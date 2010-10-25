@@ -2,12 +2,9 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package r;
 
-
 import problem.DataColumn;
-import problem.Operation;
 import org.rosuda.JRI.Rengine;
 import org.rosuda.JRI.REXP;
 
@@ -15,7 +12,8 @@ import org.rosuda.JRI.REXP;
  *
  * @author Andrew Sterling
  */
-public class OperationSummary extends problem.Operation {
+public class OperationSummary extends problem.Operation
+{
 
 	private Rengine re;
 	private REXP exp;
@@ -24,21 +22,21 @@ public class OperationSummary extends problem.Operation {
 	private double[] resultData;
 	private DataColumn storedColumn;
 
-
-	public Summary() {
+	public OperationSummary()
+	{
 		super("Summary");
-		re=new Rengine(null, false, new RInterface());
+		re = new Rengine(null, false, new RInterface());
 	}
 
-	public Summary(String name, double[] data) {
+	public OperationSummary(String name, double[] data)
+	{
 		super("Summary");
-		re=new Rengine(null, false, new RInterface());
+		re = new Rengine(null, false, new RInterface());
 		storedName = name;
 		storedData = data;
 	}
 
 	//@Override
-	//Takes a string??
 	@Override
 	public DataColumn calcColumn(int index)
 	{
@@ -47,7 +45,8 @@ public class OperationSummary extends problem.Operation {
 		Double[] temp = (Double[]) c.toArray();
 
 		//casts array to double
-		for(int i = 0; i < c.size(); i++) {
+		for(int i = 0; i < c.size(); i++)
+		{
 			storedData[i] = temp[i].doubleValue();
 		}
 
@@ -58,12 +57,14 @@ public class OperationSummary extends problem.Operation {
 
 		//throw results from exp into the local column
 		resultData = exp.asDoubleArray();
-		
-		if(!storedColumn.isEmpty()) {
+
+		if(!storedColumn.isEmpty())
+		{
 			storedColumn.clear();
 		}
-		for(int i=0; i<resultData.length; i++) {
-			storedColumn.add((Double)resultData[i]);
+		for(int i = 0; i < resultData.length; i++)
+		{
+			storedColumn.add((Double) resultData[i]);
 		}
 
 		//operation via the Rengine.
