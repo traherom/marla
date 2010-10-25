@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF8"?>
+<problem>
+  <statement />
+  <data name="1287952266697" id="-310468497" x="330" y="50" height="60" width="16">
+    <column name="Column 1">
+      <value>10.0</value>
+      <value>11.0</value>
+      <value>12.0</value>
+      <value>13.0</value>
+    </column>
+    <column name="Column 2">
+      <value>20.0</value>
+      <value>21.0</value>
+      <value>22.0</value>
+      <value>23.0</value>
+    </column>
+    <column name="Column 3">
+      <value>30.0</value>
+      <value>31.0</value>
+      <value>32.0</value>
+      <value>33.0</value>
+    </column>
+    <operation name="Sum" type="r.OperationSummation" x="330" y="70" height="30" width="16">
+      <operations />
+    </operation>
+  </data>
+</problem>
+
