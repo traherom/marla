@@ -28,30 +28,25 @@ public class OperationSummary extends problem.Operation
 		re = new Rengine(null, false, new RInterface());
 	}
 
-	public OperationSummary(String name, double[] data)
-	{
-		super("Summary");
-		re = new Rengine(null, false, new RInterface());
-		storedName = name;
-		storedData = data;
-	}
-
 	//@Override
 	@Override
 	public DataColumn calcColumn(int index)
 	{
-		DataColumn c = new DataColumn("Summary");
 
-		Double[] temp = (Double[]) c.toArray();
+		storedColumn = parent.getColumn(index);
+
+		DataColumn out = new DataColumn("Summary");
+
+		Double[] temp = (Double[]) storedColumn.toArray();
 
 		//casts array to double
-		for(int i = 0; i < c.size(); i++)
+		for(int i = 0; i < storedColumn.size(); i++)
 		{
 			storedData[i] = temp[i].doubleValue();
 		}
 
 		//does operation
-		storedName = c.getName();
+		storedName = storedColumn.getName();
 		re.assign(storedName, storedData);
 		exp = re.eval("summary(" + storedName + ")");
 
@@ -64,11 +59,12 @@ public class OperationSummary extends problem.Operation
 		}
 		for(int i = 0; i < resultData.length; i++)
 		{
-			storedColumn.add((Double) resultData[i]);
+			out.add((Double) resultData[i]);
 		}
+		out.setName("min, 1stQ, median, mean, 3rdQ, max");
 
 		//operation via the Rengine.
 		//this.ischanged?? will check all the way up if "go" is hit, and recalculate
-		return storedColumn;
+		return out;
 	}
 }
