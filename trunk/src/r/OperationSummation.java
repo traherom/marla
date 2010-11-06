@@ -19,31 +19,60 @@ package r;
 
 import problem.DataColumn;
 import problem.Operation;
+import org.rosuda.JRI.Rengine;
+import org.rosuda.JRI.REXP;
 
 /**
- * DOES NOT ACTUALLY USE R! Just returns the summation of the values in
- * a column.
+ * Using R, it returns the sum of values in the DataColumn
  * @author Ryan Morehart
+ * @author Andrew Sterling
  */
 public class OperationSummation extends problem.Operation
 {
 
+	private Rengine re;
+	private REXP exp;
+	private String storedName;
+	private double[] storedData;
+	private double[] resultData;
+	private DataColumn storedColumn;
+
 	public OperationSummation()
 	{
 		super("Sum");
+		re = new Rengine(null, false, new RInterface());
 	}
 
 	@Override
 	public DataColumn calcColumn(int index)
 	{
-		DataColumn col = parent.getColumn(index);
+		storedColumn = parent.getColumn(index);
 
-		Double total = new Double(0);
-		for(Double d : col)
-			total += d;
+		DataColumn out = new DataColumn("Sum");
 
-		DataColumn sum = new DataColumn("sum" + index);
-		sum.add(total);
-		return sum;
+		Double[] temp = (Double[]) storedColumn.toArray();
+
+		//casts array to double
+		for(int i = 0; i < storedColumn.size(); i++)
+		{
+			storedData[i] = temp[i].doubleValue();
+		}
+
+
+		//does operation
+		storedName = storedColumn.getName();
+		re.assign(storedName, storedData);
+		exp = re.eval("sum(" + storedName + ")");
+
+		//throw results from exp into the local column
+		resultData = exp.asDoubleArray();
+
+		for(int i = 0; i < resultData.length; i++)
+		{
+			out.add((Double) resultData[i]);
+		}
+		out.setName("Sum");
+
+		return out;
 	}
 }

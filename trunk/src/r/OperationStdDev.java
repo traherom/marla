@@ -19,24 +19,64 @@ package r;
 
 import problem.DataColumn;
 import problem.Operation;
+import org.rosuda.JRI.Rengine;
+import org.rosuda.JRI.REXP;
+
+
 
 /**
  * Serves as a pass-through sort of operation, performing no actual
  * action on the data it is associated with.
  * @author Ryan Morehart
+ * @author Andrew Sterling
  */
 public class OperationStdDev extends problem.Operation
 {
+
+	private Rengine re;
+	private REXP exp;
+	private String storedName;
+	private double[] storedData;
+	private double[] resultData;
+	private DataColumn storedColumn;
+
+
 	public OperationStdDev()
 	{
 		super("StdDev");
+		re = new Rengine(null, false, new RInterface());
 	}
 
 	@Override
 	public DataColumn calcColumn(int index)
 	{
-		DataColumn c = new DataColumn("StdDev");
-		c.add(15.2);
-		return c;
+		storedColumn = parent.getColumn(index);
+
+		DataColumn out = new DataColumn("SD");
+
+		Double[] temp = (Double[]) storedColumn.toArray();
+
+		//casts array to double
+		for(int i = 0; i < storedColumn.size(); i++)
+		{
+			storedData[i] = temp[i].doubleValue();
+		}
+
+
+		//does operation
+		storedName = storedColumn.getName();
+		re.assign(storedName, storedData);
+		exp = re.eval("sd(" + storedName + ")");
+
+		//throw results from exp into the local column
+		resultData = exp.asDoubleArray();
+
+		for(int i = 0; i < resultData.length; i++)
+		{
+			out.add((Double) resultData[i]);
+		}
+		out.setName("SD");
+
+		return out;
 	}
 }
