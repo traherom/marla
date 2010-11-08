@@ -40,7 +40,7 @@ public class OperationSummation extends problem.Operation
 	public OperationSummation()
 	{
 		super("Sum");
-		re = new Rengine(null, false, new RInterface());
+		re = new Rengine(new String[]{"--no-save"}, false, new RInterface());
 	}
 
 	@Override

@@ -44,7 +44,7 @@ public class OperationStdDev extends problem.Operation
 	public OperationStdDev()
 	{
 		super("StdDev");
-		re = new Rengine(null, false, new RInterface());
+		re = new Rengine(new String[]{"--no-save"}, false, new RInterface());
 	}
 
 	@Override
