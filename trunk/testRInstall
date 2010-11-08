@@ -1,0 +1,27 @@
+#!/bin/sh
+
+R_HOME=/usr/lib/R
+
+R_SHARE_DIR=/usr/share/R/share
+export R_SHARE_DIR
+R_INCLUDE_DIR=/usr/share/R/include
+export R_INCLUDE_DIR
+R_DOC_DIR=/usr/share/R/doc
+export R_DOC_DIR
+
+JRI_LD_PATH=${R_HOME}/lib:${R_HOME}/bin:
+if test -z "$LD_LIBRARY_PATH"; then
+  LD_LIBRARY_PATH=$JRI_LD_PATH
+else
+  LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$JRI_LD_PATH
+fi
+JAVA=java
+
+cd build/classes/
+CLASSPATH=${CLASSPATH}:../../lib/JRI.jar:../../lib/jdom.jar:../../swing-layout-1.0.4.jar
+
+export R_HOME
+export LD_LIBRARY_PATH
+
+${JAVA} -Djava.library.path=.:../../lib -cp ${CLASSPATH} r.RInterface
+
