@@ -50,7 +50,8 @@ public class OperationSummary extends problem.Operation
 
 		DataColumn out = new DataColumn("Summary");
 
-		Double[] temp = (Double[]) storedColumn.toArray();
+		Double[] temp = new Double[storedColumn.size()];
+		storedColumn.toArray(temp);
 
 		//casts array to double
 		for(int i = 0; i < storedColumn.size(); i++)

@@ -36,8 +36,6 @@ public class OperationStdDev extends problem.Operation
 	private Rengine re;
 	private REXP exp;
 	private String storedName;
-	private double[] storedData;
-	private double[] resultData;
 	private DataColumn storedColumn;
 
 
@@ -54,7 +52,10 @@ public class OperationStdDev extends problem.Operation
 
 		DataColumn out = new DataColumn("SD");
 
-		Double[] temp = (Double[]) storedColumn.toArray();
+		Double[] temp = new Double[storedColumn.size()];
+		storedColumn.toArray(temp);
+
+		double[] storedData = new double[storedColumn.size()];// storedData[20];// = double[20];
 
 		//casts array to double
 		for(int i = 0; i < storedColumn.size(); i++)
@@ -64,17 +65,14 @@ public class OperationStdDev extends problem.Operation
 
 
 		//does operation
-		storedName = storedColumn.getName();
+		storedName = "SD";
 		re.assign(storedName, storedData);
 		exp = re.eval("sd(" + storedName + ")");
 
 		//throw results from exp into the local column
-		resultData = exp.asDoubleArray();
+		double resultData = exp.asDouble();
 
-		for(int i = 0; i < resultData.length; i++)
-		{
-			out.add((Double) resultData[i]);
-		}
+		out.add((Double) resultData);
 		out.setName("SD");
 
 		return out;
