@@ -17,6 +17,7 @@
  */
 package r;
 
+import java.util.ArrayList;
 import problem.DataColumn;
 import problem.Operation;
 import org.rosuda.JRI.Rengine;

@@ -73,6 +73,9 @@ public class Domain
 	/** The reference to the view of the application.*/
 	private ViewPanel viewPanel;
 
+	/** Types of questions Operations can ask a user. */
+	public enum PromptType {CHECKBOX, TEXT, COMBO};
+
 	/**
 	 * Construct the domain with the view reference.
 	 *
