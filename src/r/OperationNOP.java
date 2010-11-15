@@ -17,6 +17,8 @@
  */
 package r;
 
+import gui.Domain.PromptType;
+import java.util.ArrayList;
 import problem.DataColumn;
 import problem.Operation;
 
@@ -36,5 +38,15 @@ public class OperationNOP extends Operation
 	public DataColumn calcColumn(int index)
 	{
 		return new DataColumn(this.parent.getColumn(index), null);
+	}
+
+	@Override
+	public ArrayList<Object[]> getRequiredInfoPrompt()
+	{
+		ArrayList<Object[]> req = new ArrayList<Object[]>();
+		req.add(new Object[] {"Population mean", PromptType.TEXT});
+		req.add(new Object[] {"Is normal data?", PromptType.CHECKBOX});
+		req.add(new Object[] {"Column", PromptType.COMBO, parent.getColumnNames()});
+		return req;
 	}
 }

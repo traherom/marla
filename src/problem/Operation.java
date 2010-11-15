@@ -18,6 +18,7 @@
 package problem;
 
 import java.awt.Rectangle;
+import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.jdom.Element;
@@ -208,13 +209,13 @@ public abstract class Operation extends DataSet
 	}
 
 	/**
-	 * Deriving classes should override this to return true if
-	 * they need more information than just the dataset
+	 * Returns true if the Operation has questions/prompts for the user.
+	 * getRequiredInfoPrompt() returns the actual ArrayList of data needed
 	 * @return true if additional information is required
 	 */
-	public boolean AdditionalInfoRequired()
+	public boolean isInfoRequired()
 	{
-		return false;
+		return !getRequiredInfoPrompt().isEmpty();
 	}
 
 	/**
@@ -222,11 +223,29 @@ public abstract class Operation extends DataSet
 	 * information they need. Alex and I need to work out how this actually
 	 * works. We'll need to display a window for it, but we don't want to
 	 * do that from here. Do we call back to a class by him?
-	 * @return true if additional information was requested
+	 * @return Object[] ArrayList of questions to ask the user. The Object[] array
+	 *			is two dimensional, the first element is a verbatim string to
+	 *			ask the user and the second is a constant on the question type.
+	 *			If the question type requires for information (for example, a
+	 *			combo selection box), then the third element in Object[] will
+	 *			be whatever is needed.
 	 */
-	public boolean DisplayInformationRequest()
+	public ArrayList<Object[]> getRequiredInfoPrompt()
 	{
-		return false;
+		return new ArrayList<Object[]>();
+	}
+
+	/**
+	 * After the user is prompted for additional values, their selections
+	 * are returned as an ArrayList where the index corresponds to the question
+	 * originally asked by getInforRequiredPrompt(). This function ignores
+	 * the values by default. If a derived class needs to handle them then
+	 * it should override this.
+	 * @param values ArrayList of Objects that answer the questions
+	 */
+	public void setRequiredInfo(ArrayList<Object> values)
+	{
+		
 	}
 
 	/**
