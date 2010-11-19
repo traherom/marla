@@ -38,10 +38,6 @@ import resource.LoadSaveThread;
  */
 public class Domain
 {
-
-	/**************************************************************************/
-	/* GLOBAL CONSTANTS                                                       */
-	/**************************************************************************/
 	/** The name of the application.*/
 	public static final String NAME = "The maRla Project";
 	/** The version number of the application.*/
@@ -56,6 +52,10 @@ public class Domain
 	public static final String HOME_DIR = System.getProperty("user.home");
 	/** The logger holds all caught exceptions for recording in the log file.*/
 	public static final ArrayList<Exception> logger = new ArrayList<Exception>();
+
+	/** Types of questions Operations can ask a user.*/
+	public enum PromptType {CHECKBOX, TEXT, COMBO};
+
 	/** The last good problem directory.*/
 	public String lastGoodDir = HOME_DIR;
 	/** The last good file that was a CSV file.*/
@@ -72,9 +72,6 @@ public class Domain
 	protected Operation currentOperation = null;
 	/** The reference to the view of the application.*/
 	private ViewPanel viewPanel;
-
-	/** Types of questions Operations can ask a user. */
-	public enum PromptType {CHECKBOX, TEXT, COMBO};
 
 	/**
 	 * Construct the domain with the view reference.
