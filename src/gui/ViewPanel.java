@@ -19,7 +19,6 @@
 package gui;
 
 import java.awt.Font;
-import java.awt.GridLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.BufferedWriter;
@@ -44,6 +43,7 @@ import problem.Operation;
 import problem.Problem;
 import r.OperationMean;
 import r.OperationStdDev;
+import r.OperationSummary;
 import r.OperationSummation;
 import resource.LoadSaveThread;
 
@@ -56,35 +56,28 @@ import resource.LoadSaveThread;
  */
 public class ViewPanel extends JPanel
 {
-	/** The full time format for debug output.*/
-    public static final SimpleDateFormat fullTimeFormat = new SimpleDateFormat ("MM/dd/yyyy h:mm:ss a");
-	
-	
-	/**************************************************************************/
-	/* AVAILABLE FONT PROPERTIES                                              */
-	/**************************************************************************/
-
-	/** Default, plain, 12-point font.*/
-	public static final Font FONT_PLAIN_12 = new Font ("Verdana", Font.PLAIN, 12);
-	/** Default, bold, 12-point font.*/
-	public static final Font FONT_BOLD_12 = new Font ("Verdana", Font.BOLD, 12);
-
-
 	/**************************************************************************/
 	/* DEFINE ALL STATISTICAL COMPONENTS THAT WILL BE LOADED INTO THE PALETTE */
 	/* PAIN (THESE COMPONENTS MUST ALSO BE LISTED IN PALETTE_TYPES ARRAY)     */
 	/**************************************************************************/
-	
+	private final Operation SUMMARY = new OperationSummary ();
 	private final Operation SUMMATION = new OperationSummation ();
 	private final Operation MEAN = new OperationMean ();
 	private final Operation STD_DEV = new OperationStdDev ();
 	/** The list of types that will be loaded into the palette.*/
 	private final Operation[] PALETTE_TYPES = new Operation[]
 	{
-		SUMMATION, MEAN, STD_DEV
+		SUMMARY, SUMMATION, MEAN, STD_DEV
 	};
+	
+	/** The full time format for debug output.*/
+    public static final SimpleDateFormat fullTimeFormat = new SimpleDateFormat ("MM/dd/yyyy h:mm:ss a");
+	/** Default, plain, 12-point font.*/
+	public static final Font FONT_PLAIN_12 = new Font ("Verdana", Font.PLAIN, 12);
+	/** Default, bold, 12-point font.*/
+	public static final Font FONT_BOLD_12 = new Font ("Verdana", Font.BOLD, 12);
 
-    /** The main frame of a stand-alone application.*/
+	/** The main frame of a stand-alone application.*/
     public MainFrame mainFrame;
 	/** The domain object reference performs generic actions specific to the GUI.*/
     protected Domain domain = new Domain (this);
@@ -169,19 +162,9 @@ public class ViewPanel extends JPanel
 		((JButton) access.getComponent (1)).setToolTipText ("Cancel save");
 
 		// Add all operation types to the palette, adding listeners to the labels as we go
-		((GridLayout) componentsPanel.getLayout()).setRows((int) Math.round (PALETTE_TYPES.length / 2));
 		for (int i = 0; i < PALETTE_TYPES.length; ++i)
 		{
 			final Operation operation = PALETTE_TYPES[i];
-
-			if (i % 2 == 0)
-			{
-				leftPanel.add (operation);
-			}
-			else
-			{
-				rightPanel.add (operation);
-			}
 
 			operation.addMouseListener(new MouseAdapter ()
 			{
@@ -191,6 +174,15 @@ public class ViewPanel extends JPanel
 					addToWorkspace (operation);
 				}
 			});
+
+			if (i % 2 == 0)
+			{
+				leftPanel.add (operation);
+			}
+			else
+			{
+				rightPanel.add (operation);
+			}
 		}
     }
 
@@ -480,7 +472,7 @@ public class ViewPanel extends JPanel
         subProblemsCardPanel.add(wizardLineCard5);
         wizardLineCard5.setBounds(10, 10, 440, 20);
 
-        subProblemsWizardLabel.setFont(new java.awt.Font("Verdana", 1, 12)); // NOI18N
+        subProblemsWizardLabel.setFont(new java.awt.Font("Verdana", 1, 12));
         subProblemsWizardLabel.setText("Sub Problems");
         subProblemsCardPanel.add(subProblemsWizardLabel);
         subProblemsWizardLabel.setBounds(10, 10, 130, 16);
@@ -759,9 +751,9 @@ public class ViewPanel extends JPanel
         );
         trayPanelLayout.setVerticalGroup(
             trayPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(0, 23, Short.MAX_VALUE)
+            .add(0, 22, Short.MAX_VALUE)
             .add(trayPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                .add(outputScrollPane, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 23, Short.MAX_VALUE))
+                .add(outputScrollPane, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 22, Short.MAX_VALUE))
         );
 
         workspaceSplitPane.setBottomComponent(trayPanel);
