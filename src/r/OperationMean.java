@@ -34,8 +34,7 @@ public class OperationMean extends problem.Operation
 	private Rengine re;
 	private REXP exp;
 	private String storedName;
-	private double[] storedData;
-	private double[] resultData;
+
 	private DataColumn storedColumn;
 
 
@@ -55,6 +54,8 @@ public class OperationMean extends problem.Operation
 		Double[] temp = new Double[storedColumn.size()];
 		storedColumn.toArray(temp);
 
+		double[] storedData = new double[storedColumn.size()];
+		
 		//casts array to double
 		for(int i = 0; i < storedColumn.size(); i++)
 		{
@@ -63,17 +64,13 @@ public class OperationMean extends problem.Operation
 
 
 		//does operation
-		storedName = storedColumn.getName();
+		storedName = "Mean";
 		re.assign(storedName, storedData);
 		exp = re.eval("mean(" + storedName + ")");
 
-		//throw results from exp into the local column
-		resultData = exp.asDoubleArray();
+		double resultData = exp.asDouble();
 
-		for(int i = 0; i < resultData.length; i++)
-		{
-			out.add((Double) resultData[i]);
-		}
+		out.add((Double) resultData);
 		out.setName("Mean");
 
 		return out;
