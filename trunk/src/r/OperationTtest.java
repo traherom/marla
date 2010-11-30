@@ -51,10 +51,9 @@ public class OperationTtest extends problem.Operation {
 		re.assign(storedName, storedData);
 		exp = re.eval("t.test(" + storedName + ")");
 
-//		double resultData = exp.asDouble();
 		String[] resultData = exp.asStringArray();
 		for(int i=0; i<resultData.length; i++) {
-			//out.add(resultData[i]);
+			out.add(Double.parseDouble(resultData[i]));
 		}
 		out.setName("ttest");
 
