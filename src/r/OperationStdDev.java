@@ -65,7 +65,7 @@ public class OperationStdDev extends problem.Operation
 
 
 		//does operation
-		storedName = "SD";
+		storedName = "stdeviation";
 		re.assign(storedName, storedData);
 		exp = re.eval("sd(" + storedName + ")");
 
