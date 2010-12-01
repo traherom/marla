@@ -31,8 +31,6 @@ public class OperationSummary extends problem.Operation
 	private Rengine re;
 	private REXP exp;
 	private String storedName;
-	private double[] storedData;
-	private double[] resultData;
 	private DataColumn storedColumn;
 
 	public OperationSummary()
@@ -52,7 +50,7 @@ public class OperationSummary extends problem.Operation
 
 		Double[] temp = new Double[storedColumn.size()];
 		storedColumn.toArray(temp);
-
+		double[] storedData = new double[storedColumn.size()];
 		//casts array to double
 		for(int i = 0; i < storedColumn.size(); i++)
 		{
@@ -65,7 +63,7 @@ public class OperationSummary extends problem.Operation
 		exp = re.eval("summary(" + storedName + ")");
 
 		//throw results from exp into the local column
-		resultData = exp.asDoubleArray();
+		double[] resultData = exp.asDoubleArray();
 
 
 		for(int i = 0; i < resultData.length; i++)
@@ -76,6 +74,7 @@ public class OperationSummary extends problem.Operation
 
 		//operation via the Rengine.
 		//this.ischanged?? will check all the way up if "go" is hit, and recalculate
+		re.end();
 		return out;
 	}
 }

@@ -70,6 +70,7 @@ public class OperationSummation extends problem.Operation
 		out.add((Double) resultData);
 		out.setName("Sum");
 
+		re.end();
 		return out;
 	}
 }

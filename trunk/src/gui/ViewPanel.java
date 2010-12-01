@@ -45,6 +45,7 @@ import r.OperationMean;
 import r.OperationStdDev;
 import r.OperationSummary;
 import r.OperationSummation;
+import r.OperationTtest;
 import resource.LoadSaveThread;
 
 /**
@@ -64,10 +65,11 @@ public class ViewPanel extends JPanel
 	private final Operation SUMMATION = new OperationSummation ();
 	private final Operation MEAN = new OperationMean ();
 	private final Operation STD_DEV = new OperationStdDev ();
+	private final Operation T_TEST = new OperationTtest ();
 	/** The list of types that will be loaded into the palette.*/
 	private final Operation[] PALETTE_TYPES = new Operation[]
 	{
-		SUMMARY, SUMMATION, MEAN, STD_DEV
+		SUMMARY, SUMMATION, MEAN, STD_DEV, T_TEST
 	};
 	
 	/** The full time format for debug output.*/

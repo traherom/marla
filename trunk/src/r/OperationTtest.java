@@ -25,6 +25,7 @@ public class OperationTtest extends problem.Operation {
 	public OperationTtest() {
 		super("Ttest");
 		re = new Rengine(new String[]{"--no-save"}, false, new RInterface());
+
 	}
 
 	@Override
@@ -57,6 +58,7 @@ public class OperationTtest extends problem.Operation {
 		}
 		out.setName("ttest");
 
+		re.end();
 		return out;
 	}
 }
