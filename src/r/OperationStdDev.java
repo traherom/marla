@@ -75,6 +75,7 @@ public class OperationStdDev extends problem.Operation
 		out.add((Double) resultData);
 		out.setName("SD");
 
+		re.end();
 		return out;
 	}
 }
