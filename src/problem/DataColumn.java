@@ -107,7 +107,7 @@ public class DataColumn implements List<Double>
 	 * Changes the name this data column goes by.
 	 * @param name New name for column.
 	 */
-	public void setName(String name)
+	public void setName(String name) throws CalcException
 	{
 		markChanged();
 		this.name = name;
@@ -130,7 +130,11 @@ public class DataColumn implements List<Double>
 	@Override
 	public boolean add(Double val)
 	{
-		markChanged();
+		try
+		{
+			markChanged();
+		}
+		catch (CalcException ex) {}
 		return values.add(val);
 	}
 
@@ -183,7 +187,11 @@ public class DataColumn implements List<Double>
 	{
 		if(values.remove((Double) o))
 		{
-			markChanged();
+			try
+			{
+				markChanged();
+			}
+			catch (CalcException ex) {}
 			return true;
 		}
 		else
@@ -203,7 +211,11 @@ public class DataColumn implements List<Double>
 	{
 		if(values.addAll(c))
 		{
-			markChanged();
+			try
+			{
+				markChanged();
+			}
+			catch (CalcException ex) {}
 			return true;
 		}
 		else
@@ -215,7 +227,11 @@ public class DataColumn implements List<Double>
 	{
 		if(values.addAll(index, c))
 		{
-			markChanged();
+			try
+			{
+				markChanged();
+			}
+			catch (CalcException ex) {}
 			return true;
 		}
 		else
@@ -228,7 +244,11 @@ public class DataColumn implements List<Double>
 	{
 		if(values.removeAll(c))
 		{
-			markChanged();
+			try
+			{
+				markChanged();
+			}
+			catch (CalcException ex) {}
 			return true;
 		}
 		else
@@ -245,7 +265,11 @@ public class DataColumn implements List<Double>
 	{
 		if(values.retainAll(c))
 		{
-			markChanged();
+			try
+			{
+				markChanged();
+			}
+			catch (CalcException ex) {}
 			return true;
 		}
 		else
@@ -261,7 +285,11 @@ public class DataColumn implements List<Double>
 	{
 		if(!values.isEmpty())
 		{
-			markChanged();
+			try
+			{
+				markChanged();
+			}
+			catch (CalcException ex) {}
 			values.clear();
 		}
 	}
@@ -290,7 +318,13 @@ public class DataColumn implements List<Double>
 		// Only mark unsaved if it actually set a new value
 		Double old = values.set(index, element);
 		if(old != element && parent != null)
-			markChanged();
+		{
+			try
+			{
+				markChanged();
+			}
+			catch (CalcException ex) {}
+		}
 
 		return old;
 	}
@@ -304,7 +338,11 @@ public class DataColumn implements List<Double>
 	@Override
 	public void add(int index, Double element)
 	{
-		markChanged();
+		try
+		{
+			markChanged();
+		}
+		catch (CalcException ex) {}
 		values.add(index, element);
 	}
 
@@ -317,7 +355,11 @@ public class DataColumn implements List<Double>
 	@Override
 	public Double remove(int index)
 	{
-		markChanged();
+		try
+		{
+			markChanged();
+		}
+		catch (CalcException ex) {}
 		return values.remove(index);
 	}
 
@@ -458,7 +500,7 @@ public class DataColumn implements List<Double>
 	 * parent. Package scope is intentional.
 	 * @param newParent New DataSet we belong to
 	 */
-	void setParent(DataSet newParent)
+	void setParent(DataSet newParent) throws CalcException
 	{
 		if(parent != null)
 		{
@@ -472,7 +514,7 @@ public class DataColumn implements List<Double>
 	 * Marks this DataColumn as having changes than haven't been saved
 	 * and tells parent about it, so that they can take appropiate action
 	 */
-	public void markChanged()
+	public void markChanged() throws CalcException
 	{
 		if(parent != null)
 			parent.markChanged();

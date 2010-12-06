@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import org.jdom.JDOMException;
+import problem.CalcException;
 import problem.DataSet;
 import problem.FileException;
 import problem.Operation;
@@ -192,11 +193,15 @@ public class Domain
 				{
 					viewPanel.closeProblem();
 				}
-					
+				
 				problem = Problem.load(viewPanel.openChooserDialog.getSelectedFile().toString ());
 
 				viewPanel.openProblem();
 			}
+		}
+		catch (CalcException ex)
+		{
+			// TODO add box
 		}
 		catch(FileNotFoundException ex)
 		{

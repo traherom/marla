@@ -333,7 +333,7 @@ public class Problem implements ProblemPart
 	 * @param fileName Path to save file
 	 * @return Restored Problem object
 	 */
-	public static Problem load(String fileName) throws FileNotFoundException, IOException, JDOMException
+	public static Problem load(String fileName) throws FileNotFoundException, IOException, JDOMException, CalcException
 	{
 		// Load file into JDOM
 		SAXBuilder parser = new SAXBuilder();
@@ -401,7 +401,7 @@ public class Problem implements ProblemPart
 	}
 
 	@Override
-	public DataSet getAnswer() throws IncompleteInitialization
+	public DataSet getAnswer() throws IncompleteInitialization, CalcException
 	{
 		if(datasets.isEmpty())
 			throw new IncompleteInitialization("This problem has no datasets yet, unable to solve");
@@ -444,7 +444,7 @@ public class Problem implements ProblemPart
 	 * Creates a new problem based on the data in the given XML tree
 	 * @param rootEl JDOM Tree to load problem from
 	 */
-	public static Problem fromXml(Element rootEl)
+	public static Problem fromXml(Element rootEl) throws CalcException
 	{
 		Problem newProb = new Problem();
 		newProb.setStatement(rootEl.getChild("statement").getText());

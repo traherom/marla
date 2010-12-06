@@ -102,7 +102,7 @@ public class DataSet extends JLabel
 	 * @param filePath Absolute or relative path to file to import.
 	 * @return New DataSet containing the imported values
 	 */
-	public static DataSet importFile(String filePath) throws FileNotFoundException
+	public static DataSet importFile(String filePath) throws FileNotFoundException, CalcException
 	{
 		File file = new File(filePath);
 		BufferedReader is = new BufferedReader(new FileReader(file));
@@ -218,7 +218,11 @@ public class DataSet extends JLabel
 	@Override
 	public void setName(String newName)
 	{
-		markChanged();
+		try
+		{
+			markChanged();
+		}
+		catch (CalcException ex) {}
 		super.setName(newName);
 		name = newName;
 	}
@@ -228,7 +232,7 @@ public class DataSet extends JLabel
 	 * @param colName Name for new column
 	 * @return Newly created data column
 	 */
-	public DataColumn addColumn(String colName)
+	public DataColumn addColumn(String colName) throws CalcException
 	{
 		markChanged();
 		DataColumn newCol = new DataColumn(this, colName);
@@ -241,7 +245,7 @@ public class DataSet extends JLabel
 	 * @param column Column to assign to this DataSet
 	 * @return Column that was added to data (same as passed in)
 	 */
-	public DataColumn addColumn(DataColumn column)
+	public DataColumn addColumn(DataColumn column) throws CalcException
 	{
 		markChanged();
 		columns.add(column);
@@ -258,7 +262,7 @@ public class DataSet extends JLabel
 	 * @param column Column to assign to this DataSet
 	 * @return Column that was added (same as passed in)
 	 */
-	public DataColumn addColumn(int index, DataColumn column)
+	public DataColumn addColumn(int index, DataColumn column) throws CalcException
 	{
 		markChanged();
 		columns.add(index, column);
@@ -271,7 +275,7 @@ public class DataSet extends JLabel
 	 * @param col Column to remove from the dataset
 	 * @return The removed column
 	 */
-	public DataColumn removeColumn(DataColumn col)
+	public DataColumn removeColumn(DataColumn col) throws CalcException
 	{
 		return removeColumn(columns.indexOf(col));
 	}
@@ -282,7 +286,7 @@ public class DataSet extends JLabel
 	 * @param index Location to remove from DataSet
 	 * @return Removed DataColumn, with the parent no longer set to this dataset
 	 */
-	public DataColumn removeColumn(int index)
+	public DataColumn removeColumn(int index) throws CalcException
 	{
 		markChanged();
 		DataColumn col = columns.remove(index);
@@ -377,7 +381,7 @@ public class DataSet extends JLabel
 	 * desired.
 	 * @return DataSet with all values "solved" (if an operation is being performed)
 	 */
-	public DataSet getAllColumns()
+	public DataSet getAllColumns() throws CalcException
 	{
 		return new DataSet(this, null);
 	}
@@ -386,7 +390,7 @@ public class DataSet extends JLabel
 	 * Tells the problem we belong to that we've changed. Used by DataColumns
 	 * under us to notify encapsulating problem.
 	 */
-	public void markChanged()
+	public void markChanged() throws CalcException
 	{
 		// Tell all children to recompute
 		for(Operation op : solutionOps)
@@ -419,7 +423,7 @@ public class DataSet extends JLabel
 	 * @param op Operation to add to perform on DataSet
 	 * @return Newly added operation
 	 */
-	public Operation addOperation(Operation op)
+	public Operation addOperation(Operation op) throws CalcException
 	{
 		markChanged();
 		op.setParentData(this);
@@ -432,7 +436,7 @@ public class DataSet extends JLabel
 	 * @param op Operation to remove from data
 	 * @return The removed Operation
 	 */
-	public Operation removeOperation(Operation op)
+	public Operation removeOperation(Operation op) throws CalcException
 	{
 		markChanged();
 		solutionOps.remove(op);
@@ -550,7 +554,7 @@ public class DataSet extends JLabel
 	 * @param dataEl JDOM Element with the information to construct DataSet
 	 * @return Constructed and initialized DataSet
 	 */
-	public static DataSet fromXml(Element dataEl)
+	public static DataSet fromXml(Element dataEl) throws CalcException
 	{
 		DataSet newData = new DataSet(dataEl.getAttributeValue("name"));
 

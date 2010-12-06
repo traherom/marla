@@ -218,7 +218,7 @@ public class SubProblem implements ProblemPart
 	}
 
 	@Override
-	public DataSet getAnswer() throws IncompleteInitialization
+	public DataSet getAnswer() throws IncompleteInitialization, CalcException
 	{
 		if(endSolutionStep == null)
 			throw new IncompleteInitialization();

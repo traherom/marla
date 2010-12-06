@@ -66,7 +66,7 @@ public interface ProblemPart
 	 * the first DataSet in a part
 	 * @return Solved DataSet
 	 */
-	public DataSet getAnswer() throws IncompleteInitialization;
+	public DataSet getAnswer() throws IncompleteInitialization, CalcException;
 
 	/**
 	 * Trues true if the problem has unsaved changes

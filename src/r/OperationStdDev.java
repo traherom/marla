@@ -18,9 +18,9 @@
 package r;
 
 import problem.DataColumn;
-import problem.Operation;
 import org.rosuda.JRI.Rengine;
 import org.rosuda.JRI.REXP;
+import problem.CalcException;
 
 
 
@@ -46,7 +46,7 @@ public class OperationStdDev extends problem.Operation
 	}
 
 	@Override
-	public DataColumn calcColumn(int index)
+	public DataColumn calcColumn(int index) throws CalcException
 	{
 		storedColumn = parent.getColumn(index);
 

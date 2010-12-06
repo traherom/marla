@@ -20,6 +20,7 @@ package r;
 import problem.DataColumn;
 import org.rosuda.JRI.Rengine;
 import org.rosuda.JRI.REXP;
+import problem.CalcException;
 
 /**
  *
@@ -41,7 +42,7 @@ public class OperationSummary extends problem.Operation
 
 	//@Override
 	@Override
-	public DataColumn calcColumn(int index)
+	public DataColumn calcColumn(int index) throws CalcException
 	{
 
 		storedColumn = parent.getColumn(index);
