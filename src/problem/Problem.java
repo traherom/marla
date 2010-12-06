@@ -201,14 +201,15 @@ public class Problem implements ProblemPart
 
 	/**
 	 * Adds an existing SubProblem to the problem.
+	 * @param id Subproblem identifier. For example, "a," "part B," etc
 	 * @param description Problem statement for new SubProblem
 	 * @return Reference to newly added SubProblem.
 	 */
-	public SubProblem addSubProblem(String description)
+	public SubProblem addSubProblem(String id, String description)
 	{
 		markChanged();
 		isSaved = false;
-		SubProblem sub = new SubProblem(this, description);
+		SubProblem sub = new SubProblem(this, id, description);
 		subProblems.add(sub);
 		return sub;
 	}
