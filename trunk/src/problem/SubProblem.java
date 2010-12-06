@@ -200,6 +200,8 @@ public class SubProblem implements ProblemPart
 		SubProblem otherP = (SubProblem) other;
 		if(!this.partDesc.equals(otherP.partDesc))
 			return false;
+		if(!this.id.equals(otherP.id))
+			return false;
 		if(!endSolutionStep.equals(otherP.endSolutionStep))
 			return false;
 		if(!startSolutionStep.equals(otherP.startSolutionStep))
@@ -212,6 +214,7 @@ public class SubProblem implements ProblemPart
 	{
 		int hash = 7;
 		hash = 29 * hash + (this.partDesc != null ? this.partDesc.hashCode() : 0);
+		hash = 29 * hash + (this.id != null ? this.id.hashCode() : 0);
 		hash = 29 * hash + (this.startSolutionStep != null ? this.startSolutionStep.hashCode() : 0);
 		hash = 29 * hash + (this.endSolutionStep != null ? this.endSolutionStep.hashCode() : 0);
 		return hash;
@@ -231,8 +234,14 @@ public class SubProblem implements ProblemPart
 	{
 		Element subEl = new Element("part");
 		subEl.setAttribute("id", id);
-		subEl.setAttribute("start", Integer.toString(startSolutionStep.hashCode()));
-		subEl.setAttribute("end", Integer.toString(endSolutionStep.hashCode()));
+		if(startSolutionStep != null)
+			subEl.setAttribute("start",	 Integer.toString(startSolutionStep.hashCode()));
+		else
+			subEl.setAttribute("start",	 "");
+		if(endSolutionStep != null)
+			subEl.setAttribute("end", Integer.toString(endSolutionStep.hashCode()));
+		else
+			subEl.setAttribute("end", "");
 		subEl.addContent(new Element("statement").addContent(partDesc));
 
 		return subEl;
@@ -252,14 +261,22 @@ public class SubProblem implements ProblemPart
 
 		// Now find our start and end Operation objects so we can point
 		// to them again
-		int startID = Integer.parseInt(subEl.getAttribute("start").toString());
-		int endID = Integer.parseInt(subEl.getAttribute("end").toString());
+		String startIDStr = subEl.getAttribute("start").toString();
+		String endIDStr = subEl.getAttribute("end").toString();
+
+		int startID = 0;
+		if(!startIDStr.isEmpty())
+			startID = Integer.parseInt(startIDStr);
+
+		int endID = 0;
+		if(!endIDStr.isEmpty())
+			endID = Integer.parseInt(endIDStr);
 
 		for(int i = 0; i < parent.getDataCount(); i++)
 		{
-			if(newSub.getSolutionStart() == null)
+			if(!startIDStr.isEmpty() && newSub.getSolutionStart() == null)
 				newSub.setSolutionStart(findDataSet(startID, parent.getData(i)));
-			if(newSub.getSolutionEnd() == null)
+			if(!endIDStr.isEmpty() && newSub.getSolutionEnd() == null)
 				newSub.setSolutionEnd(findDataSet(endID, parent.getData(i)));
 		}
 
