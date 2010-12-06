@@ -106,7 +106,7 @@ public abstract class Operation extends DataSet
 	 * 
 	 * @param newParent Parent DataSet/Operation we're a part of
 	 */
-	void setParentData(DataSet newParent)
+	void setParentData(DataSet newParent) throws CalcException
 	{
 		parent = newParent;
 		refreshCache();
@@ -147,17 +147,24 @@ public abstract class Operation extends DataSet
 	 * Recalculates cached columns and informs children to
 	 * refresh themselves as well.
 	 */
-	public void refreshCache()
+	public void refreshCache() throws CalcException
 	{
-		columns.clear();
-		for(int i = 0; i < parent.getColumnCount(); i++)
+		try
 		{
-			columns.add(calcColumn(i));
-		}
+			columns.clear();
+			for(int i = 0; i < parent.getColumnCount(); i++)
+			{
+				columns.add(calcColumn(i));
+			}
 
-		for(Operation op : solutionOps)
+			for(Operation op : solutionOps)
+			{
+				op.refreshCache();
+			}
+		}
+		catch(Exception ex)
 		{
-			op.refreshCache();
+			throw new CalcException("An error occured while refreshing the calculation cache", ex);
 		}
 	}
 
