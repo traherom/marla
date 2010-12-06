@@ -202,10 +202,10 @@ public abstract class Operation extends DataSet
 	 * arises.
 	 * @param index Column to calculate
 	 */
-	public abstract DataColumn calcColumn(int index);
+	public abstract DataColumn calcColumn(int index) throws CalcException;
 
 	@Override
-	public DataSet getAllColumns()
+	public DataSet getAllColumns() throws CalcException
 	{
 		DataSet newDS = new DataSet(parent.getName() + " solved");
 		for(int i = 0; i < parent.getColumnCount(); i++)

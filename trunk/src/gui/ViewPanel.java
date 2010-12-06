@@ -18,7 +18,10 @@
 
 package gui;
 
+import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Rectangle;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.BufferedWriter;
@@ -27,14 +30,20 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.JViewport;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.table.DefaultTableColumnModel;
 import javax.swing.table.TableColumn;
+import problem.CalcException;
 import problem.DataColumn;
 import problem.DataSet;
 import problem.FileException;
@@ -71,9 +80,15 @@ public class ViewPanel extends JPanel
 	{
 		SUMMARY, SUMMATION, MEAN, STD_DEV, T_TEST
 	};
-	
+
+	/** The alphabet.*/
+	public static final String[] alphabet = new String[] {"a.", "b.", "c.", "d.", "e.", "f.",
+														  "g.", "h.", "i.", "j.", "k.", "l.",
+														  "m.", "n.", "o.", "p.", "q.", "r.",
+														  "s.", "t.", "u.", "v.", "w.", "x.",
+														  "y.", "z."};
 	/** The full time format for debug output.*/
-    public static final SimpleDateFormat fullTimeFormat = new SimpleDateFormat ("MM/dd/yyyy h:mm:ss a");
+    public static final SimpleDateFormat FULL_TIME_FORMAT = new SimpleDateFormat ("MM/dd/yyyy h:mm:ss a");
 	/** Default, plain, 12-point font.*/
 	public static final Font FONT_PLAIN_12 = new Font ("Verdana", Font.PLAIN, 12);
 	/** Default, bold, 12-point font.*/
@@ -83,6 +98,8 @@ public class ViewPanel extends JPanel
     public MainFrame mainFrame;
 	/** The domain object reference performs generic actions specific to the GUI.*/
     protected Domain domain = new Domain (this);
+	/** The list in the New Problem Wizard of sub problems within the current problem.*/
+	private ArrayList<JPanel> subProblemPanels = new ArrayList<JPanel> ();
 	/** The table model for values in the New Problem Wizard.*/
 	private ExtendedTableModel valuesTableModel = new ExtendedTableModel ();
 	/** True if the New Problem Wizard is being opened and actions should be ignored.*/
@@ -199,12 +216,12 @@ public class ViewPanel extends JPanel
 
         newProblemWizardDialog = new EscapeDialog (this);
         stepsPanel = new javax.swing.JPanel();
-        jLabel1 = new javax.swing.JLabel();
+        stepsLabel = new javax.swing.JLabel();
         welcomeLabel = new javax.swing.JLabel();
         nameAndLocationLabel = new javax.swing.JLabel();
         descriptionLabel = new javax.swing.JLabel();
         valuesLabel = new javax.swing.JLabel();
-        jLabel2 = new javax.swing.JLabel();
+        stepsLineLabel = new javax.swing.JLabel();
         subProblemsLabel = new javax.swing.JLabel();
         wizardCardPanel = new javax.swing.JPanel();
         welcomeCardPanel = new javax.swing.JPanel();
@@ -225,13 +242,17 @@ public class ViewPanel extends JPanel
         wizardLineCard3 = new javax.swing.JLabel();
         descriptionWizardLabel = new javax.swing.JLabel();
         descriptionPanel = new javax.swing.JPanel();
-        jScrollPane1 = new javax.swing.JScrollPane();
+        descroptionScollPane = new javax.swing.JScrollPane();
         descriptionTextArea = new javax.swing.JTextArea();
         problemDescriptionLabel = new javax.swing.JLabel();
         subProblemsCardPanel = new javax.swing.JPanel();
         wizardLineCard5 = new javax.swing.JLabel();
         subProblemsWizardLabel = new javax.swing.JLabel();
         subProblemsPanel = new javax.swing.JPanel();
+        removeSubProblemButton = new javax.swing.JButton();
+        addSubProblemButton = new javax.swing.JButton();
+        subProblemsScrollPane = new javax.swing.JScrollPane();
+        subProblemsScollablePanel = new javax.swing.JPanel();
         valuesCardPanel = new javax.swing.JPanel();
         wizardLineCard4 = new javax.swing.JLabel();
         valuesWizardLabel = new javax.swing.JLabel();
@@ -266,16 +287,17 @@ public class ViewPanel extends JPanel
 
         newProblemWizardDialog.setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         newProblemWizardDialog.setTitle("New Problem Wizard");
+        newProblemWizardDialog.setModal(true);
         newProblemWizardDialog.setResizable(false);
 
         stepsPanel.setBackground(new java.awt.Color(240, 239, 239));
         stepsPanel.setBorder(javax.swing.BorderFactory.createEtchedBorder());
         stepsPanel.setLayout(null);
 
-        jLabel1.setFont(new java.awt.Font("Verdana", 1, 12));
-        jLabel1.setText("Steps");
-        stepsPanel.add(jLabel1);
-        jLabel1.setBounds(10, 10, 37, 16);
+        stepsLabel.setFont(new java.awt.Font("Verdana", 1, 12));
+        stepsLabel.setText("Steps");
+        stepsPanel.add(stepsLabel);
+        stepsLabel.setBounds(10, 10, 37, 16);
 
         welcomeLabel.setFont(new java.awt.Font("Verdana", 1, 12));
         welcomeLabel.setText("1. Welcome");
@@ -297,10 +319,10 @@ public class ViewPanel extends JPanel
         stepsPanel.add(valuesLabel);
         valuesLabel.setBounds(20, 120, 140, 16);
 
-        jLabel2.setFont(new java.awt.Font("Verdana", 0, 12));
-        jLabel2.setText("_____________________");
-        stepsPanel.add(jLabel2);
-        jLabel2.setBounds(10, 10, 170, 20);
+        stepsLineLabel.setFont(new java.awt.Font("Verdana", 0, 12));
+        stepsLineLabel.setText("_____________________");
+        stepsPanel.add(stepsLineLabel);
+        stepsLineLabel.setBounds(10, 10, 170, 20);
 
         subProblemsLabel.setFont(new java.awt.Font("Verdana", 0, 12));
         subProblemsLabel.setText("4. Sub Problems");
@@ -332,14 +354,14 @@ public class ViewPanel extends JPanel
             .add(welcomePanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .add(welcomeTextLabel)
-                .addContainerGap(275, Short.MAX_VALUE))
+                .addContainerGap(277, Short.MAX_VALUE))
         );
         welcomePanelLayout.setVerticalGroup(
             welcomePanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(welcomePanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .add(welcomeTextLabel)
-                .addContainerGap(292, Short.MAX_VALUE))
+                .addContainerGap(293, Short.MAX_VALUE))
         );
 
         welcomeCardPanel.add(welcomePanel);
@@ -389,11 +411,11 @@ public class ViewPanel extends JPanel
                     .add(nameAndLocationPanelLayout.createSequentialGroup()
                         .add(problemNameLabel)
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(problemNameTextField, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 328, Short.MAX_VALUE))
+                        .add(problemNameTextField, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 340, Short.MAX_VALUE))
                     .add(nameAndLocationPanelLayout.createSequentialGroup()
                         .add(problemLocationLabel)
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(problemLocationTextField, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 311, Short.MAX_VALUE))
+                        .add(problemLocationTextField, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 323, Short.MAX_VALUE))
                     .add(org.jdesktop.layout.GroupLayout.TRAILING, browseButton))
                 .addContainerGap())
         );
@@ -410,7 +432,7 @@ public class ViewPanel extends JPanel
                     .add(problemLocationTextField, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(browseButton)
-                .addContainerGap(204, Short.MAX_VALUE))
+                .addContainerGap(216, Short.MAX_VALUE))
         );
 
         nameAndLocationCardPanel.add(nameAndLocationPanel);
@@ -436,7 +458,7 @@ public class ViewPanel extends JPanel
         descriptionTextArea.setLineWrap(true);
         descriptionTextArea.setRows(5);
         descriptionTextArea.setWrapStyleWord(true);
-        jScrollPane1.setViewportView(descriptionTextArea);
+        descroptionScollPane.setViewportView(descriptionTextArea);
 
         problemDescriptionLabel.setFont(new java.awt.Font("Verdana", 0, 12));
         problemDescriptionLabel.setText("Problem Description:");
@@ -448,7 +470,7 @@ public class ViewPanel extends JPanel
             .add(descriptionPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .add(descriptionPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                    .add(jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 436, Short.MAX_VALUE)
+                    .add(descroptionScollPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 440, Short.MAX_VALUE)
                     .add(problemDescriptionLabel))
                 .addContainerGap())
         );
@@ -458,7 +480,7 @@ public class ViewPanel extends JPanel
                 .addContainerGap()
                 .add(problemDescriptionLabel)
                 .add(18, 18, 18)
-                .add(jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 262, Short.MAX_VALUE)
+                .add(descroptionScollPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 264, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -479,15 +501,53 @@ public class ViewPanel extends JPanel
         subProblemsCardPanel.add(subProblemsWizardLabel);
         subProblemsWizardLabel.setBounds(10, 10, 130, 16);
 
+        removeSubProblemButton.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        removeSubProblemButton.setText("Remove");
+        removeSubProblemButton.setToolTipText("Remove the last sub problem");
+        removeSubProblemButton.setEnabled(false);
+        removeSubProblemButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                removeSubProblemButtonActionPerformed(evt);
+            }
+        });
+
+        addSubProblemButton.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        addSubProblemButton.setText("Add");
+        addSubProblemButton.setToolTipText("Add a sub problem");
+        addSubProblemButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                addSubProblemButtonActionPerformed(evt);
+            }
+        });
+
+        subProblemsScrollPane.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+
+        subProblemsScollablePanel.setLayout(new javax.swing.BoxLayout(subProblemsScollablePanel, javax.swing.BoxLayout.PAGE_AXIS));
+        subProblemsScrollPane.setViewportView(subProblemsScollablePanel);
+
         org.jdesktop.layout.GroupLayout subProblemsPanelLayout = new org.jdesktop.layout.GroupLayout(subProblemsPanel);
         subProblemsPanel.setLayout(subProblemsPanelLayout);
         subProblemsPanelLayout.setHorizontalGroup(
             subProblemsPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(0, 460, Short.MAX_VALUE)
+            .add(org.jdesktop.layout.GroupLayout.TRAILING, subProblemsPanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .add(subProblemsPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
+                    .add(org.jdesktop.layout.GroupLayout.LEADING, subProblemsScrollPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 440, Short.MAX_VALUE)
+                    .add(subProblemsPanelLayout.createSequentialGroup()
+                        .add(addSubProblemButton)
+                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                        .add(removeSubProblemButton)))
+                .addContainerGap())
         );
         subProblemsPanelLayout.setVerticalGroup(
             subProblemsPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(0, 320, Short.MAX_VALUE)
+            .add(org.jdesktop.layout.GroupLayout.TRAILING, subProblemsPanelLayout.createSequentialGroup()
+                .add(subProblemsScrollPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 266, Short.MAX_VALUE)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                .add(subProblemsPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                    .add(removeSubProblemButton)
+                    .add(addSubProblemButton))
+                .add(23, 23, 23))
         );
 
         subProblemsCardPanel.add(subProblemsPanel);
@@ -549,7 +609,7 @@ public class ViewPanel extends JPanel
             .add(valuesPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .add(valuesPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                    .add(valuesScrollPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 436, Short.MAX_VALUE)
+                    .add(valuesScrollPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 440, Short.MAX_VALUE)
                     .add(valuesPanelLayout.createSequentialGroup()
                         .add(columnsLabel)
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
@@ -558,7 +618,7 @@ public class ViewPanel extends JPanel
                         .add(rowsLabel)
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                         .add(rowsSpinner, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 107, Short.MAX_VALUE)
+                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 113, Short.MAX_VALUE)
                         .add(importButton)))
                 .addContainerGap())
         );
@@ -575,7 +635,7 @@ public class ViewPanel extends JPanel
                     .add(valuesPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING, false)
                         .add(rowsLabel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .add(rowsSpinner, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(21, Short.MAX_VALUE))
+                .addContainerGap(24, Short.MAX_VALUE))
         );
 
         valuesCardPanel.add(valuesPanel);
@@ -639,7 +699,7 @@ public class ViewPanel extends JPanel
             .add(newProblemWizardDialogLayout.createSequentialGroup()
                 .add(stepsPanel, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 193, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(wizardCardPanel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 463, Short.MAX_VALUE))
+                .add(wizardCardPanel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 479, Short.MAX_VALUE))
             .add(wizardControlPanel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         newProblemWizardDialogLayout.setVerticalGroup(
@@ -679,7 +739,7 @@ public class ViewPanel extends JPanel
         );
         emptyPalettePanelLayout.setVerticalGroup(
             emptyPalettePanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(0, 242, Short.MAX_VALUE)
+            .add(0, 241, Short.MAX_VALUE)
         );
 
         componentsCardPanel.add(emptyPalettePanel, "card3");
@@ -697,7 +757,6 @@ public class ViewPanel extends JPanel
         add(componentsCardPanel, java.awt.BorderLayout.EAST);
 
         workspaceSplitPane.setDividerLocation(450);
-        workspaceSplitPane.setDividerSize(5);
         workspaceSplitPane.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
         workspaceSplitPane.setResizeWeight(1.0);
 
@@ -717,7 +776,7 @@ public class ViewPanel extends JPanel
             preWorkspacePanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(preWorkspacePanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .add(preWorkspaceLabel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 152, Short.MAX_VALUE)
+                .add(preWorkspaceLabel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 154, Short.MAX_VALUE)
                 .addContainerGap())
         );
         preWorkspacePanelLayout.setVerticalGroup(
@@ -747,9 +806,9 @@ public class ViewPanel extends JPanel
         trayPanel.setLayout(trayPanelLayout);
         trayPanelLayout.setHorizontalGroup(
             trayPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(0, 180, Short.MAX_VALUE)
+            .add(0, 178, Short.MAX_VALUE)
             .add(trayPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                .add(outputScrollPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 180, Short.MAX_VALUE))
+                .add(outputScrollPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 178, Short.MAX_VALUE))
         );
         trayPanelLayout.setVerticalGroup(
             trayPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
@@ -984,28 +1043,35 @@ public class ViewPanel extends JPanel
 				if (openChooserDialog.getSelectedFile().exists ())
 				{
 					domain.lastGoodCsvFile = openChooserDialog.getSelectedFile().toString ();
-					DataSet importedDataSet = DataSet.importFile(domain.lastGoodCsvFile);
-
-					// Setup the values table to be ready for the import
-					columnsSpinner.setValue (importedDataSet.getColumnCount());
-					rowsSpinner.setValue (importedDataSet.getColumnLength());
-
-					// Set the column headers
-					String[] columnNames = importedDataSet.getColumnNames ();
-					for (int i = 0; i < columnNames.length; ++i)
+					try
 					{
-						valuesTable.getColumnModel ().getColumn(i).setHeaderValue(columnNames[i]);
-					}
-					// Load imported data into the values table
-					for (int i = 0; i < importedDataSet.getColumnCount(); ++i)
-					{
-						DataColumn column = importedDataSet.getColumn (i);
-						for (int j = 0; j < column.size(); ++j)
+						DataSet importedDataSet = DataSet.importFile(domain.lastGoodCsvFile);
+
+						// Setup the values table to be ready for the import
+						columnsSpinner.setValue (importedDataSet.getColumnCount());
+						rowsSpinner.setValue (importedDataSet.getColumnLength());
+
+						// Set the column headers
+						String[] columnNames = importedDataSet.getColumnNames ();
+						for (int i = 0; i < columnNames.length; ++i)
 						{
-							valuesTableModel.setValueAt (column.get (j), j, i);
+							valuesTable.getColumnModel ().getColumn(i).setHeaderValue(columnNames[i]);
 						}
+						// Load imported data into the values table
+						for (int i = 0; i < importedDataSet.getColumnCount(); ++i)
+						{
+							DataColumn column = importedDataSet.getColumn (i);
+							for (int j = 0; j < column.size(); ++j)
+							{
+								valuesTableModel.setValueAt (column.get (j), j, i);
+							}
+						}
+						valuesTable.updateUI ();
 					}
-					valuesTable.updateUI ();
+					catch (CalcException ex)
+					{
+						// TODO add box
+					}
 				}
 			}
 			catch(FileNotFoundException e) { }
@@ -1051,6 +1117,61 @@ public class ViewPanel extends JPanel
 		}
 	}//GEN-LAST:event_rowsSpinnerStateChanged
 
+	private void removeSubProblemButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeSubProblemButtonActionPerformed
+		// Remove the JPanel from the list of sub problems and from the New Problem Wizard
+		JPanel panel = subProblemPanels.remove (subProblemPanels.size () - 1);
+		subProblemsScollablePanel.remove (panel);
+
+		if (subProblemPanels.isEmpty ())
+		{
+			removeSubProblemButton.setEnabled (false);
+		}
+		else if (subProblemPanels.size () == 25)
+		{
+			addSubProblemButton.setEnabled (true);
+		}
+
+		subProblemsScollablePanel.updateUI ();
+	}//GEN-LAST:event_removeSubProblemButtonActionPerformed
+
+	private void addSubProblemButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addSubProblemButtonActionPerformed
+		// Create objects toward the new JPanel for the sub problem
+		JPanel subProblemPanel = new JPanel ();
+		JLabel label = new JLabel (alphabet[subProblemPanels.size ()]);
+		label.setFont (new Font ("Verdana", Font.BOLD, 11));
+		JTextArea textArea = new JTextArea ();
+		JScrollPane scrollPane = new JScrollPane ();
+		textArea.setLineWrap (true);
+		textArea.setWrapStyleWord (true);
+        scrollPane.setViewportView (textArea);
+
+		// Add items to the new JPanel
+		subProblemPanel.setLayout (new BorderLayout());
+		subProblemPanel.add (label, BorderLayout.NORTH);
+		subProblemPanel.add (scrollPane, BorderLayout.CENTER);
+		subProblemPanel.setPreferredSize (new Dimension(430, 100));
+		subProblemPanel.setMinimumSize (new Dimension(430, 100));
+		subProblemPanel.setMaximumSize (new Dimension(430, 100));
+
+		// Add the JPanel to the list of sub problem JPanels
+		subProblemPanels.add (subProblemPanel);
+		if (subProblemPanels.size () == 1)
+		{
+			removeSubProblemButton.setEnabled (true);
+		}
+		else if (subProblemPanels.size () == 26)
+		{
+			addSubProblemButton.setEnabled (false);
+		}
+
+		// Add the JPanel to the New Problem Wizard
+		subProblemsScollablePanel.add (subProblemPanel);
+		subProblemsScollablePanel.updateUI ();
+		subProblemsScollablePanel.scrollRectToVisible(new Rectangle(0, subProblemsScollablePanel.getHeight() + 100, 1, 1));
+
+		textArea.requestFocus ();
+	}//GEN-LAST:event_addSubProblemButtonActionPerformed
+
 	/**
 	 * Add this operation to the workspace under the current data set.
 	 *
@@ -1064,7 +1185,14 @@ public class ViewPanel extends JPanel
 		int y = domain.currentDataSet.getY () + 20;
 		Operation newOperation = operation.clone();
 		newOperation.setBounds (x, y, 30, 16);
-		domain.currentDataSet.addOperation(newOperation);
+		try
+		{
+			domain.currentDataSet.addOperation(newOperation);
+		}
+		catch (CalcException ex)
+		{
+			// TODO add box
+		}
 		workspacePanel.add (newOperation);
 		workspacePanel.updateUI();
 	}
@@ -1081,6 +1209,11 @@ public class ViewPanel extends JPanel
 		// Use values from the New Problem Wizard to construct a new problem
 		domain.problem = new Problem (descriptionTextArea.getText ());
 		domain.problem.markChanged();
+		// Construct sub problems from the New Problem Wizard
+		for (int i = 0; i < subProblemPanels.size (); ++i)
+		{
+			domain.problem.addSubProblem(alphabet[i], ((JTextArea) ((JViewport) ((JScrollPane) subProblemPanels.get (i).getComponent (1)).getComponent(0)).getComponent(0)).getText ());
+		}
 		
 		String fileName = problemNameTextField.getText ();
 		if (!fileName.endsWith (".marla"))
@@ -1094,11 +1227,19 @@ public class ViewPanel extends JPanel
 		// Add columns from the New Problem Wizard
 		for (int i = 0; i < valuesTableModel.getColumnCount(); ++i)
 		{
-			DataColumn column = domain.currentDataSet.addColumn (valuesTableModel.getColumnName(i));
-			// Add all rows within this column to the data set
-			for (int j = 0; j < valuesTableModel.getRowCount (); ++j)
+			try
 			{
-				column.add (Double.parseDouble (valuesTableModel.getValueAt (j, i).toString ()));
+				DataColumn column = domain.currentDataSet.addColumn (valuesTableModel.getColumnName(i));
+
+				// Add all rows within this column to the data set
+				for (int j = 0; j < valuesTableModel.getRowCount (); ++j)
+				{
+					column.add (Double.parseDouble (valuesTableModel.getValueAt (j, i).toString ()));
+				}
+			}
+			catch (CalcException ex)
+			{
+				// TODO add box
 			}
 		}
 
@@ -1253,6 +1394,11 @@ public class ViewPanel extends JPanel
 		backWizardButton.setEnabled (false);
 		nextWizardButton.setEnabled (true);
 		nextWizardButton.setText ("Next >");
+		// Set properties in the sub problems panel
+		subProblemsScollablePanel.removeAll ();
+		subProblemsScollablePanel.updateUI ();
+		addSubProblemButton.setEnabled (true);
+		removeSubProblemButton.setEnabled (true);
 
 		setNewProblemDefaultValues ();
 
@@ -1269,26 +1415,15 @@ public class ViewPanel extends JPanel
 	 */
 	protected void solve()
 	{
-		Double[][] array = domain.currentDataSet.toArray();
-		outputTextArea.append ("::Summation::\n");
-		outputTextArea.append ("Values: ");
-		for (int i = 0; i < array[0].length; ++i)
-		{
-			outputTextArea.append (array[0][i] + "");
-			if (i < array[0].length - 1)
-			{
-				outputTextArea.append (", ");
-			}
-			else
-			{
-				outputTextArea.append ("\n");
-			}
-		}
 		try
 		{
-			outputTextArea.append ("Solution: " + domain.problem.getAnswer());
+			outputTextArea.append ("Solution: " + domain.problem.getAnswer() + "\n");
 		}
 		catch (IncompleteInitialization ex) {}
+		catch (CalcException ex)
+		{
+			// TODO add box
+		}
 	}
 
     /**
@@ -1307,7 +1442,7 @@ public class ViewPanel extends JPanel
 				BufferedWriter out = new BufferedWriter (new FileWriter (domain.logFile, true));
 				Date date = new Date ();
 				out.write ("------------------------------------\n");
-				out.write ("Date: " + fullTimeFormat.format (date) + "\n");
+				out.write ("Date: " + FULL_TIME_FORMAT.format (date) + "\n");
 
 				for (int i = 0; i < Domain.logger.size (); ++i)
 				{
@@ -1341,6 +1476,7 @@ public class ViewPanel extends JPanel
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton addSubProblemButton;
     private javax.swing.JButton backWizardButton;
     private javax.swing.JButton browseButton;
     private javax.swing.JButton closeWizardButton;
@@ -1353,11 +1489,9 @@ public class ViewPanel extends JPanel
     private javax.swing.JPanel descriptionPanel;
     private javax.swing.JTextArea descriptionTextArea;
     private javax.swing.JLabel descriptionWizardLabel;
+    private javax.swing.JScrollPane descroptionScollPane;
     protected javax.swing.JPanel emptyPalettePanel;
     private javax.swing.JButton importButton;
-    private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
-    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JPanel leftPanel;
     private javax.swing.JPanel nameAndLocationCardPanel;
     private javax.swing.JLabel nameAndLocationLabel;
@@ -1375,14 +1509,19 @@ public class ViewPanel extends JPanel
     private javax.swing.JTextField problemLocationTextField;
     private javax.swing.JLabel problemNameLabel;
     private javax.swing.JTextField problemNameTextField;
+    private javax.swing.JButton removeSubProblemButton;
     private javax.swing.JPanel rightPanel;
     private javax.swing.JLabel rowsLabel;
     private javax.swing.JSpinner rowsSpinner;
     protected javax.swing.JFileChooser saveChooserDialog;
+    private javax.swing.JLabel stepsLabel;
+    private javax.swing.JLabel stepsLineLabel;
     private javax.swing.JPanel stepsPanel;
     private javax.swing.JPanel subProblemsCardPanel;
     private javax.swing.JLabel subProblemsLabel;
     private javax.swing.JPanel subProblemsPanel;
+    private javax.swing.JPanel subProblemsScollablePanel;
+    private javax.swing.JScrollPane subProblemsScrollPane;
     private javax.swing.JLabel subProblemsWizardLabel;
     private javax.swing.JToolBar toolBar;
     private javax.swing.JPanel trayPanel;
