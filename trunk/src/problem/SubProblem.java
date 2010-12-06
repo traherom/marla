@@ -33,6 +33,11 @@ public class SubProblem implements ProblemPart
 	 */
 	private String partDesc;
 	/**
+	 * Identifier for this part of the problem. For example, "part A,"
+	 * B, C, etc
+	 */
+	private String id;
+	/**
 	 * Beginning operation for the chain of ops which solves this
 	 * subproblem.  Actual solution steps are found by tracing
 	 * _up_ from last operation to this one.
@@ -52,12 +57,14 @@ public class SubProblem implements ProblemPart
 	/**
 	 * Initializes the subproblem with a description of the question it asks
 	 * @param parent Parent problem that we are a part of
+	 * @param id "id" of the subproblem. IE, "A"
 	 * @param desc Description of question
 	 */
-	public SubProblem(Problem parent, String desc)
+	public SubProblem(Problem parent, String id, String desc)
 	{
 		this.parent = parent;
 		partDesc = desc;
+		this.id = id;
 		startSolutionStep = null;
 		endSolutionStep = null;
 	}
@@ -156,6 +163,25 @@ public class SubProblem implements ProblemPart
 	}
 
 	/**
+	 * Returns the subproblem identifier, often the one-letter designation
+	 * from the book. IE, "a"
+	 * @return Subproblem id
+	 */
+	public String getSubproblemID()
+	{
+		return id;
+	}
+	
+	/**
+	 * Sets the subproblem identifier 
+	 * @param newID Part ID (IE, "A")
+	 */
+	public void setSubproblemID(String newID)
+	{
+		id = newID;
+	}
+
+	/**
 	 * A DataColumn is equal if all solution ops, columns, and name are the same
 	 * @param other Object to compare against
 	 * @return True if the the given object is the same as this one
@@ -204,6 +230,7 @@ public class SubProblem implements ProblemPart
 	public Element toXml()
 	{
 		Element subEl = new Element("part");
+		subEl.setAttribute("id", id);
 		subEl.setAttribute("start", Integer.toString(startSolutionStep.hashCode()));
 		subEl.setAttribute("end", Integer.toString(endSolutionStep.hashCode()));
 		subEl.addContent(new Element("statement").addContent(partDesc));
@@ -220,7 +247,8 @@ public class SubProblem implements ProblemPart
 	public static SubProblem fromXml(Element subEl, Problem parent)
 	{
 		SubProblem newSub = new SubProblem(parent,
-										   subEl.getAttributeValue("statement"));
+				subEl.getAttributeValue("id"),
+				subEl.getText());
 
 		// Now find our start and end Operation objects so we can point
 		// to them again
