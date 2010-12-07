@@ -19,6 +19,7 @@ package problem;
 
 /**
  *
+ * 
  * @author Ryan Morehart
  */
 public class CalcException extends Exception

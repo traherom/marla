@@ -21,7 +21,7 @@ import org.jdom.Element;
 
 /**
  * Stores descriptions for subproblems and points to the head(s)
- * of the chains of operations which
+ * of the chains of operations which.
  *
  * @author Ryan Morehart
  */

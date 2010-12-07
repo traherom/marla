@@ -26,7 +26,7 @@ import org.jdom.Element;
 /**
  * Operation to perform on a parent object that implements
  * the DataAccess interface. The root parent will be a DataSet,
- * which then gets refined down by a chain of Operations
+ * which then gets refined down by a chain of Operations.
  *
  * @author Ryan Morehart
  */
