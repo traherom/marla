@@ -201,7 +201,7 @@ public class Domain
 		}
 		catch (CalcException ex)
 		{
-			// TODO add box
+			JOptionPane.showMessageDialog(viewPanel, "The requested R package either cannot be located or is not installed.", "Missing Package", JOptionPane.WARNING_MESSAGE);
 		}
 		catch(FileNotFoundException ex)
 		{

@@ -20,7 +20,7 @@ public class DataSetTest
 	 * Test of toArray method, of class DataSet.
 	 */
 	@Test
-	public void testToArray()
+	public void testToArray() throws CalcException
 	{
 		DataSet instance = new DataSet("test");
 		Double[][] comp = new Double[10][];
@@ -53,14 +53,14 @@ public class DataSetTest
 	}
 
 	@Test
-	public void testToString()
+	public void testToString() throws CalcException
 	{
 		DataSet ds = createSet();
 		System.out.println(ds);
 	}
 
 	@Test
-	public void testImportFile()
+	public void testImportFile() throws CalcException
 	{
 		try
 		{
@@ -77,7 +77,7 @@ public class DataSetTest
 	 * Creates a random DataSet
 	 * @return
 	 */
-	public DataSet createSet()
+	public DataSet createSet() throws CalcException
 	{
 		DataSet ds = new DataSet(random.nextString());
 

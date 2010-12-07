@@ -19,6 +19,7 @@ package r;
 
 import org.junit.Test;
 import static org.junit.Assert.*;
+import problem.CalcException;
 import problem.DataColumn;
 import problem.DataNotFound;
 import problem.DataSet;
@@ -32,7 +33,7 @@ public class OperationSummaryTest
 {
 
 	@Test
-	public void testRIntegration()
+	public void testRIntegration() throws CalcException
 	{
 		try
 		{
