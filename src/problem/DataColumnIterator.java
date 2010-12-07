@@ -21,7 +21,8 @@ import java.util.ListIterator;
 import java.util.NoSuchElementException;
 
 /**
- * Iterator for working with the values in a DataColumn
+ * Iterator for working with the values in a DataColumn.
+ *
  * @author Ryan Morehart
  */
 public class DataColumnIterator implements ListIterator<Double>

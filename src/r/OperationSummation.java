@@ -24,7 +24,8 @@ import org.rosuda.JRI.REXP;
 import problem.CalcException;
 
 /**
- * Using R, it returns the sum of values in the DataColumn
+ * Using R, it returns the sum of values in the DataColumn.
+ * 
  * @author Ryan Morehart
  * @author Andrew Sterling
  */

@@ -34,7 +34,7 @@ import org.jdom.output.XMLOutputter;
  * Contains an entire stats problem, including the question itself,
  * associated data sets, and the operations (R commands) a user
  * chooses to solve a part of a problem with. The interface for the
- * data allows the GUI to extract the information
+ * data allows the GUI to extract the information.
  *
  * @author Ryan Morehart
  */

@@ -20,7 +20,7 @@ package r;
 
 /**
  *
- * @author Andrew
+ * @author Andrew Sterlin
  */
 import java.io.*;
 import java.awt.Frame;

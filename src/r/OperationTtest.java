@@ -26,7 +26,7 @@ import problem.CalcException;
 
 /**
  *
- * @author Andrew
+ * @author Andrew Sterling
  */
 public class OperationTtest extends problem.Operation {
 

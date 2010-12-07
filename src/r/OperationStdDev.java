@@ -28,6 +28,7 @@ import problem.CalcException;
 /**
  * Serves as a pass-through sort of operation, performing no actual
  * action on the data it is associated with.
+ * 
  * @author Ryan Morehart
  * @author Andrew Sterling
  */

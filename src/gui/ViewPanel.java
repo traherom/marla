@@ -23,6 +23,8 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.Rectangle;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.BufferedWriter;
@@ -1222,21 +1224,24 @@ public class ViewPanel extends JPanel
 
 		int x = domain.currentDataSet.getX ();
 		int y = domain.currentDataSet.getY () + 20;
-		Operation newOperation = operation.clone();
+		final Operation newOperation = operation.clone();
 		newOperation.setBounds (x, y, 30, 16);
 		try
 		{
 			if (newOperation.isInfoRequired())
 			{
 				// Create the dialog which will be launched to ask about requirements
-				ArrayList<Object[]> prompt = newOperation.getRequiredInfoPrompt();
-				JDialog dialog = new JDialog ();
+				final ArrayList<Object[]> prompt = newOperation.getRequiredInfoPrompt();
+				final JDialog dialog = new JDialog ();
 				JPanel panel = new JPanel ();
 				panel.setLayout (new GridLayout (prompt.size () + 1, 2));
 
 				dialog.setTitle ("Information Required");
 				dialog.setModal (true);
 				dialog.add (panel);
+
+				// This array will contain references to objects that will hold the values
+				final ArrayList<Object> valueComponents = new ArrayList<Object> ();
 
 				// Fill dialog with components
 				for (int i = 0; i < prompt.size(); ++i)
@@ -1248,6 +1253,7 @@ public class ViewPanel extends JPanel
 						JTextField textField = new JTextField ();
 						panel.add (label);
 						panel.add (textField);
+						valueComponents.add (textField);
 					}
 					else if(components[1] == Domain.PromptType.CHECKBOX)
 					{
@@ -1255,6 +1261,7 @@ public class ViewPanel extends JPanel
 						JLabel label = new JLabel ("");
 						panel.add (checkBox);
 						panel.add (label);
+						valueComponents.add (checkBox);
 					}
 					else if(components[1] == Domain.PromptType.COMBO)
 					{
@@ -1263,10 +1270,54 @@ public class ViewPanel extends JPanel
 						JComboBox comboBox = new JComboBox (model);
 						panel.add (label);
 						panel.add (comboBox);
+						valueComponents.add (comboBox);
 					}
 				}
 
 				JButton doneButton = new JButton ("Done");
+				final ViewPanel viewPanel = this;
+				// When the user is done with the assumptions, forms will be validated and their values stored into the operation before continuing
+				doneButton.addActionListener (new ActionListener()
+				{
+					@Override
+					public void actionPerformed(ActionEvent evt)
+					{
+						ArrayList<Object> values = new ArrayList<Object> ();
+						boolean pass = true;
+						for (int i = 0; i < prompt.size (); ++i)
+						{
+							if (prompt.get (i)[1] == Domain.PromptType.TEXT)
+							{
+								try
+								{
+									values.add (Double.parseDouble (((JTextField) valueComponents.get (i)).getText ()));
+								}
+								catch (NumberFormatException ex)
+								{
+									// If the users input was not valid, the form is not accepted and the dialog will not close
+									((JTextField) valueComponents.get (i)).requestFocus();
+									((JTextField) valueComponents.get (i)).selectAll();
+									JOptionPane.showMessageDialog(viewPanel, "You must enter a valid numerical value.", "Invalid Input", JOptionPane.ERROR_MESSAGE);
+									pass = false;
+								}
+							}
+							else if(prompt.get (i)[1] == Domain.PromptType.CHECKBOX)
+							{
+								values.add (Boolean.valueOf (((JCheckBox) valueComponents.get (i)).isSelected ()));
+							}
+							else if(prompt.get (i)[1] == Domain.PromptType.COMBO)
+							{
+								values.add (((JComboBox) valueComponents.get (i)).getSelectedItem());
+							}
+						}
+
+						if (pass)
+						{
+							newOperation.setRequiredInfo(values);
+							dialog.setVisible (false);
+						}
+					}
+				});
 				panel.add (doneButton);
 				// Display dialog
 				dialog.setVisible (true);

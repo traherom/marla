@@ -20,7 +20,8 @@ package problem;
 import org.jdom.Element;
 
 /**
- * Simple interface
+ * Simple interface.
+ *
  * @author Ryan Morehart
  */
 public interface ProblemPart

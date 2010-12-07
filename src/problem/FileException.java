@@ -18,7 +18,8 @@
 package problem;
 
 /**
- * Thrown for any error that occurs in the process of saving to disk
+ * Thrown for any error that occurs in the process of saving to disk.
+ *
  * @author Ryan Morehart
  */
 public class FileException extends Exception
