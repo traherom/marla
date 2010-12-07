@@ -137,7 +137,7 @@ public class MainFrame extends JFrame
         editSeparator2 = new javax.swing.JPopupMenu.Separator();
         selectAllMenuItem = new javax.swing.JMenuItem();
         problemMenu = new javax.swing.JMenu();
-        editQuestionMenuItem = new javax.swing.JMenuItem();
+        editProblemMenuItem = new javax.swing.JMenuItem();
         setSelectionAsAnswerMenuItem = new javax.swing.JMenuItem();
         solveMenuItem = new javax.swing.JMenuItem();
         problemSeparator1 = new javax.swing.JPopupMenu.Separator();
@@ -158,17 +158,17 @@ public class MainFrame extends JFrame
         fileMenu.setText("File");
         fileMenu.setFont(new java.awt.Font("Verdana", 0, 12));
         fileMenu.addMenuListener(new javax.swing.event.MenuListener() {
-            public void menuSelected(javax.swing.event.MenuEvent evt) {
-                fileMenuMenuSelected(evt);
+            public void menuCanceled(javax.swing.event.MenuEvent evt) {
             }
             public void menuDeselected(javax.swing.event.MenuEvent evt) {
             }
-            public void menuCanceled(javax.swing.event.MenuEvent evt) {
+            public void menuSelected(javax.swing.event.MenuEvent evt) {
+                fileMenuMenuSelected(evt);
             }
         });
 
         newProblemMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_N, java.awt.event.InputEvent.CTRL_MASK));
-        newProblemMenuItem.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        newProblemMenuItem.setFont(new java.awt.Font("Verdana", 0, 12));
         newProblemMenuItem.setText("New Problem...");
         newProblemMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -188,7 +188,7 @@ public class MainFrame extends JFrame
         fileMenu.add(openProblemMenuItem);
 
         closeProblemMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_W, java.awt.event.InputEvent.CTRL_MASK));
-        closeProblemMenuItem.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        closeProblemMenuItem.setFont(new java.awt.Font("Verdana", 0, 12));
         closeProblemMenuItem.setText("Close Problem");
         closeProblemMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -242,12 +242,12 @@ public class MainFrame extends JFrame
         editMenu.setText("Edit");
         editMenu.setFont(new java.awt.Font("Verdana", 0, 12));
         editMenu.addMenuListener(new javax.swing.event.MenuListener() {
-            public void menuSelected(javax.swing.event.MenuEvent evt) {
-                editMenuMenuSelected(evt);
+            public void menuCanceled(javax.swing.event.MenuEvent evt) {
             }
             public void menuDeselected(javax.swing.event.MenuEvent evt) {
             }
-            public void menuCanceled(javax.swing.event.MenuEvent evt) {
+            public void menuSelected(javax.swing.event.MenuEvent evt) {
+                editMenuMenuSelected(evt);
             }
         });
 
@@ -293,21 +293,26 @@ public class MainFrame extends JFrame
         problemMenu.setText("Problem");
         problemMenu.setFont(new java.awt.Font("Verdana", 0, 12));
         problemMenu.addMenuListener(new javax.swing.event.MenuListener() {
-            public void menuSelected(javax.swing.event.MenuEvent evt) {
-                problemMenuMenuSelected(evt);
+            public void menuCanceled(javax.swing.event.MenuEvent evt) {
             }
             public void menuDeselected(javax.swing.event.MenuEvent evt) {
             }
-            public void menuCanceled(javax.swing.event.MenuEvent evt) {
+            public void menuSelected(javax.swing.event.MenuEvent evt) {
+                problemMenuMenuSelected(evt);
             }
         });
 
-        editQuestionMenuItem.setFont(new java.awt.Font("Verdana", 0, 12));
-        editQuestionMenuItem.setText("Edit Question");
-        problemMenu.add(editQuestionMenuItem);
+        editProblemMenuItem.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        editProblemMenuItem.setText("Edit Problem");
+        editProblemMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                editProblemMenuItemActionPerformed(evt);
+            }
+        });
+        problemMenu.add(editProblemMenuItem);
 
         setSelectionAsAnswerMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_A, java.awt.event.InputEvent.SHIFT_MASK | java.awt.event.InputEvent.CTRL_MASK));
-        setSelectionAsAnswerMenuItem.setFont(new java.awt.Font("Verdana", 0, 12));
+        setSelectionAsAnswerMenuItem.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
         setSelectionAsAnswerMenuItem.setText("Set Selection as Answer");
         problemMenu.add(setSelectionAsAnswerMenuItem);
 
@@ -335,12 +340,12 @@ public class MainFrame extends JFrame
         toolsMenu.setText("Tools");
         toolsMenu.setFont(new java.awt.Font("Verdana", 0, 12));
         toolsMenu.addMenuListener(new javax.swing.event.MenuListener() {
-            public void menuSelected(javax.swing.event.MenuEvent evt) {
-                toolsMenuMenuSelected(evt);
+            public void menuCanceled(javax.swing.event.MenuEvent evt) {
             }
             public void menuDeselected(javax.swing.event.MenuEvent evt) {
             }
-            public void menuCanceled(javax.swing.event.MenuEvent evt) {
+            public void menuSelected(javax.swing.event.MenuEvent evt) {
+                toolsMenuMenuSelected(evt);
             }
         });
 
@@ -454,7 +459,7 @@ public class MainFrame extends JFrame
 	private void problemMenuMenuSelected(javax.swing.event.MenuEvent evt) {//GEN-FIRST:event_problemMenuMenuSelected
 		if (viewPanel.domain.problem != null)
 		{
-			editQuestionMenuItem.setEnabled (true);
+			editProblemMenuItem.setEnabled (true);
 			setSelectionAsAnswerMenuItem.setEnabled (true);
 			solveMenuItem.setEnabled (true);
 			newDataSetMenuItem.setEnabled (true);
@@ -462,7 +467,7 @@ public class MainFrame extends JFrame
 		}
 		else
 		{
-			editQuestionMenuItem.setEnabled (false);
+			editProblemMenuItem.setEnabled (false);
 			setSelectionAsAnswerMenuItem.setEnabled (false);
 			solveMenuItem.setEnabled (false);
 			newDataSetMenuItem.setEnabled (false);
@@ -486,6 +491,11 @@ public class MainFrame extends JFrame
 	private void closeProblemMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_closeProblemMenuItemActionPerformed
 		viewPanel.closeProblem();
 	}//GEN-LAST:event_closeProblemMenuItemActionPerformed
+
+	private void editProblemMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editProblemMenuItemActionPerformed
+		viewPanel.editing = true;
+		viewPanel.launchNewProblemWizard ();
+	}//GEN-LAST:event_editProblemMenuItemActionPerformed
 
 	/**
 	 * Retrieves the default title, which is the program name with it's version number.
@@ -558,7 +568,7 @@ public class MainFrame extends JFrame
     private javax.swing.JMenuItem deleteMenuItem;
     private javax.swing.JMenuItem editDataSetMenuItem;
     private javax.swing.JMenu editMenu;
-    private javax.swing.JMenuItem editQuestionMenuItem;
+    private javax.swing.JMenuItem editProblemMenuItem;
     private javax.swing.JPopupMenu.Separator editSeparator1;
     private javax.swing.JPopupMenu.Separator editSeparator2;
     private javax.swing.JMenuItem exitMenuItem;

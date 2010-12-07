@@ -106,6 +106,8 @@ public class ViewPanel extends JPanel
 	private boolean openingWizard = false;
 	/** Set true once the New Problem Wizard is told to overwrite existing files.*/
 	private boolean newProblemOverwrite = false;
+	/** True if the current problem is being edited in the wizard, false if creating a new problem in the wizard.*/
+	protected boolean editing = false;
 	/** The default file filter for a JFileChooser open dialog.*/
 	private FileFilter defaultFilter;
 	/** The extensions file filter for CSV files.*/
@@ -825,6 +827,8 @@ public class ViewPanel extends JPanel
 	private void closeWizardButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_closeWizardButtonActionPerformed
 		newProblemWizardDialog.dispose();
 		mainFrame.requestFocus ();
+
+		editing = false;
 	}//GEN-LAST:event_closeWizardButtonActionPerformed
 
 	private void nextWizardButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nextWizardButtonActionPerformed
@@ -880,7 +884,7 @@ public class ViewPanel extends JPanel
 				}
 			}
 			// Ensure the problem name given does not match an already existing file
-			if (continueAllowed && file.exists () && !newProblemOverwrite)
+			if (continueAllowed && file.exists () && !newProblemOverwrite && !editing)
 			{
 				int response = JOptionPane.showConfirmDialog(newProblemWizardDialog, "The given problem name already exists as a file\n"
 						+ "at the specified location. If you would not like to overwrite the\n"
@@ -928,6 +932,13 @@ public class ViewPanel extends JPanel
 			// Shift the boldness in the Steps panel to the next card
 			descriptionLabel.setFont (FONT_PLAIN_12);
 			subProblemsLabel.setFont (FONT_BOLD_12);
+
+			try
+			{
+				((JTextArea) ((JViewport) ((JScrollPane) ((JPanel) subProblemPanels.get (subProblemPanels.size() - 1)).getComponent (1)).getComponent (0)).getComponent (0)).requestFocus ();
+				subProblemsScollablePanel.scrollRectToVisible(new Rectangle(0, subProblemsScollablePanel.getHeight(), 1, 1));
+			}
+			catch (ArrayIndexOutOfBoundsException ex) {}
 		}
 		else if (subProblemsCardPanel.isVisible ())
 		{
@@ -998,6 +1009,13 @@ public class ViewPanel extends JPanel
 			valuesLabel.setFont (FONT_PLAIN_12);
 
 			nextWizardButton.setText ("Next >");
+
+			try
+			{
+				((JTextArea) ((JViewport) ((JScrollPane) ((JPanel) subProblemPanels.get (subProblemPanels.size() - 1)).getComponent (1)).getComponent (0)).getComponent (0)).requestFocus ();
+				subProblemsScollablePanel.scrollRectToVisible(new Rectangle(0, subProblemsScollablePanel.getHeight(), 1, 1));
+			}
+			catch (ArrayIndexOutOfBoundsException ex) {}
 		}
 	}//GEN-LAST:event_backWizardButtonActionPerformed
 
@@ -1051,11 +1069,23 @@ public class ViewPanel extends JPanel
 						columnsSpinner.setValue (importedDataSet.getColumnCount());
 						rowsSpinner.setValue (importedDataSet.getColumnLength());
 
+						valuesTableModel = new ExtendedTableModel ();
 						// Set the column headers
 						String[] columnNames = importedDataSet.getColumnNames ();
 						for (int i = 0; i < columnNames.length; ++i)
 						{
+							valuesTableModel.addColumn(columnNames[i]);
 							valuesTable.getColumnModel ().getColumn(i).setHeaderValue(columnNames[i]);
+						}
+						// Initialize number of rows
+						for (int i = 0; i < importedDataSet.getColumnLength (); ++i)
+						{
+							ArrayList<Integer> row = new ArrayList<Integer> ();
+							for (int j = 0; j < importedDataSet.getColumnCount (); ++j)
+							{
+								row.add (0);
+							}
+							valuesTableModel.addRow (row.toArray());
 						}
 						// Load imported data into the values table
 						for (int i = 0; i < importedDataSet.getColumnCount(); ++i)
@@ -1066,6 +1096,7 @@ public class ViewPanel extends JPanel
 								valuesTableModel.setValueAt (column.get (j), j, i);
 							}
 						}
+						valuesTable.setModel (valuesTableModel);
 						valuesTable.updateUI ();
 					}
 					catch (CalcException ex)
@@ -1132,6 +1163,8 @@ public class ViewPanel extends JPanel
 		}
 
 		subProblemsScollablePanel.updateUI ();
+
+		((JTextArea) ((JViewport) ((JScrollPane) ((JPanel) subProblemPanels.get (subProblemPanels.size() - 1)).getComponent (1)).getComponent (0)).getComponent (0)).requestFocus ();
 	}//GEN-LAST:event_removeSubProblemButtonActionPerformed
 
 	private void addSubProblemButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addSubProblemButtonActionPerformed
@@ -1149,9 +1182,9 @@ public class ViewPanel extends JPanel
 		subProblemPanel.setLayout (new BorderLayout());
 		subProblemPanel.add (label, BorderLayout.NORTH);
 		subProblemPanel.add (scrollPane, BorderLayout.CENTER);
-		subProblemPanel.setPreferredSize (new Dimension(430, 100));
-		subProblemPanel.setMinimumSize (new Dimension(430, 100));
-		subProblemPanel.setMaximumSize (new Dimension(430, 100));
+		subProblemPanel.setPreferredSize (new Dimension(410, 100));
+		subProblemPanel.setMinimumSize (new Dimension(410, 100));
+		subProblemPanel.setMaximumSize (new Dimension(410, 100));
 
 		// Add the JPanel to the list of sub problem JPanels
 		subProblemPanels.add (subProblemPanel);
@@ -1207,7 +1240,19 @@ public class ViewPanel extends JPanel
 		closeProblem ();
 		
 		// Use values from the New Problem Wizard to construct a new problem
-		domain.problem = new Problem (descriptionTextArea.getText ());
+		if (!editing)
+		{
+			domain.problem = new Problem (descriptionTextArea.getText ());
+		}
+		else
+		{
+			// First remove all old sub problems
+			for (int i = 0; i < domain.problem.getSubProblemCount(); ++i)
+			{
+				domain.problem.removeSubProblem(domain.problem.getSubProblem (i));
+			}
+		}
+
 		domain.problem.markChanged();
 		// Construct sub problems from the New Problem Wizard
 		for (int i = 0; i < subProblemPanels.size (); ++i)
@@ -1264,11 +1309,15 @@ public class ViewPanel extends JPanel
 			// Check to save changes before closing the program
 			if (domain.problem.isChanged())
 			{
-				int response = 	JOptionPane.showConfirmDialog(this,
-						"Would you like to save changes to the currently open problem?",
-						"Save Problem Changes",
-						JOptionPane.YES_NO_CANCEL_OPTION,
-						JOptionPane.QUESTION_MESSAGE);
+				int response = JOptionPane.YES_OPTION;
+				if (!editing)
+				{
+					response = JOptionPane.showConfirmDialog(this,
+							"Would you like to save changes to the currently open problem?",
+							"Save Problem Changes",
+							JOptionPane.YES_NO_CANCEL_OPTION,
+							JOptionPane.QUESTION_MESSAGE);
+				}
 				if (response == JOptionPane.YES_OPTION)
 				{
 					try
@@ -1289,19 +1338,22 @@ public class ViewPanel extends JPanel
 					return false;
 				}
 			}
-			
-			workspacePanel.removeAll();
 
-			emptyPalettePanel.setVisible (true);
-			componentsPanel.setVisible (false);
-			preWorkspacePanel.setVisible (true);
-			workspacePanel.setVisible (false);
+			if (!editing)
+			{
+				workspacePanel.removeAll();
 
-			domain.problem = null;
-			domain.currentDataSet = null;
-			domain.currentOperation = null;
+				emptyPalettePanel.setVisible (true);
+				componentsPanel.setVisible (false);
+				preWorkspacePanel.setVisible (true);
+				workspacePanel.setVisible (false);
 
-			mainFrame.setTitle (mainFrame.getDefaultTitle ());
+				domain.problem = null;
+				domain.currentDataSet = null;
+				domain.currentOperation = null;
+
+				mainFrame.setTitle (mainFrame.getDefaultTitle ());
+			}
 		}
 
 		return true;
@@ -1314,26 +1366,29 @@ public class ViewPanel extends JPanel
 	{
 		if (domain.problem != null)
 		{
-			domain.currentDataSet = domain.problem.getData(0);
-			for (int i = 0; i < domain.problem.getDataCount(); ++i)
+			if (!editing)
 			{
-				DataSet dataSet = domain.problem.getData (i);
-				// Add the new data set to the workspace
-				workspacePanel.add (dataSet);
-
-				for (int j = 0; j < dataSet.getOperationCount(); ++j)
+				domain.currentDataSet = domain.problem.getData(0);
+				for (int i = 0; i < domain.problem.getDataCount(); ++i)
 				{
-					Operation operation = dataSet.getOperation(j);
-					workspacePanel.add (operation);
+					DataSet dataSet = domain.problem.getData (i);
+					// Add the new data set to the workspace
+					workspacePanel.add (dataSet);
+
+					for (int j = 0; j < dataSet.getOperationCount(); ++j)
+					{
+						Operation operation = dataSet.getOperation(j);
+						workspacePanel.add (operation);
+					}
 				}
+
+				workspacePanel.updateUI();
+
+				componentsPanel.setVisible (true);
+				emptyPalettePanel.setVisible (false);
+				workspacePanel.setVisible (true);
+				preWorkspacePanel.setVisible (false);
 			}
-
-			workspacePanel.updateUI();
-
-			componentsPanel.setVisible (true);
-			emptyPalettePanel.setVisible (false);
-			workspacePanel.setVisible (true);
-			preWorkspacePanel.setVisible (false);
 
 			mainFrame.setTitle (mainFrame.getDefaultTitle () + " - " + domain.problem.getFileName().substring (domain.problem.getFileName ().lastIndexOf (System.getProperty ("file.separator")) + 1, domain.problem.getFileName ().lastIndexOf (".")));
 		}
@@ -1342,33 +1397,118 @@ public class ViewPanel extends JPanel
 	/**
 	 * Sets the default values for components in the New Problem Wizard.
 	 */
-	private void setNewProblemDefaultValues()
+	private void setNewProblemWizardDefaultValues()
 	{
-		// Set problem defaults for name and location
-		problemNameTextField.setText ("New Problem");
-		problemLocationTextField.setText (domain.lastGoodDir);
-		descriptionTextArea.setText ("");
-
-		// By default, new problems have three columns and five rows
-		columnsSpinner.setValue (3);
-		rowsSpinner.setValue (5);
-
-		// Add minimum columns to the table model
-		valuesTableModel = new ExtendedTableModel ();
-		DefaultTableColumnModel newColumnModel = new DefaultTableColumnModel ();
-		for (int i = 0; i < Integer.parseInt (columnsSpinner.getValue ().toString ()); ++i)
+		if (!editing)
 		{
-			newColumnModel.addColumn (new TableColumn ());
-			valuesTableModel.addColumn("Column " + (i + 1));
+			// Set problem defaults for name and location
+			problemNameTextField.setText ("New Problem");
+			problemLocationTextField.setText (domain.lastGoodDir);
+			descriptionTextArea.setText ("");
+
+			// By default, new problems have three columns and five rows
+			columnsSpinner.setValue (3);
+			rowsSpinner.setValue (5);
+
+			// Add minimum columns to the table model
+			valuesTableModel = new ExtendedTableModel ();
+			DefaultTableColumnModel newColumnModel = new DefaultTableColumnModel ();
+			for (int i = 0; i < Integer.parseInt (columnsSpinner.getValue ().toString ()); ++i)
+			{
+				newColumnModel.addColumn (new TableColumn ());
+				valuesTableModel.addColumn("Column " + (i + 1));
+			}
+			valuesTable.setColumnModel (newColumnModel);
+			// Add minimum rows to the table model
+			for (int i = 0; i < Integer.parseInt (rowsSpinner.getValue ().toString ()); ++i)
+			{
+				valuesTableModel.addRow (new Object[Integer.parseInt (columnsSpinner.getValue ().toString ())]);
+			}
+			valuesTable.setModel (valuesTableModel);
+			valuesTable.updateUI();
 		}
-		valuesTable.setColumnModel (newColumnModel);
-		// Add minimum rows to the table model
-		for (int i = 0; i < Integer.parseInt (rowsSpinner.getValue ().toString ()); ++i)
+		else
 		{
-			valuesTableModel.addRow (new Object[Integer.parseInt (columnsSpinner.getValue ().toString ())]);
+			// Set problem defaults for name and location
+			problemNameTextField.setText (domain.problem.getFileName().substring (domain.problem.getFileName ().lastIndexOf (System.getProperty ("file.separator")) + 1, domain.problem.getFileName ().lastIndexOf (".")));
+			problemLocationTextField.setText (domain.problem.getFileName().substring (0, domain.problem.getFileName ().lastIndexOf (System.getProperty ("file.separator"))));
+			descriptionTextArea.setText (domain.problem.getStatement ());
+
+			// By default, new problems have three columns and five rows
+			columnsSpinner.setValue (domain.problem.getData (0).getColumnCount());
+			rowsSpinner.setValue (domain.problem.getData (0).getColumnLength ());
+
+			// Add sub problems to the panel
+			for (int i = 0; i < domain.problem.getSubProblemCount(); ++i)
+			{
+				// Create objects toward the new JPanel for the sub problem
+				JPanel subProblemPanel = new JPanel ();
+				JLabel label = new JLabel (alphabet[i]);
+				label.setFont (new Font ("Verdana", Font.BOLD, 11));
+				JTextArea textArea = new JTextArea (domain.problem.getSubProblem (i).getStatement ());
+				JScrollPane scrollPane = new JScrollPane ();
+				textArea.setLineWrap (true);
+				textArea.setWrapStyleWord (true);
+				scrollPane.setViewportView (textArea);
+
+				// Add items to the new JPanel
+				subProblemPanel.setLayout (new BorderLayout());
+				subProblemPanel.add (label, BorderLayout.NORTH);
+				subProblemPanel.add (scrollPane, BorderLayout.CENTER);
+				subProblemPanel.setPreferredSize (new Dimension(410, 100));
+				subProblemPanel.setMinimumSize (new Dimension(410, 100));
+				subProblemPanel.setMaximumSize (new Dimension(410, 100));
+
+				// Add the JPanel to the list of sub problem JPanels
+				subProblemPanels.add (subProblemPanel);
+
+				// Add the JPanel to the New Problem Wizard
+				subProblemsScollablePanel.add (subProblemPanel);
+			}
+			if (subProblemPanels.size () > 0)
+			{
+				removeSubProblemButton.setEnabled (true);
+			}
+			else
+			{
+				removeSubProblemButton.setEnabled (false);
+			}
+			if (subProblemPanels.size () < 26)
+			{
+				addSubProblemButton.setEnabled (true);
+			}
+			else
+			{
+				addSubProblemButton.setEnabled (false);
+			}
+			subProblemsScollablePanel.updateUI ();
+			subProblemsScollablePanel.scrollRectToVisible(new Rectangle(0, subProblemsScollablePanel.getHeight(), 1, 1));
+
+			// Add minimum columns to the table model
+			valuesTableModel = new ExtendedTableModel ();
+			DefaultTableColumnModel newColumnModel = new DefaultTableColumnModel ();
+			for (int i = 0; i < domain.problem.getData (0).getColumnCount (); ++i)
+			{
+				newColumnModel.addColumn (new TableColumn ());
+				valuesTableModel.addColumn(domain.problem.getData (0).getColumn(i).getName());
+			}
+			valuesTable.setColumnModel (newColumnModel);
+			// Add minimum rows to the table model
+			for (int i = 0; i < Integer.parseInt (rowsSpinner.getValue ().toString ()); ++i)
+			{
+				valuesTableModel.addRow (new Object[Integer.parseInt (columnsSpinner.getValue ().toString ())]);
+			}
+			// Fill in the values for all table elements
+			for (int i = 0; i < domain.problem.getData (0).getColumnCount (); ++i)
+			{
+				for (int j = 0; j < domain.problem.getData (0).getColumn (i).size(); ++j)
+				{
+					valuesTableModel.setValueAt(domain.problem.getData (0).getColumn (i).get (j), j, i);
+				}
+			}
+			valuesTable.setModel (valuesTableModel);
+			valuesTable.updateUI();
 		}
-		valuesTable.setModel (valuesTableModel);
-		valuesTable.updateUI();
 	}
 
 	/**
@@ -1384,23 +1524,26 @@ public class ViewPanel extends JPanel
 		welcomeCardPanel.setVisible (true);
 		nameAndLocationCardPanel.setVisible (false);
 		descriptionCardPanel.setVisible (false);
+		subProblemsCardPanel.setVisible (false);
 		valuesCardPanel.setVisible (false);
 		// Set the proper label to bold
 		welcomeLabel.setFont (FONT_BOLD_12);
 		nameAndLocationLabel.setFont (FONT_PLAIN_12);
 		descriptionLabel.setFont (FONT_PLAIN_12);
+		subProblemsLabel.setFont (FONT_PLAIN_12);
 		valuesLabel.setFont (FONT_PLAIN_12);
 		// Set forward/backward button states
 		backWizardButton.setEnabled (false);
 		nextWizardButton.setEnabled (true);
 		nextWizardButton.setText ("Next >");
 		// Set properties in the sub problems panel
+		subProblemPanels.clear();
 		subProblemsScollablePanel.removeAll ();
 		subProblemsScollablePanel.updateUI ();
 		addSubProblemButton.setEnabled (true);
 		removeSubProblemButton.setEnabled (true);
 
-		setNewProblemDefaultValues ();
+		setNewProblemWizardDefaultValues ();
 
 		// Pack and show the New Problem Wizard dialog
 		newProblemWizardDialog.pack ();
