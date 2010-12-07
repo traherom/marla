@@ -262,7 +262,7 @@ public class ProblemTest
 	 * Test of save and load methods, of class Problem.
 	 */
 	@Test
-	public void testSave()
+	public void testSave() throws CalcException
 	{
 		// Make a sort of complex Problem
 		Problem instance = makeProblem();
@@ -320,7 +320,7 @@ public class ProblemTest
 	 * Test of copy constructor of Problem
 	 */
 	@Test
-	public void testCopy()
+	public void testCopy() throws CalcException
 	{
 		Problem instance = makeProblem();
 		Problem copied = new Problem(instance);
@@ -331,7 +331,7 @@ public class ProblemTest
 	 * Creates a populated problem that's relatively random for testing
 	 * @return Newly created Problem
 	 */
-	private Problem makeProblem()
+	private Problem makeProblem() throws CalcException
 	{
 		// Make a sort of complex Problem
 		Problem instance = new Problem();

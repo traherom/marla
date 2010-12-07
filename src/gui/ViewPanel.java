@@ -21,6 +21,7 @@ package gui;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.GridLayout;
 import java.awt.Rectangle;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -32,13 +33,18 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.JTextField;
 import javax.swing.JViewport;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.table.DefaultTableColumnModel;
@@ -503,7 +509,7 @@ public class ViewPanel extends JPanel
         subProblemsCardPanel.add(subProblemsWizardLabel);
         subProblemsWizardLabel.setBounds(10, 10, 130, 16);
 
-        removeSubProblemButton.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        removeSubProblemButton.setFont(new java.awt.Font("Verdana", 0, 12));
         removeSubProblemButton.setText("Remove");
         removeSubProblemButton.setToolTipText("Remove the last sub problem");
         removeSubProblemButton.setEnabled(false);
@@ -513,7 +519,7 @@ public class ViewPanel extends JPanel
             }
         });
 
-        addSubProblemButton.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        addSubProblemButton.setFont(new java.awt.Font("Verdana", 0, 12));
         addSubProblemButton.setText("Add");
         addSubProblemButton.setToolTipText("Add a sub problem");
         addSubProblemButton.addActionListener(new java.awt.event.ActionListener() {
@@ -737,11 +743,11 @@ public class ViewPanel extends JPanel
         emptyPalettePanel.setLayout(emptyPalettePanelLayout);
         emptyPalettePanelLayout.setHorizontalGroup(
             emptyPalettePanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(0, 208, Short.MAX_VALUE)
+            .add(0, 204, Short.MAX_VALUE)
         );
         emptyPalettePanelLayout.setVerticalGroup(
             emptyPalettePanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(0, 241, Short.MAX_VALUE)
+            .add(0, 238, Short.MAX_VALUE)
         );
 
         componentsCardPanel.add(emptyPalettePanel, "card3");
@@ -1101,7 +1107,7 @@ public class ViewPanel extends JPanel
 					}
 					catch (CalcException ex)
 					{
-						// TODO add box
+						JOptionPane.showMessageDialog(this, "The requested R package either cannot be located or is not installed.", "Missing Package", JOptionPane.WARNING_MESSAGE);
 					}
 				}
 			}
@@ -1220,11 +1226,57 @@ public class ViewPanel extends JPanel
 		newOperation.setBounds (x, y, 30, 16);
 		try
 		{
+			if (newOperation.isInfoRequired())
+			{
+				// Create the dialog which will be launched to ask about requirements
+				ArrayList<Object[]> prompt = newOperation.getRequiredInfoPrompt();
+				JDialog dialog = new JDialog ();
+				JPanel panel = new JPanel ();
+				panel.setLayout (new GridLayout (prompt.size () + 1, 2));
+
+				dialog.setTitle ("Information Required");
+				dialog.setModal (true);
+				dialog.add (panel);
+
+				// Fill dialog with components
+				for (int i = 0; i < prompt.size(); ++i)
+				{
+					Object[] components = prompt.get (i);
+					if (components[1] == Domain.PromptType.TEXT)
+					{
+						JLabel label = new JLabel (components[0].toString ());
+						JTextField textField = new JTextField ();
+						panel.add (label);
+						panel.add (textField);
+					}
+					else if(components[1] == Domain.PromptType.CHECKBOX)
+					{
+						JCheckBox checkBox = new JCheckBox (components[0].toString ());
+						JLabel label = new JLabel ("");
+						panel.add (checkBox);
+						panel.add (label);
+					}
+					else if(components[1] == Domain.PromptType.COMBO)
+					{
+						JLabel label = new JLabel (components[0].toString ());
+						DefaultComboBoxModel model = new DefaultComboBoxModel ((Object[]) components[2]);
+						JComboBox comboBox = new JComboBox (model);
+						panel.add (label);
+						panel.add (comboBox);
+					}
+				}
+
+				JButton doneButton = new JButton ("Done");
+				panel.add (doneButton);
+				// Display dialog
+				dialog.setVisible (true);
+				
+			}
 			domain.currentDataSet.addOperation(newOperation);
 		}
 		catch (CalcException ex)
 		{
-			// TODO add box
+			JOptionPane.showMessageDialog(this, "The requested R package either cannot be located or is not installed.", "Missing Package", JOptionPane.WARNING_MESSAGE);
 		}
 		workspacePanel.add (newOperation);
 		workspacePanel.updateUI();
@@ -1284,7 +1336,7 @@ public class ViewPanel extends JPanel
 			}
 			catch (CalcException ex)
 			{
-				// TODO add box
+				JOptionPane.showMessageDialog(this, "The requested R package either cannot be located or is not installed.", "Missing Package", JOptionPane.WARNING_MESSAGE);
 			}
 		}
 
@@ -1565,7 +1617,7 @@ public class ViewPanel extends JPanel
 		catch (IncompleteInitialization ex) {}
 		catch (CalcException ex)
 		{
-			// TODO add box
+			JOptionPane.showMessageDialog(this, "The requested R package either cannot be located or is not installed.", "Missing Package", JOptionPane.WARNING_MESSAGE);
 		}
 	}
 
