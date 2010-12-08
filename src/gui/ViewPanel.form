@@ -20,7 +20,7 @@
               <Group type="102" alignment="0" attributes="0">
                   <Component id="stepsPanel" min="-2" pref="193" max="-2" attributes="1"/>
                   <EmptySpace max="-2" attributes="0"/>
-                  <Component id="wizardCardPanel" pref="479" max="32767" attributes="0"/>
+                  <Component id="wizardCardPanel" pref="499" max="32767" attributes="0"/>
               </Group>
               <Component id="wizardControlPanel" alignment="0" max="32767" attributes="1"/>
           </Group>
@@ -227,7 +227,7 @@
                           <Group type="102" alignment="0" attributes="0">
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="welcomeTextLabel" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace pref="287" max="32767" attributes="0"/>
+                              <EmptySpace pref="277" max="32767" attributes="0"/>
                           </Group>
                       </Group>
                     </DimensionLayout>
@@ -310,12 +310,12 @@
                                   <Group type="102" attributes="0">
                                       <Component id="problemNameLabel" min="-2" max="-2" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
-                                      <Component id="problemNameTextField" pref="334" max="32767" attributes="0"/>
+                                      <Component id="problemNameTextField" pref="340" max="32767" attributes="0"/>
                                   </Group>
                                   <Group type="102" alignment="0" attributes="0">
                                       <Component id="problemLocationLabel" min="-2" max="-2" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
-                                      <Component id="problemLocationTextField" pref="321" max="32767" attributes="0"/>
+                                      <Component id="problemLocationTextField" pref="323" max="32767" attributes="0"/>
                                   </Group>
                                   <Component id="browseButton" alignment="1" min="-2" max="-2" attributes="0"/>
                               </Group>
@@ -338,7 +338,7 @@
                               </Group>
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="browseButton" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace pref="207" max="32767" attributes="0"/>
+                              <EmptySpace pref="216" max="32767" attributes="0"/>
                           </Group>
                       </Group>
                     </DimensionLayout>
@@ -445,7 +445,7 @@
                           <Group type="102" alignment="0" attributes="0">
                               <EmptySpace max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="0" attributes="0">
-                                  <Component id="descroptionScollPane" alignment="0" pref="436" max="32767" attributes="0"/>
+                                  <Component id="descroptionScollPane" alignment="0" pref="440" max="32767" attributes="0"/>
                                   <Component id="problemDescriptionLabel" alignment="0" min="-2" max="-2" attributes="0"/>
                               </Group>
                               <EmptySpace max="-2" attributes="0"/>
@@ -458,7 +458,7 @@
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="problemDescriptionLabel" min="-2" max="-2" attributes="0"/>
                               <EmptySpace type="separate" max="-2" attributes="0"/>
-                              <Component id="descroptionScollPane" pref="263" max="32767" attributes="0"/>
+                              <Component id="descroptionScollPane" pref="264" max="32767" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                           </Group>
                       </Group>
@@ -540,7 +540,7 @@
                 <Container class="javax.swing.JPanel" name="subProblemsPanel">
                   <Constraints>
                     <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout" value="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout$AbsoluteConstraintsDescription">
-                      <AbsoluteConstraints x="0" y="40" width="460" height="280"/>
+                      <AbsoluteConstraints x="0" y="40" width="461" height="290"/>
                     </Constraint>
                   </Constraints>
 
@@ -549,14 +549,13 @@
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Group type="102" alignment="0" attributes="0">
                               <EmptySpace max="-2" attributes="0"/>
-                              <Component id="subProblemsScrollPane" pref="436" max="32767" attributes="0"/>
-                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="subProblemsScrollPane" pref="451" max="32767" attributes="0"/>
                           </Group>
                       </Group>
                     </DimensionLayout>
                     <DimensionLayout dim="1">
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="subProblemsScrollPane" alignment="0" pref="280" max="32767" attributes="0"/>
+                          <Component id="subProblemsScrollPane" alignment="0" pref="290" max="32767" attributes="0"/>
                       </Group>
                     </DimensionLayout>
                   </Layout>
@@ -591,7 +590,7 @@
                   </Events>
                   <Constraints>
                     <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout" value="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout$AbsoluteConstraintsDescription">
-                      <AbsoluteConstraints x="305" y="330" width="50" height="-1"/>
+                      <AbsoluteConstraints x="285" y="330" width="70" height="-1"/>
                     </Constraint>
                   </Constraints>
                 </Component>
@@ -609,7 +608,7 @@
                   </Events>
                   <Constraints>
                     <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout" value="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout$AbsoluteConstraintsDescription">
-                      <AbsoluteConstraints x="370" y="330" width="80" height="-1"/>
+                      <AbsoluteConstraints x="370" y="330" width="90" height="-1"/>
                     </Constraint>
                   </Constraints>
                 </Component>
@@ -657,9 +656,14 @@
                   </Constraints>
                 </Component>
                 <Container class="javax.swing.JTabbedPane" name="dataSetTabbedPane">
+                  <Properties>
+                    <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                      <Font name="Verdana" size="12" style="0"/>
+                    </Property>
+                  </Properties>
                   <Constraints>
                     <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout" value="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout$AbsoluteConstraintsDescription">
-                      <AbsoluteConstraints x="0" y="30" width="460" height="300"/>
+                      <AbsoluteConstraints x="0" y="30" width="460" height="299"/>
                     </Constraint>
                   </Constraints>
 
@@ -678,7 +682,7 @@
                   </Events>
                   <Constraints>
                     <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout" value="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout$AbsoluteConstraintsDescription">
-                      <AbsoluteConstraints x="305" y="330" width="50" height="-1"/>
+                      <AbsoluteConstraints x="285" y="330" width="70" height="-1"/>
                     </Constraint>
                   </Constraints>
                 </Component>
@@ -696,7 +700,7 @@
                   </Events>
                   <Constraints>
                     <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout" value="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout$AbsoluteConstraintsDescription">
-                      <AbsoluteConstraints x="370" y="330" width="80" height="-1"/>
+                      <AbsoluteConstraints x="370" y="330" width="90" height="-1"/>
                     </Constraint>
                   </Constraints>
                 </Component>
@@ -870,7 +874,7 @@
             </DimensionLayout>
             <DimensionLayout dim="1">
               <Group type="103" groupAlignment="0" attributes="0">
-                  <EmptySpace min="0" pref="243" max="32767" attributes="0"/>
+                  <EmptySpace min="0" pref="241" max="32767" attributes="0"/>
               </Group>
             </DimensionLayout>
           </Layout>
@@ -956,7 +960,7 @@
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Group type="102" alignment="0" attributes="0">
                           <EmptySpace max="-2" attributes="0"/>
-                          <Component id="preWorkspaceLabel" pref="152" max="32767" attributes="0"/>
+                          <Component id="preWorkspaceLabel" pref="154" max="32767" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
                       </Group>
                   </Group>
@@ -965,7 +969,7 @@
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Group type="102" alignment="0" attributes="0">
                           <EmptySpace max="-2" attributes="0"/>
-                          <Component id="preWorkspaceLabel" pref="236" max="32767" attributes="0"/>
+                          <Component id="preWorkspaceLabel" pref="237" max="32767" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
                       </Group>
                   </Group>
@@ -1017,9 +1021,9 @@
           <Layout>
             <DimensionLayout dim="0">
               <Group type="103" groupAlignment="0" attributes="0">
-                  <EmptySpace min="0" pref="180" max="32767" attributes="0"/>
+                  <EmptySpace min="0" pref="178" max="32767" attributes="0"/>
                   <Group type="103" rootIndex="1" groupAlignment="0" attributes="0">
-                      <Component id="outputScrollPane" alignment="0" pref="180" max="32767" attributes="0"/>
+                      <Component id="outputScrollPane" alignment="0" pref="178" max="32767" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
