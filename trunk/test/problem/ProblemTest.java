@@ -18,6 +18,8 @@
 package problem;
 
 import java.io.FileNotFoundException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.jdom.JDOMException;
 import r.OperationNOP;
 import java.io.IOException;
@@ -33,7 +35,6 @@ import static org.junit.Assert.*;
  */
 public class ProblemTest
 {
-
 	private RandomValues random = new RandomValues();
 	private String tempFileName = "testing_temp_file.marlatemp";
 
@@ -300,7 +301,11 @@ public class ProblemTest
 		try
 		{
 			Problem readIn = Problem.load(tempFileName);
-			assert(readIn.equals(instance));
+			assert (readIn.equals(instance));
+		}
+		catch(CalcException ex)
+		{
+			fail("Unable to compute from newly loaded problem");
 		}
 		catch(JDOMException ex)
 		{
@@ -324,7 +329,7 @@ public class ProblemTest
 	{
 		Problem instance = makeProblem();
 		Problem copied = new Problem(instance);
-		assert(instance.equals(copied));
+		assert (instance.equals(copied));
 	}
 
 	/**
@@ -333,32 +338,40 @@ public class ProblemTest
 	 */
 	private Problem makeProblem() throws CalcException
 	{
-		// Make a sort of complex Problem
-		Problem instance = new Problem();
-
-		instance.setStatement(random.nextString());
-
-		for(int dsNum = 0; dsNum < 5; dsNum++)
+		try
 		{
-			DataSet ds = instance.addData(new DataSet(random.nextString()));
+			// Make a sort of complex Problem
+			Problem instance = new Problem();
 
-			for(int dcNum = 0; dcNum < 5; dcNum++)
+			instance.setStatement(random.nextString());
+
+			for(int dsNum = 0; dsNum < 5; dsNum++)
 			{
-				DataColumn dc = ds.addColumn(random.nextString());
+				DataSet ds = instance.addData(new DataSet(random.nextString()));
 
-				for(int dataNum = 0; dataNum < 50; dataNum++)
+				for(int dcNum = 0; dcNum < 5; dcNum++)
 				{
-					dc.add(random.nextDouble());
+					DataColumn dc = ds.addColumn(random.nextString());
+
+					for(int dataNum = 0; dataNum < 50; dataNum++)
+					{
+						dc.add(random.nextDouble());
+					}
+				}
+
+				for(int opNum = 0; opNum < 5; opNum++)
+				{
+					Operation op = new OperationNOP();
+					ds.addOperation(op);
 				}
 			}
 
-			for(int opNum = 0; opNum < 5; opNum++)
-			{
-				Operation op = new OperationNOP();
-				ds.addOperation(op);
-			}
+			return instance;
 		}
-
-		return instance;
+		catch(CalcException ex)
+		{
+			fail("Unable to create example problem");
+			return null;
+		}
 	}
 }

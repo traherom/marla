@@ -51,4 +51,10 @@ public class OperationNOP extends Operation
 		req.add(new Object[] {"Column", PromptType.COMBO, parent.getColumnNames()});
 		return req;
 	}
+
+	@Override
+	public String toString()
+	{
+		throw new UnsupportedOperationException("Not supported yet.");
+	}
 }

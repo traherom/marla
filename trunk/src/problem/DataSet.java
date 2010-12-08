@@ -36,7 +36,6 @@ import org.jdom.Element;
  */
 public class DataSet extends JLabel
 {
-
 	/**
 	 * Dataset name.
 	 */
@@ -75,8 +74,8 @@ public class DataSet extends JLabel
 	{
 		super(name);
 		this.parent = parent;
-		this.name = name;
 		this.columns = new ArrayList<DataColumn>();
+		setName(name);
 	}
 
 	/**
@@ -101,6 +100,8 @@ public class DataSet extends JLabel
 	 * of each, well, column. A dataset name is derived from those.
 	 * @param filePath Absolute or relative path to file to import.
 	 * @return New DataSet containing the imported values
+	 * @throws FileNotFoundException The file we're supposed to be importing could not be found
+	 * @throws CalcException Unable to compute values after everything was loaded up
 	 */
 	public static DataSet importFile(String filePath) throws FileNotFoundException, CalcException
 	{
@@ -213,16 +214,31 @@ public class DataSet extends JLabel
 
 	/**
 	 * Sets the dataset name
-	 * @param newName
+	 * @param newName New name to call this DataSet by
 	 */
 	@Override
-	public void setName(String newName)
+	public final void setName(String newName)
 	{
+		// Make sure no other datasets have this name
+		if(parent != null)
+		{
+			for(int i = 0; i < parent.getDataCount(); i++)
+			{
+				if(newName.equalsIgnoreCase(parent.getData(i).getName()))
+				{
+					throw new DuplicateNameException("DataSet with name '" + newName + "' already exists.");
+				}
+			}
+		}
+
 		try
 		{
 			markChanged();
 		}
-		catch (CalcException ex) {}
+		catch(CalcException ex)
+		{
+		}
+
 		super.setName(newName);
 		name = newName;
 	}
@@ -493,23 +509,33 @@ public class DataSet extends JLabel
 	@Override
 	public String toString()
 	{
+		return toString(this);
+	}
+
+	/**
+	 * Represents the given DataSet as a string that would build an R dataframe for it
+	 * @param ds DataSet to create string for
+	 * @return Valid R code for creating a dataframe with the given data
+	 */
+	public static String toString(DataSet ds)
+	{
 		StringBuilder sb = new StringBuilder();
 
-		for(DataColumn col : columns)
+		for(DataColumn col : ds.columns)
 		{
 			sb.append(col.toString());
 			sb.append('\n');
 		}
 
-		sb.append(Operation.sanatizeName(this.name));
+		sb.append(Operation.sanatizeName(ds.name));
 		sb.append(" = data.frame(");
 
-		for(DataColumn col : columns)
+		for(DataColumn col : ds.columns)
 		{
 			sb.append(Operation.sanatizeName(col.getName()));
 			sb.append(", ");
 		}
-		if(columns.size() > 0)
+		if(ds.columns.size() > 0)
 			sb.replace(sb.length() - 2, sb.length(), "");
 
 		sb.append(')');
@@ -529,10 +555,10 @@ public class DataSet extends JLabel
 		dataEl.setAttribute("id", Integer.toString(hashCode()));
 
 		Rectangle rect = getBounds();
-		dataEl.setAttribute("x", Integer.toString((int)rect.getX()));
-		dataEl.setAttribute("y", Integer.toString((int)rect.getY()));
-		dataEl.setAttribute("height", Integer.toString((int)rect.getHeight()));
-		dataEl.setAttribute("width", Integer.toString((int)rect.getWidth()));
+		dataEl.setAttribute("x", Integer.toString((int) rect.getX()));
+		dataEl.setAttribute("y", Integer.toString((int) rect.getY()));
+		dataEl.setAttribute("height", Integer.toString((int) rect.getHeight()));
+		dataEl.setAttribute("width", Integer.toString((int) rect.getWidth()));
 
 		// Add columns
 		for(DataColumn col : columns)

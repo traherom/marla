@@ -26,7 +26,6 @@ import org.jdom.Element;
  */
 public interface ProblemPart
 {
-
 	/**
 	 * Gets the description for this part of the problem
 	 * @return String description of the question for this sub problem
@@ -66,6 +65,8 @@ public interface ProblemPart
 	 * Returns the getColumn() results for all of the columns in
 	 * the first DataSet in a part
 	 * @return Solved DataSet
+	 * @throws IncompleteInitialization Some aspect of the problem was not initialized
+	 * @throws CalcException Unable to perform R work to computer answer
 	 */
 	public DataSet getAnswer() throws IncompleteInitialization, CalcException;
 
@@ -74,6 +75,55 @@ public interface ProblemPart
 	 * @return true if the problem has changes that are not yet saved
 	 */
 	public boolean isChanged();
+
+	/**
+	 * Adds an existing dataset to the problem.
+	 * @param data Dataset to add.
+	 * @return Reference to newly added dataset.
+	 */
+	public DataSet addData(DataSet data);
+
+	/**
+	 * Remove a given dataset from this problem
+	 * @param data DataSet object to remove
+	 */
+	public DataSet removeData(DataSet data);
+
+	/**
+	 * Remove the DataSet at the given index from the problem
+	 * @param index Index of DataSet to remove
+	 * @return DataSet being removed from the problem
+	 */
+	public DataSet removeData(int index);
+
+	/**
+	 * Returns the dataset with the given name.
+	 * @param name Dataset name
+	 * @return Dataset with matching name
+	 * @throws DataNotFound Unable to find the DataSet requested
+	 */
+	public DataSet getData(String name) throws DataNotFound;
+
+	/**
+	 * Returns the DataSet at the given index
+	 * @param index Index of DataSet to retrieve
+	 * @return DataSet at given index
+	 */
+	public DataSet getData(int index);
+
+	/**
+	 * Returns the index of the DataSet with the given name
+	 * @param name Dataset name
+	 * @return Dataset with matching name
+	 * @throws DataNotFound Unable to find the DataSet requested
+	 */
+	public int getDataIndex(String name) throws DataNotFound;
+
+	/**
+	 * Returns the number of DataSets this Problem contains
+	 * @return Number of DataSets in this Problem
+	 */
+	public int getDataCount();
 
 	/**
 	 * Returns this problem part as a JDOM Element
