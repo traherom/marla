@@ -168,7 +168,7 @@ public class MainFrame extends JFrame
         });
 
         newProblemMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_N, java.awt.event.InputEvent.CTRL_MASK));
-        newProblemMenuItem.setFont(new java.awt.Font("Verdana", 0, 12));
+        newProblemMenuItem.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
         newProblemMenuItem.setText("New Problem...");
         newProblemMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -312,7 +312,7 @@ public class MainFrame extends JFrame
         problemMenu.add(editProblemMenuItem);
 
         setSelectionAsAnswerMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_A, java.awt.event.InputEvent.SHIFT_MASK | java.awt.event.InputEvent.CTRL_MASK));
-        setSelectionAsAnswerMenuItem.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        setSelectionAsAnswerMenuItem.setFont(new java.awt.Font("Verdana", 0, 12));
         setSelectionAsAnswerMenuItem.setText("Set Selection as Answer");
         problemMenu.add(setSelectionAsAnswerMenuItem);
 
@@ -327,8 +327,12 @@ public class MainFrame extends JFrame
         problemMenu.add(solveMenuItem);
         problemMenu.add(problemSeparator1);
 
-        newDataSetMenuItem.setFont(new java.awt.Font("Verdana", 0, 12));
         newDataSetMenuItem.setText("New Data Set...");
+        newDataSetMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                newDataSetMenuItemActionPerformed(evt);
+            }
+        });
         problemMenu.add(newDataSetMenuItem);
 
         editDataSetMenuItem.setFont(new java.awt.Font("Verdana", 0, 12));
@@ -392,6 +396,7 @@ public class MainFrame extends JFrame
 	}//GEN-LAST:event_solveMenuItemActionPerformed
 
 	private void newProblemMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newProblemMenuItemActionPerformed
+		viewPanel.newProblemWizardDialog.setTitle ("New Problem Wizard");
 		viewPanel.launchNewProblemWizard ();
 	}//GEN-LAST:event_newProblemMenuItemActionPerformed
 
@@ -493,9 +498,15 @@ public class MainFrame extends JFrame
 	}//GEN-LAST:event_closeProblemMenuItemActionPerformed
 
 	private void editProblemMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editProblemMenuItemActionPerformed
+		viewPanel.newProblemWizardDialog.setTitle ("Edit Problem");
 		viewPanel.editing = true;
 		viewPanel.launchNewProblemWizard ();
 	}//GEN-LAST:event_editProblemMenuItemActionPerformed
+
+	private void newDataSetMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newDataSetMenuItemActionPerformed
+		editProblemMenuItemActionPerformed (null);
+		viewPanel.addNewDataSet ();
+	}//GEN-LAST:event_newDataSetMenuItemActionPerformed
 
 	/**
 	 * Retrieves the default title, which is the program name with it's version number.
