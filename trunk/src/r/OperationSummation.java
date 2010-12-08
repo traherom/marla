@@ -22,6 +22,8 @@ import problem.DataColumn;
 import org.rosuda.JRI.Rengine;
 import org.rosuda.JRI.REXP;
 import problem.CalcException;
+import problem.DataSet;
+import problem.Operation;
 
 /**
  * Using R, it returns the sum of values in the DataColumn.
@@ -79,6 +81,18 @@ public class OperationSummation extends problem.Operation
 	@Override
 	public String toString()
 	{
-		throw new UnsupportedOperationException("Not supported yet.");
+		// What we're starting out with
+		StringBuilder sb = new StringBuilder();
+		sb.append(parent.toString());
+
+		// What we're doing for the computation
+		sb.append("\nsum(");
+		sb.append(Operation.sanatizeName(parent));
+		sb.append(")\n");
+
+		// And the result
+		sb.append(DataSet.toString(this));
+
+		return sb.toString();
 	}
 }

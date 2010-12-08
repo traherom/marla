@@ -1893,13 +1893,16 @@ public class ViewPanel extends JPanel
 	{
 		try
 		{
-			outputTextArea.append ("Solution: " + domain.problem.getAnswer() + "\n");
+			outputTextArea.append ("Solution:\n" + domain.problem.getAnswer() + "\n");
 		}
 		catch (IncompleteInitialization ex) {}
 		catch (CalcException ex)
 		{
 			JOptionPane.showMessageDialog(this, "The requested R package either cannot be located or is not installed.", "Missing Package", JOptionPane.WARNING_MESSAGE);
 		}
+		
+		// Drew Hearle
+		System.out.println("I AM A WIZARD!");
 	}
 
     /**
