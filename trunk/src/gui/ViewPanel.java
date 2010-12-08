@@ -354,8 +354,8 @@ public class ViewPanel extends JPanel
         welcomeCardPanel.add(wizardLineCard1);
         wizardLineCard1.setBounds(10, 10, 440, 20);
 
-        welcomeTextLabel.setFont(new java.awt.Font("Verdana", 0, 12));
-        welcomeTextLabel.setText("This will be welcome text ...");
+        welcomeTextLabel.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        welcomeTextLabel.setText("<<Welcome Text Placeholder>>");
 
         org.jdesktop.layout.GroupLayout welcomePanelLayout = new org.jdesktop.layout.GroupLayout(welcomePanel);
         welcomePanel.setLayout(welcomePanelLayout);
@@ -364,7 +364,7 @@ public class ViewPanel extends JPanel
             .add(welcomePanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .add(welcomeTextLabel)
-                .addContainerGap(287, Short.MAX_VALUE))
+                .addContainerGap(256, Short.MAX_VALUE))
         );
         welcomePanelLayout.setVerticalGroup(
             welcomePanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
@@ -585,9 +585,9 @@ public class ViewPanel extends JPanel
         valuesCardPanel.add(addDataSetButton);
         addDataSetButton.setBounds(285, 330, 70, 27);
 
-        removeDataSetButton.setFont(new java.awt.Font("Verdana", 0, 12));
+        removeDataSetButton.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
         removeDataSetButton.setText("Remove");
-        removeDataSetButton.setToolTipText("Remove the last data set");
+        removeDataSetButton.setToolTipText("Remove the currently selected data set");
         removeDataSetButton.setEnabled(false);
         removeDataSetButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -1100,8 +1100,7 @@ public class ViewPanel extends JPanel
 	}//GEN-LAST:event_addDataSetButtonActionPerformed
 
 	private void removeDataSetButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeDataSetButtonActionPerformed
-		dataSetTabbedPane.remove (dataSetTabbedPane.getTabCount() - 1);
-		dataSetTabbedPane.setSelectedIndex (dataSetTabbedPane.getTabCount () - 1);
+		dataSetTabbedPane.remove (dataSetTabbedPane.getSelectedIndex());
 		if (dataSetTabbedPane.getTabCount() == 1)
 		{
 			removeDataSetButton.setEnabled (false);
@@ -1643,16 +1642,95 @@ public class ViewPanel extends JPanel
 	}
 
 	/**
+	 * Retreives the ith data set found in the workspace panel.
+	 *
+	 * @param i The data set index to return.
+	 * @return The data set, if it exists.
+	 */
+	private DataSet getDisplayedDataSet(int i)
+	{
+		int count = 0;
+		for (int j = 0; j < workspacePanel.getComponentCount (); ++j)
+		{
+			if (workspacePanel.getComponent (j) instanceof DataSet)
+			{
+				if (count == i)
+				{
+					return (DataSet) workspacePanel.getComponent (j);
+				}
+				++count;
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Retrieve the number of data sets currently displayed in the workspace panel.
+	 *
+	 * @return The number of data sets currently displayed in the workspace panel.
+	 */
+	private int getShownDataSetCount()
+	{
+		int count = 0;
+
+		for (int i = 0; i < workspacePanel.getComponentCount (); ++i)
+		{
+			if (workspacePanel.getComponent (i) instanceof DataSet)
+			{
+				++count;
+			}
+		}
+
+		return count;
+	}
+
+	/**
+	 * Checks if a tab of the given name exists.
+	 *
+	 * @param name Tab name to look for.
+	 * @return True if the tab name was found, false otherwise.
+	 */
+	private boolean tabNameExists(String name)
+	{
+		for (int i = 0; i < dataSetTabbedPane.getTabCount (); ++i)
+		{
+			if (dataSetTabbedPane.getComponent (i).getName ().equals (name))
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
 	 * Open the problem currently stored in the problem variable.
 	 */
 	protected void openProblem()
 	{
 		if (domain.problem != null)
 		{
-			if (!editing)
+			domain.currentDataSet = domain.problem.getData(0);
+			// If a data set was removed, remove it from the display along with all its operations
+			if (dataSetTabbedPane.getTabCount () < getShownDataSetCount ())
 			{
-				domain.currentDataSet = domain.problem.getData(0);
-				for (int i = 0; i < domain.problem.getDataCount(); ++i)
+				for (int i = 0; i < getShownDataSetCount (); ++i)
+				{
+					DataSet dataSet = getDisplayedDataSet (i);
+					if (!tabNameExists (dataSet.getName ()))
+					{
+						// Since the data set is no longer in the problem, remove it from the workspace
+						for (int j = 0; j < dataSet.getOperationCount(); ++j)
+						{
+							workspacePanel.remove (dataSet.getOperation (j));
+						}
+						workspacePanel.remove (dataSet);
+						workspacePanel.updateUI ();
+					}
+				}
+			}
+			for (int i = 0; i < domain.problem.getDataCount(); ++i)
+			{
+				if (i > getShownDataSetCount () - 1)
 				{
 					DataSet dataSet = domain.problem.getData (i);
 					// Add the new data set to the workspace
@@ -1664,14 +1742,14 @@ public class ViewPanel extends JPanel
 						workspacePanel.add (operation);
 					}
 				}
-
-				workspacePanel.updateUI();
-
-				componentsPanel.setVisible (true);
-				emptyPalettePanel.setVisible (false);
-				workspacePanel.setVisible (true);
-				preWorkspacePanel.setVisible (false);
 			}
+
+			workspacePanel.updateUI();
+
+			componentsPanel.setVisible (true);
+			emptyPalettePanel.setVisible (false);
+			workspacePanel.setVisible (true);
+			preWorkspacePanel.setVisible (false);
 
 			mainFrame.setTitle (mainFrame.getDefaultTitle () + " - " + domain.problem.getFileName().substring (domain.problem.getFileName ().lastIndexOf (System.getProperty ("file.separator")) + 1, domain.problem.getFileName ().lastIndexOf (".")));
 		}
