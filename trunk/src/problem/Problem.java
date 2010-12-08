@@ -484,7 +484,7 @@ public class Problem implements ProblemPart
 
 		// Do initial computations for everything
 		newProb.recompute();
-		
+
 		return newProb;
 	}
 }

@@ -32,11 +32,10 @@ import org.jdom.Element;
  */
 public abstract class Operation extends DataSet
 {
-
 	/**
 	 * Used to create "R acceptable" variable names
 	 */
-	private static Pattern rNamesPatt = Pattern.compile("[^a-zA-Z_]");
+	private static Pattern rNamesPatt = Pattern.compile("[^a-zA-Z0-9_]");
 	/**
 	 * Parent data that this operation works on
 	 */
@@ -146,6 +145,7 @@ public abstract class Operation extends DataSet
 	/**
 	 * Recalculates cached columns and informs children to
 	 * refresh themselves as well.
+	 * @throws CalcException Unable to recompute the values for this Operation
 	 */
 	public void refreshCache() throws CalcException
 	{
@@ -201,6 +201,8 @@ public abstract class Operation extends DataSet
 	 * should not implement their own caching unless a specific need
 	 * arises.
 	 * @param index Column to calculate
+	 * @return Computations that are the result of this calculation
+	 * @throws CalcException Unable to calculate the values for this column
 	 */
 	public abstract DataColumn calcColumn(int index) throws CalcException;
 
@@ -252,7 +254,6 @@ public abstract class Operation extends DataSet
 	 */
 	public void setRequiredInfo(ArrayList<Object> values)
 	{
-		
 	}
 
 	/**
@@ -300,10 +301,10 @@ public abstract class Operation extends DataSet
 		dataEl.setAttribute("type", this.getClass().getName());
 
 		Rectangle rect = getBounds();
-		dataEl.setAttribute("x", Integer.toString((int)rect.getX()));
-		dataEl.setAttribute("y", Integer.toString((int)rect.getY()));
-		dataEl.setAttribute("height", Integer.toString((int)rect.getHeight()));
-		dataEl.setAttribute("width", Integer.toString((int)rect.getWidth()));
+		dataEl.setAttribute("x", Integer.toString((int) rect.getX()));
+		dataEl.setAttribute("y", Integer.toString((int) rect.getY()));
+		dataEl.setAttribute("height", Integer.toString((int) rect.getHeight()));
+		dataEl.setAttribute("width", Integer.toString((int) rect.getWidth()));
 
 		// Add Ops
 		Element opEls = new Element("operations");
@@ -334,26 +335,26 @@ public abstract class Operation extends DataSet
 	/**
 	 * Takes the given name and returns a version of it that is
 	 * usable in R (obeys all the naming rules for variables basically)
-	 * @param str Name that needs to be cleaned
+	 * @param dirtyName Name that needs to be cleaned
 	 * @return Valid R variable name
 	 */
 	public static String sanatizeName(String dirtyName)
 	{
 		Matcher m = Operation.rNamesPatt.matcher(dirtyName);
+		m.region(1, dirtyName.length());
 		return m.replaceAll("");
 	}
 
 	/**
 	 * Takes the given DataSet (or Operation, obviously) and returns a unique
 	 * name for it.
-	 * @param str Name that needs to be cleaned
+	 * @param ds Name that needs to be cleaned
 	 * @return Valid R variable name
 	 */
 	public static String sanatizeName(DataSet ds)
 	{
 		String s = ds.getName() + Integer.toString(ds.hashCode());
-		Matcher m = Operation.rNamesPatt.matcher(s);
-		return m.replaceAll("");
+		return sanatizeName(s);
 	}
 
 	/**
