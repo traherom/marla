@@ -22,24 +22,31 @@ public class DataSetTest
 	@Test
 	public void testToArray() throws CalcException
 	{
-		DataSet instance = new DataSet("test");
-		Double[][] comp = new Double[10][];
-		for(int i = 0; i < comp.length; i++)
+		try
 		{
-			DataColumn col = instance.addColumn("col" + i);
-			Double[] compCol = new Double[50];
-			for(int j = 0; j < compCol.length; j++)
+			DataSet instance = new DataSet("test");
+			Double[][] comp = new Double[10][];
+			for(int i = 0; i < comp.length; i++)
 			{
-				Double t = random.nextDouble();
-				col.add(t);
-				compCol[j] = t;
+				DataColumn col = instance.addColumn("col" + i);
+				Double[] compCol = new Double[50];
+				for(int j = 0; j < compCol.length; j++)
+				{
+					Double t = random.nextDouble();
+					col.add(t);
+					compCol[j] = t;
+				}
+
+				comp[i] = compCol;
 			}
 
-			comp[i] = compCol;
+			Double[][] result = instance.toArray();
+			assertEquals(comp, result);
 		}
-
-		Double[][] result = instance.toArray();
-		assertEquals(comp, result);
+		catch(CalcException ex)
+		{
+			fail("CalcException occured: " + ex.toString());
+		}
 	}
 
 	/**
@@ -49,7 +56,6 @@ public class DataSetTest
 	public void testEquals()
 	{
 		// Internal data should be the same
-		
 	}
 
 	@Test
@@ -67,6 +73,10 @@ public class DataSetTest
 			DataSet ds = DataSet.importFile("test.csv");
 			System.out.println(ds);
 		}
+		catch(CalcException ex)
+		{
+			fail("CalcException: " + ex.toString());
+		}
 		catch(FileNotFoundException ex)
 		{
 			fail("Make the test.csv file");
@@ -79,18 +89,26 @@ public class DataSetTest
 	 */
 	public DataSet createSet() throws CalcException
 	{
-		DataSet ds = new DataSet(random.nextString());
-
-		for(int dcNum = 0; dcNum < 5; dcNum++)
+		try
 		{
-			DataColumn dc = ds.addColumn(random.nextString(10));
+			DataSet ds = new DataSet(random.nextString());
 
-			for(int dataNum = 0; dataNum < 50; dataNum++)
+			for(int dcNum = 0; dcNum < 5; dcNum++)
 			{
-				dc.add(random.nextDouble());
-			}
-		}
+				DataColumn dc = ds.addColumn(random.nextString(10));
 
-		return ds;
+				for(int dataNum = 0; dataNum < 50; dataNum++)
+				{
+					dc.add(random.nextDouble());
+				}
+			}
+
+			return ds;
+		}
+		catch(CalcException ex)
+		{
+			fail("Unable to create test DataSet");
+			return null;
+		}
 	}
 }

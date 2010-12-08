@@ -342,4 +342,25 @@ public abstract class Operation extends DataSet
 		Matcher m = Operation.rNamesPatt.matcher(dirtyName);
 		return m.replaceAll("");
 	}
+
+	/**
+	 * Takes the given DataSet (or Operation, obviously) and returns a unique
+	 * name for it.
+	 * @param str Name that needs to be cleaned
+	 * @return Valid R variable name
+	 */
+	public static String sanatizeName(DataSet ds)
+	{
+		String s = ds.getName() + Integer.toString(ds.hashCode());
+		Matcher m = Operation.rNamesPatt.matcher(s);
+		return m.replaceAll("");
+	}
+
+	/**
+	 * Derivative Operations _must_ override this so that they display the
+	 * appropriate operations they are performing on the data
+	 * @return
+	 */
+	@Override
+	public abstract String toString();
 }

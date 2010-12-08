@@ -40,7 +40,6 @@ import org.jdom.output.XMLOutputter;
  */
 public class Problem implements ProblemPart
 {
-
 	/**
 	 * Problem statement.
 	 */
@@ -114,11 +113,7 @@ public class Problem implements ProblemPart
 		this.statement = newStatement;
 	}
 
-	/**
-	 * Adds an existing dataset to the problem.
-	 * @param data Dataset to add.
-	 * @return Reference to newly added dataset.
-	 */
+	@Override
 	public DataSet addData(DataSet data)
 	{
 		markChanged();
@@ -128,20 +123,13 @@ public class Problem implements ProblemPart
 		return data;
 	}
 
-	/**
-	 * Remove a given dataset from this problem
-	 * @param data DataSet object to remove
-	 */
+	@Override
 	public DataSet removeData(DataSet data)
 	{
 		return removeData(datasets.indexOf(data));
 	}
 
-	/**
-	 * Remove the DataSet at the given index from the problem
-	 * @param index Index of DataSet to remove
-	 * @return DataSet being removed from the problem
-	 */
+	@Override
 	public DataSet removeData(int index)
 	{
 		DataSet d = datasets.get(index);
@@ -151,33 +139,19 @@ public class Problem implements ProblemPart
 		return d;
 	}
 
-	/**
-	 * Returns the dataset with the given name.
-	 * @param name Dataset name
-	 * @return Dataset with matching name
-	 * @throws DataNotFound Unable to find the DataSet requested
-	 */
+	@Override
 	public DataSet getData(String name) throws DataNotFound
 	{
 		return getData(getDataIndex(name));
 	}
 
-	/**
-	 * Returns the DataSet at the given index
-	 * @param index Index of DataSet to retrieve
-	 * @return DataSet at given index
-	 */
+	@Override
 	public DataSet getData(int index)
 	{
 		return datasets.get(index);
 	}
 
-	/**
-	 * Returns the index of the DataSet with the given name
-	 * @param name Dataset name
-	 * @return Dataset with matching name
-	 * @throws DataNotFound Unable to find the DataSet requested
-	 */
+	@Override
 	public int getDataIndex(String name) throws DataNotFound
 	{
 		for(int i = 0; i < datasets.size(); i++)
@@ -190,10 +164,7 @@ public class Problem implements ProblemPart
 		throw new DataNotFound("Failed to find dataset with name '" + name + "'");
 	}
 
-	/**
-	 * Returns the number of DataSets this Problem contains
-	 * @return Number of DataSets in this Problem
-	 */
+	@Override
 	public int getDataCount()
 	{
 		return datasets.size();
@@ -294,6 +265,33 @@ public class Problem implements ProblemPart
 	}
 
 	/**
+	 * Forces all DataSets to recompute their values
+	 * @throws CalcException Unable to compute all values
+	 */
+	public void recompute() throws CalcException
+	{
+		boolean failed = false;
+
+		// Tell all children to recompute
+		for(DataSet ds : datasets)
+		{
+			try
+			{
+				ds.markChanged();
+			}
+			catch(CalcException ex)
+			{
+				failed = true;
+			}
+		}
+
+		if(failed)
+		{
+			throw new CalcException("Unable to recompute one or more columns");
+		}
+	}
+
+	/**
 	 * Attempts to save problem to file path given.
 	 * @param fileName Where to attempt to save the problem.
 	 * @throws FileSaveException Thrown if a file save fails in any way
@@ -319,6 +317,7 @@ public class Problem implements ProblemPart
 	/**
 	 * Attempts to save problem to file specified by fileName
 	 * @throws FileException Thrown if a file save fails in any way
+	 * @throws IOException Unable to save file for some reason.
 	 */
 	public void save() throws FileException, IOException
 	{
@@ -332,6 +331,10 @@ public class Problem implements ProblemPart
 	 * was saved.
 	 * @param fileName Path to save file
 	 * @return Restored Problem object
+	 * @throws FileNotFoundException The file requested to be loaded could not be found
+	 * @throws IOException Unable to access and/or read the file to load
+	 * @throws JDOMException The save file is likely corrupt, we were unable to parse it
+	 * @throws CalcException Unable to compute values after the tree has been built
 	 */
 	public static Problem load(String fileName) throws FileNotFoundException, IOException, JDOMException, CalcException
 	{
@@ -443,22 +446,45 @@ public class Problem implements ProblemPart
 	/**
 	 * Creates a new problem based on the data in the given XML tree
 	 * @param rootEl JDOM Tree to load problem from
+	 * @return Newly created problem from the given XML
+	 * @throws CalcException Unable to compute values
 	 */
 	public static Problem fromXml(Element rootEl) throws CalcException
 	{
 		Problem newProb = new Problem();
+
 		newProb.setStatement(rootEl.getChild("statement").getText());
 
 		for(Object dataEl : rootEl.getChildren("data"))
 		{
-			newProb.addData(DataSet.fromXml((Element) dataEl));
+			try
+			{
+				newProb.addData(DataSet.fromXml((Element) dataEl));
+			}
+			catch(CalcException ex)
+			{
+				// I don't care that you failed. It may just be missing stuff currently,
+				// we'll try a computation after everything finishes loading
+			}
 		}
 
 		for(Object partEl : rootEl.getChildren("part"))
 		{
-			//newProb.addSubProblem(SubProblem.fromXml((Element)partEl, newProb));
+			/*
+			try
+			{
+			newProb.addSubProblem(SubProblem.fromXml((Element) partEl, newProb));
+			}
+			catch(CalcException ex)
+			{
+			// Ditto above
+			}
+			 */
 		}
 
+		// Do initial computations for everything
+		newProb.recompute();
+		
 		return newProb;
 	}
 }

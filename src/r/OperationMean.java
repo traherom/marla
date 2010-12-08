@@ -22,6 +22,8 @@ import problem.DataColumn;
 import org.rosuda.JRI.Rengine;
 import org.rosuda.JRI.REXP;
 import problem.CalcException;
+import problem.DataSet;
+import problem.Operation;
 
 /**
  * Serves as a pass-through sort of operation, performing no actual
@@ -75,5 +77,23 @@ public class OperationMean extends problem.Operation
 		out.setName("Mean");
 
 		return out;
+	}
+
+	@Override
+	public String toString()
+	{
+		// What we're starting out with
+		StringBuilder sb = new StringBuilder();
+		sb.append(parent.toString());
+
+		// What we're doing for the computation
+		sb.append("\nmean(");
+		sb.append(Operation.sanatizeName(parent));
+		sb.append(")\n");
+
+		// And the result
+		sb.append(DataSet.toString(this));
+
+		return sb.toString();
 	}
 }

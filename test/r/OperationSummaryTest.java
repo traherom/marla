@@ -31,9 +31,9 @@ import problem.Operation;
  */
 public class OperationSummaryTest
 {
-
 	@Test
-	public void testRIntegration() throws CalcException
+	@SuppressWarnings("deprecation")
+	public void testRIntegration()
 	{
 		try
 		{
@@ -47,6 +47,10 @@ public class OperationSummaryTest
 			Double result = op.getColumn("mean").get(0);
 
 			assertEquals(result.doubleValue(), 10.0);
+		}
+		catch(CalcException ex)
+		{
+			fail("Unable to compute values using R");
 		}
 		catch(DataNotFound ex)
 		{

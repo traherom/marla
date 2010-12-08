@@ -22,6 +22,8 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.jdom.Element;
 
 /**
@@ -32,7 +34,6 @@ import org.jdom.Element;
  */
 public class DataColumn implements List<Double>
 {
-
 	/**
 	 * The dataset we belong to.
 	 */
@@ -50,8 +51,10 @@ public class DataColumn implements List<Double>
 	 * Creates a new DataColumn with the given name that does not
 	 * belong to a certain DataSet
 	 * @param name Human-friendly name for column
+	 * @throws DuplicateNameException There is already a column in this DataSet with the same name
+	 * @throws CalcException Unable to compute values for the new column
 	 */
-	public DataColumn(String name)
+	public DataColumn(String name) throws DuplicateNameException, CalcException
 	{
 		this(null, name);
 	}
@@ -60,11 +63,13 @@ public class DataColumn implements List<Double>
 	 * Creates a new data column for a given dataset with the given name.
 	 * @param parent DataSet we belong to
 	 * @param name Human-friendly name for this column
+	 * @throws DuplicateNameException There is already a column in this DataSet with the same name
+	 * @throws CalcException UNable to compute values for the new column
 	 */
-	public DataColumn(DataSet parent, String name)
+	public DataColumn(DataSet parent, String name) throws DuplicateNameException, CalcException
 	{
 		this.parent = parent;
-		this.name = name;
+		setName(name);
 	}
 
 	/**
@@ -106,9 +111,24 @@ public class DataColumn implements List<Double>
 	/**
 	 * Changes the name this data column goes by.
 	 * @param name New name for column.
+	 * @throws CalcException Unable to recompute values after this name change
+	 * @throws DuplicateNameException Another DataColumn with the given name already exists
 	 */
-	public void setName(String name) throws CalcException
+	public final void setName(String name) throws CalcException, DuplicateNameException
 	{
+		if(parent != null)
+		{
+			// Make sure no other datasets have this name
+			for(int i = 0; i < parent.getColumnCount(); i++)
+			{
+				if(name.equalsIgnoreCase(parent.getColumn(i).getName()))
+				{
+					throw new DuplicateNameException("Data column with name '"
+							+ name + "' already exists in dataset '" + parent.getName() + "'");
+				}
+			}
+		}
+		
 		markChanged();
 		this.name = name;
 	}
@@ -134,7 +154,9 @@ public class DataColumn implements List<Double>
 		{
 			markChanged();
 		}
-		catch (CalcException ex) {}
+		catch(CalcException ex)
+		{
+		}
 		return values.add(val);
 	}
 
@@ -191,7 +213,9 @@ public class DataColumn implements List<Double>
 			{
 				markChanged();
 			}
-			catch (CalcException ex) {}
+			catch(CalcException ex)
+			{
+			}
 			return true;
 		}
 		else
@@ -215,7 +239,9 @@ public class DataColumn implements List<Double>
 			{
 				markChanged();
 			}
-			catch (CalcException ex) {}
+			catch(CalcException ex)
+			{
+			}
 			return true;
 		}
 		else
@@ -231,7 +257,9 @@ public class DataColumn implements List<Double>
 			{
 				markChanged();
 			}
-			catch (CalcException ex) {}
+			catch(CalcException ex)
+			{
+			}
 			return true;
 		}
 		else
@@ -248,7 +276,9 @@ public class DataColumn implements List<Double>
 			{
 				markChanged();
 			}
-			catch (CalcException ex) {}
+			catch(CalcException ex)
+			{
+			}
 			return true;
 		}
 		else
@@ -269,7 +299,9 @@ public class DataColumn implements List<Double>
 			{
 				markChanged();
 			}
-			catch (CalcException ex) {}
+			catch(CalcException ex)
+			{
+			}
 			return true;
 		}
 		else
@@ -289,7 +321,9 @@ public class DataColumn implements List<Double>
 			{
 				markChanged();
 			}
-			catch (CalcException ex) {}
+			catch(CalcException ex)
+			{
+			}
 			values.clear();
 		}
 	}
@@ -323,7 +357,9 @@ public class DataColumn implements List<Double>
 			{
 				markChanged();
 			}
-			catch (CalcException ex) {}
+			catch(CalcException ex)
+			{
+			}
 		}
 
 		return old;
@@ -342,7 +378,9 @@ public class DataColumn implements List<Double>
 		{
 			markChanged();
 		}
-		catch (CalcException ex) {}
+		catch(CalcException ex)
+		{
+		}
 		values.add(index, element);
 	}
 
@@ -359,7 +397,9 @@ public class DataColumn implements List<Double>
 		{
 			markChanged();
 		}
-		catch (CalcException ex) {}
+		catch(CalcException ex)
+		{
+		}
 		return values.remove(index);
 	}
 
@@ -450,13 +490,16 @@ public class DataColumn implements List<Double>
 	 * Builds a DataColumn from the given JDOM Element
 	 * @param colEl JDOM Element with data for column
 	 * @return New DataColumn
+	 * @throws DuplicateNameException The save file must be wrong, there is already a column with
+	 *			this name
+	 * @throws CalcException Unable to compute values. Honestly probably doesn't matter
 	 */
-	public static DataColumn fromXml(Element colEl)
+	public static DataColumn fromXml(Element colEl) throws DuplicateNameException, CalcException
 	{
 		DataColumn newCol = new DataColumn(colEl.getAttributeValue("name"));
 		for(Object el : colEl.getChildren("value"))
 		{
-			newCol.add(Double.parseDouble(((Element)el).getText()));
+			newCol.add(Double.parseDouble(((Element) el).getText()));
 		}
 		return newCol;
 	}
@@ -512,7 +555,9 @@ public class DataColumn implements List<Double>
 
 	/**
 	 * Marks this DataColumn as having changes than haven't been saved
-	 * and tells parent about it, so that they can take appropiate action
+	 * and tells parent about it, so that they can take appropriate action
+	 *
+	 * @throws CalcException Unable to recompute values
 	 */
 	public void markChanged() throws CalcException
 	{

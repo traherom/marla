@@ -80,4 +80,10 @@ public class OperationStdDev extends problem.Operation
 		re.end();
 		return out;
 	}
+
+	@Override
+	public String toString()
+	{
+		throw new UnsupportedOperationException("Not supported yet.");
+	}
 }

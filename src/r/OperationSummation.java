@@ -75,4 +75,10 @@ public class OperationSummation extends problem.Operation
 		re.end();
 		return out;
 	}
+
+	@Override
+	public String toString()
+	{
+		throw new UnsupportedOperationException("Not supported yet.");
+	}
 }
