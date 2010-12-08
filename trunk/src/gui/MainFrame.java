@@ -168,7 +168,7 @@ public class MainFrame extends JFrame
         });
 
         newProblemMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_N, java.awt.event.InputEvent.CTRL_MASK));
-        newProblemMenuItem.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        newProblemMenuItem.setFont(new java.awt.Font("Verdana", 0, 12));
         newProblemMenuItem.setText("New Problem...");
         newProblemMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -302,7 +302,7 @@ public class MainFrame extends JFrame
             }
         });
 
-        editProblemMenuItem.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        editProblemMenuItem.setFont(new java.awt.Font("Verdana", 0, 12));
         editProblemMenuItem.setText("Edit Problem");
         editProblemMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -327,6 +327,7 @@ public class MainFrame extends JFrame
         problemMenu.add(solveMenuItem);
         problemMenu.add(problemSeparator1);
 
+        newDataSetMenuItem.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
         newDataSetMenuItem.setText("New Data Set...");
         newDataSetMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -499,7 +500,7 @@ public class MainFrame extends JFrame
 
 	private void editProblemMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editProblemMenuItemActionPerformed
 		viewPanel.newProblemWizardDialog.setTitle ("Edit Problem");
-		viewPanel.editing = true;
+		ViewPanel.editing = true;
 		viewPanel.launchNewProblemWizard ();
 	}//GEN-LAST:event_editProblemMenuItemActionPerformed
 
