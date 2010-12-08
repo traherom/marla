@@ -45,12 +45,18 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JSpinner;
+import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.JViewport;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.table.DefaultTableColumnModel;
 import javax.swing.table.TableColumn;
+import org.jdesktop.layout.GroupLayout;
+import org.jdesktop.layout.LayoutStyle;
 import problem.CalcException;
 import problem.DataColumn;
 import problem.DataSet;
@@ -109,7 +115,7 @@ public class ViewPanel extends JPanel
 	/** The list in the New Problem Wizard of sub problems within the current problem.*/
 	private ArrayList<JPanel> subProblemPanels = new ArrayList<JPanel> ();
 	/** The table model for values in the New Problem Wizard.*/
-	private ExtendedTableModel valuesTableModel = new ExtendedTableModel ();
+	private ArrayList<JPanel> valuesPanels = new ArrayList<JPanel> ();
 	/** True if the New Problem Wizard is being opened and actions should be ignored.*/
 	private boolean openingWizard = false;
 	/** Set true once the New Problem Wizard is told to overwrite existing files.*/
@@ -159,30 +165,6 @@ public class ViewPanel extends JPanel
 
 		// Retrieve the default file filter from the JFileChooser before it is ever changed
 		defaultFilter = openChooserDialog.getFileFilter();
-
-		// Set the font for the column headers in the values table
-		valuesTable.getTableHeader ().setFont (FONT_PLAIN_12);
-		// Add column header listeners
-		valuesTable.getTableHeader ().addMouseListener(new MouseAdapter ()
-		{
-			@Override
-			public void mouseReleased(MouseEvent evt)
-			{
-				int index = valuesTable.getTableHeader().columnAtPoint(evt.getPoint());
-				Object name = JOptionPane.showInputDialog(newProblemWizardDialog,
-						"Give the column a new name:",
-						"Column Name",
-						JOptionPane.QUESTION_MESSAGE,
-						null,
-						null,
-						valuesTable.getColumnModel ().getColumn(index).getHeaderValue());
-				if (name != null)
-				{
-					valuesTableModel.setColumn (name.toString (), index);
-					valuesTable.getColumnModel ().getColumn (index).setHeaderValue (name);
-				}
-			}
-		});
 
 		// Set custom behavior of JFileChooser
 		JPanel access = (JPanel) ((JPanel) openChooserDialog.getComponent(3)).getComponent(3);
@@ -259,21 +241,16 @@ public class ViewPanel extends JPanel
         wizardLineCard5 = new javax.swing.JLabel();
         subProblemsWizardLabel = new javax.swing.JLabel();
         subProblemsPanel = new javax.swing.JPanel();
-        removeSubProblemButton = new javax.swing.JButton();
-        addSubProblemButton = new javax.swing.JButton();
         subProblemsScrollPane = new javax.swing.JScrollPane();
         subProblemsScollablePanel = new javax.swing.JPanel();
+        addSubProblemButton = new javax.swing.JButton();
+        removeSubProblemButton = new javax.swing.JButton();
         valuesCardPanel = new javax.swing.JPanel();
         wizardLineCard4 = new javax.swing.JLabel();
         valuesWizardLabel = new javax.swing.JLabel();
-        valuesPanel = new javax.swing.JPanel();
-        valuesScrollPane = new javax.swing.JScrollPane();
-        valuesTable = new ExtendedJTable ();
-        rowsLabel = new javax.swing.JLabel();
-        rowsSpinner = new javax.swing.JSpinner();
-        columnsLabel = new javax.swing.JLabel();
-        columnsSpinner = new javax.swing.JSpinner();
-        importButton = new javax.swing.JButton();
+        dataSetTabbedPane = new javax.swing.JTabbedPane();
+        addDataSetButton = new javax.swing.JButton();
+        removeDataSetButton = new javax.swing.JButton();
         wizardControlPanel = new javax.swing.JPanel();
         closeWizardButton = new javax.swing.JButton();
         nextWizardButton = new javax.swing.JButton();
@@ -511,25 +488,6 @@ public class ViewPanel extends JPanel
         subProblemsCardPanel.add(subProblemsWizardLabel);
         subProblemsWizardLabel.setBounds(10, 10, 130, 16);
 
-        removeSubProblemButton.setFont(new java.awt.Font("Verdana", 0, 12));
-        removeSubProblemButton.setText("Remove");
-        removeSubProblemButton.setToolTipText("Remove the last sub problem");
-        removeSubProblemButton.setEnabled(false);
-        removeSubProblemButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                removeSubProblemButtonActionPerformed(evt);
-            }
-        });
-
-        addSubProblemButton.setFont(new java.awt.Font("Verdana", 0, 12));
-        addSubProblemButton.setText("Add");
-        addSubProblemButton.setToolTipText("Add a sub problem");
-        addSubProblemButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                addSubProblemButtonActionPerformed(evt);
-            }
-        });
-
         subProblemsScrollPane.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 
         subProblemsScollablePanel.setLayout(new javax.swing.BoxLayout(subProblemsScollablePanel, javax.swing.BoxLayout.PAGE_AXIS));
@@ -539,29 +497,41 @@ public class ViewPanel extends JPanel
         subProblemsPanel.setLayout(subProblemsPanelLayout);
         subProblemsPanelLayout.setHorizontalGroup(
             subProblemsPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(org.jdesktop.layout.GroupLayout.TRAILING, subProblemsPanelLayout.createSequentialGroup()
+            .add(subProblemsPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .add(subProblemsPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
-                    .add(org.jdesktop.layout.GroupLayout.LEADING, subProblemsScrollPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 440, Short.MAX_VALUE)
-                    .add(subProblemsPanelLayout.createSequentialGroup()
-                        .add(addSubProblemButton)
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(removeSubProblemButton)))
+                .add(subProblemsScrollPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 440, Short.MAX_VALUE)
                 .addContainerGap())
         );
         subProblemsPanelLayout.setVerticalGroup(
             subProblemsPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(org.jdesktop.layout.GroupLayout.TRAILING, subProblemsPanelLayout.createSequentialGroup()
-                .add(subProblemsScrollPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 266, Short.MAX_VALUE)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(subProblemsPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                    .add(removeSubProblemButton)
-                    .add(addSubProblemButton))
-                .add(23, 23, 23))
+            .add(subProblemsScrollPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 280, Short.MAX_VALUE)
         );
 
         subProblemsCardPanel.add(subProblemsPanel);
-        subProblemsPanel.setBounds(0, 40, 460, 320);
+        subProblemsPanel.setBounds(0, 40, 460, 280);
+
+        addSubProblemButton.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        addSubProblemButton.setText("Add");
+        addSubProblemButton.setToolTipText("Add a sub problem");
+        addSubProblemButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                addSubProblemButtonActionPerformed(evt);
+            }
+        });
+        subProblemsCardPanel.add(addSubProblemButton);
+        addSubProblemButton.setBounds(305, 330, 57, 25);
+
+        removeSubProblemButton.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        removeSubProblemButton.setText("Remove");
+        removeSubProblemButton.setToolTipText("Remove the last sub problem");
+        removeSubProblemButton.setEnabled(false);
+        removeSubProblemButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                removeSubProblemButtonActionPerformed(evt);
+            }
+        });
+        subProblemsCardPanel.add(removeSubProblemButton);
+        removeSubProblemButton.setBounds(370, 330, 83, 25);
 
         wizardCardPanel.add(subProblemsCardPanel, "card6");
 
@@ -577,79 +547,31 @@ public class ViewPanel extends JPanel
         valuesWizardLabel.setToolTipText("values");
         valuesCardPanel.add(valuesWizardLabel);
         valuesWizardLabel.setBounds(10, 10, 50, 16);
+        valuesCardPanel.add(dataSetTabbedPane);
+        dataSetTabbedPane.setBounds(0, 30, 460, 300);
 
-        valuesTable.setFont(new java.awt.Font("Verdana", 0, 12));
-        valuesTable.setModel(valuesTableModel);
-        valuesScrollPane.setViewportView(valuesTable);
-
-        rowsLabel.setFont(new java.awt.Font("Verdana", 0, 12));
-        rowsLabel.setText("Rows:");
-
-        rowsSpinner.setFont(new java.awt.Font("Verdana", 0, 12));
-        rowsSpinner.setModel(new javax.swing.SpinnerNumberModel(Integer.valueOf(3), Integer.valueOf(1), null, Integer.valueOf(1)));
-        rowsSpinner.addChangeListener(new javax.swing.event.ChangeListener() {
-            public void stateChanged(javax.swing.event.ChangeEvent evt) {
-                rowsSpinnerStateChanged(evt);
-            }
-        });
-
-        columnsLabel.setFont(new java.awt.Font("Verdana", 0, 12));
-        columnsLabel.setText("Columns:");
-
-        columnsSpinner.setFont(new java.awt.Font("Verdana", 0, 12));
-        columnsSpinner.setModel(new javax.swing.SpinnerNumberModel(Integer.valueOf(5), Integer.valueOf(1), null, Integer.valueOf(1)));
-        columnsSpinner.addChangeListener(new javax.swing.event.ChangeListener() {
-            public void stateChanged(javax.swing.event.ChangeEvent evt) {
-                columnsSpinnerStateChanged(evt);
-            }
-        });
-
-        importButton.setFont(new java.awt.Font("Verdana", 0, 12));
-        importButton.setText("Import from CSV");
-        importButton.addActionListener(new java.awt.event.ActionListener() {
+        addDataSetButton.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        addDataSetButton.setText("Add");
+        addDataSetButton.setToolTipText("Add a data set");
+        addDataSetButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                importButtonActionPerformed(evt);
+                addDataSetButtonActionPerformed(evt);
             }
         });
+        valuesCardPanel.add(addDataSetButton);
+        addDataSetButton.setBounds(305, 330, 57, 25);
 
-        org.jdesktop.layout.GroupLayout valuesPanelLayout = new org.jdesktop.layout.GroupLayout(valuesPanel);
-        valuesPanel.setLayout(valuesPanelLayout);
-        valuesPanelLayout.setHorizontalGroup(
-            valuesPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(valuesPanelLayout.createSequentialGroup()
-                .addContainerGap()
-                .add(valuesPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                    .add(valuesScrollPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 440, Short.MAX_VALUE)
-                    .add(valuesPanelLayout.createSequentialGroup()
-                        .add(columnsLabel)
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(columnsSpinner, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                        .add(18, 18, 18)
-                        .add(rowsLabel)
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(rowsSpinner, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 113, Short.MAX_VALUE)
-                        .add(importButton)))
-                .addContainerGap())
-        );
-        valuesPanelLayout.setVerticalGroup(
-            valuesPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(valuesPanelLayout.createSequentialGroup()
-                .add(valuesScrollPane, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 265, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(valuesPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                    .add(importButton)
-                    .add(valuesPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING, false)
-                        .add(columnsLabel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .add(columnsSpinner, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                    .add(valuesPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING, false)
-                        .add(rowsLabel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .add(rowsSpinner, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(24, Short.MAX_VALUE))
-        );
-
-        valuesCardPanel.add(valuesPanel);
-        valuesPanel.setBounds(0, 40, 460, 320);
+        removeDataSetButton.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        removeDataSetButton.setText("Remove");
+        removeDataSetButton.setToolTipText("Remove the last data set");
+        removeDataSetButton.setEnabled(false);
+        removeDataSetButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                removeDataSetButtonActionPerformed(evt);
+            }
+        });
+        valuesCardPanel.add(removeDataSetButton);
+        removeDataSetButton.setBounds(370, 330, 83, 25);
 
         wizardCardPanel.add(valuesCardPanel, "card2");
 
@@ -1046,116 +968,6 @@ public class ViewPanel extends JPanel
 		}
 	}//GEN-LAST:event_browseButtonActionPerformed
 
-	private void importButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_importButtonActionPerformed
-		// Construct the folder-based open chooser dialog
-		openChooserDialog.setFileFilter(csvFilter);
-		openChooserDialog.setFileSelectionMode(JFileChooser.FILES_ONLY);
-		openChooserDialog.setCurrentDirectory(new File (domain.lastGoodCsvFile));
-		if (new File (domain.lastGoodCsvFile).isFile ())
-		{
-			openChooserDialog.setSelectedFile (new File (domain.lastGoodCsvFile));
-		}
-		else
-		{
-			openChooserDialog.setSelectedFile (new File (""));
-		}
-		// Display the chooser and retrieve the selected folder
-		int response = openChooserDialog.showOpenDialog (newProblemWizardDialog);
-		if (response == JFileChooser.APPROVE_OPTION)
-		{
-			try
-			{
-				// If the user selected a file that exists, point the problem's location to the newly selected location
-				if (openChooserDialog.getSelectedFile().exists ())
-				{
-					domain.lastGoodCsvFile = openChooserDialog.getSelectedFile().toString ();
-					try
-					{
-						DataSet importedDataSet = DataSet.importFile(domain.lastGoodCsvFile);
-
-						// Setup the values table to be ready for the import
-						columnsSpinner.setValue (importedDataSet.getColumnCount());
-						rowsSpinner.setValue (importedDataSet.getColumnLength());
-
-						valuesTableModel = new ExtendedTableModel ();
-						// Set the column headers
-						String[] columnNames = importedDataSet.getColumnNames ();
-						for (int i = 0; i < columnNames.length; ++i)
-						{
-							valuesTableModel.addColumn(columnNames[i]);
-							valuesTable.getColumnModel ().getColumn(i).setHeaderValue(columnNames[i]);
-						}
-						// Initialize number of rows
-						for (int i = 0; i < importedDataSet.getColumnLength (); ++i)
-						{
-							ArrayList<Integer> row = new ArrayList<Integer> ();
-							for (int j = 0; j < importedDataSet.getColumnCount (); ++j)
-							{
-								row.add (0);
-							}
-							valuesTableModel.addRow (row.toArray());
-						}
-						// Load imported data into the values table
-						for (int i = 0; i < importedDataSet.getColumnCount(); ++i)
-						{
-							DataColumn column = importedDataSet.getColumn (i);
-							for (int j = 0; j < column.size(); ++j)
-							{
-								valuesTableModel.setValueAt (column.get (j), j, i);
-							}
-						}
-						valuesTable.setModel (valuesTableModel);
-						valuesTable.updateUI ();
-					}
-					catch (CalcException ex)
-					{
-						JOptionPane.showMessageDialog(this, "The requested R package either cannot be located or is not installed.", "Missing Package", JOptionPane.WARNING_MESSAGE);
-					}
-				}
-			}
-			catch(FileNotFoundException e) { }
-		}
-	}//GEN-LAST:event_importButtonActionPerformed
-
-	private void columnsSpinnerStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_columnsSpinnerStateChanged
-		if (!openingWizard)
-		{
-			// If columns were removed, loop and delete from the end
-			while (Integer.parseInt (columnsSpinner.getValue ().toString ()) < valuesTableModel.getColumnCount ())
-			{
-				valuesTableModel.removeColumn (valuesTable.getColumnCount () - 1);
-				valuesTable.getColumnModel().removeColumn(valuesTable.getColumnModel().getColumn(valuesTable.getColumnCount () - 1));
-			}
-			// If columns were added, loop and add to the end
-			while (Integer.parseInt (columnsSpinner.getValue ().toString ()) > valuesTableModel.getColumnCount ())
-			{
-				valuesTable.getColumnModel().addColumn (new TableColumn ());
-				valuesTableModel.addColumn ("Column " + valuesTableModel.getColumnCount ());
-				valuesTable.getColumnModel ().getColumn (valuesTableModel.getColumnCount () - 1).setHeaderValue ("Column " + valuesTableModel.getColumnCount ());
-			}
-
-			valuesTable.updateUI ();
-		}
-	}//GEN-LAST:event_columnsSpinnerStateChanged
-
-	private void rowsSpinnerStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_rowsSpinnerStateChanged
-		if (!openingWizard)
-		{
-			// If rows were removed, loop and delete from the end
-			while (Integer.parseInt (rowsSpinner.getValue ().toString ()) < valuesTableModel.getRowCount ())
-			{
-				valuesTableModel.removeRow (valuesTable.getRowCount () - 1);
-			}
-			// If rows were added, loop and add to the end
-			while (Integer.parseInt (rowsSpinner.getValue ().toString ()) > valuesTableModel.getRowCount ())
-			{
-				valuesTableModel.addRow (new Object[valuesTable.getColumnCount ()]);
-			}
-
-			valuesTable.updateUI ();
-		}
-	}//GEN-LAST:event_rowsSpinnerStateChanged
-
 	private void removeSubProblemButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeSubProblemButtonActionPerformed
 		// Remove the JPanel from the list of sub problems and from the New Problem Wizard
 		JPanel panel = subProblemPanels.remove (subProblemPanels.size () - 1);
@@ -1212,6 +1024,204 @@ public class ViewPanel extends JPanel
 
 		textArea.requestFocus ();
 	}//GEN-LAST:event_addSubProblemButtonActionPerformed
+
+	private void addDataSetButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addDataSetButtonActionPerformed
+		// TODO add your handling code here:
+	}//GEN-LAST:event_addDataSetButtonActionPerformed
+
+	private void removeDataSetButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeDataSetButtonActionPerformed
+		// TODO add your handling code here:
+	}//GEN-LAST:event_removeDataSetButtonActionPerformed
+
+	/**
+	 * Create a panel for display in the tabbed display for data set values.
+	 *
+	 * @return The panel created to be stored in the values tabbed panel.
+	 */
+	private JPanel createValuesTabbedPanel()
+	{
+		final ViewPanel viewPanel = this;
+		
+		final JPanel valuesPanel = new JPanel ();
+		final JScrollPane scrollPane = new JScrollPane ();
+		final ExtendedTableModel model = new ExtendedTableModel ();
+		final JTable table = new JTable (model);
+		table.getTableHeader ().setFont (FONT_PLAIN_12);
+		table.getTableHeader ().addMouseListener(new MouseAdapter ()
+		{
+			@Override
+			public void mouseReleased(MouseEvent evt)
+			{
+				int index = table.getTableHeader().columnAtPoint(evt.getPoint());
+				Object name = JOptionPane.showInputDialog(newProblemWizardDialog,
+						"Give the column a new name:",
+						"Column Name",
+						JOptionPane.QUESTION_MESSAGE,
+						null,
+						null,
+						table.getColumnModel ().getColumn(index).getHeaderValue());
+				if (name != null)
+				{
+					((ExtendedTableModel) ((JTable) ((JScrollPane) valuesPanels.get (dataSetTabbedPane.getSelectedIndex()).getComponent (0)).getComponent (0)).getModel()).setColumn (name.toString (), index);
+					((JTable) ((JScrollPane) valuesPanels.get (dataSetTabbedPane.getSelectedIndex()).getComponent (0)).getComponent (0)).getColumnModel ().getColumn (index).setHeaderValue (name);
+				}
+			}
+		});
+		scrollPane.setViewportView(table);
+		final JLabel columnsLabel = new JLabel ("Columns:");
+		columnsLabel.setFont(new java.awt.Font("Verdana", 0, 12));
+		final JSpinner columnsSpinner = new JSpinner ();
+		columnsSpinner.addChangeListener(new ChangeListener()
+		{
+			@Override
+            public void stateChanged(ChangeEvent evt)
+			{
+                if (!openingWizard)
+				{
+					// If columns were removed, loop and delete from the end
+					while (Integer.parseInt(columnsSpinner.getValue().toString()) < model.getColumnCount())
+					{
+						model.removeColumn(table.getColumnCount() - 1);
+						table.getColumnModel().removeColumn(table.getColumnModel().getColumn(table.getColumnCount() - 1));
+					}
+					// If columns were added, loop and add to the end
+					while (Integer.parseInt(columnsSpinner.getValue().toString()) > model.getColumnCount())
+					{
+						table.getColumnModel().addColumn(new TableColumn());
+						model.addColumn("Column " + model.getColumnCount());
+						table.getColumnModel().getColumn(model.getColumnCount() - 1).setHeaderValue("Column " + model.getColumnCount());
+					}
+
+					table.updateUI();
+				}
+            }
+        });
+		final JLabel rowsLabel = new JLabel ("Rows:");
+		rowsLabel.setFont(new java.awt.Font("Verdana", 0, 12));
+		final JSpinner rowsSpinner = new JSpinner ();
+		rowsSpinner.addChangeListener(new ChangeListener()
+		{
+			@Override
+            public void stateChanged(ChangeEvent evt)
+			{
+                if (!openingWizard)
+				{
+					// If rows were removed, loop and delete from the end
+					while (Integer.parseInt(rowsSpinner.getValue().toString()) < model.getRowCount())
+					{
+						model.removeRow(table.getRowCount() - 1);
+					}
+					// If rows were added, loop and add to the end
+					while (Integer.parseInt(rowsSpinner.getValue().toString()) > model.getRowCount())
+					{
+						model.addRow(new Object[table.getColumnCount()]);
+					}
+
+					table.updateUI();
+				}
+            }
+        });
+		final JButton button = new JButton ("Import from CSV");
+		button.setFont(new java.awt.Font("Verdana", 0, 12));
+        button.addActionListener(new ActionListener()
+		{
+			@Override
+            public void actionPerformed(ActionEvent evt)
+			{
+                // Construct the folder-based open chooser dialog
+				openChooserDialog.setFileFilter(csvFilter);
+				openChooserDialog.setFileSelectionMode(JFileChooser.FILES_ONLY);
+				openChooserDialog.setCurrentDirectory(new File(domain.lastGoodCsvFile));
+				if (new File(domain.lastGoodCsvFile).isFile()) {
+					openChooserDialog.setSelectedFile(new File(domain.lastGoodCsvFile));
+				} else {
+					openChooserDialog.setSelectedFile(new File(""));
+				}
+				// Display the chooser and retrieve the selected folder
+				int response = openChooserDialog.showOpenDialog(newProblemWizardDialog);
+				if (response == JFileChooser.APPROVE_OPTION) {
+					try {
+						// If the user selected a file that exists, point the problem's location to the newly selected location
+						if (openChooserDialog.getSelectedFile().exists()) {
+							domain.lastGoodCsvFile = openChooserDialog.getSelectedFile().toString();
+							try {
+								DataSet importedDataSet = DataSet.importFile(domain.lastGoodCsvFile);
+
+								// Setup the values table to be ready for the import
+								columnsSpinner.setValue(importedDataSet.getColumnCount());
+								rowsSpinner.setValue(importedDataSet.getColumnLength());
+
+								ExtendedTableModel newModel = new ExtendedTableModel();
+								// Set the column headers
+								String[] columnNames = importedDataSet.getColumnNames();
+								for (int i = 0; i < columnNames.length; ++i) {
+									newModel.addColumn(columnNames[i]);
+									table.getColumnModel().getColumn(i).setHeaderValue(columnNames[i]);
+								}
+								// Initialize number of rows
+								for (int i = 0; i < importedDataSet.getColumnLength(); ++i) {
+									ArrayList<Integer> row = new ArrayList<Integer> ();
+									for (int j = 0; j < importedDataSet.getColumnCount(); ++j) {
+										row.add(0);
+									}
+									newModel.addRow(row.toArray());
+								}
+								// Load imported data into the values table
+								for (int i = 0; i < importedDataSet.getColumnCount(); ++i) {
+									DataColumn column = importedDataSet.getColumn(i);
+									for (int j = 0; j < column.size(); ++j) {
+										newModel.setValueAt(column.get(j), j, i);
+									}
+								}
+								table.setModel(newModel);
+								table.updateUI();
+							} catch (CalcException ex) {
+								JOptionPane.showMessageDialog(viewPanel, "The requested R package either cannot be located or is not installed.", "Missing Package", JOptionPane.WARNING_MESSAGE);
+							}
+						}
+					} catch(FileNotFoundException e) { }
+				}
+            }
+        });
+
+		GroupLayout valuesPanelLayout = new GroupLayout(valuesPanel);
+        valuesPanel.setLayout(valuesPanelLayout);
+        valuesPanelLayout.setHorizontalGroup(
+            valuesPanelLayout.createParallelGroup(GroupLayout.LEADING)
+            .add(valuesPanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .add(valuesPanelLayout.createParallelGroup(GroupLayout.LEADING)
+                    .add(scrollPane, GroupLayout.DEFAULT_SIZE, 435, Short.MAX_VALUE)
+                    .add(valuesPanelLayout.createSequentialGroup()
+                        .add(columnsLabel)
+                        .addPreferredGap(LayoutStyle.RELATED)
+                        .add(columnsSpinner, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                        .add(18, 18, 18)
+                        .add(rowsLabel)
+                        .addPreferredGap(LayoutStyle.RELATED)
+                        .add(rowsSpinner, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(LayoutStyle.RELATED, 108, Short.MAX_VALUE)
+                        .add(button)))
+                .addContainerGap())
+        );
+        valuesPanelLayout.setVerticalGroup(
+            valuesPanelLayout.createParallelGroup(GroupLayout.LEADING)
+            .add(valuesPanelLayout.createSequentialGroup()
+                .add(scrollPane, GroupLayout.PREFERRED_SIZE, 238, GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(LayoutStyle.RELATED)
+                .add(valuesPanelLayout.createParallelGroup(GroupLayout.LEADING)
+                    .add(button)
+                    .add(valuesPanelLayout.createParallelGroup(GroupLayout.LEADING, false)
+                        .add(columnsLabel, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .add(columnsSpinner, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+                    .add(valuesPanelLayout.createParallelGroup(GroupLayout.LEADING, false)
+                        .add(rowsLabel, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .add(rowsSpinner, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+		return valuesPanel;
+	}
 
 	/**
 	 * Add this operation to the workspace under the current data set.
@@ -1373,16 +1383,17 @@ public class ViewPanel extends JPanel
 		domain.currentDataSet.setBounds (330, 50, domain.currentDataSet.getText ().length() * 8, 16);
 		domain.problem.addData (domain.currentDataSet);
 		// Add columns from the New Problem Wizard
-		for (int i = 0; i < valuesTableModel.getColumnCount(); ++i)
+		ExtendedTableModel tableModel = (ExtendedTableModel) ((JTable) ((JViewport) ((JScrollPane) ((JPanel) dataSetTabbedPane.getComponent (0)).getComponent (0)).getComponent (0)).getComponent (0)).getModel ();
+		for (int i = 0; i < tableModel.getColumnCount(); ++i)
 		{
 			try
 			{
-				DataColumn column = domain.currentDataSet.addColumn (valuesTableModel.getColumnName(i));
+				DataColumn column = domain.currentDataSet.addColumn (tableModel.getColumnName(i));
 
 				// Add all rows within this column to the data set
-				for (int j = 0; j < valuesTableModel.getRowCount (); ++j)
+				for (int j = 0; j < tableModel.getRowCount (); ++j)
 				{
-					column.add (Double.parseDouble (valuesTableModel.getValueAt (j, i).toString ()));
+					column.add (Double.parseDouble (tableModel.getValueAt (j, i).toString ()));
 				}
 			}
 			catch (CalcException ex)
@@ -1510,25 +1521,28 @@ public class ViewPanel extends JPanel
 			descriptionTextArea.setText ("");
 
 			// By default, new problems have three columns and five rows
-			columnsSpinner.setValue (3);
-			rowsSpinner.setValue (5);
+			int columns = 3;
+			int rows = 5;
+			((JSpinner) ((JPanel) dataSetTabbedPane.getComponent (0)).getComponent (2)).setValue (columns);
+			((JSpinner) ((JPanel) dataSetTabbedPane.getComponent (0)).getComponent (4)).setValue (rows);
 
 			// Add minimum columns to the table model
-			valuesTableModel = new ExtendedTableModel ();
+			JTable table = ((JTable) ((JViewport) ((JScrollPane) ((JPanel) dataSetTabbedPane.getComponent (0)).getComponent (0)).getComponent (0)).getComponent (0));
+			ExtendedTableModel newTableModel = new ExtendedTableModel ();
 			DefaultTableColumnModel newColumnModel = new DefaultTableColumnModel ();
-			for (int i = 0; i < Integer.parseInt (columnsSpinner.getValue ().toString ()); ++i)
+			for (int i = 0; i < columns; ++i)
 			{
 				newColumnModel.addColumn (new TableColumn ());
-				valuesTableModel.addColumn("Column " + (i + 1));
+				newTableModel.addColumn("Column " + (i + 1));
 			}
-			valuesTable.setColumnModel (newColumnModel);
+			table.setColumnModel (newColumnModel);
 			// Add minimum rows to the table model
-			for (int i = 0; i < Integer.parseInt (rowsSpinner.getValue ().toString ()); ++i)
+			for (int i = 0; i < rows; ++i)
 			{
-				valuesTableModel.addRow (new Object[Integer.parseInt (columnsSpinner.getValue ().toString ())]);
+				newTableModel.addRow (new Object[columns]);
 			}
-			valuesTable.setModel (valuesTableModel);
-			valuesTable.updateUI();
+			table.setModel (newTableModel);
+			table.updateUI();
 		}
 		else
 		{
@@ -1538,8 +1552,8 @@ public class ViewPanel extends JPanel
 			descriptionTextArea.setText (domain.problem.getStatement ());
 
 			// By default, new problems have three columns and five rows
-			columnsSpinner.setValue (domain.problem.getData (0).getColumnCount());
-			rowsSpinner.setValue (domain.problem.getData (0).getColumnLength ());
+			// TODO columnsSpinner.setValue (domain.problem.getData (0).getColumnCount());
+			// TODO rowsSpinner.setValue (domain.problem.getData (0).getColumnLength ());
 
 			// Add sub problems to the panel
 			for (int i = 0; i < domain.problem.getSubProblemCount(); ++i)
@@ -1588,29 +1602,29 @@ public class ViewPanel extends JPanel
 			subProblemsScollablePanel.scrollRectToVisible(new Rectangle(0, subProblemsScollablePanel.getHeight(), 1, 1));
 
 			// Add minimum columns to the table model
-			valuesTableModel = new ExtendedTableModel ();
+			// TODO valuesTableModel = new ExtendedTableModel ();
 			DefaultTableColumnModel newColumnModel = new DefaultTableColumnModel ();
 			for (int i = 0; i < domain.problem.getData (0).getColumnCount (); ++i)
 			{
 				newColumnModel.addColumn (new TableColumn ());
-				valuesTableModel.addColumn(domain.problem.getData (0).getColumn(i).getName());
+				// TODO valuesTableModel.addColumn(domain.problem.getData (0).getColumn(i).getName());
 			}
-			valuesTable.setColumnModel (newColumnModel);
+			// TODO valuesTable.setColumnModel (newColumnModel);
 			// Add minimum rows to the table model
-			for (int i = 0; i < Integer.parseInt (rowsSpinner.getValue ().toString ()); ++i)
+			// TODO for (int i = 0; i < Integer.parseInt (rowsSpinner.getValue ().toString ()); ++i)
 			{
-				valuesTableModel.addRow (new Object[Integer.parseInt (columnsSpinner.getValue ().toString ())]);
+				// TODO valuesTableModel.addRow (new Object[Integer.parseInt (columnsSpinner.getValue ().toString ())]);
 			}
 			// Fill in the values for all table elements
 			for (int i = 0; i < domain.problem.getData (0).getColumnCount (); ++i)
 			{
 				for (int j = 0; j < domain.problem.getData (0).getColumn (i).size(); ++j)
 				{
-					valuesTableModel.setValueAt(domain.problem.getData (0).getColumn (i).get (j), j, i);
+					// TODO valuesTableModel.setValueAt(domain.problem.getData (0).getColumn (i).get (j), j, i);
 				}
 			}
-			valuesTable.setModel (valuesTableModel);
-			valuesTable.updateUI();
+			// TODO valuesTable.setModel (valuesTableModel);
+			// TODO valuesTable.updateUI();
 		}
 	}
 
@@ -1645,6 +1659,8 @@ public class ViewPanel extends JPanel
 		subProblemsScollablePanel.updateUI ();
 		addSubProblemButton.setEnabled (true);
 		removeSubProblemButton.setEnabled (true);
+		// Set properties for the values tabs
+		dataSetTabbedPane.add ("Data Set 1", createValuesTabbedPanel());
 
 		setNewProblemWizardDefaultValues ();
 
@@ -1654,6 +1670,21 @@ public class ViewPanel extends JPanel
 		newProblemWizardDialog.setVisible(true);
 
 		openingWizard = false;
+	}
+
+	/**
+	 * Adds a new data set in the New Problem Wizard.
+	 */
+	protected void addNewDataSet()
+	{
+		// Transition to the values card panel
+		nextWizardButtonActionPerformed(null);
+		nextWizardButtonActionPerformed(null);
+		nextWizardButtonActionPerformed(null);
+		nextWizardButtonActionPerformed(null);
+
+		// Add the new data set
+		addDataSetButtonActionPerformed(null);
 	}
 
 	/**
@@ -1722,29 +1753,28 @@ public class ViewPanel extends JPanel
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton addDataSetButton;
     private javax.swing.JButton addSubProblemButton;
-    private javax.swing.JButton backWizardButton;
+    protected javax.swing.JButton backWizardButton;
     private javax.swing.JButton browseButton;
     private javax.swing.JButton closeWizardButton;
-    private javax.swing.JLabel columnsLabel;
-    private javax.swing.JSpinner columnsSpinner;
     private javax.swing.JPanel componentsCardPanel;
     protected javax.swing.JPanel componentsPanel;
-    private javax.swing.JPanel descriptionCardPanel;
-    private javax.swing.JLabel descriptionLabel;
+    private javax.swing.JTabbedPane dataSetTabbedPane;
+    protected javax.swing.JPanel descriptionCardPanel;
+    protected javax.swing.JLabel descriptionLabel;
     private javax.swing.JPanel descriptionPanel;
     private javax.swing.JTextArea descriptionTextArea;
     private javax.swing.JLabel descriptionWizardLabel;
     private javax.swing.JScrollPane descroptionScollPane;
     protected javax.swing.JPanel emptyPalettePanel;
-    private javax.swing.JButton importButton;
     private javax.swing.JPanel leftPanel;
-    private javax.swing.JPanel nameAndLocationCardPanel;
-    private javax.swing.JLabel nameAndLocationLabel;
+    protected javax.swing.JPanel nameAndLocationCardPanel;
+    protected javax.swing.JLabel nameAndLocationLabel;
     private javax.swing.JPanel nameAndLocationPanel;
     private javax.swing.JLabel nameAndLocationWizardLabel;
-    private javax.swing.JDialog newProblemWizardDialog;
-    private javax.swing.JButton nextWizardButton;
+    protected javax.swing.JDialog newProblemWizardDialog;
+    protected javax.swing.JButton nextWizardButton;
     protected javax.swing.JFileChooser openChooserDialog;
     private javax.swing.JScrollPane outputScrollPane;
     private javax.swing.JTextArea outputTextArea;
@@ -1755,30 +1785,26 @@ public class ViewPanel extends JPanel
     private javax.swing.JTextField problemLocationTextField;
     private javax.swing.JLabel problemNameLabel;
     private javax.swing.JTextField problemNameTextField;
+    private javax.swing.JButton removeDataSetButton;
     private javax.swing.JButton removeSubProblemButton;
     private javax.swing.JPanel rightPanel;
-    private javax.swing.JLabel rowsLabel;
-    private javax.swing.JSpinner rowsSpinner;
     protected javax.swing.JFileChooser saveChooserDialog;
     private javax.swing.JLabel stepsLabel;
     private javax.swing.JLabel stepsLineLabel;
     private javax.swing.JPanel stepsPanel;
-    private javax.swing.JPanel subProblemsCardPanel;
-    private javax.swing.JLabel subProblemsLabel;
+    protected javax.swing.JPanel subProblemsCardPanel;
+    protected javax.swing.JLabel subProblemsLabel;
     private javax.swing.JPanel subProblemsPanel;
     private javax.swing.JPanel subProblemsScollablePanel;
     private javax.swing.JScrollPane subProblemsScrollPane;
     private javax.swing.JLabel subProblemsWizardLabel;
     private javax.swing.JToolBar toolBar;
     private javax.swing.JPanel trayPanel;
-    private javax.swing.JPanel valuesCardPanel;
-    private javax.swing.JLabel valuesLabel;
-    private javax.swing.JPanel valuesPanel;
-    private javax.swing.JScrollPane valuesScrollPane;
-    private javax.swing.JTable valuesTable;
+    protected javax.swing.JPanel valuesCardPanel;
+    protected javax.swing.JLabel valuesLabel;
     private javax.swing.JLabel valuesWizardLabel;
-    private javax.swing.JPanel welcomeCardPanel;
-    private javax.swing.JLabel welcomeLabel;
+    protected javax.swing.JPanel welcomeCardPanel;
+    protected javax.swing.JLabel welcomeLabel;
     private javax.swing.JPanel welcomePanel;
     private javax.swing.JLabel welcomeTextLabel;
     private javax.swing.JLabel welcomeWizardLabel;
