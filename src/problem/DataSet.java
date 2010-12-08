@@ -237,6 +237,7 @@ public class DataSet extends JLabel
 		}
 		catch(CalcException ex)
 		{
+			// Not much we can do about this
 		}
 
 		super.setName(newName);
