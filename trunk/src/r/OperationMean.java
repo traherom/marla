@@ -18,6 +18,8 @@
 
 package r;
 
+import gui.Domain.PromptType;
+import java.util.ArrayList;
 import problem.DataColumn;
 import org.rosuda.JRI.Rengine;
 import org.rosuda.JRI.REXP;
@@ -77,6 +79,14 @@ public class OperationMean extends problem.Operation
 		out.setName("Mean");
 
 		return out;
+	}
+
+	@Override
+	public ArrayList<Object[]> getRequiredInfoPrompt()
+	{
+		ArrayList<Object[]> req = new ArrayList<Object[]>();
+		req.add(new Object[] {"Do you want to do this? (testing... lol)", PromptType.CHECKBOX});
+		return req;
 	}
 
 	@Override
