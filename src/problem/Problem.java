@@ -419,7 +419,7 @@ public class Problem implements ProblemPart
 			curr = curr.getOperation(0);
 		}
 
-		return curr.getAllColumns();
+		return curr;
 	}
 
 	@Override

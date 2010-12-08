@@ -15,15 +15,14 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package r;
 
 import problem.DataColumn;
 import org.rosuda.JRI.Rengine;
 import org.rosuda.JRI.REXP;
 import problem.CalcException;
-
-
+import problem.DataSet;
+import problem.Operation;
 
 /**
  * Serves as a pass-through sort of operation, performing no actual
@@ -34,17 +33,18 @@ import problem.CalcException;
  */
 public class OperationStdDev extends problem.Operation
 {
-
 	private Rengine re;
 	private REXP exp;
 	private String storedName;
 	private DataColumn storedColumn;
 
-
 	public OperationStdDev()
 	{
 		super("StdDev");
-		re = new Rengine(new String[]{"--no-save"}, false, new RInterface());
+		re = new Rengine(new String[]
+				{
+					"--no-save"
+				}, false, new RInterface());
 	}
 
 	@Override
@@ -84,6 +84,18 @@ public class OperationStdDev extends problem.Operation
 	@Override
 	public String toString()
 	{
-		throw new UnsupportedOperationException("Not supported yet.");
+		// What we're starting out with
+		StringBuilder sb = new StringBuilder();
+		sb.append(parent.toString());
+
+		// What we're doing for the computation
+		sb.append("\nsd(");
+		sb.append(Operation.sanatizeName(parent));
+		sb.append(")\n");
+
+		// And the result
+		sb.append(DataSet.toString(this));
+
+		return sb.toString();
 	}
 }

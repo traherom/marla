@@ -21,6 +21,7 @@ package r;
 import gui.Domain.PromptType;
 import java.util.ArrayList;
 import problem.DataColumn;
+import problem.DataSet;
 import problem.Operation;
 
 /**
@@ -55,6 +56,13 @@ public class OperationNOP extends Operation
 	@Override
 	public String toString()
 	{
-		throw new UnsupportedOperationException("Not supported yet.");
+		// What we're starting out with
+		StringBuilder sb = new StringBuilder();
+		sb.append(parent.toString());
+
+		// And the result
+		sb.append(DataSet.toString(this));
+
+		return sb.toString();
 	}
 }
