@@ -72,7 +72,6 @@ public class DataSet extends JLabel
 	 */
 	public DataSet(ProblemPart parent, String name)
 	{
-		super(name);
 		this.parent = parent;
 		this.columns = new ArrayList<DataColumn>();
 		setName(name);
@@ -85,7 +84,6 @@ public class DataSet extends JLabel
 	 */
 	public DataSet(DataSet copy, ProblemPart parent)
 	{
-		super(copy.name);
 		this.parent = parent;
 		name = copy.name;
 		for(DataColumn dc : copy.columns)
@@ -439,6 +437,7 @@ public class DataSet extends JLabel
 	 *
 	 * @param op Operation to add to perform on DataSet
 	 * @return Newly added operation
+	 * @throws CalcException Unable to compute values with new operation attached
 	 */
 	public Operation addOperation(Operation op) throws CalcException
 	{
@@ -446,6 +445,25 @@ public class DataSet extends JLabel
 		op.setParentData(this);
 		solutionOps.add(op);
 		return op;
+	}
+
+	/**
+	 * Appends the given operation to the end of the "left" (first) chain
+	 * on this dataset.
+	 * @param op Operation to add to perform on DataSet
+	 * @return Newly added operation
+	 * @throws CalcException Unable to compute values with new operation attached
+	 */
+	public Operation addOperationToEnd(Operation op) throws CalcException
+	{
+		if(solutionOps.isEmpty())
+		{
+			return addOperation(op);
+		}
+		else
+		{
+			return solutionOps.get(0).addOperationToEnd(op);
+		}
 	}
 
 	/**

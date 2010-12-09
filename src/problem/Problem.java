@@ -57,7 +57,7 @@ public class Problem implements ProblemPart
 	 */
 	private String fileName = null;
 	/**
-	 * Whether this problem has been saved with @see #save() save() since
+	 * Whether this problem has been saved with save() since
 	 * it was last updated in any way.
 	 */
 	private boolean isSaved = false;
