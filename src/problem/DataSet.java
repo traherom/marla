@@ -248,6 +248,7 @@ public class DataSet extends JLabel
 	 * Adds another column to this dataset
 	 * @param colName Name for new column
 	 * @return Newly created data column
+	 * @throws CalcException Unable to recompute the data with this new column
 	 */
 	public DataColumn addColumn(String colName) throws CalcException
 	{
@@ -261,6 +262,7 @@ public class DataSet extends JLabel
 	 * Adds a column to this DataSet
 	 * @param column Column to assign to this DataSet
 	 * @return Column that was added to data (same as passed in)
+	 * @throws CalcException Unable to recompute the data with this new column
 	 */
 	public DataColumn addColumn(DataColumn column) throws CalcException
 	{
@@ -278,6 +280,7 @@ public class DataSet extends JLabel
 	 * @param index Position to insert the column at
 	 * @param column Column to assign to this DataSet
 	 * @return Column that was added (same as passed in)
+	 * @throws CalcException Unable to recompute the data with this new column
 	 */
 	public DataColumn addColumn(int index, DataColumn column) throws CalcException
 	{
@@ -291,6 +294,7 @@ public class DataSet extends JLabel
 	 * Removes given column in the dataset.
 	 * @param col Column to remove from the dataset
 	 * @return The removed column
+	 * @throws CalcException Unable to recompute the data without the column
 	 */
 	public DataColumn removeColumn(DataColumn col) throws CalcException
 	{
@@ -609,7 +613,7 @@ public class DataSet extends JLabel
 		int y = Integer.parseInt(dataEl.getAttributeValue("y"));
 		int height = Integer.parseInt(dataEl.getAttributeValue("height"));
 		int width = Integer.parseInt(dataEl.getAttributeValue("width"));
-		newData.setBounds(x, y, height, width);
+		newData.setBounds(x, y, width, height);
 
 		for(Object colEl : dataEl.getChildren("column"))
 		{

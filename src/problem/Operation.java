@@ -69,7 +69,7 @@ public abstract class Operation extends DataSet
 			int y = Integer.parseInt(opEl.getAttributeValue("y"));
 			int height = Integer.parseInt(opEl.getAttributeValue("height"));
 			int width = Integer.parseInt(opEl.getAttributeValue("width"));
-			newOp.setBounds(x, y, height, width);
+			newOp.setBounds(x, y, width, height);
 
 			// Allow it to do its custom thing
 			newOp.fromXmlExtra(opEl);
