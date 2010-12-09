@@ -257,12 +257,12 @@ public class SubProblem implements ProblemPart
 	{
 		SubProblem newSub = new SubProblem(parent,
 				subEl.getAttributeValue("id"),
-				subEl.getText());
+				subEl.getChildText("statement"));
 
 		// Now find our start and end Operation objects so we can point
 		// to them again
-		String startIDStr = subEl.getAttribute("start").toString();
-		String endIDStr = subEl.getAttribute("end").toString();
+		String startIDStr = subEl.getAttribute("start").getValue();
+		String endIDStr = subEl.getAttribute("end").getValue();
 
 		int startID = 0;
 		if(!startIDStr.isEmpty())
