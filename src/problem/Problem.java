@@ -171,16 +171,25 @@ public class Problem implements ProblemPart
 	}
 
 	/**
-	 * Adds an existing SubProblem to the problem.
+	 * Adds a new SubProblem to the problem.
 	 * @param id Subproblem identifier. For example, "a," "part B," etc
 	 * @param description Problem statement for new SubProblem
 	 * @return Reference to newly added SubProblem.
 	 */
 	public SubProblem addSubProblem(String id, String description)
 	{
-		markChanged();
-		isSaved = false;
 		SubProblem sub = new SubProblem(this, id, description);
+		return addSubProblem(sub);
+	}
+
+	/**
+	 * Adds an existing SubProblem to this problem
+	 * @param sub SubProblem to be added
+	 * @return The newly added SubProblem
+	 */
+	private SubProblem addSubProblem(SubProblem sub)
+	{
+		markChanged();
 		subProblems.add(sub);
 		return sub;
 	}
@@ -470,16 +479,7 @@ public class Problem implements ProblemPart
 
 		for(Object partEl : rootEl.getChildren("part"))
 		{
-			/*
-			try
-			{
 			newProb.addSubProblem(SubProblem.fromXml((Element) partEl, newProb));
-			}
-			catch(CalcException ex)
-			{
-			// Ditto above
-			}
-			 */
 		}
 
 		// Do initial computations for everything
