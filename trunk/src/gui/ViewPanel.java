@@ -628,9 +628,9 @@ public class ViewPanel extends JPanel
         valuesCardPanel.add(addDataSetButton);
         addDataSetButton.setBounds(285, 330, 70, 25);
 
-        removeDataSetButton.setFont(new java.awt.Font("Verdana", 0, 12));
+        removeDataSetButton.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
         removeDataSetButton.setText("Remove");
-        removeDataSetButton.setToolTipText("Remove the currently selected data set");
+        removeDataSetButton.setToolTipText("Remove the last data set");
         removeDataSetButton.setEnabled(false);
         removeDataSetButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -764,7 +764,7 @@ public class ViewPanel extends JPanel
 
         preWorkspacePanel.setBackground(new java.awt.Color(204, 204, 204));
 
-        preWorkspaceLabel.setFont(new java.awt.Font("Verdana", 1, 14));
+        preWorkspaceLabel.setFont(new java.awt.Font("Verdana", 1, 14)); // NOI18N
         preWorkspaceLabel.setForeground(new java.awt.Color(102, 102, 102));
         preWorkspaceLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         preWorkspaceLabel.setText("<html><div align=\"center\">To get started, load a previous problem or use the<br /><em>New Problem Wizard</em> to create a new problem</div></html>");
@@ -1160,7 +1160,7 @@ public class ViewPanel extends JPanel
 	}//GEN-LAST:event_addDataSetButtonActionPerformed
 
 	private void removeDataSetButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeDataSetButtonActionPerformed
-		dataSetTabbedPane.remove (dataSetTabbedPane.getSelectedIndex());
+		dataSetTabbedPane.remove (dataSetTabbedPane.getTabCount() - 1);
 		if (dataSetTabbedPane.getTabCount() == 1)
 		{
 			removeDataSetButton.setEnabled (false);
@@ -1212,7 +1212,10 @@ public class ViewPanel extends JPanel
 					workspacePanel.getComponentAt(evt.getPoint ()) != selectedOperation)
 			{
 				hoveredComponent = (JComponent) workspacePanel.getComponentAt (evt.getPoint ());
+				hoveredComponent.setSize(hoveredComponent.getPreferredSize());
+
 				hoveredComponent.setBorder (BorderFactory.createLineBorder(Color.BLACK));
+				hoveredComponent.setSize(hoveredComponent.getPreferredSize());
 			}
 		}
 		else if (workspacePanel.getComponentAt (evt.getPoint ()) != null &&
@@ -1223,13 +1226,17 @@ public class ViewPanel extends JPanel
 					workspacePanel.getComponentAt(evt.getPoint ()) != selectedOperation)
 			{
 				hoveredComponent.setBorder (BorderFactory.createEmptyBorder());
+				hoveredComponent.setSize(hoveredComponent.getPreferredSize());
+
 				hoveredComponent = (JComponent) workspacePanel.getComponentAt (evt.getPoint ());
 				hoveredComponent.setBorder (BorderFactory.createLineBorder(Color.BLACK));
+				hoveredComponent.setSize(hoveredComponent.getPreferredSize());
 			}
 		}
 		else if (hoveredComponent != null)
 		{
 			hoveredComponent.setBorder (BorderFactory.createEmptyBorder());
+			hoveredComponent.setSize(hoveredComponent.getPreferredSize());
 			hoveredComponent = null;
 		}
 	}//GEN-LAST:event_workspacePanelMouseMoved
@@ -1242,10 +1249,12 @@ public class ViewPanel extends JPanel
 				if (selectedOperation != null)
 				{
 					selectedOperation.setBorder (BorderFactory.createEmptyBorder());
+					selectedOperation.setSize(selectedOperation.getPreferredSize());
 				}
 				selectedOperation = (Operation) hoveredComponent;
 				domain.currentOperation = selectedOperation;
 				selectedOperation.setBorder (BorderFactory.createLineBorder(Color.BLUE));
+				selectedOperation.setSize(selectedOperation.getPreferredSize());
 				hoveredComponent = null;
 			}
 			else if (hoveredComponent instanceof DataSet)
@@ -1253,10 +1262,12 @@ public class ViewPanel extends JPanel
 				if (selectedDataSet != null)
 				{
 					selectedDataSet.setBorder (BorderFactory.createEmptyBorder());
+					selectedDataSet.setSize(selectedDataSet.getPreferredSize());
 				}
 				selectedDataSet = (DataSet) hoveredComponent;
 				domain.currentDataSet = selectedDataSet;
 				selectedDataSet.setBorder (BorderFactory.createLineBorder(Color.RED));
+				selectedDataSet.setSize(selectedDataSet.getPreferredSize());
 				hoveredComponent = null;
 			}
 		}
@@ -1552,7 +1563,7 @@ public class ViewPanel extends JPanel
 			y += 20;
 		}
 		final Operation newOperation = operation.clone();
-		newOperation.setBounds (x, y, 75, 16);
+		newOperation.setBounds (x, y, newOperation.getPreferredSize().width, newOperation.getPreferredSize().height);
 		try
 		{
 			if (newOperation.isInfoRequired())
@@ -1704,6 +1715,10 @@ public class ViewPanel extends JPanel
 			if (i < domain.problem.getDataCount())
 			{
 				dataSet = domain.problem.getData (i);
+				if (!dataSetTabbedPane.getTitleAt(i).equals (dataSet.getName ()))
+				{
+					dataSet.setName(dataSetTabbedPane.getTitleAt (i));
+				}
 			}
 			// This is a new data set, so add it to the workspace and to the problem
 			else
@@ -1715,7 +1730,7 @@ public class ViewPanel extends JPanel
 				{
 					x = domain.problem.getData (i - 1).getX () + 150;
 				}
-				dataSet.setBounds (x, y, dataSet.getText ().length() * 8, 16);
+				dataSet.setBounds (x, y, dataSet.getPreferredSize().width, dataSet.getPreferredSize().height);
 			}
 			// Add columns from the New Problem Wizard
 			ExtendedTableModel tableModel = (ExtendedTableModel) ((JTable) ((JViewport) ((JScrollPane) ((JPanel) dataSetTabbedPane.getComponent (i)).getComponent (0)).getComponent (0)).getComponent (0)).getModel ();
@@ -1753,6 +1768,27 @@ public class ViewPanel extends JPanel
 				catch (CalcException ex)
 				{
 					JOptionPane.showMessageDialog(this, "The requested R package either cannot be located or is not installed.", "Missing Package", JOptionPane.WARNING_MESSAGE);
+				}
+			}
+		}
+		
+		// If a data set was removed, remove it from the display along with all its operations
+		if (editing && dataSetTabbedPane.getTabCount () < getShownDataSetCount ())
+		{
+			int numShown = getShownDataSetCount ();
+			for (int i = 0; i < numShown; ++i)
+			{
+				DataSet dataSet = getDisplayedDataSet (i);
+				if (!tabNameExists (dataSet.getName ()))
+				{
+					// Since the data set is no longer in the problem, remove it from the workspace
+					for (int j = 0; j < dataSet.getOperationCount(); ++j)
+					{
+						workspacePanel.remove (dataSet.getOperation (j));
+					}
+					domain.problem.removeData (dataSet);
+					workspacePanel.remove (dataSet);
+					workspacePanel.updateUI ();
 				}
 			}
 		}
@@ -1863,7 +1899,8 @@ public class ViewPanel extends JPanel
 
 		for (int i = 0; i < workspacePanel.getComponentCount (); ++i)
 		{
-			if (workspacePanel.getComponent (i) instanceof DataSet)
+			if (workspacePanel.getComponent (i) instanceof DataSet &&
+					!(workspacePanel.getComponent (i) instanceof Operation))
 			{
 				++count;
 			}
@@ -1897,26 +1934,9 @@ public class ViewPanel extends JPanel
 	{
 		if (domain.problem != null)
 		{
-			domain.currentDataSet = domain.problem.getData(0);
-			// If a data set was removed, remove it from the display along with all its operations
-			if (editing && dataSetTabbedPane.getTabCount () < getShownDataSetCount ())
+			if (domain.currentDataSet == null)
 			{
-				int numShown = getShownDataSetCount ();
-				for (int i = 0; i < numShown; ++i)
-				{
-					DataSet dataSet = getDisplayedDataSet (i);
-					if (!tabNameExists (dataSet.getName ()))
-					{
-						// Since the data set is no longer in the problem, remove it from the workspace
-						for (int j = 0; j < dataSet.getOperationCount(); ++j)
-						{
-							workspacePanel.remove (dataSet.getOperation (j));
-						}
-						domain.problem.removeData (dataSet);
-						workspacePanel.remove (dataSet);
-						workspacePanel.updateUI ();
-					}
-				}
+				domain.currentDataSet = domain.problem.getData(0);
 			}
 
 			int numShow = getShownDataSetCount ();
@@ -2080,6 +2100,14 @@ public class ViewPanel extends JPanel
 				table.setModel (newTableModel);
 				table.updateUI ();
 				table.getTableHeader().resizeAndRepaint ();
+			}
+			if (dataSetTabbedPane.getTabCount () > 1)
+			{
+				removeDataSetButton.setEnabled (true);
+			}
+			else
+			{
+				removeDataSetButton.setEnabled (false);
 			}
 		}
 	}

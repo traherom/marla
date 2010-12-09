@@ -240,7 +240,7 @@ public class DataSet extends JLabel
 			// Not much we can do about this
 		}
 
-		super.setName(newName);
+		super.setText (newName);
 		name = newName;
 	}
 
