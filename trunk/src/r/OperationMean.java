@@ -85,7 +85,9 @@ public class OperationMean extends problem.Operation
 	public ArrayList<Object[]> getRequiredInfoPrompt()
 	{
 		ArrayList<Object[]> req = new ArrayList<Object[]>();
-		req.add(new Object[] {"Do you want to do this? (testing... lol)", PromptType.CHECKBOX});
+		req.add(new Object[] {"Are you sure you want to add the mean?", PromptType.CHECKBOX});
+		req.add(new Object[] {"Seriously?", PromptType.COMBO, new Object[] {"Here", "Are", "Reasons"}});
+		req.add(new Object[] {"Explain why:", PromptType.TEXT});
 		return req;
 	}
 
