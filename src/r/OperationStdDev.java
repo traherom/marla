@@ -17,6 +17,9 @@
  */
 package r;
 
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import problem.DataColumn;
 import org.rosuda.JRI.Rengine;
 import org.rosuda.JRI.REXP;
@@ -50,35 +53,28 @@ public class OperationStdDev extends problem.Operation
 	@Override
 	public DataColumn calcColumn(int index) throws CalcException
 	{
-		storedColumn = parent.getColumn(index);
-
-		DataColumn out = new DataColumn("SD");
-
-		Double[] temp = new Double[storedColumn.size()];
-		storedColumn.toArray(temp);
-
-		double[] storedData = new double[storedColumn.size()];// storedData[20];// = double[20];
-
-		//casts array to double
-		for(int i = 0; i < storedColumn.size(); i++)
+		try
 		{
-			storedData[i] = temp[i].doubleValue();
+			DataColumn inCol = parent.getColumn(index);
+			DataColumn outCol = new DataColumn("SD");
+			RProcessor proc = RProcessor.getInstance();
+			String varName = proc.setVariable(inCol);
+			Double sdVal = proc.executeDouble("sd(" + varName + ")");
+			outCol.add(sdVal);
+			return outCol;
 		}
-
-
-		//does operation
-		storedName = "stdeviation";
-		re.assign(storedName, storedData);
-		exp = re.eval("sd(" + storedName + ")");
-
-		//throw results from exp into the local column
-		double resultData = exp.asDouble();
-
-		out.add((Double) resultData);
-		out.setName("SD");
-
-		re.end();
-		return out;
+		catch(RProcessorParseException ex)
+		{
+			throw new CalcException();
+		}
+		catch(IOException ex)
+		{
+			throw new CalcException("Unable to work with R");
+		}
+		catch(RProcessorException ex)
+		{
+			throw new CalcException();
+		}
 	}
 
 	@Override
