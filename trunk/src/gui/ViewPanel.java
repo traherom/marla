@@ -2197,7 +2197,11 @@ public class ViewPanel extends JPanel
 	{
 		try
 		{
-			outputTextArea.append ("Solution:\n" + domain.problem.getAnswer() + "\n");
+			outputTextArea.append ("Solution:\n");
+			for(int i = 0; i < domain.problem.getDataCount(); i++)
+			{
+				outputTextArea.append(domain.problem.getAnswer(i) + "\n");
+			}
 		}
 		catch (IncompleteInitialization ex) {}
 		catch (CalcException ex)

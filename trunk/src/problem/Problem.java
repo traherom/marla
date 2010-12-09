@@ -413,16 +413,14 @@ public class Problem implements ProblemPart
 	}
 
 	@Override
-	public DataSet getAnswer() throws IncompleteInitialization, CalcException
+	public DataSet getAnswer(int index) throws IncompleteInitialization, CalcException
 	{
 		if(datasets.isEmpty())
 			throw new IncompleteInitialization("This problem has no datasets yet, unable to solve");
 
-		DataSet solvedDS = new DataSet("Solution for problem");
-
 		// Find the bottom operation. Assume the first one for any
 		// places where we find multiple ops or whatever
-		DataSet curr = getSolutionSteps();
+		DataSet curr = datasets.get(index);
 		while(curr.getOperationCount() != 0)
 		{
 			curr = curr.getOperation(0);
