@@ -59,6 +59,10 @@ public class RProcessor
 	 * Single instance of RProcessor that we allow
 	 */
 	private static RProcessor singleRProcessor = null;
+	/**
+	 * Stores the next value to use for the "unique" name generator
+	 */
+	private int uniqueValCounter = 0;
 
 	/**
 	 * Creates a new R instance that can be fed commands
@@ -158,8 +162,7 @@ public class RProcessor
 			line = procOut.readLine();
 		}
 
-		// Process down to array if possible
-		System.out.println(results.toString());
+		// Return results, the caller is responsible for processing further
 		return results.toString();
 	}
 
@@ -256,6 +259,83 @@ public class RProcessor
 		return vals;
 	}
 
+	/**
+	 * Sets the given variable with the value given
+	 * @param name R-conforming variable name
+	 * @param val Value to store in the variable
+	 * @return Name of the variable used
+	 * @throws IOException Thrown if there is a problem working with P
+	 * @throws RProcessorException Thrown if an internal error occur
+	 */
+	public String setVariable(String name, Double val) throws IOException, RProcessorException
+	{
+		execute(name + "=" + val);
+		return name;
+	}
+
+	/**
+	 * Sets the given variable with the value given
+	 * @param val Value to store in the variable
+	 * @return Name of the variable used
+	 * @throws IOException Thrown if there is a problem working with P
+	 * @throws RProcessorException Thrown if an internal error occur
+	 */
+	public String setVariable(Double val) throws IOException, RProcessorException
+	{
+		return setVariable(getUniqueName(), val);
+	}
+	
+	/**
+	 * Sets a new unique variable with a vector of the values given
+	 * @param vals Array of values to store in the variable
+	 * @return Name of the variable used
+	 * @throws IOException Thrown if there is a problem working with P
+	 * @throws RProcessorException Thrown if an internal error occur
+	 */
+	public String setVariable(ArrayList<Double> vals) throws IOException, RProcessorException
+	{
+		return setVariable(getUniqueName(), vals);
+	}
+
+	/**
+	 * Sets the given variable with a vector of the values given
+	 * @param name R-conforming variable name
+	 * @param vals Array of values to store in the variable
+	 * @return Name of the variable used
+	 * @throws IOException Thrown if there is a problem working with P
+	 * @throws RProcessorException Thrown if an internal error occur
+	 */
+	public String setVariable(String name, ArrayList<Double> vals) throws IOException, RProcessorException
+	{
+		// Builds an R command to set the given variable name with the values in the array
+		StringBuilder cmd = new StringBuilder();
+		cmd.append(name);
+		cmd.append(" = c(");
+
+		for(Double val : vals)
+			{
+			cmd.append(val);
+			cmd.append(", ");
+		}
+		cmd.replace(cmd.length() - 2, cmd.length() - 1, "");
+		cmd.append(")\n");
+
+		// Run R command
+		execute(cmd.toString());
+
+		return name;
+	}
+
+	/**
+	 * Returns a unique variable name for use in this R instance
+	 * @return New unique name
+	 */
+	public String getUniqueName()
+	{
+		uniqueValCounter++;
+		return "marlaVar" + uniqueValCounter;
+	}
+
 	public static void main(String[] args) throws Exception
 	{
 		RProcessor test = RProcessor.getInstance();
@@ -264,18 +344,11 @@ public class RProcessor
 		System.out.println(output);
 		System.out.println("Parses to: " + test.parseDouble(output));
 
-		output = test.execute("1:70");
+		output = test.execute("1:10");
 		System.out.println(output);
 		System.out.println("Parses to: " + test.parseDoubleArray(output));
-		/*
-		System.out.println(test.execute("sd(c(5, 5, 6))"));
-		System.out.println(test.execute("t.test(c(5, 5, 6))"));
-		System.out.println(test.execute("plot(c(5, 5, 6))"));
 
-		ArrayList<String> batch = new ArrayList<String>();
-		batch.add("mean(c(5, 5, 6))");
-		batch.add("sd(c(5, 5, 6))");
-		batch.add("t.test(c(5, 5, 6))");
-		System.out.println(test.execute(batch));*/
+		test.setVariable("testing", test.parseDoubleArray(output));
+		System.out.println(test.execute("testing"));
 	}
 }
