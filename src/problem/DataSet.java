@@ -72,6 +72,7 @@ public class DataSet extends JLabel
 	 */
 	public DataSet(ProblemPart parent, String name)
 	{
+		super (name);
 		this.parent = parent;
 		this.columns = new ArrayList<DataColumn>();
 		setName(name);
@@ -84,6 +85,7 @@ public class DataSet extends JLabel
 	 */
 	public DataSet(DataSet copy, ProblemPart parent)
 	{
+		super (copy.name);
 		this.parent = parent;
 		name = copy.name;
 		for(DataColumn dc : copy.columns)
