@@ -68,7 +68,7 @@ public interface ProblemPart
 	 * @throws IncompleteInitialization Some aspect of the problem was not initialized
 	 * @throws CalcException Unable to perform R work to computer answer
 	 */
-	public DataSet getAnswer() throws IncompleteInitialization, CalcException;
+	public DataSet getAnswer(int index) throws IncompleteInitialization, CalcException;
 
 	/**
 	 * Trues true if the problem has unsaved changes
