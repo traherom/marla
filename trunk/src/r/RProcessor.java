@@ -22,6 +22,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -292,7 +293,7 @@ public class RProcessor
 	 * @throws IOException Thrown if there is a problem working with P
 	 * @throws RProcessorException Thrown if an internal error occur
 	 */
-	public String setVariable(ArrayList<Double> vals) throws IOException, RProcessorException
+	public String setVariable(List<Double> vals) throws IOException, RProcessorException
 	{
 		return setVariable(getUniqueName(), vals);
 	}
@@ -305,7 +306,7 @@ public class RProcessor
 	 * @throws IOException Thrown if there is a problem working with P
 	 * @throws RProcessorException Thrown if an internal error occur
 	 */
-	public String setVariable(String name, ArrayList<Double> vals) throws IOException, RProcessorException
+	public String setVariable(String name, List<Double> vals) throws IOException, RProcessorException
 	{
 		// Builds an R command to set the given variable name with the values in the array
 		StringBuilder cmd = new StringBuilder();
