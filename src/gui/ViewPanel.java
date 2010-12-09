@@ -22,6 +22,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.Rectangle;
@@ -1173,10 +1174,12 @@ public class ViewPanel extends JPanel
 		if (dataSetDragging != null)
 		{
 			dataSetDragging.setLocation(evt.getX() - xDragOffset, evt.getY() - yDragOffset);
+			domain.problem.markChanged();
 		}
 		else if (operationDragging != null)
 		{
 			operationDragging.setLocation(evt.getX() - xDragOffset, evt.getY() - yDragOffset);
+			domain.problem.markChanged();
 		}
 	}//GEN-LAST:event_workspacePanelMouseDragged
 
@@ -1587,28 +1590,35 @@ public class ViewPanel extends JPanel
 					Object[] components = prompt.get (i);
 					if (components[1] == Domain.PromptType.TEXT)
 					{
+						JPanel tempPanel = new JPanel (new FlowLayout (FlowLayout.LEFT));
 						JLabel label = new JLabel (components[0].toString ());
 						JTextField textField = new JTextField ();
-						panel.add (label);
-						panel.add (textField);
+						textField.setPreferredSize(new Dimension (150, textField.getPreferredSize().height));
+						tempPanel.add (label);
+						tempPanel.add (textField);
 						valueComponents.add (textField);
+						panel.add (tempPanel);
 					}
 					else if(components[1] == Domain.PromptType.CHECKBOX)
 					{
+						JPanel tempPanel = new JPanel (new FlowLayout (FlowLayout.LEFT));
 						JCheckBox checkBox = new JCheckBox (components[0].toString ());
 						JLabel label = new JLabel ("");
-						panel.add (checkBox);
-						panel.add (label);
+						tempPanel.add (checkBox);
+						tempPanel.add (label);
 						valueComponents.add (checkBox);
+						panel.add (tempPanel);
 					}
 					else if(components[1] == Domain.PromptType.COMBO)
 					{
+						JPanel tempPanel = new JPanel (new FlowLayout (FlowLayout.LEFT));
 						JLabel label = new JLabel (components[0].toString ());
 						DefaultComboBoxModel model = new DefaultComboBoxModel ((Object[]) components[2]);
 						JComboBox comboBox = new JComboBox (model);
-						panel.add (label);
-						panel.add (comboBox);
+						tempPanel.add (label);
+						tempPanel.add (comboBox);
 						valueComponents.add (comboBox);
+						panel.add (tempPanel);
 					}
 				}
 
@@ -1660,6 +1670,7 @@ public class ViewPanel extends JPanel
 
 				// Display dialog
 				dialog.pack();
+				dialog.setLocationRelativeTo(this);
 				dialog.setVisible (true);
 			}
 			domain.currentDataSet.addOperationToEnd (newOperation);
