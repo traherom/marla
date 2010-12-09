@@ -1552,7 +1552,7 @@ public class ViewPanel extends JPanel
 			y += 20;
 		}
 		final Operation newOperation = operation.clone();
-		newOperation.setBounds (x, y, 30, 25);
+		newOperation.setBounds (x, y, 75, 16);
 		try
 		{
 			if (newOperation.isInfoRequired())
@@ -1899,9 +1899,10 @@ public class ViewPanel extends JPanel
 		{
 			domain.currentDataSet = domain.problem.getData(0);
 			// If a data set was removed, remove it from the display along with all its operations
-			if (dataSetTabbedPane.getTabCount () < getShownDataSetCount ())
+			if (editing && dataSetTabbedPane.getTabCount () < getShownDataSetCount ())
 			{
-				for (int i = 0; i < getShownDataSetCount (); ++i)
+				int numShown = getShownDataSetCount ();
+				for (int i = 0; i < numShown; ++i)
 				{
 					DataSet dataSet = getDisplayedDataSet (i);
 					if (!tabNameExists (dataSet.getName ()))
@@ -1917,9 +1918,11 @@ public class ViewPanel extends JPanel
 					}
 				}
 			}
+
+			int numShow = getShownDataSetCount ();
 			for (int i = 0; i < domain.problem.getDataCount(); ++i)
 			{
-				if (i > getShownDataSetCount () - 1)
+				if (i > numShow - 1)
 				{
 					DataSet dataSet = domain.problem.getData (i);
 					// Add the new data set to the workspace
