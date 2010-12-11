@@ -22,6 +22,8 @@ import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.jdom.Element;
+import r.RProcessorException;
+import r.RProcessorParseException;
 
 /**
  * Operation to perform on a parent object that implements
@@ -151,18 +153,20 @@ public abstract class Operation extends DataSet
 	{
 		try
 		{
-			columns.clear();
-			for(int i = 0; i < parent.getColumnCount(); i++)
-			{
-				columns.add(calcColumn(i));
-			}
+			// Compute new colums and cache
+			columns = computeColumns();
 
+			// Tell all children to do the same
 			for(Operation op : solutionOps)
 			{
 				op.refreshCache();
 			}
 		}
-		catch(Exception ex)
+		catch(RProcessorParseException ex)
+		{
+			throw new CalcException("An error occured while refreshing the calculation cache", ex);
+		}
+		catch(RProcessorException ex)
 		{
 			throw new CalcException("An error occured while refreshing the calculation cache", ex);
 		}
@@ -193,18 +197,19 @@ public abstract class Operation extends DataSet
 	/**
 	 * Overridden by child operations to actually perform the task. When the
 	 * column/other data is requested the deriving class should return
-	 * the result of the appropriate operation on the dataset above. If more
-	 * than one column is needed in the operation that's fine, just return
-	 * only the requested column.
+	 * the result of the appropriate operation on the dataset above.
 	 *
 	 * Caching is performed by Operation. Concrete Operation derivatives
 	 * should not implement their own caching unless a specific need
 	 * arises.
-	 * @param index Column to calculate
-	 * @return Computations that are the result of this calculation
-	 * @throws CalcException Unable to calculate the values for this column
+	 * @return DataColums that are a result of this operation
+	 * @throws CalcException Thrown as a result of other functions performing calculations
+	 * @throws RProcessorParseException Thrown if the R processor could not parse the R output
+	 *		as it was instructed to. Likely a programming error.
+	 * @throws RProcessorException Error working with the R process itself (permissions or closed
+	 *		pipes, for example).
 	 */
-	public abstract DataColumn calcColumn(int index) throws CalcException;
+	public abstract ArrayList<DataColumn> computeColumns() throws RProcessorParseException, RProcessorException, CalcException;
 
 	@Override
 	public DataSet getAllColumns() throws CalcException

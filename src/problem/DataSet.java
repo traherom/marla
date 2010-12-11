@@ -54,6 +54,10 @@ public class DataSet extends JLabel
 	 * Commands to perform on this dataset
 	 */
 	protected ArrayList<Operation> solutionOps = new ArrayList<Operation>();
+	/**
+	 * The last number used as part of the unique column name creator.
+	 */
+	private int lastUniqueColumnID = 0;
 
 	/**
 	 * Creates a blank dataset with the given name.
@@ -72,7 +76,7 @@ public class DataSet extends JLabel
 	 */
 	public DataSet(ProblemPart parent, String name)
 	{
-		super (name);
+		super(name);
 		this.parent = parent;
 		this.columns = new ArrayList<DataColumn>();
 		setName(name);
@@ -85,7 +89,7 @@ public class DataSet extends JLabel
 	 */
 	public DataSet(DataSet copy, ProblemPart parent)
 	{
-		super (copy.name);
+		super(copy.name);
 		this.parent = parent;
 		name = copy.name;
 		for(DataColumn dc : copy.columns)
@@ -240,8 +244,22 @@ public class DataSet extends JLabel
 			// Not much we can do about this
 		}
 
-		super.setText (newName);
+		super.setText(newName);
 		name = newName;
+	}
+
+	/**
+	 * Returns a unique, unused name for a column in this DataSet. Used primarily internally.
+	 * @return New unique name
+	 */
+	public String getUniqueColumnName()
+	{
+		lastUniqueColumnID++;
+		String newName = "marlaInternalUniqueColumnName" + lastUniqueColumnID;
+
+		// TODO Actually check for uniqueness
+
+		return newName;
 	}
 
 	/**

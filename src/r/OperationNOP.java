@@ -20,8 +20,12 @@ package r;
 
 import gui.Domain.PromptType;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import problem.CalcException;
 import problem.DataColumn;
 import problem.DataSet;
+import problem.DuplicateNameException;
 import problem.Operation;
 
 /**
@@ -38,19 +42,14 @@ public class OperationNOP extends Operation
 	}
 
 	@Override
-	public DataColumn calcColumn(int index)
+	public ArrayList<DataColumn> computeColumns() throws RProcessorParseException, RProcessorException, CalcException
 	{
-		return new DataColumn(this.parent.getColumn(index), null);
-	}
-
-	@Override
-	public ArrayList<Object[]> getRequiredInfoPrompt()
-	{
-		ArrayList<Object[]> req = new ArrayList<Object[]>();
-		req.add(new Object[] {"Population mean", PromptType.TEXT});
-		req.add(new Object[] {"Is normal data?", PromptType.CHECKBOX});
-		req.add(new Object[] {"Column", PromptType.COMBO, parent.getColumnNames()});
-		return req;
+		ArrayList<DataColumn> cols = new ArrayList<DataColumn>();
+		for(int i = 0; i < parent.getColumnCount(); i++)
+		{
+			cols.add(new DataColumn(parent.getColumn(i), this));
+		}
+		return cols;
 	}
 
 	@Override

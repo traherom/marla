@@ -18,6 +18,7 @@
 package r;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import problem.DataColumn;
@@ -25,6 +26,7 @@ import org.rosuda.JRI.Rengine;
 import org.rosuda.JRI.REXP;
 import problem.CalcException;
 import problem.DataSet;
+import problem.DuplicateNameException;
 import problem.Operation;
 
 /**
@@ -44,37 +46,35 @@ public class OperationStdDev extends problem.Operation
 	public OperationStdDev()
 	{
 		super("StdDev");
-		re = new Rengine(new String[]
-				{
-					"--no-save"
-				}, false, new RInterface());
 	}
 
 	@Override
-	public DataColumn calcColumn(int index) throws CalcException
+	public ArrayList<DataColumn> computeColumns() throws RProcessorParseException, RProcessorException, CalcException
 	{
-		try
+		RProcessor proc = RProcessor.getInstance();
+		ArrayList<DataColumn> cols = new ArrayList<DataColumn>();
+
+		for(int i = 0; i < parent.getColumnCount(); i++)
 		{
-			DataColumn inCol = parent.getColumn(index);
-			DataColumn outCol = new DataColumn("SD");
-			RProcessor proc = RProcessor.getInstance();
-			String varName = proc.setVariable(inCol);
+			DataColumn parentCol = parent.getColumn(i);
+			DataColumn dc;
+			try
+			{
+				dc = new DataColumn(this, "sd(" + parentCol.getName() + ")");
+			}
+			catch(DuplicateNameException ex)
+			{
+				throw new CalcException("Duplicate name for computed columns. Should never happen.", ex);
+			}
+			
+			String varName = proc.setVariable(parentCol);
 			Double sdVal = proc.executeDouble("sd(" + varName + ")");
-			outCol.add(sdVal);
-			return outCol;
+			dc.add(sdVal);
+
+			cols.add(dc);
 		}
-		catch(RProcessorParseException ex)
-		{
-			throw new CalcException();
-		}
-		catch(IOException ex)
-		{
-			throw new CalcException("Unable to work with R");
-		}
-		catch(RProcessorException ex)
-		{
-			throw new CalcException();
-		}
+
+		return cols;
 	}
 
 	@Override

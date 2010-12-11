@@ -15,7 +15,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package r;
 
 import gui.Domain.PromptType;
@@ -25,6 +24,7 @@ import org.rosuda.JRI.Rengine;
 import org.rosuda.JRI.REXP;
 import problem.CalcException;
 import problem.DataSet;
+import problem.DuplicateNameException;
 import problem.Operation;
 
 /**
@@ -35,59 +35,64 @@ import problem.Operation;
  */
 public class OperationMean extends problem.Operation
 {
-
 	private Rengine re;
 	private REXP exp;
 	private String storedName;
-
 	private DataColumn storedColumn;
-
 
 	public OperationMean()
 	{
 		super("Mean");
-		re = new Rengine(new String[]{"--no-save"}, false, new RInterface());
 	}
 
 	@Override
-	public DataColumn calcColumn(int index) throws CalcException
+	public ArrayList<DataColumn> computeColumns() throws RProcessorParseException, RProcessorException, CalcException
 	{
-		storedColumn = parent.getColumn(index);
+		RProcessor proc = RProcessor.getInstance();
+		ArrayList<DataColumn> cols = new ArrayList<DataColumn>();
 
-		DataColumn out = new DataColumn("Mean");
-
-		Double[] temp = new Double[storedColumn.size()];
-		storedColumn.toArray(temp);
-
-		double[] storedData = new double[storedColumn.size()];
-		
-		//casts array to double
-		for(int i = 0; i < storedColumn.size(); i++)
+		for(int i = 0; i < parent.getColumnCount(); i++)
 		{
-			storedData[i] = temp[i].doubleValue();
+			DataColumn parentCol = parent.getColumn(i);
+			DataColumn dc;
+			try
+			{
+				dc = new DataColumn(this, "mean(" + parentCol.getName() + ")");
+			}
+			catch(DuplicateNameException ex)
+			{
+				throw new CalcException("Duplicate name for computed columns. Should never happen.", ex);
+			}
+
+			String varName = proc.setVariable(parentCol);
+			Double sdVal = proc.executeDouble("mean(" + varName + ")");
+			dc.add(sdVal);
+
+			cols.add(dc);
 		}
 
-
-		//does operation
-		storedName = "Mean";
-		re.assign(storedName, storedData);
-		exp = re.eval("mean(" + storedName + ")");
-
-		double resultData = exp.asDouble();
-
-		out.add((Double) resultData);
-		out.setName("Mean");
-
-		return out;
+		return cols;
 	}
 
 	@Override
 	public ArrayList<Object[]> getRequiredInfoPrompt()
 	{
 		ArrayList<Object[]> req = new ArrayList<Object[]>();
-		req.add(new Object[] {"Are you sure you want to add the mean?", PromptType.CHECKBOX});
-		req.add(new Object[] {"Seriously?", PromptType.COMBO, new Object[] {"Here", "Are", "Reasons"}});
-		req.add(new Object[] {"Explain why:", PromptType.TEXT});
+		req.add(new Object[]
+				{
+					"Are you sure you want to add the mean?", PromptType.CHECKBOX
+				});
+		req.add(new Object[]
+				{
+					"Seriously?", PromptType.COMBO, new Object[]
+					{
+						"Here", "Are", "Reasons"
+					}
+				});
+		req.add(new Object[]
+				{
+					"Explain why:", PromptType.TEXT
+				});
 		return req;
 	}
 

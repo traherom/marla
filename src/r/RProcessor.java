@@ -45,6 +45,14 @@ public class RProcessor
 	 */
 	private final Pattern doublePatt = Pattern.compile("(?<!\\[)-?[0-9]+(\\.[0-9]+)?(?!\\])");
 	/**
+	 * Pattern used to recognize doubles in R output, mainly for use with vectors
+	 */
+	private final Pattern stringPatt = Pattern.compile("(?<=\")[^\"]*?\\w[^\"]*?(?=\")");
+	/**
+	 * Single instance of RProcessor that we allow
+	 */
+	private static RProcessor singleRProcessor = null;
+	/**
 	 * The R process itself
 	 */
 	private Process rProc = null;
@@ -57,46 +65,72 @@ public class RProcessor
 	 */
 	private BufferedOutputStream procIn = null;
 	/**
-	 * Single instance of RProcessor that we allow
+	 * Denotes whether commands sent to R should be recorded
 	 */
-	private static RProcessor singleRProcessor = null;
+	private boolean enableCmdRecord = false;
+	/**
+	 * Record of commands sent to R
+	 */
+	private StringBuilder cmdRecord = new StringBuilder();
+	/**
+	 * Denotes whether output from R should be recorded
+	 */
+	private boolean enableOutputRecord = false;
+	/**
+	 * Record of output returned from R
+	 */
+	private StringBuilder outputRecord = new StringBuilder();
 	/**
 	 * Stores the next value to use for the "unique" name generator
 	 */
-	private int uniqueValCounter = 0;
+	private long uniqueValCounter = 0;
 
 	/**
 	 * Creates a new R instance that can be fed commands
 	 * @param rPath R executable to run
-	 * @throws IOException Thrown if R cannot be run
 	 */
-	private RProcessor(String rPath) throws IOException
+	private RProcessor(String rPath) throws RProcessorException
 	{
-		rProc = Runtime.getRuntime().exec(new String[]
-				{
-					rPath, "--slave", "--no-readline"
-				});
-		procOut = new BufferedReader(new InputStreamReader(rProc.getInputStream()));
-		procIn = (BufferedOutputStream) rProc.getOutputStream();
+		try
+		{
+			rProc = Runtime.getRuntime().exec(new String[]
+					{
+						rPath, "--slave", "--no-readline"
+					});
+			procOut = new BufferedReader(new InputStreamReader(rProc.getInputStream()));
+			procIn = (BufferedOutputStream) rProc.getOutputStream();
+		}
+		catch(IOException ex)
+		{
+			throw new RProcessorException("Unable to initialize R processor", ex);
+		}
 	}
 
 	/**
 	 * Creates a new instance of R which can be fed commands. Assumes R is accessible on the path
 	 * @return Instance of RProcessor that can be used for calculations
-	 * @throws IOException Thrown if R cannot be run
+	 * @throws RProcessorException Thrown in the R process cannot be located and/or launched
 	 */
-	public static RProcessor getInstance() throws IOException
+	public static RProcessor getInstance() throws RProcessorException
 	{
-		return getInstance("R");
+		try
+		{
+			return getInstance("R");
+		}
+		catch(RProcessorException ex)
+		{
+			// Try to find it another way?
+			throw ex;
+		}
 	}
 
 	/**
 	 * Creates a new instance of R at the given path which can be fed commands
 	 * @param rPath Path to the R executable
 	 * @return Instance of RProcessor that can be used for calculations
-	 * @throws IOException Thrown if R cannot be run
+	 * @throws RProcessorException Unable to load R processor
 	 */
-	public static RProcessor getInstance(String rPath) throws IOException
+	public static RProcessor getInstance(String rPath) throws RProcessorException
 	{
 		if(singleRProcessor == null)
 		{
@@ -125,6 +159,28 @@ public class RProcessor
 		}
 	}
 
+	public void close()
+	{
+		try
+		{
+			// Tell R we're closing, then close everything out
+			execute("q()");
+			procIn.close();
+			procOut.close();
+			rProc.waitFor();
+		}
+		catch(Exception ex)
+		{
+			// Oh well, it happens
+		}
+		finally
+		{
+			procIn = null;
+			procOut = null;
+			rProc = null;
+		}
+	}
+
 	/**
 	 * Passes the given string onto R just as if you typed it at the command line. Only a single
 	 * command may be executed by this command. If the user wants to run multiple commands as a
@@ -132,39 +188,54 @@ public class RProcessor
 	 * a newline if it does not have one.
 	 * @param cmd R command to execute
 	 * @return String output from R. Use one of the parse functions to processor further
-	 * @throws IOException Thrown if an error reading or writing to the pipes attached to R
 	 * @throws RProcessorException Thrown if called with more than one command
 	 */
-	public String execute(String cmd) throws IOException, RProcessorException
+	public String execute(String cmd) throws RProcessorException
 	{
-		StringBuilder sentinelCmd = new StringBuilder(cmd);
-
-		// Only allow a single command to be run by this method
-		// Use this opportunity to append a newline if needed
-		int newLineLoc = cmd.indexOf('\n');
-		if(newLineLoc == -1)
-			sentinelCmd.append('\n');
-		else if(newLineLoc != cmd.length() - 1)
-			throw new RProcessorException("Only a single command may be run at a time with execute(String)");
-
-		// Send command with a sentinel at the end so we know when the output is done
-		sentinelCmd.append(this.SENTINEL_STRING_CMD);
-		byte[] cmdArray = sentinelCmd.toString().getBytes();
-		procIn.write(cmdArray, 0, cmdArray.length);
-		procIn.flush();
-
-		// Get results back
-		StringBuilder results = new StringBuilder();
-		String line = procOut.readLine();
-		while(line != null && !line.equals(this.SENTINEL_STRING_RETURN))
+		try
 		{
-			results.append(line);
-			results.append('\n');
-			line = procOut.readLine();
-		}
+			StringBuilder sentinelCmd = new StringBuilder(cmd);
 
-		// Return results, the caller is responsible for processing further
-		return results.toString();
+			// Only allow a single command to be run by this method
+			// Use this opportunity to append a newline if needed
+			int newLineLoc = cmd.indexOf('\n');
+			if(newLineLoc == -1)
+				sentinelCmd.append('\n');
+			else if(newLineLoc != cmd.length() - 1)
+				throw new RProcessorException("Only a single command may be run at a time with execute(String)");
+
+			// Record if needed
+			if(enableCmdRecord)
+				cmdRecord.append(sentinelCmd);
+
+			// Send command with a sentinel at the end so we know when the output is done
+			sentinelCmd.append(this.SENTINEL_STRING_CMD);
+			byte[] cmdArray = sentinelCmd.toString().getBytes();
+			procIn.write(cmdArray, 0, cmdArray.length);
+			procIn.flush();
+
+			// Get results back
+			StringBuilder results = new StringBuilder();
+			String line = procOut.readLine();
+			while(line != null && !line.equals(this.SENTINEL_STRING_RETURN))
+			{
+				results.append(line);
+				results.append('\n');
+				line = procOut.readLine();
+			}
+
+			// Record if needed
+			if(enableOutputRecord)
+				outputRecord.append(results);
+
+			// Return results, the caller is responsible for processing further
+			return results.toString();
+		}
+		catch(IOException ex)
+		{
+			// Unable to read/write to pipes. Try to create new R instance and try again, then die
+			throw new RProcessorException("Unable to read or write to the R instance", ex);
+		}
 	}
 
 	/**
@@ -172,13 +243,13 @@ public class RProcessor
 	 * be automatically terminated with a newline if they does not have one.
 	 * @param cmds List of R commands to execute
 	 * @return ArrayList of Strings, where each entry is the output from one of the commands given.
-	 * @throws IOException Thrown if an error reading or writing to the pipes attached to R
 	 * @throws RProcessorException Thrown if one of the commands in cmds contains more than
-	 *		one command
+	 *		one command or we encounter an error executing command itself
 	 */
-	public ArrayList<String> execute(ArrayList<String> cmds) throws IOException, RProcessorException
+	public ArrayList<String> execute(ArrayList<String> cmds) throws RProcessorException
 	{
 		ArrayList<String> output = new ArrayList<String>(cmds.size());
+
 		for(String cmd : cmds)
 		{
 			output.add(execute(cmd));
@@ -190,12 +261,11 @@ public class RProcessor
 	 * Convenience function that executes the given command and parses the result as a double
 	 * @param cmd R command to execute
 	 * @return Double value of the R call
-	 * @throws IOException Thrown if an error reading or writing to the pipes attached to R
 	 * @throws RProcessorException Thrown if called with more than one command
 	 * @throws RProcessorParseException Thrown if the given output does not contain a single double
 	 *		value. This includes if the output has multiple doubles
 	 */
-	public Double executeDouble(String cmd) throws IOException, RProcessorException, RProcessorParseException
+	public Double executeDouble(String cmd) throws RProcessorException, RProcessorParseException
 	{
 		return parseDouble(execute(cmd));
 	}
@@ -204,14 +274,53 @@ public class RProcessor
 	 * Convenience function that executes the given command and parses the result as a double
 	 * @param cmd R command to execute
 	 * @return ArrayList of doubles that the R command returned
-	 * @throws IOException Thrown if an error reading or writing to the pipes attached to R
 	 * @throws RProcessorException Thrown if called with more than one command
 	 * @throws RProcessorParseException Thrown if the given output does not contain a vector of
 	 *		numerical values.
 	 */
-	public ArrayList<Double> executeDoubleArray(String cmd) throws IOException, RProcessorException, RProcessorParseException
+	public ArrayList<Double> executeDoubleArray(String cmd) throws RProcessorException, RProcessorParseException
 	{
 		return parseDoubleArray(execute(cmd));
+	}
+
+	/**
+	 * Convenience function that executes the given command and parses the result as a string
+	 * @param cmd R command to execute
+	 * @return String value of the R call
+	 * @throws RProcessorException Thrown if called with more than one command
+	 * @throws RProcessorParseException Thrown if the given output does not contain a single string
+	 *		value. This includes if the output has multiple string
+	 */
+	public String executeString(String cmd) throws RProcessorException, RProcessorParseException
+	{
+		return parseString(execute(cmd));
+	}
+
+	/**
+	 * Convenience function that executes the given command and parses the result as a string
+	 * @param cmd R command to execute
+	 * @return ArrayList of strings that the R command returned
+	 * @throws RProcessorException Thrown if called with more than one command
+	 * @throws RProcessorParseException Thrown if the given output does not contain a vector of
+	 *		strings
+	 */
+	public ArrayList<String> executeStringArray(String cmd) throws RProcessorException, RProcessorParseException
+	{
+		return parseStringArray(execute(cmd));
+	}
+
+	/**
+	 * Runs the given command and saves it into a new, unique variable. The variable name used
+	 * is returned as a string.
+	 * @param cmd R command to execute
+	 * @return R variable name that contains the results of the executed command
+	 * @throws RProcessorException Thrown if called with more than one command
+	 */
+	public String executeSave(String cmd) throws RProcessorException
+	{
+		String varName = getUniqueName();
+		execute(varName + " = " + cmd);
+		return varName;
 	}
 
 	/**
@@ -224,8 +333,10 @@ public class RProcessor
 	public Double parseDouble(String rOutput) throws RProcessorParseException
 	{
 		ArrayList<Double> arr = parseDoubleArray(rOutput);
+
 		if(arr.size() != 1)
 			throw new RProcessorParseException("The R result was not a single double value");
+
 		return arr.get(0);
 	}
 
@@ -242,6 +353,7 @@ public class RProcessor
 		try
 		{
 			Matcher m = doublePatt.matcher(rOutput);
+
 			while(m.find())
 			{
 				vals.add(new Double(m.group()));
@@ -261,16 +373,65 @@ public class RProcessor
 	}
 
 	/**
+	 * Takes the given R output and attempts to parse it as a single string value
+	 * @param rOutput R output, as returned by execute(String)
+	 * @return String value contained in the output
+	 * @throws RProcessorParseException Thrown if the given output does not contain a single string
+	 *		value. This includes if the output has multiple strings
+	 */
+	public String parseString(String rOutput) throws RProcessorParseException
+	{
+		ArrayList<String> arr = parseStringArray(rOutput);
+
+		if(arr.size() != 1)
+			throw new RProcessorParseException("The R result was not a single string value");
+
+		return arr.get(0);
+	}
+
+	/**
+	 * Takes the given R output and attempts to parse it as an array of strings
+	 * @param rOutput R output, as returned by execute(String)
+	 * @return ArrayList of Strings from the output
+	 * @throws RProcessorParseException Thrown if the output does not contain string values
+	 */
+	public ArrayList<String> parseStringArray(String rOutput) throws RProcessorParseException
+	{
+		ArrayList<String> vals = new ArrayList<String>();
+
+		try
+		{
+			Matcher m = stringPatt.matcher(rOutput);
+
+			while(m.find())
+			{
+				vals.add(m.group());
+			}
+		}
+		catch(NumberFormatException ex)
+		{
+			// Should almost never be hit, as we recognized it with our regex
+			throw new RProcessorParseException("The R result was improperly processed internally. Please tell the developer");
+		}
+
+		// We clearly weren't supposed to parse the output like this, it wasn't what we wanted
+		if(vals.isEmpty())
+			throw new RProcessorParseException("The R result is not a vector of strings");
+
+		return vals;
+	}
+
+	/**
 	 * Sets the given variable with the value given
 	 * @param name R-conforming variable name
 	 * @param val Value to store in the variable
 	 * @return Name of the variable used
-	 * @throws IOException Thrown if there is a problem working with P
 	 * @throws RProcessorException Thrown if an internal error occur
 	 */
-	public String setVariable(String name, Double val) throws IOException, RProcessorException
+	public String setVariable(String name, Double val) throws RProcessorException
 	{
 		execute(name + "=" + val);
+
 		return name;
 	}
 
@@ -278,22 +439,20 @@ public class RProcessor
 	 * Sets the given variable with the value given
 	 * @param val Value to store in the variable
 	 * @return Name of the variable used
-	 * @throws IOException Thrown if there is a problem working with P
 	 * @throws RProcessorException Thrown if an internal error occur
 	 */
-	public String setVariable(Double val) throws IOException, RProcessorException
+	public String setVariable(Double val) throws RProcessorException
 	{
 		return setVariable(getUniqueName(), val);
 	}
-	
+
 	/**
 	 * Sets a new unique variable with a vector of the values given
 	 * @param vals Array of values to store in the variable
 	 * @return Name of the variable used
-	 * @throws IOException Thrown if there is a problem working with P
 	 * @throws RProcessorException Thrown if an internal error occur
 	 */
-	public String setVariable(List<Double> vals) throws IOException, RProcessorException
+	public String setVariable(List<Double> vals) throws RProcessorException
 	{
 		return setVariable(getUniqueName(), vals);
 	}
@@ -303,10 +462,9 @@ public class RProcessor
 	 * @param name R-conforming variable name
 	 * @param vals Array of values to store in the variable
 	 * @return Name of the variable used
-	 * @throws IOException Thrown if there is a problem working with P
 	 * @throws RProcessorException Thrown if an internal error occur
 	 */
-	public String setVariable(String name, List<Double> vals) throws IOException, RProcessorException
+	public String setVariable(String name, List<Double> vals) throws RProcessorException
 	{
 		// Builds an R command to set the given variable name with the values in the array
 		StringBuilder cmd = new StringBuilder();
@@ -314,7 +472,7 @@ public class RProcessor
 		cmd.append(" = c(");
 
 		for(Double val : vals)
-			{
+		{
 			cmd.append(val);
 			cmd.append(", ");
 		}
@@ -328,18 +486,53 @@ public class RProcessor
 	}
 
 	/**
+	 * Enables or disables the recording of all commands sent to R.
+	 * @param enable true if commands should be recorded, false otherwise
+	 */
+	public void setCommandRecorder(boolean enable)
+	{
+		this.enableCmdRecord = enable;
+	}
+
+	/**
+	 * Enables or disables the recording of all output from R
+	 * @param enable true if output should be recorded, false otherwise
+	 */
+	public void setOuputRecorder(boolean enable)
+	{
+		this.enableOutputRecord = enable;
+	}
+
+	/**
+	 * Retrieves the recorded commands since the last fetch call.
+	 * @return String of all the commands executed since the last fetch
+	 */
+	public String fetchCommands()
+	{
+		String sent = cmdRecord.toString();
+		cmdRecord = new StringBuilder();
+		return sent;
+	}
+
+	/**
 	 * Returns a unique variable name for use in this R instance
 	 * @return New unique name
 	 */
 	public String getUniqueName()
 	{
 		uniqueValCounter++;
-		return "marlaVar" + uniqueValCounter;
+		if(uniqueValCounter < 0)
+			uniqueValCounter = 0;
+
+		return "marlaUniqueVar" + uniqueValCounter;
 	}
 
 	public static void main(String[] args) throws Exception
 	{
 		RProcessor test = RProcessor.getInstance();
+
+		test.setCommandRecorder(true);
+		test.setOuputRecorder(true);
 
 		String output = test.execute("mean(c(-1, -2, -3))");
 		System.out.println(output);
@@ -349,7 +542,21 @@ public class RProcessor
 		System.out.println(output);
 		System.out.println("Parses to: " + test.parseDoubleArray(output));
 
-		test.setVariable("testing", test.parseDoubleArray(output));
-		System.out.println(test.execute("testing"));
+		output = test.execute("\"test\"");
+		System.out.println(output);
+		System.out.println("Parses to: " + test.parseString(output));
+
+		output = test.executeSave("summary(1:200)");
+		System.out.println(output);
+		String outputNames = test.execute("attr(" + output + ", \"names\")");
+		System.out.println(outputNames);
+		System.out.println("Parses to: " + test.parseStringArray(outputNames));
+		String outputValues = test.execute(output);
+		System.out.println(outputValues);
+		System.out.println("Parses to: " + test.parseDoubleArray(outputValues));
+
+		System.out.println(test.fetchCommands());
+
+		test.close();
 	}
 }
