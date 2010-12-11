@@ -18,11 +18,13 @@
 
 package r;
 
+import java.util.ArrayList;
 import problem.DataColumn;
 import org.rosuda.JRI.Rengine;
 import org.rosuda.JRI.REXP;
 import problem.CalcException;
 import problem.DataSet;
+import problem.DuplicateNameException;
 import problem.Operation;
 
 /**
@@ -42,40 +44,35 @@ public class OperationSummation extends problem.Operation
 	public OperationSummation()
 	{
 		super("Sum");
-		re = new Rengine(new String[]{"--no-save"}, false, new RInterface());
 	}
 
 	@Override
-	public DataColumn calcColumn(int index) throws CalcException
+	public ArrayList<DataColumn> computeColumns() throws RProcessorParseException, RProcessorException, CalcException
 	{
-		storedColumn = parent.getColumn(index);
+		RProcessor proc = RProcessor.getInstance();
+		ArrayList<DataColumn> cols = new ArrayList<DataColumn>();
 
-		DataColumn out = new DataColumn("Sum");
-
-		Double[] temp = new Double[storedColumn.size()];
-		storedColumn.toArray(temp);
-
-		double[] storedData = new double[storedColumn.size()];
-
-		//casts array to double
-		for(int i = 0; i < storedColumn.size(); i++)
+		for(int i = 0; i < parent.getColumnCount(); i++)
 		{
-			storedData[i] = temp[i].doubleValue();
+			DataColumn parentCol = parent.getColumn(i);
+			DataColumn dc;
+			try
+			{
+				dc = new DataColumn(this, "sum(" + parentCol.getName() + ")");
+			}
+			catch(DuplicateNameException ex)
+			{
+				throw new CalcException("Duplicate name for computed columns. Should never happen.", ex);
+			}
+
+			String varName = proc.setVariable(parentCol);
+			Double sdVal = proc.executeDouble("sum(" + varName + ")");
+			dc.add(sdVal);
+
+			cols.add(dc);
 		}
 
-
-		//does operation
-		storedName = "sum";
-		re.assign(storedName, storedData);
-		exp = re.eval("sum(" + storedName + ")");
-
-		double resultData = exp.asDouble();
-
-		out.add((Double) resultData);
-		out.setName("Sum");
-
-		re.end();
-		return out;
+		return cols;
 	}
 
 	@Override

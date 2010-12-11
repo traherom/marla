@@ -15,14 +15,15 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package r;
 
+import java.util.ArrayList;
 import problem.DataColumn;
 import org.rosuda.JRI.Rengine;
 import org.rosuda.JRI.REXP;
 import problem.CalcException;
 import problem.DataSet;
+import problem.DuplicateNameException;
 import problem.Operation;
 
 /**
@@ -31,7 +32,6 @@ import problem.Operation;
  */
 public class OperationSummary extends problem.Operation
 {
-
 	private Rengine re;
 	private REXP exp;
 	private String storedName;
@@ -40,46 +40,42 @@ public class OperationSummary extends problem.Operation
 	public OperationSummary()
 	{
 		super("Summary");
-		re = new Rengine(new String[]{"--no-save"}, false, new RInterface());
+		re = new Rengine(new String[]
+				{
+					"--no-save"
+				}, false, new RInterface());
 	}
 
-	//@Override
 	@Override
-	public DataColumn calcColumn(int index) throws CalcException
+	public ArrayList<DataColumn> computeColumns() throws RProcessorParseException, RProcessorException, CalcException
 	{
+		RProcessor proc = RProcessor.getInstance();
+		ArrayList<DataColumn> cols = new ArrayList<DataColumn>();
 
-		storedColumn = parent.getColumn(index);
-
-		DataColumn out = new DataColumn("Summary");
-
-		Double[] temp = new Double[storedColumn.size()];
-		storedColumn.toArray(temp);
-		double[] storedData = new double[storedColumn.size()];
-		//casts array to double
-		for(int i = 0; i < storedColumn.size(); i++)
+		for(int i = 0; i < parent.getColumnCount(); i++)
 		{
-			storedData[i] = temp[i].doubleValue();
+			try
+			{
+				DataColumn parentCol = parent.getColumn(i);
+
+				String colVarName = proc.setVariable(parentCol);
+				String sumVarName = proc.executeSave("summary(" + colVarName + ")");
+				ArrayList<String> names = proc.executeStringArray("attr(" + sumVarName + ", 'names')");
+				ArrayList<Double> values = proc.executeDoubleArray(sumVarName);
+				for(int j = 0; j < names.size(); j++)
+				{
+					DataColumn dc = new DataColumn(this, parentCol.getName() + " " + names.get(j));
+					dc.add(values.get(j));
+					cols.add(dc);
+				}
+			}
+			catch(DuplicateNameException ex)
+			{
+				throw new CalcException("Duplicate name for computed columns. Should never happen.", ex);
+			}
 		}
 
-		//does operation
-		storedName = storedColumn.getName();
-		re.assign(storedName, storedData);
-		exp = re.eval("summary(" + storedName + ")");
-
-		//throw results from exp into the local column
-		double[] resultData = exp.asDoubleArray();
-
-
-		for(int i = 0; i < resultData.length; i++)
-		{
-			out.add((Double) resultData[i]);
-		}
-		out.setName("min, 1stQ, median, mean, 3rdQ, max");
-
-		//operation via the Rengine.
-		//this.ischanged?? will check all the way up if "go" is hit, and recalculate
-		re.end();
-		return out;
+		return cols;
 	}
 
 	@Override

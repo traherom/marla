@@ -1,28 +1,51 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * The maRla Project - Graphical problem solver for statistics and probability problems.
+ * Copyright (C) 2010 Cedarville University
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package r;
 
 /**
  *
- * @author traherom
+ * @author Ryan Morehart
  */
-public class RProcessorException extends Exception {
+public class RProcessorException extends Exception
+{
+	/**
+	 * Creates a new instance of <code>RProcessorException</code> without detail message.
+	 */
+	public RProcessorException()
+	{
+	}
 
-    /**
-     * Creates a new instance of <code>RProcessorException</code> without detail message.
-     */
-    public RProcessorException() {
-    }
+	/**
+	 * Constructs an instance of <code>RProcessorException</code> with the specified detail message.
+	 * @param msg the detail message.
+	 */
+	public RProcessorException(String msg)
+	{
+		super(msg);
+	}
 
-
-    /**
-     * Constructs an instance of <code>RProcessorException</code> with the specified detail message.
-     * @param msg the detail message.
-     */
-    public RProcessorException(String msg) {
-        super(msg);
-    }
+	/**
+	 * Constructs an instance of <code>RProcessorException</code> with the specified detail message.
+	 * @param msg the detail message.
+	 * @param cause
+	 */
+	public RProcessorException(String msg, Throwable cause)
+	{
+		super(msg, cause);
+	}
 }
