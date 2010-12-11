@@ -69,17 +69,13 @@ public class RProcessor
 	 */
 	private boolean enableCmdRecord = false;
 	/**
-	 * Record of commands sent to R
-	 */
-	private StringBuilder cmdRecord = new StringBuilder();
-	/**
 	 * Denotes whether output from R should be recorded
 	 */
-	private boolean enableOutputRecord = false;
+	private boolean enableIntectactionRecord = false;
 	/**
 	 * Record of output returned from R
 	 */
-	private StringBuilder outputRecord = new StringBuilder();
+	private StringBuilder interactionRecord = new StringBuilder();
 	/**
 	 * Stores the next value to use for the "unique" name generator
 	 */
@@ -205,8 +201,8 @@ public class RProcessor
 				throw new RProcessorException("Only a single command may be run at a time with execute(String)");
 
 			// Record if needed
-			if(enableCmdRecord)
-				cmdRecord.append(sentinelCmd);
+			if(enableCmdRecord || enableIntectactionRecord)
+				interactionRecord.append(sentinelCmd);
 
 			// Send command with a sentinel at the end so we know when the output is done
 			sentinelCmd.append(this.SENTINEL_STRING_CMD);
@@ -224,9 +220,11 @@ public class RProcessor
 				line = procOut.readLine();
 			}
 
-			// Record if needed
-			if(enableOutputRecord)
-				outputRecord.append(results);
+			// Record interaction if needed
+			if(enableIntectactionRecord)
+			{
+				interactionRecord.append(results);
+			}
 
 			// Return results, the caller is responsible for processing further
 			return results.toString();
@@ -486,31 +484,41 @@ public class RProcessor
 	}
 
 	/**
-	 * Enables or disables the recording of all commands sent to R.
-	 * @param enable true if commands should be recorded, false otherwise
+	 * Turns off all recording
 	 */
-	public void setCommandRecorder(boolean enable)
+	public void disableRecorder()
 	{
-		this.enableCmdRecord = enable;
+		this.enableCmdRecord = false;
+		this.enableIntectactionRecord = false;
 	}
 
 	/**
-	 * Enables or disables the recording of all output from R
-	 * @param enable true if output should be recorded, false otherwise
+	 * Enables or disables the recording of all commands sent to R, disables
+	 * recording of returned output
 	 */
-	public void setOuputRecorder(boolean enable)
+	public void startRecorderCmd()
 	{
-		this.enableOutputRecord = enable;
+		this.enableCmdRecord = true;
+		this.enableIntectactionRecord = false;
 	}
 
 	/**
-	 * Retrieves the recorded commands since the last fetch call.
-	 * @return String of all the commands executed since the last fetch
+	 * Enables or disables the recording of all input and output from R
 	 */
-	public String fetchCommands()
+	public void startRecorderFull()
 	{
-		String sent = cmdRecord.toString();
-		cmdRecord = new StringBuilder();
+		this.enableCmdRecord = true;
+		this.enableIntectactionRecord = true;
+	}
+
+	/**
+	 * Retrieves the recorded input and output with R since the last fetch
+	 * @return String of all the commands and their output executed since the last fetch
+	 */
+	public String fetchInteraction()
+	{
+		String sent = interactionRecord.toString();
+		interactionRecord = new StringBuilder();
 		return sent;
 	}
 
@@ -531,8 +539,7 @@ public class RProcessor
 	{
 		RProcessor test = RProcessor.getInstance();
 
-		test.setCommandRecorder(true);
-		test.setOuputRecorder(true);
+		test.startRecorderFull();
 
 		String output = test.execute("mean(c(-1, -2, -3))");
 		System.out.println(output);
@@ -555,7 +562,7 @@ public class RProcessor
 		System.out.println(outputValues);
 		System.out.println("Parses to: " + test.parseDoubleArray(outputValues));
 
-		System.out.println(test.fetchCommands());
+		System.out.println(test.fetchInteraction());
 
 		test.close();
 	}
