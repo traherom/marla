@@ -374,13 +374,19 @@ public abstract class Operation extends DataSet
 	 * is returned.
 	 * @return String of the R commands used to do computations
 	 */
-
 	@Override
 	public String toString()
 	{
+		StringBuilder sb = new StringBuilder();
+		
+		if(parent != null)
+			sb.append(parent.toString());
 		if(this.operationRecord != null)
-			return operationRecord;
+
+			sb.append(operationRecord);
 		else
-			return "Not computed yet";
+			sb.append("Not computed yet\n");
+		
+		return sb.toString();
 	}
 }
