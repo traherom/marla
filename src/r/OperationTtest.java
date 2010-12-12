@@ -22,9 +22,7 @@ import problem.DataColumn;
 import org.rosuda.JRI.Rengine;
 import org.rosuda.JRI.REXP;
 import problem.CalcException;
-import problem.DataSet;
 import problem.DuplicateNameException;
-import problem.Operation;
 
 /**
  *
@@ -43,10 +41,10 @@ public class OperationTtest extends problem.Operation
 	}
 
 	@Override
-	public ArrayList<DataColumn> computeColumns() throws RProcessorParseException, RProcessorException, CalcException
+	public void computeColumns() throws RProcessorParseException, RProcessorException, CalcException
 	{
-		RProcessor proc = RProcessor.getInstance();
-		ArrayList<DataColumn> cols = new ArrayList<DataColumn>();
+		if(parent == null)
+			throw new CalcException("This operation has no parent assigned");
 
 		for(int i = 0; i < parent.getColumnCount(); i++)
 		{
@@ -65,27 +63,7 @@ public class OperationTtest extends problem.Operation
 			Double sdVal = proc.executeDouble("sd(" + varName + ")");
 			dc.add(sdVal);
 
-			cols.add(dc);
+			columns.add(dc);
 		}
-
-		return cols;
-	}
-
-	@Override
-	public String toString()
-	{
-		// What we're starting out with
-		StringBuilder sb = new StringBuilder();
-		sb.append(parent.toString());
-
-		// What we're doing for the computation
-		sb.append("\nt.test(");
-		sb.append(Operation.sanatizeName(parent));
-		sb.append(")\n");
-
-		// And the result
-		sb.append(DataSet.toString(this));
-
-		return sb.toString();
 	}
 }

@@ -22,9 +22,7 @@ import problem.DataColumn;
 import org.rosuda.JRI.Rengine;
 import org.rosuda.JRI.REXP;
 import problem.CalcException;
-import problem.DataSet;
 import problem.DuplicateNameException;
-import problem.Operation;
 
 /**
  *
@@ -47,11 +45,8 @@ public class OperationSummary extends problem.Operation
 	}
 
 	@Override
-	public ArrayList<DataColumn> computeColumns() throws RProcessorParseException, RProcessorException, CalcException
+	public void computeColumns() throws RProcessorParseException, RProcessorException, CalcException
 	{
-		RProcessor proc = RProcessor.getInstance();
-		ArrayList<DataColumn> cols = new ArrayList<DataColumn>();
-
 		for(int i = 0; i < parent.getColumnCount(); i++)
 		{
 			try
@@ -66,7 +61,7 @@ public class OperationSummary extends problem.Operation
 				{
 					DataColumn dc = new DataColumn(this, parentCol.getName() + " " + names.get(j));
 					dc.add(values.get(j));
-					cols.add(dc);
+					columns.add(dc);
 				}
 			}
 			catch(DuplicateNameException ex)
@@ -74,25 +69,5 @@ public class OperationSummary extends problem.Operation
 				throw new CalcException("Duplicate name for computed columns. Should never happen.", ex);
 			}
 		}
-
-		return cols;
-	}
-
-	@Override
-	public String toString()
-	{
-		// What we're starting out with
-		StringBuilder sb = new StringBuilder();
-		sb.append(parent.toString());
-
-		// What we're doing for the computation
-		sb.append("\nsummary(");
-		sb.append(Operation.sanatizeName(parent));
-		sb.append(")\n");
-
-		// And the result
-		sb.append(DataSet.toString(this));
-
-		return sb.toString();
 	}
 }
