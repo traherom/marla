@@ -23,9 +23,7 @@ import problem.DataColumn;
 import org.rosuda.JRI.Rengine;
 import org.rosuda.JRI.REXP;
 import problem.CalcException;
-import problem.DataSet;
 import problem.DuplicateNameException;
-import problem.Operation;
 
 /**
  * Serves as a pass-through sort of operation, performing no actual
@@ -46,11 +44,8 @@ public class OperationMean extends problem.Operation
 	}
 
 	@Override
-	public ArrayList<DataColumn> computeColumns() throws RProcessorParseException, RProcessorException, CalcException
+	public void computeColumns() throws RProcessorParseException, RProcessorException, CalcException
 	{
-		RProcessor proc = RProcessor.getInstance();
-		ArrayList<DataColumn> cols = new ArrayList<DataColumn>();
-
 		for(int i = 0; i < parent.getColumnCount(); i++)
 		{
 			DataColumn parentCol = parent.getColumn(i);
@@ -68,10 +63,8 @@ public class OperationMean extends problem.Operation
 			Double sdVal = proc.executeDouble("mean(" + varName + ")");
 			dc.add(sdVal);
 
-			cols.add(dc);
+			columns.add(dc);
 		}
-
-		return cols;
 	}
 
 	@Override
@@ -94,23 +87,5 @@ public class OperationMean extends problem.Operation
 					"Explain why:", PromptType.TEXT
 				});
 		return req;
-	}
-
-	@Override
-	public String toString()
-	{
-		// What we're starting out with
-		StringBuilder sb = new StringBuilder();
-		sb.append(parent.toString());
-
-		// What we're doing for the computation
-		sb.append("\nmean(");
-		sb.append(Operation.sanatizeName(parent));
-		sb.append(")\n");
-
-		// And the result
-		sb.append(DataSet.toString(this));
-
-		return sb.toString();
 	}
 }

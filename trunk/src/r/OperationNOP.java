@@ -18,14 +18,9 @@
 
 package r;
 
-import gui.Domain.PromptType;
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import problem.CalcException;
 import problem.DataColumn;
-import problem.DataSet;
-import problem.DuplicateNameException;
 import problem.Operation;
 
 /**
@@ -42,26 +37,11 @@ public class OperationNOP extends Operation
 	}
 
 	@Override
-	public ArrayList<DataColumn> computeColumns() throws RProcessorParseException, RProcessorException, CalcException
+	public void computeColumns() throws RProcessorParseException, RProcessorException, CalcException
 	{
-		ArrayList<DataColumn> cols = new ArrayList<DataColumn>();
 		for(int i = 0; i < parent.getColumnCount(); i++)
 		{
-			cols.add(new DataColumn(parent.getColumn(i), this));
+			columns.add(new DataColumn(parent.getColumn(i), this));
 		}
-		return cols;
-	}
-
-	@Override
-	public String toString()
-	{
-		// What we're starting out with
-		StringBuilder sb = new StringBuilder();
-		sb.append(parent.toString());
-
-		// And the result
-		sb.append(DataSet.toString(this));
-
-		return sb.toString();
 	}
 }

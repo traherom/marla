@@ -116,7 +116,7 @@ public class DataColumn implements List<Double>
 	{
 		if(parent != null)
 		{
-			// Make sure no other datasets have this name
+			// Make sure no other columns have this name
 			for(int i = 0; i < parent.getColumnCount(); i++)
 			{
 				if(name.equalsIgnoreCase(parent.getColumn(i).getName()))

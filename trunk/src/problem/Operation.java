@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.jdom.Element;
+import r.RProcessor;
 import r.RProcessorException;
 import r.RProcessorParseException;
 
@@ -42,6 +43,15 @@ public abstract class Operation extends DataSet
 	 * Parent data that this operation works on
 	 */
 	protected DataSet parent;
+	/**
+	 * Saves the R operations used the last time refreshCache() was called. This
+	 * string can then be dumped out by toString() to give a nice representation.
+	 */
+	protected String operationRecord = null;
+	/**
+	 * Pointer to the current RProcessor instance
+	 */
+	protected RProcessor proc = null;
 
 	/**
 	 * Sets the text name for the JLabel
@@ -151,10 +161,18 @@ public abstract class Operation extends DataSet
 	 */
 	public void refreshCache() throws CalcException
 	{
+		if(parent == null)
+			throw new CalcException("No parent for operation to get dadta from");
+
 		try
 		{
-			// Compute new colums and cache
-			columns = computeColumns();
+			// Compute new columns and save the way we do so (R commands) for use by toString()
+			proc = RProcessor.getInstance();
+			proc.setRecorder(RProcessor.RecordMode.FULL);
+			columns.clear();
+			computeColumns();
+			this.operationRecord = proc.fetchInteraction();
+			proc.setRecorder(RProcessor.RecordMode.DISABLED);
 
 			// Tell all children to do the same
 			for(Operation op : solutionOps)
@@ -196,20 +214,20 @@ public abstract class Operation extends DataSet
 
 	/**
 	 * Overridden by child operations to actually perform the task. When the
-	 * column/other data is requested the deriving class should return
-	 * the result of the appropriate operation on the dataset above.
+	 * column/other data is requested the deriving class should place the
+	 * result of the appropriate operation on the dataset above in the columns
+	 * ArrayList.
 	 *
 	 * Caching is performed by Operation. Concrete Operation derivatives
 	 * should not implement their own caching unless a specific need
 	 * arises.
-	 * @return DataColums that are a result of this operation
 	 * @throws CalcException Thrown as a result of other functions performing calculations
 	 * @throws RProcessorParseException Thrown if the R processor could not parse the R output
 	 *		as it was instructed to. Likely a programming error.
 	 * @throws RProcessorException Error working with the R process itself (permissions or closed
 	 *		pipes, for example).
 	 */
-	public abstract ArrayList<DataColumn> computeColumns() throws RProcessorParseException, RProcessorException, CalcException;
+	public abstract void computeColumns() throws RProcessorParseException, RProcessorException, CalcException;
 
 	@Override
 	public DataSet getAllColumns() throws CalcException
@@ -351,22 +369,18 @@ public abstract class Operation extends DataSet
 	}
 
 	/**
-	 * Takes the given DataSet (or Operation, obviously) and returns a unique
-	 * name for it.
-	 * @param ds Name that needs to be cleaned
-	 * @return Valid R variable name
+	 * Returns the operations used to compute the Operation's values the last time
+	 * refreshCache() was called. If it has never been called then "Not computed yet"
+	 * is returned.
+	 * @return String of the R commands used to do computations
 	 */
-	public static String sanatizeName(DataSet ds)
-	{
-		String s = ds.getName() + Integer.toString(ds.hashCode());
-		return sanatizeName(s);
-	}
 
-	/**
-	 * Derivative Operations _must_ override this so that they display the
-	 * appropriate operations they are performing on the data
-	 * @return
-	 */
 	@Override
-	public abstract String toString();
+	public String toString()
+	{
+		if(this.operationRecord != null)
+			return operationRecord;
+		else
+			return "Not computed yet";
+	}
 }

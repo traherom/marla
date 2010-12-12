@@ -17,17 +17,12 @@
  */
 package r;
 
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import problem.DataColumn;
 import org.rosuda.JRI.Rengine;
 import org.rosuda.JRI.REXP;
 import problem.CalcException;
-import problem.DataSet;
 import problem.DuplicateNameException;
-import problem.Operation;
 
 /**
  * Serves as a pass-through sort of operation, performing no actual
@@ -49,11 +44,8 @@ public class OperationStdDev extends problem.Operation
 	}
 
 	@Override
-	public ArrayList<DataColumn> computeColumns() throws RProcessorParseException, RProcessorException, CalcException
+	public void computeColumns() throws RProcessorParseException, RProcessorException, CalcException
 	{
-		RProcessor proc = RProcessor.getInstance();
-		ArrayList<DataColumn> cols = new ArrayList<DataColumn>();
-
 		for(int i = 0; i < parent.getColumnCount(); i++)
 		{
 			DataColumn parentCol = parent.getColumn(i);
@@ -71,27 +63,7 @@ public class OperationStdDev extends problem.Operation
 			Double sdVal = proc.executeDouble("sd(" + varName + ")");
 			dc.add(sdVal);
 
-			cols.add(dc);
+			columns.add(dc);
 		}
-
-		return cols;
-	}
-
-	@Override
-	public String toString()
-	{
-		// What we're starting out with
-		StringBuilder sb = new StringBuilder();
-		sb.append(parent.toString());
-
-		// What we're doing for the computation
-		sb.append("\nsd(");
-		sb.append(Operation.sanatizeName(parent));
-		sb.append(")\n");
-
-		// And the result
-		sb.append(DataSet.toString(this));
-
-		return sb.toString();
 	}
 }
