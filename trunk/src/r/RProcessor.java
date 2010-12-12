@@ -41,6 +41,10 @@ public class RProcessor
 	 */
 	private final String SENTINEL_STRING_RETURN = "[1] \"---MARLA R OUTPUT END. DONT USE THIS STRING---\"";
 	/**
+	 * Enumeration denoting the record mode the R processor can use
+	 */
+	public enum RecordMode {DISABLED, CMDS_ONLY, OUTPUT_ONLY, FULL};
+	/**
 	 * Pattern used to recognize doubles in R output, mainly for use with vectors
 	 */
 	private final Pattern doublePatt = Pattern.compile("(?<!\\[)-?[0-9]+(\\.[0-9]+)?(?!\\])");
@@ -65,13 +69,9 @@ public class RProcessor
 	 */
 	private BufferedOutputStream procIn = null;
 	/**
-	 * Denotes whether commands sent to R should be recorded
+	 * Denotes the mode the RProcessor is
 	 */
-	private boolean enableCmdRecord = false;
-	/**
-	 * Denotes whether output from R should be recorded
-	 */
-	private boolean enableIntectactionRecord = false;
+	private RecordMode recordMode = RecordMode.DISABLED;
 	/**
 	 * Record of output returned from R
 	 */
@@ -201,7 +201,7 @@ public class RProcessor
 				throw new RProcessorException("Only a single command may be run at a time with execute(String)");
 
 			// Record if needed
-			if(enableCmdRecord || enableIntectactionRecord)
+			if(recordMode == RecordMode.CMDS_ONLY || recordMode == RecordMode.FULL)
 				interactionRecord.append(sentinelCmd);
 
 			// Send command with a sentinel at the end so we know when the output is done
@@ -221,10 +221,8 @@ public class RProcessor
 			}
 
 			// Record interaction if needed
-			if(enableIntectactionRecord)
-			{
+			if(recordMode == RecordMode.OUTPUT_ONLY || recordMode == RecordMode.FULL)
 				interactionRecord.append(results);
-			}
 
 			// Return results, the caller is responsible for processing further
 			return results.toString();
@@ -484,31 +482,12 @@ public class RProcessor
 	}
 
 	/**
-	 * Turns off all recording
+	 * Sets the recording mode for the processor
+	 * @param mode RecordMode to place the processor in. 
 	 */
-	public void disableRecorder()
+	public void setRecorder(RecordMode mode)
 	{
-		this.enableCmdRecord = false;
-		this.enableIntectactionRecord = false;
-	}
-
-	/**
-	 * Enables or disables the recording of all commands sent to R, disables
-	 * recording of returned output
-	 */
-	public void startRecorderCmd()
-	{
-		this.enableCmdRecord = true;
-		this.enableIntectactionRecord = false;
-	}
-
-	/**
-	 * Enables or disables the recording of all input and output from R
-	 */
-	public void startRecorderFull()
-	{
-		this.enableCmdRecord = true;
-		this.enableIntectactionRecord = true;
+		recordMode = mode;
 	}
 
 	/**
@@ -539,7 +518,7 @@ public class RProcessor
 	{
 		RProcessor test = RProcessor.getInstance();
 
-		test.startRecorderFull();
+		test.setRecorder(RecordMode.CMDS_ONLY);
 
 		String output = test.execute("mean(c(-1, -2, -3))");
 		System.out.println(output);
@@ -562,6 +541,7 @@ public class RProcessor
 		System.out.println(outputValues);
 		System.out.println("Parses to: " + test.parseDoubleArray(outputValues));
 
+		System.out.println("\n\n------\nInteractions");
 		System.out.println(test.fetchInteraction());
 
 		test.close();
