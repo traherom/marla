@@ -27,6 +27,9 @@ import java.util.ArrayList;
 import java.util.InputMismatchException;
 import javax.swing.JLabel;
 import org.jdom.Element;
+import r.RProcessor;
+import r.RProcessorException;
+import r.RProcessorParseException;
 
 /**
  * Contains a simple dataset that essentially amounts to a table
@@ -99,16 +102,19 @@ public class DataSet extends JLabel
 	}
 
 	/**
-	 * Imports the given file in as a dataset. Currently only
-	 * CSV files are supported. Column names must be given at the top
-	 * of each, well, column. A dataset name is derived from those.
+	 * Imports the given file in as a dataset. Files may be either in table format or CSV,
+	 * as parsed by R read.table() and read.csv(). Column names may be given at the top
+	 * of each column. The dataset name is set from the file name.
 	 * @param filePath Absolute or relative path to file to import.
 	 * @return New DataSet containing the imported values
 	 * @throws FileNotFoundException The file we're supposed to be importing could not be found
 	 * @throws CalcException Unable to compute values after everything was loaded up
+	 * @throws RProcessorException Unable to bring in R processor to import file
+	 * @throws RProcessorParseException R was unable to parse the file in some way
 	 */
-	public static DataSet importFile(String filePath) throws FileNotFoundException, CalcException
+	public static DataSet importFile(String filePath) throws FileNotFoundException, CalcException, RProcessorException, RProcessorParseException
 	{
+		// Open file ourselves to determine the type and settings we'll be handing R
 		File file = new File(filePath);
 		BufferedReader is = new BufferedReader(new FileReader(file));
 
@@ -123,56 +129,89 @@ public class DataSet extends JLabel
 			throw new InputMismatchException("File is empty");
 		}
 
-		String[] lineEntries = firstLine.split(",|;");
+		// Is this a CSV?
+		boolean isCSV = true;
+		String[] lineEntries = null;
+		lineEntries = firstLine.split(",|;");
+		if(lineEntries.length == 1)
+		{
+			// Well, maybe it's a table then
+			isCSV = false;
+			lineEntries = firstLine.split("\\w+");
+		}
 
 		// Is this row parsable as names?
-		DataSet newData = new DataSet(file.getName());
+		boolean hasHeader = false;
 		try
 		{
 			// Do these work as numbers?
 			Double.parseDouble(lineEntries[0]);
-			// Yes, so we have to make our own column headers
-			for(int i = 0; i < lineEntries.length; i++)
-			{
-				DataColumn col = newData.addColumn("Column " + i);
-				col.add(Double.parseDouble(lineEntries[i]));
-			}
 		}
 		catch(NumberFormatException e)
 		{
-			// Well, we certainly can't use the columns as numbers
-			for(int i = 0; i < lineEntries.length; i++)
-			{
-				newData.addColumn(lineEntries[i]);
-			}
+			// Well, we certainly can't use the columns as numbers, so they must be headers
+			hasHeader = true;
 		}
 
+		// Done with file
 		try
 		{
-			while(is.ready())
-			{
-				lineEntries = is.readLine().split(",|;");
-				for(int i = 0; i < lineEntries.length; i++)
-				{
-					try
-					{
-						newData.getColumn(i).add(Double.parseDouble(lineEntries[i]));
-					}
-					catch(NumberFormatException e)
-					{
-						// Whatever, maybe a blank in it, maybe we're reading
-						// a blank line
-					}
-				}
-			}
-			return newData;
+			is.close();
 		}
 		catch(IOException ex)
 		{
-			// All out o' file, no biggie
+			// Crap. Maybe this'll close it
+			is = null;
 		}
 
-		return newData;
+		// Now actually use R to pull in the file as appropriate
+		StringBuilder cmd = new StringBuilder("read.");
+		if(isCSV)
+			cmd.append("csv(\"");
+		else
+			cmd.append("table(\"");
+		cmd.append(filePath);
+		cmd.append("\", header=");
+		if(hasHeader)
+			cmd.append('T');
+		else
+			cmd.append('F');
+		cmd.append(")");
+
+		System.out.println(cmd.toString());
+		RProcessor proc = RProcessor.getInstance();
+		proc.setRecorder(RProcessor.RecordMode.FULL);
+		String varName = proc.executeSave(cmd.toString());
+
+		// Read it back in
+		proc.execute(varName);
+		System.out.println(proc.fetchInteraction());
+		DataSet ds = DataSet.fromRFrame(varName);
+		ds.setName(file.getName());
+
+		return ds;
+	}
+
+	/**
+	 * Takes the given variable in R and builds the DataSet that represents it.
+	 * The variable must be a data frame with numeric values.
+	 * @param varName Variable name within the global RProcessor instance to work with
+	 * @return New DataSet containing the loaded data
+	 */
+	private static DataSet fromRFrame(String varName) throws RProcessorException, RProcessorParseException, DuplicateNameException, CalcException
+	{
+		DataSet ds = new DataSet(varName);
+
+		// Get the column names
+		RProcessor proc = RProcessor.getInstance();
+		ArrayList<String> cols = proc.executeStringArray("colnames(" + varName + ")");
+		for(String col : cols)
+		{
+			DataColumn dc = ds.addColumn(col);
+			dc.addAll(proc.executeDoubleArray(varName + "$" + col));
+		}
+
+		return ds;
 	}
 
 	/**
@@ -428,6 +467,7 @@ public class DataSet extends JLabel
 	/**
 	 * Tells the problem we belong to that we've changed. Used by DataColumns
 	 * under us to notify encapsulating problem.
+	 * @throws CalcException Unable to recompute values after change
 	 */
 	public void markChanged() throws CalcException
 	{
@@ -564,6 +604,12 @@ public class DataSet extends JLabel
 	{
 		StringBuilder sb = new StringBuilder();
 
+		// Build header row
+		// How wide will the "row number" column be?
+		int numEls = ds.getColumnLength();
+		int numRowWidth = 5;
+
+		//sb.append(String.format("", args))
 		for(DataColumn col : ds.columns)
 		{
 			sb.append(col.toString());

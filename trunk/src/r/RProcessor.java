@@ -521,27 +521,14 @@ public class RProcessor
 		test.setRecorder(RecordMode.CMDS_ONLY);
 
 		String output = test.execute("mean(c(-1, -2, -3))");
-		System.out.println(output);
+		System.out.println("   Output: " + output);
 		System.out.println("Parses to: " + test.parseDouble(output));
 
 		output = test.execute("1:10");
-		System.out.println(output);
+		System.out.println("   Output: " + output);
 		System.out.println("Parses to: " + test.parseDoubleArray(output));
 
-		output = test.execute("\"test\"");
-		System.out.println(output);
-		System.out.println("Parses to: " + test.parseString(output));
-
-		output = test.executeSave("summary(1:200)");
-		System.out.println(output);
-		String outputNames = test.execute("attr(" + output + ", \"names\")");
-		System.out.println(outputNames);
-		System.out.println("Parses to: " + test.parseStringArray(outputNames));
-		String outputValues = test.execute(output);
-		System.out.println(outputValues);
-		System.out.println("Parses to: " + test.parseDoubleArray(outputValues));
-
-		System.out.println("\n\n------\nInteractions");
+		System.out.println("\n------\nInteractions");
 		System.out.println(test.fetchInteraction());
 
 		test.close();
