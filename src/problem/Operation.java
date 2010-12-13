@@ -19,6 +19,8 @@ package problem;
 
 import java.awt.Rectangle;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.jdom.Element;
@@ -60,6 +62,15 @@ public abstract class Operation extends DataSet
 	public Operation(String name)
 	{
 		super(name);
+
+		try
+		{
+			proc = RProcessor.getInstance();
+		}
+		catch(RProcessorException ex)
+		{
+			throw new RuntimeException("Unable to load R processor", ex);
+		}
 	}
 
 	/**
@@ -167,7 +178,6 @@ public abstract class Operation extends DataSet
 		try
 		{
 			// Compute new columns and save the way we do so (R commands) for use by toString()
-			proc = RProcessor.getInstance();
 			proc.setRecorder(RProcessor.RecordMode.FULL);
 			columns.clear();
 			computeColumns();
@@ -378,15 +388,14 @@ public abstract class Operation extends DataSet
 	public String toString()
 	{
 		StringBuilder sb = new StringBuilder();
-		
+
 		if(parent != null)
 			sb.append(parent.toString());
 		if(this.operationRecord != null)
-
 			sb.append(operationRecord);
 		else
 			sb.append("Not computed yet\n");
-		
+
 		return sb.toString();
 	}
 }
