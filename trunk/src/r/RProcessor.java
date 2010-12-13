@@ -47,7 +47,7 @@ public class RProcessor
 	/**
 	 * Pattern used to recognize doubles in R output, mainly for use with vectors
 	 */
-	private final Pattern doublePatt = Pattern.compile("(?<!\\[)-?[0-9]+(\\.[0-9]+)?(?!\\])");
+	private final Pattern doublePatt = Pattern.compile("(?<=\\s)-?[0-9]+(\\.[0-9]+)?(?=\\s)");
 	/**
 	 * Pattern used to recognize doubles in R output, mainly for use with vectors
 	 */
@@ -525,6 +525,10 @@ public class RProcessor
 		System.out.println("Parses to: " + test.parseDouble(output));
 
 		output = test.execute("1:10");
+		System.out.println("   Output: " + output);
+		System.out.println("Parses to: " + test.parseDoubleArray(output));
+
+		output = test.execute("summary(1:10)");
 		System.out.println("   Output: " + output);
 		System.out.println("Parses to: " + test.parseDoubleArray(output));
 
