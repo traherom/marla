@@ -19,8 +19,6 @@ package problem;
 
 import java.awt.Rectangle;
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.jdom.Element;
@@ -178,7 +176,7 @@ public abstract class Operation extends DataSet
 		try
 		{
 			// Compute new columns and save the way we do so (R commands) for use by toString()
-			proc.setRecorder(RProcessor.RecordMode.FULL);
+			proc.setRecorder(RProcessor.RecordMode.CMDS_ONLY);
 			columns.clear();
 			computeColumns();
 			this.operationRecord = proc.fetchInteraction();
@@ -389,10 +387,23 @@ public abstract class Operation extends DataSet
 	{
 		StringBuilder sb = new StringBuilder();
 
+		// Show the parents do their computation. If we don't have a parent then
+		// just show what we're starting our computation off with
 		if(parent != null)
 			sb.append(parent.toString());
+		else
+		{
+			sb.append("Incoming:\n");
+			sb.append(super.toString());
+		}
+
 		if(this.operationRecord != null)
+		{
 			sb.append(operationRecord);
+			sb.append("Result:\n");
+			sb.append(super.toString());
+			sb.append("-----------\n");
+		}
 		else
 			sb.append("Not computed yet\n");
 

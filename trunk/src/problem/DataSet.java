@@ -604,31 +604,28 @@ public class DataSet extends JLabel
 	{
 		StringBuilder sb = new StringBuilder();
 
-		// Build header row
-		// How wide will the "row number" column be?
-		int numEls = ds.getColumnLength();
-		int numRowWidth = 5;
-
-		//sb.append(String.format("", args))
+		// Widest column name?
+		int width = 0;
 		for(DataColumn col : ds.columns)
 		{
+			int newWidth = col.getName().length();
+			if(width < newWidth)
+				width = newWidth;
+		}
+
+		// Output DataSet name
+		sb.append(ds.getName());
+		sb.append('\n');
+
+		// Output each column
+		String formatStr = "  %" + width + "s: ";
+		for(DataColumn col : ds.columns)
+		{
+			sb.append(String.format(formatStr, col.getName()));
 			sb.append(col.toString());
 			sb.append('\n');
 		}
-
-		sb.append(Operation.sanatizeName(ds.name));
-		sb.append(" = data.frame(");
-
-		for(DataColumn col : ds.columns)
-		{
-			sb.append(Operation.sanatizeName(col.getName()));
-			sb.append(", ");
-		}
-		if(ds.columns.size() > 0)
-			sb.replace(sb.length() - 2, sb.length(), "");
-
-		sb.append(')');
-
+		
 		return sb.toString();
 	}
 

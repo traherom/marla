@@ -18,10 +18,7 @@
 
 package r;
 
-import java.util.ArrayList;
 import problem.DataColumn;
-import org.rosuda.JRI.Rengine;
-import org.rosuda.JRI.REXP;
 import problem.CalcException;
 import problem.DuplicateNameException;
 
@@ -33,9 +30,6 @@ import problem.DuplicateNameException;
  */
 public class OperationSummation extends problem.Operation
 {
-
-	private Rengine re;
-	private REXP exp;
 	private String storedName;
 	private DataColumn storedColumn;
 
