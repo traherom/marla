@@ -450,11 +450,6 @@ public class DataColumn implements List<Double>
 	{
 		StringBuilder sb = new StringBuilder();
 
-		// Vector name and beginning of vector
-		sb.append(Operation.sanatizeName(name));
-		sb.append(hashCode());
-		sb.append(" = c(");
-
 		for(int i = 0; i < values.size(); i++)
 		{
 			sb.append(values.get(i));
@@ -462,8 +457,6 @@ public class DataColumn implements List<Double>
 		}
 		if(values.size() > 0)
 			sb.replace(sb.length() - 2, sb.length(), "");
-
-		sb.append(')');
 
 		return sb.toString();
 	}
