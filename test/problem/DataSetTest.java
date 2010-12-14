@@ -7,6 +7,8 @@ package problem;
 import java.io.FileNotFoundException;
 import org.junit.Test;
 import static org.junit.Assert.*;
+import r.RProcessorException;
+import r.RProcessorParseException;
 
 /**
  *
@@ -66,7 +68,7 @@ public class DataSetTest
 	}
 
 	@Test
-	public void testImportFile() throws CalcException
+	public void testImportFile() throws CalcException, RProcessorException, RProcessorParseException
 	{
 		try
 		{
