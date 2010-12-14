@@ -75,6 +75,8 @@ import r.OperationStdDev;
 import r.OperationSummary;
 import r.OperationSummation;
 import r.OperationTtest;
+import r.RProcessorException;
+import r.RProcessorParseException;
 import resource.LoadSaveThread;
 
 /**
@@ -1504,6 +1506,10 @@ public class ViewPanel extends JPanel
 								table.getTableHeader().resizeAndRepaint ();
 							} catch (CalcException ex) {
 								JOptionPane.showMessageDialog(viewPanel, "The requested R package either cannot be located or is not installed.", "Missing Package", JOptionPane.WARNING_MESSAGE);
+							} catch (RProcessorParseException ex) {
+								JOptionPane.showMessageDialog(viewPanel, "Loading of file failed, it may be invalid", "Load failed", JOptionPane.WARNING_MESSAGE);
+							} catch (RProcessorException ex) {
+								JOptionPane.showMessageDialog(viewPanel, "Loading of file failed, R could not be loaded", "Load failed", JOptionPane.WARNING_MESSAGE);
 							}
 						}
 					} catch(FileNotFoundException e) { }
