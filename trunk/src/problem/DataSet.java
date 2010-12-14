@@ -57,10 +57,6 @@ public class DataSet extends JLabel
 	 * Commands to perform on this dataset
 	 */
 	protected ArrayList<Operation> solutionOps = new ArrayList<Operation>();
-	/**
-	 * The last number used as part of the unique column name creator.
-	 */
-	private int lastUniqueColumnID = 0;
 
 	/**
 	 * Creates a blank dataset with the given name.
@@ -285,20 +281,6 @@ public class DataSet extends JLabel
 
 		super.setText(newName);
 		name = newName;
-	}
-
-	/**
-	 * Returns a unique, unused name for a column in this DataSet. Used primarily internally.
-	 * @return New unique name
-	 */
-	public String getUniqueColumnName()
-	{
-		lastUniqueColumnID++;
-		String newName = "marlaInternalUniqueColumnName" + lastUniqueColumnID;
-
-		// TODO Actually check for uniqueness
-
-		return newName;
 	}
 
 	/**
