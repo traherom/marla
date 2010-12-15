@@ -37,7 +37,7 @@ public class OperationSummary extends problem.Operation
 	}
 
 	@Override
-	public void computeColumns() throws RProcessorParseException, RProcessorException, CalcException
+	protected void computeColumns() throws RProcessorParseException, RProcessorException, CalcException
 	{
 		for(int i = 0; i < parent.getColumnCount(); i++)
 		{
@@ -47,7 +47,7 @@ public class OperationSummary extends problem.Operation
 
 				String colVarName = proc.setVariable(parentCol);
 				String sumVarName = proc.executeSave("summary(" + colVarName + ")");
-				ArrayList<String> names = proc.executeStringArray("attr(" + sumVarName + ", 'names')");
+				ArrayList<String> names = proc.executeStringArray("names(" + sumVarName + ")");
 				ArrayList<Double> values = proc.executeDoubleArray(sumVarName);
 				for(int j = 0; j < names.size(); j++)
 				{

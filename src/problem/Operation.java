@@ -235,7 +235,7 @@ public abstract class Operation extends DataSet
 	 * @throws RProcessorException Error working with the R process itself (permissions or closed
 	 *		pipes, for example).
 	 */
-	public abstract void computeColumns() throws RProcessorParseException, RProcessorException, CalcException;
+	protected abstract void computeColumns() throws RProcessorParseException, RProcessorException, CalcException;
 
 	@Override
 	public DataSet getAllColumns() throws CalcException

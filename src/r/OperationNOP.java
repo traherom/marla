@@ -37,7 +37,7 @@ public class OperationNOP extends Operation
 	}
 
 	@Override
-	public void computeColumns() throws RProcessorParseException, RProcessorException, CalcException
+	protected void computeColumns() throws RProcessorParseException, RProcessorException, CalcException
 	{
 		for(int i = 0; i < parent.getColumnCount(); i++)
 		{
