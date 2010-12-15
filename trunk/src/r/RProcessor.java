@@ -19,6 +19,7 @@ package r;
 
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
@@ -46,12 +47,17 @@ public class RProcessor
 	public enum RecordMode {DISABLED, CMDS_ONLY, OUTPUT_ONLY, FULL};
 	/**
 	 * Pattern used to recognize doubles in R output, mainly for use with vectors
+	 * 5.948823e-05
 	 */
-	private final Pattern doublePatt = Pattern.compile("(?<=\\s)-?[0-9]+(\\.[0-9]+)?(?=\\s)");
+	private final Pattern doublePatt = Pattern.compile("(?<=\\s)-?[0-9]+(\\.[0-9]+)?(e-?[0-9]+)?(?=\\s)");
 	/**
 	 * Pattern used to recognize doubles in R output, mainly for use with vectors
 	 */
 	private final Pattern stringPatt = Pattern.compile("(?<=\")[^\"]*?\\w[^\"]*?(?=\")");
+	/**
+	 * Path to the R executable, used if R has to be reloaded after it dies
+	 */
+	private static String rPath = "R";
 	/**
 	 * Single instance of RProcessor that we allow
 	 */
@@ -73,6 +79,10 @@ public class RProcessor
 	 */
 	private RecordMode recordMode = RecordMode.DISABLED;
 	/**
+	 * Denotes how/if the RProcessor should dump to console interactions with R
+	 */
+	private RecordMode debugOutputMode = RecordMode.DISABLED;
+	/**
 	 * Record of output returned from R
 	 */
 	private StringBuilder interactionRecord = new StringBuilder();
@@ -83,18 +93,23 @@ public class RProcessor
 
 	/**
 	 * Creates a new R instance that can be fed commands
-	 * @param rPath R executable to run
+	 * @param newRPath R executable to run
 	 */
-	private RProcessor(String rPath) throws RProcessorException
+	private RProcessor(String newRPath) throws RProcessorException
 	{
 		try
 		{
+			rPath = newRPath;
 			rProc = Runtime.getRuntime().exec(new String[]
 					{
 						rPath, "--slave", "--no-readline"
 					});
 			procOut = new BufferedReader(new InputStreamReader(rProc.getInputStream()));
 			procIn = (BufferedOutputStream) rProc.getOutputStream();
+
+			// TODO: set this in domain or someplace, so that the command line can be used
+			// to turn it on and off
+			debugOutputMode = RecordMode.FULL;
 		}
 		catch(IOException ex)
 		{
@@ -111,11 +126,25 @@ public class RProcessor
 	{
 		try
 		{
-			return getInstance("R");
+			return getInstance(rPath);
 		}
 		catch(RProcessorException ex)
 		{
-			// Try to find it another way?
+			// Try to find it in all the common locations
+			System.err.print("Looking for R in common locations: ");
+			String[] commonLocs = new String[] {"C:\\Program Files\\R\\bin\\R", "/usr/lib/R/bin/R"};
+			for(String s : commonLocs)
+			{
+				File f = new File(s);
+				if(f.exists())
+				{
+					System.err.println("found at " + s);
+					return getInstance(s);
+				}
+			}
+
+			// Darn, no luck finding it
+			System.err.println("not found");
 			throw ex;
 		}
 	}
@@ -200,9 +229,11 @@ public class RProcessor
 			else if(newLineLoc != cmd.length() - 1)
 				throw new RProcessorException("Only a single command may be run at a time with execute(String)");
 
-			// Record if needed
+			// Record and/or output if needed
 			if(recordMode == RecordMode.CMDS_ONLY || recordMode == RecordMode.FULL)
 				interactionRecord.append(sentinelCmd);
+			if(debugOutputMode == RecordMode.CMDS_ONLY || debugOutputMode == RecordMode.FULL)
+				System.out.print("> " + sentinelCmd);
 
 			// Send command with a sentinel at the end so we know when the output is done
 			sentinelCmd.append(this.SENTINEL_STRING_CMD);
@@ -223,6 +254,8 @@ public class RProcessor
 			// Record interaction if needed
 			if(recordMode == RecordMode.OUTPUT_ONLY || recordMode == RecordMode.FULL)
 				interactionRecord.append(results);
+			if(debugOutputMode == RecordMode.OUTPUT_ONLY || debugOutputMode == RecordMode.FULL)
+				System.out.print(results);
 
 			// Return results, the caller is responsible for processing further
 			return results.toString();
@@ -483,11 +516,20 @@ public class RProcessor
 
 	/**
 	 * Sets the recording mode for the processor
-	 * @param mode RecordMode to place the processor in. 
+	 * @param mode RecordMode to place the processor in.
 	 */
 	public void setRecorder(RecordMode mode)
 	{
 		recordMode = mode;
+	}
+
+	/**
+	 * Sets how much the processor should output to the console. Useful debugging operations
+	 * @param mode RecordMode to place the processor in.
+	 */
+	public void setDebug(RecordMode mode)
+	{
+		debugOutputMode = mode;
 	}
 
 	/**

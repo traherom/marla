@@ -36,18 +36,25 @@ public class OperationTtest extends problem.Operation
 	}
 
 	@Override
-	public void computeColumns() throws RProcessorParseException, RProcessorException, CalcException
+	protected void computeColumns() throws RProcessorParseException, RProcessorException, CalcException
 	{
-		if(parent == null)
-			throw new CalcException("This operation has no parent assigned");
-
 		for(int i = 0; i < parent.getColumnCount(); i++)
 		{
 			DataColumn parentCol = parent.getColumn(i);
-			DataColumn dc;
+			DataColumn dcT;
+			DataColumn dcDF;
+			DataColumn dcP;
+			DataColumn dcMean;
+			DataColumn dcCI;
+			DataColumn dcAlpha;
 			try
 			{
-				dc = new DataColumn(this, "sd(" + parentCol.getName() + ")");
+				dcT = new DataColumn(this, "t(" + parentCol.getName() + ")");
+				dcDF = new DataColumn(this, "df(" + parentCol.getName() + ")");
+				dcP = new DataColumn(this, "P Value(" + parentCol.getName() + ")");
+				dcMean = new DataColumn(this, "mean(" + parentCol.getName() + ")");
+				dcCI = new DataColumn(this, "CI(" + parentCol.getName() + ")");
+				dcAlpha = new DataColumn(this, "alpha(" + parentCol.getName() + ")");
 			}
 			catch(DuplicateNameException ex)
 			{
@@ -55,10 +62,20 @@ public class OperationTtest extends problem.Operation
 			}
 
 			String varName = proc.setVariable(parentCol);
-			Double sdVal = proc.executeDouble("sd(" + varName + ")");
-			dc.add(sdVal);
+			String resultVarName = proc.executeSave("t.test(" + varName + ")");
+			dcT.add(proc.executeDouble(resultVarName + "$statistic"));
+			dcDF.add(proc.executeDouble(resultVarName + "$parameter"));
+			dcP.add(proc.executeDouble(resultVarName + "$p.value"));
+			dcMean.add(proc.executeDouble(resultVarName + "$estimate"));
+			dcCI.add(proc.executeDouble(resultVarName + "$conf.int[1]"));
+			dcAlpha.add(proc.executeDouble("attr(" + resultVarName + "$conf.int, 'conf.level')"));
 
-			columns.add(dc);
+			columns.add(dcT);
+			columns.add(dcDF);
+			columns.add(dcP);
+			columns.add(dcMean);
+			columns.add(dcCI);
+			columns.add(dcAlpha);
 		}
 	}
 }
