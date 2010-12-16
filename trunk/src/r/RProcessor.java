@@ -41,10 +41,14 @@ public class RProcessor
 	 * Return from R for the command given in SENTINEL_STRING_CMD, we watch for this result
 	 */
 	private final String SENTINEL_STRING_RETURN = "[1] \"---MARLA R OUTPUT END. DONT USE THIS STRING---\"";
+
 	/**
 	 * Enumeration denoting the record mode the R processor can use
 	 */
-	public enum RecordMode {DISABLED, CMDS_ONLY, OUTPUT_ONLY, FULL};
+	public enum RecordMode
+	{
+		DISABLED, CMDS_ONLY, OUTPUT_ONLY, FULL
+	};
 	/**
 	 * Pattern used to recognize doubles in R output, mainly for use with vectors
 	 * 5.948823e-05
@@ -107,9 +111,18 @@ public class RProcessor
 			procOut = new BufferedReader(new InputStreamReader(rProc.getInputStream()));
 			procIn = (BufferedOutputStream) rProc.getOutputStream();
 
+			// See if things worked
+			Double testing = executeDouble("5");
+			if(testing != 5)
+				throw new RProcessorException("Unable to initialize R processor, test return incorrect");
+
 			// TODO: set this in domain or someplace, so that the command line can be used
 			// to turn it on and off
 			debugOutputMode = RecordMode.FULL;
+		}
+		catch(RProcessorParseException ex)
+		{
+			throw new RProcessorException("Unable to initialize R processor, failed execute test", ex);
 		}
 		catch(IOException ex)
 		{
@@ -118,7 +131,10 @@ public class RProcessor
 	}
 
 	/**
-	 * Creates a new instance of R which can be fed commands. Assumes R is accessible on the path
+	 * Creates a new instance of R which can be fed commands. Assumes R is accessible on the path.
+	 * If it isn't, RProcessor then searches for an installation alongside itself (in an
+	 * R directory, so the R executable is at R/bin/R), then in common system install
+	 * locations for Windows, Linux, and OSX.
 	 * @return Instance of RProcessor that can be used for calculations
 	 * @throws RProcessorException Thrown in the R process cannot be located and/or launched
 	 */
@@ -132,19 +148,31 @@ public class RProcessor
 		{
 			// Try to find it in all the common locations
 			System.err.print("Looking for R in common locations: ");
-			String[] commonLocs = new String[] {"C:\\Program Files\\R\\bin\\R", "/usr/lib/R/bin/R"};
+			String[] commonLocs = new String[]
+						{
+							"R/bin/R", // Our own installation of it
+							"/Library/Frameworks/R.framework/Resources/R",
+							"/usr/lib/R/bin/R",
+							"C:\\Program Files\\R\\bin\\R\\x64\\R",
+							"C:\\Program Files\\R\\bin\\R\\x32\\R",
+							"C:\\Program Files\\R\\bin\\R",
+							"D:\\Program Files\\R\\bin\\R",
+							"D:\\Program Files\\R\\bin\\R\\x64\\R",
+							"D:\\Program Files\\R\\bin\\R\\x32\\R"
+						};
 			for(String s : commonLocs)
 			{
 				File f = new File(s);
+				System.err.print("\n\t" + s);
 				if(f.exists())
 				{
-					System.err.println("found at " + s);
+					System.err.println("found!");
 					return getInstance(s);
 				}
 			}
 
 			// Darn, no luck finding it
-			System.err.println("not found");
+			System.err.println("No installation found, dying.");
 			throw ex;
 		}
 	}

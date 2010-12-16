@@ -166,7 +166,11 @@ public class DataSet extends JLabel
 			cmd.append("csv(\"");
 		else
 			cmd.append("table(\"");
-		cmd.append(filePath);
+
+		// I swear to god this is right: \ to \\. The extra slashes are first
+		// to get through the Java string, then through the regex, then to R
+		cmd.append(filePath.replaceAll("\\\\", "\\\\\\\\"));
+
 		cmd.append("\", header=");
 		if(hasHeader)
 			cmd.append('T');
@@ -174,14 +178,10 @@ public class DataSet extends JLabel
 			cmd.append('F');
 		cmd.append(")");
 
-		System.out.println(cmd.toString());
 		RProcessor proc = RProcessor.getInstance();
-		proc.setRecorder(RProcessor.RecordMode.FULL);
 		String varName = proc.executeSave(cmd.toString());
 
 		// Read it back in
-		proc.execute(varName);
-		System.out.println(proc.fetchInteraction());
 		DataSet ds = DataSet.fromRFrame(varName);
 		ds.setName(file.getName());
 
