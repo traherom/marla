@@ -21,7 +21,6 @@ import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -51,7 +50,6 @@ public class RProcessor
 	};
 	/**
 	 * Pattern used to recognize doubles in R output, mainly for use with vectors
-	 * 5.948823e-05
 	 */
 	private final Pattern doublePatt = Pattern.compile("(?<=\\s)-?[0-9]+(\\.[0-9]+)?(e-?[0-9]+)?(?=\\s)");
 	/**
@@ -79,6 +77,10 @@ public class RProcessor
 	 */
 	private BufferedOutputStream procIn = null;
 	/**
+	 * The class that combines R's stdout and stderr streams
+	 */
+	private InputStreamCombine comboStream = null;
+	/**
 	 * Denotes the mode the RProcessor is
 	 */
 	private RecordMode recordMode = RecordMode.DISABLED;
@@ -103,15 +105,27 @@ public class RProcessor
 	{
 		try
 		{
+			// Save new path for future use (IE, we need to restart)
 			rPath = newRPath;
+
+			// Start up R
 			rProc = Runtime.getRuntime().exec(new String[]
 					{
 						rPath, "--slave", "--no-readline"
 					});
-			procOut = new BufferedReader(new InputStreamReader(rProc.getInputStream()));
+
+			// Hook up streams
+			//procOut = new BufferedReader(new InputStreamReader(rProc.getInputStream()));
+			comboStream = new InputStreamCombine();
+			procOut = new BufferedReader(comboStream);
+			comboStream.addStream(rProc.getInputStream());
+			comboStream.addStream(rProc.getErrorStream());
+
 			procIn = (BufferedOutputStream) rProc.getOutputStream();
 
-			// See if things worked
+			// See if things worked and eat up an error about "no --no-readline"
+			// option on Windows if needed.
+			execute("options(error=dump.frames)");
 			Double testing = executeDouble("5");
 			if(testing != 5)
 				throw new RProcessorException("Unable to initialize R processor, test return incorrect");
@@ -147,19 +161,21 @@ public class RProcessor
 		catch(RProcessorException ex)
 		{
 			// Try to find it in all the common locations
+			System.err.print("R not found on path:\n\t");
+			System.err.println(System.getenv("PATH").replaceAll(";", "\n\t"));
 			System.err.print("Looking for R in common locations: ");
 			String[] commonLocs = new String[]
-						{
-							"R/bin/R", // Our own installation of it
-							"/Library/Frameworks/R.framework/Resources/R",
-							"/usr/lib/R/bin/R",
-							"C:\\Program Files\\R\\bin\\R\\x64\\R",
-							"C:\\Program Files\\R\\bin\\R\\x32\\R",
-							"C:\\Program Files\\R\\bin\\R",
-							"D:\\Program Files\\R\\bin\\R",
-							"D:\\Program Files\\R\\bin\\R\\x64\\R",
-							"D:\\Program Files\\R\\bin\\R\\x32\\R"
-						};
+			{
+				"R/bin/R", // Our own installation of it
+				"/Library/Frameworks/R.framework/Resources/R",
+				"/usr/lib/R/bin/R",
+				"C:\\Program Files\\R\\bin\\R\\x64\\R",
+				"C:\\Program Files\\R\\bin\\R\\x32\\R",
+				"C:\\Program Files\\R\\bin\\R",
+				"D:\\Program Files\\R\\bin\\R",
+				"D:\\Program Files\\R\\bin\\R\\x64\\R",
+				"D:\\Program Files\\R\\bin\\R\\x32\\R"
+			};
 			for(String s : commonLocs)
 			{
 				File f = new File(s);
@@ -172,7 +188,7 @@ public class RProcessor
 			}
 
 			// Darn, no luck finding it
-			System.err.println("No installation found, dying.");
+			System.err.println("\nNo installation found, dying.");
 			throw ex;
 		}
 	}
@@ -196,19 +212,21 @@ public class RProcessor
 	/**
 	 * Ensures that R is killed cleanly if at all possible
 	 */
-	public void destroy()
+	@Override
+	protected void finalize() throws Throwable
 	{
 		try
 		{
-			execute("q()");
-			procIn.close();
-			procOut.close();
-			rProc.waitFor();
+			close();
 		}
 		catch(Exception ex)
 		{
 			// Don't care, kill it forcibly
 			rProc.destroy();
+		}
+		finally
+		{
+			super.finalize();
 		}
 	}
 
@@ -220,6 +238,7 @@ public class RProcessor
 			execute("q()");
 			procIn.close();
 			procOut.close();
+			comboStream.close();
 			rProc.waitFor();
 		}
 		catch(Exception ex)
@@ -230,6 +249,7 @@ public class RProcessor
 		{
 			procIn = null;
 			procOut = null;
+			comboStream = null;
 			rProc = null;
 		}
 	}
@@ -272,11 +292,27 @@ public class RProcessor
 			// Get results back
 			StringBuilder results = new StringBuilder();
 			String line = procOut.readLine();
-			while(line != null && !line.equals(this.SENTINEL_STRING_RETURN))
+			while(line != null && !line.equals(this.SENTINEL_STRING_RETURN) && !line.startsWith("Error: "))
 			{
 				results.append(line);
 				results.append('\n');
 				line = procOut.readLine();
+			}
+
+			// If we ended the loop because of an error, read until we hit our sentinel anyway
+			if(line.startsWith("Error: "))
+			{
+				// The last loop stopped before it added this
+				results.append(line);
+				results.append('\n');
+
+				line = procOut.readLine();
+				while(line != null && !line.equals(this.SENTINEL_STRING_RETURN))
+				{
+					results.append(line);
+					results.append('\n');
+					line = procOut.readLine();
+				}
 			}
 
 			// Record interaction if needed
@@ -601,6 +637,9 @@ public class RProcessor
 		output = test.execute("summary(1:10)");
 		System.out.println("   Output: " + output);
 		System.out.println("Parses to: " + test.parseDoubleArray(output));
+
+		output = test.execute("blah");
+		System.out.println("   Output: " + output);
 
 		System.out.println("\n------\nInteractions");
 		System.out.println(test.fetchInteraction());
