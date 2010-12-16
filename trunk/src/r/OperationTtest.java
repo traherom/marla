@@ -68,6 +68,7 @@ public class OperationTtest extends problem.Operation
 			dcP.add(proc.executeDouble(resultVarName + "$p.value"));
 			dcMean.add(proc.executeDouble(resultVarName + "$estimate"));
 			dcCI.add(proc.executeDouble(resultVarName + "$conf.int[1]"));
+			dcCI.add(proc.executeDouble(resultVarName + "$conf.int[2]"));
 			dcAlpha.add(proc.executeDouble("attr(" + resultVarName + "$conf.int, 'conf.level')"));
 
 			columns.add(dcT);
