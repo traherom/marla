@@ -176,7 +176,7 @@ public class DataSet extends JLabel
 			cmd.append('T');
 		else
 			cmd.append('F');
-		cmd.append(")");
+		cmd.append(')');
 
 		RProcessor proc = RProcessor.getInstance();
 		String varName = proc.executeSave(cmd.toString());
