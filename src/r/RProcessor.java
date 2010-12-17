@@ -49,6 +49,12 @@ public class RProcessor
 		DISABLED, CMDS_ONLY, OUTPUT_ONLY, FULL
 	};
 	/**
+	 * Pattern used to recognize single R commands. Used by execute() to protect from
+	 * hangs resulting from multiple commands being passed in.
+	 * TODO: Make this actually match one command
+	 */
+	private final Pattern singleCmdPatt = Pattern.compile("^[^\\n;]+[\\n;]?$");
+	/**
 	 * Pattern used to recognize doubles in R output, mainly for use with vectors
 	 */
 	private final Pattern doublePatt = Pattern.compile("(?<=\\s)-?[0-9]+(\\.[0-9]+)?(e-?[0-9]+)?(?=\\s)");
@@ -257,8 +263,7 @@ public class RProcessor
 	/**
 	 * Passes the given string onto R just as if you typed it at the command line. Only a single
 	 * command may be executed by this command. If the user wants to run multiple commands as a
-	 * group, use execute(ArrayList<String>). The command will be automatically terminated with
-	 * a newline if it does not have one.
+	 * group, use execute(ArrayList<String>).
 	 * @param cmd R command to execute
 	 * @return String output from R. Use one of the parse functions to processor further
 	 * @throws RProcessorException Thrown if called with more than one command
@@ -267,15 +272,15 @@ public class RProcessor
 	{
 		try
 		{
-			StringBuilder sentinelCmd = new StringBuilder(cmd);
+			// Check if there are multiple commands in the string.
+			// Seriously, that's dangerous for us, could make us hang.
+			Matcher m = singleCmdPatt.matcher(cmd);
+			if(!m.matches())
+				throw new RProcessorException("execute() may only be given one command at a time");
 
-			// Only allow a single command to be run by this method
-			// Use this opportunity to append a newline if needed
-			int newLineLoc = cmd.indexOf('\n');
-			if(newLineLoc == -1)
-				sentinelCmd.append('\n');
-			else if(newLineLoc != cmd.length() - 1)
-				throw new RProcessorException("Only a single command may be run at a time with execute(String)");
+			// Start building up our nice command
+			StringBuilder sentinelCmd = new StringBuilder(cmd.trim());
+			sentinelCmd.append('\n');
 
 			// Record and/or output if needed
 			if(recordMode == RecordMode.CMDS_ONLY || recordMode == RecordMode.FULL)
@@ -313,6 +318,15 @@ public class RProcessor
 					results.append('\n');
 					line = procOut.readLine();
 				}
+
+				// Record interaction if needed
+				if(recordMode == RecordMode.OUTPUT_ONLY || recordMode == RecordMode.FULL)
+					interactionRecord.append(results);
+				if(debugOutputMode == RecordMode.OUTPUT_ONLY || debugOutputMode == RecordMode.FULL)
+					System.out.print(results);
+
+				// Throw an exception about this
+				throw new RProcessorException(results.toString());
 			}
 
 			// Record interaction if needed
@@ -638,8 +652,35 @@ public class RProcessor
 		System.out.println("   Output: " + output);
 		System.out.println("Parses to: " + test.parseDoubleArray(output));
 
-		output = test.execute("blah");
-		System.out.println("   Output: " + output);
+		try
+		{
+			output = test.execute("blah");
+			System.out.println("   Output: " + output);
+		}
+		catch(Exception e)
+		{
+			System.out.println("good");
+		}
+
+		try
+		{
+			output = test.execute("print(5)\nprint(6)");
+			System.out.println("   Output: " + output);
+		}
+		catch(Exception e)
+		{
+			System.out.println("good");
+		}
+		
+		try
+		{
+			output = test.execute("print(5); print(6)");
+			System.out.println("   Output: " + output);
+		}
+		catch(Exception e)
+		{
+			System.out.println("good");
+		}
 
 		System.out.println("\n------\nInteractions");
 		System.out.println(test.fetchInteraction());
