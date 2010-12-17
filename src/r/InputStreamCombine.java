@@ -36,11 +36,6 @@ public class InputStreamCombine extends PipedReader
 	 */
 	private final ArrayList<StreamThread> threads = new ArrayList<StreamThread>();
 	/**
-	 * Number of threads currently active. We maintain this separately from
-	 * the listing for easier, quicker updating
-	 */
-	private int aliveThreads = 0;
-	/**
 	 * Pipe that writes to this stream
 	 */
 	private PipedWriter pipe = null;
@@ -67,7 +62,7 @@ public class InputStreamCombine extends PipedReader
 	public void addStream(InputStream is) throws IOException
 	{
 		StreamThread gobbler = new StreamThread(pipeBuff, is);
-		new Thread(gobbler).start();
+		gobbler.start();
 		threads.add(gobbler);
 	}
 
@@ -80,9 +75,14 @@ public class InputStreamCombine extends PipedReader
 	{
 		for(StreamThread t : threads)
 		{
-			t.stop();
+			if(t.isAlive())
+			{
+				t.finish();
+				threads.remove(t);
+			}
 		}
 
+		// Close out pipes
 		pipeBuff = null;
 		pipe = null;
 
@@ -110,19 +110,29 @@ public class InputStreamCombine extends PipedReader
 	 * Used to continuously read in from a stream and pump into into the pipe
 	 * it receives.
 	 */
-	private class StreamThread implements Runnable
+	private class StreamThread extends Thread
 	{
 		private InputStream in = null;
 		private Writer out = null;
 		private boolean shouldRun = true;
 
-		StreamThread(Writer pipe, InputStream is) throws IOException
+		/**
+		 * Creates a new StreamThread timed to the given streams.
+		 * @param outputPipe The Writer (probably a PipedWriter) that we should
+		 *			output to.
+		 * @param inputStream The input we'll be watching. Anything new on it gets
+		 *			pushed to pipe
+		 */
+		StreamThread(Writer outputPipe, InputStream inputStream)
 		{
-			in = is;
-			out = pipe;
+			in = inputStream;
+			out = outputPipe;
 		}
 
-		public void stop()
+		/**
+		 * Tries to force run() to terminate
+		 */
+		public void finish()
 		{
 			try
 			{
@@ -136,6 +146,10 @@ public class InputStreamCombine extends PipedReader
 			}
 		}
 
+		/**
+		 * Watches the input stream and puts any new bytes on it straight into
+		 * the output pipe.
+		 */
 		@Override
 		public void run()
 		{
@@ -152,6 +166,11 @@ public class InputStreamCombine extends PipedReader
 				// Only throw if we weren't instructed to die
 				if(shouldRun)
 					throw new RuntimeException("Input stream died", ex);
+			}
+			catch(NullPointerException ex)
+			{
+				// Somebody closed our streams on us, which
+				// means R was killed. Carry on, nothing to see here
 			}
 		}
 	}
