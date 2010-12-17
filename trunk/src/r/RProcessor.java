@@ -50,8 +50,8 @@ public class RProcessor
 	};
 	/**
 	 * Pattern used to recognize single R commands. Used by execute() to protect from
-	 * hangs resulting from multiple commands being passed in.
-	 * TODO: Make this actually match one command
+	 * hangs resulting from multiple commands being passed in. Does not allow
+	 * strings with newlines in them, use \n instead.
 	 */
 	private final Pattern singleCmdPatt = Pattern.compile("^[^\\n;]+[\\n;]?$");
 	/**
@@ -236,12 +236,19 @@ public class RProcessor
 		}
 	}
 
+	/**
+	 * Kills R process
+	 */
 	public void close()
 	{
 		try
 		{
-			// Tell R we're closing, then close everything out
-			execute("q()");
+			// Tell R we're closing
+			byte[] cmdArray = "q()".getBytes();
+			procIn.write(cmdArray, 0, cmdArray.length);
+			procIn.flush();
+
+			// Close everything out
 			procIn.close();
 			procOut.close();
 			comboStream.close();
