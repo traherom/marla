@@ -31,9 +31,22 @@ import java.util.ArrayList;
  */
 public class InputStreamCombine extends PipedReader
 {
-	private ArrayList<StreamThread> threads = new ArrayList<StreamThread>();
+	/**
+	 * Active threads so we can tell them all to die if we're told to close
+	 */
+	private final ArrayList<StreamThread> threads = new ArrayList<StreamThread>();
+	/**
+	 * Number of threads currently active. We maintain this separately from
+	 * the listing for easier, quicker updating
+	 */
 	private int aliveThreads = 0;
+	/**
+	 * Pipe that writes to this stream
+	 */
 	private PipedWriter pipe = null;
+	/**
+	 * Buffered version of the writer
+	 */
 	private BufferedWriter pipeBuff = null;
 
 	/**
@@ -93,6 +106,10 @@ public class InputStreamCombine extends PipedReader
 		}
 	}
 
+	/**
+	 * Used to continuously read in from a stream and pump into into the pipe
+	 * it receives.
+	 */
 	private class StreamThread implements Runnable
 	{
 		private InputStream in = null;
@@ -111,7 +128,6 @@ public class InputStreamCombine extends PipedReader
 			{
 				shouldRun = false;
 				in.close();
-				in = null;
 				out = null;
 			}
 			catch(IOException ex)
