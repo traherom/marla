@@ -561,6 +561,31 @@ public class RProcessor
 	}
 
 	/**
+	 * Sets the given variable with the value given
+	 * @param name R-conforming variable name
+	 * @param val Value to store in the variable
+	 * @return Name of the variable used
+	 * @throws RProcessorException Thrown if an internal error occur
+	 */
+	public String setVariable(String name, String val) throws RProcessorException
+	{
+		execute(name + "=" + val);
+
+		return name;
+	}
+
+	/**
+	 * Sets the given variable with the value given
+	 * @param val Value to store in the variable
+	 * @return Name of the variable used
+	 * @throws RProcessorException Thrown if an internal error occur
+	 */
+	public String setVariable(String val) throws RProcessorException
+	{
+		return setVariable(getUniqueName(), val);
+	}
+
+	/**
 	 * Sets a new unique variable with a vector of the values given
 	 * @param vals Array of values to store in the variable
 	 * @return Name of the variable used
@@ -589,6 +614,46 @@ public class RProcessor
 		{
 			cmd.append(val);
 			cmd.append(", ");
+		}
+		cmd.replace(cmd.length() - 2, cmd.length() - 1, "");
+		cmd.append(")\n");
+
+		// Run R command
+		execute(cmd.toString());
+
+		return name;
+	}
+
+	/**
+	 * Sets a new unique variable with a vector of the values given
+	 * @param vals Array of values to store in the variable
+	 * @return Name of the variable used
+	 * @throws RProcessorException Thrown if an internal error occur
+	 */
+	public String setVariableString(List<String> vals) throws RProcessorException
+	{
+		return setVariableString(getUniqueName(), vals);
+	}
+
+	/**
+	 * Sets the given variable with a vector of the values given
+	 * @param name R-conforming variable name
+	 * @param vals Array of values to store in the variable
+	 * @return Name of the variable used
+	 * @throws RProcessorException Thrown if an internal error occur
+	 */
+	public String setVariableString(String name, List<String> vals) throws RProcessorException
+	{
+		// Builds an R command to set the given variable name with the values in the array
+		StringBuilder cmd = new StringBuilder();
+		cmd.append(name);
+		cmd.append(" = c(");
+
+		for(String val : vals)
+		{
+			cmd.append('"');
+			cmd.append(val);
+			cmd.append("\", ");
 		}
 		cmd.replace(cmd.length() - 2, cmd.length() - 1, "");
 		cmd.append(")\n");

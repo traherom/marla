@@ -171,7 +171,7 @@ public abstract class Operation extends DataSet
 	public void refreshCache() throws CalcException
 	{
 		if(parent == null)
-			throw new CalcException("No parent for operation to get dadta from");
+			throw new CalcException("No parent for operation to get data from");
 
 		try
 		{
@@ -196,28 +196,6 @@ public abstract class Operation extends DataSet
 		{
 			throw new CalcException("An error occured while refreshing the calculation cache", ex);
 		}
-	}
-
-	/**
-	 * Overridden by child operations to actually perform the task. When the
-	 * column/other data is requested the deriving class should return
-	 * the result of the appropriate operation on the dataset above. If more
-	 * than one column is needed in the operation that's fine, just return
-	 * only the requested column.
-	 *
-	 * Will cache results from calcColumn() and recalculate as needed
-	 * @param index Column to retrieve
-	 */
-	@Override
-	public DataColumn getColumn(int index)
-	{
-		return columns.get(index);
-	}
-
-	@Override
-	public int getColumnIndex(String colName) throws DataNotFound
-	{
-		return parent.getColumnIndex(colName);
 	}
 
 	/**

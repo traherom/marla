@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<operations>
+	<operation name="xyprint">
+		<query type="column" name="x_column" prompt="Select X column" />
+		<query type="column" name="y_column" prompt="Select Y column" />
+		<computation>
+			<set rvar="x" name="x_column" />
+			<set rvar="y" name="y_column" />
+			<cmd>x = x*2</cmd>
+			<cmd>y2 = y-10</cmd>
+			<save type="double_array" rvar="x" column="newX" />
+			<save type="double_array" column="newY">y2</save>
+		</computation>
+	</operation>
+	<operation name="nop">
+		<computation>
+			<loop type="parent" indexVar="col">
+				<save type="double_array" rvar="col" column="" />
+			</loop>
+		</computation>
+	</operation>
+	<operation name="count">
+		<computation>
+			<loop type="r_vector" rvar="1:10" indexVar="i">
+				<save type="double" rvar="i" column="count" />
+			</loop>
+		</computation>
+	</operation>
+</operations>
+

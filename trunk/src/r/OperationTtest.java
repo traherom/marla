@@ -17,6 +17,8 @@
  */
 package r;
 
+import gui.Domain.PromptType;
+import java.util.ArrayList;
 import problem.DataColumn;
 import problem.CalcException;
 import problem.DuplicateNameException;
@@ -27,9 +29,6 @@ import problem.DuplicateNameException;
  */
 public class OperationTtest extends problem.Operation
 {
-	private String storedName;
-	private DataColumn storedColumn;
-
 	public OperationTtest()
 	{
 		super("Ttest");
@@ -78,5 +77,16 @@ public class OperationTtest extends problem.Operation
 			columns.add(dcCI);
 			columns.add(dcAlpha);
 		}
+	}
+
+	@Override
+	public ArrayList<Object[]> getRequiredInfoPrompt()
+	{
+		ArrayList<Object[]> req = new ArrayList<Object[]>();
+		req.add(new Object[]
+				{
+					"Is the data normal?", PromptType.CHECKBOX
+				});
+		return req;
 	}
 }
