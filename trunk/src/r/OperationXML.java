@@ -208,10 +208,10 @@ public class OperationXML extends Operation
 
 		// Process away
 		Element compEl = opConfig.getChild("computation");
-		processSequence(compEl);
+		processSequence("", compEl);
 	}
 
-	private void processSequence(Element compEl) throws RProcessorException, RProcessorParseException, CalcException
+	private void processSequence(String savePrepend, Element compEl) throws RProcessorException, RProcessorParseException, CalcException
 	{
 		// Walk through each command/control structure sequentially
 		for(Object elObj : compEl.getChildren())
@@ -229,11 +229,11 @@ public class OperationXML extends Operation
 					break;
 
 				case SAVE:
-					processSave(el);
+					processSave(savePrepend, el);
 					break;
 
 				case LOOP:
-					processLoop(el);
+					processLoop(savePrepend, el);
 					break;
 
 				default:
@@ -280,54 +280,35 @@ public class OperationXML extends Operation
 		}
 	}
 
-	private void processSave(Element cmdEl) throws RProcessorException, RProcessorParseException, CalcException
+	private void processSave(String savePrepend, Element cmdEl) throws RProcessorException, RProcessorParseException, CalcException
 	{
-		String cmd = null;
+		// Get the value
+		String cmd = cmdEl.getAttributeValue("rvar");
+		if(cmd == null)
+			cmd = cmdEl.getTextTrim();
+		
+		// Get Column, create if needed
 		DataColumn col = null;
+		try
+		{
+			col = getColumn(savePrepend + cmdEl.getAttributeValue("column"));
+		}
+		catch(DataNotFound ex)
+		{
+			// The column doesn't exist yet, create it
+			col = addColumn(savePrepend + cmdEl.getAttributeValue("column"));
+		}
 
 		SaveType type = SaveType.valueOf(cmdEl.getAttributeValue("type", "double").toUpperCase());
 		switch(type)
 		{
 			case DOUBLE: // Saves either the given R variable or command result into the given column
-				// Get the value
-				cmd = cmdEl.getAttributeValue("rvar");
-				if(cmd == null)
-					cmd = cmdEl.getTextTrim();
-				Double val = proc.executeDouble(cmd);
-
-				// Save to column, create if needed
-				try
-				{
-					col = getColumn(cmdEl.getAttributeValue("column"));
-					col.add(val);
-				}
-				catch(DataNotFound ex)
-				{
-					// The column doesn't exist yet, create it
-					col = addColumn(cmdEl.getAttributeValue("column"));
-					col.add(val);
-				}
+				col.add(proc.executeDouble(cmd));
 				break;
 
 			case DOUBLE_ARRAY: // Saves either the given R variable or command result into the given column
 				// Get the value
-				cmd = cmdEl.getAttributeValue("rvar");
-				if(cmd == null)
-					cmd = cmdEl.getTextTrim();
-				ArrayList<Double> vals = proc.executeDoubleArray(cmd);
-
-				// Save to column, create if needed
-				try
-				{
-					col = getColumn(cmdEl.getAttributeValue("column"));
-					col.addAll(vals);
-				}
-				catch(DataNotFound ex)
-				{
-					// The column doesn't exist yet, create it
-					col = addColumn(cmdEl.getAttributeValue("column"));
-					col.addAll(vals);
-				}
+				col.addAll(proc.executeDoubleArray(cmd));
 				break;
 
 			default:
@@ -335,7 +316,7 @@ public class OperationXML extends Operation
 		}
 	}
 
-	private void processLoop(Element loopEl) throws RProcessorException, RProcessorParseException, CalcException
+	private void processLoop(String savePrepend, Element loopEl) throws RProcessorException, RProcessorParseException, CalcException
 	{
 		// Make up the loop we're going to work over and pass iteration back to processSequence()
 		String indexVar = loopEl.getAttributeValue("indexVar");
@@ -349,7 +330,7 @@ public class OperationXML extends Operation
 					proc.setVariable(indexVar, parent.getColumn(i));
 
 					// Now do what the XML says
-					processSequence(loopEl);
+					processSequence(parent.getColumn(i).getName() + savePrepend + " ", loopEl);
 				}
 				break;
 
@@ -361,7 +342,7 @@ public class OperationXML extends Operation
 					proc.setVariable(indexVar, val);
 
 					// Now do what the XML says
-					processSequence(loopEl);
+					processSequence(savePrepend + val + " ", loopEl);
 				}
 				break;
 
@@ -430,7 +411,7 @@ public class OperationXML extends Operation
 		questionAnswers = new HashMap<String, Object[]>();
 		@SuppressWarnings("unchecked")
 		List<Element> queryEls = opConfig.getChildren("query");
-		for(int i = 0; i < values.size(); i++)
+		for(int i = 0; i < queryEls.size(); i++)
 		{
 			Element queryEl = queryEls.get(i);
 			Object[] temp = new Object[2];
@@ -445,26 +426,28 @@ public class OperationXML extends Operation
 		try
 		{
 			Problem p = new Problem();
-			DataSet ds = DataSet.importFile("test.csv");
-			p.addData(ds);
+			DataSet ds1 = DataSet.importFile("test.csv");
+			DataSet ds2 = DataSet.importFile("test.csv");
+			p.addData(ds2);
+			p.addData(ds1);
 
 			OperationXML.loadXML("ops.xml");
 
-			OperationXML testOp = OperationXML.createOperation("xyprint");
-			/*ArrayList<Object> responses = new ArrayList<Object>();
-			responses.add("Import.me");
-			responses.add("Column.");
-			testOp.setRequiredInfo(responses);
-			ds.addOperation(testOp);
-			System.out.println(testOp);
-*/
-			//testOp = OperationXML.createOperation("nop");
-			//ds.addOperation(testOp);
-			//System.out.println(testOp);
+			OperationTtest testOpHC = new OperationTtest();
+			long startHC = System.currentTimeMillis();
+			ds1.addOperation(testOpHC);
+			long endHC = System.currentTimeMillis();
 
-			testOp = OperationXML.createOperation("count");
-			ds.addOperation(testOp);
-			System.out.println(testOp);
+			OperationXML testOpXML = OperationXML.createOperation("t-test");
+			long startXML = System.currentTimeMillis();
+			ds2.addOperation(testOpXML);
+			long endXML = System.currentTimeMillis();
+
+			System.out.println(testOpXML);
+			System.out.println(testOpHC);
+
+			System.out.println("Time XML: " + (endXML - startXML));
+			System.out.println("Time HC: " + (endHC - startHC));
 		}
 		finally
 		{
