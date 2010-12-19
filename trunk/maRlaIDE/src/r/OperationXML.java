@@ -22,6 +22,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
@@ -287,8 +289,7 @@ public class OperationXML extends Operation
 		Document doc = parser.build(operationFilePath);
 		operationXML = doc.getRootElement();
 
-		// Force it to check for duplicate names
-		getAvailableOperations();
+		// TODO Check version. Maybe have to use old versions of parsers someday?
 	}
 
 	/**
@@ -296,22 +297,22 @@ public class OperationXML extends Operation
 	 * elements in the XML that describe those operations. The Element or
 	 * the name can then be passed off to createOperation() to retrieve an object
 	 * that will perform the calculations.
-	 * @return HashMap of the names and operations.
+	 * @return ArrayList of the names of all available XML operations
 	 * @throws OperationXMLException Thrown when multiple operations with the same name are detected
 	 */
-	public static HashMap<String, Element> getAvailableOperations() throws OperationXMLException
+	public static ArrayList<String> getAvailableOperations() throws OperationXMLException
 	{
-		HashMap<String, Element> opNames = new HashMap<String, Element>();
+		ArrayList<String> opNames = new ArrayList<String>();
 		for(Object opEl : operationXML.getChildren("operation"))
 		{
 			Element op = (Element) opEl;
 			String name = op.getAttributeValue("name");
 
 			// Only allow a name to appear once
-			if(opNames.containsKey(name))
-				throw new OperationXMLException("Multiple operations with the name '" + name + "' found");
+			if(opNames.contains(name))
+				throw new OperationXMLException("Multiple XML operations with the name '" + name + "' found");
 
-			opNames.put(name, op);
+			opNames.add(name);
 		}
 		return opNames;
 	}
@@ -323,9 +324,23 @@ public class OperationXML extends Operation
 	 * efficient to directly just call that.
 	 * @param opName Name of the operation to load from the XML file
 	 * @return New operation that will perform the specified computations
-	 * @throws OperationXMLException
+	 * @throws OperationXMLException Thrown when the given operation name cannot be found
+	 *		in the XML file or when XML has not yet been loaded.
 	 */
 	public static OperationXML createOperation(String opName) throws OperationXMLException
+	{
+		OperationXML newOp = new OperationXML();
+		newOp.setConfiguration(findConfiguration(opName));
+		return newOp;
+	}
+
+	/**
+	 * Locates the named operation in the XML file and returns the associated Element
+	 * @param opName XML operation to find in the file, as specified by its "name" attribute.
+	 * @return Element holding the configuration information for the operation
+	 * @throws OperationXMLException Unable to locate the corresponding XML operation
+	 */
+	protected static Element findConfiguration(String opName) throws OperationXMLException
 	{
 		if(operationXML == null)
 			throw new OperationXMLException("XML file has not been loaded yet.");
@@ -335,7 +350,7 @@ public class OperationXML extends Operation
 		{
 			op = (Element) opEl;
 			if(op.getAttributeValue("name").equals(opName))
-				return createOperation(op);
+				return op;
 		}
 
 		// Couldn't find what they wanted
@@ -343,23 +358,25 @@ public class OperationXML extends Operation
 	}
 
 	/**
-	 * Creates a new instance of an operation with the given XML configuration.
-	 * @param op JDOM XML Element that contains all the configuration information the an operation
-	 * @return Newly created, functional operation
+	 * Exists basically to allow Operation to load us from a save file. Should rarely
+	 * be used externally otherwise, instead use createOperation(). Before this may be
+	 * used opConfig needs to be set, which can only occur through fromXMLExtra(Element)
+	 * or createOperation()
 	 */
-	public static OperationXML createOperation(Element op)
+	public OperationXML()
 	{
-		return new OperationXML(op);
+		super("Unconfigured");
+		opConfig = null;
 	}
 
 	/**
 	 * Creates a new operation with the given computational... stuff
-	 * @param config JDOM XML Element that contains the needed configuration information
+	 * @param newOpConfig JDOM XML Element that contains the needed configuration information
 	 */
-	private OperationXML(Element config)
+	protected void setConfiguration(Element newOpConfig)
 	{
-		super(config.getAttributeValue("name"));
-		opConfig = config;
+		opConfig = newOpConfig;
+		setName(opConfig.getAttributeValue("name"));
 	}
 
 	/**
@@ -375,7 +392,7 @@ public class OperationXML extends Operation
 	{
 		// Ensure any requirements were met already
 		if(isInfoRequired() && questionAnswers == null)
-			throw new OperationXMLException("Required info has not been set yet");
+			throw new CalcException("Required info has not been set yet");
 
 		// Process away
 		Element compEl = opConfig.getChild("computation");
@@ -408,7 +425,7 @@ public class OperationXML extends Operation
 					break;
 
 				default:
-					throw new OperationXMLException("Unknow computation command '" + type + "'");
+					throw new CalcException("Unknow computation command '" + type + "'");
 			}
 		}
 	}
@@ -418,7 +435,7 @@ public class OperationXML extends Operation
 		proc.execute(cmdEl.getTextTrim());
 	}
 
-	private void processSet(Element cmdEl) throws RProcessorException
+	private void processSet(Element cmdEl) throws RProcessorException, CalcException
 	{
 		// What type of setVariable() should we call?
 		String rVar = cmdEl.getAttributeValue("rvar");
@@ -442,12 +459,12 @@ public class OperationXML extends Operation
 				}
 				catch(DataNotFound ex)
 				{
-					throw new OperationXMLException("A DataColumn with the given name ('" + answer[1] + "') could not be found.");
+					throw new CalcException("A DataColumn with the given name ('" + answer[1] + "') could not be found.");
 				}
 				break;
 
 			default:
-				throw new OperationXMLException("Unable to set '" + varType + "' yet.");
+				throw new CalcException("Unable to set '" + varType + "' yet.");
 		}
 	}
 
@@ -494,7 +511,7 @@ public class OperationXML extends Operation
 				break;
 
 			default:
-				throw new OperationXMLException("Commands of type '" + type + "' are not yet handled.");
+				throw new CalcException("Commands of type '" + type + "' are not yet handled.");
 		}
 	}
 
@@ -552,7 +569,7 @@ public class OperationXML extends Operation
 				break;
 
 			default:
-				throw new OperationXMLException("Loop type '" + type + "' not handled yet.");
+				throw new CalcException("Loop type '" + type + "' not handled yet.");
 		}
 	}
 
@@ -598,7 +615,7 @@ public class OperationXML extends Operation
 					break;
 
 				default:
-					throw new OperationXMLException("The query command type '" + type + "' is not yet handled.");
+					throw new RuntimeException(new OperationXMLException("The query command type '" + type + "' is not yet handled."));
 			}
 		}
 
@@ -623,6 +640,35 @@ public class OperationXML extends Operation
 			temp[0] = QueryType.valueOf(queryEl.getAttributeValue("type").toUpperCase());
 			temp[1] = values.get(i);
 			questionAnswers.put(queryEl.getAttributeValue("name"), temp);
+		}
+	}
+
+	/**
+	 * Saves the XML operation name
+	 * @return Element with the XML operation name
+	 */
+	@Override
+	protected Element toXmlExtra()
+	{
+		Element el = new Element("xmlop");
+		el.setAttribute("name", opConfig.getAttributeValue("name"));
+		return el;
+	}
+
+	/**
+	 * Loads opConfig with the appropriate XML execution configuration.
+	 * @param opEl xmlop Element with the needed name of the XML operation to use
+	 */
+	@Override
+	protected void fromXmlExtra(Element opEl)
+	{
+		try
+		{
+			setConfiguration(findConfiguration(opEl.getAttributeValue("name")));
+		}
+		catch(OperationXMLException ex)
+		{
+			throw new RuntimeException("Unable to load operation '" + opEl.getAttributeValue("name") + "' from XML", ex);
 		}
 	}
 

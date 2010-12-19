@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<operations>
+<operations version="1.0">
 	<operation name="NOP">
 		<computation>
 			<loop type="parent" valueVar="col">
