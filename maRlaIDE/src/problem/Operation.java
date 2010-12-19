@@ -20,8 +20,6 @@ package problem;
 import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.jdom.Element;
@@ -63,15 +61,16 @@ public abstract class Operation extends DataSet
 	 */
 	protected static HashMap<String, String> javaOps = initJavaOperationList();
 
+	/**
+	 * Initializes the list of available Java-based (hard coded) operations.
+	 * This list should contain key value pairs with the key being a friendly, user
+	 * readable name and the value being the class string, as would be passed to Class.forName().
+	 * For example, a mean operation in the the r package would be "Mean" => "r.OperationMean"
+	 * @return New HashMap to save into javaOps
+	 */
 	private static HashMap<String, String> initJavaOperationList()
 	{
 		HashMap<String, String> ops = new HashMap<String, String>();
-		ops.put("t-test", "r.OperationTtest");
-		ops.put("Mean", "r.OperationMean");
-		ops.put("HC NOP", "r.OperationNOP");
-		ops.put("HC StdDev", "r.OperationStdDev");
-		ops.put("HC Summary", "r.OperationSummary");
-		ops.put("HC summation", "r.OperationSummation");
 		return ops;
 	}
 
