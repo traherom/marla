@@ -38,6 +38,8 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.BorderFactory;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
@@ -62,6 +64,7 @@ import javax.swing.table.DefaultTableColumnModel;
 import javax.swing.table.TableColumn;
 import org.jdesktop.layout.GroupLayout;
 import org.jdesktop.layout.LayoutStyle;
+import org.jdom.JDOMException;
 import problem.CalcException;
 import problem.DataColumn;
 import problem.DataNotFound;
@@ -70,11 +73,8 @@ import problem.FileException;
 import problem.IncompleteInitialization;
 import problem.Operation;
 import problem.Problem;
-import r.OperationMean;
-import r.OperationStdDev;
-import r.OperationSummary;
-import r.OperationSummation;
-import r.OperationTtest;
+import r.OperationXML;
+import r.OperationXMLException;
 import r.RProcessorException;
 import r.RProcessorParseException;
 import resource.LoadSaveThread;
@@ -88,21 +88,6 @@ import resource.LoadSaveThread;
  */
 public class ViewPanel extends JPanel
 {
-	/**************************************************************************/
-	/* DEFINE ALL STATISTICAL COMPONENTS THAT WILL BE LOADED INTO THE PALETTE */
-	/* PAIN (THESE COMPONENTS MUST ALSO BE LISTED IN PALETTE_TYPES ARRAY)     */
-	/**************************************************************************/
-	private final Operation SUMMARY = new OperationSummary ();
-	private final Operation SUMMATION = new OperationSummation ();
-	private final Operation MEAN = new OperationMean ();
-	private final Operation STD_DEV = new OperationStdDev ();
-	private final Operation T_TEST = new OperationTtest ();
-	/** The list of types that will be loaded into the palette.*/
-	private final Operation[] PALETTE_TYPES = new Operation[]
-	{
-		SUMMARY, SUMMATION, MEAN, STD_DEV, T_TEST
-	};
-
 	/** The alphabet.*/
 	public static final String[] ALPHABET = new String[] {"a.", "b.", "c.", "d.", "e.", "f.",
 														  "g.", "h.", "i.", "j.", "k.", "l.",
@@ -141,6 +126,8 @@ public class ViewPanel extends JPanel
 	private boolean openingWizard = false;
 	/** Set true once the New Problem Wizard is told to overwrite existing files.*/
 	private boolean newProblemOverwrite = false;
+	/** The set of operations contained in the XML file.*/
+	private ArrayList<String> operations;
 	/** True if the current problem is being edited in the wizard, false if creating a new problem in the wizard.*/
 	protected boolean editing = false;
 	/** The operation being dragged.*/
@@ -241,29 +228,44 @@ public class ViewPanel extends JPanel
 				}
 			}
 		});
-
-		// Add all operation types to the palette, adding listeners to the labels as we go
-		for (int i = 0; i < PALETTE_TYPES.length; ++i)
+		
+		try		
 		{
-			final Operation operation = PALETTE_TYPES[i];
+			OperationXML.loadXML(Domain.xmlPath);
+			operations = OperationXML.getAvailableOperations();
 
-			operation.addMouseListener(new MouseAdapter ()
+			// Add all operation types to the palette, adding listeners to the labels as we go
+			for (int i = 0; i < operations.size (); ++i)
 			{
-				@Override
-				public void mouseReleased(MouseEvent evt)
+				final OperationXML operation = OperationXML.createOperation(operations.get (i));
+
+				operation.addMouseListener(new MouseAdapter ()
 				{
-					addToWorkspace (operation);
-				}
-			});
+					@Override
+					public void mouseReleased(MouseEvent evt)
+					{
+						addToWorkspace (operation);
+					}
+				});
 
-			if (i % 2 == 0)
-			{
-				leftPanel.add (operation);
+				if (i % 2 == 0)
+				{
+					leftPanel.add (operation);
+				}
+				else
+				{
+					rightPanel.add (operation);
+				}
 			}
-			else
-			{
-				rightPanel.add (operation);
-			}
+		}
+		catch (JDOMException ex)
+		{
+		}
+		catch (IOException ex)
+		{
+		}
+		catch (OperationXMLException ex)
+		{
 		}
     }
 
@@ -1572,122 +1574,130 @@ public class ViewPanel extends JPanel
 		{
 			y += 20;
 		}
-		final Operation newOperation = operation.clone();
-		newOperation.setBounds (x, y, newOperation.getPreferredSize().width, newOperation.getPreferredSize().height);
+		final OperationXML newOperation;
 		try
 		{
-			if (newOperation.isInfoRequired())
+			newOperation = OperationXML.createOperation(operation.getName());
+			newOperation.setBounds (x, y, newOperation.getPreferredSize().width, newOperation.getPreferredSize().height);
+			try
 			{
-				// Create the dialog which will be launched to ask about requirements
-				final ArrayList<Object[]> prompt = newOperation.getRequiredInfoPrompt();
-				final JDialog dialog = new JDialog ();
-				JPanel panel = new JPanel ();
-				panel.setLayout (new GridLayout (prompt.size () + 1, 2));
-
-				dialog.setTitle ("Information Required");
-				dialog.setModal (true);
-				dialog.add (panel);
-
-				// This array will contain references to objects that will hold the values
-				final ArrayList<Object> valueComponents = new ArrayList<Object> ();
-
-				// Fill dialog with components
-				for (int i = 0; i < prompt.size(); ++i)
+				if (newOperation.isInfoRequired())
 				{
-					Object[] components = prompt.get (i);
-					if (components[1] == Domain.PromptType.TEXT)
+					// Create the dialog which will be launched to ask about requirements
+					final ArrayList<Object[]> prompt = newOperation.getRequiredInfoPrompt();
+					final JDialog dialog = new JDialog ();
+					JPanel panel = new JPanel ();
+					panel.setLayout (new GridLayout (prompt.size () + 1, 2));
+
+					dialog.setTitle ("Information Required");
+					dialog.setModal (true);
+					dialog.add (panel);
+
+					// This array will contain references to objects that will hold the values
+					final ArrayList<Object> valueComponents = new ArrayList<Object> ();
+
+					// Fill dialog with components
+					for (int i = 0; i < prompt.size(); ++i)
 					{
-						JPanel tempPanel = new JPanel (new FlowLayout (FlowLayout.LEFT));
-						JLabel label = new JLabel (components[0].toString ());
-						JTextField textField = new JTextField ();
-						textField.setPreferredSize(new Dimension (150, textField.getPreferredSize().height));
-						tempPanel.add (label);
-						tempPanel.add (textField);
-						valueComponents.add (textField);
-						panel.add (tempPanel);
+						Object[] components = prompt.get (i);
+						if (components[1] == Domain.PromptType.TEXT)
+						{
+							JPanel tempPanel = new JPanel (new FlowLayout (FlowLayout.LEFT));
+							JLabel label = new JLabel (components[0].toString ());
+							JTextField textField = new JTextField ();
+							textField.setPreferredSize(new Dimension (150, textField.getPreferredSize().height));
+							tempPanel.add (label);
+							tempPanel.add (textField);
+							valueComponents.add (textField);
+							panel.add (tempPanel);
+						}
+						else if(components[1] == Domain.PromptType.CHECKBOX)
+						{
+							JPanel tempPanel = new JPanel (new FlowLayout (FlowLayout.LEFT));
+							JCheckBox checkBox = new JCheckBox (components[0].toString ());
+							JLabel label = new JLabel ("");
+							tempPanel.add (checkBox);
+							tempPanel.add (label);
+							valueComponents.add (checkBox);
+							panel.add (tempPanel);
+						}
+						else if(components[1] == Domain.PromptType.COMBO)
+						{
+							JPanel tempPanel = new JPanel (new FlowLayout (FlowLayout.LEFT));
+							JLabel label = new JLabel (components[0].toString ());
+							DefaultComboBoxModel model = new DefaultComboBoxModel ((Object[]) components[2]);
+							JComboBox comboBox = new JComboBox (model);
+							tempPanel.add (label);
+							tempPanel.add (comboBox);
+							valueComponents.add (comboBox);
+							panel.add (tempPanel);
+						}
 					}
-					else if(components[1] == Domain.PromptType.CHECKBOX)
+
+					JButton doneButton = new JButton ("Done");
+					final ViewPanel viewPanel = this;
+					// When the user is done with the assumptions, forms will be validated and their values stored into the operation before continuing
+					doneButton.addActionListener (new ActionListener()
 					{
-						JPanel tempPanel = new JPanel (new FlowLayout (FlowLayout.LEFT));
-						JCheckBox checkBox = new JCheckBox (components[0].toString ());
-						JLabel label = new JLabel ("");
-						tempPanel.add (checkBox);
-						tempPanel.add (label);
-						valueComponents.add (checkBox);
-						panel.add (tempPanel);
-					}
-					else if(components[1] == Domain.PromptType.COMBO)
-					{
-						JPanel tempPanel = new JPanel (new FlowLayout (FlowLayout.LEFT));
-						JLabel label = new JLabel (components[0].toString ());
-						DefaultComboBoxModel model = new DefaultComboBoxModel ((Object[]) components[2]);
-						JComboBox comboBox = new JComboBox (model);
-						tempPanel.add (label);
-						tempPanel.add (comboBox);
-						valueComponents.add (comboBox);
-						panel.add (tempPanel);
-					}
+						@Override
+						public void actionPerformed(ActionEvent evt)
+						{
+							ArrayList<Object> values = new ArrayList<Object> ();
+							boolean pass = true;
+							for (int i = 0; i < prompt.size (); ++i)
+							{
+								if (prompt.get (i)[1] == Domain.PromptType.TEXT)
+								{
+									try
+									{
+										values.add (Double.parseDouble (((JTextField) valueComponents.get (i)).getText ()));
+									}
+									catch (NumberFormatException ex)
+									{
+										// If the users input was not valid, the form is not accepted and the dialog will not close
+										((JTextField) valueComponents.get (i)).requestFocus();
+										((JTextField) valueComponents.get (i)).selectAll();
+										JOptionPane.showMessageDialog(viewPanel, "You must enter a valid numerical value.", "Invalid Input", JOptionPane.ERROR_MESSAGE);
+										pass = false;
+									}
+								}
+								else if(prompt.get (i)[1] == Domain.PromptType.CHECKBOX)
+								{
+									values.add (Boolean.valueOf (((JCheckBox) valueComponents.get (i)).isSelected ()));
+								}
+								else if(prompt.get (i)[1] == Domain.PromptType.COMBO)
+								{
+									values.add (((JComboBox) valueComponents.get (i)).getSelectedItem());
+								}
+							}
+
+							if (pass)
+							{
+								newOperation.setRequiredInfo(values);
+								dialog.setVisible (false);
+							}
+						}
+					});
+					panel.add (doneButton);
+
+					// Display dialog
+					dialog.pack();
+					dialog.setLocationRelativeTo(this);
+					dialog.setVisible (true);
 				}
-
-				JButton doneButton = new JButton ("Done");
-				final ViewPanel viewPanel = this;
-				// When the user is done with the assumptions, forms will be validated and their values stored into the operation before continuing
-				doneButton.addActionListener (new ActionListener()
-				{
-					@Override
-					public void actionPerformed(ActionEvent evt)
-					{
-						ArrayList<Object> values = new ArrayList<Object> ();
-						boolean pass = true;
-						for (int i = 0; i < prompt.size (); ++i)
-						{
-							if (prompt.get (i)[1] == Domain.PromptType.TEXT)
-							{
-								try
-								{
-									values.add (Double.parseDouble (((JTextField) valueComponents.get (i)).getText ()));
-								}
-								catch (NumberFormatException ex)
-								{
-									// If the users input was not valid, the form is not accepted and the dialog will not close
-									((JTextField) valueComponents.get (i)).requestFocus();
-									((JTextField) valueComponents.get (i)).selectAll();
-									JOptionPane.showMessageDialog(viewPanel, "You must enter a valid numerical value.", "Invalid Input", JOptionPane.ERROR_MESSAGE);
-									pass = false;
-								}
-							}
-							else if(prompt.get (i)[1] == Domain.PromptType.CHECKBOX)
-							{
-								values.add (Boolean.valueOf (((JCheckBox) valueComponents.get (i)).isSelected ()));
-							}
-							else if(prompt.get (i)[1] == Domain.PromptType.COMBO)
-							{
-								values.add (((JComboBox) valueComponents.get (i)).getSelectedItem());
-							}
-						}
-
-						if (pass)
-						{
-							newOperation.setRequiredInfo(values);
-							dialog.setVisible (false);
-						}
-					}
-				});
-				panel.add (doneButton);
-
-				// Display dialog
-				dialog.pack();
-				dialog.setLocationRelativeTo(this);
-				dialog.setVisible (true);
+				domain.currentDataSet.addOperationToEnd (newOperation);
 			}
-			domain.currentDataSet.addOperationToEnd (newOperation);
+			catch (CalcException ex)
+			{
+				JOptionPane.showMessageDialog(this, "The requested R package either cannot be located or is not installed.", "Missing Package", JOptionPane.WARNING_MESSAGE);
+			}
+			workspacePanel.add (newOperation);
+			workspacePanel.updateUI();
 		}
-		catch (CalcException ex)
+		catch(OperationXMLException ex)
 		{
-			JOptionPane.showMessageDialog(this, "The requested R package either cannot be located or is not installed.", "Missing Package", JOptionPane.WARNING_MESSAGE);
+			Logger.getLogger(ViewPanel.class.getName()).log(Level.SEVERE, null, ex);
 		}
-		workspacePanel.add (newOperation);
-		workspacePanel.updateUI();
 	}
 
 	/**

@@ -15,6 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package r;
 
 import gui.Domain.PromptType;
@@ -22,8 +23,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
@@ -31,10 +30,8 @@ import org.jdom.input.SAXBuilder;
 import problem.CalcException;
 import problem.DataColumn;
 import problem.DataNotFound;
-import problem.DataSet;
 import problem.IncompleteInitialization;
 import problem.Operation;
-import problem.Problem;
 
 /**
  * <p>Creates operations based on an XML specification. The XML file should be similar
@@ -669,43 +666,6 @@ public class OperationXML extends Operation
 		catch(OperationXMLException ex)
 		{
 			throw new RuntimeException("Unable to load operation '" + opEl.getAttributeValue("name") + "' from XML", ex);
-		}
-	}
-
-	public static void main(String[] args) throws Exception
-	{
-		try
-		{
-			Problem p = new Problem();
-			DataSet ds1 = DataSet.importFile("test.csv");
-			DataSet ds2 = DataSet.importFile("test.csv");
-			p.addData(ds1);
-			p.addData(ds2);
-
-			OperationXML.loadXML("ops.xml");
-
-			OperationXML testOpXML = OperationXML.createOperation("Summary");
-			long startXML = System.currentTimeMillis();
-			ds2.addOperation(testOpXML);
-			long endXML = System.currentTimeMillis();
-
-			OperationSummary testOpHC = new OperationSummary();
-			long startHC = System.currentTimeMillis();
-			ds1.addOperation(testOpHC);
-			long endHC = System.currentTimeMillis();
-
-			System.out.println("Hardcoded:");
-			System.out.println(testOpHC);
-			
-			System.out.println("$$$$$$$$$$$$$$$$$$\nXML:");
-			System.out.println(testOpXML);
-
-			System.out.println("Time HC: " + (endHC - startHC));
-			System.out.println("Time XML: " + (endXML - startXML));
-		}
-		finally
-		{
-			RProcessor.getInstance().close();
 		}
 	}
 }
