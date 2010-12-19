@@ -1,0 +1,10 @@
+build
+store
+bin
+test
+obj
+classes
+*.pyc
+*.class
+.DS_Store
+__MACOSX
