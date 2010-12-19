@@ -15,28 +15,26 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package r;
-
-import problem.OperationException;
+package problem;
 
 /**
  *
  * @author Ryan Morehart
  */
-public class OperationXMLException extends OperationException
+public class OperationException extends Exception
 {
 	/**
-	 * Creates a new instance of <code>OperationXMLException</code> without detail message.
+	 * Creates a new instance of <code>OperationException</code> without detail message.
 	 */
-	public OperationXMLException()
+	public OperationException()
 	{
 	}
 
 	/**
-	 * Constructs an instance of <code>OperationXMLException</code> with the specified detail message.
+	 * Constructs an instance of <code>OperationException</code> with the specified detail message.
 	 * @param msg the detail message.
 	 */
-	public OperationXMLException(String msg)
+	public OperationException(String msg)
 	{
 		super(msg);
 	}

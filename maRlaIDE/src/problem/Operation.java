@@ -19,9 +19,14 @@ package problem;
 
 import java.awt.Rectangle;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.jdom.Element;
+import r.OperationXML;
+import r.OperationXMLException;
 import r.RProcessor;
 import r.RProcessorException;
 import r.RProcessorParseException;
@@ -52,12 +57,87 @@ public abstract class Operation extends DataSet
 	 * Pointer to the current RProcessor instance
 	 */
 	protected RProcessor proc = null;
+	/**
+	 * List of Java Operation derivative classes that may be created by
+	 * the GUI front end.
+	 */
+	protected static HashMap<String, String> javaOps = initJavaOperationList();
+
+	private static HashMap<String, String> initJavaOperationList()
+	{
+		HashMap<String, String> ops = new HashMap<String, String>();
+		ops.put("t-test", "r.OperationTtest");
+		ops.put("Mean", "r.OperationMean");
+		ops.put("HC NOP", "r.OperationNOP");
+		ops.put("HC StdDev", "r.OperationStdDev");
+		ops.put("HC Summary", "r.OperationSummary");
+		ops.put("HC summation", "r.OperationSummation");
+		return ops;
+	}
+
+	/**
+	 * Returns a list of all the operations available, both from XML and Java. This is a
+	 * hard coded list for now and eases adding new operations to the GUI (no need to edit the
+	 * other package in a few places).
+	 * @return ArrayList of the names of operations available. Each name will be unique. If an XML
+	 *		operation with the same name as a Java operation exists then the XML version will
+	 *		be used. Otherwise an OperationException is thrown.
+	 * @throws OperationException Thrown when multiple operations with the same name are detected
+	 */
+	public static ArrayList<String> getAvailableOperations() throws OperationException
+	{
+		ArrayList<String> ops = new ArrayList<String>();
+
+		// Java
+		ops.addAll(javaOps.keySet());
+
+		// XML operations
+		for(String xmlOpName : OperationXML.getAvailableOperations())
+		{
+			if(!ops.contains(xmlOpName))
+				ops.add(xmlOpName);
+		}
+
+		return ops;
+	}
+
+	/**
+	 *
+	 * @param opName
+	 * @return
+	 * @throws OperationException
+	 */
+	public static Operation createOperation(String opName) throws OperationException
+	{
+		// Locate the operation
+		Operation op = null;
+		try
+		{
+			// Try first in XML, then the hardcoded list
+			op = OperationXML.createOperation(opName);
+		}
+		catch(OperationXMLException ex)
+		{
+			try
+			{
+				// Try in the list of Java classes
+				Class opClass = Class.forName(Operation.javaOps.get(opName));
+				op = (Operation) opClass.newInstance();
+			}
+			catch(Exception ex1)
+			{
+				throw new OperationException("Unable to locate operation '" + opName + "' for loading");
+			}
+		}
+
+		return op;
+	}
 
 	/**
 	 * Sets the text name for the JLabel
 	 * @param name Text for JLabel
 	 */
-	public Operation(String name)
+	protected Operation(String name)
 	{
 		super(name);
 
@@ -115,7 +195,7 @@ public abstract class Operation extends DataSet
 	 * information saved for their type of Operation
 	 * @param opEl JDOM Element with all data for Operation
 	 */
-	private void fromXmlExtra(Element opEl)
+	protected void fromXmlExtra(Element opEl)
 	{
 	}
 
