@@ -138,7 +138,7 @@ public class RProcessor
 
 			// TODO: set this in domain or someplace, so that the command line can be used
 			// to turn it on and off
-			debugOutputMode = RecordMode.FULL;
+			debugOutputMode = RecordMode.DISABLED;
 		}
 		catch(RProcessorParseException ex)
 		{
@@ -569,7 +569,7 @@ public class RProcessor
 	 */
 	public String setVariable(String name, String val) throws RProcessorException
 	{
-		execute(name + "=" + val);
+		execute(name + "=\"" + val + '"');
 
 		return name;
 	}

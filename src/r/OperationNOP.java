@@ -18,7 +18,6 @@
 
 package r;
 
-import java.util.ArrayList;
 import problem.CalcException;
 import problem.DataColumn;
 import problem.Operation;
