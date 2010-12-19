@@ -49,7 +49,7 @@ import problem.Problem;
  *       ...
  *       &lt;cmd&gt;R command&lt;/cmd&gt;
  *       
- *       &lt;loop type="parent|r_vector" indexVar="&lt;R variable name&gt;" [rvar=""]&gt;
+ *       &lt;loop type="parent|double_array|string_array" [keyVar="&lt;R variable name&gt;"] [valueVar="&lt;R variable name&gt;"] [rvar=""]&gt;
  *         &lt;cmd&gt;R command&lt;/cmd&gt;
  *         ...
  *       &lt;/loop&gt;
@@ -105,12 +105,13 @@ import problem.Problem;
  * </code>
  * </p>
  *
- * <p>Third, &lt;loop /&gt;s allow repetition. Each loop must specify its "type" as either "parent" or "r_vector".
- * Parent loops go through every column of the parent data set and/or operation, assigning them
- * in turn to the R variable given in indexVar. Vector loops take the R command given in "rvar"
- * and iterate over the elements in it, setting each in turn as the value of indexVar. The command
- * given in rvar must result in a numerical vector. A loop may then use any of the other elements
- * inside itself, including other loops.</p>
+ * <p>Third, &lt;loop /&gt;s allow repetition. Each loop must specify its "type" as either "parent",
+ * "double_array", or "string_array". Parent loops go through every column of the parent data set
+ * and/or operation, assigning them in turn to the R variable given in "valueVar". A "keyVar" may
+ * also be specified for any loop type which will keep an index (1 based) of the loop number.
+ * Array loops take the R command given in "rvar" and iterate over the elements in it, setting
+ * each in turn as the value of valueVar. A loop may then use any of the other elements inside
+ * itself, including other loops.</p>
  *
  * <p>Finally, to set the actual values for the operation, &lt;save /&gt; elements may be specified. The
  * result to save may be given either via an "rvar" attribute or as a contain R command. For
@@ -245,7 +246,7 @@ public class OperationXML extends Operation
 	 */
 	private enum LoopType
 	{
-		PARENT, R_VECTOR
+		PARENT, DOUBLE_ARRAY, STRING_ARRAY
 	};
 
 	/**
@@ -284,6 +285,9 @@ public class OperationXML extends Operation
 		SAXBuilder parser = new SAXBuilder();
 		Document doc = parser.build(operationFilePath);
 		operationXML = doc.getRootElement();
+
+		// Force it to check for duplicate names
+		getAvailableOperations();
 	}
 
 	/**
@@ -454,15 +458,26 @@ public class OperationXML extends Operation
 			cmd = cmdEl.getTextTrim();
 		
 		// Get Column, create if needed
+		String colName = null;
+		String dynamicColumnCmd = cmdEl.getAttributeValue("dynamic_column");
+		if(dynamicColumnCmd != null)
+		{
+			colName = proc.executeString(dynamicColumnCmd);
+		}
+		else
+		{
+			colName = savePrepend + cmdEl.getAttributeValue("column");
+		}
+
 		DataColumn col = null;
 		try
 		{
-			col = getColumn(savePrepend + cmdEl.getAttributeValue("column"));
+			col = getColumn(colName);
 		}
 		catch(DataNotFound ex)
 		{
 			// The column doesn't exist yet, create it
-			col = addColumn(savePrepend + cmdEl.getAttributeValue("column"));
+			col = addColumn(colName);
 		}
 
 		SaveType type = SaveType.valueOf(cmdEl.getAttributeValue("type", "double").toUpperCase());
@@ -485,30 +500,53 @@ public class OperationXML extends Operation
 	private void processLoop(String savePrepend, Element loopEl) throws RProcessorException, RProcessorParseException, CalcException
 	{
 		// Make up the loop we're going to work over and pass iteration back to processSequence()
-		String indexVar = loopEl.getAttributeValue("indexVar");
+		String keyVar = loopEl.getAttributeValue("keyVar");
+		String valueVar = loopEl.getAttributeValue("valueVar");
+
 		LoopType type = LoopType.valueOf(loopEl.getAttributeValue("type").toUpperCase());
 		switch(type)
 		{
 			case PARENT: // Loop over every column in parent
 				for(int i = 0; i < parent.getColumnCount(); i++)
 				{
-					// Assign the loop index
-					proc.setVariable(indexVar, parent.getColumn(i));
+					// Assign the loop key and value
+					if(keyVar != null)
+						proc.setVariable(keyVar, parent.getColumn(i).getName());
+					if(valueVar != null)
+						proc.setVariable(valueVar, parent.getColumn(i));
 
 					// Now do what the XML says
 					processSequence(parent.getColumn(i).getName() + savePrepend + " ", loopEl);
 				}
 				break;
 
-			case R_VECTOR: // Loop over an R vector, setting each element as the index var
-				ArrayList<Double> vector = proc.executeDoubleArray(loopEl.getAttributeValue("rvar"));
-				for(Double val : vector)
+			case DOUBLE_ARRAY: // Loop over an R vector, setting each element as the index var
+				ArrayList<Double> doubleVals = proc.executeDoubleArray(loopEl.getAttributeValue("rvar"));
+				for(int i = 0; i < doubleVals.size(); i++)
 				{
 					// Assign the loop index
-					proc.setVariable(indexVar, val);
+					if(keyVar != null)
+						proc.setVariable(keyVar, new Double(i + 1));
+					if(valueVar != null)
+						proc.setVariable(valueVar, doubleVals.get(i));
 
 					// Now do what the XML says
-					processSequence(savePrepend + val + " ", loopEl);
+					processSequence(savePrepend + doubleVals.get(i) + " ", loopEl);
+				}
+				break;
+
+			case STRING_ARRAY: // Loop over an R vector, setting each element as the index var
+				ArrayList<String> stringVals = proc.executeStringArray(loopEl.getAttributeValue("rvar"));
+				for(int i = 0; i < stringVals.size(); i++)
+				{
+					// Assign the loop index
+					if(keyVar != null)
+						proc.setVariable(keyVar, new Double(i + 1));
+					if(valueVar != null)
+						proc.setVariable(valueVar, stringVals.get(i));
+
+					// Now do what the XML says
+					processSequence(savePrepend + stringVals.get(i) + " ", loopEl);
 				}
 				break;
 
@@ -594,26 +632,29 @@ public class OperationXML extends Operation
 			Problem p = new Problem();
 			DataSet ds1 = DataSet.importFile("test.csv");
 			DataSet ds2 = DataSet.importFile("test.csv");
-			p.addData(ds2);
 			p.addData(ds1);
+			p.addData(ds2);
 
 			OperationXML.loadXML("ops.xml");
 
-			OperationTtest testOpHC = new OperationTtest();
-			long startHC = System.currentTimeMillis();
-			ds1.addOperation(testOpHC);
-			long endHC = System.currentTimeMillis();
-
-			OperationXML testOpXML = OperationXML.createOperation("t-test");
+			OperationXML testOpXML = OperationXML.createOperation("Summary");
 			long startXML = System.currentTimeMillis();
 			ds2.addOperation(testOpXML);
 			long endXML = System.currentTimeMillis();
 
-			System.out.println(testOpXML);
-			System.out.println(testOpHC);
+			OperationSummary testOpHC = new OperationSummary();
+			long startHC = System.currentTimeMillis();
+			ds1.addOperation(testOpHC);
+			long endHC = System.currentTimeMillis();
 
-			System.out.println("Time XML: " + (endXML - startXML));
+			System.out.println("Hardcoded:");
+			System.out.println(testOpHC);
+			
+			System.out.println("$$$$$$$$$$$$$$$$$$\nXML:");
+			System.out.println(testOpXML);
+
 			System.out.println("Time HC: " + (endHC - startHC));
+			System.out.println("Time XML: " + (endXML - startXML));
 		}
 		finally
 		{
