@@ -54,7 +54,7 @@ import problem.Problem;
  *         ...
  *       &lt;/loop&gt;
  *       
- *       &lt;save type="double|string|double_array|string_array" column="&lt;Column name&gt;"&gt;R command&lt;/save&gt;
+ *       &lt;save type="double|string|double_array|string_array" [column="&lt;Column name&gt;"] [dynamic_column="&lt;R command&gt;"] [rvar="&lt;R command&gt;"]&gt;[R command]&lt;/save&gt;
  *     &lt;/computation&gt;
  *   &lt;/operation&gt;
  * &lt;/operations&gt;
@@ -126,7 +126,8 @@ import problem.Problem;
  * </p>
  * <p>The "type" tells the operation how to process the result and may be one of "double", "string",
  * "double_array", or "string_array". The "column" attribute gives the name of the result
- * column to save into.</p>
+ * column to save into. Instead of plain "column", "dynamic_column" maybe used, which may
+ * contain any R command that results in a single string.</p>
  *
  * <p>Below is an example of implementing a t-test:
  * <code style="white-space: pre; font-family: monospace;">
