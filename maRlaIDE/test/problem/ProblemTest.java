@@ -19,7 +19,6 @@ package problem;
 
 import java.io.FileNotFoundException;
 import org.jdom.JDOMException;
-import r.OperationNOP;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.ArrayList;
@@ -359,8 +358,8 @@ public class ProblemTest
 
 				for(int opNum = 0; opNum < 5; opNum++)
 				{
-					Operation op = new OperationNOP();
-					ds.addOperation(op);
+					//Operation op = new OperationNOP();
+					//ds.addOperation(op);
 				}
 			}
 
