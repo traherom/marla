@@ -35,7 +35,166 @@ import problem.Operation;
 import problem.Problem;
 
 /**
+ * <p>Creates operations based on an XML specification. The XML file should be similar
+ * to the following. A full example implementing a t-test is listed at the bottom.</p>
+ * <code style="white-space: pre; font-family: monospace;">
+ * &lt;?xml version="1.0" encoding="UTF-8" ?&gt;
+ * &lt;operations&gt;
+ *   &lt;operation name="&lt;operation name&gt;"&gt;
+ *     &lt;query type="&lt;column|checkbox|string|number|combo&gt;" name="&lt;internal name&gt;" prompt="&lt;User prompt&gt;" /&gt;
+ *     &lt;computation&gt;
+ *       &lt;set rvar="&lt;variable name&gt;" name="&lt;internal name&gt;" /&gt;
+ *       
+ *       &lt;cmd&gt;R command&lt;/cmd&gt;
+ *       ...
+ *       &lt;cmd&gt;R command&lt;/cmd&gt;
+ *       
+ *       &lt;loop type="parent|r_vector" indexVar="&lt;R variable name&gt;" [rvar=""]&gt;
+ *         &lt;cmd&gt;R command&lt;/cmd&gt;
+ *         ...
+ *       &lt;/loop&gt;
+ *       
+ *       &lt;save type="double|string|double_array|string_array" column="&lt;Column name&gt;"&gt;R command&lt;/save&gt;
+ *     &lt;/computation&gt;
+ *   &lt;/operation&gt;
+ * &lt;/operations&gt;
+ * </code>
+ * </p>
  *
+ * <p>Each &lt;operation />&gt; takes a name that will be displayed to the user and can be used to
+ * create that operation. It must be unique. If multiple with the same name exist an
+ * exception will be thrown.</p>
+ *
+ * <p>Inside of an operation there can be multiple <query /> elements. These queries will be presented
+ * to the user with the given "prompt" when they add the operation. Each query requires a "prompt",
+ * a "type", and a "name". Prompt may be any arbitrary string to display to the user. The type
+ * should be one of "column", "checkbox", "string", "number", or "combo".</p>
+ * 
+ * <p>A column type allows the selection of one of the columns in the parent data set and/or
+ * operation. A combo requires that <option />s be specified. For example:
+ * <code style="white-space: pre; font-family: monospace;">
+ * &lt;query type="combo" name="test_type" prompt="Select the test to perform"&gt;
+ *   &lt;option&gt;Two sample&lt;/option&gt;
+ *   &lt;option&gt;Paired&lt;/option&gt;
+ * &lt;/query&gt;
+ * </code>
+ * </p>
+ *
+ * <p>The user's response will be returned back and saved under the name given. In the computation
+ * section of the operation specification these values can be sent to R to perform work.</p>
+ *
+ * <p>There then is a &lt;computation /&gt; section inside the operation. This section allows four types of
+ * elements, all of which may be specified in any number of times. Elements will be executed in the
+ * order they are encountered.</p>
+ *
+ * <p>The first element type is the simplest, commands. A &lt;cmd /&gt; takes a single R command and executes
+ * it. An exception will be thrown if more than one command is placed here. If a newline is needed
+ * in a string then use \n, not a hard line break.</p>
+ *
+ * <p>Second, a &lt;set /&gt; element allows for an R variable to be set from one of the user-prompted
+ * values. The attribute "rvar" specifies the R variable name to use and "name" should reference the
+ * same name as was used in the original &lt;query /&gt;. For example, to ask a user to select a column
+ * and then save it for use:
+ * <code style="white-space: pre; font-family: monospace;">
+ * &lt;operation&gt;
+ *   &lt;query type="column" name="selected_column" prompt="Select a column" /&gt;
+ *   &lt;computation&gt;
+ *     &lt;set rvar="col" name="selected_column" /&gt;
+ *   &lt;computation&gt;
+ * &lt;/operation&gt;
+ * </code>
+ * </p>
+ *
+ * <p>Third, &lt;loop /&gt;s allow repetition. Each loop must specify its "type" as either "parent" or "r_vector".
+ * Parent loops go through every column of the parent data set and/or operation, assigning them
+ * in turn to the R variable given in indexVar. Vector loops take the R command given in "rvar"
+ * and iterate over the elements in it, setting each in turn as the value of indexVar. The command
+ * given in rvar must result in a numerical vector. A loop may then use any of the other elements
+ * inside itself, including other loops.</p>
+ *
+ * <p>Finally, to set the actual values for the operation, &lt;save /&gt; elements may be specified. The
+ * result to save may be given either via an "rvar" attribute or as a contain R command. For
+ * example, both of the following do the same thing:
+ * <code style="white-space: pre; font-family: monospace;">
+ * &lt;comuptation&gt;
+ *   &lt;cmd&gt;testing = 75.6&lt;/cmd&gt;
+ *   &lt;save type="double" column="ex" rvar="testing" /&gt;
+ *   &lt;save type="double" column="ex"&gt;testing&lt;/save&gt;
+ * &lt;/computation&gt;
+ * </code>
+ * </p>
+ * <p>The "type" tells the operation how to process the result and may be one of "double", "string",
+ * "double_array", or "string_array". The "column" attribute gives the name of the result
+ * column to save into.</p>
+ *
+ * <p>Below is an example of implementing a t-test:
+ * <code style="white-space: pre; font-family: monospace;">
+ * &lt;operations&gt;
+ *   &lt;operation name="t-test"&gt;
+ *     &lt;computation&gt;
+ *       &lt;loop type="parent" indexVar="col"&gt;
+ *         &lt;cmd&gt;t = t.test(col)&lt;/cmd&gt;
+ *         &lt;save type="double" column="t"&gt;t$statistic&lt;/save&gt;
+ *         &lt;save type="double" column="df"&gt;t$parameter&lt;/save&gt;
+ *         &lt;save type="double" column="p-value"&gt;t$p.value&lt;/save&gt;
+ *         &lt;save type="double" column="mean"&gt;t$estimate&lt;/save&gt;
+ *         &lt;save type="double" column="CI"&gt;t$conf.int[1]&lt;/save&gt;
+ *         &lt;save type="double" column="CI"&gt;t$conf.int[2]&lt;/save&gt;
+ *         &lt;save type="double" column="alpha"&gt;attr(t$conf.int, 'conf.level')&lt;/save&gt;
+ *       &lt;/loop&gt;
+ *     &lt;/computation&gt;
+ *   &lt;/operation&gt;
+ * &lt;/operations&gt;
+ * </code>
+ * </p>
+ *
+ * The resultant operation does the following internally:
+ * <code style="white-space: pre; font-family: monospace;">
+ * test.csv
+ *   Import.me: 10.0, 11.0, 12.0, 13.0
+ *     Column.: 20.0, 21.0, 22.0, 23.0
+ *       Hello: 30.0, 31.0, 32.0, 33.0
+ * col = c(10.0, 11.0, 12.0, 13.0 )
+ * t = t.test(col)
+ * t$statistic
+ * t$parameter
+ * t$p.value
+ * t$estimate
+ * t$conf.int[1]
+ * t$conf.int[2]
+ * attr(t$conf.int, 'conf.level')
+ * col = c(20.0, 21.0, 22.0, 23.0 )
+ * t = t.test(col)
+ * t$statistic
+ * ... (repeat above)
+ * attr(t$conf.int, 'conf.level')
+ * col = c(30.0, 31.0, 32.0, 33.0 )
+ * t = t.test(col)
+ * t$statistic
+ * ... (repeat again)
+ * attr(t$conf.int, 'conf.level')
+ * Result:
+ * t-test
+ *         Import.me t: 17.81572
+ *        Import.me df: 3.0
+ *   Import.me p-value: 3.856172E-4
+ *      Import.me mean: 11.5
+ *        Import.me CI: 9.44574, 13.55426
+ *     Import.me alpha: 0.95
+ *           Column. t: 33.30766
+ *          Column. df: 3.0
+ *     Column. p-value: 5.948823E-5
+ *        Column. mean: 21.5
+ *          Column. CI: 19.44574, 23.55426
+ *       Column. alpha: 0.95
+ *             Hello t: 48.79959
+ *            Hello df: 3.0
+ *       Hello p-value: 1.894812E-5
+ *          Hello mean: 31.5
+ *            Hello CI: 29.44574, 33.55426
+ *         Hello alpha: 0.95
+ * </code>
+ * 
  * @author Ryan Morehart
  */
 public class OperationXML extends Operation
@@ -133,14 +292,21 @@ public class OperationXML extends Operation
 	 * the name can then be passed off to createOperation() to retrieve an object
 	 * that will perform the calculations.
 	 * @return HashMap of the names and operations.
+	 * @throws OperationXMLException Thrown when multiple operations with the same name are detected
 	 */
-	public static HashMap<String, Element> getAvailableOperations()
+	public static HashMap<String, Element> getAvailableOperations() throws OperationXMLException
 	{
 		HashMap<String, Element> opNames = new HashMap<String, Element>();
 		for(Object opEl : operationXML.getChildren("operation"))
 		{
 			Element op = (Element) opEl;
-			opNames.put(op.getAttributeValue("name"), op);
+			String name = op.getAttributeValue("name");
+
+			// Only allow a name to appear once
+			if(opNames.containsKey(name))
+				throw new OperationXMLException("Multiple operations with the name '" + name + "' found");
+
+			opNames.put(name, op);
 		}
 		return opNames;
 	}
