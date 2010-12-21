@@ -72,6 +72,7 @@ import problem.DataSet;
 import problem.FileException;
 import problem.IncompleteInitialization;
 import problem.Operation;
+import problem.OperationException;
 import problem.Problem;
 import r.OperationXML;
 import r.OperationXMLException;
@@ -232,29 +233,39 @@ public class ViewPanel extends JPanel
 		try		
 		{
 			OperationXML.loadXML(Domain.xmlPath);
-			operations = OperationXML.getAvailableOperations();
+			operations = Operation.getAvailableOperations();
 
 			// Add all operation types to the palette, adding listeners to the labels as we go
 			for (int i = 0; i < operations.size (); ++i)
 			{
-				final OperationXML operation = OperationXML.createOperation(operations.get (i));
-
-				operation.addMouseListener(new MouseAdapter ()
+				try
 				{
-					@Override
-					public void mouseReleased(MouseEvent evt)
+					final Operation operation = Operation.createOperation(operations.get (i));
+					operation.addMouseListener(new MouseAdapter ()
 					{
-						addToWorkspace (operation);
-					}
-				});
+						@Override
+						public void mouseReleased(MouseEvent evt)
+						{
+							addToWorkspace (operation);
+						}
+					});
 
-				if (i % 2 == 0)
-				{
-					leftPanel.add (operation);
+					if (i % 2 == 0)
+					{
+						leftPanel.add (operation);
+					}
+					else
+					{
+						rightPanel.add (operation);
+					}
 				}
-				else
+				catch (OperationXMLException ex)
 				{
-					rightPanel.add (operation);
+					// Unable to load, not a real operation
+				}
+				catch (OperationException ex)
+				{
+					// Unable to load, not a real operation
 				}
 			}
 		}
@@ -264,7 +275,7 @@ public class ViewPanel extends JPanel
 		catch (IOException ex)
 		{
 		}
-		catch (OperationXMLException ex)
+		catch (OperationException ex)
 		{
 		}
     }
