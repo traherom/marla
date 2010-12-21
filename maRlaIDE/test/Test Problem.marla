@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF8"?>
 <problem>
   <statement>This is a test problem.</statement>
-  <data name="Data Set 1" id="1503518234" x="330" y="50" height="16" width="80">
+  <data name="Data Set 1" id="1503518234" x="330" y="50" height="17" width="76">
     <column name="Column 1">
       <value>10.0</value>
       <value>11.0</value>

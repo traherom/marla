@@ -101,10 +101,12 @@ public abstract class Operation extends DataSet
 	}
 
 	/**
-	 *
-	 * @param opName
-	 * @return
-	 * @throws OperationException
+	 * Creates a new Operation via the given name. Operations are first searched for in
+	 * the currently loaded XML operations list, then in the Java-based list.
+	 * @param opName Name of operation to search for, usually taken from getAvailableOperations().
+	 * @return Newly created operation of the given type
+	 * @throws OperationException Thrown if an operation matching the name cannot be found and/or
+	 *		instantiated.
 	 */
 	public static Operation createOperation(String opName) throws OperationException
 	{
@@ -202,7 +204,6 @@ public abstract class Operation extends DataSet
 	 * Assigns this Operation to a new parent. Should only be called by
 	 * the new parent DataSet, as that needs to actually insert the
 	 * operation into its array. The package private access is intentional.
-	 * 
 	 * @param newParent Parent DataSet/Operation we're a part of
 	 */
 	void setParentData(DataSet newParent) throws CalcException
@@ -246,6 +247,9 @@ public abstract class Operation extends DataSet
 	 * Recalculates cached columns and informs children to
 	 * refresh themselves as well.
 	 * @throws CalcException Unable to recompute the values for this Operation
+	 * @throws OperationInfoRequiredException  Thrown when the operation needs more information to
+	 *		complete its calculations. The GUI should catch this and display a dialog for the user
+	 *		based on getRequiredInfo().
 	 */
 	public void refreshCache() throws CalcException
 	{
@@ -291,6 +295,9 @@ public abstract class Operation extends DataSet
 	 *		as it was instructed to. Likely a programming error.
 	 * @throws RProcessorException Error working with the R process itself (permissions or closed
 	 *		pipes, for example).
+	 * @throws OperationInfoRequiredException Thrown when the operation needs more information to
+	 *		complete its calculations. The GUI should catch this and display a dialog for the user
+	 *		based on getRequiredInfo().
 	 */
 	protected abstract void computeColumns() throws RProcessorParseException, RProcessorException, CalcException;
 
@@ -342,6 +349,25 @@ public abstract class Operation extends DataSet
 	 */
 	public void setRequiredInfo(ArrayList<Object> values)
 	{
+	}
+
+	/**
+	 * Returns true if this operation has graphical output. The path to the graphic
+	 * file can be obtained via getPlot().
+	 * @return true if there is available graphical output, false otherwise
+	 */
+	public boolean hasPlot()
+	{
+		return getPlot() != null;
+	}
+
+	/**
+	 * Returns the path to the graphical plot this operation generated.
+	 * @return Path to plot, null if there is none associated with this operation.
+	 */
+	public String getPlot()
+	{
+		return null;
 	}
 
 	/**

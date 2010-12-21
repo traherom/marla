@@ -60,17 +60,17 @@ import problem.Operation;
  * </code>
  * </p>
  *
- * <p>Each &lt;operation />&gt; takes a name that will be displayed to the user and can be used to
+ * <p>Each &lt;operation /&gt; takes a name that will be displayed to the user and can be used to
  * create that operation. It must be unique. If multiple with the same name exist an
  * exception will be thrown.</p>
  *
- * <p>Inside of an operation there can be multiple <query /> elements. These queries will be presented
+ * <p>Inside of an operation there can be multiple &lt;query /&gt; elements. These queries will be presented
  * to the user with the given "prompt" when they add the operation. Each query requires a "prompt",
  * a "type", and a "name". Prompt may be any arbitrary string to display to the user. The type
  * should be one of "column", "checkbox", "string", "number", or "combo".</p>
  * 
  * <p>A column type allows the selection of one of the columns in the parent data set and/or
- * operation. A combo requires that <option />s be specified. For example:
+ * operation. A combo requires that &lt;option /&gt;s be specified. For example:
  * <code style="white-space: pre; font-family: monospace;">
  * &lt;query type="combo" name="test_type" prompt="Select the test to perform"&gt;
  *   &lt;option&gt;Two sample&lt;/option&gt;
@@ -82,7 +82,7 @@ import problem.Operation;
  * <p>The user's response will be returned back and saved under the name given. In the computation
  * section of the operation specification these values can be sent to R to perform work.</p>
  *
- * <p>There then is a &lt;computation /&gt; section inside the operation. This section allows four types of
+ * <p>There then is a &lt;computation /&gt; section inside the operation. This section allows five types of
  * elements, all of which may be specified in any number of times. Elements will be executed in the
  * order they are encountered.</p>
  *
@@ -112,7 +112,7 @@ import problem.Operation;
  * each in turn as the value of valueVar. A loop may then use any of the other elements inside
  * itself, including other loops.</p>
  *
- * <p>Finally, to set the actual values for the operation, &lt;save /&gt; elements may be specified. The
+ * <p>Fourth, to set the actual values for the operation, &lt;save /&gt; elements may be specified. The
  * result to save may be given either via an "rvar" attribute or as a contain R command. For
  * example, both of the following do the same thing:
  * <code style="white-space: pre; font-family: monospace;">
@@ -128,10 +128,17 @@ import problem.Operation;
  * column to save into. Instead of plain "column", "dynamic_column" maybe used, which may
  * contain any R command that results in a single string.</p>
  *
+ * <p>Finally, a single &lt;plot /&gt; element is allowed in an operation. A plot creates a new
+ * device and commands may be placed inside may draw onto it. Commands should not manually change
+ * the device or close it, that will be taken care of by the plot. A plot takes no attributes
+ * but allows any of the other elements to be place inside it, just as with the main computation
+ * section.</p>
+ *
  * <p>Below is an example of implementing a t-test:
  * <code style="white-space: pre; font-family: monospace;">
  * &lt;operations&gt;
  *   &lt;operation name="t-test"&gt;
+ *     &lt;query type="checkbox" prompt="Is your data normal?" name="normal" /&gt;
  *     &lt;computation&gt;
  *       &lt;loop type="parent" indexVar="col"&gt;
  *         &lt;cmd&gt;t = t.test(col)&lt;/cmd&gt;
@@ -213,6 +220,12 @@ public class OperationXML extends Operation
 	 */
 	private Element opConfig = null;
 	/**
+	 * Used to store the name of the plot we (might) create. Unused
+	 * if the XML specification itself doesn't contain a <plot />
+	 * element.
+	 */
+	private String plotPath = null;
+	/**
 	 * Saves the answer from the GUI to any questions we asked
 	 */
 	private HashMap<String, Object[]> questionAnswers = null;
@@ -230,7 +243,7 @@ public class OperationXML extends Operation
 	 */
 	private enum CommandType
 	{
-		CMD, SET, SAVE, LOOP
+		CMD, SET, SAVE, LOOP, PLOT
 	};
 
 	/**
@@ -421,6 +434,10 @@ public class OperationXML extends Operation
 					processLoop(savePrepend, el);
 					break;
 
+				case PLOT:
+					processPlot(savePrepend, el);
+					break;
+
 				default:
 					throw new CalcException("Unknow computation command '" + type + "'");
 			}
@@ -570,6 +587,18 @@ public class OperationXML extends Operation
 		}
 	}
 
+	private void processPlot(String savePrepend, Element cmdEl) throws RProcessorException, RProcessorParseException, CalcException
+	{
+		// An operation may only have one plot in it
+		if(plotPath != null)
+			throw new RProcessorParseException("An operation may only have one plot in it");
+
+		// Plot away
+		plotPath = proc.startGraphicOutput();
+		processSequence(savePrepend, cmdEl);
+		proc.stopGraphicOutput();
+	}
+
 	/**
 	 * Prompts user for the data specified by <query /> XML in operations. Query
 	 * takes the following attributes:
@@ -638,6 +667,12 @@ public class OperationXML extends Operation
 			temp[1] = values.get(i);
 			questionAnswers.put(queryEl.getAttributeValue("name"), temp);
 		}
+	}
+
+	@Override
+	public String getPlot()
+	{
+		return plotPath;
 	}
 
 	/**
