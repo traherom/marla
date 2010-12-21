@@ -607,7 +607,7 @@ public class DataSet extends JLabel
 			sb.append(col.toString());
 			sb.append('\n');
 		}
-		
+
 		return sb.toString();
 	}
 

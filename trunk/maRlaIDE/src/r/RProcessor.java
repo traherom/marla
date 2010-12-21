@@ -129,20 +129,13 @@ public class RProcessor
 
 			procIn = (BufferedOutputStream) rProc.getOutputStream();
 
-			// See if things worked and eat up an error about "no --no-readline"
+			// Set options and eat up an error about "no --no-readline"
 			// option on Windows if needed.
-			execute("options(error=dump.frames)");
-			Double testing = executeDouble("5");
-			if(testing != 5)
-				throw new RProcessorException("Unable to initialize R processor, test return incorrect");
+			execute("options(error=dump.frames, device=png)");
 
 			// TODO: set this in domain or someplace, so that the command line can be used
 			// to turn it on and off
 			debugOutputMode = RecordMode.DISABLED;
-		}
-		catch(RProcessorParseException ex)
-		{
-			throw new RProcessorException("Unable to initialize R processor, failed execute test", ex);
 		}
 		catch(IOException ex)
 		{
@@ -347,7 +340,9 @@ public class RProcessor
 		}
 		catch(IOException ex)
 		{
-			// Unable to read/write to pipes. Try to create new R instance and try again, then die
+			// Unable to read/write to pipes. Try to kill off the process completely to allow
+			// us to be restarted
+			close();
 			throw new RProcessorException("Unable to read or write to the R instance", ex);
 		}
 	}
@@ -665,6 +660,71 @@ public class RProcessor
 	}
 
 	/**
+	 * Creates a new graphic device with the necessary options for passing
+	 * back to the GUI. Returns the path to the file that will hold the output.
+	 * @return Path where the new graphics device will write to
+	 * @throws RProcessorException An error occurred creating the device
+	 */
+	public String startGraphicOutput() throws RProcessorException
+	{
+		String pngName = getUniqueName() + ".png";
+		execute("png(filename='" + pngName + "')");
+		return pngName;
+	}
+
+	/**
+	 * Stops the current graphic device, flushing it to disk.
+	 * @throws RProcessorException An error occurred closing the device
+	 */
+	public void stopGraphicOutput() throws RProcessorException
+	{
+		execute("dev.off()");
+	}
+
+	/**
+	 * Stores the function with the given code into a unique function name.
+	 * This function does far less checking than the normal execute and does not record
+	 * into the appropriate variables. Use only as needed
+	 * @param code Function (including the function() header itself) to save
+	 * @return Name of the new function
+	 * @throws RProcessorException Thrown if an internal error occur
+	 */
+	public String setFunction(String code) throws RProcessorException
+	{
+		return setFunction(getUniqueName(), code);
+	}
+
+	/**
+	 * Stores the function with the given code into the given name.
+	 * This function does far less checking than the normal execute and does not record
+	 * into the appropriate variables. Use only as needed
+	 * @param name R-conforming function name
+	 * @param code Function (including the function() header itself) to save
+	 * @return Name of the new function
+	 * @throws RProcessorException Thrown if an internal error occur
+	 */
+	public String setFunction(String name, String code) throws RProcessorException
+	{
+		try
+		{
+			// Can't use the normal execute, it'll block us from "using" multiple commands
+			StringBuilder fullSave = new StringBuilder();
+			fullSave.append(name);
+			fullSave.append("<-");
+			fullSave.append(code);
+
+			byte[] cmdArray = fullSave.toString().getBytes();
+			procIn.write(cmdArray, 0, cmdArray.length);
+			procIn.flush();
+			return name;
+		}
+		catch(IOException ex)
+		{
+			throw new RProcessorException("Unable to send command to R");
+		}
+	}
+
+	/**
 	 * Sets the recording mode for the processor
 	 * @param mode RecordMode to place the processor in.
 	 */
@@ -710,53 +770,20 @@ public class RProcessor
 	{
 		RProcessor test = RProcessor.getInstance();
 
-		test.setRecorder(RecordMode.CMDS_ONLY);
-
-		String output = test.execute("mean(c(-1, -2, -3))");
-		System.out.println("   Output: " + output);
-		System.out.println("Parses to: " + test.parseDouble(output));
-
-		output = test.execute("1:10");
-		System.out.println("   Output: " + output);
-		System.out.println("Parses to: " + test.parseDoubleArray(output));
-
-		output = test.execute("summary(1:10)");
-		System.out.println("   Output: " + output);
-		System.out.println("Parses to: " + test.parseDoubleArray(output));
-
 		try
 		{
-			output = test.execute("blah");
-			System.out.println("   Output: " + output);
-		}
-		catch(Exception e)
-		{
-			System.out.println("good");
-		}
+			test.setRecorder(RecordMode.FULL);
 
-		try
-		{
-			output = test.execute("print(5)\nprint(6)");
-			System.out.println("   Output: " + output);
-		}
-		catch(Exception e)
-		{
-			System.out.println("good");
-		}
-		
-		try
-		{
-			output = test.execute("print(5); print(6)");
-			System.out.println("   Output: " + output);
-		}
-		catch(Exception e)
-		{
-			System.out.println("good");
-		}
+			test.execute("x = 1:10");
+			test.execute("y = 1:10");
+			test.execute("plot(x, y)");
 
-		System.out.println("\n------\nInteractions");
-		System.out.println(test.fetchInteraction());
-
-		test.close();
+			System.out.println("\n------\nInteractions");
+			System.out.println(test.fetchInteraction());
+		}
+		finally
+		{
+			test.close();
+		}
 	}
 }

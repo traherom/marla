@@ -38,4 +38,9 @@ public class OperationException extends Exception
 	{
 		super(msg);
 	}
+
+	OperationException(String msg, Throwable ex)
+	{
+		super(msg, ex);
+	}
 }

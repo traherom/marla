@@ -8,6 +8,7 @@
 		</computation>
 	</operation>
 	<operation name="t-test">
+		<query type="checkbox" prompt="Is your data normal?" name="normal" />
 		<computation>
 			<loop type="parent" valueVar="col">
 				<cmd>t = t.test(col)</cmd>
@@ -58,6 +59,17 @@
 					<save type="double" dynamic_column="paste(colName, n[i])">s[i]</save>
 				</loop>
 			</loop>
+		</computation>
+	</operation>
+	<operation name="Plot">
+		<query type="column" name="x" prompt="X column" />
+		<query type="column" name="y" prompt="Y column" />
+		<computation>
+			<set rvar="x" name="x" />
+			<set rvar="y" name="y" />
+			<plot>
+				<cmd>plot(x,y)</cmd>
+			</plot>
 		</computation>
 	</operation>
 </operations>
