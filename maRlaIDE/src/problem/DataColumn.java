@@ -30,7 +30,7 @@ import org.jdom.Element;
  * 
  * @author Ryan Morehart
  */
-public class DataColumn implements List<Double>
+public class DataColumn implements List<Object>
 {
 	/**
 	 * The dataset we belong to.
@@ -41,16 +41,24 @@ public class DataColumn implements List<Double>
 	 */
 	private String name = new String();
 	/**
-	 * Data in column. Assumed to be doubles since stats works with those a lot.
+	 * Data in column. Could be strings or doubles
 	 */
-	private ArrayList<Double> values = new ArrayList<Double>();
+	private ArrayList<Object> values = new ArrayList<Object>();
+	/**
+	 * Mode this column is in
+	 */
+	private DataMode mode = DataMode.NUMERICAL;
+	/**
+	 * Valid storage modes for a column to be in. Every value in it will
+	 * be interpreted this way.
+	 */
+	public enum DataMode {NUMERICAL, STRING};
 
 	/**
 	 * Creates a new DataColumn with the given name that does not
 	 * belong to a certain DataSet
 	 * @param name Human-friendly name for column
 	 * @throws DuplicateNameException There is already a column in this DataSet with the same name
-	 * @throws CalcException Unable to compute values for the new column
 	 */
 	public DataColumn(String name) throws DuplicateNameException
 	{
@@ -62,7 +70,6 @@ public class DataColumn implements List<Double>
 	 * @param parent DataSet we belong to
 	 * @param name Human-friendly name for this column
 	 * @throws DuplicateNameException There is already a column in this DataSet with the same name
-	 * @throws CalcException UNable to compute values for the new column
 	 */
 	public DataColumn(DataSet parent, String name) throws DuplicateNameException
 	{
@@ -79,9 +86,9 @@ public class DataColumn implements List<Double>
 	{
 		this.parent = parent;
 		name = col.name;
-		for(Double v : col.values)
+		for(Object v : col.values)
 		{
-			values.add(new Double(v));
+			values.add(castToMode(v));
 		}
 	}
 
@@ -140,15 +147,64 @@ public class DataColumn implements List<Double>
 	}
 
 	/**
+	 * Determines if this DataColumn contains numerical values (returned as Doubles
+	 * by other functions)
+	 * @return true if the data should be interpreted as Doubles
+	 */
+	public boolean isNumerical()
+	{
+		return mode == DataMode.NUMERICAL;
+	}
+
+	/**
+	 * Determines if this DataColumn contains strings (R "factors")
+	 * @return true if the data should be interpreted as strings
+	 */
+	public boolean isString()
+	{
+		return mode == DataMode.STRING;
+	}
+
+	/**
+	 * Returns the interpretation mode of the DataColumn. Every value returned
+	 * from the column will be cost to an appropriate object for that type
+	 * (numerical is for doubles, for example).
+	 * @return Mode from DataMode
+	 */
+	public DataMode getMode()
+	{
+		return mode;
+	}
+
+	/**
+	 * Changes the interpretation mode of the DataColumn and returns the old mode
+	 * @param newMode New DataMode to put the DataColumn into
+	 * @return DataMode the DataColumn used to be operating in.
+	 */
+	public DataMode setMode(DataMode newMode)
+	{
+		DataMode oldMode = mode;
+		mode = newMode;
+
+		// Convert all values to the new mode
+		for(int i = 0; i < values.size(); i++)
+		{
+			values.set(i, castToMode(values.get(i)));
+		}
+
+		return oldMode;
+	}
+
+	/**
 	 * Adds an element to the end of the column
 	 * @param val New element value to be added
 	 * @return True if the value was successfully placed in column
 	 */
 	@Override
-	public boolean add(Double val)
+	public boolean add(Object val)
 	{
 		markChanged();
-		return values.add(val);
+		return values.add(castToMode(val));
 	}
 
 	/**
@@ -174,11 +230,11 @@ public class DataColumn implements List<Double>
 	@Override
 	public boolean contains(Object o)
 	{
-		return values.contains((Double) o);
+		return values.contains(o);
 	}
 
 	@Override
-	public Iterator<Double> iterator()
+	public Iterator<Object> iterator()
 	{
 		return new DataColumnIterator(this);
 	}
@@ -198,7 +254,7 @@ public class DataColumn implements List<Double>
 	@Override
 	public boolean remove(Object o)
 	{
-		if(values.remove((Double) o))
+		if(values.remove(o))
 		{
 			markChanged();
 			return true;
@@ -216,9 +272,17 @@ public class DataColumn implements List<Double>
 	}
 
 	@Override
-	public boolean addAll(Collection<? extends Double> c)
+	public boolean addAll(Collection<? extends Object> c)
 	{
-		if(values.addAll(c))
+		// Convert each value as it comes in
+		ArrayList<Object> converted = new ArrayList<Object>();
+		for(Object val : c)
+		{
+			converted.add(castToMode(val));
+		}
+
+		// And add them
+		if(values.addAll(converted))
 		{
 			markChanged();
 			return true;
@@ -228,9 +292,17 @@ public class DataColumn implements List<Double>
 	}
 
 	@Override
-	public boolean addAll(int index, Collection<? extends Double> c)
+	public boolean addAll(int index, Collection<? extends Object> c)
 	{
-		if(values.addAll(index, c))
+		// Convert each value as it comes in
+		ArrayList<Object> converted = new ArrayList<Object>();
+		for(Object val : c)
+		{
+			converted.add(castToMode(val));
+		}
+
+		// Add
+		if(values.addAll(index, converted))
 		{
 			markChanged();
 			return true;
@@ -289,9 +361,23 @@ public class DataColumn implements List<Double>
 	 * @return Current value at requested location.
 	 */
 	@Override
-	public Double get(int index)
+	public Object get(int index)
 	{
 		return values.get(index);
+	}
+
+	/**
+	 * Converts the given object to the correct type for the mode the DataColumn
+	 * is in.
+	 * @param val
+	 * @return
+	 */
+	private Object castToMode(Object val)
+	{
+		if(mode == DataMode.NUMERICAL)
+			return Double.valueOf(val.toString());
+		else
+			return val.toString();
 	}
 
 	/**
@@ -302,11 +388,11 @@ public class DataColumn implements List<Double>
 	 * @return Old value at given location
 	 */
 	@Override
-	public Double set(int index, Double element)
+	public Object set(int index, Object element)
 	{
 		// Only mark unsaved if it actually set a new value
-		Double old = values.set(index, element);
-		if(old != element && parent != null)
+		Object old = values.set(index, castToMode(element));
+		if(!old.equals(element) && parent != null)
 		{
 			markChanged();
 		}
@@ -321,10 +407,10 @@ public class DataColumn implements List<Double>
 	 * @param element New value to insert.
 	 */
 	@Override
-	public void add(int index, Double element)
+	public void add(int index, Object element)
 	{
 		markChanged();
-		values.add(index, element);
+		values.add(index, castToMode(element));
 	}
 
 	/**
@@ -334,7 +420,7 @@ public class DataColumn implements List<Double>
 	 * @return Old value in the index location.
 	 */
 	@Override
-	public Double remove(int index)
+	public Object remove(int index)
 	{
 		markChanged();
 		return values.remove(index);
@@ -363,13 +449,13 @@ public class DataColumn implements List<Double>
 	}
 
 	@Override
-	public ListIterator<Double> listIterator()
+	public ListIterator<Object> listIterator()
 	{
 		return new DataColumnIterator(this);
 	}
 
 	@Override
-	public ListIterator<Double> listIterator(int index)
+	public ListIterator<Object> listIterator(int index)
 	{
 		return new DataColumnIterator(this, index);
 	}
@@ -409,7 +495,7 @@ public class DataColumn implements List<Double>
 		Element colEl = new Element("column");
 		colEl.setAttribute("name", name);
 
-		for(Double d : values)
+		for(Object d : values)
 		{
 			colEl.addContent(new Element("value").addContent(d.toString()));
 		}
@@ -428,7 +514,7 @@ public class DataColumn implements List<Double>
 		DataColumn newCol = new DataColumn(colEl.getAttributeValue("name"));
 		for(Object el : colEl.getChildren("value"))
 		{
-			newCol.add(Double.parseDouble(((Element) el).getText()));
+			newCol.add(((Element) el).getText());
 		}
 		return newCol;
 	}

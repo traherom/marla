@@ -30,16 +30,16 @@ import java.util.regex.Pattern;
  *
  * @author Ryan Morehart
  */
-public class RProcessor
+public final class RProcessor
 {
 	/**
 	 * Sent to R to force an output we can recognize as finishing the command set
 	 */
-	private final String SENTINEL_STRING_CMD = "print('---MARLA R OUTPUT END. DONT USE THIS STRING---')\n";
+	private final String SENTINEL_STRING_CMD = "print('---MARLA R OUTPUT END---')\n";
 	/**
 	 * Return from R for the command given in SENTINEL_STRING_CMD, we watch for this result
 	 */
-	private final String SENTINEL_STRING_RETURN = "[1] \"---MARLA R OUTPUT END. DONT USE THIS STRING---\"";
+	private final String SENTINEL_STRING_RETURN = "[1] \"---MARLA R OUTPUT END---\"";
 
 	/**
 	 * Enumeration denoting the record mode the R processor can use
@@ -562,7 +562,7 @@ public class RProcessor
 	 * @return Name of the variable used
 	 * @throws RProcessorException Thrown if an internal error occur
 	 */
-	public String setVariable(Double val) throws RProcessorException
+	public String setVariable(Object val) throws RProcessorException
 	{
 		return setVariable(getUniqueName(), val);
 	}
@@ -574,22 +574,14 @@ public class RProcessor
 	 * @return Name of the variable used
 	 * @throws RProcessorException Thrown if an internal error occur
 	 */
-	public String setVariable(String name, String val) throws RProcessorException
+	public String setVariable(String name, Object val) throws RProcessorException
 	{
-		execute(name + "=\"" + val + '"');
+		if(val instanceof Double)
+			execute(name + "=\"" + val + '"');
+		else
+			execute(name + "=" + val);
 
 		return name;
-	}
-
-	/**
-	 * Sets the given variable with the value given
-	 * @param val Value to store in the variable
-	 * @return Name of the variable used
-	 * @throws RProcessorException Thrown if an internal error occur
-	 */
-	public String setVariable(String val) throws RProcessorException
-	{
-		return setVariable(getUniqueName(), val);
 	}
 
 	/**
@@ -598,69 +590,43 @@ public class RProcessor
 	 * @return Name of the variable used
 	 * @throws RProcessorException Thrown if an internal error occur
 	 */
-	public String setVariable(List<Double> vals) throws RProcessorException
+	public String setVariable(List<Object> vals) throws RProcessorException
 	{
 		return setVariable(getUniqueName(), vals);
 	}
 
 	/**
-	 * Sets the given variable with a vector of the values given
+	 * Sets the given variable with a vector of the values given. Values may be either
+	 * Doubles or Strings (anything unrecognized is assumed to be a string).
 	 * @param name R-conforming variable name
 	 * @param vals Array of values to store in the variable
 	 * @return Name of the variable used
 	 * @throws RProcessorException Thrown if an internal error occur
 	 */
-	public String setVariable(String name, List<Double> vals) throws RProcessorException
+	public String setVariable(String name, List<Object> vals) throws RProcessorException
 	{
 		// Builds an R command to set the given variable name with the values in the array
 		StringBuilder cmd = new StringBuilder();
 		cmd.append(name);
 		cmd.append(" = c(");
 
-		for(Double val : vals)
+		// Save as numerical or string vector as appropriate
+		if(vals.get(0) instanceof Double)
 		{
-			cmd.append(val);
-			cmd.append(", ");
+			for(Object val : vals)
+			{
+				cmd.append(val);
+				cmd.append(", ");
+			}
 		}
-		cmd.replace(cmd.length() - 2, cmd.length() - 1, "");
-		cmd.append(")\n");
-
-		// Run R command
-		execute(cmd.toString());
-
-		return name;
-	}
-
-	/**
-	 * Sets a new unique variable with a vector of the values given
-	 * @param vals Array of values to store in the variable
-	 * @return Name of the variable used
-	 * @throws RProcessorException Thrown if an internal error occur
-	 */
-	public String setVariableString(List<String> vals) throws RProcessorException
-	{
-		return setVariableString(getUniqueName(), vals);
-	}
-
-	/**
-	 * Sets the given variable with a vector of the values given
-	 * @param name R-conforming variable name
-	 * @param vals Array of values to store in the variable
-	 * @return Name of the variable used
-	 * @throws RProcessorException Thrown if an internal error occur
-	 */
-	public String setVariableString(String name, List<String> vals) throws RProcessorException
-	{
-		// Builds an R command to set the given variable name with the values in the array
-		StringBuilder cmd = new StringBuilder();
-		cmd.append(name);
-		cmd.append(" = c(");
-
-		for(String val : vals)
+		else
 		{
-			cmd.append('"');
-			cmd.append(val);
-			cmd.append("\", ");
+			for(Object val : vals)
+			{
+				cmd.append('"');
+				cmd.append(val);
+				cmd.append("\", ");
+			}
 		}
 		cmd.replace(cmd.length() - 2, cmd.length() - 1, "");
 		cmd.append(")\n");
@@ -775,27 +741,6 @@ public class RProcessor
 		if(uniqueValCounter < 0)
 			uniqueValCounter = 0;
 
-		return "marlaUniqueVar" + uniqueValCounter;
-	}
-
-	public static void main(String[] args) throws Exception
-	{
-		RProcessor test = RProcessor.getInstance();
-
-		try
-		{
-			test.setRecorder(RecordMode.FULL);
-
-			test.execute("x = 1:10");
-			test.execute("y = 1:10");
-			test.execute("plot(x, y)");
-
-			System.out.println("\n------\nInteractions");
-			System.out.println(test.fetchInteraction());
-		}
-		finally
-		{
-			test.close();
-		}
+		return "marlaUnique" + uniqueValCounter;
 	}
 }
