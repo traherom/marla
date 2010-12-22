@@ -526,8 +526,9 @@ public class OperationXML extends Operation
 	}
 
 	@Override
-	public String getPlot()
+	public String getPlot() throws CalcException
 	{
+		checkCache();
 		return plotPath;
 	}
 
