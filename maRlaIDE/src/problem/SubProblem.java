@@ -226,7 +226,7 @@ public class SubProblem implements ProblemPart
 		if(endSolutionStep == null)
 			throw new IncompleteInitialization();
 
-		return endSolutionStep.getAllColumns();
+		return endSolutionStep;
 	}
 
 	@Override

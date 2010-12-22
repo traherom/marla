@@ -56,6 +56,15 @@ public abstract class Operation extends DataSet
 	 */
 	protected RProcessor proc = null;
 	/**
+	 * True if the operation needs to recompute its values before returning results
+	 */
+	protected boolean isCacheDirty = true;
+	/**
+	 * True if the operation is recalculating its results, used to allow it to
+	 * work with its own columns and not cause infinite recursion.
+	 */
+	protected boolean inRecompute = false;
+	/**
 	 * List of Java Operation derivative classes that may be created by
 	 * the GUI front end.
 	 */
@@ -206,10 +215,10 @@ public abstract class Operation extends DataSet
 	 * operation into its array. The package private access is intentional.
 	 * @param newParent Parent DataSet/Operation we're a part of
 	 */
-	void setParentData(DataSet newParent) throws CalcException
+	void setParentData(DataSet newParent)
 	{
 		parent = newParent;
-		refreshCache();
+		markChanged();
 	}
 
 	/**
@@ -220,6 +229,62 @@ public abstract class Operation extends DataSet
 	public DataSet getParentData()
 	{
 		return parent;
+	}
+
+	@Override
+	public int getColumnIndex(String colName) throws DataNotFound
+	{
+		try
+		{
+			checkCache();
+			return super.getColumnIndex(colName);
+		}
+		catch(CalcException ex)
+		{
+			throw new RuntimeException(ex);
+		}
+	}
+
+	@Override
+	public DataColumn getColumn(int index)
+	{
+		try
+		{
+			checkCache();
+			return super.getColumn(index);
+		}
+		catch(CalcException ex)
+		{
+			throw new RuntimeException(ex);
+		}
+	}
+
+	@Override
+	public int getColumnLength()
+	{
+		try
+		{
+			checkCache();
+			return super.getColumnLength();
+		}
+		catch(CalcException ex)
+		{
+			throw new RuntimeException(ex);
+		}
+	}
+
+	@Override
+	public String[] getColumnNames()
+	{
+		try
+		{
+			checkCache();
+			return super.getColumnNames();
+		}
+		catch(CalcException ex)
+		{
+			throw new RuntimeException(ex);
+		}
 	}
 
 	/**
@@ -244,6 +309,16 @@ public abstract class Operation extends DataSet
 	}
 
 	/**
+	 * Refreshes the cache if needed
+	 * @throws CalcException Unable to recompute the values for this operation.
+	 */
+	public void checkCache() throws CalcException
+	{
+		if(isCacheDirty && !inRecompute)
+			refreshCache();
+	}
+
+	/**
 	 * Recalculates cached columns and informs children to
 	 * refresh themselves as well.
 	 * @throws CalcException Unable to recompute the values for this Operation
@@ -261,15 +336,14 @@ public abstract class Operation extends DataSet
 			// Compute new columns and save the way we do so (R commands) for use by toString()
 			proc.setRecorder(RProcessor.RecordMode.CMDS_ONLY);
 			columns.clear();
+			inRecompute = true;
 			computeColumns();
+			inRecompute = false;
 			this.operationRecord = proc.fetchInteraction();
 			proc.setRecorder(RProcessor.RecordMode.DISABLED);
 
-			// Tell all children to do the same
-			for(Operation op : solutionOps)
-			{
-				op.refreshCache();
-			}
+			// We're clean!
+			isCacheDirty = false;
 		}
 		catch(RProcessorParseException ex)
 		{
@@ -300,17 +374,6 @@ public abstract class Operation extends DataSet
 	 *		based on getRequiredInfo().
 	 */
 	protected abstract void computeColumns() throws RProcessorParseException, RProcessorException, CalcException;
-
-	@Override
-	public DataSet getAllColumns() throws CalcException
-	{
-		DataSet newDS = new DataSet(parent.getName() + " solved");
-		for(int i = 0; i < parent.getColumnCount(); i++)
-		{
-			newDS.addColumn(getColumn(i));
-		}
-		return newDS;
-	}
 
 	/**
 	 * Returns true if the Operation has questions/prompts for the user.
@@ -349,6 +412,8 @@ public abstract class Operation extends DataSet
 	 */
 	public void setRequiredInfo(ArrayList<Object> values)
 	{
+		markChanged();
+		
 	}
 
 	/**
@@ -447,6 +512,23 @@ public abstract class Operation extends DataSet
 	}
 
 	/**
+	 * Marks the Operation as having had something change about it and it
+	 * needing to recompute its values.
+	 */
+	@Override
+	public void markChanged()
+	{
+		// Mark as dirty but don't actually recompute yet
+		isCacheDirty = true;
+		
+		// Tell all children they need to recompute
+		for(Operation op : solutionOps)
+		{
+			op.markChanged();
+		}
+	}
+
+	/**
 	 * Takes the given name and returns a version of it that is
 	 * usable in R (obeys all the naming rules for variables basically)
 	 * @param dirtyName Name that needs to be cleaned
@@ -468,6 +550,15 @@ public abstract class Operation extends DataSet
 	@Override
 	public String toString()
 	{
+		try
+		{
+			checkCache();
+		}
+		catch(CalcException ex)
+		{
+			throw new RuntimeException("Unable to do toString() because the values could not be computed.", ex);
+		}
+		
 		StringBuilder sb = new StringBuilder();
 
 		// Show the parents do their computation. If we don't have a parent then
