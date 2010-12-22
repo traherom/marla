@@ -61,7 +61,8 @@ public abstract class Operation extends DataSet
 	protected boolean isCacheDirty = true;
 	/**
 	 * True if the operation is recalculating its results, used to allow it to
-	 * work with its own columns and not cause infinite recursion.
+	 * work with its own columns and not cause infinite recursion. Not certain
+	 * about the proper handling of threads here. TODO: ensure thread safety.
 	 */
 	protected boolean inRecompute = false;
 	/**
@@ -326,7 +327,7 @@ public abstract class Operation extends DataSet
 	 *		complete its calculations. The GUI should catch this and display a dialog for the user
 	 *		based on getRequiredInfo().
 	 */
-	public void refreshCache() throws CalcException
+	public synchronized void refreshCache() throws CalcException
 	{
 		if(parent == null)
 			throw new CalcException("No parent for operation to get data from");
@@ -338,8 +339,7 @@ public abstract class Operation extends DataSet
 			columns.clear();
 			inRecompute = true;
 			computeColumns();
-			inRecompute = false;
-			this.operationRecord = proc.fetchInteraction();
+			operationRecord = proc.fetchInteraction();
 			proc.setRecorder(RProcessor.RecordMode.DISABLED);
 
 			// We're clean!
@@ -352,6 +352,11 @@ public abstract class Operation extends DataSet
 		catch(RProcessorException ex)
 		{
 			throw new CalcException("An error occured while refreshing the calculation cache", ex);
+		}
+		finally
+		{
+			// Well we're certainly not recomputing any more
+			inRecompute = false;
 		}
 	}
 
@@ -373,7 +378,7 @@ public abstract class Operation extends DataSet
 	 *		complete its calculations. The GUI should catch this and display a dialog for the user
 	 *		based on getRequiredInfo().
 	 */
-	protected abstract void computeColumns() throws RProcessorParseException, RProcessorException, CalcException;
+	protected abstract void computeColumns() throws RProcessorParseException, RProcessorException, CalcException, OperationInfoRequiredException;
 
 	/**
 	 * Returns true if the Operation has questions/prompts for the user.
