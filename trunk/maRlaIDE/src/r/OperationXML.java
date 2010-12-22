@@ -32,7 +32,6 @@ import problem.DataColumn;
 import problem.DataNotFound;
 import problem.IncompleteInitialization;
 import problem.Operation;
-import problem.OperationException;
 import problem.OperationInfoRequiredException;
 
 /**

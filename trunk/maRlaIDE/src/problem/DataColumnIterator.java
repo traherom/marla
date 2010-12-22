@@ -25,7 +25,7 @@ import java.util.NoSuchElementException;
  *
  * @author Ryan Morehart
  */
-public class DataColumnIterator implements ListIterator<Double>
+public class DataColumnIterator implements ListIterator<Object>
 {
 	/**
 	 * DataColumn this iterator uses
@@ -80,14 +80,14 @@ public class DataColumnIterator implements ListIterator<Double>
 	}
 
 	@Override
-	public Double next()
+	public Object next()
 	{
 		if(!hasNext())
 			throw new NoSuchElementException("Already at end of DataColumn");
 
 		mayChange = true;
 
-		Double val = col.get(current);
+		Object val = col.get(current);
 		current++;
 		return val;
 	}
@@ -100,7 +100,7 @@ public class DataColumnIterator implements ListIterator<Double>
 	}
 
 	@Override
-	public Double previous()
+	public Object previous()
 	{
 		if(!hasPrevious())
 			throw new NoSuchElementException("Already at beginning of DataColumn");
@@ -140,7 +140,7 @@ public class DataColumnIterator implements ListIterator<Double>
 	}
 
 	@Override
-	public void set(Double e)
+	public void set(Object e)
 	{
 		if(!mayChange)
 			throw new IllegalStateException("Must call next() or previous() first");
@@ -149,7 +149,7 @@ public class DataColumnIterator implements ListIterator<Double>
 	}
 
 	@Override
-	public void add(Double e)
+	public void add(Object e)
 	{
 		if(!mayChange)
 			throw new IllegalStateException("Must call next() or previous() first");
