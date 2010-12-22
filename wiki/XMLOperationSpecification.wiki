@@ -1,2 +1,170 @@
 #summary Covers the XML file that specifies operations for maRla
 #labels Featured
+
+Operations in maRla may be specified using an XML format. The XML file should be similar
+to the following. A full example implementing a t-test is listed at the bottom.
+
+{{{
+<?xml version="1.0" encoding="UTF-8" ?>
+<operations>
+  <operation name="<operation name>">
+    <query type="<column|checkbox|string|number|combo>" name="<internal name>" prompt="<User prompt>" />
+    <computation>
+      <set rvar="<variable name>" name="<internal name>" />
+      
+      <cmd>R command</cmd>
+      ...
+      <cmd>R command</cmd>
+      
+      <loop type="parent|double_array|string_array" [keyVar="<R variable name>"] [valueVar="<R variable name>"] [rvar=""]>
+        <cmd>R command</cmd>
+        ...
+      </loop>
+      
+      <save type="double|string|double_array|string_array" [column="<Column name>"] [dynamic_column="<R command>"] [rvar="<R command>"]>[R command]</save>
+    </computation>
+  </operation>
+</operations>
+}}}
+
+Each `<operation />` takes a name that will be displayed to the user and can be used to
+create that operation. It must be unique. If multiple with the same name exist an
+exception will be thrown.
+
+Inside of an operation there can be multiple <query /> elements. These queries will be presented
+to the user with the given `prompt` when they add the operation. Each query requires a `prompt`,
+a `type`, and a `name`. Prompt may be any arbitrary string to display to the user. The type
+should be one of `column`, `checkbox`, `string`, `number`, or `combo`.
+
+A column type allows the selection of one of the columns in the parent data set and/or
+operation. A combo requires that `<option />`s be specified. For example:
+{{{
+<query type="combo" name="test_type" prompt="Select the test to perform">
+  <option>Two sample</option>
+  <option>Paired</option>
+</query>
+}}}
+
+
+The user's response will be returned back and saved under the name given. In the computation
+section of the operation specification these values can be sent to R to perform work.
+
+There then is a `<computation />` section inside the operation. This section allows five types of
+elements, all of which may be specified in any number of times. Elements will be executed in the
+order they are encountered.
+
+The first element type is the simplest, commands. A `<cmd />` takes a single R command and executes
+it. An exception will be thrown if more than one command is placed here. If a newline is needed
+in a string then use `\n`, not a hard line break.
+
+Second, a `<set />` element allows for an R variable to be set from one of the user-prompted
+values. The attribute `rvar` specifies the R variable name to use and `name` should reference the
+same name as was used in the original `<query />`. For example, to ask a user to select a column
+and then save it for use:
+{{{
+<operation>
+  <query type="column" name="selected_column" prompt="Select a column" />
+  <computation>
+    <set rvar="col" name="selected_column" />
+  <computation>
+</operation>
+}}}
+
+Third, `<loop />`s allow repetition. Each loop must specify its `type` as either `parent`,
+`double_array`, or `string_array`. Parent loops go through every column of the parent data set
+and/or operation, assigning them in turn to the R variable given in `valueVar`. A `keyVar` may
+also be specified for any loop type which will keep an index (1 based) of the loop number.
+Array loops take the R command given in `rvar` and iterate over the elements in it, setting
+each in turn as the value of valueVar. A loop may then use any of the other elements inside
+itself, including other loops.
+
+Fourth, to set the actual values for the operation, `<save />` elements may be specified. The
+result to save may be given either via an `rvar` attribute or as a contain R command. For
+example, both of the following do the same thing:
+{{{
+<comuptation>
+  <cmd>testing = 75.6</cmd>
+  <save type="double" column="ex" rvar="testing" />
+  <save type="double" column="ex">testing</save>
+</computation>
+}}}
+
+The `type` tells the operation how to process the result and may be one of `double`, `string`,
+`double_array`, or `string_array`. The `column` attribute gives the name of the result
+column to save into. Instead of plain `column`, `dynamic_column` maybe used, which may
+contain any R command that results in a single string.
+
+Finally, a single `<plot />` element is allowed in an operation. A plot creates a new
+device and commands may be placed inside may draw onto it. Commands should not manually change
+the device or close it, that will be taken care of by the plot. A plot takes no attributes
+but allows any of the other elements to be place inside it, just as with the main computation
+section.
+
+Below is an example of implementing a t-test:
+{{{
+<operations>
+  <operation name="t-test">
+    <query type="checkbox" prompt="Is your data normal?" name="normal" />
+    <computation>
+      <loop type="parent" indexVar="col">
+        <cmd>t = t.test(col)</cmd>
+        <save type="double" column="t">t$statistic</save>
+        <save type="double" column="df">t$parameter</save>
+        <save type="double" column="p-value">t$p.value</save>
+        <save type="double" column="mean">t$estimate</save>
+        <save type="double" column="CI">t$conf.int[1]</save>
+        <save type="double" column="CI">t$conf.int[2]</save>
+        <save type="double" column="alpha">attr(t$conf.int, 'conf.level')</save>
+      </loop>
+    </computation>
+  </operation>
+</operations>
+}}}
+
+The resultant operation does the following internally:
+{{{
+test.csv
+  Import.me: 10.0, 11.0, 12.0, 13.0
+    Column.: 20.0, 21.0, 22.0, 23.0
+      Hello: 30.0, 31.0, 32.0, 33.0
+col = c(10.0, 11.0, 12.0, 13.0 )
+t = t.test(col)
+t$statistic
+t$parameter
+t$p.value
+t$estimate
+t$conf.int[1]
+t$conf.int[2]
+attr(t$conf.int, 'conf.level')
+col = c(20.0, 21.0, 22.0, 23.0 )
+t = t.test(col)
+t$statistic
+... (repeat above)
+attr(t$conf.int, 'conf.level')
+col = c(30.0, 31.0, 32.0, 33.0 )
+t = t.test(col)
+t$statistic
+... (repeat again)
+attr(t$conf.int, 'conf.level')
+Result:
+t-test
+        Import.me t: 17.81572
+       Import.me df: 3.0
+  Import.me p-value: 3.856172E-4
+     Import.me mean: 11.5
+       Import.me CI: 9.44574, 13.55426
+    Import.me alpha: 0.95
+          Column. t: 33.30766
+         Column. df: 3.0
+    Column. p-value: 5.948823E-5
+       Column. mean: 21.5
+         Column. CI: 19.44574, 23.55426
+      Column. alpha: 0.95
+            Hello t: 48.79959
+           Hello df: 3.0
+      Hello p-value: 1.894812E-5
+         Hello mean: 31.5
+           Hello CI: 29.44574, 33.55426
+        Hello alpha: 0.95
+}}}
+
