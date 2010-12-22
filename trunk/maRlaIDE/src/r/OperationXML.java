@@ -689,7 +689,7 @@ public class OperationXML extends Operation
 
 	/**
 	 * Loads opConfig with the appropriate XML execution configuration.
-	 * @param opEl xmlop Element with the needed name of the XML operation to use
+	 * @param opEl Element with the needed name of the XML operation to use
 	 */
 	@Override
 	protected void fromXmlExtra(Element opEl)

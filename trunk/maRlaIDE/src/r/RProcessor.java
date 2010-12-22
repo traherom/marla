@@ -120,6 +120,10 @@ public class RProcessor
 						rPath, "--slave", "--no-readline"
 					});
 
+			// TODO: set this in domain or someplace, so that the command line can be used
+			// to turn it on and off
+			debugOutputMode = RecordMode.FULL;
+
 			// Hook up streams
 			//procOut = new BufferedReader(new InputStreamReader(rProc.getInputStream()));
 			comboStream = new InputStreamCombine();
@@ -132,10 +136,6 @@ public class RProcessor
 			// Set options and eat up an error about "no --no-readline"
 			// option on Windows if needed.
 			execute("options(error=dump.frames, device=png)");
-
-			// TODO: set this in domain or someplace, so that the command line can be used
-			// to turn it on and off
-			debugOutputMode = RecordMode.DISABLED;
 		}
 		catch(IOException ex)
 		{

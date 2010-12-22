@@ -270,14 +270,7 @@ public class DataSet extends JLabel
 			}
 		}
 
-		try
-		{
-			markChanged();
-		}
-		catch(CalcException ex)
-		{
-			// Not much we can do about this
-		}
+		markChanged();
 
 		super.setText(newName);
 		name = newName;
@@ -301,9 +294,8 @@ public class DataSet extends JLabel
 	 * Adds a column to this DataSet
 	 * @param column Column to assign to this DataSet
 	 * @return Column that was added to data (same as passed in)
-	 * @throws CalcException Unable to recompute the data with this new column
 	 */
-	public DataColumn addColumn(DataColumn column) throws CalcException
+	public DataColumn addColumn(DataColumn column)
 	{
 		markChanged();
 		columns.add(column);
@@ -333,9 +325,8 @@ public class DataSet extends JLabel
 	 * Removes given column in the dataset.
 	 * @param col Column to remove from the dataset
 	 * @return The removed column
-	 * @throws CalcException Unable to recompute the data without the column
 	 */
-	public DataColumn removeColumn(DataColumn col) throws CalcException
+	public DataColumn removeColumn(DataColumn col)
 	{
 		return removeColumn(columns.indexOf(col));
 	}
@@ -346,7 +337,7 @@ public class DataSet extends JLabel
 	 * @param index Location to remove from DataSet
 	 * @return Removed DataColumn, with the parent no longer set to this dataset
 	 */
-	public DataColumn removeColumn(int index) throws CalcException
+	public DataColumn removeColumn(int index)
 	{
 		markChanged();
 		DataColumn col = columns.remove(index);
@@ -436,40 +427,19 @@ public class DataSet extends JLabel
 	}
 
 	/**
-	 * Returns the same result as if you called getColumn() for each column
-	 * and combined them into a single DataSet. Shortcut if all values are
-	 * desired.
-	 * @return DataSet with all values "solved" (if an operation is being performed)
-	 */
-	public DataSet getAllColumns() throws CalcException
-	{
-		return new DataSet(this, null);
-	}
-
-	/**
 	 * Tells the problem we belong to that we've changed. Used by DataColumns
 	 * under us to notify encapsulating problem.
-	 * @throws CalcException Unable to recompute values after change
 	 */
-	public void markChanged() throws CalcException
+	public void markChanged()
 	{
-		// Tell all children to recompute
+		// Tell all children they need to recompute
 		for(Operation op : solutionOps)
 		{
-			op.refreshCache();
+			op.markChanged();
 		}
 
 		if(parent != null)
 			parent.markChanged();
-	}
-
-	/**
-	 * Quick way to check if something may need to be recomputed
-	 * @return true if it is possible that the values in this DataSet are different
-	 */
-	public boolean isChanged()
-	{
-		return parent.isChanged();
 	}
 
 	/**
@@ -483,9 +453,8 @@ public class DataSet extends JLabel
 	 *
 	 * @param op Operation to add to perform on DataSet
 	 * @return Newly added operation
-	 * @throws CalcException Unable to compute values with new operation attached
 	 */
-	public Operation addOperation(Operation op) throws CalcException
+	public Operation addOperation(Operation op)
 	{
 		markChanged();
 		op.setParentData(this);
@@ -517,7 +486,7 @@ public class DataSet extends JLabel
 	 * @param op Operation to remove from data
 	 * @return The removed Operation
 	 */
-	public Operation removeOperation(Operation op) throws CalcException
+	public Operation removeOperation(Operation op)
 	{
 		markChanged();
 		solutionOps.remove(op);
@@ -543,28 +512,6 @@ public class DataSet extends JLabel
 	public int getOperationCount()
 	{
 		return solutionOps.size();
-	}
-
-	/**
-	 * Returns a two dimensional array with all values in this dataset.
-	 * Column labels are lost but columns are in the order they were
-	 * inserted in
-	 * @return Table of all values in dataset
-	 */
-	public Double[][] toArray()
-	{
-		Double[][] allColumns = new Double[columns.size()][];
-		for(int i = 0; i < columns.size(); i++)
-		{
-			allColumns[i] = new Double[columns.get(i).size()];
-
-			Object[] vals = columns.get(i).toArray();
-			for(int j = 0; j < vals.length; j++)
-			{
-				allColumns[i][j] = (Double) vals[j];
-			}
-		}
-		return allColumns;
 	}
 
 	/**
@@ -648,7 +595,7 @@ public class DataSet extends JLabel
 	 * @param dataEl JDOM Element with the information to construct DataSet
 	 * @return Constructed and initialized DataSet
 	 */
-	public static DataSet fromXml(Element dataEl) throws CalcException
+	public static DataSet fromXml(Element dataEl)
 	{
 		DataSet newData = new DataSet(dataEl.getAttributeValue("name"));
 

@@ -21,7 +21,7 @@ package problem;
  *
  * @author traherom
  */
-public class DuplicateNameException extends RuntimeException
+public class DuplicateNameException extends Exception
 {
 	/**
 	 * Creates a new instance of <code>DuplicateNameException</code> without detail message.

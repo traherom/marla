@@ -274,29 +274,15 @@ public class Problem implements ProblemPart
 	}
 
 	/**
-	 * Forces all DataSets to recompute their values
+	 * Forces all DataSets to recompute their values the next time they are accessed
 	 * @throws CalcException Unable to compute all values
 	 */
-	public void recompute() throws CalcException
+	public void markDirty() throws CalcException
 	{
-		boolean failed = false;
-
-		// Tell all children to recompute
+		// Tell all children to recompute themselves when they need to
 		for(DataSet ds : datasets)
 		{
-			try
-			{
-				ds.markChanged();
-			}
-			catch(CalcException ex)
-			{
-				failed = true;
-			}
-		}
-
-		if(failed)
-		{
-			throw new CalcException("Unable to recompute one or more columns");
+			ds.markChanged();
 		}
 	}
 
@@ -464,15 +450,7 @@ public class Problem implements ProblemPart
 
 		for(Object dataEl : rootEl.getChildren("data"))
 		{
-			try
-			{
-				newProb.addData(DataSet.fromXml((Element) dataEl));
-			}
-			catch(CalcException ex)
-			{
-				// I don't care that you failed. It may just be missing stuff currently,
-				// we'll try a computation after everything finishes loading
-			}
+			newProb.addData(DataSet.fromXml((Element) dataEl));
 		}
 
 		for(Object partEl : rootEl.getChildren("part"))
@@ -480,8 +458,8 @@ public class Problem implements ProblemPart
 			newProb.addSubProblem(SubProblem.fromXml((Element) partEl, newProb));
 		}
 
-		// Do initial computations for everything
-		newProb.recompute();
+		// Make sure we're all dirty and recompute when needed
+		newProb.markDirty();
 
 		return newProb;
 	}

@@ -52,7 +52,7 @@ public class DataColumn implements List<Double>
 	 * @throws DuplicateNameException There is already a column in this DataSet with the same name
 	 * @throws CalcException Unable to compute values for the new column
 	 */
-	public DataColumn(String name) throws DuplicateNameException, CalcException
+	public DataColumn(String name) throws DuplicateNameException
 	{
 		this(null, name);
 	}
@@ -64,7 +64,7 @@ public class DataColumn implements List<Double>
 	 * @throws DuplicateNameException There is already a column in this DataSet with the same name
 	 * @throws CalcException UNable to compute values for the new column
 	 */
-	public DataColumn(DataSet parent, String name) throws DuplicateNameException, CalcException
+	public DataColumn(DataSet parent, String name) throws DuplicateNameException
 	{
 		this.parent = parent;
 		setName(name);
@@ -109,10 +109,9 @@ public class DataColumn implements List<Double>
 	/**
 	 * Changes the name this data column goes by.
 	 * @param name New name for column.
-	 * @throws CalcException Unable to recompute values after this name change
 	 * @throws DuplicateNameException Another DataColumn with the given name already exists
 	 */
-	public final void setName(String name) throws CalcException, DuplicateNameException
+	public final void setName(String name) throws DuplicateNameException
 	{
 		if(parent != null)
 		{
@@ -148,13 +147,7 @@ public class DataColumn implements List<Double>
 	@Override
 	public boolean add(Double val)
 	{
-		try
-		{
-			markChanged();
-		}
-		catch(CalcException ex)
-		{
-		}
+		markChanged();
 		return values.add(val);
 	}
 
@@ -207,13 +200,7 @@ public class DataColumn implements List<Double>
 	{
 		if(values.remove((Double) o))
 		{
-			try
-			{
-				markChanged();
-			}
-			catch(CalcException ex)
-			{
-			}
+			markChanged();
 			return true;
 		}
 		else
@@ -233,13 +220,7 @@ public class DataColumn implements List<Double>
 	{
 		if(values.addAll(c))
 		{
-			try
-			{
-				markChanged();
-			}
-			catch(CalcException ex)
-			{
-			}
+			markChanged();
 			return true;
 		}
 		else
@@ -251,13 +232,7 @@ public class DataColumn implements List<Double>
 	{
 		if(values.addAll(index, c))
 		{
-			try
-			{
-				markChanged();
-			}
-			catch(CalcException ex)
-			{
-			}
+			markChanged();
 			return true;
 		}
 		else
@@ -270,13 +245,7 @@ public class DataColumn implements List<Double>
 	{
 		if(values.removeAll(c))
 		{
-			try
-			{
-				markChanged();
-			}
-			catch(CalcException ex)
-			{
-			}
+			markChanged();
 			return true;
 		}
 		else
@@ -293,13 +262,7 @@ public class DataColumn implements List<Double>
 	{
 		if(values.retainAll(c))
 		{
-			try
-			{
-				markChanged();
-			}
-			catch(CalcException ex)
-			{
-			}
+			markChanged();
 			return true;
 		}
 		else
@@ -315,13 +278,7 @@ public class DataColumn implements List<Double>
 	{
 		if(!values.isEmpty())
 		{
-			try
-			{
-				markChanged();
-			}
-			catch(CalcException ex)
-			{
-			}
+			markChanged();
 			values.clear();
 		}
 	}
@@ -351,13 +308,7 @@ public class DataColumn implements List<Double>
 		Double old = values.set(index, element);
 		if(old != element && parent != null)
 		{
-			try
-			{
-				markChanged();
-			}
-			catch(CalcException ex)
-			{
-			}
+			markChanged();
 		}
 
 		return old;
@@ -372,13 +323,7 @@ public class DataColumn implements List<Double>
 	@Override
 	public void add(int index, Double element)
 	{
-		try
-		{
-			markChanged();
-		}
-		catch(CalcException ex)
-		{
-		}
+		markChanged();
 		values.add(index, element);
 	}
 
@@ -391,13 +336,7 @@ public class DataColumn implements List<Double>
 	@Override
 	public Double remove(int index)
 	{
-		try
-		{
-			markChanged();
-		}
-		catch(CalcException ex)
-		{
-		}
+		markChanged();
 		return values.remove(index);
 	}
 
@@ -483,9 +422,8 @@ public class DataColumn implements List<Double>
 	 * @return New DataColumn
 	 * @throws DuplicateNameException The save file must be wrong, there is already a column with
 	 *			this name
-	 * @throws CalcException Unable to compute values. Honestly probably doesn't matter
 	 */
-	public static DataColumn fromXml(Element colEl) throws DuplicateNameException, CalcException
+	public static DataColumn fromXml(Element colEl) throws DuplicateNameException
 	{
 		DataColumn newCol = new DataColumn(colEl.getAttributeValue("name"));
 		for(Object el : colEl.getChildren("value"))
@@ -534,7 +472,7 @@ public class DataColumn implements List<Double>
 	 * parent. Package scope is intentional.
 	 * @param newParent New DataSet we belong to
 	 */
-	void setParent(DataSet newParent) throws CalcException
+	void setParent(DataSet newParent)
 	{
 		if(parent != null)
 		{
@@ -547,10 +485,8 @@ public class DataColumn implements List<Double>
 	/**
 	 * Marks this DataColumn as having changes than haven't been saved
 	 * and tells parent about it, so that they can take appropriate action
-	 *
-	 * @throws CalcException Unable to recompute values
 	 */
-	public void markChanged() throws CalcException
+	public void markChanged()
 	{
 		if(parent != null)
 			parent.markChanged();
