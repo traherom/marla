@@ -417,16 +417,15 @@ public abstract class Operation extends DataSet
 	 */
 	public void setRequiredInfo(ArrayList<Object> values)
 	{
-		markChanged();
-		
 	}
 
 	/**
 	 * Returns true if this operation has graphical output. The path to the graphic
 	 * file can be obtained via getPlot().
 	 * @return true if there is available graphical output, false otherwise
+	 * @throws CalcException Unable to perform calculations
 	 */
-	public boolean hasPlot()
+	public boolean hasPlot() throws CalcException
 	{
 		return getPlot() != null;
 	}
@@ -434,9 +433,11 @@ public abstract class Operation extends DataSet
 	/**
 	 * Returns the path to the graphical plot this operation generated.
 	 * @return Path to plot, null if there is none associated with this operation.
+	 * @throws CalcException Unable to perform calculations
 	 */
-	public String getPlot()
+	public String getPlot() throws CalcException
 	{
+		checkCache();
 		return null;
 	}
 

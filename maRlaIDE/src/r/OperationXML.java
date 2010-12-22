@@ -509,7 +509,10 @@ public class OperationXML extends Operation
 	@Override
 	public void setRequiredInfo(ArrayList<Object> values)
 	{
+		markChanged();
+
 		questionAnswers = new HashMap<String, Object[]>();
+
 		@SuppressWarnings("unchecked")
 		List<Element> queryEls = opConfig.getChildren("query");
 		for(int i = 0; i < queryEls.size(); i++)
