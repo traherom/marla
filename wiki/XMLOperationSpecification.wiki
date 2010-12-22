@@ -31,7 +31,7 @@ Each `<operation />` takes a name that will be displayed to the user and can be 
 create that operation. It must be unique. If multiple with the same name exist an
 exception will be thrown.
 
-Inside of an operation there can be multiple <query /> elements. These queries will be presented
+Inside of an operation there can be multiple `<query />` elements. These queries will be presented
 to the user with the given `prompt` when they add the operation. Each query requires a `prompt`,
 a `type`, and a `name`. Prompt may be any arbitrary string to display to the user. The type
 should be one of `column`, `checkbox`, `string`, `number`, or `combo`.
@@ -167,4 +167,3 @@ t-test
            Hello CI: 29.44574, 33.55426
         Hello alpha: 0.95
 }}}
-
