@@ -87,6 +87,10 @@ public class RProcessor
 	 */
 	private InputStreamCombine comboStream = null;
 	/**
+	 * Synchronization variable
+	 */
+	private final Object processSync = new Object();
+	/**
 	 * Denotes the mode the RProcessor is
 	 */
 	private RecordMode recordMode = RecordMode.DISABLED;
@@ -237,6 +241,8 @@ public class RProcessor
 		try
 		{
 			// Tell R we're closing
+			// We don't synchronize here because that would leave us
+			// hanging if the main execute() was
 			byte[] cmdArray = "q()".getBytes();
 			procIn.write(cmdArray, 0, cmdArray.length);
 			procIn.flush();
@@ -288,47 +294,53 @@ public class RProcessor
 			if(debugOutputMode == RecordMode.CMDS_ONLY || debugOutputMode == RecordMode.FULL)
 				System.out.print("> " + sentinelCmd);
 
-			// Send command with a sentinel at the end so we know when the output is done
-			sentinelCmd.append(this.SENTINEL_STRING_CMD);
-			byte[] cmdArray = sentinelCmd.toString().getBytes();
-			procIn.write(cmdArray, 0, cmdArray.length);
-			procIn.flush();
-
-			// Get results back
+			// Save R output to here
 			StringBuilder results = new StringBuilder();
-			String line = procOut.readLine();
-			while(line != null && !line.equals(this.SENTINEL_STRING_RETURN) && !line.startsWith("Error: "))
-			{
-				results.append(line);
-				results.append('\n');
-				line = procOut.readLine();
-			}
 
-			// If we ended the loop because of an error, read until we hit our sentinel anyway
-			if(line.startsWith("Error: "))
+			// Only one thread may access the R input/output at one time
+			synchronized(processSync)
 			{
-				// The last loop stopped before it added this
-				results.append(line);
-				results.append('\n');
+				// Send command with a sentinel at the end so we know when the output is done
+				sentinelCmd.append(this.SENTINEL_STRING_CMD);
+				byte[] cmdArray = sentinelCmd.toString().getBytes();
+				procIn.write(cmdArray, 0, cmdArray.length);
+				procIn.flush();
 
-				line = procOut.readLine();
-				while(line != null && !line.equals(this.SENTINEL_STRING_RETURN))
+				// Get results back
+				String line = procOut.readLine();
+				while(line != null && !line.equals(this.SENTINEL_STRING_RETURN) && !line.startsWith("Error: "))
 				{
 					results.append(line);
 					results.append('\n');
 					line = procOut.readLine();
 				}
 
-				// Record interaction if needed
-				if(recordMode == RecordMode.OUTPUT_ONLY || recordMode == RecordMode.FULL)
-					interactionRecord.append(results);
-				if(debugOutputMode == RecordMode.OUTPUT_ONLY || debugOutputMode == RecordMode.FULL)
-					System.out.print(results);
+				// If we ended the loop because of an error, read until we hit our sentinel anyway
+				if(line.startsWith("Error: "))
+				{
+					// The last loop stopped before it added this
+					results.append(line);
+					results.append('\n');
 
-				// Throw an exception about this
-				throw new RProcessorException(results.toString());
+					line = procOut.readLine();
+					while(line != null && !line.equals(this.SENTINEL_STRING_RETURN))
+					{
+						results.append(line);
+						results.append('\n');
+						line = procOut.readLine();
+					}
+
+					// Record interaction if needed
+					if(recordMode == RecordMode.OUTPUT_ONLY || recordMode == RecordMode.FULL)
+						interactionRecord.append(results);
+					if(debugOutputMode == RecordMode.OUTPUT_ONLY || debugOutputMode == RecordMode.FULL)
+						System.out.print(results);
+
+					// Throw an exception about this
+					throw new RProcessorException(results.toString());
+				}
 			}
-
+			
 			// Record interaction if needed
 			if(recordMode == RecordMode.OUTPUT_ONLY || recordMode == RecordMode.FULL)
 				interactionRecord.append(results);

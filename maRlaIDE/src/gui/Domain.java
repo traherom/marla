@@ -29,6 +29,7 @@ import problem.CalcException;
 import problem.DataSet;
 import problem.FileException;
 import problem.Operation;
+import problem.OperationInfoRequiredException;
 import problem.Problem;
 import resource.LoadSaveThread;
 
@@ -214,6 +215,25 @@ public class Domain
 		}
 		catch(JDOMException ex)
 		{
+		}
+	}
+
+	public void ensureRequirementsMet(Operation op) throws CalcException
+	{
+		// Iteratively attempts to tell operation to recompute itself until noone that
+		// it depends on has missing requirements
+		boolean isSolved = false;
+		while(!isSolved)
+		{
+			try
+			{
+				op.checkCache();
+				isSolved = true;
+			}
+			catch(OperationInfoRequiredException ex)
+			{
+				viewPanel.getRequiredInfoDialog(ex.getOperation());
+			}
 		}
 	}
 }

@@ -519,7 +519,7 @@ public class DataSet extends JLabel
 	 * @return DataSet as a string two dimensional array
 	 */
 	@Override
-	public String toString()
+	public String toString() 
 	{
 		return toString(this);
 	}
