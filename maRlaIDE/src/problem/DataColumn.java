@@ -186,10 +186,16 @@ public class DataColumn implements List<Object>
 		DataMode oldMode = mode;
 		mode = newMode;
 
-		// Convert all values to the new mode
-		for(int i = 0; i < values.size(); i++)
+		// Only do the rest if they actually changed it
+		if(oldMode != newMode)
 		{
-			values.set(i, castToMode(values.get(i)));
+			markChanged();
+			
+			// Convert all values to the new mode
+			for(int i = 0; i < values.size(); i++)
+			{
+				values.set(i, castToMode(values.get(i)));
+			}
 		}
 
 		return oldMode;
@@ -477,7 +483,12 @@ public class DataColumn implements List<Object>
 
 		for(int i = 0; i < values.size(); i++)
 		{
+			if(mode == DataMode.STRING)
+				sb.append('"');
 			sb.append(values.get(i));
+			if(mode == DataMode.STRING)
+				sb.append('"');
+
 			sb.append(", ");
 		}
 		if(values.size() > 0)

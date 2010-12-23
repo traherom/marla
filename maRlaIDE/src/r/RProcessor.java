@@ -577,9 +577,9 @@ public final class RProcessor
 	public String setVariable(String name, Object val) throws RProcessorException
 	{
 		if(val instanceof Double)
-			execute(name + "=\"" + val + '"');
-		else
 			execute(name + "=" + val);
+		else
+			execute(name + "=\"" + val + '"');
 
 		return name;
 	}

@@ -242,7 +242,7 @@ public class OperationXML extends Operation
 		{
 			// Process away
 			Element compEl = opConfig.getChild("computation");
-			processSequence("", compEl);
+			processSequence(compEl);
 		}
 		catch(OperationXMLException ex)
 		{
@@ -250,7 +250,7 @@ public class OperationXML extends Operation
 		}
 	}
 
-	private void processSequence(String savePrepend, Element compEl) throws RProcessorException, RProcessorParseException, CalcException, OperationXMLException
+	private void processSequence(Element compEl) throws RProcessorException, RProcessorParseException, CalcException, OperationXMLException
 	{
 		// Walk through each command/control structure sequentially
 		for(Object elObj : compEl.getChildren())
@@ -268,15 +268,15 @@ public class OperationXML extends Operation
 					break;
 
 				case SAVE:
-					processSave(savePrepend, el);
+					processSave(el);
 					break;
 
 				case LOOP:
-					processLoop(savePrepend, el);
+					processLoop(el);
 					break;
 
 				case PLOT:
-					processPlot(savePrepend, el);
+					processPlot(el);
 					break;
 
 				default:
@@ -335,12 +335,10 @@ public class OperationXML extends Operation
 		}
 	}
 
-	private void processSave(String savePrepend, Element cmdEl) throws RProcessorException, RProcessorParseException, CalcException
+	private void processSave(Element cmdEl) throws RProcessorException, RProcessorParseException, CalcException
 	{
-		// Get the value
-		String cmd = cmdEl.getAttributeValue("rvar");
-		if(cmd == null)
-			cmd = cmdEl.getTextTrim();
+		// Get the command we will execute for the value
+		String cmd = cmdEl.getTextTrim();
 
 		// Get Column, create if needed
 		String colName = null;
@@ -351,7 +349,7 @@ public class OperationXML extends Operation
 		}
 		else
 		{
-			colName = savePrepend + cmdEl.getAttributeValue("column");
+			colName = cmdEl.getAttributeValue("column");
 		}
 
 		DataColumn col = null;
@@ -369,12 +367,24 @@ public class OperationXML extends Operation
 		switch(type)
 		{
 			case DOUBLE: // Saves either the given R variable or command result into the given column
+				col.setMode(DataColumn.DataMode.NUMERICAL);
 				col.add(proc.executeDouble(cmd));
 				break;
 
 			case DOUBLE_ARRAY: // Saves either the given R variable or command result into the given column
 				// Get the value
+				col.setMode(DataColumn.DataMode.NUMERICAL);
 				col.addAll(proc.executeDoubleArray(cmd));
+				break;
+
+			case STRING:
+				col.setMode(DataColumn.DataMode.STRING);
+				col.add(proc.executeString(cmd));
+				break;
+
+			case STRING_ARRAY:
+				col.setMode(DataColumn.DataMode.STRING);
+				col.addAll(proc.executeStringArray(cmd));
 				break;
 
 			default:
@@ -382,10 +392,11 @@ public class OperationXML extends Operation
 		}
 	}
 
-	private void processLoop(String savePrepend, Element loopEl) throws RProcessorException, RProcessorParseException, CalcException, OperationXMLException
+	private void processLoop(Element loopEl) throws RProcessorException, RProcessorParseException, CalcException, OperationXMLException
 	{
 		// Make up the loop we're going to work over and pass iteration back to processSequence()
-		String keyVar = loopEl.getAttributeValue("keyVar");
+		String nameVar = loopEl.getAttributeValue("nameVar");
+		String indexVar = loopEl.getAttributeValue("indexVar");
 		String valueVar = loopEl.getAttributeValue("valueVar");
 
 		LoopType type = LoopType.valueOf(loopEl.getAttributeValue("type").toUpperCase());
@@ -395,43 +406,45 @@ public class OperationXML extends Operation
 				for(int i = 0; i < parent.getColumnCount(); i++)
 				{
 					// Assign the loop key and value
-					if(keyVar != null)
-						proc.setVariable(keyVar, parent.getColumn(i).getName());
+					if(nameVar != null)
+						proc.setVariable(nameVar, parent.getColumn(i).getName());
+					if(indexVar != null)
+						proc.setVariable(indexVar, new Double(i + 1));
 					if(valueVar != null)
 						proc.setVariable(valueVar, parent.getColumn(i));
 
 					// Now do what the XML says
-					processSequence(parent.getColumn(i).getName() + savePrepend + " ", loopEl);
+					processSequence(loopEl);
 				}
 				break;
 
 			case DOUBLE_ARRAY: // Loop over an R vector, setting each element as the index var
-				ArrayList<Double> doubleVals = proc.executeDoubleArray(loopEl.getAttributeValue("rvar"));
+				ArrayList<Double> doubleVals = proc.executeDoubleArray(loopEl.getAttributeValue("loopVar"));
 				for(int i = 0; i < doubleVals.size(); i++)
 				{
 					// Assign the loop index
-					if(keyVar != null)
-						proc.setVariable(keyVar, new Double(i + 1));
+					if(indexVar != null)
+						proc.setVariable(indexVar, new Double(i + 1));
 					if(valueVar != null)
 						proc.setVariable(valueVar, doubleVals.get(i));
 
 					// Now do what the XML says
-					processSequence(savePrepend + doubleVals.get(i) + " ", loopEl);
+					processSequence(loopEl);
 				}
 				break;
 
 			case STRING_ARRAY: // Loop over an R vector, setting each element as the index var
-				ArrayList<String> stringVals = proc.executeStringArray(loopEl.getAttributeValue("rvar"));
+				ArrayList<String> stringVals = proc.executeStringArray(loopEl.getAttributeValue("loopVar"));
 				for(int i = 0; i < stringVals.size(); i++)
 				{
 					// Assign the loop index
-					if(keyVar != null)
-						proc.setVariable(keyVar, new Double(i + 1));
+					if(indexVar != null)
+						proc.setVariable(indexVar, new Double(i + 1));
 					if(valueVar != null)
 						proc.setVariable(valueVar, stringVals.get(i));
 
 					// Now do what the XML says
-					processSequence(savePrepend + stringVals.get(i) + " ", loopEl);
+					processSequence(loopEl);
 				}
 				break;
 
@@ -440,7 +453,7 @@ public class OperationXML extends Operation
 		}
 	}
 
-	private void processPlot(String savePrepend, Element cmdEl) throws RProcessorException, RProcessorParseException, CalcException, OperationXMLException
+	private void processPlot(Element cmdEl) throws RProcessorException, RProcessorParseException, CalcException, OperationXMLException
 	{
 		// An operation may only have one plot in it
 		if(plotPath != null)
@@ -448,7 +461,7 @@ public class OperationXML extends Operation
 
 		// Plot away
 		plotPath = proc.startGraphicOutput();
-		processSequence(savePrepend, cmdEl);
+		processSequence(cmdEl);
 		proc.stopGraphicOutput();
 	}
 
