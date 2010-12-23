@@ -1,10 +1,10 @@
 #summary Covers the XML file that specifies operations for maRla
 #labels Featured
-
-= Overview =
+<wiki:toc max_depth="3" />
 Operations in maRla may be specified using an XML format. The XML file should be similar
 to the following. A full example implementing a t-test is listed at the bottom.
 
+= Quick Reference = 
 {{{
 <?xml version="1.0" encoding="UTF-8" ?>
 <operations>
@@ -28,7 +28,7 @@ to the following. A full example implementing a t-test is listed at the bottom.
 </operations>
 }}}
 
-== Operation ==
+= Operation =
 Each `<operation />` takes a name that will be displayed to the user and can be used to
 create that operation. It must be unique. If multiple with the same name exist an
 exception will be thrown.
@@ -108,31 +108,33 @@ the device or close it, that will be taken care of by the plot. A plot takes no 
 but allows any of the other elements to be place inside it, just as with the main computation
 section.
 
-== Example ==
+= Example =
 Below is an example of implementing a t-test:
 {{{
-<operation name="t-test">
-	<query type="checkbox" prompt="Is your data normal?" name="normal" />
-	<computation>
-		<!-- Run t test on each column and save, plus prepare the top row -->
-		<cmd>t = list()</cmd>
-		<loop type="parent" valueVar="col" nameVar="colName" indexVar="i">
-			<cmd>t[[i]] = t.test(col)</cmd>
-			<save type="string" column="Column">colName</save>
-		</loop>
-
-		<!-- Save each -->
-		<loop type="parent" indexVar="i">
-			<save type="double" column="t">t[[i]]$statistic</save>
-			<save type="double" column="DF">t[[i]]$parameter</save>
-			<save type="double" column="P-Value">t[[i]]$p.value</save>
-			<save type="double" column="Mean">t[[i]]$estimate</save>
-			<save type="double" column="Lower CI">t[[i]]$conf.int[1]</save>
-			<save type="double" column="Upper CI">t[[i]]$conf.int[1]</save>
-			<save type="double" column="alpha">attr(t[[i]]$conf.int, 'conf.level')</save>
-		</loop>
-	</computation>
-</operation>
+<?xml version="1.0" encoding="UTF-8" ?>
+<operations>
+  <operation name="t-test">
+    <query type="checkbox" prompt="Is your data normal?" name="normal" />
+    <computation>
+      <!-- Run t test on each column and save, plus prepare the top row -->
+      <cmd>t = list()</cmd>
+      <loop type="parent" valueVar="col" nameVar="colName" indexVar="i">
+        <cmd>t[[i]] = t.test(col)</cmd>
+        <save type="string" column="Column">colName</save>
+      </loop>
+      <!-- Save each -->
+      <loop type="parent" indexVar="i">
+        <save type="double" column="t">t[[i]]$statistic</save>
+        <save type="double" column="DF">t[[i]]$parameter</save>
+        <save type="double" column="P-Value">t[[i]]$p.value</save>
+        <save type="double" column="Mean">t[[i]]$estimate</save>
+        <save type="double" column="Lower CI">t[[i]]$conf.int[1]</save>
+        <save type="double" column="Upper CI">t[[i]]$conf.int[1]</save>
+        <save type="double" column="alpha">attr(t[[i]]$conf.int, 'conf.level')</save>
+      </loop>
+    </computation>
+  </operation>
+</operations>
 }}}
 
 If we have the dataset:
@@ -230,4 +232,3 @@ And the final result is:
 || 9.44574 || 19.44574 || 29.44574 ||
 || 13.55426 || 23.55426 || 33.55426 ||
 || 0.95 || 0.95 || 0.95 ||
-
