@@ -15,14 +15,15 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package r;
 
 import gui.Domain.PromptType;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
@@ -292,7 +293,7 @@ public class OperationXML extends Operation
 	private void processSet(Element cmdEl) throws RProcessorException, CalcException, OperationXMLException
 	{
 		Object[] answer = null;
-		
+
 		try
 		{
 			answer = questionAnswers.get(cmdEl.getAttributeValue("name"));
@@ -340,7 +341,7 @@ public class OperationXML extends Operation
 		String cmd = cmdEl.getAttributeValue("rvar");
 		if(cmd == null)
 			cmd = cmdEl.getTextTrim();
-		
+
 		// Get Column, create if needed
 		String colName = null;
 		String dynamicColumnCmd = cmdEl.getAttributeValue("dynamic_column");
@@ -540,6 +541,26 @@ public class OperationXML extends Operation
 	{
 		Element el = new Element("xmlop");
 		el.setAttribute("name", opConfig.getAttributeValue("name"));
+
+		// Answers to prompts, if they exist
+		if(questionAnswers != null)
+		{
+			Set<String> keys = questionAnswers.keySet();
+			Iterator<String> it = keys.iterator();
+			while(it.hasNext())
+			{
+				String key = it.next();
+				Object[] answer = questionAnswers.get(key);
+
+				Element answerEl = new Element("answer");
+				answerEl.setAttribute("key", key);
+				answerEl.setAttribute("type", answer[0].toString());
+				answerEl.setAttribute("answer", answer[1].toString());
+
+				el.addContent(answerEl);
+			}
+		}
+
 		return el;
 	}
 
@@ -552,7 +573,29 @@ public class OperationXML extends Operation
 	{
 		try
 		{
-			setConfiguration(findConfiguration(opEl.getAttributeValue("name")));
+			Element xmlEl = opEl.getChild("xmlop");
+
+			// Load the correct XML specification
+			setConfiguration(findConfiguration(xmlEl.getAttributeValue("name")));
+
+			// Question answers
+			if(!xmlEl.getChildren("answer").isEmpty())
+			{
+				questionAnswers = new HashMap<String, Object[]>();
+				for(Object answer : xmlEl.getChildren("answer"))
+				{
+					Element answerEl = (Element) answer;
+
+					String key = answerEl.getAttributeValue("key");
+					Object[] an =
+					{
+						QueryType.valueOf(answerEl.getAttributeValue("type")),
+						answerEl.getAttributeValue("answer")
+					};
+					
+					questionAnswers.put(key, an);
+				}
+			}
 		}
 		catch(OperationXMLException ex)
 		{

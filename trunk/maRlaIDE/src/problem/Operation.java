@@ -482,7 +482,6 @@ public abstract class Operation extends DataSet
 	public final Element toXml()
 	{
 		Element dataEl = new Element("operation");
-		dataEl.setAttribute("name", name);
 		dataEl.setAttribute("type", this.getClass().getName());
 
 		Rectangle rect = getBounds();

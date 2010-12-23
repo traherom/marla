@@ -494,7 +494,8 @@ public class DataColumn implements List<Object>
 	{
 		Element colEl = new Element("column");
 		colEl.setAttribute("name", name);
-
+		colEl.setAttribute("mode", mode.toString());
+		
 		for(Object d : values)
 		{
 			colEl.addContent(new Element("value").addContent(d.toString()));
@@ -512,6 +513,8 @@ public class DataColumn implements List<Object>
 	public static DataColumn fromXml(Element colEl) throws DuplicateNameException
 	{
 		DataColumn newCol = new DataColumn(colEl.getAttributeValue("name"));
+		newCol.setMode(DataMode.valueOf(colEl.getAttributeValue("mode")));
+		
 		for(Object el : colEl.getChildren("value"))
 		{
 			newCol.add(((Element) el).getText());
