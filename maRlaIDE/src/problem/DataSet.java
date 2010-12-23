@@ -518,6 +518,15 @@ public class DataSet extends JLabel
 	 * Outputs this DataSet as a constructed R data frame
 	 * @return DataSet as a string two dimensional array
 	 */
+	public String toRString()
+	{
+		return toString(this);
+	}
+
+	/**
+	 * Outputs this DataSet as a human readable display
+	 * @return DataSet as a string two dimensional array
+	 */
 	@Override
 	public String toString() 
 	{
@@ -525,9 +534,9 @@ public class DataSet extends JLabel
 	}
 
 	/**
-	 * Represents the given DataSet as a string that would build an R dataframe for it
+	 * Represents the given DataSet as an easily readable string
 	 * @param ds DataSet to create string for
-	 * @return Valid R code for creating a dataframe with the given data
+	 * @return String of the data inside the DataSet with the given data
 	 */
 	public static String toString(DataSet ds)
 	{

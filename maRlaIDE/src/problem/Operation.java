@@ -547,9 +547,30 @@ public abstract class Operation extends DataSet
 	}
 
 	/**
-	 * Returns the operations used to compute the Operation's values the last time
-	 * refreshCache() was called. If it has never been called then "Not computed yet"
-	 * is returned.
+	 * Outputs this Operation as the string of R commands it took to produce it
+	 * @return R commands
+	 */
+	@Override
+	public String toRString()
+	{
+		try
+		{
+			checkCache();
+		}
+		catch(CalcException ex)
+		{
+			throw new RuntimeException("Unable to do toString() because the values could not be computed.", ex);
+		}
+
+		StringBuilder sb = new StringBuilder();
+		if(parent != null)
+			sb.append(parent.toString());
+		sb.append(operationRecord);
+		return operationRecord;
+	}
+
+	/**
+	 * Returns the calculated result of this operation.
 	 * @return String of the R commands used to do computations
 	 */
 	@Override
@@ -564,28 +585,6 @@ public abstract class Operation extends DataSet
 			throw new RuntimeException("Unable to do toString() because the values could not be computed.", ex);
 		}
 		
-		StringBuilder sb = new StringBuilder();
-
-		// Show the parents do their computation. If we don't have a parent then
-		// just show what we're starting our computation off with
-		if(parent != null)
-			sb.append(parent.toString());
-		else
-		{
-			sb.append("Incoming:\n");
-			sb.append(super.toString());
-		}
-
-		if(this.operationRecord != null)
-		{
-			sb.append(operationRecord);
-			sb.append("Result:\n");
-			sb.append(super.toString());
-			sb.append("-----------\n");
-		}
-		else
-			sb.append("Not computed yet\n");
-
-		return sb.toString();
+		return super.toString();
 	}
 }
