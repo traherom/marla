@@ -19,6 +19,7 @@ package problem;
 
 import java.awt.Rectangle;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -106,6 +107,9 @@ public abstract class Operation extends DataSet
 			if(!ops.contains(xmlOpName))
 				ops.add(xmlOpName);
 		}
+
+		// And sort 'em
+		Collections.sort(ops);
 
 		return ops;
 	}

@@ -10,15 +10,22 @@
 	<operation name="t-test">
 		<query type="checkbox" prompt="Is your data normal?" name="normal" />
 		<computation>
-			<loop type="parent" valueVar="col">
-				<cmd>t = t.test(col)</cmd>
-				<save type="double" column="t">t$statistic</save>
-				<save type="double" column="df">t$parameter</save>
-				<save type="double" column="p-value">t$p.value</save>
-				<save type="double" column="mean">t$estimate</save>
-				<save type="double" column="CI">t$conf.int[1]</save>
-				<save type="double" column="CI">t$conf.int[2]</save>
-				<save type="double" column="alpha">attr(t$conf.int, 'conf.level')</save>
+			<!-- Run t test on each column and save, plus prepare the top row -->
+			<cmd>t = list()</cmd>
+			<loop type="parent" valueVar="col" nameVar="colName" indexVar="i">
+				<cmd>t[[i]] = t.test(col)</cmd>
+				<save type="string" column="Column">colName</save>
+			</loop>
+
+			<!-- Save each -->
+			<loop type="parent" indexVar="i">
+				<save type="double" column="t">t[[i]]$statistic</save>
+				<save type="double" column="DF">t[[i]]$parameter</save>
+				<save type="double" column="P-Value">t[[i]]$p.value</save>
+				<save type="double" column="Mean">t[[i]]$estimate</save>
+				<save type="double" column="Lower CI">t[[i]]$conf.int[1]</save>
+				<save type="double" column="Upper CI">t[[i]]$conf.int[2]</save>
+				<save type="double" column="alpha">attr(t[[i]]$conf.int, 'conf.level')</save>
 			</loop>
 		</computation>
 	</operation>
@@ -52,16 +59,16 @@
 	</operation>
 	<operation name="Summary">
 		<computation>
-			<loop type="parent" keyVar="colName" valueVar="col">
+			<loop type="parent" indexVar="colName" valueVar="col">
 				<cmd>s = summary(col)</cmd>
 				<cmd>n = names(s)</cmd>
-				<loop type="double_array" rvar="s" keyVar="i">
+				<loop type="double_array" loopVar="s" indexVar="i">
 					<save type="double" dynamic_column="paste(colName, n[i])">s[i]</save>
 				</loop>
 			</loop>
 		</computation>
 	</operation>
-	<operation name="Plot">
+	<operation name="XY Plot">
 		<query type="column" name="x" prompt="X column" />
 		<query type="column" name="y" prompt="Y column" />
 		<computation>
