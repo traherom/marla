@@ -428,8 +428,7 @@ public class DataSet extends JLabel
 	}
 
 	/**
-	 * Tells the problem we belong to that we've changed. Used by DataColumns
-	 * under us to notify encapsulating problem.
+	 * Tells our child operations that their caches are dirty and need to be recomputed
 	 */
 	public void markChanged()
 	{
@@ -439,6 +438,15 @@ public class DataSet extends JLabel
 			op.markChanged();
 		}
 
+		markUnsaved();
+	}
+
+	/**
+	 * Tells the problem we belong to that we've changed. Used by DataColumns
+	 * under us to notify encapsulating problem.
+	 */
+	public void markUnsaved()
+	{
 		if(parent != null)
 			parent.markChanged();
 	}
@@ -529,7 +537,7 @@ public class DataSet extends JLabel
 	 * @return DataSet as a string two dimensional array
 	 */
 	@Override
-	public String toString() 
+	public String toString()
 	{
 		return toString(this);
 	}
@@ -543,72 +551,82 @@ public class DataSet extends JLabel
 	{
 		StringBuilder sb = new StringBuilder();
 
-		// Make a table of all the strings, then use
-		// that to determine the correct width for each column
-		int colCount = 1 + ds.getColumnCount();
-		int rowCount = 1 + ds.getColumnLength();
-		String[][] table = new String[rowCount][];
-		int[] colWidth = new int[colCount];
-
-		// Header row
-		table[0] = new String[colCount];
-		table[0][0] = "";
-		for(int col = 1; col < colCount; col++)
+		// Only actually do this if we have columns
+		if(ds.getColumnCount() > 0)
 		{
-			table[0][col] = ds.getColumn(col - 1).getName();
+			// Make a table of all the strings, then use
+			// that to determine the correct width for each column
+			int colCount = 1 + ds.getColumnCount();
+			int rowCount = 1 + ds.getColumnLength();
+			String[][] table = new String[rowCount][];
+			int[] colWidth = new int[colCount];
 
-			// Change width if needed
-			if(colWidth[col] < table[0][col].length())
-				colWidth[col] = table[0][col].length();
-		}
-
-		// Value rows
-		for(int row = 1; row < rowCount; row++)
-		{
-			// Assign index column and change width if needed
-			table[row] = new String[colCount];
-			table[row][0] = "[" + row + "]";
-			if(colWidth[0] < table[row][0].length())
-				colWidth[0] = table[row][0].length();
-
-			// Assign each column's corresponding value to this row
+			// Header row
+			table[0] = new String[colCount];
+			table[0][0] = "";
 			for(int col = 1; col < colCount; col++)
 			{
-				try
-				{
-					DataColumn dc =  ds.getColumn(col - 1);
-					if(dc.getMode() == DataMode.NUMERICAL)
-						table[row][col] = dc.get(row - 1).toString();
-					else
-						table[row][col] = '"' + dc.get(row - 1).toString() + '"';
+				table[0][col] = ds.getColumn(col - 1).getName();
 
-					// Change column width if needed
-					if(colWidth[col] < table[row][col].length())
-						colWidth[col] = table[row][col].length();
-				}
-				catch(IndexOutOfBoundsException ex)
-				{
-					table[row][col] = "";
-				}
+				// Change width if needed
+				if(colWidth[col] < table[0][col].length())
+					colWidth[col] = table[0][col].length();
 			}
-		}
 
-		// Output DataSet name
-		sb.append(ds.getName());
-		sb.append('\n');
-
-		// Print each row in the table
-		for(int row = 0; row < table.length; row++)
-		{
-			for(int col = 0; col < table[row].length; col++)
+			// Value rows
+			for(int row = 1; row < rowCount; row++)
 			{
-				sb.append(String.format("%-" + colWidth[col] + "s  ", table[row][col]));
-			}
-			
-			// Done with the row
-			sb.append('\n');
-		}
+				// Assign index column and change width if needed
+				table[row] = new String[colCount];
+				table[row][0] = "[" + row + "]";
+				if(colWidth[0] < table[row][0].length())
+					colWidth[0] = table[row][0].length();
 
+				// Assign each column's corresponding value to this row
+				for(int col = 1; col < colCount; col++)
+				{
+					try
+					{
+						DataColumn dc = ds.getColumn(col - 1);
+						if(dc.getMode() == DataMode.NUMERICAL)
+							table[row][col] = dc.get(row - 1).toString();
+						else
+							table[row][col] = '"' + dc.get(row - 1).toString() + '"';
+
+						// Change column width if needed
+						if(colWidth[col] < table[row][col].length())
+							colWidth[col] = table[row][col].length();
+					}
+					catch(IndexOutOfBoundsException ex)
+					{
+						table[row][col] = "";
+					}
+				}
+			}
+
+			// Output DataSet name
+			sb.append(ds.getName());
+			sb.append('\n');
+
+			// Print each row in the table
+			for(int row = 0; row < table.length; row++)
+			{
+				for(int col = 0; col < table[row].length; col++)
+				{
+					sb.append(String.format("%-" + colWidth[col] + "s  ", table[row][col]));
+				}
+
+				// Done with the row
+				sb.append('\n');
+			}
+		}
+		else
+		{
+			// Output DataSet name
+			sb.append(ds.getName());
+			sb.append('\n');
+			sb.append("Empty\n");
+		}
 		return sb.toString();
 	}
 

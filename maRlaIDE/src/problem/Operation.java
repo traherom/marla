@@ -224,6 +224,7 @@ public abstract class Operation extends DataSet
 	{
 		parent = newParent;
 		markChanged();
+		markUnsaved();
 	}
 
 	/**
