@@ -240,6 +240,9 @@ public class OperationXML extends Operation
 
 		try
 		{
+			// Clear out old plot
+			this.plotPath = null;
+			
 			// Process away
 			Element compEl = opConfig.getChild("computation");
 			processSequence(compEl);
@@ -522,8 +525,6 @@ public class OperationXML extends Operation
 	@Override
 	public void setRequiredInfo(ArrayList<Object> values)
 	{
-		markChanged();
-
 		questionAnswers = new HashMap<String, Object[]>();
 
 		@SuppressWarnings("unchecked")
@@ -536,6 +537,9 @@ public class OperationXML extends Operation
 			temp[1] = values.get(i);
 			questionAnswers.put(queryEl.getAttributeValue("name"), temp);
 		}
+
+		markChanged();
+		markUnsaved();
 	}
 
 	@Override
