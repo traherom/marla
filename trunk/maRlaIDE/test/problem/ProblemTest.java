@@ -17,11 +17,7 @@
  */
 package problem;
 
-import java.io.FileNotFoundException;
-import org.jdom.JDOMException;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.ArrayList;
+import org.jdom.Element;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -32,343 +28,198 @@ import static org.junit.Assert.*;
  */
 public class ProblemTest
 {
-	private RandomValues random = new RandomValues();
 	private String tempFileName = "testing_temp_file.marlatemp";
 
-	/**
-	 * Test of getStatement and setStatement method, of class Problem.
-	 */
+	public static Problem createProblem(int dataSetNum, int colNum, int valNum)
+	{
+		Problem prob = new Problem("Test Problem");
+
+		for(int dsNum = 0; dsNum < dataSetNum; dsNum++)
+		{
+			prob.addData(DataSetTest.createDataSet(colNum, valNum));
+		}
+
+		return prob;
+	}
+	
 	@Test
 	public void testStatement()
 	{
-		// Quick test to make sure when you set it in the constructor it pops
-		// out the same
-		String name = random.nextString();
-		Problem instance = new Problem(name);
-		assertEquals(instance.getStatement(), name);
+		Problem prob = new Problem("Test statement");
+		assertEquals("Test statement", prob.getStatement());
 
-		for(int i = 0; i < 50; i++)
-		{
-			name = random.nextString();
-			instance.setStatement(name);
-			assertEquals(instance.getStatement(), name);
-		}
+		prob.setStatement("Test 2");
+		assertEquals("Test 2", prob.getStatement());
 	}
 
-	/**
-	 * Test of addData() accepting a pre-created DataSet with
-	 * no pre-set parent
-	 */
 	@Test
-	public void testAddDataNoParent_DataSet()
+	public void testAddDataNoParent()
 	{
-		Problem instance = new Problem();
+		Problem prob = new Problem();
 
-		// Data where the parent wasn't set explicitly beforehand
-		DataSet testData1 = new DataSet("Test1");
-		DataSet returnedData1 = instance.addData(testData1);
-		assertEquals(testData1, returnedData1);
+		DataSet testDS1 = DataSetTest.createDataSet(5, 50);
+		assertEquals(null, testDS1.getParentProblem());
+		prob.addData(testDS1);
 
-		DataSet retrievedData1;
-		try
-		{
-			retrievedData1 = instance.getData("Test1");
-			assertEquals(testData1, retrievedData1);
-		}
-		catch(DataNotFound ex)
-		{
-			fail("Unable to retreive added data");
-		}
+		// Make sure it changed the changed the parent of the dataset
+		// and that we can retreive it
+		assertEquals(prob, testDS1.getParentProblem());
+		assertEquals(testDS1, prob.getData(0));
+		assertEquals(1, prob.getDataCount());
 	}
 
-	/**
-	 * Test of addData() accepting a pre-created DataSet with the parent set
-	 */
-	@Test
-	public void testAddDataWithParent_DataSet()
+	@Test(expected=IndexOutOfBoundsException.class)
+	public void testAddDataWithParent()
 	{
-		Problem instance = new Problem();
+		// Stick a dataset in one problem
+		Problem prob1 = new Problem();
+		DataSet ds1 = DataSetTest.createDataSet(5, 50);
+		prob1.addData(ds1);
+		assertEquals(prob1, ds1.getParentProblem());
 
-		// Data where the parent wasn't set explicitly beforehand
-		DataSet testData1 = new DataSet(instance, "Test1");
-		DataSet returnedData1 = instance.addData(testData1);
-		assertEquals(testData1, returnedData1);
+		// And assign to a new location
+		Problem prob2 = new Problem();
+		prob2.addData(ds1);
 
-		DataSet retrievedData1;
-		try
-		{
-			retrievedData1 = instance.getData("Test1");
-			assertEquals(testData1, retrievedData1);
-		}
-		catch(DataNotFound ex)
-		{
-			fail("Unable to retreive added data");
-		}
+		// Should be set to the new location and the old problem shouldn't
+		// know about it any more
+		assertEquals(prob2, ds1.getParentProblem());
+		assertEquals(0, prob1.getDataCount());
+		assertEquals(1, prob2.getDataCount());
+		assertEquals(ds1, prob2.getData(0));
+		
+		prob1.getData(0); // Should throw exception
 	}
 
-	/**
-	 * Test of getData method, of class Problem.
-	 */
-	@Test
-	public void testGetData()
+	@Test(expected=DataNotFound.class)
+	public void testGetData() throws Exception
 	{
-		Problem instance = new Problem();
+		Problem prob = new Problem();
 
-		// Insert a whole bunch of datasets
-		ArrayList<String> names = new ArrayList<String>();
-		HashMap<String, DataSet> inserted = new HashMap<String, DataSet>();
-		for(int i = 0; i < 50; i++)
-		{
-			String newName = random.nextString();
-			names.add(newName);
+		DataSet ds1 = DataSetTest.createDataSet(5, 50);
+		ds1.setName("test 1");
+		prob.addData(ds1);
 
-			DataSet ds = new DataSet(newName);
-			instance.addData(ds);
+		DataSet ds2 = DataSetTest.createDataSet(5, 50);
+		ds1.setName("test 2");
+		prob.addData(ds2);
 
-			// Save somewhere else so we can see if they come out the same
-			inserted.put(newName, ds);
-		}
+		assertEquals(ds1, prob.getData(0));
+		assertEquals(ds1, prob.getData("test 1"));
+		assertEquals(ds2, prob.getData(1));
+		assertEquals(ds2, prob.getData("test 2"));
 
-		// Retrieve data back out... twice. Ha.
-		for(int j = 0; j < 2; j++)
-		{
-			for(int i = 0; i < names.size(); i++)
-			{
-				String lookingFor = names.get(i);
-
-				try
-				{
-					DataSet ds = instance.getData(lookingFor);
-					assertEquals(ds, inserted.get(lookingFor));
-				}
-				catch(DataNotFound ex)
-				{
-					fail("Unable to locate the inserted data: '" + lookingFor + "'");
-				}
-			}
-		}
+		// Should fail
+		prob.getData("test 3");
 	}
 
-	/**
-	 * Test of setFileName and getFileName methods, of class Problem.
-	 *
-	 * Tries many times with random names
-	 */
 	@Test
-	public void testFileName()
+	public void testIsSavedSimple() throws Exception
 	{
-		Problem instance = new Problem();
-		for(int i = 0; i < 50; i++)
-		{
-			String name = random.nextString();
-			instance.setFileName(name);
-			assertEquals(instance.getFileName(), name);
-		}
-	}
-
-	/**
-	 * Test of isSaved and isChanged method, of class Problem.
-	 */
-	@Test
-	public void testIsSaved()
-	{
-		Problem instance = new Problem();
-
 		// Newly created problem, should be unsaved
+		Problem instance = createProblem(2, 3, 10);
 		assertFalse(instance.isSaved());
-		assertTrue(instance.isChanged());
 
-		// Save it to a temporary file
+		// Save it to a temporary file and check it's now marked saved
 		instance.setFileName(tempFileName);
-
-		try
-		{
-			instance.save();
-		}
-		catch(FileException ex)
-		{
-			fail("Save failed with the error: " + ex.getMessage());
-		}
-		catch(IOException ex)
-		{
-			fail("IO Exception: " + ex.getMessage());
-		}
-
-		// Should be saved nicely now
+		instance.save();
 		assertTrue(instance.isSaved());
-		assertFalse(instance.isChanged());
+	}
 
-		// Now alter it, should be marked as changed
+	@Test
+	public void testIsSavedAddData() throws Exception
+	{
+		// Newly created problem, should be unsaved
+		Problem instance = createProblem(2, 3, 10);
+		assertFalse(instance.isSaved());
+
+		// Save it to a temporary file and check it's now marked saved
+		instance.setFileName(tempFileName);
+		instance.save();
+		assertTrue(instance.isSaved());
+
+		// Now add a dataset, should be marked as changed
 		instance.addData(new DataSet("Test"));
 		assertFalse(instance.isSaved());
-		assertTrue(instance.isChanged());
-
-		// Save it, then change the file path. Should be marked as change
-		try
-		{
-			instance.save();
-			assertTrue(instance.isSaved());
-			assertFalse(instance.isChanged());
-		}
-		catch(FileException ex)
-		{
-			fail("Save failed with the error: " + ex.getMessage());
-		}
-		catch(IOException ex)
-		{
-			fail("IO Exception: " + ex.getMessage());
-		}
-
-		instance.setFileName("temp");
-		instance.setFileName(tempFileName);
-		assertFalse(instance.isSaved());
-		assertTrue(instance.isChanged());
 	}
 
-	/**
-	 * Test of markChanged method, of class Problem.
-	 */
 	@Test
-	public void testMarkChanged()
+	public void testIsSavedChangePath() throws Exception
 	{
-		Problem instance = new Problem();
+		// Newly created problem, should be unsaved
+		Problem instance = createProblem(2, 3, 10);
 		assertFalse(instance.isSaved());
 
-		// Save it to a temporary file so it marks as saved
+		// Save it to a temporary file and check it's now marked saved
 		instance.setFileName(tempFileName);
+		instance.save();
+		assertTrue(instance.isSaved());
 
-		try
-		{
-			instance.save();
-			assertTrue(instance.isSaved());
-		}
-		catch(FileException ex)
-		{
-			fail("Save failed with the error: " + ex.getMessage());
-		}
-		catch(IOException ex)
-		{
-			fail("IO Exception: " + ex.getMessage());
-		}
-
-		// Mark as changed and make sure it shows
-		instance.markChanged();
+		// Now add a column, should be marked as changed
+		instance.setFileName("different");
 		assertFalse(instance.isSaved());
 	}
 
-	/**
-	 * Test of save and load methods, of class Problem.
-	 */
 	@Test
-	public void testSave() throws CalcException
+	public void testIsSavedChangeData() throws Exception
+	{
+		// Newly created problem, should be unsaved
+		Problem instance = createProblem(2, 3, 10);
+		assertFalse(instance.isSaved());
+
+		// Save it to a temporary file and check it's now marked saved
+		instance.setFileName(tempFileName);
+		instance.save();
+		assertTrue(instance.isSaved());
+
+		// Now prentend we changed a value is a dataset we hold
+		instance.getData(0).markChanged();
+		assertFalse(instance.isSaved());
+	}
+
+	@Test(expected=FileException.class)
+	public void testSaveAndLoadNoPath() throws Exception
 	{
 		// Make a sort of complex Problem
-		Problem instance = makeProblem();
+		Problem prob = createProblem(2, 3, 4);
 
 		// Try saving without setting a path. This _should_ fail
-		try
-		{
-			instance.save();
-			fail("Somehow save() succeeded without a path. Hm.");
-		}
-		catch(FileException ex)
-		{
-		}
-		catch(IOException ex)
-		{
-			fail("IO Exception: " + ex.getMessage());
-		}
+		prob.save();
+		fail("Somehow save() succeeded without a path.");
+	}
+
+	@Test
+	public void testToAndFromXML() throws Exception
+	{
+		// Make a sort of complex Problem
+		Problem prob = createProblem(2, 3, 4);
+
+		Element el = prob.toXml();
+		Problem newProb = Problem.fromXml(el);
+		
+		assertEquals(prob, newProb);
+	}
+
+	@Test
+	public void testSaveAndLoad() throws Exception
+	{
+		// Make a sort of complex Problem
+		Problem prob = createProblem(2, 3, 4);
 
 		// Save to disk, then read it back in. It should match up with
 		// the problem we just made
-		try
-		{
-			instance.setFileName(tempFileName);
-			instance.save();
-		}
-		catch(FileException ex)
-		{
-			fail("File save failed with error: " + ex.getMessage());
-		}
-		catch(IOException ex)
-		{
-			fail("Save IO Exception: " + ex.getMessage());
-		}
+		prob.setFileName(tempFileName);
+		prob.save();
 
-		try
-		{
-			Problem readIn = Problem.load(tempFileName);
-			assert (readIn.equals(instance));
-		}
-		catch(CalcException ex)
-		{
-			fail("Unable to compute from newly loaded problem");
-		}
-		catch(JDOMException ex)
-		{
-			fail("Save failed with the error: " + ex.getMessage());
-		}
-		catch(FileNotFoundException ex)
-		{
-			fail("Unable to locate file to load");
-		}
-		catch(IOException ex)
-		{
-			fail("Load IO Exception: " + ex.getMessage());
-		}
+		Problem readInProb = Problem.load(tempFileName);
+		assertEquals(prob, readInProb);
 	}
 
-	/**
-	 * Test of copy constructor of Problem
-	 */
 	@Test
 	public void testCopy() throws CalcException
 	{
-		Problem instance = makeProblem();
+		Problem instance = createProblem(3, 4, 10);
 		Problem copied = new Problem(instance);
-		assert (instance.equals(copied));
-	}
-
-	/**
-	 * Creates a populated problem that's relatively random for testing
-	 * @return Newly created Problem
-	 */
-	private Problem makeProblem() throws CalcException
-	{
-		try
-		{
-			// Make a sort of complex Problem
-			Problem instance = new Problem();
-
-			instance.setStatement(random.nextString());
-
-			for(int dsNum = 0; dsNum < 5; dsNum++)
-			{
-				DataSet ds = instance.addData(new DataSet(random.nextString()));
-
-				for(int dcNum = 0; dcNum < 5; dcNum++)
-				{
-					DataColumn dc = ds.addColumn(random.nextString());
-
-					for(int dataNum = 0; dataNum < 50; dataNum++)
-					{
-						dc.add(random.nextDouble());
-					}
-				}
-
-				for(int opNum = 0; opNum < 5; opNum++)
-				{
-					//Operation op = new OperationNOP();
-					//ds.addOperation(op);
-				}
-			}
-
-			return instance;
-		}
-		catch(CalcException ex)
-		{
-			fail("Unable to create example problem");
-			return null;
-		}
+		assertEquals(instance, copied);
 	}
 }
