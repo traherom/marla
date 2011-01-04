@@ -95,9 +95,15 @@ public class DataSet extends JLabel
 		super(copy.name);
 		this.parent = parent;
 		name = copy.name;
+
 		for(DataColumn dc : copy.columns)
 		{
 			columns.add(new DataColumn(dc, this));
+		}
+
+		for(Operation op : copy.solutionOps)
+		{
+			solutionOps.add(op.clone());
 		}
 	}
 
@@ -564,6 +570,19 @@ public class DataSet extends JLabel
 	{
 		markChanged();
 		solutionOps.remove(op);
+		op.setParentData(null);
+		return op;
+	}
+
+	/**
+	 * Removes an operation from the data
+	 * @param index Index of the operation to remove
+	 * @return The removed Operation
+	 */
+	public Operation removeOperation(int index)
+	{
+		markChanged();
+		Operation op = solutionOps.remove(index);
 		op.setParentData(null);
 		return op;
 	}

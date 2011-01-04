@@ -27,7 +27,6 @@ import org.jdom.Element;
  */
 public class SubProblem implements ProblemPart
 {
-
 	/**
 	 * Description for this sub part in the problem
 	 */
@@ -171,7 +170,7 @@ public class SubProblem implements ProblemPart
 	{
 		return id;
 	}
-	
+
 	/**
 	 * Sets the subproblem identifier 
 	 * @param newID Part ID (IE, "A")
@@ -202,10 +201,29 @@ public class SubProblem implements ProblemPart
 			return false;
 		if(!this.id.equals(otherP.id))
 			return false;
-		if(!endSolutionStep.equals(otherP.endSolutionStep))
-			return false;
-		if(!startSolutionStep.equals(otherP.startSolutionStep))
-			return false;
+
+		if(startSolutionStep != null)
+		{
+			if(!startSolutionStep.equals(otherP.startSolutionStep))
+				return false;
+		}
+		else
+		{
+			 if(otherP.startSolutionStep != null)
+				 return false;
+		}
+
+		if(endSolutionStep != null)
+		{
+			if(!endSolutionStep.equals(otherP.endSolutionStep))
+				return false;
+		}
+		else
+		{
+			 if(otherP.endSolutionStep != null)
+				 return false;
+		}
+
 		return true;
 	}
 
@@ -235,9 +253,9 @@ public class SubProblem implements ProblemPart
 		Element subEl = new Element("part");
 		subEl.setAttribute("id", id);
 		if(startSolutionStep != null)
-			subEl.setAttribute("start",	 Integer.toString(startSolutionStep.hashCode()));
+			subEl.setAttribute("start", Integer.toString(startSolutionStep.hashCode()));
 		else
-			subEl.setAttribute("start",	 "");
+			subEl.setAttribute("start", "");
 		if(endSolutionStep != null)
 			subEl.setAttribute("end", Integer.toString(endSolutionStep.hashCode()));
 		else
@@ -256,8 +274,8 @@ public class SubProblem implements ProblemPart
 	public static SubProblem fromXml(Element subEl, Problem parent)
 	{
 		SubProblem newSub = new SubProblem(parent,
-				subEl.getAttributeValue("id"),
-				subEl.getChildText("statement"));
+										   subEl.getAttributeValue("id"),
+										   subEl.getChildText("statement"));
 
 		// Now find our start and end Operation objects so we can point
 		// to them again
