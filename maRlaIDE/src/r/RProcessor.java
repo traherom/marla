@@ -705,19 +705,25 @@ public final class RProcessor
 	/**
 	 * Sets the recording mode for the processor
 	 * @param mode RecordMode to place the processor in.
+	 * @return The mode the RProcessor was in before the switch
 	 */
-	public void setRecorder(RecordMode mode)
+	public RecordMode setRecorder(RecordMode mode)
 	{
+		RecordMode oldMode = recordMode;
 		recordMode = mode;
+		return oldMode;
 	}
 
 	/**
 	 * Sets how much the processor should output to the console. Useful debugging operations
 	 * @param mode RecordMode to place the processor in.
+	 * @return The mode the RProcessor was in before the switch
 	 */
-	public void setDebug(RecordMode mode)
+	public RecordMode setDebug(RecordMode mode)
 	{
+		RecordMode oldMode = debugOutputMode;
 		debugOutputMode = mode;
+		return oldMode;
 	}
 
 	/**

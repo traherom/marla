@@ -1779,38 +1779,31 @@ public class ViewPanel extends JPanel
 			ExtendedTableModel tableModel = (ExtendedTableModel) ((JTable) ((JViewport) ((JScrollPane) ((JPanel) dataSetTabbedPane.getComponent (i)).getComponent (0)).getComponent (0)).getComponent (0)).getModel ();
 			for (int j = 0; j < tableModel.getColumnCount(); ++j)
 			{
-				try
+				if (j < dataSet.getColumnCount ())
 				{
-					if (j < dataSet.getColumnCount ())
+					DataColumn column = dataSet.getColumn (j);
+					if (!dataSet.getColumn (j).getName ().equals (tableModel.getColumnName (j)))
 					{
-						DataColumn column = dataSet.getColumn (j);
-						if (!dataSet.getColumn (j).getName ().equals (tableModel.getColumnName (j)))
-						{
-							column.setName (tableModel.getColumnName (j));
-						}
-						for (int k = 0; k < tableModel.getRowCount(); ++k)
-						{
-							column.set (k, Double.parseDouble (tableModel.getValueAt (k, j).toString ()));
-						}
-						for (int k = tableModel.getRowCount (); k < dataSet.getColumnLength (); ++k)
-						{
-							column.remove (k);
-						}
+						column.setName (tableModel.getColumnName (j));
 					}
-					else
+					for (int k = 0; k < tableModel.getRowCount(); ++k)
 					{
-						DataColumn column = dataSet.addColumn (tableModel.getColumnName(j));
-
-						// Add all rows within this column to the data set
-						for (int k = 0; k < tableModel.getRowCount (); ++k)
-						{
-							column.add (Double.parseDouble (tableModel.getValueAt (k, j).toString ()));
-						}
+						column.set (k, Double.parseDouble (tableModel.getValueAt (k, j).toString ()));
+					}
+					for (int k = tableModel.getRowCount (); k < dataSet.getColumnLength (); ++k)
+					{
+						column.remove (k);
 					}
 				}
-				catch (CalcException ex)
+				else
 				{
-					JOptionPane.showMessageDialog(this, "The requested R package either cannot be located or is not installed.", "Missing Package", JOptionPane.WARNING_MESSAGE);
+					DataColumn column = dataSet.addColumn (tableModel.getColumnName(j));
+
+					// Add all rows within this column to the data set
+					for (int k = 0; k < tableModel.getRowCount (); ++k)
+					{
+						column.add (Double.parseDouble (tableModel.getValueAt (k, j).toString ()));
+					}
 				}
 			}
 		}

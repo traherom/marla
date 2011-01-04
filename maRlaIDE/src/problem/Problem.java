@@ -117,6 +117,15 @@ public class Problem implements ProblemPart
 	@Override
 	public DataSet addData(DataSet data)
 	{
+		// Don't add the same data again
+		if(datasets.contains(data))
+			return data;
+
+		// Remove from the old problem if needed
+		ProblemPart oldParent = data.getParentProblem();
+		if(oldParent != null)
+			oldParent.removeData(data);
+
 		markChanged();
 		isSaved = false;
 		data.setParentProblem(this);

@@ -19,9 +19,11 @@ package problem;
 
 import java.awt.Rectangle;
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.InputMismatchException;
@@ -29,6 +31,7 @@ import javax.swing.JLabel;
 import org.jdom.Element;
 import problem.DataColumn.DataMode;
 import r.RProcessor;
+import r.RProcessor.RecordMode;
 import r.RProcessorException;
 import r.RProcessorParseException;
 
@@ -190,12 +193,73 @@ public class DataSet extends JLabel
 	}
 
 	/**
+	 * Exports this DataSet to a CSV file at the given path. Use R to perform the export.
+	 * @param filePath CSV file to write to. File will be overwritten if needed.
+	 */
+	public void exportFile(String filePath) throws IOException
+	{
+		// Column names
+		BufferedWriter out = new BufferedWriter(new FileWriter(filePath));
+		StringBuilder line = new StringBuilder();
+		for(DataColumn dc : columns)
+		{
+			line.append('"');
+			line.append(dc.getName());
+			line.append("\", ");
+		}
+
+		// Remove the final comma and terminate
+		line.replace(line.length() - 2, line.length(), "");
+		line.append("\n");
+
+		// Go team, write
+		out.write(line.toString());
+
+		// Values
+		int len = getColumnLength();
+		for(int i = 0; i < len; i++)
+		{
+			line = new StringBuilder();
+
+			for(DataColumn dc : columns)
+			{
+				// Actually more items in this column?
+				if(i < dc.size())
+				{
+					if(dc.isNumerical())
+					{
+						line.append(dc.get(i));
+					}
+					else
+					{
+						line.append('"');
+						line.append(dc.get(i));
+						line.append('"');
+					}
+				}
+
+				line.append(", ");
+			}
+
+			// Remove the final comma and terminate
+			line.replace(line.length() - 2, line.length(), "");
+			line.append("\n");
+
+			// And write
+			out.write(line.toString());
+		}
+
+		// All done
+		out.close();
+	}
+
+	/**
 	 * Takes the given variable in R and builds the DataSet that represents it.
 	 * The variable must be a data frame with numeric values.
 	 * @param varName Variable name within the global RProcessor instance to work with
 	 * @return New DataSet containing the loaded data
 	 */
-	private static DataSet fromRFrame(String varName) throws RProcessorException, RProcessorParseException, DuplicateNameException, CalcException
+	public static DataSet fromRFrame(String varName) throws RProcessorException, RProcessorParseException, DuplicateNameException, CalcException
 	{
 		DataSet ds = new DataSet(varName);
 
@@ -215,12 +279,14 @@ public class DataSet extends JLabel
 	 * Assigns this DataSet to a new parent. Should only be called by
 	 * the new parent Problem, as that needs to actually insert the
 	 * operation into its array. The package private access is intentional.
-	 *
 	 * @param newParent Problem this dataset belongs to
+	 * @return Old parent this DataSet used to belong to, null if there was none
 	 */
-	void setParentProblem(ProblemPart newParent)
+	ProblemPart setParentProblem(ProblemPart newParent)
 	{
+		ProblemPart oldParent = parent;
 		parent = newParent;
+		return oldParent;
 	}
 
 	/**
@@ -281,9 +347,8 @@ public class DataSet extends JLabel
 	 * Adds another column to this dataset
 	 * @param colName Name for new column
 	 * @return Newly created data column
-	 * @throws CalcException Unable to recompute the data with this new column
 	 */
-	public DataColumn addColumn(String colName) throws CalcException
+	public DataColumn addColumn(String colName)
 	{
 		markChanged();
 		DataColumn newCol = new DataColumn(this, colName);
@@ -524,12 +589,50 @@ public class DataSet extends JLabel
 	}
 
 	/**
-	 * Outputs this DataSet as a constructed R data frame
-	 * @return DataSet as a string two dimensional array
+	 * Outputs this DataSet as the string of R commands needed to turn it into a data frame
+	 * @return R commands
 	 */
-	public String toRString()
+	public String toRString() throws RProcessorException, RProcessorParseException
 	{
-		return toString(this);
+		RProcessor proc = RProcessor.getInstance();
+		RecordMode oldMode = proc.setRecorder(RecordMode.CMDS_ONLY);
+		toRFrame();
+		proc.setRecorder(oldMode);
+		return proc.fetchInteraction();
+	}
+
+	/**
+	 * Outputs this DataSet as a constructed R data frame and returns the
+	 * variable the data frame is stored in.
+	 * @return R variable the data frame is in
+	 */
+	public String toRFrame() throws RProcessorException, RProcessorParseException
+	{
+		RProcessor proc = RProcessor.getInstance();
+
+		// Save all of the columns to variables
+		ArrayList<String> colVars = new ArrayList<String>();
+		for(DataColumn dc : columns)
+		{
+			String colName = proc.executeString("make.names('" + dc.getName() + "')");
+			colVars.add(colName);
+			proc.setVariable(colName, dc);
+		}
+
+		// Save to frame
+		StringBuilder sb = new StringBuilder("data.frame(");
+		for(String var : colVars)
+		{
+			sb.append(var);
+			sb.append(", ");
+		}
+		if(colVars.size() > 0)
+			sb.replace(sb.length() - 2, sb.length(), "");
+		sb.append(")");
+		String frameName = proc.executeSave(sb.toString());
+
+		// And return back the variable it's in
+		return frameName;
 	}
 
 	/**

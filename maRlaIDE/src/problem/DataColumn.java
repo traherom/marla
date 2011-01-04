@@ -550,6 +550,8 @@ public class DataColumn implements List<Object>
 			return false;
 
 		DataColumn otherCol = (DataColumn) other;
+		if(!mode.equals(otherCol.mode))
+			return false;
 		if(!name.equals(otherCol.name))
 			return false;
 		if(!values.equals(otherCol.values))
@@ -563,6 +565,7 @@ public class DataColumn implements List<Object>
 		int hash = 5;
 		hash = 11 * hash + (this.name != null ? this.name.hashCode() : 0);
 		hash = 11 * hash + (this.values != null ? this.values.hashCode() : 0);
+		hash = 11 * hash + (this.mode != null ? this.mode.hashCode() : 0);
 		return hash;
 	}
 

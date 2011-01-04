@@ -539,19 +539,6 @@ public abstract class Operation extends DataSet
 	}
 
 	/**
-	 * Takes the given name and returns a version of it that is
-	 * usable in R (obeys all the naming rules for variables basically)
-	 * @param dirtyName Name that needs to be cleaned
-	 * @return Valid R variable name
-	 */
-	public static String sanatizeName(String dirtyName)
-	{
-		Matcher m = Operation.rNamesPatt.matcher(dirtyName);
-		m.region(1, dirtyName.length());
-		return m.replaceAll("");
-	}
-
-	/**
 	 * Outputs this Operation as the string of R commands it took to produce it
 	 * @return R commands
 	 */
