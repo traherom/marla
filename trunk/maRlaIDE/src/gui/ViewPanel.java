@@ -38,8 +38,6 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.BorderFactory;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
@@ -73,7 +71,6 @@ import problem.FileException;
 import problem.IncompleteInitialization;
 import problem.Operation;
 import problem.OperationException;
-import problem.OperationInfoRequiredException;
 import problem.Problem;
 import r.OperationXML;
 import r.OperationXMLException;
@@ -1586,10 +1583,10 @@ public class ViewPanel extends JPanel
 		{
 			y += 20;
 		}
-		final OperationXML newOperation;
+		final Operation newOperation;
 		try
 		{
-			newOperation = OperationXML.createOperation(operation.getName());
+			newOperation = Operation.createOperation(operation.getName());
 			newOperation.setBounds (x, y, newOperation.getPreferredSize().width, newOperation.getPreferredSize().height);
 			try
 			{
@@ -1603,9 +1600,9 @@ public class ViewPanel extends JPanel
 			workspacePanel.add (newOperation);
 			workspacePanel.updateUI();
 		}
-		catch(OperationXMLException ex)
+		catch(OperationException ex)
 		{
-			Logger.getLogger(ViewPanel.class.getName()).log(Level.SEVERE, null, ex);
+			JOptionPane.showMessageDialog(this, "Unable to load the requested operation", "Missing Operation", JOptionPane.WARNING_MESSAGE);
 		}
 	}
 

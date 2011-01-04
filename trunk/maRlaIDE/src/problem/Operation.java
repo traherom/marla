@@ -21,8 +21,6 @@ import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import org.jdom.Element;
 import r.OperationXML;
 import r.OperationXMLException;
@@ -39,10 +37,6 @@ import r.RProcessorParseException;
  */
 public abstract class Operation extends DataSet
 {
-	/**
-	 * Used to create "R acceptable" variable names
-	 */
-	private static Pattern rNamesPatt = Pattern.compile("[^a-zA-Z0-9_]");
 	/**
 	 * Parent data that this operation works on
 	 */
@@ -294,7 +288,8 @@ public abstract class Operation extends DataSet
 	}
 
 	/**
-	 * Duplicates an operation
+	 * Duplicates an operation. Derivative classes should override this
+	 * if additional information needs to be copied.
 	 * @return Duplicated Operation
 	 */
 	@Override
@@ -302,13 +297,17 @@ public abstract class Operation extends DataSet
 	{
 		try
 		{
-			return this.getClass().newInstance();
+			// Create an operation with the same type
+			Operation newOp = Operation.createOperation(name);
+
+			for(Operation op : solutionOps)
+			{
+				newOp.addOperation(op.clone());
+			}
+
+			return newOp;
 		}
-		catch(InstantiationException ex)
-		{
-			throw new RuntimeException(ex);
-		}
-		catch(IllegalAccessException ex)
+		catch(OperationException ex)
 		{
 			throw new RuntimeException(ex);
 		}

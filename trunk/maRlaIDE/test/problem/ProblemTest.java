@@ -18,7 +18,7 @@
 package problem;
 
 import org.jdom.Element;
-import org.junit.Test;
+import org.junit.*;
 import static org.junit.Assert.*;
 
 /**
@@ -30,14 +30,27 @@ public class ProblemTest
 {
 	private String tempFileName = "testing_temp_file.marlatemp";
 
-	public static Problem createProblem(int dataSetNum, int colNum, int valNum)
+	@BeforeClass
+	public static void initOperations() throws Exception
+	{
+		r.OperationXML.loadXML("ops.xml");
+	}
+
+	public static Problem createProblem(int dataSetNum, int colNum, int valNum) throws Exception
 	{
 		Problem prob = new Problem("Test Problem");
 
+		// Add DataSets
 		for(int dsNum = 0; dsNum < dataSetNum; dsNum++)
 		{
 			prob.addData(DataSetTest.createDataSet(colNum, valNum));
 		}
+
+		// Add a few operations in a couple places
+		//for(int i = 0; i < dataSetNum / 2; i++)
+		//{
+		//	prob.getData(i * 2).addOperation(Operation.createOperation("NOP"));
+		//}
 
 		return prob;
 	}
@@ -53,7 +66,7 @@ public class ProblemTest
 	}
 
 	@Test
-	public void testAddDataNoParent()
+	public void testAddDataNoParent() throws Exception
 	{
 		Problem prob = new Problem();
 
@@ -69,7 +82,7 @@ public class ProblemTest
 	}
 
 	@Test(expected=IndexOutOfBoundsException.class)
-	public void testAddDataWithParent()
+	public void testAddDataWithParent() throws Exception
 	{
 		// Stick a dataset in one problem
 		Problem prob1 = new Problem();
@@ -216,7 +229,7 @@ public class ProblemTest
 	}
 
 	@Test
-	public void testCopy() throws CalcException
+	public void testCopy() throws Exception
 	{
 		Problem instance = createProblem(3, 4, 10);
 		Problem copied = new Problem(instance);

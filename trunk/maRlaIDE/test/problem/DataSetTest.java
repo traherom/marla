@@ -28,7 +28,7 @@ import r.RProcessor;
  */
 public class DataSetTest
 {
-	public static DataSet createDataSet(int columns, int rows)
+	public static DataSet createDataSet(int columns, int rows) throws Exception
 	{
 		DataSet ds = new DataSet("DataSet Test");
 
@@ -42,11 +42,20 @@ public class DataSetTest
 			}
 		}
 
+		// Add an operation, just for giggles
+		ds.addOperation(Operation.createOperation("NOP"));
+
 		return ds;
 	}
 
+	@BeforeClass
+	public static void initOperations() throws Exception
+	{
+		r.OperationXML.loadXML("ops.xml");
+	}
+
 	@Test
-	public void testEquals()
+	public void testEquals() throws Exception
 	{
 		// Equal
 		DataSet testDS1 = createDataSet(5, 50);
@@ -55,7 +64,7 @@ public class DataSetTest
 	}
 
 	@Test
-	public void testNotEqualsColCount()
+	public void testNotEqualsColCount() throws Exception
 	{
 		// Different number of columns
 		DataSet testDS1 = createDataSet(5, 50);
@@ -64,7 +73,7 @@ public class DataSetTest
 	}
 
 	@Test
-	public void testNotEqualsNumItemsInColumn()
+	public void testNotEqualsNumItemsInColumn() throws Exception
 	{
 		// Different number of items in the columns
 		DataSet testDS1 = createDataSet(5, 50);
@@ -73,7 +82,7 @@ public class DataSetTest
 	}
 
 	@Test
-	public void testNotEqualsValuesInColumn()
+	public void testNotEqualsValuesInColumn() throws Exception
 	{
 		// Different value in one of the columns
 		DataSet testDS1 = createDataSet(5, 50);
@@ -83,7 +92,7 @@ public class DataSetTest
 	}
 
 	@Test
-	public void testNotEqualsColumnNames()
+	public void testNotEqualsColumnNames() throws Exception
 	{
 		// Different names for one of the columns
 		DataSet testDS1 = createDataSet(5, 50);
@@ -93,7 +102,7 @@ public class DataSetTest
 	}
 
 	@Test
-	public void testNotEqualsNames()
+	public void testNotEqualsNames() throws Exception
 	{
 		// Different name for the dataset
 		DataSet testDS1 = createDataSet(5, 50);
@@ -105,16 +114,19 @@ public class DataSetTest
 	@Test
 	public void testImportAndExportFile() throws Exception
 	{
-		// Export to file
+		// Export to file. Change column names to match the way it will
+		// be imported. We also don't export operations, so dump those.
 		DataSet testDS1 = createDataSet(5, 50);
 		testDS1.getColumn(0).setName("Column.1");
 		testDS1.getColumn(1).setName("Column.2");
 		testDS1.getColumn(2).setName("Column.3");
 		testDS1.getColumn(3).setName("Column.4");
 		testDS1.getColumn(4).setName("Column.5");
+		testDS1.removeOperation(0);
 		testDS1.exportFile("test.csv");
 
-		// Import and make name match (otherwise it's based on the file name)
+		// Import and make name match (otherwise it's based on the file name,
+		// which clearly wouldn't be right)
 		DataSet importedDS = DataSet.importFile("test.csv");
 		assertEquals("test.csv", importedDS.getName());
 		importedDS.setName(testDS1.getName());
@@ -178,14 +190,14 @@ public class DataSetTest
 	}
 
 	@Test
-	public void testGetColumnCount()
+	public void testGetColumnCount() throws Exception
 	{
 		DataSet testDS1 = createDataSet(5, 4);
 		assertEquals(5, testDS1.getColumnCount());
 	}
 
 	@Test
-	public void testGetColumnLengthEqual()
+	public void testGetColumnLengthEqual() throws Exception
 	{
 		// Equally sized columns
 		DataSet testDS1 = createDataSet(5, 50);
@@ -193,7 +205,7 @@ public class DataSetTest
 	}
 
 	@Test
-	public void testGetColumnLengthVaried()
+	public void testGetColumnLengthVaried() throws Exception
 	{
 		// Some shorter
 		DataSet testDS1 = createDataSet(5, 50);
@@ -213,7 +225,7 @@ public class DataSetTest
 	 * Can we save a dataset to XML, then read it back in and
 	 */
 	@Test
-	public void testToAndFromXML()
+	public void testToAndFromXML() throws Exception
 	{
 		DataSet testDS1 = createDataSet(5, 50);
 
@@ -224,7 +236,7 @@ public class DataSetTest
 	}
 
 	@Test
-	public void testCopy()
+	public void testCopy() throws Exception
 	{
 		DataSet testDS1 = createDataSet(5, 50);
 		DataSet testDS2 = new DataSet(testDS1, null);
