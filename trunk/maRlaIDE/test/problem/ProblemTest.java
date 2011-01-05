@@ -51,7 +51,42 @@ public class ProblemTest
 
 		return prob;
 	}
-	
+
+	@Test
+	public void testEquals() throws Exception
+	{
+		Problem prob1 = createProblem(2, 3, 10);
+		Problem prob2 = createProblem(2, 3, 10);
+		assertEquals(prob1, prob2);
+	}
+
+	@Test
+	public void testEqualsDifferentStatement() throws Exception
+	{
+		Problem prob1 = createProblem(2, 3, 10);
+		Problem prob2 = createProblem(2, 3, 10);
+		prob2.setStatement("different statement");
+		assertFalse(prob1.equals(prob2));
+	}
+
+	@Test
+	public void testEqualsDifferentData() throws Exception
+	{
+		Problem prob1 = createProblem(2, 3, 10);
+		Problem prob2 = createProblem(2, 3, 10);
+		prob2.addData(DataSetTest.createDataSet(3, 5));
+		assertFalse(prob1.equals(prob2));
+	}
+
+	@Test
+	public void testEqualsDifferentSubProblem() throws Exception
+	{
+		Problem prob1 = createProblem(2, 3, 10);
+		Problem prob2 = createProblem(2, 3, 10);
+		prob2.addSubProblem("New Part", "sub problem statement");
+		assertFalse(prob1.equals(prob2));
+	}
+
 	@Test
 	public void testStatement()
 	{
