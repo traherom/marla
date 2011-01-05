@@ -117,9 +117,13 @@ public class Problem implements ProblemPart
 	@Override
 	public DataSet addData(DataSet data)
 	{
-		// Don't add the same data again
-		if(datasets.contains(data))
-			return data;
+		// Don't add the same data again. Do an actual object
+		// comparison, not .equals(). Hence why we don't use .contains.
+		for(DataSet ds : datasets)
+		{
+			if(ds == data)
+				return data;
+		}
 
 		// Remove from the old problem if needed
 		ProblemPart oldParent = data.getParentProblem();

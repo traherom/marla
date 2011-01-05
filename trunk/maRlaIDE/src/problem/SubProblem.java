@@ -290,6 +290,17 @@ public class SubProblem implements ProblemPart
 		if(!endIDStr.isEmpty())
 			endID = Integer.parseInt(endIDStr);
 
+		// Look for match in DataSets
+		for(int i = 0; i < parent.getDataCount(); i++)
+		{
+			int hash = parent.getData(i).hashCode();
+			if(!startIDStr.isEmpty() && newSub.getSolutionStart() == null && hash == startID)
+				newSub.setSolutionStart(parent.getData(i));
+			if(!endIDStr.isEmpty() && newSub.getSolutionEnd() == null && hash == endID)
+				newSub.setSolutionEnd(parent.getData(i));
+		}
+
+		// Look for it in operations
 		for(int i = 0; i < parent.getDataCount(); i++)
 		{
 			if(!startIDStr.isEmpty() && newSub.getSolutionStart() == null)

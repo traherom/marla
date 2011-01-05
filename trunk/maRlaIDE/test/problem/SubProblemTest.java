@@ -73,7 +73,13 @@ public class SubProblemTest
 	@Test
 	public void testToAndFromXMLWithSolution()
 	{
-		// TBD, hook up the start and ends in some places
+		// Hook up the start and ends in some places
+		testSub1.setSolutionStart(testProb1.getData(0));
+		testSub1.setSolutionEnd(testProb1.getData(0).getOperation(0));
+
+		testSub2.setSolutionStart(testProb1.getData(1));
+
+		// And test
 		Element el = testSub1.toXml();
 		SubProblem newSub = SubProblem.fromXml(el, testProb2);
 		assertEquals(testSub1, newSub);

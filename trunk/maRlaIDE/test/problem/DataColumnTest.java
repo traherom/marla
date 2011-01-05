@@ -34,6 +34,10 @@ public class DataColumnTest
 		{
 			dc.add(i);
 		}
+
+		// Make sure we built correctly
+		assertEquals(items, dc.size());
+
 		return dc;
 	}
 

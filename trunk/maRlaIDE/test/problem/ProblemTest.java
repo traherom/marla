@@ -46,11 +46,8 @@ public class ProblemTest
 			prob.addData(DataSetTest.createDataSet(colNum, valNum));
 		}
 
-		// Add a few operations in a couple places
-		//for(int i = 0; i < dataSetNum / 2; i++)
-		//{
-		//	prob.getData(i * 2).addOperation(Operation.createOperation("NOP"));
-		//}
+		// Make sure it built correctly
+		assertEquals(dataSetNum, prob.getDataCount());
 
 		return prob;
 	}
