@@ -40,10 +40,16 @@ public class DataSetTest
 			{
 				dc.add(dataNum);
 			}
+
+			// Make sure we built correctly
+			assertEquals(rows, dc.size());
 		}
 
 		// Add an operation, just for giggles
 		ds.addOperation(Operation.createOperation("NOP"));
+
+		// Make sure we built correctly
+		assertEquals(columns, ds.getColumnCount());
 
 		return ds;
 	}
