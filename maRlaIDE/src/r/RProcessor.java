@@ -57,7 +57,7 @@ public final class RProcessor
 	/**
 	 * Pattern used to recognize doubles in R output, mainly for use with vectors
 	 */
-	private final Pattern doublePatt = Pattern.compile("(?<=\\s)-?[0-9]+(\\.[0-9]+)?(e-?[0-9]+)?(?=\\s)");
+	private final Pattern doublePatt = Pattern.compile("(?<=\\s)-?[0-9]+(\\.[0-9]+)?(e-?[0-9]+)?(?=\\s|$)");
 	/**
 	 * Pattern used to recognize doubles in R output, mainly for use with vectors
 	 */
@@ -172,12 +172,12 @@ public final class RProcessor
 				"R/bin/R", // Our own installation of it
 				"/Library/Frameworks/R.framework/Resources/R",
 				"/usr/lib/R/bin/R",
-				"C:\\Program Files\\R\\bin\\R\\x64\\R",
-				"C:\\Program Files\\R\\bin\\R\\x32\\R",
-				"C:\\Program Files\\R\\bin\\R",
-				"D:\\Program Files\\R\\bin\\R",
-				"D:\\Program Files\\R\\bin\\R\\x64\\R",
-				"D:\\Program Files\\R\\bin\\R\\x32\\R"
+				"C:\\Program Files\\R\\bin\\x64\\R.exe",
+				"C:\\Program Files\\R\\bin\\x32\\R.exe",
+				"D:\\Program Files\\R\\bin\\x64\\R.exe",
+				"D:\\Program Files\\R\\bin\\x32\\R.exe",
+				"C:\\Program Files\\R\\bin\\R.exe",
+				"D:\\Program Files\\R\\bin\\R.exe"
 			};
 			for(String s : commonLocs)
 			{
@@ -185,7 +185,7 @@ public final class RProcessor
 				System.err.print("\n\t" + s);
 				if(f.exists())
 				{
-					System.err.println("found!");
+					System.err.println("\nfound!");
 					return getInstance(s);
 				}
 			}
@@ -210,6 +210,23 @@ public final class RProcessor
 		}
 
 		return singleRProcessor;
+	}
+
+	/**
+	 * Kills any existing instances of the RProcessor and starts a new one.
+	 * @return Newly created RProcessor instance
+	 * @throws RProcessorException Unable to load R process
+	 */
+	public static RProcessor restartInstance() throws RProcessorException
+	{
+		if(singleRProcessor != null)
+		{
+			// Make sure the previous one closed properly
+			singleRProcessor.close();
+			singleRProcessor = null;
+		}
+
+		return getInstance();
 	}
 
 	/**
@@ -240,6 +257,10 @@ public final class RProcessor
 	{
 		try
 		{
+			// Only bother if we're not already dead
+			if(!isRunning())
+				return;
+
 			// Tell R we're closing
 			// We don't synchronize here because that would leave us
 			// hanging if the main execute() was
@@ -259,11 +280,26 @@ public final class RProcessor
 		}
 		finally
 		{
+			// Make the process die even if it didn't want to
+			rProc.destroy();
+			
 			procIn = null;
 			procOut = null;
 			comboStream = null;
-			rProc = null;
+			System.gc();
 		}
+	}
+
+	/**
+	 * Checks if the current R process is still running and accessible
+	 * @return true if the process may be used, false otherwise
+	 */
+	public boolean isRunning()
+	{
+		if(rProc == null || procIn == null || procOut == null)
+			return false;
+		else
+			return true;
 	}
 
 	/**
@@ -276,27 +312,31 @@ public final class RProcessor
 	 */
 	public String execute(String cmd) throws RProcessorException
 	{
+		// Ensure the processor is still running
+		if(!isRunning())
+			throw new RProcessorException("R process has been closed.");
+
+		// Check if there are multiple commands in the string.
+		// Seriously, that's dangerous for us, could make us hang.
+		Matcher m = singleCmdPatt.matcher(cmd);
+		if(!m.matches())
+			throw new RProcessorException("execute() may only be given one command at a time");
+
+		// Start building up our nice command
+		StringBuilder sentinelCmd = new StringBuilder(cmd.trim());
+		sentinelCmd.append('\n');
+
+		// Record and/or output if needed
+		if(recordMode == RecordMode.CMDS_ONLY || recordMode == RecordMode.FULL)
+			interactionRecord.append(sentinelCmd);
+		if(debugOutputMode == RecordMode.CMDS_ONLY || debugOutputMode == RecordMode.FULL)
+			System.out.print("> " + sentinelCmd);
+
+		// Save R output to here
+		StringBuilder results = new StringBuilder();
+
 		try
 		{
-			// Check if there are multiple commands in the string.
-			// Seriously, that's dangerous for us, could make us hang.
-			Matcher m = singleCmdPatt.matcher(cmd);
-			if(!m.matches())
-				throw new RProcessorException("execute() may only be given one command at a time");
-
-			// Start building up our nice command
-			StringBuilder sentinelCmd = new StringBuilder(cmd.trim());
-			sentinelCmd.append('\n');
-
-			// Record and/or output if needed
-			if(recordMode == RecordMode.CMDS_ONLY || recordMode == RecordMode.FULL)
-				interactionRecord.append(sentinelCmd);
-			if(debugOutputMode == RecordMode.CMDS_ONLY || debugOutputMode == RecordMode.FULL)
-				System.out.print("> " + sentinelCmd);
-
-			// Save R output to here
-			StringBuilder results = new StringBuilder();
-
 			// Only one thread may access the R input/output at one time
 			synchronized(processSync)
 			{
@@ -657,49 +697,6 @@ public final class RProcessor
 	public void stopGraphicOutput() throws RProcessorException
 	{
 		execute("dev.off()");
-	}
-
-	/**
-	 * Stores the function with the given code into a unique function name.
-	 * This function does far less checking than the normal execute and does not record
-	 * into the appropriate variables. Use only as needed
-	 * @param code Function (including the function() header itself) to save
-	 * @return Name of the new function
-	 * @throws RProcessorException Thrown if an internal error occur
-	 */
-	public String setFunction(String code) throws RProcessorException
-	{
-		return setFunction(getUniqueName(), code);
-	}
-
-	/**
-	 * Stores the function with the given code into the given name.
-	 * This function does far less checking than the normal execute and does not record
-	 * into the appropriate variables. Use only as needed
-	 * @param name R-conforming function name
-	 * @param code Function (including the function() header itself) to save
-	 * @return Name of the new function
-	 * @throws RProcessorException Thrown if an internal error occur
-	 */
-	public String setFunction(String name, String code) throws RProcessorException
-	{
-		try
-		{
-			// Can't use the normal execute, it'll block us from "using" multiple commands
-			StringBuilder fullSave = new StringBuilder();
-			fullSave.append(name);
-			fullSave.append("<-");
-			fullSave.append(code);
-
-			byte[] cmdArray = fullSave.toString().getBytes();
-			procIn.write(cmdArray, 0, cmdArray.length);
-			procIn.flush();
-			return name;
-		}
-		catch(IOException ex)
-		{
-			throw new RProcessorException("Unable to send command to R");
-		}
 	}
 
 	/**
