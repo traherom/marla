@@ -61,7 +61,7 @@ public final class RProcessor
 	/**
 	 * Pattern used to recognize doubles in R output, mainly for use with vectors
 	 */
-	private final Pattern stringPatt = Pattern.compile("(?<=\")[^\"]*?\\w[^\"]*?(?=\")");
+	private final Pattern stringPatt = Pattern.compile("\"(([^\\n]|\\\")+?)\"");
 	/**
 	 * Path to the R executable, used if R has to be reloaded after it dies
 	 */
@@ -102,6 +102,10 @@ public final class RProcessor
 	 * Record of output returned from R
 	 */
 	private StringBuilder interactionRecord = new StringBuilder();
+	/**
+	 * Path of the most recently output graphic
+	 */
+	private String lastPngName = null;
 	/**
 	 * Stores the next value to use for the "unique" name generator
 	 */
@@ -566,7 +570,7 @@ public final class RProcessor
 
 			while(m.find())
 			{
-				vals.add(m.group());
+				vals.add(m.group(1));
 			}
 		}
 		catch(NumberFormatException ex)
@@ -685,18 +689,22 @@ public final class RProcessor
 	 */
 	public String startGraphicOutput() throws RProcessorException
 	{
-		String pngName = getUniqueName() + ".png";
-		execute("png(filename='" + pngName + "')");
-		return pngName;
+		lastPngName = getUniqueName() + ".png";
+		execute("png(filename='" + lastPngName + "')");
+		return lastPngName;
 	}
 
 	/**
 	 * Stops the current graphic device, flushing it to disk.
+	 * @return Path where the new graphic has been written to
 	 * @throws RProcessorException An error occurred closing the device
 	 */
-	public void stopGraphicOutput() throws RProcessorException
+	public String stopGraphicOutput() throws RProcessorException
 	{
+		String pngName = lastPngName;
+		lastPngName = null;
 		execute("dev.off()");
+		return pngName;
 	}
 
 	/**
