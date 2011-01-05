@@ -31,6 +31,7 @@ public class SubProblemTest
 	 */
 	private Problem testProb1 = null;
 	private SubProblem testSub1 = null;
+	private SubProblem testSubIdentical1 = null;
 	private SubProblem testSub2 = null;
 	/**
 	 * Empty test problem that subproblems can be added to
@@ -56,10 +57,45 @@ public class SubProblemTest
 		// Create a problem and some subproblems to work with
 		testProb1 = ProblemTest.createProblem(3, 3, 5);
 		testSub1 = testProb1.addSubProblem("a", "Test subproblem A.");
+		testSubIdentical1 = new SubProblem(null, "a", "Test subproblem A.");
 		testSub2 = testProb1.addSubProblem("b", "Test subproblem B.");
 
 		// And a stupid one to do other stuff to
 		testProb2 = ProblemTest.createProblem(3, 3, 5);
+	}
+
+	@Test
+	public void testEquals()
+	{
+		assertEquals(testSub1, testSubIdentical1);
+	}
+
+	@Test
+	public void testEqualsDifferentID()
+	{
+		testSubIdentical1.setSubproblemID("NEW ID");
+		assertFalse(testSub1.equals(testSubIdentical1));
+	}
+
+	@Test
+	public void testEqualsDifferentDescription()
+	{
+		testSubIdentical1.setStatement("Different statement");
+		assertFalse(testSub1.equals(testSubIdentical1));
+	}
+
+	@Test
+	public void testEqualsDifferentStart()
+	{
+		testSubIdentical1.setSolutionStart(new DataSet("blah"));
+		assertFalse(testSub1.equals(testSubIdentical1));
+	}
+
+	@Test
+	public void testEqualsDifferentEnd()
+	{
+		testSubIdentical1.setSolutionEnd(new DataSet("blah"));
+		assertFalse(testSub1.equals(testSubIdentical1));
 	}
 
 	@Test
@@ -82,6 +118,13 @@ public class SubProblemTest
 		// And test
 		Element el = testSub1.toXml();
 		SubProblem newSub = SubProblem.fromXml(el, testProb2);
+		assertEquals(testSub1, newSub);
+	}
+
+	@Test
+	public void testCopy()
+	{
+		SubProblem newSub = new SubProblem(testSub1, null);
 		assertEquals(testSub1, newSub);
 	}
 }

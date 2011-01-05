@@ -79,6 +79,7 @@ public class SubProblem implements ProblemPart
 	public SubProblem(SubProblem sp, Problem parent)
 	{
 		partDesc = sp.partDesc;
+		id = sp.id;
 		startSolutionStep = sp.startSolutionStep;
 		endSolutionStep = sp.endSolutionStep;
 		this.parent = parent;
@@ -99,13 +100,17 @@ public class SubProblem implements ProblemPart
 	@Override
 	public void markChanged()
 	{
-		parent.markChanged();
+		if(parent != null)
+			parent.markChanged();
 	}
 
 	@Override
 	public boolean isChanged()
 	{
-		return parent.isChanged();
+		if(parent != null)
+			return parent.isChanged();
+		else
+			return true;
 	}
 
 	/**
