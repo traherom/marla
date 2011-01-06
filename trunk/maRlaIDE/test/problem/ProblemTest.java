@@ -43,7 +43,7 @@ public class ProblemTest
 		// Add DataSets
 		for(int dsNum = 0; dsNum < dataSetNum; dsNum++)
 		{
-			prob.addData(DataSetTest.createDataSet(colNum, valNum));
+			prob.addData(DataSetTest.createDataSet(colNum, valNum, 1));
 		}
 
 		// Make sure it built correctly
@@ -74,7 +74,7 @@ public class ProblemTest
 	{
 		Problem prob1 = createProblem(2, 3, 10);
 		Problem prob2 = createProblem(2, 3, 10);
-		prob2.addData(DataSetTest.createDataSet(3, 5));
+		prob2.addData(DataSetTest.createDataSet(3, 5, 1));
 		assertFalse(prob1.equals(prob2));
 	}
 
@@ -102,7 +102,7 @@ public class ProblemTest
 	{
 		Problem prob = new Problem();
 
-		DataSet testDS1 = DataSetTest.createDataSet(5, 50);
+		DataSet testDS1 = DataSetTest.createDataSet(5, 50, 1);
 		assertEquals(null, testDS1.getParentProblem());
 		prob.addData(testDS1);
 
@@ -118,7 +118,7 @@ public class ProblemTest
 	{
 		// Stick a dataset in one problem
 		Problem prob1 = new Problem();
-		DataSet ds1 = DataSetTest.createDataSet(5, 50);
+		DataSet ds1 = DataSetTest.createDataSet(5, 50, 1);
 		prob1.addData(ds1);
 		assertEquals(prob1, ds1.getParentProblem());
 
@@ -141,11 +141,11 @@ public class ProblemTest
 	{
 		Problem prob = new Problem();
 
-		DataSet ds1 = DataSetTest.createDataSet(5, 50);
+		DataSet ds1 = DataSetTest.createDataSet(5, 50, 1);
 		ds1.setName("test 1");
 		prob.addData(ds1);
 
-		DataSet ds2 = DataSetTest.createDataSet(5, 50);
+		DataSet ds2 = DataSetTest.createDataSet(5, 50, 1);
 		ds1.setName("test 2");
 		prob.addData(ds2);
 

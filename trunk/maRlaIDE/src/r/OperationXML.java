@@ -33,6 +33,7 @@ import problem.DataColumn;
 import problem.DataNotFound;
 import problem.IncompleteInitialization;
 import problem.Operation;
+import problem.OperationException;
 import problem.OperationInfoRequiredException;
 
 /**
@@ -49,6 +50,10 @@ public class OperationXML extends Operation
 	 * Storage location for parsed operation XML file
 	 */
 	private static Element operationXML = null;
+	/**
+	 * Parser version this file was meant to be used under
+	 */
+	private static int parserVersion = Integer.MIN_VALUE;
 	/**
 	 * Configuration information for an instantiated operation
 	 */
@@ -101,8 +106,9 @@ public class OperationXML extends Operation
 	 * @param xmlPath Path to the operation XML file
 	 * @throws JDOMException A failure occurred during processing of the XML
 	 * @throws IOException An error occurred reading the file
+	 * @throws OperationXMLException Thrown when the version of the XML file is inappropriate
 	 */
-	public static void loadXML(String xmlPath) throws JDOMException, IOException
+	public static void loadXML(String xmlPath) throws JDOMException, IOException, OperationXMLException
 	{
 		try
 		{
@@ -121,12 +127,13 @@ public class OperationXML extends Operation
 	 * @throws JDOMException A failure occurred during processing of the XML
 	 * @throws IOException An error occurred reading the file
 	 * @throws IncompleteInitialization XML path not yet set by loadXML()
+	 * @throws OperationXMLException Thrown when the version of the XML file is inappropriate
 	 */
-	public static void reloadXML() throws JDOMException, IOException, IncompleteInitialization
+	public static void reloadXML() throws JDOMException, IOException, IncompleteInitialization, OperationXMLException
 	{
 		// Make sure we know where we're looking for that there XML
 		if(operationFilePath == null)
-			throw new IncompleteInitialization("");
+			throw new IncompleteInitialization("XML file for operations has not been specified");
 
 		// Load file into JDOM
 		SAXBuilder parser = new SAXBuilder();
@@ -134,6 +141,9 @@ public class OperationXML extends Operation
 		operationXML = doc.getRootElement();
 
 		// TODO Check version. Maybe have to use old versions of parsers someday?
+		parserVersion = Integer.parseInt(operationXML.getAttributeValue("version"));
+		if(parserVersion != 1)
+			throw new OperationXMLException("Version " + parserVersion + " of operational XML cannot be parsed.");
 	}
 
 	/**
@@ -146,6 +156,9 @@ public class OperationXML extends Operation
 	 */
 	public static ArrayList<String> getAvailableOperations() throws OperationXMLException
 	{
+		if(operationXML == null)
+			throw new OperationXMLException("XML file has not been loaded yet.");
+
 		ArrayList<String> opNames = new ArrayList<String>();
 		for(Object opEl : operationXML.getChildren("operation"))
 		{
@@ -242,7 +255,7 @@ public class OperationXML extends Operation
 		{
 			// Clear out old plot
 			this.plotPath = null;
-			
+
 			// Process away
 			Element compEl = opConfig.getChild("computation");
 			processSequence(compEl);
@@ -521,12 +534,16 @@ public class OperationXML extends Operation
 	 * Saves the returned values into a HashMap with keys from the name given in the query
 	 * XML. First element in the HashMap stores the type that the value actually represents
 	 * @param values ArrayList of Objects that answer the questions.
+	 * @throws OperationException Info was attempted to be set when not requested
 	 */
 	@Override
-	public void setRequiredInfo(ArrayList<Object> values)
+	public void setRequiredInfo(ArrayList<Object> values) throws OperationException
 	{
-		questionAnswers = new HashMap<String, Object[]>();
+		// It would be an error to try to set when none is asked for
+		if(!isInfoRequired())
+			throw new OperationException("This operation does not require info, should not be set");
 
+		questionAnswers = new HashMap<String, Object[]>();
 		@SuppressWarnings("unchecked")
 		List<Element> queryEls = opConfig.getChildren("query");
 		for(int i = 0; i < queryEls.size(); i++)
@@ -547,6 +564,55 @@ public class OperationXML extends Operation
 	{
 		checkCache();
 		return plotPath;
+	}
+
+	@Override
+	public boolean equals(Object other)
+	{
+		// Operation checks apply here too
+		if(!super.equals(other))
+			return false;
+
+		// Actually an XML operation?
+		if(!(other instanceof OperationXML))
+			return false;
+
+		OperationXML otherOp = (OperationXML) other;
+		if(!opConfig.equals(otherOp.opConfig))
+			return false;
+
+		// Can only test if it's not null
+		if(questionAnswers != null)
+		{
+			if(questionAnswers.equals(otherOp.questionAnswers))
+				return false;
+		}
+		else
+		{
+			// Other side had better be null too then...
+			if(otherOp.questionAnswers != null)
+				return false;
+		}
+
+		return true;
+	}
+
+	@Override
+	public Operation clone()
+	{
+		OperationXML op = (OperationXML) super.clone();
+		// TODO op.questionAnswers = (HashMap<String, Object[]>) (questionAnswers == null ? null : questionAnswers.clone());
+		return op;
+	}
+
+	@Override
+	public int hashCode()
+	{
+		int hash = 5;
+		hash = 31 * hash + (this.solutionOps != null ? this.solutionOps.hashCode() : 0);
+		hash = 31 * hash + (this.opConfig != null ? this.opConfig.hashCode() : 0);
+		hash = 31 * hash + (this.questionAnswers != null ? this.questionAnswers.hashCode() : 0);
+		return hash;
 	}
 
 	/**
@@ -604,12 +670,19 @@ public class OperationXML extends Operation
 					Element answerEl = (Element) answer;
 
 					String key = answerEl.getAttributeValue("key");
-					Object[] an =
+					Object[] an = new Object[2];
+					an[0] = QueryType.valueOf(answerEl.getAttributeValue("type"));
+
+					// Covert the actual answer if needed
+					if(an[0] == QueryType.CHECKBOX)
 					{
-						QueryType.valueOf(answerEl.getAttributeValue("type")),
-						answerEl.getAttributeValue("answer")
-					};
-					
+						an[1] = Boolean.parseBoolean(answerEl.getAttributeValue("answer"));
+					}
+					else
+					{
+						an[1] = answerEl.getAttributeValue("answer");
+					}
+
 					questionAnswers.put(key, an);
 				}
 			}
