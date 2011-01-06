@@ -47,27 +47,14 @@ public interface ProblemPart
 	public void markChanged();
 
 	/**
-	 * Returns the starting DataSet and operations running down
-	 * to the end of the solution to this part of the problem. The "starting"
-	 * DataSet this returns may not be data the problem was actually
-	 * initialized with. Instead, it's the data as it was at the "start"
-	 * operation. For example, if we start our solution at a "divide by 10"
-	 * operation, then the DataSet that is returned here will be the result
-	 * of that.
-	 * @return Chain of operations to solve this part of the problem
-	 * @throws IncompleteInitialization Thrown if an end point has not been
-	 *			indicated. If a start isn't marked it will go to the beginning
-	 *			of the chain.
-	 */
-	public DataSet getSolutionSteps() throws IncompleteInitialization;
-
-	/**
 	 * Returns the getColumn() results for all of the columns in
 	 * the first DataSet in a part
 	 * @return Solved DataSet
 	 * @throws IncompleteInitialization Some aspect of the problem was not initialized
 	 * @throws CalcException Unable to perform R work to computer answer
+	 * @deprecated Instead call toRString() on the appropriate Operation/DataSet
 	 */
+	@Deprecated
 	public DataSet getAnswer(int index) throws IncompleteInitialization, CalcException;
 
 	/**

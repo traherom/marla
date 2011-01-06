@@ -396,21 +396,6 @@ public class Problem implements ProblemPart
 		return hash;
 	}
 
-	/**
-	 * Assumes that the first DataSet solves the problem. If there is more than
-	 * one DataSet associated with this Problem then IncompleteInitialization
-	 * is thrown
-	 * @return DataSet starting the solution
-	 * @throws IncompleteInitialization Thrown if more than one DataSet exists
-	 */
-	@Override
-	public DataSet getSolutionSteps() throws IncompleteInitialization
-	{
-		if(datasets.size() != 1)
-			throw new IncompleteInitialization("Must have exactly one DataSet");
-		return datasets.get(0);
-	}
-
 	@Override
 	public DataSet getAnswer(int index) throws IncompleteInitialization, CalcException
 	{

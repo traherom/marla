@@ -157,15 +157,6 @@ public class SubProblem implements ProblemPart
 		return endSolutionStep;
 	}
 
-	@Override
-	public DataSet getSolutionSteps() throws IncompleteInitialization
-	{
-		if(endSolutionStep == null)
-			throw new IncompleteInitialization();
-
-		return new DataSet("Solution");
-	}
-
 	/**
 	 * Returns the subproblem identifier, often the one-letter designation
 	 * from the book. IE, "a"
