@@ -396,9 +396,7 @@ public abstract class Operation extends DataSet
 
 	/**
 	 * Deriving classes should override this to prompt the user for the
-	 * information they need. Alex and I need to work out how this actually
-	 * works. We'll need to display a window for it, but we don't want to
-	 * do that from here. Do we call back to a class by him?
+	 * information they need.
 	 * @return Object[] ArrayList of questions to ask the user. The Object[] array
 	 *			is two dimensional, the first element is a verbatim string to
 	 *			ask the user and the second is a constant on the question type.
@@ -414,13 +412,15 @@ public abstract class Operation extends DataSet
 	/**
 	 * After the user is prompted for additional values, their selections
 	 * are returned as an ArrayList where the index corresponds to the question
-	 * originally asked by getInforRequiredPrompt(). This function ignores
-	 * the values by default. If a derived class needs to handle them then
-	 * it should override this.
+	 * originally asked by getInforRequiredPrompt(). If a derived class needs
+	 * to handle them it should override this.
 	 * @param values ArrayList of Objects that answer the questions
+	 * @throws OperationException Info was attempted to be set when not requested
 	 */
-	public void setRequiredInfo(ArrayList<Object> values)
+	public void setRequiredInfo(ArrayList<Object> values) throws OperationException
 	{
+		if(!isInfoRequired())
+			throw new OperationException("This operation does not require info, should not be set");
 	}
 
 	/**
@@ -457,7 +457,7 @@ public abstract class Operation extends DataSet
 		if(other == this)
 			return true;
 
-		// Actually a problem?
+		// Actually an operation?
 		if(!(other instanceof Operation))
 			return false;
 
@@ -575,7 +575,8 @@ public abstract class Operation extends DataSet
 		{
 			throw new RuntimeException("Unable to do toString() because the values could not be computed.", ex);
 		}
-		
+
+		// Just display the results as a normal DataSet
 		return super.toString();
 	}
 }

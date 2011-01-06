@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<operations version="1.0">
+<operations version="1">
 	<operation name="NOP">
 		<computation>
 			<loop type="parent" valueVar="col">
-				<save type="double_array" rvar="col" column="" />
+				<save type="double_array" column="">col</save>
 			</loop>
 		</computation>
 	</operation>

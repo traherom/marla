@@ -28,7 +28,7 @@ import r.RProcessor;
  */
 public class DataSetTest
 {
-	public static DataSet createDataSet(int columns, int rows) throws Exception
+	public static DataSet createDataSet(int columns, int rows, int opCount) throws Exception
 	{
 		DataSet ds = new DataSet("DataSet Test");
 
@@ -45,9 +45,12 @@ public class DataSetTest
 			assertEquals(rows, dc.size());
 		}
 
-		// Add an operation, just for giggles
-		ds.addOperation(Operation.createOperation("NOP"));
-
+		// Add operations, just for giggles
+		for(int i = 0; i < opCount; i++)
+		{
+			ds.addOperation(Operation.createOperation("NOP"));
+		}
+		
 		// Make sure we built correctly
 		assertEquals(columns, ds.getColumnCount());
 
@@ -64,8 +67,8 @@ public class DataSetTest
 	public void testEquals() throws Exception
 	{
 		// Equal
-		DataSet testDS1 = createDataSet(5, 50);
-		DataSet testDS2 = createDataSet(5, 50);
+		DataSet testDS1 = createDataSet(5, 50, 1);
+		DataSet testDS2 = createDataSet(5, 50, 1);
 		assertEquals(testDS1, testDS2);
 	}
 
@@ -73,8 +76,17 @@ public class DataSetTest
 	public void testNotEqualsColCount() throws Exception
 	{
 		// Different number of columns
-		DataSet testDS1 = createDataSet(5, 50);
-		DataSet testDS2 = createDataSet(4, 50);
+		DataSet testDS1 = createDataSet(5, 50, 1);
+		DataSet testDS2 = createDataSet(4, 50, 1);
+		assertFalse(testDS1.equals(testDS2));
+	}
+
+	@Test
+	public void testNotEqualsOpCount() throws Exception
+	{
+		// Different number of columns
+		DataSet testDS1 = createDataSet(5, 50, 1);
+		DataSet testDS2 = createDataSet(5, 50, 2);
 		assertFalse(testDS1.equals(testDS2));
 	}
 
@@ -82,8 +94,8 @@ public class DataSetTest
 	public void testNotEqualsNumItemsInColumn() throws Exception
 	{
 		// Different number of items in the columns
-		DataSet testDS1 = createDataSet(5, 50);
-		DataSet testDS2 = createDataSet(5, 49);
+		DataSet testDS1 = createDataSet(5, 50, 1);
+		DataSet testDS2 = createDataSet(5, 49, 1);
 		assertFalse(testDS1.equals(testDS2));
 	}
 
@@ -91,8 +103,8 @@ public class DataSetTest
 	public void testNotEqualsValuesInColumn() throws Exception
 	{
 		// Different value in one of the columns
-		DataSet testDS1 = createDataSet(5, 50);
-		DataSet testDS2 = createDataSet(5, 50);
+		DataSet testDS1 = createDataSet(5, 50, 1);
+		DataSet testDS2 = createDataSet(5, 50, 1);
 		testDS2.getColumn(0).set(4, 10000);
 		assertFalse(testDS1.equals(testDS2));
 	}
@@ -101,8 +113,8 @@ public class DataSetTest
 	public void testNotEqualsColumnNames() throws Exception
 	{
 		// Different names for one of the columns
-		DataSet testDS1 = createDataSet(5, 50);
-		DataSet testDS2 = createDataSet(5, 50);
+		DataSet testDS1 = createDataSet(5, 50, 1);
+		DataSet testDS2 = createDataSet(5, 50, 1);
 		testDS2.getColumn(0).setName("SOMETHING DIFFERENT");
 		assertFalse(testDS1.equals(testDS2));
 	}
@@ -111,8 +123,8 @@ public class DataSetTest
 	public void testNotEqualsNames() throws Exception
 	{
 		// Different name for the dataset
-		DataSet testDS1 = createDataSet(5, 50);
-		DataSet testDS2 = createDataSet(5, 50);
+		DataSet testDS1 = createDataSet(5, 50, 1);
+		DataSet testDS2 = createDataSet(5, 50, 1);
 		testDS2.setName("SOMETHING DIFFERENT");
 		assertFalse(testDS1.equals(testDS2));
 	}
@@ -122,13 +134,12 @@ public class DataSetTest
 	{
 		// Export to file. Change column names to match the way it will
 		// be imported. We also don't export operations, so dump those.
-		DataSet testDS1 = createDataSet(5, 50);
+		DataSet testDS1 = createDataSet(5, 50, 0);
 		testDS1.getColumn(0).setName("Column.1");
 		testDS1.getColumn(1).setName("Column.2");
 		testDS1.getColumn(2).setName("Column.3");
 		testDS1.getColumn(3).setName("Column.4");
 		testDS1.getColumn(4).setName("Column.5");
-		testDS1.removeOperation(0);
 		testDS1.exportFile("test.csv");
 
 		// Import and make name match (otherwise it's based on the file name,
@@ -169,7 +180,7 @@ public class DataSetTest
 	@Test
 	public void testToRFrame() throws Exception
 	{
-		DataSet testDS1 = createDataSet(5, 50);
+		DataSet testDS1 = createDataSet(5, 50, 1);
 
 		// Save it
 		String frameVar = testDS1.toRFrame();
@@ -184,7 +195,7 @@ public class DataSetTest
 	@Test(expected=DataNotFound.class)
 	public void testGetColumn() throws Exception
 	{
-		DataSet testDS1 = createDataSet(5, 50);
+		DataSet testDS1 = createDataSet(5, 50, 0);
 
 		// Try getting from both ends of the DataSet and in the middle
 		assertEquals(testDS1.getColumn(0), testDS1.getColumn("Column 1"));
@@ -198,7 +209,7 @@ public class DataSetTest
 	@Test
 	public void testGetColumnCount() throws Exception
 	{
-		DataSet testDS1 = createDataSet(5, 4);
+		DataSet testDS1 = createDataSet(5, 4, 0);
 		assertEquals(5, testDS1.getColumnCount());
 	}
 
@@ -206,7 +217,7 @@ public class DataSetTest
 	public void testGetColumnLengthEqual() throws Exception
 	{
 		// Equally sized columns
-		DataSet testDS1 = createDataSet(5, 50);
+		DataSet testDS1 = createDataSet(5, 50, 0);
 		assertEquals(50, testDS1.getColumnLength());
 	}
 
@@ -214,7 +225,7 @@ public class DataSetTest
 	public void testGetColumnLengthVaried() throws Exception
 	{
 		// Some shorter
-		DataSet testDS1 = createDataSet(5, 50);
+		DataSet testDS1 = createDataSet(5, 50, 0);
 		testDS1.getColumn(0).remove(0);
 		testDS1.getColumn(4).remove(0);
 		assertEquals(50, testDS1.getColumnLength());
@@ -233,7 +244,7 @@ public class DataSetTest
 	@Test
 	public void testToAndFromXML() throws Exception
 	{
-		DataSet testDS1 = createDataSet(5, 50);
+		DataSet testDS1 = createDataSet(5, 50, 1);
 
 		Element el = testDS1.toXml();
 		DataSet testDS2 = DataSet.fromXml(el);
@@ -244,7 +255,7 @@ public class DataSetTest
 	@Test
 	public void testCopy() throws Exception
 	{
-		DataSet testDS1 = createDataSet(5, 50);
+		DataSet testDS1 = createDataSet(5, 50, 2);
 		DataSet testDS2 = new DataSet(testDS1, null);
 		assertEquals(testDS1, testDS2);
 	}

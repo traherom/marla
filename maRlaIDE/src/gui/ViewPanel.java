@@ -1698,8 +1698,15 @@ public class ViewPanel extends JPanel
 
 				if (pass)
 				{
-					newOperation.setRequiredInfo(values);
-					dialog.setVisible (false);
+					try
+					{
+						newOperation.setRequiredInfo(values);
+						dialog.setVisible (false);
+					}
+					catch(OperationException ex)
+					{
+						JOptionPane.showMessageDialog(viewPanel, "Internal error, attempted to set required information when none was needed.\nPlease report to the developers.", "Internal Error", JOptionPane.WARNING_MESSAGE);
+					}
 				}
 			}
 		});
