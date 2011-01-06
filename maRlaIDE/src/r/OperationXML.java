@@ -31,7 +31,7 @@ import org.jdom.input.SAXBuilder;
 import problem.CalcException;
 import problem.DataColumn;
 import problem.DataNotFound;
-import problem.IncompleteInitialization;
+import problem.IncompleteInitializationException;
 import problem.Operation;
 import problem.OperationException;
 import problem.OperationInfoRequiredException;
@@ -115,7 +115,7 @@ public class OperationXML extends Operation
 			operationFilePath = xmlPath;
 			reloadXML();
 		}
-		catch(IncompleteInitialization ex)
+		catch(IncompleteInitializationException ex)
 		{
 			// This should be... impossible
 			throw new RuntimeException(ex);
@@ -129,11 +129,11 @@ public class OperationXML extends Operation
 	 * @throws IncompleteInitialization XML path not yet set by loadXML()
 	 * @throws OperationXMLException Thrown when the version of the XML file is inappropriate
 	 */
-	public static void reloadXML() throws JDOMException, IOException, IncompleteInitialization, OperationXMLException
+	public static void reloadXML() throws JDOMException, IOException, IncompleteInitializationException, OperationXMLException
 	{
 		// Make sure we know where we're looking for that there XML
 		if(operationFilePath == null)
-			throw new IncompleteInitialization("XML file for operations has not been specified");
+			throw new IncompleteInitializationException("XML file for operations has not been specified");
 
 		// Load file into JDOM
 		SAXBuilder parser = new SAXBuilder();

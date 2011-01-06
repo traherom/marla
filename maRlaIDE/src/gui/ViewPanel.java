@@ -68,7 +68,7 @@ import problem.DataColumn;
 import problem.DataNotFound;
 import problem.DataSet;
 import problem.FileException;
-import problem.IncompleteInitialization;
+import problem.IncompleteInitializationException;
 import problem.Operation;
 import problem.OperationException;
 import problem.Problem;
@@ -2249,7 +2249,7 @@ public class ViewPanel extends JPanel
 				outputTextArea.append(ds + "\n");
 			}
 		}
-		catch (IncompleteInitialization ex) {}
+		catch (IncompleteInitializationException ex) {}
 		catch (CalcException ex)
 		{
 			JOptionPane.showMessageDialog(this, "The requested R package either cannot be located or is not installed.", "Missing Package", JOptionPane.WARNING_MESSAGE);
