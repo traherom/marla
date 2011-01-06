@@ -235,10 +235,10 @@ public class SubProblem implements ProblemPart
 	}
 
 	@Override
-	public DataSet getAnswer(int index) throws IncompleteInitialization, CalcException
+	public DataSet getAnswer(int index) throws IncompleteInitializationException, CalcException
 	{
 		if(endSolutionStep == null)
-			throw new IncompleteInitialization();
+			throw new IncompleteInitializationException();
 
 		return endSolutionStep;
 	}

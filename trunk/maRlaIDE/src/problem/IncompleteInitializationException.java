@@ -24,13 +24,12 @@ package problem;
  * 
  * @author Ryan Morehart
  */
-public class IncompleteInitialization extends Exception
+public class IncompleteInitializationException extends Exception
 {
-
 	/**
 	 * Creates a new instance of <code>IncompleteInitialization</code> without detail message.
 	 */
-	public IncompleteInitialization()
+	public IncompleteInitializationException()
 	{
 	}
 
@@ -38,7 +37,7 @@ public class IncompleteInitialization extends Exception
 	 * Constructs an instance of <code>IncompleteInitialization</code> with the specified detail message.
 	 * @param msg the detail message.
 	 */
-	public IncompleteInitialization(String msg)
+	public IncompleteInitializationException(String msg)
 	{
 		super(msg);
 	}

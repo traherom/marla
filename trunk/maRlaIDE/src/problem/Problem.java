@@ -397,10 +397,10 @@ public class Problem implements ProblemPart
 	}
 
 	@Override
-	public DataSet getAnswer(int index) throws IncompleteInitialization, CalcException
+	public DataSet getAnswer(int index) throws IncompleteInitializationException, CalcException
 	{
 		if(datasets.isEmpty())
-			throw new IncompleteInitialization("This problem has no datasets yet, unable to solve");
+			throw new IncompleteInitializationException("This problem has no datasets yet, unable to solve");
 
 		// Find the bottom operation. Assume the first one for any
 		// places where we find multiple ops or whatever

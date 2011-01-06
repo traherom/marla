@@ -55,7 +55,7 @@ public interface ProblemPart
 	 * @deprecated Instead call toRString() on the appropriate Operation/DataSet
 	 */
 	@Deprecated
-	public DataSet getAnswer(int index) throws IncompleteInitialization, CalcException;
+	public DataSet getAnswer(int index) throws IncompleteInitializationException, CalcException;
 
 	/**
 	 * Trues true if the problem has unsaved changes
