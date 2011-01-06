@@ -548,7 +548,9 @@ public class DataSet extends JLabel
 	 * @param op Operation to add to perform on DataSet
 	 * @return Newly added operation
 	 * @throws CalcException Unable to compute values with new operation attached
+	 * @deprecated Instead call addOperation() on the appropriate Operation
 	 */
+	@Deprecated
 	public Operation addOperationToEnd(Operation op) throws CalcException
 	{
 		if(solutionOps.isEmpty())

@@ -221,6 +221,13 @@ public abstract class Operation extends DataSet
 		markUnsaved();
 	}
 
+	@Override
+	@Deprecated
+	public ProblemPart setParentProblem(ProblemPart newParent)
+	{
+		throw new RuntimeException("setParentProblem() should not be called on Operations");
+	}
+
 	/**
 	 * Returns the parent this Operation derives from
 	 * @return Next higher set of data or null if there is none.
