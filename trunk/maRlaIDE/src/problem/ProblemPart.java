@@ -24,7 +24,7 @@ import org.jdom.Element;
  *
  * @author Ryan Morehart
  */
-public interface ProblemPart
+public interface ProblemPart extends Changeable
 {
 	/**
 	 * Gets the description for this part of the problem
@@ -41,21 +41,15 @@ public interface ProblemPart
 	public void setStatement(String newStatement);
 
 	/**
-	 * Marks this problem as needing saving. Used by datasets and such
-	 * to note when they've been altered.
-	 */
-	public void markChanged();
-
-	/**
-	 * Returns the getColumn() results for all of the columns in
-	 * the first DataSet in a part
-	 * @return Solved DataSet
-	 * @throws IncompleteInitialization Some aspect of the problem was not initialized
+	 * Returns the DataSource that is the "answer" to this Problem or SubProblem
+	 * @param index Undocumented
+	 * @return DataSource which may be iterated over to see the result
+	 * @throws IncompleteInitializationException Some aspect of the problem was not initialized
 	 * @throws CalcException Unable to perform R work to computer answer
 	 * @deprecated Instead call toRString() on the appropriate Operation/DataSet
 	 */
 	@Deprecated
-	public DataSet getAnswer(int index) throws IncompleteInitializationException, CalcException;
+	public DataSource getAnswer(int index) throws IncompleteInitializationException, CalcException;
 
 	/**
 	 * Trues true if the problem has unsaved changes
@@ -73,6 +67,7 @@ public interface ProblemPart
 	/**
 	 * Remove a given dataset from this problem
 	 * @param data DataSet object to remove
+	 * @return DataSet that was removed
 	 */
 	public DataSet removeData(DataSet data);
 
@@ -87,9 +82,9 @@ public interface ProblemPart
 	 * Returns the dataset with the given name.
 	 * @param name Dataset name
 	 * @return Dataset with matching name
-	 * @throws DataNotFound Unable to find the DataSet requested
+	 * @throws DataNotFoundException Unable to find the DataSet requested
 	 */
-	public DataSet getData(String name) throws DataNotFound;
+	public DataSet getData(String name) throws DataNotFoundException;
 
 	/**
 	 * Returns the DataSet at the given index
@@ -102,9 +97,9 @@ public interface ProblemPart
 	 * Returns the index of the DataSet with the given name
 	 * @param name Dataset name
 	 * @return Dataset with matching name
-	 * @throws DataNotFound Unable to find the DataSet requested
+	 * @throws DataNotFoundException Unable to find the DataSet requested
 	 */
-	public int getDataIndex(String name) throws DataNotFound;
+	public int getDataIndex(String name) throws DataNotFoundException;
 
 	/**
 	 * Returns the number of DataSets this Problem contains

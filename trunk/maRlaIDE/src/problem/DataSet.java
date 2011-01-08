@@ -41,26 +41,26 @@ import r.RProcessorParseException;
  *
  * @author Ryan Morehart
  */
-public class DataSet extends JLabel
+public final class DataSet extends JLabel implements DataSource, Changeable
 {
 	/**
 	 * Dataset name.
 	 */
-	protected String name = null;
+	private String name = null;
 	/**
 	 * Actual values in dataset. All values are assumed to be doubles as
 	 * a majority of statistics problems go at least somewhat into decimals.
 	 */
-	protected ArrayList<DataColumn> columns = new ArrayList<DataColumn>();
+	private final ArrayList<DataColumn> columns = new ArrayList<DataColumn>();
 	/**
 	 * Problem this dataset belongs to. Lets us tell the parent when
 	 * we've been updated in some way.
 	 */
-	private ProblemPart parent = null;
+	private Changeable parent = null;
 	/**
 	 * Commands to perform on this dataset
 	 */
-	protected ArrayList<Operation> solutionOps = new ArrayList<Operation>();
+	private final ArrayList<Operation> solutionOps = new ArrayList<Operation>();
 
 	/**
 	 * Creates a blank dataset with the given name.
@@ -77,23 +77,20 @@ public class DataSet extends JLabel
 	 * @param parent The problem set this dataset is used by
 	 * @param name New dataset name
 	 */
-	public DataSet(ProblemPart parent, String name)
+	public DataSet(Changeable parent, String name)
 	{
-		super(name);
 		this.parent = parent;
-		this.columns = new ArrayList<DataColumn>();
 		setName(name);
 	}
 
 	/**
 	 * Create a deep copy of a dataset.
 	 * @param copy Dataset to be copied.
-	 * @param parent Parent for the copy to use
+	 * @param newParent Parent for the copy to use
 	 */
-	public DataSet(DataSet copy, ProblemPart parent)
+	public DataSet(DataSet copy, Changeable newParent)
 	{
-		super(copy.name);
-		this.parent = parent;
+		parent = newParent;
 		name = copy.name;
 
 		for(DataColumn dc : copy.columns)
@@ -200,17 +197,18 @@ public class DataSet extends JLabel
 
 	/**
 	 * Exports this DataSet to a CSV file at the given path. Use R to perform the export.
+	 * @param ds DataSource to export to CSV
 	 * @param filePath CSV file to write to. File will be overwritten if needed.
 	 */
-	public void exportFile(String filePath) throws IOException
+	public static void exportFile(DataSource ds, String filePath) throws IOException, MarlaException
 	{
 		// Column names
 		BufferedWriter out = new BufferedWriter(new FileWriter(filePath));
 		StringBuilder line = new StringBuilder();
-		for(DataColumn dc : columns)
+		for(int i = 0; i < ds.getColumnCount(); i++)
 		{
 			line.append('"');
-			line.append(dc.getName());
+			line.append(ds.getColumn(i).getName());
 			line.append("\", ");
 		}
 
@@ -222,13 +220,15 @@ public class DataSet extends JLabel
 		out.write(line.toString());
 
 		// Values
-		int len = getColumnLength();
+		int len = ds.getColumnLength();
 		for(int i = 0; i < len; i++)
 		{
 			line = new StringBuilder();
 
-			for(DataColumn dc : columns)
+			for(int j = 0; j < ds.getColumnCount(); j++)
 			{
+				DataColumn dc = ds.getColumn(j);
+				
 				// Actually more items in this column?
 				if(i < dc.size())
 				{
@@ -257,6 +257,12 @@ public class DataSet extends JLabel
 
 		// All done
 		out.close();
+	}
+
+	@Override
+	public void exportFile(String filePath) throws IOException, MarlaException
+	{
+		exportFile(this, filePath);
 	}
 
 	/**
@@ -290,7 +296,7 @@ public class DataSet extends JLabel
 	 */
 	ProblemPart setParentProblem(ProblemPart newParent)
 	{
-		ProblemPart oldParent = parent;
+		ProblemPart oldParent = (ProblemPart)parent;
 		parent = newParent;
 		return oldParent;
 	}
@@ -302,16 +308,7 @@ public class DataSet extends JLabel
 	 */
 	public ProblemPart getParentProblem()
 	{
-		return parent;
-	}
-
-	/**
-	 * Always returns null, as DataSets do not have higher data sources.
-	 * @return null, indicating top of data hierarchy
-	 */
-	public DataSet getParentData()
-	{
-		return null;
+		return (ProblemPart)parent;
 	}
 
 	/**
@@ -332,11 +329,13 @@ public class DataSet extends JLabel
 	public final void setName(String newName)
 	{
 		// Make sure no other datasets have this name
-		if(parent != null)
+		if(parent != null && parent instanceof ProblemPart)
 		{
-			for(int i = 0; i < parent.getDataCount(); i++)
+			ProblemPart prob = (ProblemPart)parent;
+
+			for(int i = 0; i < prob.getDataCount(); i++)
 			{
-				if(newName.equalsIgnoreCase(parent.getData(i).getName()))
+				if(newName.equalsIgnoreCase(prob.getData(i).getName()))
 				{
 					throw new DuplicateNameException("DataSet with name '" + newName + "' already exists.");
 				}
@@ -349,11 +348,7 @@ public class DataSet extends JLabel
 		name = newName;
 	}
 
-	/**
-	 * Ensures the given name is unique within the DataSet
-	 * @param name Name to check for in existing columns
-	 * @return true if the name is unique, false otherwise
-	 */
+	@Override
 	public boolean isUniqueColumnName(String name)
 	{
 		// Make sure no other columns have this name
@@ -375,34 +370,19 @@ public class DataSet extends JLabel
 	 */
 	public DataColumn addColumn(String colName)
 	{
-		return addColumn(new DataColumn(colName));
-	}
-
-	/**
-	 * Adds a column to this DataSet
-	 * @param column Column to assign to this DataSet
-	 * @return Column that was added to data (same as passed in)
-	 */
-	public DataColumn addColumn(DataColumn column)
-	{
-		// Tell the column to set us as the parent
-		column.setParent(this);
-
-		if(!columns.contains(column))
+		// Ensure the name of this new column is ok
+		if(!isUniqueColumnName(colName))
 		{
-			// Ensure the name of this new column is ok
-			if(!isUniqueColumnName(column.getName()))
-			{
-				throw new DuplicateNameException("Data column with name '"
-						+ column.getName() + "' already exists in dataset '" + name + "'");
-			}
-
-			// They weren't already assigned to us, so stick them on our list
-			columns.add(column);
-			markChanged();
+			throw new DuplicateNameException("Data column with name '"
+					+ colName + "' already exists in dataset '" + name + "'");
 		}
+
+		// Create
+		DataColumn newColumn = new DataColumn(this, colName);
+		columns.add(newColumn);
+		markChanged();
 		
-		return column;
+		return newColumn;
 	}
 
 	/**
@@ -411,30 +391,34 @@ public class DataSet extends JLabel
 	 * columns 0, 1, 2, 3, then in insert of column 4 at index 1 makes
 	 * the new setup 0, 4, 1, 2, 3.
 	 * @param index Position to insert the column at
-	 * @param column Column to assign to this DataSet
+	 * @param colName Name of the new Column to create and add to set
 	 * @return Column that was added (same as passed in)
 	 * @throws CalcException Unable to recompute the data with this new column
 	 */
-	public DataColumn addColumn(int index, DataColumn column) throws CalcException
+	public DataColumn addColumn(int index, String colName) throws CalcException
 	{
-		// Tell the column to set us as the parent
-		column.setParent(this);
-
-		if(!columns.contains(column))
+		// Ensure the name of this new column is ok
+		if(!isUniqueColumnName(colName))
 		{
-			// Ensure the name of this new column is ok
-			if(!isUniqueColumnName(column.getName()))
-			{
-				throw new DuplicateNameException("Data column with name '"
-						+ column.getName() + "' already exists in dataset '" + name + "'");
-			}
-
-			// They weren't already assigned to us, so stick them on our list
-			columns.add(index, column);
-			markChanged();
+			throw new DuplicateNameException("Data column with name '"
+					+ colName + "' already exists in dataset '" + name + "'");
 		}
 
-		return column;
+		// Create
+		DataColumn newColumn = new DataColumn(this, colName);
+		columns.add(index, newColumn);
+		markChanged();
+
+		return newColumn;
+	}
+
+	/**
+	 * Removes all Columns from DataSet
+	 */
+	public void clearColumns()
+	{
+		columns.clear();
+		markChanged();
 	}
 
 	/**
@@ -444,10 +428,7 @@ public class DataSet extends JLabel
 	 */
 	public DataColumn removeColumn(DataColumn column)
 	{
-		// Tell column to we're not its parent any more
-		column.setParent(null);
-
-		// Remove them from our list if still needed
+		// Remove them from our list
 		if(columns.remove(column))
 		{
 			markChanged();
@@ -464,30 +445,19 @@ public class DataSet extends JLabel
 	 */
 	public DataColumn removeColumn(int index)
 	{
-		return removeColumn(columns.get(index));
+		DataColumn removedCol = columns.remove(index);
+		markChanged();
+		return removedCol;
 	}
 
-	/**
-	 * Returns the column in the dataset with the given name.
-	 *
-	 * @param colName List of values in that column. Column manipulations will
-	 *					be reflected in the dataset itself unless a copy is made.
-	 * @throws DataNotFound Unable to find the requested column to return
-	 * @return The DataColumn requested
-	 */
-	public DataColumn getColumn(String colName) throws DataNotFound
+	@Override
+	public DataColumn getColumn(String colName) throws DataNotFoundException
 	{
 		return getColumn(getColumnIndex(colName));
 	}
 
-	/**
-	 * Returns the column index (as would be passed to getColumn(int))
-	 * of the column with the given name
-	 * @param colName Column name to search for
-	 * @return index of corresponding column
-	 * @throws DataNotFound Thrown if a column with the given name can't be found
-	 */
-	public int getColumnIndex(String colName) throws DataNotFound
+	@Override
+	public int getColumnIndex(String colName) throws DataNotFoundException
 	{
 		for(int i = 0; i < columns.size(); i++)
 		{
@@ -495,32 +465,22 @@ public class DataSet extends JLabel
 				return i;
 		}
 
-		throw new DataNotFound("Unable to locate data column named '" + colName + "'");
+		throw new DataNotFoundException("Unable to locate data column named '" + colName + "'");
 	}
 
-	/**
-	 * Returns the column requested by index
-	 * @param index Index of the column to access
-	 * @return DataColumn at the given index
-	 */
+	@Override
 	public DataColumn getColumn(int index)
 	{
 		return columns.get(index);
 	}
 
-	/**
-	 * Returns the number of columns in this DataSet
-	 * @return Number of columns in DataSet
-	 */
+	@Override
 	public int getColumnCount()
 	{
 		return columns.size();
 	}
 
-	/**
-	 * Returns the length of the <em>longest</em> column in this dataset
-	 * @return Length of the longest column in this dataset. 0 if there are none
-	 */
+	@Override
 	public int getColumnLength()
 	{
 		int max = 0;
@@ -533,11 +493,7 @@ public class DataSet extends JLabel
 		return max;
 	}
 
-	/**
-	 * Returns a list of column names.
-	 * Alex is too stupid to do it on his own.
-	 * @return All column names in this dataset
-	 */
+	@Override
 	public String[] getColumnNames()
 	{
 		String[] names = new String[columns.size()];
@@ -551,6 +507,7 @@ public class DataSet extends JLabel
 	/**
 	 * Tells our child operations that their caches are dirty and need to be recomputed
 	 */
+	@Override
 	public void markChanged()
 	{
 		// Tell all children they need to recompute
@@ -566,24 +523,14 @@ public class DataSet extends JLabel
 	 * Tells the problem we belong to that we've changed. Used by DataColumns
 	 * under us to notify encapsulating problem.
 	 */
+	@Override
 	public void markUnsaved()
 	{
 		if(parent != null)
 			parent.markChanged();
 	}
 
-	/**
-	 * Add an operation to this data object. If you want to chain operations
-	 * together, then you must append the operation to another operation.
-	 * Multiple operations added to a single dataset are independent and
-	 * the results have no effect on one another!
-	 *
-	 * The return of the newly added operation allows chains to be built
-	 * quickly.
-	 *
-	 * @param op Operation to add to perform on DataSet
-	 * @return Newly added operation
-	 */
+	@Override
 	public Operation addOperation(Operation op)
 	{
 		// Tell the operation to set us as the parent
@@ -593,21 +540,13 @@ public class DataSet extends JLabel
 		{
 			// They weren't already assigned to us, so stick them on our list
 			solutionOps.add(op);
-			markChanged();
+			markUnsaved();
 		}
 
 		return op;
 	}
 
-	/**
-	 * Appends the given operation to the end of the "left" (first) chain
-	 * on this dataset.
-	 * @param op Operation to add to perform on DataSet
-	 * @return Newly added operation
-	 * @throws CalcException Unable to compute values with new operation attached
-	 * @deprecated Instead call addOperation() on the appropriate Operation
-	 */
-	@Deprecated
+	@Override
 	public Operation addOperationToEnd(Operation op) throws CalcException
 	{
 		if(solutionOps.isEmpty())
@@ -620,50 +559,34 @@ public class DataSet extends JLabel
 		}
 	}
 
-	/**
-	 * Removes an operation from the data
-	 * @param op Operation to remove from data
-	 * @return The removed Operation
-	 */
+	@Override
 	public Operation removeOperation(Operation op)
 	{
-		// Tell column to we're not its parent any more
+		// Tell operation to we're not its parent any more
 		op.setParentData(null);
 
 		// Remove them from our list if still needed
 		if(solutionOps.remove(op))
 		{
-			markChanged();
+			markUnsaved();
 		}
 
 		return op;
 	}
 
-	/**
-	 * Removes an operation from the data
-	 * @param index Index of the operation to remove
-	 * @return The removed Operation
-	 */
+	@Override
 	public Operation removeOperation(int index)
 	{
 		return removeOperation(solutionOps.get(index));
 	}
 
-	/**
-	 * Get the Operation at the specified index
-	 * @param index Index of Operation to retrieve
-	 * @return Operation at index
-	 */
+	@Override
 	public Operation getOperation(int index)
 	{
 		return solutionOps.get(index);
 	}
 
-	/**
-	 * Returns the number of top-level operations working on this
-	 * DataSet
-	 * @return Number of Operations in DataSet
-	 */
+	@Override
 	public int getOperationCount()
 	{
 		return solutionOps.size();
@@ -673,6 +596,7 @@ public class DataSet extends JLabel
 	 * Outputs this DataSet as the string of R commands needed to turn it into a data frame
 	 * @return R commands
 	 */
+	@Override
 	public String toRString() throws RProcessorException, RProcessorParseException
 	{
 		RProcessor proc = RProcessor.getInstance();
@@ -682,11 +606,7 @@ public class DataSet extends JLabel
 		return proc.fetchInteraction();
 	}
 
-	/**
-	 * Outputs this DataSet as a constructed R data frame and returns the
-	 * variable the data frame is stored in.
-	 * @return R variable the data frame is in
-	 */
+	@Override
 	public String toRFrame() throws RProcessorException, RProcessorParseException
 	{
 		RProcessor proc = RProcessor.getInstance();
@@ -723,7 +643,14 @@ public class DataSet extends JLabel
 	@Override
 	public String toString()
 	{
-		return toString(this);
+		try
+		{
+			return toString(this);
+		}
+		catch(MarlaException ex)
+		{
+			throw new InternalMarlaException("Unable to do toString() because the values could not be computed.", ex);
+		}
 	}
 
 	/**
@@ -731,7 +658,7 @@ public class DataSet extends JLabel
 	 * @param ds DataSet to create string for
 	 * @return String of the data inside the DataSet with the given data
 	 */
-	public static String toString(DataSet ds)
+	public static String toString(DataSource ds) throws MarlaException
 	{
 		StringBuilder sb = new StringBuilder();
 
@@ -814,11 +741,7 @@ public class DataSet extends JLabel
 		return sb.toString();
 	}
 
-	/**
-	 * Returns a JDOM Element that encapsulates this DataSet's
-	 * name, columns, and child operations
-	 * @return JDOM Element of this DataSet
-	 */
+	@Override
 	public Element toXml()
 	{
 		Element dataEl = new Element("data");
@@ -834,7 +757,19 @@ public class DataSet extends JLabel
 		// Add columns
 		for(DataColumn col : columns)
 		{
-			dataEl.addContent(col.toXml());
+			// Column settings
+			Element colEl = new Element("column");
+			colEl.setAttribute("name", col.getName());
+			colEl.setAttribute("mode", col.getMode().toString());
+
+			// Each of the values
+			for(Object d : col)
+			{
+				colEl.addContent(new Element("value").addContent(d.toString()));
+			}
+
+			// And put it with the rest of the data
+			dataEl.addContent(colEl);
 		}
 
 		// Add Ops
@@ -851,7 +786,7 @@ public class DataSet extends JLabel
 	 * @param dataEl JDOM Element with the information to construct DataSet
 	 * @return Constructed and initialized DataSet
 	 */
-	public static DataSet fromXml(Element dataEl)
+	public static DataSet fromXml(Element dataEl) throws MarlaException
 	{
 		DataSet newData = new DataSet(dataEl.getAttributeValue("name"));
 
@@ -861,9 +796,19 @@ public class DataSet extends JLabel
 		int width = Integer.parseInt(dataEl.getAttributeValue("width"));
 		newData.setBounds(x, y, width, height);
 
-		for(Object colEl : dataEl.getChildren("column"))
+		for(Object colElObj : dataEl.getChildren("column"))
 		{
-			newData.addColumn(DataColumn.fromXml((Element) colEl));
+			Element colEl = (Element)colElObj;
+
+			// Create column
+			DataColumn newCol = newData.addColumn(colEl.getAttributeValue("name"));
+			newCol.setMode(DataMode.valueOf(colEl.getAttributeValue("mode")));
+
+			// Stick in values
+			for(Object el : colEl.getChildren("value"))
+			{
+				newCol.add(((Element) el).getText());
+			}
 		}
 
 		for(Object opEl : dataEl.getChildren("operation"))

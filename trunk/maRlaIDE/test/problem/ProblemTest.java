@@ -136,7 +136,7 @@ public class ProblemTest
 		prob1.getData(0); // Should throw exception
 	}
 
-	@Test(expected=DataNotFound.class)
+	@Test(expected=DataNotFoundException.class)
 	public void testGetData() throws Exception
 	{
 		Problem prob = new Problem();

@@ -18,9 +18,11 @@
 package problem;
 
 import java.awt.Rectangle;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import javax.swing.JLabel;
 import org.jdom.Element;
 import r.OperationXML;
 import r.OperationXMLException;
@@ -35,15 +37,28 @@ import r.RProcessorParseException;
  *
  * @author Ryan Morehart
  */
-public abstract class Operation extends DataSet
+public abstract class Operation extends JLabel implements DataSource, Changeable
 {
+	/**
+	 * Operation name.
+	 */
+	protected String name;
+	/**
+	 * Actual values from computation
+	 */
+	protected final DataSet data;
+	/**
+	 * Commands to perform on this dataset
+	 */
+	protected final ArrayList<Operation> solutionOps = new ArrayList<Operation>();
 	/**
 	 * Parent data that this operation works on
 	 */
-	protected DataSet parent;
+	protected DataSource parent;
 	/**
 	 * Saves the R operations used the last time refreshCache() was called. This
-	 * string can then be dumped out by toString() to give a nice representation.
+	 * string can then be dumped out by toRString() to give an idea of how to perform
+	 * the calculations
 	 */
 	protected String operationRecord = null;
 	/**
@@ -116,7 +131,7 @@ public abstract class Operation extends DataSet
 	 * @throws OperationException Thrown if an operation matching the name cannot be found and/or
 	 *		instantiated.
 	 */
-	public static Operation createOperation(String opName) throws OperationException
+	public static Operation createOperation(String opName) throws OperationException, RProcessorException
 	{
 		// Locate the operation
 		Operation op = null;
@@ -133,9 +148,17 @@ public abstract class Operation extends DataSet
 				Class opClass = Class.forName(Operation.javaOps.get(opName));
 				op = (Operation) opClass.newInstance();
 			}
-			catch(Exception ex1)
+			catch(IllegalAccessException ex2)
 			{
-				throw new OperationException("Unable to locate operation '" + opName + "' for loading");
+				throw new OperationException("Illegal access during creation of operation '" + opName + "'", ex2);
+			}
+			catch(InstantiationException ex2)
+			{
+				throw new OperationException("Unable to create instance of operation '" + opName + "'", ex2);
+			}
+			catch(ClassNotFoundException ex2)
+			{
+				throw new OperationException("Unable to locate operation '" + opName + "' for loading", ex2);
 			}
 		}
 
@@ -144,20 +167,29 @@ public abstract class Operation extends DataSet
 
 	/**
 	 * Sets the text name for the JLabel
-	 * @param name Text for JLabel
+	 * @param newName Text for JLabel
+	 * @throws RProcessorException Thrown when the R processor could not be loaded
 	 */
-	protected Operation(String name)
+	protected Operation(String newName) throws RProcessorException
 	{
-		super(name);
+		super(newName);
+		setName(newName);
+		data = new DataSet(this, "internal");
+		proc = RProcessor.getInstance();
+	}
 
-		try
-		{
-			proc = RProcessor.getInstance();
-		}
-		catch(RProcessorException ex)
-		{
-			throw new RuntimeException("Unable to load R processor", ex);
-		}
+	/**
+	 * Sets the name of the operation, only used internally
+	 * @param newName New name for the operation
+	 */
+	@Override
+	public final void setName(String newName)
+	{
+		// Set the label
+		super.setText(newName);
+
+		// And save the op name
+		name = newName;
 	}
 
 	/**
@@ -166,13 +198,16 @@ public abstract class Operation extends DataSet
 	 * Element supplied.
 	 * @param opEl JDOM Element with the information to construct Operation
 	 * @return Constructed and initialized operation
+	 * @throws OperationException Unable to create operation. Inner exception has more information
 	 */
-	public static Operation fromXml(Element opEl)
+	public final static Operation fromXml(Element opEl) throws OperationException
 	{
+		String opName = opEl.getAttributeValue("type");
+
 		try
 		{
 			// Create the correct type of Operation
-			Class opClass = Class.forName(opEl.getAttributeValue("type"));
+			Class opClass = Class.forName(opName);
 			Operation newOp = (Operation) opClass.newInstance();
 
 			int x = Integer.parseInt(opEl.getAttributeValue("x"));
@@ -187,15 +222,15 @@ public abstract class Operation extends DataSet
 		}
 		catch(IllegalAccessException ex)
 		{
-			throw new RuntimeException(ex);
+			throw new OperationException("Illegal access during creation of operation '" + opName + "'", ex);
 		}
 		catch(InstantiationException ex)
 		{
-			throw new RuntimeException(ex);
+			throw new OperationException("Unable to create instance of operation '" + opName + "'", ex);
 		}
 		catch(ClassNotFoundException ex)
 		{
-			throw new RuntimeException(ex);
+			throw new OperationException("Unable to locate operation '" + opName + "' for loading", ex);
 		}
 	}
 
@@ -204,17 +239,17 @@ public abstract class Operation extends DataSet
 	 * information saved for their type of Operation
 	 * @param opEl JDOM Element with all data for Operation
 	 */
-	protected void fromXmlExtra(Element opEl)
+	protected void fromXmlExtra(Element opEl) throws OperationException
 	{
 	}
 
 	/**
 	 * Assigns this Operation to a new parent. Should only be called by
 	 * the new parent DataSet, as that needs to actually insert the
-	 * operation into its array. The package private access is intentional.
+	 * operation into its array.
 	 * @param newParent Parent DataSet/Operation we're a part of
 	 */
-	void setParentData(DataSet newParent)
+	protected final void setParentData(DataSource newParent)
 	{
 		// If we're already a part of this parent, ignore request
 		if(parent == newParent)
@@ -223,7 +258,7 @@ public abstract class Operation extends DataSet
 		// Tell our old parent we're removing ourselves
 		if(parent != null)
 		{
-			DataSet oldParent = parent;
+			DataSource oldParent = parent;
 			parent = null;
 			oldParent.removeOperation(this);
 		}
@@ -237,76 +272,60 @@ public abstract class Operation extends DataSet
 		markChanged();
 	}
 
-	@Override
-	public ProblemPart setParentProblem(ProblemPart newParent)
-	{
-		throw new RuntimeException("setParentProblem() should not be called on Operations");
-	}
-
 	/**
 	 * Returns the parent this Operation derives from
 	 * @return Next higher set of data or null if there is none.
 	 */
-	@Override
-	public DataSet getParentData()
+	public final DataSource getParentData()
 	{
 		return parent;
 	}
 
 	@Override
-	public int getColumnIndex(String colName) throws DataNotFound
+	public final boolean isUniqueColumnName(String name) throws MarlaException
 	{
-		try
-		{
-			checkCache();
-			return super.getColumnIndex(colName);
-		}
-		catch(CalcException ex)
-		{
-			throw new RuntimeException(ex);
-		}
+		checkCache();
+		return data.isUniqueColumnName(name);
 	}
 
 	@Override
-	public DataColumn getColumn(int index)
+	public final int getColumnIndex(String colName) throws MarlaException
 	{
-		try
-		{
-			checkCache();
-			return super.getColumn(index);
-		}
-		catch(CalcException ex)
-		{
-			throw new RuntimeException(ex);
-		}
+		checkCache();
+		return data.getColumnIndex(colName);
 	}
 
 	@Override
-	public int getColumnLength()
+	public final DataColumn getColumn(String colName) throws MarlaException
 	{
-		try
-		{
-			checkCache();
-			return super.getColumnLength();
-		}
-		catch(CalcException ex)
-		{
-			throw new RuntimeException(ex);
-		}
+		return data.getColumn(colName);
 	}
 
 	@Override
-	public String[] getColumnNames()
+	public final DataColumn getColumn(int index) throws MarlaException
 	{
-		try
-		{
-			checkCache();
-			return super.getColumnNames();
-		}
-		catch(CalcException ex)
-		{
-			throw new RuntimeException(ex);
-		}
+		checkCache();
+		return data.getColumn(index);
+	}
+
+	@Override
+	public final int getColumnLength() throws MarlaException
+	{
+		checkCache();
+		return data.getColumnLength();
+	}
+
+	@Override
+	public final String[] getColumnNames() throws MarlaException
+	{
+		checkCache();
+		return data.getColumnNames();
+	}
+
+	@Override
+	public final int getOperationCount()
+	{
+		return solutionOps.size();
 	}
 
 	/**
@@ -329,9 +348,9 @@ public abstract class Operation extends DataSet
 
 			return newOp;
 		}
-		catch(OperationException ex)
+		catch(MarlaException ex)
 		{
-			throw new RuntimeException(ex);
+			throw new InternalMarlaException("Unable to clone Operation. See internal exception.", ex);
 		}
 	}
 
@@ -339,7 +358,7 @@ public abstract class Operation extends DataSet
 	 * Refreshes the cache if needed
 	 * @throws CalcException Unable to recompute the values for this operation.
 	 */
-	public void checkCache() throws CalcException
+	public final void checkCache() throws MarlaException
 	{
 		if(isCacheDirty && !inRecompute)
 			refreshCache();
@@ -353,7 +372,7 @@ public abstract class Operation extends DataSet
 	 *		complete its calculations. The GUI should catch this and display a dialog for the user
 	 *		based on getRequiredInfo().
 	 */
-	public synchronized void refreshCache() throws CalcException
+	public final synchronized void refreshCache() throws MarlaException
 	{
 		if(parent == null)
 			throw new CalcException("No parent for operation to get data from");
@@ -362,7 +381,7 @@ public abstract class Operation extends DataSet
 		{
 			// Compute new columns and save the way we do so (R commands) for use by toString()
 			proc.setRecorder(RProcessor.RecordMode.CMDS_ONLY);
-			columns.clear();
+			data.clearColumns();
 			inRecompute = true;
 			computeColumns();
 			operationRecord = proc.fetchInteraction();
@@ -389,8 +408,8 @@ public abstract class Operation extends DataSet
 	/**
 	 * Overridden by child operations to actually perform the task. When the
 	 * column/other data is requested the deriving class should place the
-	 * result of the appropriate operation on the dataset above in the columns
-	 * ArrayList.
+	 * result of the appropriate operation on the dataset above in the data
+	 * DataSet.
 	 *
 	 * Caching is performed by Operation. Concrete Operation derivatives
 	 * should not implement their own caching unless a specific need
@@ -404,14 +423,14 @@ public abstract class Operation extends DataSet
 	 *		complete its calculations. The GUI should catch this and display a dialog for the user
 	 *		based on getRequiredInfo().
 	 */
-	protected abstract void computeColumns() throws RProcessorParseException, RProcessorException, CalcException, OperationInfoRequiredException;
+	protected abstract void computeColumns() throws MarlaException;
 
 	/**
 	 * Returns true if the Operation has questions/prompts for the user.
 	 * getRequiredInfoPrompt() returns the actual ArrayList of data needed
 	 * @return true if additional information is required
 	 */
-	public boolean isInfoRequired()
+	public boolean isInfoRequired() throws MarlaException
 	{
 		return !getRequiredInfoPrompt().isEmpty();
 	}
@@ -426,7 +445,7 @@ public abstract class Operation extends DataSet
 	 *			combo selection box), then the third element in Object[] will
 	 *			be whatever is needed.
 	 */
-	public ArrayList<Object[]> getRequiredInfoPrompt()
+	public ArrayList<Object[]> getRequiredInfoPrompt() throws MarlaException
 	{
 		return new ArrayList<Object[]>();
 	}
@@ -439,7 +458,7 @@ public abstract class Operation extends DataSet
 	 * @param values ArrayList of Objects that answer the questions
 	 * @throws OperationException Info was attempted to be set when not requested
 	 */
-	public void setRequiredInfo(ArrayList<Object> values) throws OperationException
+	public void setRequiredInfo(ArrayList<Object> values) throws MarlaException
 	{
 		if(!isInfoRequired())
 			throw new OperationException("This operation does not require info, should not be set");
@@ -451,7 +470,7 @@ public abstract class Operation extends DataSet
 	 * @return true if there is available graphical output, false otherwise
 	 * @throws CalcException Unable to perform calculations
 	 */
-	public boolean hasPlot() throws CalcException
+	public boolean hasPlot() throws MarlaException
 	{
 		return getPlot() != null;
 	}
@@ -461,7 +480,7 @@ public abstract class Operation extends DataSet
 	 * @return Path to plot, null if there is none associated with this operation.
 	 * @throws CalcException Unable to perform calculations
 	 */
-	public String getPlot() throws CalcException
+	public String getPlot() throws MarlaException
 	{
 		checkCache();
 		return null;
@@ -554,11 +573,11 @@ public abstract class Operation extends DataSet
 	 * needing to recompute its values.
 	 */
 	@Override
-	public void markChanged()
+	public final void markChanged()
 	{
 		// Mark as dirty but don't actually recompute yet
 		isCacheDirty = true;
-		
+
 		// Tell all children they need to recompute
 		for(Operation op : solutionOps)
 		{
@@ -571,16 +590,9 @@ public abstract class Operation extends DataSet
 	 * @return R commands
 	 */
 	@Override
-	public String toRString()
+	public final String toRString() throws MarlaException
 	{
-		try
-		{
-			checkCache();
-		}
-		catch(CalcException ex)
-		{
-			throw new RuntimeException("Unable to do toString() because the values could not be computed.", ex);
-		}
+		checkCache();
 
 		StringBuilder sb = new StringBuilder();
 		if(parent != null)
@@ -594,18 +606,112 @@ public abstract class Operation extends DataSet
 	 * @return String of the R commands used to do computations
 	 */
 	@Override
-	public String toString()
+	public final String toString()
 	{
 		try
 		{
 			checkCache();
+
+			// Just display the results as a normal DataSet
+			return data.toString();
 		}
-		catch(CalcException ex)
+		catch(MarlaException ex)
 		{
-			throw new RuntimeException("Unable to do toString() because the values could not be computed.", ex);
+			throw new InternalMarlaException("Unable to do toString() because the values could not be computed.", ex);
+		}
+	}
+
+	@Override
+	public final void exportFile(String filePath) throws IOException, MarlaException
+	{
+		checkCache();
+		data.exportFile(filePath);
+	}
+
+	@Override
+	public final String toRFrame() throws MarlaException
+	{
+		checkCache();
+		return data.toRFrame();
+	}
+
+	/**
+	 * Informs the parent source that a change has occurred that should be passed up
+	 * the chain to the Problem.
+	 */
+	@Override
+	public final void markUnsaved()
+	{
+		if(parent != null)
+			parent.markUnsaved();
+	}
+
+	@Override
+	public final String getName()
+	{
+		return name;
+	}
+
+	@Override
+	public final int getColumnCount() throws MarlaException
+	{
+		checkCache();
+		return data.getColumnCount();
+	}
+
+	@Override
+	public final Operation addOperation(Operation op)
+	{
+		// Tell the operation to set us as the parent
+		op.setParentData(this);
+
+		if(!solutionOps.contains(op))
+		{
+			// They weren't already assigned to us, so stick them on our list
+			solutionOps.add(op);
+			markUnsaved();
 		}
 
-		// Just display the results as a normal DataSet
-		return super.toString();
+		return op;
+	}
+
+	@Override
+	public final Operation addOperationToEnd(Operation op) throws CalcException
+	{
+		if(solutionOps.isEmpty())
+		{
+			return addOperation(op);
+		}
+		else
+		{
+			return solutionOps.get(0).addOperationToEnd(op);
+		}
+	}
+
+	@Override
+	public final Operation removeOperation(Operation op)
+	{
+		// Tell operation to we're not its parent any more
+		op.setParentData(null);
+
+		// Remove them from our list if still needed
+		if(solutionOps.remove(op))
+		{
+			markUnsaved();
+		}
+
+		return op;
+	}
+
+	@Override
+	public final Operation removeOperation(int index)
+	{
+		return removeOperation(solutionOps.get(index));
+	}
+
+	@Override
+	public final Operation getOperation(int index)
+	{
+		return solutionOps.get(index);
 	}
 }

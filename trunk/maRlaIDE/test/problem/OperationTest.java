@@ -57,7 +57,7 @@ public class OperationTest
 		return objectArray;
 	}
 
-	private void fillRequiredInfo(Operation op) throws OperationException
+	private void fillRequiredInfo(Operation op) throws MarlaException
 	{
 		ArrayList<Object[]> info = op.getRequiredInfoPrompt();
 
@@ -159,7 +159,7 @@ public class OperationTest
 		// Cache should be dirty and nothing computed
 		assertTrue(op1.isCacheDirty);
 		assertFalse(op1.inRecompute);
-		assertTrue(op1.columns.isEmpty());
+		assertEquals(0, op1.data.getColumnCount());
 
 		// Tell it to check
 		if(op1.isInfoRequired())
@@ -169,7 +169,7 @@ public class OperationTest
 		// Should be full now
 		assertFalse(op1.isCacheDirty);
 		assertFalse(op1.inRecompute);
-		assertFalse(op1.columns.isEmpty());
+		assertFalse(op1.data.getColumnCount() == 0);
 	}
 
 	@Test

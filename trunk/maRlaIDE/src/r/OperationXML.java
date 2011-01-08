@@ -30,14 +30,14 @@ import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 import problem.CalcException;
 import problem.DataColumn;
-import problem.DataNotFound;
+import problem.DataNotFoundException;
 import problem.IncompleteInitializationException;
+import problem.MarlaException;
 import problem.Operation;
 import problem.OperationException;
 import problem.OperationInfoRequiredException;
 
 /**
- * 
  * @author Ryan Morehart
  */
 public class OperationXML extends Operation
@@ -108,7 +108,7 @@ public class OperationXML extends Operation
 	 * @throws IOException An error occurred reading the file
 	 * @throws OperationXMLException Thrown when the version of the XML file is inappropriate
 	 */
-	public static void loadXML(String xmlPath) throws JDOMException, IOException, OperationXMLException
+	public static void loadXML(String xmlPath) throws OperationXMLException
 	{
 		try
 		{
@@ -124,26 +124,34 @@ public class OperationXML extends Operation
 
 	/**
 	 * Loads the XML
-	 * @throws JDOMException A failure occurred during processing of the XML
-	 * @throws IOException An error occurred reading the file
-	 * @throws IncompleteInitialization XML path not yet set by loadXML()
+	 * @throws IncompleteInitializationException XML path not yet set by loadXML()
 	 * @throws OperationXMLException Thrown when the version of the XML file is inappropriate
 	 */
-	public static void reloadXML() throws JDOMException, IOException, IncompleteInitializationException, OperationXMLException
+	public static void reloadXML() throws IncompleteInitializationException, OperationXMLException
 	{
-		// Make sure we know where we're looking for that there XML
-		if(operationFilePath == null)
-			throw new IncompleteInitializationException("XML file for operations has not been specified");
+		try
+		{
+			// Make sure we know where we're looking for that there XML
+			if(operationFilePath == null)
+				throw new IncompleteInitializationException("XML file for operations has not been specified");
 
-		// Load file into JDOM
-		SAXBuilder parser = new SAXBuilder();
-		Document doc = parser.build(operationFilePath);
-		operationXML = doc.getRootElement();
+			SAXBuilder parser = new SAXBuilder();
+			Document doc = parser.build(operationFilePath);
+			operationXML = doc.getRootElement();
 
-		// TODO Check version. Maybe have to use old versions of parsers someday?
-		parserVersion = Integer.parseInt(operationXML.getAttributeValue("version"));
-		if(parserVersion != 1)
-			throw new OperationXMLException("Version " + parserVersion + " of operational XML cannot be parsed.");
+			// TODO Check version. Maybe have to use old versions of parsers someday?
+			parserVersion = Integer.parseInt(operationXML.getAttributeValue("version"));
+			if(parserVersion != 1)
+				throw new OperationXMLException("Version " + parserVersion + " of operational XML cannot be parsed.");
+		}
+		catch(JDOMException ex)
+		{
+			throw new OperationXMLException("An error while processing the operation XML file", ex);
+		}
+		catch(IOException ex)
+		{
+			throw new OperationXMLException("An error occurred in accessing the operation XML file", ex);
+		}
 	}
 
 	/**
@@ -184,7 +192,7 @@ public class OperationXML extends Operation
 	 * @throws OperationXMLException Thrown when the given operation name cannot be found
 	 *		in the XML file or when XML has not yet been loaded.
 	 */
-	public static OperationXML createOperation(String opName) throws OperationXMLException
+	public static OperationXML createOperation(String opName) throws OperationXMLException, RProcessorException
 	{
 		OperationXML newOp = new OperationXML();
 		newOp.setConfiguration(findConfiguration(opName));
@@ -220,7 +228,7 @@ public class OperationXML extends Operation
 	 * used opConfig needs to be set, which can only occur through fromXMLExtra(Element)
 	 * or createOperation()
 	 */
-	public OperationXML()
+	public OperationXML() throws RProcessorException
 	{
 		super("Unconfigured");
 		opConfig = null;
@@ -245,7 +253,7 @@ public class OperationXML extends Operation
 	 *		pipes, for example).
 	 */
 	@Override
-	protected void computeColumns() throws RProcessorParseException, RProcessorException, CalcException
+	protected void computeColumns() throws MarlaException
 	{
 		// Ensure any requirements were met already
 		if(isInfoRequired() && questionAnswers == null)
@@ -266,7 +274,7 @@ public class OperationXML extends Operation
 		}
 	}
 
-	private void processSequence(Element compEl) throws RProcessorException, RProcessorParseException, CalcException, OperationXMLException
+	private void processSequence(Element compEl) throws RProcessorException, RProcessorParseException, CalcException, OperationXMLException, MarlaException
 	{
 		// Walk through each command/control structure sequentially
 		for(Object elObj : compEl.getChildren())
@@ -306,7 +314,7 @@ public class OperationXML extends Operation
 		proc.execute(cmdEl.getTextTrim());
 	}
 
-	private void processSet(Element cmdEl) throws RProcessorException, CalcException, OperationXMLException
+	private void processSet(Element cmdEl) throws RProcessorException, CalcException, OperationXMLException, MarlaException
 	{
 		Object[] answer = null;
 
@@ -340,7 +348,7 @@ public class OperationXML extends Operation
 				{
 					proc.setVariable(rVar, parent.getColumn((String) answer[1]));
 				}
-				catch(DataNotFound ex)
+				catch(DataNotFoundException ex)
 				{
 					throw new OperationInfoRequiredException("A DataColumn with the given name ('" + answer[1] + "') could not be found.", this);
 				}
@@ -351,7 +359,7 @@ public class OperationXML extends Operation
 		}
 	}
 
-	private void processSave(Element cmdEl) throws RProcessorException, RProcessorParseException, CalcException
+	private void processSave(Element cmdEl) throws MarlaException
 	{
 		// Get the command we will execute for the value
 		String cmd = cmdEl.getTextTrim();
@@ -373,10 +381,10 @@ public class OperationXML extends Operation
 		{
 			col = getColumn(colName);
 		}
-		catch(DataNotFound ex)
+		catch(DataNotFoundException ex)
 		{
 			// The column doesn't exist yet, create it
-			col = addColumn(colName);
+			col = data.addColumn(colName);
 		}
 
 		SaveType type = SaveType.valueOf(cmdEl.getAttributeValue("type", "double").toUpperCase());
@@ -408,7 +416,7 @@ public class OperationXML extends Operation
 		}
 	}
 
-	private void processLoop(Element loopEl) throws RProcessorException, RProcessorParseException, CalcException, OperationXMLException
+	private void processLoop(Element loopEl) throws RProcessorException, RProcessorParseException, CalcException, OperationXMLException, MarlaException
 	{
 		// Make up the loop we're going to work over and pass iteration back to processSequence()
 		String nameVar = loopEl.getAttributeValue("nameVar");
@@ -469,7 +477,7 @@ public class OperationXML extends Operation
 		}
 	}
 
-	private void processPlot(Element cmdEl) throws RProcessorException, RProcessorParseException, CalcException, OperationXMLException
+	private void processPlot(Element cmdEl) throws RProcessorException, RProcessorParseException, CalcException, OperationXMLException, MarlaException
 	{
 		// An operation may only have one plot in it
 		if(plotPath != null)
@@ -489,7 +497,7 @@ public class OperationXML extends Operation
 	 *		prompt - Question to actually present the user with
 	 */
 	@Override
-	public ArrayList<Object[]> getRequiredInfoPrompt()
+	public ArrayList<Object[]> getRequiredInfoPrompt() throws MarlaException
 	{
 		ArrayList<Object[]> questions = new ArrayList<Object[]>();
 
@@ -537,7 +545,7 @@ public class OperationXML extends Operation
 	 * @throws OperationException Info was attempted to be set when not requested
 	 */
 	@Override
-	public void setRequiredInfo(ArrayList<Object> values) throws OperationException
+	public void setRequiredInfo(ArrayList<Object> values) throws MarlaException
 	{
 		// It would be an error to try to set when none is asked for
 		if(!isInfoRequired())
@@ -560,7 +568,7 @@ public class OperationXML extends Operation
 	}
 
 	@Override
-	public String getPlot() throws CalcException
+	public String getPlot() throws MarlaException
 	{
 		checkCache();
 		return plotPath;

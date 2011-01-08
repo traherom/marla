@@ -38,6 +38,8 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.BorderFactory;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
@@ -65,10 +67,13 @@ import org.jdesktop.layout.LayoutStyle;
 import org.jdom.JDOMException;
 import problem.CalcException;
 import problem.DataColumn;
-import problem.DataNotFound;
+import problem.DataNotFoundException;
 import problem.DataSet;
+import problem.DataSource;
+import problem.DuplicateNameException;
 import problem.FileException;
 import problem.IncompleteInitializationException;
+import problem.MarlaException;
 import problem.Operation;
 import problem.OperationException;
 import problem.Problem;
@@ -257,24 +262,16 @@ public class ViewPanel extends JPanel
 						rightPanel.add (operation);
 					}
 				}
-				catch (OperationXMLException ex)
-				{
-					// Unable to load, not a real operation
-				}
 				catch (OperationException ex)
 				{
 					// Unable to load, not a real operation
+					System.err.println("Error loading operation '" + operations.get(i) + "'");
 				}
 			}
 		}
-		catch (JDOMException ex)
+		catch (MarlaException ex)
 		{
-		}
-		catch (IOException ex)
-		{
-		}
-		catch (OperationException ex)
-		{
+			JOptionPane.showMessageDialog(this, ex.getMessage(), "Load Error", JOptionPane.WARNING_MESSAGE);
 		}
     }
 
@@ -1600,13 +1597,13 @@ public class ViewPanel extends JPanel
 			workspacePanel.add (newOperation);
 			workspacePanel.updateUI();
 		}
-		catch(OperationException ex)
+		catch(MarlaException ex)
 		{
 			JOptionPane.showMessageDialog(this, "Unable to load the requested operation", "Missing Operation", JOptionPane.WARNING_MESSAGE);
 		}
 	}
 
-	public void getRequiredInfoDialog(final Operation newOperation)
+	public void getRequiredInfoDialog(final Operation newOperation) throws MarlaException
 	{
 		// Create the dialog which will be launched to ask about requirements
 		final ArrayList<Object[]> prompt = newOperation.getRequiredInfoPrompt();
@@ -1707,6 +1704,10 @@ public class ViewPanel extends JPanel
 					{
 						JOptionPane.showMessageDialog(viewPanel, "Internal error, attempted to set required information when none was needed.\nPlease report to the developers.", "Internal Error", JOptionPane.WARNING_MESSAGE);
 					}
+					catch(MarlaException ex)
+					{
+						JOptionPane.showMessageDialog(viewPanel, ex.getMessage(), "Error", JOptionPane.WARNING_MESSAGE);
+					}
 				}
 			}
 		});
@@ -1788,7 +1789,13 @@ public class ViewPanel extends JPanel
 					DataColumn column = dataSet.getColumn (j);
 					if (!dataSet.getColumn (j).getName ().equals (tableModel.getColumnName (j)))
 					{
-						column.setName (tableModel.getColumnName (j));
+						try
+						{
+							column.setName(tableModel.getColumnName(j));
+						}
+						catch(MarlaException ex)
+						{
+						}
 					}
 					for (int k = 0; k < tableModel.getRowCount(); ++k)
 					{
@@ -2212,7 +2219,7 @@ public class ViewPanel extends JPanel
 		{
 			dataSetTabbedPane.setSelectedIndex (domain.problem.getDataIndex (domain.currentDataSet.getName ()));
 		}
-		catch (DataNotFound ex) {}
+		catch (DataNotFoundException ex) {}
 	}
 
 	/**
@@ -2240,7 +2247,7 @@ public class ViewPanel extends JPanel
 			outputTextArea.append ("Solution:\n");
 			for(int i = 0; i < domain.problem.getDataCount(); i++)
 			{
-				DataSet ds = domain.problem.getAnswer(i);
+				DataSource ds = domain.problem.getAnswer(i);
 				if(ds instanceof Operation)
 				{
 					domain.ensureRequirementsMet((Operation) ds);
@@ -2249,10 +2256,9 @@ public class ViewPanel extends JPanel
 				outputTextArea.append(ds + "\n");
 			}
 		}
-		catch (IncompleteInitializationException ex) {}
-		catch (CalcException ex)
+		catch (MarlaException ex)
 		{
-			JOptionPane.showMessageDialog(this, "The requested R package either cannot be located or is not installed.", "Missing Package", JOptionPane.WARNING_MESSAGE);
+			JOptionPane.showMessageDialog(this, ex.getMessage(), "Computation Error", JOptionPane.WARNING_MESSAGE);
 		}
 	}
 

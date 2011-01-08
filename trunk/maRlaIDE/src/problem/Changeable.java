@@ -15,26 +15,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package r;
-
-import problem.MarlaException;
+package problem;
 
 /**
  * @author Ryan Morehart
  */
-public class RProcessorParseException extends MarlaException
+public interface Changeable
 {
-	public RProcessorParseException()
-	{
-	}
-
-	public RProcessorParseException(String msg)
-	{
-		super(msg);
-	}
-
-	public RProcessorParseException(String msg, Throwable cause)
-	{
-		super(msg, cause);
-	}
+	public void markChanged();
 }
