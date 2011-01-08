@@ -18,32 +18,23 @@
 package problem;
 
 /**
+ * Used for internal maRla programming errors. MarlaException is used for
+ * errors which may be the result of external factors.
  * @author Ryan Morehart
- * // TODO make this not internal
  */
-public class OperationInfoRequiredException extends InternalMarlaException
+public class InternalMarlaException extends RuntimeException
 {
-	private final Operation op;
-	
-	public OperationInfoRequiredException(Operation op)
+	public InternalMarlaException()
 	{
-		this.op = op;
 	}
 
-	public OperationInfoRequiredException(String msg, Operation op)
+	public InternalMarlaException(String msg)
 	{
 		super(msg);
-		this.op = op;
 	}
 
-	public OperationInfoRequiredException(String msg, Throwable cause, Operation op)
+	public InternalMarlaException(String msg, Throwable cause)
 	{
 		super(msg, cause);
-		this.op = op;
-	}
-
-	public Operation getOperation()
-	{
-		return op;
 	}
 }

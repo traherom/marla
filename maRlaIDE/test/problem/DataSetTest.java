@@ -238,9 +238,6 @@ public class DataSetTest
 		assertEquals(51, testDS1.getColumnLength());
 	}
 
-	/**
-	 * Can we save a dataset to XML, then read it back in and
-	 */
 	@Test
 	public void testToAndFromXML() throws Exception
 	{
@@ -258,5 +255,187 @@ public class DataSetTest
 		DataSet testDS1 = createDataSet(5, 50, 2);
 		DataSet testDS2 = new DataSet(testDS1, null);
 		assertEquals(testDS1, testDS2);
+	}
+
+	@Test
+	public void testUniqueName() throws Exception
+	{
+		DataSet testDS1 = createDataSet(2, 20, 0);
+		assertTrue(testDS1.isUniqueColumnName("New Column"));
+		assertFalse(testDS1.isUniqueColumnName(testDS1.getColumn(0).getName()));
+	}
+
+	@Test
+	public void testAddColumnByName() throws Exception
+	{
+		DataSet testDS1 = createDataSet(1, 20, 0);
+
+		assertTrue(testDS1.isUniqueColumnName("New Column"));
+		DataColumn addedCol = testDS1.addColumn("New Column");
+		assertFalse(testDS1.isUniqueColumnName("New Column"));
+
+		assertEquals(addedCol, testDS1.getColumn("New Column"));
+		assertEquals(testDS1, addedCol.getParentData());
+	}
+
+	@Test
+	public void testAddColumnByObject() throws Exception
+	{
+		DataSet testDS1 = createDataSet(1, 20, 0);
+
+		DataColumn newCol = new DataColumn("New Column");
+
+		assertTrue(testDS1.isUniqueColumnName("New Column"));
+		DataColumn addedCol = testDS1.addColumn(newCol);
+		assertFalse(testDS1.isUniqueColumnName("New Column"));
+
+		assertEquals(newCol, addedCol);
+		assertEquals(newCol, testDS1.getColumn("New Column"));
+		assertEquals(testDS1, addedCol.getParentData());
+	}
+
+	@Test(expected=DuplicateNameException.class)
+	public void testAddColumnDuplicateName() throws Exception
+	{
+		DataSet testDS1 = createDataSet(3, 20, 0);
+
+		String existingName = testDS1.getColumn(1).getName();
+		DataColumn newCol = new DataColumn(existingName);
+
+		assertFalse(testDS1.isUniqueColumnName(existingName));
+		testDS1.addColumn(newCol);
+	}
+
+	@Test
+	public void testAddColumnViaDataColumnSetParent() throws Exception
+	{
+		DataSet testDS1 = createDataSet(1, 20, 0);
+
+		DataColumn newCol = new DataColumn("New Column");
+
+		assertTrue(testDS1.isUniqueColumnName("New Column"));
+		newCol.setParent(testDS1);
+		assertFalse(testDS1.isUniqueColumnName("New Column"));
+
+		assertEquals(newCol, testDS1.getColumn("New Column"));
+		assertEquals(testDS1, newCol.getParentData());
+	}
+
+	@Test
+	public void testAddColumnExistingParentByObject() throws Exception
+	{
+		DataSet testDS1 = createDataSet(2, 20, 0);
+		DataSet testDS2 = createDataSet(2, 20, 0);
+
+		// Add to one dataset and make sure it's right
+		DataColumn newCol = new DataColumn("New Column");
+		DataColumn addedCol = testDS1.addColumn(newCol);
+		assertEquals(newCol, addedCol);
+		assertEquals(newCol, testDS1.getColumn("New Column"));
+		assertEquals(testDS1, addedCol.getParentData());
+
+		// Move it
+		addedCol = testDS2.addColumn(newCol);
+		assertEquals(newCol, addedCol);
+		assertEquals(newCol, testDS2.getColumn("New Column"));
+		assertFalse(testDS1.columns.contains(newCol));
+		assertEquals(testDS2, addedCol.getParentData());
+	}
+
+	@Test
+	public void testAddColumnWithExistingParentViaSetParent() throws Exception
+	{
+		DataSet testDS1 = createDataSet(2, 20, 0);
+		DataSet testDS2 = createDataSet(2, 20, 0);
+
+		// Add to one dataset and make sure it's right
+		DataColumn newCol = new DataColumn("New Column");
+		newCol.setParent(testDS1);
+		assertEquals(newCol, testDS1.getColumn("New Column"));
+		assertEquals(testDS1, newCol.getParentData());
+
+		// Now move to the other
+		newCol.setParent(testDS2);
+		assertEquals(newCol, testDS2.getColumn("New Column"));
+		assertFalse(testDS1.columns.contains(newCol));
+		assertEquals(testDS2, newCol.getParentData());
+	}
+
+	@Test
+	public void testAddColumn() throws Exception
+	{
+		DataSet testDS1 = createDataSet(2, 20, 0);
+		Operation newOp = Operation.createOperation("NOP");
+
+		assertEquals(0, testDS1.getOperationCount());
+		Operation addedOp = testDS1.addOperation(newOp);
+		assertEquals(1, testDS1.getOperationCount());
+		
+		assertEquals(newOp, addedOp);
+		assertEquals(newOp, testDS1.getOperation(0));
+		assertEquals(testDS1, newOp.getParentData());
+	}
+
+	@Test
+	public void testAddOperationViaOperationSetParent() throws Exception
+	{
+		DataSet testDS1 = createDataSet(2, 20, 0);
+		Operation newOp = Operation.createOperation("NOP");
+
+		assertEquals(0, testDS1.getOperationCount());
+		newOp.setParentData(testDS1);
+		assertEquals(1, testDS1.getOperationCount());
+		assertEquals(1, testDS1.getOperationCount());
+
+		assertEquals(newOp, testDS1.getOperation(0));
+		assertEquals(testDS1, newOp.getParentData());
+	}
+
+	@Test
+	public void testAddOperationExistingParentByObject() throws Exception
+	{
+		DataSet testDS1 = createDataSet(2, 20, 0);
+		DataSet testDS2 = createDataSet(2, 20, 0);
+
+		// Add to one dataset and make sure it's right
+		Operation newOp = Operation.createOperation("NOP");
+		assertEquals(0, testDS1.getOperationCount());
+		Operation addedOp = testDS1.addOperation(newOp);
+		assertEquals(1, testDS1.getOperationCount());
+		assertEquals(newOp, addedOp);
+		assertEquals(newOp, testDS1.getOperation(0));
+		assertEquals(testDS1, addedOp.getParentData());
+
+		// Move it
+		assertEquals(0, testDS2.getOperationCount());
+		addedOp = testDS2.addOperation(newOp);
+		assertEquals(1, testDS2.getOperationCount());
+		assertEquals(newOp, addedOp);
+		assertEquals(newOp, testDS2.getOperation(0));
+		assertFalse(testDS1.solutionOps.contains(newOp));
+		assertEquals(testDS2, newOp.getParentData());
+	}
+
+	@Test
+	public void testAddOperationWithExistingParentViaSetParent() throws Exception
+	{
+		DataSet testDS1 = createDataSet(2, 20, 0);
+		DataSet testDS2 = createDataSet(2, 20, 0);
+
+		// Add to one dataset and make sure it's right
+		Operation newOp = Operation.createOperation("NOP");
+		assertEquals(0, testDS1.getOperationCount());
+		newOp.setParentData(testDS1);
+		assertEquals(1, testDS1.getOperationCount());
+		assertEquals(newOp, testDS1.getOperation(0));
+		assertEquals(testDS1, newOp.getParentData());
+
+		// Move it
+		assertEquals(0, testDS2.getOperationCount());
+		newOp.setParentData(testDS2);
+		assertEquals(1, testDS2.getOperationCount());
+		assertEquals(newOp, testDS2.getOperation(0));
+		assertFalse(testDS1.solutionOps.contains(newOp));
+		assertEquals(testDS2, newOp.getParentData());
 	}
 }

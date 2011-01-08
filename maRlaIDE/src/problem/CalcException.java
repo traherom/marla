@@ -18,36 +18,21 @@
 package problem;
 
 /**
- *
- * 
  * @author Ryan Morehart
  */
-public class CalcException extends Exception
+public class CalcException extends MarlaException
 {
-
-	/**
-	 * Creates a new instance of <code>CalcException</code> without detail message.
-	 */
 	public CalcException()
 	{
 	}
 
-	/**
-	 * Constructs an instance of <code>CalcException</code> with the specified detail message.
-	 * @param msg the detail message.
-	 */
 	public CalcException(String msg)
 	{
 		super(msg);
 	}
 
-	/**
-	 * Constructs an instance of <code>CalcException</code> with the specified detail message.
-	 * @param msg the detail message.
-	 * @param underlying the underlying cause
-	 */
-	public CalcException(String msg, Throwable underlying)
+	public CalcException(String msg, Throwable cause)
 	{
-		super(msg, underlying);
+		super(msg, cause);
 	}
 }
