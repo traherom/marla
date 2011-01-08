@@ -17,33 +17,22 @@
  */
 package r;
 
+import problem.MarlaException;
+
 /**
- *
  * @author Ryan Morehart
  */
-public class RProcessorException extends Exception
+public class RProcessorException extends MarlaException
 {
-	/**
-	 * Creates a new instance of <code>RProcessorException</code> without detail message.
-	 */
 	public RProcessorException()
 	{
 	}
 
-	/**
-	 * Constructs an instance of <code>RProcessorException</code> with the specified detail message.
-	 * @param msg the detail message.
-	 */
 	public RProcessorException(String msg)
 	{
 		super(msg);
 	}
 
-	/**
-	 * Constructs an instance of <code>RProcessorException</code> with the specified detail message.
-	 * @param msg the detail message.
-	 * @param cause
-	 */
 	public RProcessorException(String msg, Throwable cause)
 	{
 		super(msg, cause);

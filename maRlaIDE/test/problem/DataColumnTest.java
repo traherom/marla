@@ -17,7 +17,6 @@
  */
 package problem;
 
-import org.jdom.Element;
 import org.junit.*;
 import static org.junit.Assert.*;
 
@@ -29,7 +28,8 @@ public class DataColumnTest
 {
 	public static DataColumn createDataColumn(int items)
 	{
-		DataColumn dc = new DataColumn("Column");
+		DataSet ds = new DataSet("temp");
+		DataColumn dc = ds.addColumn("Column");
 		for(int i = 0; i < items; i++)
 		{
 			dc.add(i);
@@ -67,7 +67,7 @@ public class DataColumnTest
 	}
 
 	@Test
-	public void testNotEqualsNames()
+	public void testNotEqualsNames() throws Exception
 	{
 		DataColumn testDC1 = createDataColumn(35);
 		DataColumn testDC2 = createDataColumn(35);
@@ -89,23 +89,33 @@ public class DataColumnTest
 	{
 		DataColumn testDC1 = createDataColumn(5);
 
+		// To string
 		testDC1.setMode(DataColumn.DataMode.STRING);
 		assertTrue(testDC1.isString());
-		assertEquals(testDC1.get(0), "0.0");
-		assertEquals(testDC1.get(3), "3.0");
+		assertEquals("0.0", testDC1.get(0));
+		assertEquals("3.0", testDC1.get(3));
+		assertEquals("4.0", testDC1.get(4));
 
+		// To doubles
 		testDC1.setMode(DataColumn.DataMode.NUMERICAL);
 		assertTrue(testDC1.isNumerical());
-		assertEquals(testDC1.get(0), 0D);
-		assertEquals(testDC1.get(3), 3D);
-		assertEquals(testDC1.get(0), 0D);
+		assertEquals(0D, testDC1.get(0));
+		assertEquals(3D, testDC1.get(3));
+		assertEquals(4D, testDC1.get(4));
+
+		// And back to string
+		testDC1.setMode(DataColumn.DataMode.STRING);
+		assertTrue(testDC1.isString());
+		assertEquals("0.0", testDC1.get(0));
+		assertEquals("3.0", testDC1.get(3));
+		assertEquals("4.0", testDC1.get(4));
 	}
 
 	@Test
 	public void testSize()
 	{
 		DataColumn testDC1 = createDataColumn(50);
-		assertEquals(testDC1.size(), 50);
+		assertEquals(50, testDC1.size());
 	}
 
 	@Test
@@ -138,13 +148,13 @@ public class DataColumnTest
 	public void testAdd()
 	{
 		DataColumn testDC1 = createDataColumn(50);
-		assertEquals(testDC1.get(10), 10D);
+		assertEquals(10D, testDC1.get(10));
 
 		testDC1.add(10, 1000);
-		assertEquals(testDC1.size(), 51);
-		assertEquals(testDC1.get(9), 9D);
-		assertEquals(testDC1.get(10), 1000D);
-		assertEquals(testDC1.get(11), 10D);
+		assertEquals(51, testDC1.size());
+		assertEquals(9D, testDC1.get(9));
+		assertEquals(1000D, testDC1.get(10));
+		assertEquals(10D, testDC1.get(11));
 	}
 
 
@@ -152,18 +162,9 @@ public class DataColumnTest
 	public void testClear()
 	{
 		DataColumn testDC1 = createDataColumn(50);
-		assertEquals(testDC1.size(), 50);
+		assertEquals(50, testDC1.size());
 		testDC1.clear();
-		assertEquals(testDC1.size(), 0);
-	}
-
-	@Test
-	public void testToAndFromXML()
-	{
-		DataColumn testDC1 = createDataColumn(50);
-		Element el = testDC1.toXml();
-		DataColumn testDC2 = DataColumn.fromXml(el);
-		assertEquals(testDC1, testDC2);
+		assertEquals(0, testDC1.size());
 	}
 
 	@Test

@@ -18,26 +18,21 @@
 package problem;
 
 /**
- * Exception thrown when a dataset is requested that does not exist.
- * 
  * @author Ryan Morehart
  */
-public class DataNotFound extends Exception
+public class DataNotFoundException extends MarlaException
 {
-
-	/**
-	 * Creates a new instance of <code>DataNotFound</code> without detail message.
-	 */
-	public DataNotFound()
+	public DataNotFoundException()
 	{
 	}
 
-	/**
-	 * Constructs an instance of <code>DataNotFound</code> with the specified detail message.
-	 * @param msg the detail message.
-	 */
-	public DataNotFound(String msg)
+	public DataNotFoundException(String msg)
 	{
 		super(msg);
+	}
+
+	public DataNotFoundException(String msg, Throwable cause)
+	{
+		super(msg, cause);
 	}
 }

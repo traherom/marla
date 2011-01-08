@@ -25,7 +25,7 @@ import java.util.ListIterator;
 import org.jdom.Element;
 
 /**
- * Simple named list of data that belongs to a DataSet. List
+ * Simple named list of data that belongs to a DataSource. List
  * implementation isn't complete, as iterators don't actually work yet.
  * 
  * @author Ryan Morehart
@@ -33,9 +33,9 @@ import org.jdom.Element;
 public class DataColumn implements List<Object>
 {
 	/**
-	 * The dataset we belong to.
+	 * The DataSource we belong to.
 	 */
-	private DataSet parent = null;
+	private DataSource parent = null;
 	/**
 	 * Name of the column
 	 */
@@ -56,21 +56,22 @@ public class DataColumn implements List<Object>
 
 	/**
 	 * Creates a new DataColumn with the given name that does not
-	 * belong to a certain DataSet
+	 * belong to a certain DataSource
 	 * @param name Human-friendly name for column
-	 * @throws DuplicateNameException There is already a column in this DataSet with the same name
+	 * @throws DuplicateNameException There is already a column in this DataSource with the same name
 	 */
-	public DataColumn(String name) throws DuplicateNameException
+	public DataColumn(DataSource parent, String name) throws DuplicateNameException
 	{
-		setName(name);
+		this.parent = parent;
+		this.name = name;
 	}
 
 	/**
 	 * Creates a deep copy of the current data column pointing to the same parent.
 	 * @param col Column to copy values from
-	 * @param parent DataSet the copy should belong to
+	 * @param parent DataSource the copy should belong to
 	 */
-	public DataColumn(DataColumn col, DataSet parent)
+	public DataColumn(DataColumn col, DataSource parent)
 	{
 		this.parent = parent;
 		name = col.name;
@@ -106,12 +107,12 @@ public class DataColumn implements List<Object>
 	 * @param newName New name for column.
 	 * @throws DuplicateNameException Another DataColumn with the given name already exists
 	 */
-	public final void setName(String newName) throws DuplicateNameException
+	public final void setName(String newName) throws DuplicateNameException, MarlaException
 	{
 		if(parent != null && !parent.isUniqueColumnName(newName))
 		{
 			throw new DuplicateNameException("Data column with name '"
-					+ newName + "' already exists in dataset '" + parent.getName() + "'");
+					+ newName + "' already exists in data source '" + parent.getName() + "'");
 		}
 
 		name = newName;
@@ -119,10 +120,10 @@ public class DataColumn implements List<Object>
 	}
 
 	/**
-	 * Returns the dataset that this column belongs to
-	 * @return Parent DataSet
+	 * Returns the DataSource that this column belongs to
+	 * @return Parent DataSource
 	 */
-	public DataSet getParentData()
+	public DataSource getParentData()
 	{
 		return parent;
 	}
@@ -329,7 +330,7 @@ public class DataColumn implements List<Object>
 	}
 
 	/**
-	 * Empties column of all data values. Only marks dataset as changed if
+	 * Empties column of all data values. Only marks DataSource as changed if
 	 * it wasn't already empty.
 	 */
 	@Override
@@ -368,7 +369,7 @@ public class DataColumn implements List<Object>
 	}
 
 	/**
-	 * Changes a value in the list. Marks dataset as changed if the value
+	 * Changes a value in the list. Marks DataSource as changed if the value
 	 * differs from the original.
 	 * @param index Index in the column to change
 	 * @param element New value for column
@@ -479,42 +480,6 @@ public class DataColumn implements List<Object>
 	}
 
 	/**
-	 * Generates a JDOM Element with the data from this column
-	 * @return JDOM Element containing all data needed to restore this column
-	 */
-	public Element toXml()
-	{
-		Element colEl = new Element("column");
-		colEl.setAttribute("name", name);
-		colEl.setAttribute("mode", mode.toString());
-		
-		for(Object d : values)
-		{
-			colEl.addContent(new Element("value").addContent(d.toString()));
-		}
-		return colEl;
-	}
-
-	/**
-	 * Builds a DataColumn from the given JDOM Element
-	 * @param colEl JDOM Element with data for column
-	 * @return New DataColumn
-	 * @throws DuplicateNameException The save file must be wrong, there is already a column with
-	 *			this name
-	 */
-	public static DataColumn fromXml(Element colEl) throws DuplicateNameException
-	{
-		DataColumn newCol = new DataColumn(colEl.getAttributeValue("name"));
-		newCol.setMode(DataMode.valueOf(colEl.getAttributeValue("mode")));
-		
-		for(Object el : colEl.getChildren("value"))
-		{
-			newCol.add(((Element) el).getText());
-		}
-		return newCol;
-	}
-
-	/**
 	 * A DataColumn is equal if all solution ops, columns, and name are the same
 	 * @param other Object to compare against
 	 * @return True if the the given object is the same as this one
@@ -548,32 +513,6 @@ public class DataColumn implements List<Object>
 		hash = 11 * hash + (this.values != null ? this.values.hashCode() : 0);
 		hash = 11 * hash + (this.mode != null ? this.mode.hashCode() : 0);
 		return hash;
-	}
-
-	/**
-	 * Assigns this column to a new DataSet. Removes self from current parent
-	 * if needed, but assumes that it has already been assigned to the new
-	 * parent. Package scope is intentional.
-	 * @param newParent New DataSet we belong to
-	 */
-	public void setParent(DataSet newParent)
-	{
-		// If we're already a part of this parent, ignore request
-		if(parent == newParent)
-			return;
-
-		// Tell our old parent we're removing ourselves
-		if(parent != null)
-		{
-			DataSet oldParent = parent;
-			parent = null;
-			oldParent.removeColumn(this);
-		}
-
-		// Assign ourselves to the new guy
-		parent = newParent;
-		if(parent != null)
-			parent.addColumn(this);
 	}
 
 	/**

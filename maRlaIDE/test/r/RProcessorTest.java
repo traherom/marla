@@ -196,7 +196,7 @@ public class RProcessorTest
 		String var = proc.setVariable(col);
 
 		// Check
-		DataColumn ret = new DataColumn(col.getName());
+		DataColumn ret = DataColumnTest.createDataColumn(0);
 		assertEquals(DataMode.NUMERICAL, ret.getMode());
 		ret.addAll(proc.executeDoubleArray(var));
 		assertEquals(col, ret);
@@ -211,7 +211,7 @@ public class RProcessorTest
 		String var = proc.setVariable(col);
 
 		// Check
-		DataColumn ret = new DataColumn(col.getName());
+		DataColumn ret = DataColumnTest.createDataColumn(0);
 		ret.setMode(DataMode.STRING);
 		assertEquals(DataMode.STRING, ret.getMode());
 		ret.addAll(proc.executeStringArray(var));

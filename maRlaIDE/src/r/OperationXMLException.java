@@ -20,24 +20,21 @@ package r;
 import problem.OperationException;
 
 /**
- *
  * @author Ryan Morehart
  */
 public class OperationXMLException extends OperationException
 {
-	/**
-	 * Creates a new instance of <code>OperationXMLException</code> without detail message.
-	 */
 	public OperationXMLException()
 	{
 	}
 
-	/**
-	 * Constructs an instance of <code>OperationXMLException</code> with the specified detail message.
-	 * @param msg the detail message.
-	 */
 	public OperationXMLException(String msg)
 	{
 		super(msg);
+	}
+
+	public OperationXMLException(String msg, Throwable cause)
+	{
+		super(msg, cause);
 	}
 }

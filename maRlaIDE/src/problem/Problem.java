@@ -153,7 +153,7 @@ public class Problem implements ProblemPart
 	}
 
 	@Override
-	public DataSet getData(String name) throws DataNotFound
+	public DataSet getData(String name) throws DataNotFoundException
 	{
 		return getData(getDataIndex(name));
 	}
@@ -165,7 +165,7 @@ public class Problem implements ProblemPart
 	}
 
 	@Override
-	public int getDataIndex(String name) throws DataNotFound
+	public int getDataIndex(String name) throws DataNotFoundException
 	{
 		for(int i = 0; i < datasets.size(); i++)
 		{
@@ -174,7 +174,7 @@ public class Problem implements ProblemPart
 		}
 
 		// Dataset not found, name was bad
-		throw new DataNotFound("Failed to find dataset with name '" + name + "'");
+		throw new DataNotFoundException("Failed to find dataset with name '" + name + "'");
 	}
 
 	@Override
@@ -344,7 +344,7 @@ public class Problem implements ProblemPart
 	 * @throws JDOMException The save file is likely corrupt, we were unable to parse it
 	 * @throws CalcException Unable to compute values after the tree has been built
 	 */
-	public static Problem load(String fileName) throws FileNotFoundException, IOException, JDOMException, CalcException
+	public static Problem load(String fileName) throws FileNotFoundException, IOException, JDOMException, CalcException, MarlaException
 	{
 		// Load file into JDOM
 		SAXBuilder parser = new SAXBuilder();
@@ -397,14 +397,15 @@ public class Problem implements ProblemPart
 	}
 
 	@Override
-	public DataSet getAnswer(int index) throws IncompleteInitializationException, CalcException
+	@Deprecated
+	public DataSource getAnswer(int index) throws IncompleteInitializationException, CalcException
 	{
 		if(datasets.isEmpty())
 			throw new IncompleteInitializationException("This problem has no datasets yet, unable to solve");
 
 		// Find the bottom operation. Assume the first one for any
 		// places where we find multiple ops or whatever
-		DataSet curr = datasets.get(index);
+		DataSource curr = datasets.get(index);
 		while(curr.getOperationCount() != 0)
 		{
 			curr = curr.getOperation(0);
@@ -440,7 +441,7 @@ public class Problem implements ProblemPart
 	 * @return Newly created problem from the given XML
 	 * @throws CalcException Unable to compute values
 	 */
-	public static Problem fromXml(Element rootEl) throws CalcException
+	public static Problem fromXml(Element rootEl) throws CalcException, MarlaException
 	{
 		Problem newProb = new Problem();
 

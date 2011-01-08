@@ -41,13 +41,13 @@ public class SubProblem implements ProblemPart
 	 * subproblem.  Actual solution steps are found by tracing
 	 * _up_ from last operation to this one.
 	 */
-	private DataSet startSolutionStep;
+	private DataSource startSolutionStep;
 	/**
 	 * End operation for the chain of ops which solves this
 	 * subproblem. Actual solution steps are found by tracing
 	 * _up_ from this operation to the first.
 	 */
-	private DataSet endSolutionStep;
+	private DataSource endSolutionStep;
 	/**
 	 * Problem we belong to
 	 */
@@ -119,7 +119,7 @@ public class SubProblem implements ProblemPart
 	 * marked as the end are considered part of the solution.
 	 * @param op Beginning of solution chain
 	 */
-	public void setSolutionStart(DataSet op)
+	public void setSolutionStart(DataSource op)
 	{
 		startSolutionStep = op;
 		markChanged();
@@ -130,7 +130,7 @@ public class SubProblem implements ProblemPart
 	 * our solution to this part of the problem.
 	 * @return DataSet pointed to as the start or null if none is set
 	 */
-	public DataSet getSolutionStart()
+	public DataSource getSolutionStart()
 	{
 		return startSolutionStep;
 	}
@@ -141,7 +141,7 @@ public class SubProblem implements ProblemPart
 	 * marked as the beginning are considered part of the solution.
 	 * @param op End of solution chain
 	 */
-	public void setSolutionEnd(DataSet op)
+	public void setSolutionEnd(DataSource op)
 	{
 		endSolutionStep = op;
 		markChanged();
@@ -152,7 +152,7 @@ public class SubProblem implements ProblemPart
 	 * our solution to this part of the problem.
 	 * @return DataSet pointed to as the end or null if none is set
 	 */
-	public DataSet getSolutionEnd()
+	public DataSource getSolutionEnd()
 	{
 		return endSolutionStep;
 	}
@@ -235,7 +235,8 @@ public class SubProblem implements ProblemPart
 	}
 
 	@Override
-	public DataSet getAnswer(int index) throws IncompleteInitializationException, CalcException
+	@Deprecated
+	public DataSource getAnswer(int index) throws IncompleteInitializationException, CalcException
 	{
 		if(endSolutionStep == null)
 			throw new IncompleteInitializationException();
@@ -315,7 +316,7 @@ public class SubProblem implements ProblemPart
 	 * @param parent DataSet that we should search through to find it
 	 * @return DataSet located
 	 */
-	private static DataSet findDataSet(int hash, DataSet parent)
+	private static DataSource findDataSet(int hash, DataSource parent)
 	{
 		for(int i = 0; i < parent.getOperationCount(); i++)
 		{
@@ -328,7 +329,7 @@ public class SubProblem implements ProblemPart
 			else
 			{
 				// Can we find it deeper? If not just try the next one I guess
-				DataSet d = findDataSet(hash, op);
+				DataSource d = findDataSet(hash, op);
 				if(d != null)
 					return d;
 			}
@@ -358,7 +359,7 @@ public class SubProblem implements ProblemPart
 	}
 
 	@Override
-	public DataSet getData(String name) throws DataNotFound
+	public DataSet getData(String name) throws DataNotFoundException
 	{
 		return parent.getData(name);
 	}
@@ -370,7 +371,7 @@ public class SubProblem implements ProblemPart
 	}
 
 	@Override
-	public int getDataIndex(String name) throws DataNotFound
+	public int getDataIndex(String name) throws DataNotFoundException
 	{
 		return parent.getDataIndex(name);
 	}

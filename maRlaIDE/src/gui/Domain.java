@@ -28,6 +28,7 @@ import org.jdom.JDOMException;
 import problem.CalcException;
 import problem.DataSet;
 import problem.FileException;
+import problem.MarlaException;
 import problem.Operation;
 import problem.OperationInfoRequiredException;
 import problem.Problem;
@@ -203,7 +204,7 @@ public class Domain
 				viewPanel.openProblem();
 			}
 		}
-		catch (CalcException ex)
+		catch (MarlaException ex)
 		{
 			JOptionPane.showMessageDialog(viewPanel, "The requested R package either cannot be located or is not installed.", "Missing Package", JOptionPane.WARNING_MESSAGE);
 		}
@@ -218,7 +219,7 @@ public class Domain
 		}
 	}
 
-	public void ensureRequirementsMet(Operation op) throws CalcException
+	public void ensureRequirementsMet(Operation op) throws MarlaException
 	{
 		// Iteratively attempts to tell operation to recompute itself until noone that
 		// it depends on has missing requirements
