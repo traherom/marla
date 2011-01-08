@@ -216,13 +216,28 @@ public abstract class Operation extends DataSet
 	 */
 	void setParentData(DataSet newParent)
 	{
+		// If we're already a part of this parent, ignore request
+		if(parent == newParent)
+			return;
+
+		// Tell our old parent we're removing ourselves
+		if(parent != null)
+		{
+			DataSet oldParent = parent;
+			parent = null;
+			oldParent.removeOperation(this);
+		}
+
+		// Assign ourselves to the new guy
 		parent = newParent;
-		markChanged();
+		if(parent != null)
+			parent.addOperation(this);
+
 		markUnsaved();
+		markChanged();
 	}
 
 	@Override
-	@Deprecated
 	public ProblemPart setParentProblem(ProblemPart newParent)
 	{
 		throw new RuntimeException("setParentProblem() should not be called on Operations");
@@ -463,6 +478,13 @@ public abstract class Operation extends DataSet
 		// Ourselves?
 		if(other == this)
 			return true;
+
+		// TODO determine the best way to tell equality
+		// The problem is that a user should be able to add multiple
+		// ops of the same type to the parent dataset. Sometimes it would be ok
+		// to restrict this, but I'd rather not. So for now, we're just saying
+		// object equality is good enough.
+		//return false;
 
 		// Actually an operation?
 		if(!(other instanceof Operation))

@@ -18,24 +18,22 @@
 package problem;
 
 /**
- *
- * @author traherom
+ * @author Ryan Morehart
+ * // TODO make this not internal
  */
-public class DuplicateNameException extends RuntimeException
+public class DuplicateNameException extends InternalMarlaException
 {
-	/**
-	 * Creates a new instance of <code>DuplicateNameException</code> without detail message.
-	 */
 	public DuplicateNameException()
 	{
 	}
 
-	/**
-	 * Constructs an instance of <code>DuplicateNameException</code> with the specified detail message.
-	 * @param msg the detail message.
-	 */
 	public DuplicateNameException(String msg)
 	{
 		super(msg);
+	}
+
+	public DuplicateNameException(String msg, Throwable cause)
+	{
+		super(msg, cause);
 	}
 }

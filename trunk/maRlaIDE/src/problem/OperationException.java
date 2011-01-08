@@ -18,29 +18,21 @@
 package problem;
 
 /**
- *
  * @author Ryan Morehart
  */
-public class OperationException extends Exception
+public class OperationException extends MarlaException
 {
-	/**
-	 * Creates a new instance of <code>OperationException</code> without detail message.
-	 */
 	public OperationException()
 	{
 	}
 
-	/**
-	 * Constructs an instance of <code>OperationException</code> with the specified detail message.
-	 * @param msg the detail message.
-	 */
 	public OperationException(String msg)
 	{
 		super(msg);
 	}
 
-	public OperationException(String msg, Throwable ex)
+	public OperationException(String msg, Throwable cause)
 	{
-		super(msg, ex);
+		super(msg, cause);
 	}
 }

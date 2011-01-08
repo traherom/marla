@@ -62,18 +62,6 @@ public class DataColumn implements List<Object>
 	 */
 	public DataColumn(String name) throws DuplicateNameException
 	{
-		this(null, name);
-	}
-
-	/**
-	 * Creates a new data column for a given dataset with the given name.
-	 * @param parent DataSet we belong to
-	 * @param name Human-friendly name for this column
-	 * @throws DuplicateNameException There is already a column in this DataSet with the same name
-	 */
-	public DataColumn(DataSet parent, String name) throws DuplicateNameException
-	{
-		this.parent = parent;
 		setName(name);
 	}
 
@@ -115,33 +103,26 @@ public class DataColumn implements List<Object>
 
 	/**
 	 * Changes the name this data column goes by.
-	 * @param name New name for column.
+	 * @param newName New name for column.
 	 * @throws DuplicateNameException Another DataColumn with the given name already exists
 	 */
-	public final void setName(String name) throws DuplicateNameException
+	public final void setName(String newName) throws DuplicateNameException
 	{
-		if(parent != null)
+		if(parent != null && !parent.isUniqueColumnName(newName))
 		{
-			// Make sure no other columns have this name
-			for(int i = 0; i < parent.getColumnCount(); i++)
-			{
-				if(name.equalsIgnoreCase(parent.getColumn(i).getName()))
-				{
-					throw new DuplicateNameException("Data column with name '"
-							+ name + "' already exists in dataset '" + parent.getName() + "'");
-				}
-			}
+			throw new DuplicateNameException("Data column with name '"
+					+ newName + "' already exists in dataset '" + parent.getName() + "'");
 		}
-		
+
+		name = newName;
 		markChanged();
-		this.name = name;
 	}
 
 	/**
 	 * Returns the dataset that this column belongs to
 	 * @return Parent DataSet
 	 */
-	public DataSet getParentDataSet()
+	public DataSet getParentData()
 	{
 		return parent;
 	}
@@ -575,14 +556,24 @@ public class DataColumn implements List<Object>
 	 * parent. Package scope is intentional.
 	 * @param newParent New DataSet we belong to
 	 */
-	void setParent(DataSet newParent)
+	public void setParent(DataSet newParent)
 	{
+		// If we're already a part of this parent, ignore request
+		if(parent == newParent)
+			return;
+
+		// Tell our old parent we're removing ourselves
 		if(parent != null)
 		{
-			parent.removeColumn(this);
-			markChanged();
+			DataSet oldParent = parent;
+			parent = null;
+			oldParent.removeColumn(this);
 		}
+
+		// Assign ourselves to the new guy
 		parent = newParent;
+		if(parent != null)
+			parent.addColumn(this);
 	}
 
 	/**

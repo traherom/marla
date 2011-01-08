@@ -24,21 +24,19 @@ package problem;
  * 
  * @author Ryan Morehart
  */
-public class IncompleteInitializationException extends Exception
+public class IncompleteInitializationException extends MarlaException
 {
-	/**
-	 * Creates a new instance of <code>IncompleteInitialization</code> without detail message.
-	 */
 	public IncompleteInitializationException()
 	{
 	}
 
-	/**
-	 * Constructs an instance of <code>IncompleteInitialization</code> with the specified detail message.
-	 * @param msg the detail message.
-	 */
 	public IncompleteInitializationException(String msg)
 	{
 		super(msg);
+	}
+
+	public IncompleteInitializationException(String msg, Throwable cause)
+	{
+		super(msg, cause);
 	}
 }

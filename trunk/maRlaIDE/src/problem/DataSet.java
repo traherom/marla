@@ -350,16 +350,32 @@ public class DataSet extends JLabel
 	}
 
 	/**
+	 * Ensures the given name is unique within the DataSet
+	 * @param name Name to check for in existing columns
+	 * @return true if the name is unique, false otherwise
+	 */
+	public boolean isUniqueColumnName(String name)
+	{
+		// Make sure no other columns have this name
+		for(DataColumn dc : columns)
+		{
+			if(name.equalsIgnoreCase(dc.getName()))
+			{
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	/**
 	 * Adds another column to this dataset
 	 * @param colName Name for new column
 	 * @return Newly created data column
 	 */
 	public DataColumn addColumn(String colName)
 	{
-		markChanged();
-		DataColumn newCol = new DataColumn(this, colName);
-		columns.add(newCol);
-		return newCol;
+		return addColumn(new DataColumn(colName));
 	}
 
 	/**
@@ -369,9 +385,23 @@ public class DataSet extends JLabel
 	 */
 	public DataColumn addColumn(DataColumn column)
 	{
-		markChanged();
-		columns.add(column);
+		// Tell the column to set us as the parent
 		column.setParent(this);
+
+		if(!columns.contains(column))
+		{
+			// Ensure the name of this new column is ok
+			if(!isUniqueColumnName(column.getName()))
+			{
+				throw new DuplicateNameException("Data column with name '"
+						+ column.getName() + "' already exists in dataset '" + name + "'");
+			}
+
+			// They weren't already assigned to us, so stick them on our list
+			columns.add(column);
+			markChanged();
+		}
+		
 		return column;
 	}
 
@@ -387,20 +417,43 @@ public class DataSet extends JLabel
 	 */
 	public DataColumn addColumn(int index, DataColumn column) throws CalcException
 	{
-		markChanged();
-		columns.add(index, column);
+		// Tell the column to set us as the parent
 		column.setParent(this);
+
+		if(!columns.contains(column))
+		{
+			// Ensure the name of this new column is ok
+			if(!isUniqueColumnName(column.getName()))
+			{
+				throw new DuplicateNameException("Data column with name '"
+						+ column.getName() + "' already exists in dataset '" + name + "'");
+			}
+
+			// They weren't already assigned to us, so stick them on our list
+			columns.add(index, column);
+			markChanged();
+		}
+
 		return column;
 	}
 
 	/**
 	 * Removes given column in the dataset.
-	 * @param col Column to remove from the dataset
+	 * @param column Column to remove from the dataset
 	 * @return The removed column
 	 */
-	public DataColumn removeColumn(DataColumn col)
+	public DataColumn removeColumn(DataColumn column)
 	{
-		return removeColumn(columns.indexOf(col));
+		// Tell column to we're not its parent any more
+		column.setParent(null);
+
+		// Remove them from our list if still needed
+		if(columns.remove(column))
+		{
+			markChanged();
+		}
+
+		return column;
 	}
 
 	/**
@@ -411,10 +464,7 @@ public class DataSet extends JLabel
 	 */
 	public DataColumn removeColumn(int index)
 	{
-		markChanged();
-		DataColumn col = columns.remove(index);
-		col.setParent(null);
-		return col;
+		return removeColumn(columns.get(index));
 	}
 
 	/**
@@ -536,9 +586,16 @@ public class DataSet extends JLabel
 	 */
 	public Operation addOperation(Operation op)
 	{
-		markChanged();
+		// Tell the operation to set us as the parent
 		op.setParentData(this);
-		solutionOps.add(op);
+
+		if(!solutionOps.contains(op))
+		{
+			// They weren't already assigned to us, so stick them on our list
+			solutionOps.add(op);
+			markChanged();
+		}
+
 		return op;
 	}
 
@@ -570,9 +627,15 @@ public class DataSet extends JLabel
 	 */
 	public Operation removeOperation(Operation op)
 	{
-		markChanged();
-		solutionOps.remove(op);
+		// Tell column to we're not its parent any more
 		op.setParentData(null);
+
+		// Remove them from our list if still needed
+		if(solutionOps.remove(op))
+		{
+			markChanged();
+		}
+
 		return op;
 	}
 
@@ -583,10 +646,7 @@ public class DataSet extends JLabel
 	 */
 	public Operation removeOperation(int index)
 	{
-		markChanged();
-		Operation op = solutionOps.remove(index);
-		op.setParentData(null);
-		return op;
+		return removeOperation(solutionOps.get(index));
 	}
 
 	/**
