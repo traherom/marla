@@ -18,6 +18,8 @@
 package problem;
 
 /**
+ * The base exception class in maRla. Every exception except for InternalMarlaException
+ * derives from this.
  * @author Ryan Morehart
  */
 public class MarlaException extends Exception

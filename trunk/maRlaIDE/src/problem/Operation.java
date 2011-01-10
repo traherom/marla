@@ -18,21 +18,17 @@
 package problem;
 
 import java.awt.Rectangle;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JLabel;
 import org.jdom.Element;
 import r.OperationXML;
 import r.OperationXMLException;
 import r.RProcessor;
 import r.RProcessorException;
-import r.RProcessorParseException;
 
 /**
  * Operation to perform on a parent object that implements
@@ -97,11 +93,11 @@ public abstract class Operation extends JLabel implements DataSource, Changeable
 	/**
 	 * Returns a list of all the operations available, both from XML and Java. This is a
 	 * hard coded list for now and eases adding new operations to the GUI (no need to edit the
-	 * other package in a few places).
+	 * other package in a few places). An exception is thrown when multiple operations with
+	 * the same name are detected
 	 * @return ArrayList of the names of operations available. Each name will be unique. If an XML
 	 *		operation with the same name as a Java operation exists then the XML version will
 	 *		be used. Otherwise an OperationException is thrown.
-	 * @throws OperationException Thrown when multiple operations with the same name are detected
 	 */
 	public static List<String> getAvailableOperations() throws OperationException
 	{
@@ -125,11 +121,10 @@ public abstract class Operation extends JLabel implements DataSource, Changeable
 
 	/**
 	 * Creates a new Operation via the given name. Operations are first searched for in
-	 * the currently loaded XML operations list, then in the Java-based list.
+	 * the currently loaded XML operations list, then in the Java-based list. An exception
+	 * is thrown if an operation matching the name cannot be found and/or instantiated.
 	 * @param opName Name of operation to search for, usually taken from getAvailableOperations().
 	 * @return Newly created operation of the given type
-	 * @throws OperationException Thrown if an operation matching the name cannot be found and/or
-	 *		instantiated.
 	 */
 	public static Operation createOperation(String opName) throws OperationException, RProcessorException
 	{
@@ -168,9 +163,8 @@ public abstract class Operation extends JLabel implements DataSource, Changeable
 	/**
 	 * Sets the text name for the JLabel
 	 * @param newName Text for JLabel
-	 * @throws RProcessorException Thrown when the R processor could not be loaded
 	 */
-	protected Operation(String newName) throws RProcessorException
+	protected Operation(String newName)
 	{
 		super(newName);
 		setOperationName(newName);
@@ -199,12 +193,11 @@ public abstract class Operation extends JLabel implements DataSource, Changeable
 	}
 
 	/**
-	 * Creates the appropriate derivative Operation from the given JDOM
-	 * XML. Class must be specified as an attribute ("type") of the
-	 * Element supplied.
+	 * Creates the appropriate derivative Operation from the given JDOM XML. Class
+	 * must be specified as an attribute ("type") of the Element supplied. An exception
+	 * is thrown if the operation could not be created. The inner exception has more information.
 	 * @param opEl JDOM Element with the information to construct Operation
 	 * @return Constructed and initialized operation
-	 * @throws OperationException Unable to create operation. Inner exception has more information
 	 */
 	public static Operation fromXml(Element opEl) throws OperationException
 	{
@@ -241,10 +234,10 @@ public abstract class Operation extends JLabel implements DataSource, Changeable
 	}
 
 	/**
-	 * May be overridden by derivative classes in order to reload extra
+	 * May be overridden by derivative classes in order to reload extra. Thrown if the
+	 * save XML contains incorrect data.
 	 * information saved for their type of Operation
 	 * @param opEl JDOM Element with all data for Operation
-	 * @throws OperationException Thrown when a problem is encountered parsing the XML
 	 */
 	protected void fromXmlExtra(Element opEl) throws OperationException
 	{
@@ -463,9 +456,9 @@ public abstract class Operation extends JLabel implements DataSource, Changeable
 	 * After the user is prompted for additional values, their selections
 	 * are returned as an ArrayList where the index corresponds to the question
 	 * originally asked by getInforRequiredPrompt(). If a derived class needs
-	 * to handle them it should override this.
+	 * to handle them it should override this. An exception may be thrown if data
+	 * is set incorrectly.
 	 * @param values ArrayList of Objects that answer the questions
-	 * @throws OperationException Info was attempted to be set when not requested
 	 */
 	public void setRequiredInfo(ArrayList<Object> values) throws MarlaException
 	{
@@ -475,9 +468,9 @@ public abstract class Operation extends JLabel implements DataSource, Changeable
 
 	/**
 	 * Returns true if this operation has graphical output. The path to the graphic
-	 * file can be obtained via getPlot().
+	 * file can be obtained via getPlot(). An exception is thrown if an error occurs during
+	 * computations.
 	 * @return true if there is available graphical output, false otherwise
-	 * @throws CalcException Unable to perform calculations
 	 */
 	public boolean hasPlot() throws MarlaException
 	{
@@ -485,9 +478,9 @@ public abstract class Operation extends JLabel implements DataSource, Changeable
 	}
 
 	/**
-	 * Returns the path to the graphical plot this operation generated.
+	 * Returns the path to the graphical plot this operation generated. An exception
+	 * is thrown if an error occurs creating the plot.
 	 * @return Path to plot, null if there is none associated with this operation.
-	 * @throws CalcException Unable to perform calculations
 	 */
 	public String getPlot() throws MarlaException
 	{
@@ -632,7 +625,7 @@ public abstract class Operation extends JLabel implements DataSource, Changeable
 	}
 
 	@Override
-	public final void exportFile(String filePath) throws IOException, MarlaException
+	public final void exportFile(String filePath) throws MarlaException
 	{
 		checkCache();
 		data.exportFile(filePath);

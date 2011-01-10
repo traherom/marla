@@ -18,8 +18,10 @@
 package problem;
 
 /**
+ * Thrown when an operation needs information to be set before it can perform
+ * any calculations. getOperation() in this exception returns the operation
+ * that needs information.
  * @author Ryan Morehart
- * // TODO make this not internal
  */
 public class OperationInfoRequiredException extends MarlaException
 {

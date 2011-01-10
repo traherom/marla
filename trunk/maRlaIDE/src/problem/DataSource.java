@@ -37,7 +37,6 @@ public interface DataSource
 	 *
 	 * @param colName List of values in that column. Column manipulations will
 	 *					be reflected in the dataset itself unless a copy is made.
-	 * @throws DataNotFound Unable to find the requested column to return
 	 * @return The DataColumn requested
 	 */
 	public DataColumn getColumn(String colName) throws DataNotFoundException, MarlaException;
@@ -47,7 +46,6 @@ public interface DataSource
 	 * of the column with the given name
 	 * @param colName Column name to search for
 	 * @return index of corresponding column
-	 * @throws DataNotFound Thrown if a column with the given name can't be found
 	 */
 	public int getColumnIndex(String colName) throws DataNotFoundException, MarlaException;
 
@@ -151,10 +149,8 @@ public interface DataSource
 	/**
 	 * Exports this DataSource to a CSV file at the given path. Use R to perform the export.
 	 * @param filePath CSV file to write to. File will be overwritten if needed.
-	 * @throws IOException Thrown on any error opening or writing to the target file
-	 * @throws MarlaException Problem occurred, likely during computation of columns
 	 */
-	public void exportFile(String filePath) throws IOException, MarlaException;
+	public void exportFile(String filePath) throws MarlaException;
 
 	/**
 	 * Ensures the given name is unique within the DataSet

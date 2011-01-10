@@ -20,6 +20,7 @@ package r;
 import problem.MarlaException;
 
 /**
+ * Thrown when an R output cannot be parsed as specified.
  * @author Ryan Morehart
  */
 public class RProcessorParseException extends MarlaException

@@ -68,7 +68,7 @@ import problem.DataNotFoundException;
 import problem.DataSet;
 import problem.DataSource;
 import problem.DuplicateNameException;
-import problem.FileException;
+import problem.ProblemException;
 import problem.MarlaException;
 import problem.Operation;
 import problem.OperationException;
@@ -1887,7 +1887,7 @@ public class ViewPanel extends JPanel
 					{
 						domain.problem.save();
 					}
-					catch (FileException ex)
+					catch (ProblemException ex)
 					{
 						return false;
 					}

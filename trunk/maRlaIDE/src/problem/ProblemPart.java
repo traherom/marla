@@ -44,8 +44,6 @@ public interface ProblemPart extends Changeable
 	 * Returns the DataSource that is the "answer" to this Problem or SubProblem
 	 * @param index Undocumented
 	 * @return DataSource which may be iterated over to see the result
-	 * @throws IncompleteInitializationException Some aspect of the problem was not initialized
-	 * @throws CalcException Unable to perform R work to computer answer
 	 * @deprecated Instead call toRString() on the appropriate Operation/DataSet
 	 */
 	@Deprecated
@@ -82,7 +80,6 @@ public interface ProblemPart extends Changeable
 	 * Returns the dataset with the given name.
 	 * @param name Dataset name
 	 * @return Dataset with matching name
-	 * @throws DataNotFoundException Unable to find the DataSet requested
 	 */
 	public DataSet getData(String name) throws DataNotFoundException;
 
@@ -94,10 +91,10 @@ public interface ProblemPart extends Changeable
 	public DataSet getData(int index);
 
 	/**
-	 * Returns the index of the DataSet with the given name
+	 * Returns the index of the DataSet with the given name. An exception is
+	 * thrown if a DataSet with the given name cannot be found.
 	 * @param name Dataset name
 	 * @return Dataset with matching name
-	 * @throws DataNotFoundException Unable to find the DataSet requested
 	 */
 	public int getDataIndex(String name) throws DataNotFoundException;
 

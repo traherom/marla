@@ -301,12 +301,11 @@ public class Problem implements ProblemPart
 	/**
 	 * Attempts to save problem to file path given.
 	 * @param fileName Where to attempt to save the problem.
-	 * @throws FileSaveException Thrown if a file save fails in any way
 	 */
-	private void save(String fileName) throws FileException, IOException
+	private void save(String fileName) throws ProblemException, IOException
 	{
 		if(fileName == null)
-			throw new FileException("File name may not be null");
+			throw new ProblemException("File name may not be null");
 
 		// Build
 		Document doc = new Document(this.toXml());
@@ -323,10 +322,8 @@ public class Problem implements ProblemPart
 
 	/**
 	 * Attempts to save problem to file specified by fileName
-	 * @throws FileException Thrown if a file save fails in any way
-	 * @throws IOException Unable to save file for some reason.
 	 */
-	public void save() throws FileException, IOException
+	public void save() throws ProblemException, IOException
 	{
 		save(fileName);
 		isSaved = true;
@@ -338,10 +335,6 @@ public class Problem implements ProblemPart
 	 * was saved.
 	 * @param fileName Path to save file
 	 * @return Restored Problem object
-	 * @throws FileNotFoundException The file requested to be loaded could not be found
-	 * @throws IOException Unable to access and/or read the file to load
-	 * @throws JDOMException The save file is likely corrupt, we were unable to parse it
-	 * @throws CalcException Unable to compute values after the tree has been built
 	 */
 	public static Problem load(String fileName) throws FileNotFoundException, IOException, JDOMException, MarlaException
 	{
@@ -438,7 +431,6 @@ public class Problem implements ProblemPart
 	 * Creates a new problem based on the data in the given XML tree
 	 * @param rootEl JDOM Tree to load problem from
 	 * @return Newly created problem from the given XML
-	 * @throws CalcException Unable to compute values
 	 */
 	public static Problem fromXml(Element rootEl) throws MarlaException
 	{

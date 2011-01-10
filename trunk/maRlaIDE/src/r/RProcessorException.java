@@ -20,6 +20,8 @@ package r;
 import problem.MarlaException;
 
 /**
+ * Thrown when an error occurs within the RProcessor, often in working with R itself
+ * or passing improper commands or parameters.
  * @author Ryan Morehart
  */
 public class RProcessorException extends MarlaException

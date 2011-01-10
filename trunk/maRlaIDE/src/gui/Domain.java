@@ -26,7 +26,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import org.jdom.JDOMException;
 import problem.DataSet;
-import problem.FileException;
+import problem.ProblemException;
 import problem.MarlaException;
 import problem.Operation;
 import problem.OperationInfoRequiredException;
@@ -120,7 +120,7 @@ public class Domain
 			{
 				problem.save();
 			}
-			catch(FileException ex)
+			catch(ProblemException ex)
 			{
 				// TBD. Unable to save
 			}

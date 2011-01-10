@@ -18,26 +18,19 @@
 package problem;
 
 /**
- * Thrown for any error that occurs in the process of saving to disk.
- *
+ * Thrown for any error that occurs within the Problem class, including
+ * saving problems.
  * @author Ryan Morehart
  */
-public class FileException extends Exception
+public class ProblemException extends MarlaException
 {
-
-	/**
-	 * Creates a new instance of <code>FileSaveException</code> without detail message.
-	 */
-	public FileException()
-	{
-	}
-
-	/**
-	 * Constructs an instance of <code>FileSaveException</code> with the specified detail message.
-	 * @param msg the detail message.
-	 */
-	public FileException(String msg)
+	public ProblemException(String msg)
 	{
 		super(msg);
+	}
+
+	public ProblemException(String msg, Throwable cause)
+	{
+		super(msg, cause);
 	}
 }

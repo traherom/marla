@@ -18,6 +18,7 @@
 package problem;
 
 /**
+ * Thrown when an error occurs within an operation, usually during calculations.
  * @author Ryan Morehart
  */
 public class OperationException extends MarlaException

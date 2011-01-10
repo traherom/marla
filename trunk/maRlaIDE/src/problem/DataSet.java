@@ -109,10 +109,6 @@ public final class DataSet extends JLabel implements DataSource, Changeable
 	 * of each column. The dataset name is set from the file name.
 	 * @param filePath Absolute or relative path to file to import.
 	 * @return New DataSet containing the imported values
-	 * @throws FileNotFoundException The file we're supposed to be importing could not be found
-	 * @throws CalcException Unable to compute values after everything was loaded up
-	 * @throws RProcessorException Unable to bring in R processor to import file
-	 * @throws RProcessorParseException R was unable to parse the file in some way
 	 */
 	public static DataSet importFile(String filePath) throws FileNotFoundException, RProcessorException, RProcessorParseException, DuplicateNameException
 	{
@@ -199,67 +195,74 @@ public final class DataSet extends JLabel implements DataSource, Changeable
 	 * @param ds DataSource to export to CSV
 	 * @param filePath CSV file to write to. File will be overwritten if needed.
 	 */
-	public static void exportFile(DataSource ds, String filePath) throws IOException, MarlaException
+	public static void exportFile(DataSource ds, String filePath) throws MarlaException
 	{
-		// Column names
-		BufferedWriter out = new BufferedWriter(new FileWriter(filePath));
-		StringBuilder line = new StringBuilder();
-		for(int i = 0; i < ds.getColumnCount(); i++)
+		try
 		{
-			line.append('"');
-			line.append(ds.getColumn(i).getName());
-			line.append("\", ");
-		}
-
-		// Remove the final comma and terminate
-		line.replace(line.length() - 2, line.length(), "");
-		line.append("\n");
-
-		// Go team, write
-		out.write(line.toString());
-
-		// Values
-		int len = ds.getColumnLength();
-		for(int i = 0; i < len; i++)
-		{
-			line = new StringBuilder();
-
-			for(int j = 0; j < ds.getColumnCount(); j++)
+			// Column names
+			BufferedWriter out = new BufferedWriter(new FileWriter(filePath));
+			StringBuilder line = new StringBuilder();
+			for(int i = 0; i < ds.getColumnCount(); i++)
 			{
-				DataColumn dc = ds.getColumn(j);
-				
-				// Actually more items in this column?
-				if(i < dc.size())
-				{
-					if(dc.isNumerical())
-					{
-						line.append(dc.get(i));
-					}
-					else
-					{
-						line.append('"');
-						line.append(dc.get(i));
-						line.append('"');
-					}
-				}
-
-				line.append(", ");
+				line.append('"');
+				line.append(ds.getColumn(i).getName());
+				line.append("\", ");
 			}
 
 			// Remove the final comma and terminate
 			line.replace(line.length() - 2, line.length(), "");
 			line.append("\n");
 
-			// And write
+			// Go team, write
 			out.write(line.toString());
-		}
 
-		// All done
-		out.close();
+			// Values
+			int len = ds.getColumnLength();
+			for(int i = 0; i < len; i++)
+			{
+				line = new StringBuilder();
+
+				for(int j = 0; j < ds.getColumnCount(); j++)
+				{
+					DataColumn dc = ds.getColumn(j);
+
+					// Actually more items in this column?
+					if(i < dc.size())
+					{
+						if(dc.isNumerical())
+						{
+							line.append(dc.get(i));
+						}
+						else
+						{
+							line.append('"');
+							line.append(dc.get(i));
+							line.append('"');
+						}
+					}
+
+					line.append(", ");
+				}
+
+				// Remove the final comma and terminate
+				line.replace(line.length() - 2, line.length(), "");
+				line.append("\n");
+
+				// And write
+				out.write(line.toString());
+			}
+
+			// All done
+			out.close();
+		}
+		catch(IOException ex)
+		{
+			throw new MarlaException("An error occured working with the file", ex);
+		}
 	}
 
 	@Override
-	public void exportFile(String filePath) throws IOException, MarlaException
+	public void exportFile(String filePath) throws MarlaException
 	{
 		exportFile(this, filePath);
 	}
@@ -295,7 +298,7 @@ public final class DataSet extends JLabel implements DataSource, Changeable
 	 */
 	ProblemPart setParentProblem(ProblemPart newParent)
 	{
-		ProblemPart oldParent = (ProblemPart)parent;
+		ProblemPart oldParent = (ProblemPart) parent;
 		parent = newParent;
 		return oldParent;
 	}
@@ -307,7 +310,7 @@ public final class DataSet extends JLabel implements DataSource, Changeable
 	 */
 	public ProblemPart getParentProblem()
 	{
-		return (ProblemPart)parent;
+		return (ProblemPart) parent;
 	}
 
 	/**
@@ -329,7 +332,7 @@ public final class DataSet extends JLabel implements DataSource, Changeable
 		// Make sure no other datasets have this name
 		if(parent != null && parent instanceof ProblemPart)
 		{
-			ProblemPart prob = (ProblemPart)parent;
+			ProblemPart prob = (ProblemPart) parent;
 
 			for(int i = 0; i < prob.getDataCount(); i++)
 			{
@@ -379,7 +382,7 @@ public final class DataSet extends JLabel implements DataSource, Changeable
 		DataColumn newColumn = new DataColumn(this, colName);
 		columns.add(newColumn);
 		markChanged();
-		
+
 		return newColumn;
 	}
 
@@ -795,7 +798,7 @@ public final class DataSet extends JLabel implements DataSource, Changeable
 
 		for(Object colElObj : dataEl.getChildren("column"))
 		{
-			Element colEl = (Element)colElObj;
+			Element colEl = (Element) colElObj;
 
 			// Create column
 			DataColumn newCol = newData.addColumn(colEl.getAttributeValue("name"));

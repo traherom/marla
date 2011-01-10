@@ -102,9 +102,10 @@ public class OperationXML extends Operation
 	};
 
 	/**
-	 * Saves the passed XML file path and loads it from disk
+	 * Saves the passed XML file path and loads it from disk. An exception may
+	 * be thrown  when the version of the XML file is inappropriate or other parse errors
+	 * occur.
 	 * @param xmlPath Path to the operation XML file
-	 * @throws OperationXMLException Thrown when the version of the XML file is inappropriate
 	 */
 	public static void loadXML(String xmlPath) throws OperationXMLException
 	{
@@ -120,9 +121,9 @@ public class OperationXML extends Operation
 	}
 
 	/**
-	 * Loads the XML
-	 * @throws IncompleteInitializationException XML path not yet set by loadXML()
-	 * @throws OperationXMLException Thrown when the version of the XML file is inappropriate
+	 * Loads the XML. If the XML path has not been set by loadXML then an
+	 * IncompleteInitializationException is thrown. If the XML is contains
+	 * parse errors an exception will be thrown.
 	 */
 	public static void reloadXML() throws IncompleteInitializationException, OperationXMLException
 	{
@@ -155,9 +156,9 @@ public class OperationXML extends Operation
 	 * Returns a list of all the operations in the given XML file and the
 	 * elements in the XML that describe those operations. The Element or
 	 * the name can then be passed off to createOperation() to retrieve an object
-	 * that will perform the calculations.
+	 * that will perform the calculations. An exception is thrown if multiple operations
+	 * with the same name are detected.
 	 * @return ArrayList of the names of all available XML operations
-	 * @throws OperationXMLException Thrown when multiple operations with the same name are detected
 	 */
 	public static List<String> getAvailableOperations() throws OperationXMLException
 	{
@@ -184,11 +185,10 @@ public class OperationXML extends Operation
 	 * Creates a new instance of an operation with the given name. Names come
 	 * from the list in getAvailableOperations(). It then locates the corresponding
 	 * XML Element and passes it off to createOperation(Element). It is more
-	 * efficient to directly just call that.
+	 * efficient to directly just call that. An exception is thrown if the
+	 * operation could not be loaded from the XML.
 	 * @param opName Name of the operation to load from the XML file
 	 * @return New operation that will perform the specified computations
-	 * @throws OperationXMLException Thrown when the given operation name cannot be found
-	 *		in the XML file or when XML has not yet been loaded.
 	 */
 	public static OperationXML createOperation(String opName) throws OperationXMLException, RProcessorException
 	{
@@ -198,10 +198,10 @@ public class OperationXML extends Operation
 	}
 
 	/**
-	 * Locates the named operation in the XML file and returns the associated Element
+	 * Locates the named operation in the XML file and returns the associated Element.
+	 * An exception is thrown if an operation with the given name cannot be found in the XML.
 	 * @param opName XML operation to find in the file, as specified by its "name" attribute.
 	 * @return Element holding the configuration information for the operation
-	 * @throws OperationXMLException Unable to locate the corresponding XML operation
 	 */
 	protected static Element findConfiguration(String opName) throws OperationXMLException
 	{
@@ -244,11 +244,6 @@ public class OperationXML extends Operation
 
 	/**
 	 * Performs the appropriate operations according to whatever the XML says. Fun!
-	 * @throws CalcException Thrown as a result of other functions performing calculations
-	 * @throws RProcessorParseException Thrown if the R processor could not parse the R output
-	 *		as it was instructed to. Likely a programming error.
-	 * @throws RProcessorException Error working with the R process itself (permissions or closed
-	 *		pipes, for example).
 	 */
 	@Override
 	protected void computeColumns(RProcessor proc) throws RProcessorException, RProcessorParseException, OperationXMLException, OperationInfoRequiredException, MarlaException
