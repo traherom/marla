@@ -25,7 +25,6 @@ import java.util.ArrayList;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import org.jdom.JDOMException;
-import problem.CalcException;
 import problem.DataSet;
 import problem.FileException;
 import problem.MarlaException;

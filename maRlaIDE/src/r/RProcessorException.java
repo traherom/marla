@@ -24,10 +24,6 @@ import problem.MarlaException;
  */
 public class RProcessorException extends MarlaException
 {
-	public RProcessorException()
-	{
-	}
-
 	public RProcessorException(String msg)
 	{
 		super(msg);

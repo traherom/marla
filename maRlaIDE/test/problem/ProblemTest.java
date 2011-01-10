@@ -142,11 +142,11 @@ public class ProblemTest
 		Problem prob = new Problem();
 
 		DataSet ds1 = DataSetTest.createDataSet(5, 50, 1);
-		ds1.setName("test 1");
+		ds1.setDataName("test 1");
 		prob.addData(ds1);
 
 		DataSet ds2 = DataSetTest.createDataSet(5, 50, 1);
-		ds1.setName("test 2");
+		ds1.setDataName("test 2");
 		prob.addData(ds2);
 
 		assertEquals(ds1, prob.getData(0));

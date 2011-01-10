@@ -19,15 +19,11 @@ package problem;
 
 /**
  * Used for internal maRla programming errors. MarlaException is used for
- * errors which may be the result of external factors.
+ * errors from which recovery should be possible.
  * @author Ryan Morehart
  */
 public class InternalMarlaException extends RuntimeException
 {
-	public InternalMarlaException()
-	{
-	}
-
 	public InternalMarlaException(String msg)
 	{
 		super(msg);

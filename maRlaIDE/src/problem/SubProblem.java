@@ -236,10 +236,10 @@ public class SubProblem implements ProblemPart
 
 	@Override
 	@Deprecated
-	public DataSource getAnswer(int index) throws IncompleteInitializationException, CalcException
+	public DataSource getAnswer(int index) throws IncompleteInitializationException
 	{
 		if(endSolutionStep == null)
-			throw new IncompleteInitializationException();
+			throw new IncompleteInitializationException("An ending solution step for this subproblem has not been set");
 
 		return endSolutionStep;
 	}

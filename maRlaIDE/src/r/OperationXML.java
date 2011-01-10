@@ -23,12 +23,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
-import problem.CalcException;
 import problem.DataColumn;
 import problem.DataNotFoundException;
 import problem.IncompleteInitializationException;
@@ -67,7 +67,7 @@ public class OperationXML extends Operation
 	/**
 	 * Saves the answer from the GUI to any questions we asked
 	 */
-	private HashMap<String, Object[]> questionAnswers = null;
+	private Map<String, Object[]> questionAnswers = null;
 
 	/**
 	 * Types of queries we support from XML
@@ -104,8 +104,6 @@ public class OperationXML extends Operation
 	/**
 	 * Saves the passed XML file path and loads it from disk
 	 * @param xmlPath Path to the operation XML file
-	 * @throws JDOMException A failure occurred during processing of the XML
-	 * @throws IOException An error occurred reading the file
 	 * @throws OperationXMLException Thrown when the version of the XML file is inappropriate
 	 */
 	public static void loadXML(String xmlPath) throws OperationXMLException
@@ -117,8 +115,7 @@ public class OperationXML extends Operation
 		}
 		catch(IncompleteInitializationException ex)
 		{
-			// This should be... impossible
-			throw new RuntimeException(ex);
+			throw new OperationXMLException("Operation XML path not specified", ex);
 		}
 	}
 
@@ -162,12 +159,12 @@ public class OperationXML extends Operation
 	 * @return ArrayList of the names of all available XML operations
 	 * @throws OperationXMLException Thrown when multiple operations with the same name are detected
 	 */
-	public static ArrayList<String> getAvailableOperations() throws OperationXMLException
+	public static List<String> getAvailableOperations() throws OperationXMLException
 	{
 		if(operationXML == null)
 			throw new OperationXMLException("XML file has not been loaded yet.");
 
-		ArrayList<String> opNames = new ArrayList<String>();
+		List<String> opNames = new ArrayList<String>();
 		for(Object opEl : operationXML.getChildren("operation"))
 		{
 			Element op = (Element) opEl;
@@ -179,6 +176,7 @@ public class OperationXML extends Operation
 
 			opNames.add(name);
 		}
+		
 		return opNames;
 	}
 
@@ -241,7 +239,7 @@ public class OperationXML extends Operation
 	protected void setConfiguration(Element newOpConfig)
 	{
 		opConfig = newOpConfig;
-		setName(opConfig.getAttributeValue("name"));
+		setOperationName(opConfig.getAttributeValue("name"));
 	}
 
 	/**
@@ -253,28 +251,21 @@ public class OperationXML extends Operation
 	 *		pipes, for example).
 	 */
 	@Override
-	protected void computeColumns() throws MarlaException
+	protected void computeColumns(RProcessor proc) throws RProcessorException, RProcessorParseException, OperationXMLException, OperationInfoRequiredException, MarlaException
 	{
 		// Ensure any requirements were met already
 		if(isInfoRequired() && questionAnswers == null)
 			throw new OperationInfoRequiredException("Required info has not been set yet", this);
 
-		try
-		{
-			// Clear out old plot
-			this.plotPath = null;
+		// Clear out old plot
+		this.plotPath = null;
 
-			// Process away
-			Element compEl = opConfig.getChild("computation");
-			processSequence(compEl);
-		}
-		catch(OperationXMLException ex)
-		{
-			throw new CalcException("An error exists in the XML for this operation", ex);
-		}
+		// Process away
+		Element compEl = opConfig.getChild("computation");
+		processSequence(proc, compEl);
 	}
 
-	private void processSequence(Element compEl) throws RProcessorException, RProcessorParseException, CalcException, OperationXMLException, MarlaException
+	private void processSequence(RProcessor proc, Element compEl) throws RProcessorException, RProcessorParseException, OperationXMLException, MarlaException
 	{
 		// Walk through each command/control structure sequentially
 		for(Object elObj : compEl.getChildren())
@@ -284,37 +275,37 @@ public class OperationXML extends Operation
 			switch(type)
 			{
 				case CMD:
-					processCmd(el);
+					processCmd(proc, el);
 					break;
 
 				case SET:
-					processSet(el);
+					processSet(proc, el);
 					break;
 
 				case SAVE:
-					processSave(el);
+					processSave(proc, el);
 					break;
 
 				case LOOP:
-					processLoop(el);
+					processLoop(proc, el);
 					break;
 
 				case PLOT:
-					processPlot(el);
+					processPlot(proc, el);
 					break;
 
 				default:
-					throw new CalcException("Unknow computation command '" + type + "'");
+					throw new OperationXMLException("Unknown computation command '" + type + "'");
 			}
 		}
 	}
 
-	private void processCmd(Element cmdEl) throws RProcessorException
+	private void processCmd(RProcessor proc, Element cmdEl) throws RProcessorException
 	{
 		proc.execute(cmdEl.getTextTrim());
 	}
 
-	private void processSet(Element cmdEl) throws RProcessorException, CalcException, OperationXMLException, MarlaException
+	private void processSet(RProcessor proc, Element cmdEl) throws OperationXMLException, OperationInfoRequiredException, RProcessorException, MarlaException
 	{
 		Object[] answer = null;
 
@@ -346,7 +337,7 @@ public class OperationXML extends Operation
 			case COLUMN:
 				try
 				{
-					proc.setVariable(rVar, parent.getColumn((String) answer[1]));
+					proc.setVariable(rVar, getParentData().getColumn((String) answer[1]));
 				}
 				catch(DataNotFoundException ex)
 				{
@@ -355,11 +346,11 @@ public class OperationXML extends Operation
 				break;
 
 			default:
-				throw new CalcException("Unable to set '" + varType + "' yet.");
+				throw new OperationXMLException("Unable to set '" + varType + "' yet.");
 		}
 	}
 
-	private void processSave(Element cmdEl) throws MarlaException
+	private void processSave(RProcessor proc, Element cmdEl) throws RProcessorException, RProcessorParseException, OperationXMLException, MarlaException
 	{
 		// Get the command we will execute for the value
 		String cmd = cmdEl.getTextTrim();
@@ -384,7 +375,7 @@ public class OperationXML extends Operation
 		catch(DataNotFoundException ex)
 		{
 			// The column doesn't exist yet, create it
-			col = data.addColumn(colName);
+			col = addColumn(colName);
 		}
 
 		SaveType type = SaveType.valueOf(cmdEl.getAttributeValue("type", "double").toUpperCase());
@@ -412,11 +403,11 @@ public class OperationXML extends Operation
 				break;
 
 			default:
-				throw new CalcException("Commands of type '" + type + "' are not yet handled.");
+				throw new OperationXMLException("Save type of '" + type + "' is unrecognized.");
 		}
 	}
 
-	private void processLoop(Element loopEl) throws RProcessorException, RProcessorParseException, CalcException, OperationXMLException, MarlaException
+	private void processLoop(RProcessor proc, Element loopEl) throws RProcessorException, RProcessorParseException, OperationXMLException, MarlaException
 	{
 		// Make up the loop we're going to work over and pass iteration back to processSequence()
 		String nameVar = loopEl.getAttributeValue("nameVar");
@@ -427,18 +418,18 @@ public class OperationXML extends Operation
 		switch(type)
 		{
 			case PARENT: // Loop over every column in parent
-				for(int i = 0; i < parent.getColumnCount(); i++)
+				for(int i = 0; i < getParentData().getColumnCount(); i++)
 				{
 					// Assign the loop key and value
 					if(nameVar != null)
-						proc.setVariable(nameVar, parent.getColumn(i).getName());
+						proc.setVariable(nameVar, getParentData().getColumn(i).getName());
 					if(indexVar != null)
 						proc.setVariable(indexVar, new Double(i + 1));
 					if(valueVar != null)
-						proc.setVariable(valueVar, parent.getColumn(i));
+						proc.setVariable(valueVar, getParentData().getColumn(i));
 
 					// Now do what the XML says
-					processSequence(loopEl);
+					processSequence(proc, loopEl);
 				}
 				break;
 
@@ -453,7 +444,7 @@ public class OperationXML extends Operation
 						proc.setVariable(valueVar, doubleVals.get(i));
 
 					// Now do what the XML says
-					processSequence(loopEl);
+					processSequence(proc, loopEl);
 				}
 				break;
 
@@ -468,16 +459,16 @@ public class OperationXML extends Operation
 						proc.setVariable(valueVar, stringVals.get(i));
 
 					// Now do what the XML says
-					processSequence(loopEl);
+					processSequence(proc, loopEl);
 				}
 				break;
 
 			default:
-				throw new CalcException("Loop type '" + type + "' not handled yet.");
+				throw new OperationXMLException("Loop type '" + type + "' not recognized.");
 		}
 	}
 
-	private void processPlot(Element cmdEl) throws RProcessorException, RProcessorParseException, CalcException, OperationXMLException, MarlaException
+	private void processPlot(RProcessor proc, Element cmdEl) throws RProcessorException, RProcessorParseException, OperationXMLException, MarlaException
 	{
 		// An operation may only have one plot in it
 		if(plotPath != null)
@@ -485,7 +476,7 @@ public class OperationXML extends Operation
 
 		// Plot away
 		plotPath = proc.startGraphicOutput();
-		processSequence(cmdEl);
+		processSequence(proc, cmdEl);
 		proc.stopGraphicOutput();
 	}
 
@@ -526,7 +517,7 @@ public class OperationXML extends Operation
 					// Build a list of the column names
 					questions.add(new Object[]
 							{
-								queryEl.getAttributeValue("prompt"), PromptType.COMBO, parent.getColumnNames()
+								queryEl.getAttributeValue("prompt"), PromptType.COMBO, getParentData().getColumnNames()
 							});
 					break;
 
@@ -542,10 +533,9 @@ public class OperationXML extends Operation
 	 * Saves the returned values into a HashMap with keys from the name given in the query
 	 * XML. First element in the HashMap stores the type that the value actually represents
 	 * @param values ArrayList of Objects that answer the questions.
-	 * @throws OperationException Info was attempted to be set when not requested
 	 */
 	@Override
-	public void setRequiredInfo(ArrayList<Object> values) throws MarlaException
+	public void setRequiredInfo(ArrayList<Object> values) throws OperationException, MarlaException
 	{
 		// It would be an error to try to set when none is asked for
 		if(!isInfoRequired())
@@ -616,8 +606,7 @@ public class OperationXML extends Operation
 	@Override
 	public int hashCode()
 	{
-		int hash = 5;
-		hash = 31 * hash + (this.solutionOps != null ? this.solutionOps.hashCode() : 0);
+		int hash = super.hashCode();
 		hash = 31 * hash + (this.opConfig != null ? this.opConfig.hashCode() : 0);
 		hash = 31 * hash + (this.questionAnswers != null ? this.questionAnswers.hashCode() : 0);
 		return hash;

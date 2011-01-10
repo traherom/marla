@@ -126,7 +126,7 @@ public class DataSetTest
 		// Different name for the dataset
 		DataSet testDS1 = createDataSet(5, 50, 1);
 		DataSet testDS2 = createDataSet(5, 50, 1);
-		testDS2.setName("SOMETHING DIFFERENT");
+		testDS2.setDataName("SOMETHING DIFFERENT");
 		assertFalse(testDS1.equals(testDS2));
 	}
 
@@ -147,7 +147,7 @@ public class DataSetTest
 		// which clearly wouldn't be right)
 		DataSet importedDS = DataSet.importFile("test.csv");
 		assertEquals("test.csv", importedDS.getName());
-		importedDS.setName(testDS1.getName());
+		importedDS.setDataName(testDS1.getName());
 		
 		assertEquals(testDS1, importedDS);
 	}

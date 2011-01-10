@@ -85,14 +85,14 @@ public class SubProblemTest
 	}
 
 	@Test
-	public void testEqualsDifferentStart()
+	public void testEqualsDifferentStart() throws Exception
 	{
 		testSubIdentical1.setSolutionStart(new DataSet("blah"));
 		assertFalse(testSub1.equals(testSubIdentical1));
 	}
 
 	@Test
-	public void testEqualsDifferentEnd()
+	public void testEqualsDifferentEnd() throws Exception
 	{
 		testSubIdentical1.setSolutionEnd(new DataSet("blah"));
 		assertFalse(testSub1.equals(testSubIdentical1));

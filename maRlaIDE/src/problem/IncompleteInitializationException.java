@@ -26,10 +26,6 @@ package problem;
  */
 public class IncompleteInitializationException extends MarlaException
 {
-	public IncompleteInitializationException()
-	{
-	}
-
 	public IncompleteInitializationException(String msg)
 	{
 		super(msg);

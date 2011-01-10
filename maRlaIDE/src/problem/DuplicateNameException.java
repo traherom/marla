@@ -21,12 +21,8 @@ package problem;
  * @author Ryan Morehart
  * // TODO make this not internal
  */
-public class DuplicateNameException extends InternalMarlaException
+public class DuplicateNameException extends MarlaException
 {
-	public DuplicateNameException()
-	{
-	}
-
 	public DuplicateNameException(String msg)
 	{
 		super(msg);

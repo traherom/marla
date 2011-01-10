@@ -22,6 +22,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JLabel;
 import org.jdom.Element;
 import r.OperationXML;
@@ -42,53 +46,49 @@ public abstract class Operation extends JLabel implements DataSource, Changeable
 	/**
 	 * Operation name.
 	 */
-	protected String name;
+	private String name;
 	/**
 	 * Actual values from computation
 	 */
-	protected final DataSet data;
+	private final DataSet data;
 	/**
 	 * Commands to perform on this dataset
 	 */
-	protected final ArrayList<Operation> solutionOps = new ArrayList<Operation>();
+	private final List<Operation> solutionOps = new ArrayList<Operation>();
 	/**
 	 * Parent data that this operation works on
 	 */
-	protected DataSource parent;
+	private DataSource parent;
 	/**
 	 * Saves the R operations used the last time refreshCache() was called. This
 	 * string can then be dumped out by toRString() to give an idea of how to perform
 	 * the calculations
 	 */
-	protected String operationRecord = null;
-	/**
-	 * Pointer to the current RProcessor instance
-	 */
-	protected RProcessor proc = null;
+	private String operationRecord = null;
 	/**
 	 * True if the operation needs to recompute its values before returning results
 	 */
-	protected boolean isCacheDirty = true;
+	private boolean isCacheDirty = true;
 	/**
 	 * True if the operation is recalculating its results, used to allow it to
 	 * work with its own columns and not cause infinite recursion. Not certain
 	 * about the proper handling of threads here. TODO: ensure thread safety.
 	 */
-	protected boolean inRecompute = false;
+	private boolean inRecompute = false;
 	/**
 	 * List of Java Operation derivative classes that may be created by
 	 * the GUI front end.
 	 */
-	protected static HashMap<String, String> javaOps = initJavaOperationList();
+	private static Map<String, String> javaOps = initJavaOperationList();
 
 	/**
 	 * Initializes the list of available Java-based (hard coded) operations.
 	 * This list should contain key value pairs with the key being a friendly, user
 	 * readable name and the value being the class string, as would be passed to Class.forName().
 	 * For example, a mean operation in the the r package would be "Mean" => "r.OperationMean"
-	 * @return New HashMap to save into javaOps
+	 * @return New Map to save into javaOps
 	 */
-	private static HashMap<String, String> initJavaOperationList()
+	private static Map<String, String> initJavaOperationList()
 	{
 		HashMap<String, String> ops = new HashMap<String, String>();
 		return ops;
@@ -103,9 +103,9 @@ public abstract class Operation extends JLabel implements DataSource, Changeable
 	 *		be used. Otherwise an OperationException is thrown.
 	 * @throws OperationException Thrown when multiple operations with the same name are detected
 	 */
-	public static ArrayList<String> getAvailableOperations() throws OperationException
+	public static List<String> getAvailableOperations() throws OperationException
 	{
-		ArrayList<String> ops = new ArrayList<String>();
+		List<String> ops = new ArrayList<String>();
 
 		// Java
 		ops.addAll(javaOps.keySet());
@@ -173,17 +173,23 @@ public abstract class Operation extends JLabel implements DataSource, Changeable
 	protected Operation(String newName) throws RProcessorException
 	{
 		super(newName);
-		setName(newName);
-		data = new DataSet(this, "internal");
-		proc = RProcessor.getInstance();
+		setOperationName(newName);
+
+		try
+		{
+			data = new DataSet(this, "internal");
+		}
+		catch(DuplicateNameException ex)
+		{
+			throw new InternalMarlaException("DataSet reported it had a duplicate name when it shouldn't. Report to developers.", ex);
+		}
 	}
 
 	/**
 	 * Sets the name of the operation, only used internally
 	 * @param newName New name for the operation
 	 */
-	@Override
-	public final void setName(String newName)
+	protected final void setOperationName(String newName)
 	{
 		// Set the label
 		super.setText(newName);
@@ -200,7 +206,7 @@ public abstract class Operation extends JLabel implements DataSource, Changeable
 	 * @return Constructed and initialized operation
 	 * @throws OperationException Unable to create operation. Inner exception has more information
 	 */
-	public final static Operation fromXml(Element opEl) throws OperationException
+	public static Operation fromXml(Element opEl) throws OperationException
 	{
 		String opName = opEl.getAttributeValue("type");
 
@@ -238,6 +244,7 @@ public abstract class Operation extends JLabel implements DataSource, Changeable
 	 * May be overridden by derivative classes in order to reload extra
 	 * information saved for their type of Operation
 	 * @param opEl JDOM Element with all data for Operation
+	 * @throws OperationException Thrown when a problem is encountered parsing the XML
 	 */
 	protected void fromXmlExtra(Element opEl) throws OperationException
 	{
@@ -298,6 +305,7 @@ public abstract class Operation extends JLabel implements DataSource, Changeable
 	@Override
 	public final DataColumn getColumn(String colName) throws MarlaException
 	{
+		checkCache();
 		return data.getColumn(colName);
 	}
 
@@ -329,6 +337,16 @@ public abstract class Operation extends JLabel implements DataSource, Changeable
 	}
 
 	/**
+	 * Adds a new column to the result of the Operation
+	 * @param colName Name of the new column to add
+	 * @return Newly created DataColumn
+	 */
+	protected final DataColumn addColumn(String colName) throws DuplicateNameException
+	{
+		return data.addColumn(colName);
+	}
+
+	/**
 	 * Duplicates an operation. Derivative classes should override this
 	 * if additional information needs to be copied.
 	 * @return Duplicated Operation
@@ -356,7 +374,6 @@ public abstract class Operation extends JLabel implements DataSource, Changeable
 
 	/**
 	 * Refreshes the cache if needed
-	 * @throws CalcException Unable to recompute the values for this operation.
 	 */
 	public final void checkCache() throws MarlaException
 	{
@@ -365,38 +382,37 @@ public abstract class Operation extends JLabel implements DataSource, Changeable
 	}
 
 	/**
+	 * Retrieves the computation status of the Operation.
+	 * @return true if the Operation needs to recompute values before it can
+	 *		return anything, false otherwise
+	 */
+	public final boolean isDirty()
+	{
+		return isCacheDirty;
+	}
+
+	/**
 	 * Recalculates cached columns and informs children to
 	 * refresh themselves as well.
-	 * @throws CalcException Unable to recompute the values for this Operation
-	 * @throws OperationInfoRequiredException  Thrown when the operation needs more information to
-	 *		complete its calculations. The GUI should catch this and display a dialog for the user
-	 *		based on getRequiredInfo().
 	 */
-	public final synchronized void refreshCache() throws MarlaException
+	public final synchronized void refreshCache() throws OperationException, RProcessorException, MarlaException
 	{
 		if(parent == null)
-			throw new CalcException("No parent for operation to get data from");
+			throw new OperationException("No parent for operation to get data from");
 
 		try
 		{
 			// Compute new columns and save the way we do so (R commands) for use by toString()
+			RProcessor proc = RProcessor.getInstance();
 			proc.setRecorder(RProcessor.RecordMode.CMDS_ONLY);
 			data.clearColumns();
 			inRecompute = true;
-			computeColumns();
+			computeColumns(proc);
 			operationRecord = proc.fetchInteraction();
 			proc.setRecorder(RProcessor.RecordMode.DISABLED);
 
 			// We're clean!
 			isCacheDirty = false;
-		}
-		catch(RProcessorParseException ex)
-		{
-			throw new CalcException("An error occured while refreshing the calculation cache", ex);
-		}
-		catch(RProcessorException ex)
-		{
-			throw new CalcException("An error occured while refreshing the calculation cache", ex);
 		}
 		finally
 		{
@@ -414,16 +430,9 @@ public abstract class Operation extends JLabel implements DataSource, Changeable
 	 * Caching is performed by Operation. Concrete Operation derivatives
 	 * should not implement their own caching unless a specific need
 	 * arises.
-	 * @throws CalcException Thrown as a result of other functions performing calculations
-	 * @throws RProcessorParseException Thrown if the R processor could not parse the R output
-	 *		as it was instructed to. Likely a programming error.
-	 * @throws RProcessorException Error working with the R process itself (permissions or closed
-	 *		pipes, for example).
-	 * @throws OperationInfoRequiredException Thrown when the operation needs more information to
-	 *		complete its calculations. The GUI should catch this and display a dialog for the user
-	 *		based on getRequiredInfo().
+	 * @param proc RProcessor to use for computations
 	 */
-	protected abstract void computeColumns() throws MarlaException;
+	protected abstract void computeColumns(RProcessor proc) throws MarlaException;
 
 	/**
 	 * Returns true if the Operation has questions/prompts for the user.
@@ -519,6 +528,7 @@ public abstract class Operation extends JLabel implements DataSource, Changeable
 	public int hashCode()
 	{
 		int hash = 5;
+		hash = 31 * hash + (this.name != null ? this.name.hashCode() : 0);
 		hash = 31 * hash + (this.solutionOps != null ? this.solutionOps.hashCode() : 0);
 		return hash;
 	}
@@ -676,7 +686,8 @@ public abstract class Operation extends JLabel implements DataSource, Changeable
 	}
 
 	@Override
-	public final Operation addOperationToEnd(Operation op) throws CalcException
+	@Deprecated
+	public final Operation addOperationToEnd(Operation op)
 	{
 		if(solutionOps.isEmpty())
 		{

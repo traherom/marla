@@ -22,10 +22,6 @@ package problem;
  */
 public class DataNotFoundException extends MarlaException
 {
-	public DataNotFoundException()
-	{
-	}
-
 	public DataNotFoundException(String msg)
 	{
 		super(msg);

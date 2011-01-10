@@ -22,10 +22,6 @@ package problem;
  */
 public class OperationException extends MarlaException
 {
-	public OperationException()
-	{
-	}
-
 	public OperationException(String msg)
 	{
 		super(msg);

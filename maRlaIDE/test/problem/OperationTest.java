@@ -17,6 +17,7 @@
  */
 package problem;
 
+import java.util.List;
 import gui.Domain.PromptType;
 import org.jdom.Element;
 import java.util.ArrayList;
@@ -44,7 +45,7 @@ public class OperationTest
 	{
 		// Get the available operations
 		OperationXML.loadXML("ops.xml");
-		ArrayList<String> available = Operation.getAvailableOperations();
+		List<String> available = Operation.getAvailableOperations();
 
 		// Massage into the right format and remove "NOP" (we don't want to test it here)
 		Collection<Object[]> objectArray = new ArrayList<Object[]>();
@@ -157,9 +158,7 @@ public class OperationTest
 	public void testCheckCache() throws Exception
 	{
 		// Cache should be dirty and nothing computed
-		assertTrue(op1.isCacheDirty);
-		assertFalse(op1.inRecompute);
-		assertEquals(0, op1.data.getColumnCount());
+		assertTrue(op1.isDirty());
 
 		// Tell it to check
 		if(op1.isInfoRequired())
@@ -167,9 +166,8 @@ public class OperationTest
 		op1.checkCache();
 
 		// Should be full now
-		assertFalse(op1.isCacheDirty);
-		assertFalse(op1.inRecompute);
-		assertFalse(op1.data.getColumnCount() == 0);
+		assertFalse(op1.getColumnCount() == 0);
+		assertFalse(op1.isDirty());
 	}
 
 	@Test
@@ -188,6 +186,8 @@ public class OperationTest
 			}
 
 			fillRequiredInfo(op1);
+
+			// Now it should compute fine
 			op1.checkCache();
 		}
 		else
