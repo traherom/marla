@@ -49,7 +49,7 @@ public interface ProblemPart extends Changeable
 	 * @deprecated Instead call toRString() on the appropriate Operation/DataSet
 	 */
 	@Deprecated
-	public DataSource getAnswer(int index) throws IncompleteInitializationException, CalcException;
+	public DataSource getAnswer(int index) throws IncompleteInitializationException;
 
 	/**
 	 * Trues true if the problem has unsaved changes

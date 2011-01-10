@@ -22,10 +22,6 @@ package problem;
  */
 public class MarlaException extends Exception
 {
-	public MarlaException()
-	{
-	}
-
 	public MarlaException(String msg)
 	{
 		super(msg);

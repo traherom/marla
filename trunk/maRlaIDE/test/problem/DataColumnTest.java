@@ -28,8 +28,19 @@ public class DataColumnTest
 {
 	public static DataColumn createDataColumn(int items)
 	{
-		DataSet ds = new DataSet("temp");
-		DataColumn dc = ds.addColumn("Column");
+		DataColumn dc = null;
+		try
+		{
+			DataSet ds = new DataSet("temp");
+			dc = ds.addColumn("Column");
+			assertEquals(1, ds.getColumnCount());
+		}
+		catch(DuplicateNameException ex)
+		{
+			// Sholudn't happen
+			throw new InternalMarlaException("Duplicate name in createDataColumn(). Shouldn't happen", ex);
+		}
+
 		for(int i = 0; i < items; i++)
 		{
 			dc.add(i);

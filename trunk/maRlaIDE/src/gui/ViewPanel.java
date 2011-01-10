@@ -38,8 +38,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.List;
 import javax.swing.BorderFactory;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
@@ -64,21 +63,17 @@ import javax.swing.table.DefaultTableColumnModel;
 import javax.swing.table.TableColumn;
 import org.jdesktop.layout.GroupLayout;
 import org.jdesktop.layout.LayoutStyle;
-import org.jdom.JDOMException;
-import problem.CalcException;
 import problem.DataColumn;
 import problem.DataNotFoundException;
 import problem.DataSet;
 import problem.DataSource;
 import problem.DuplicateNameException;
 import problem.FileException;
-import problem.IncompleteInitializationException;
 import problem.MarlaException;
 import problem.Operation;
 import problem.OperationException;
 import problem.Problem;
 import r.OperationXML;
-import r.OperationXMLException;
 import r.RProcessorException;
 import r.RProcessorParseException;
 import resource.LoadSaveThread;
@@ -131,7 +126,7 @@ public class ViewPanel extends JPanel
 	/** Set true once the New Problem Wizard is told to overwrite existing files.*/
 	private boolean newProblemOverwrite = false;
 	/** The set of operations contained in the XML file.*/
-	private ArrayList<String> operations;
+	private List<String> operations;
 	/** True if the current problem is being edited in the wizard, false if creating a new problem in the wizard.*/
 	protected boolean editing = false;
 	/** The operation being dragged.*/
@@ -1513,12 +1508,13 @@ public class ViewPanel extends JPanel
 								table.setModel(newModel);
 								table.updateUI();
 								table.getTableHeader().resizeAndRepaint ();
-							} catch (CalcException ex) {
-								JOptionPane.showMessageDialog(viewPanel, "The requested R package either cannot be located or is not installed.", "Missing Package", JOptionPane.WARNING_MESSAGE);
 							} catch (RProcessorParseException ex) {
 								JOptionPane.showMessageDialog(viewPanel, "Loading of file failed, it may be invalid", "Load failed", JOptionPane.WARNING_MESSAGE);
 							} catch (RProcessorException ex) {
 								JOptionPane.showMessageDialog(viewPanel, "Loading of file failed, R could not be loaded", "Load failed", JOptionPane.WARNING_MESSAGE);
+							} catch (DuplicateNameException ex) {
+								JOptionPane.showMessageDialog(viewPanel, "The file contains duplicate column names and could not be loaded", "Load failed", JOptionPane.WARNING_MESSAGE);
+
 							}
 						}
 					} catch(FileNotFoundException e) { }
@@ -1585,15 +1581,9 @@ public class ViewPanel extends JPanel
 		{
 			newOperation = Operation.createOperation(operation.getName());
 			newOperation.setBounds (x, y, newOperation.getPreferredSize().width, newOperation.getPreferredSize().height);
-			try
-			{
-				// OLD location for info check
-				domain.currentDataSet.addOperationToEnd (newOperation);
-			}
-			catch (CalcException ex)
-			{
-				JOptionPane.showMessageDialog(this, "The requested R package either cannot be located or is not installed.", "Missing Package", JOptionPane.WARNING_MESSAGE);
-			}
+			
+			domain.currentDataSet.addOperationToEnd (newOperation);
+
 			workspacePanel.add (newOperation);
 			workspacePanel.updateUI();
 		}
@@ -1758,64 +1748,85 @@ public class ViewPanel extends JPanel
 
 		for (int i = 0; i < dataSetTabbedPane.getTabCount(); ++i)
 		{
-			DataSet dataSet = new DataSet (dataSetTabbedPane.getTitleAt (i));
-			// The data set should already exist in the workspace
-			if (i < domain.problem.getDataCount())
+			DataSet dataSet = null;
+			ExtendedTableModel tableModel = null;
+			
+			try
 			{
-				dataSet = domain.problem.getData (i);
-				if (!dataSetTabbedPane.getTitleAt(i).equals (dataSet.getName ()))
+				dataSet = new DataSet (dataSetTabbedPane.getTitleAt (i));
+				// The data set should already exist in the workspace
+				if (i < domain.problem.getDataCount())
 				{
-					dataSet.setName(dataSetTabbedPane.getTitleAt (i));
-				}
-			}
-			// This is a new data set, so add it to the workspace and to the problem
-			else
-			{
-				domain.problem.addData (dataSet);
-				int x = 200;
-				int y = 20;
-				if (i > 0)
-				{
-					x = domain.problem.getData (i - 1).getX () + 150;
-				}
-				dataSet.setBounds (x, y, dataSet.getPreferredSize().width, dataSet.getPreferredSize().height);
-			}
-			// Add columns from the New Problem Wizard
-			ExtendedTableModel tableModel = (ExtendedTableModel) ((JTable) ((JViewport) ((JScrollPane) ((JPanel) dataSetTabbedPane.getComponent (i)).getComponent (0)).getComponent (0)).getComponent (0)).getModel ();
-			for (int j = 0; j < tableModel.getColumnCount(); ++j)
-			{
-				if (j < dataSet.getColumnCount ())
-				{
-					DataColumn column = dataSet.getColumn (j);
-					if (!dataSet.getColumn (j).getName ().equals (tableModel.getColumnName (j)))
+					dataSet = domain.problem.getData (i);
+					if (!dataSetTabbedPane.getTitleAt(i).equals (dataSet.getName ()))
 					{
-						try
-						{
-							column.setName(tableModel.getColumnName(j));
-						}
-						catch(MarlaException ex)
-						{
-						}
-					}
-					for (int k = 0; k < tableModel.getRowCount(); ++k)
-					{
-						column.set (k, Double.parseDouble (tableModel.getValueAt (k, j).toString ()));
-					}
-					for (int k = tableModel.getRowCount (); k < dataSet.getColumnLength (); ++k)
-					{
-						column.remove (k);
+						dataSet.setDataName(dataSetTabbedPane.getTitleAt (i));
 					}
 				}
+				// This is a new data set, so add it to the workspace and to the problem
 				else
 				{
-					DataColumn column = dataSet.addColumn (tableModel.getColumnName(j));
-
-					// Add all rows within this column to the data set
-					for (int k = 0; k < tableModel.getRowCount (); ++k)
+					domain.problem.addData (dataSet);
+					int x = 200;
+					int y = 20;
+					if (i > 0)
 					{
-						column.add (Double.parseDouble (tableModel.getValueAt (k, j).toString ()));
+						x = domain.problem.getData (i - 1).getX () + 150;
+					}
+					dataSet.setBounds (x, y, dataSet.getPreferredSize().width, dataSet.getPreferredSize().height);
+				}
+				// Add columns from the New Problem Wizard
+				tableModel = (ExtendedTableModel) ((JTable) ((JViewport) ((JScrollPane) ((JPanel) dataSetTabbedPane.getComponent (i)).getComponent (0)).getComponent (0)).getComponent (0)).getModel ();
+			}
+			catch(DuplicateNameException ex)
+			{
+				JOptionPane.showMessageDialog(this, "Two datasets may not have the same name", "Duplicate Name", JOptionPane.WARNING_MESSAGE);
+				
+				// Try next set, can't finish saving this one to the problem
+				continue;
+			}
+
+			try
+			{
+				for (int j = 0; j < tableModel.getColumnCount(); ++j)
+				{
+					if (j < dataSet.getColumnCount ())
+					{
+						DataColumn column = dataSet.getColumn (j);
+						if (!dataSet.getColumn (j).getName ().equals (tableModel.getColumnName (j)))
+						{
+							try
+							{
+								column.setName(tableModel.getColumnName(j));
+							}
+							catch(MarlaException ex)
+							{
+							}
+						}
+						for (int k = 0; k < tableModel.getRowCount(); ++k)
+						{
+							column.set (k, Double.parseDouble (tableModel.getValueAt (k, j).toString ()));
+						}
+						for (int k = tableModel.getRowCount (); k < dataSet.getColumnLength (); ++k)
+						{
+							column.remove (k);
+						}
+					}
+					else
+					{
+						DataColumn column = dataSet.addColumn (tableModel.getColumnName(j));
+
+						// Add all rows within this column to the data set
+						for (int k = 0; k < tableModel.getRowCount (); ++k)
+						{
+							column.add (Double.parseDouble (tableModel.getValueAt (k, j).toString ()));
+						}
 					}
 				}
+			}
+			catch(DuplicateNameException ex)
+			{
+				JOptionPane.showMessageDialog(this, "Two columns may not have the same name", "Duplicate Name", JOptionPane.WARNING_MESSAGE);
 			}
 		}
 		

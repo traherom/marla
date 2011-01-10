@@ -288,9 +288,8 @@ public class Problem implements ProblemPart
 
 	/**
 	 * Forces all DataSets to recompute their values the next time they are accessed
-	 * @throws CalcException Unable to compute all values
 	 */
-	public void markDirty() throws CalcException
+	public void markDirty()
 	{
 		// Tell all children to recompute themselves when they need to
 		for(DataSet ds : datasets)
@@ -344,7 +343,7 @@ public class Problem implements ProblemPart
 	 * @throws JDOMException The save file is likely corrupt, we were unable to parse it
 	 * @throws CalcException Unable to compute values after the tree has been built
 	 */
-	public static Problem load(String fileName) throws FileNotFoundException, IOException, JDOMException, CalcException, MarlaException
+	public static Problem load(String fileName) throws FileNotFoundException, IOException, JDOMException, MarlaException
 	{
 		// Load file into JDOM
 		SAXBuilder parser = new SAXBuilder();
@@ -398,7 +397,7 @@ public class Problem implements ProblemPart
 
 	@Override
 	@Deprecated
-	public DataSource getAnswer(int index) throws IncompleteInitializationException, CalcException
+	public DataSource getAnswer(int index) throws IncompleteInitializationException
 	{
 		if(datasets.isEmpty())
 			throw new IncompleteInitializationException("This problem has no datasets yet, unable to solve");
@@ -441,7 +440,7 @@ public class Problem implements ProblemPart
 	 * @return Newly created problem from the given XML
 	 * @throws CalcException Unable to compute values
 	 */
-	public static Problem fromXml(Element rootEl) throws CalcException, MarlaException
+	public static Problem fromXml(Element rootEl) throws MarlaException
 	{
 		Problem newProb = new Problem();
 

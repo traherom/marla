@@ -58,9 +58,8 @@ public class DataColumn implements List<Object>
 	 * Creates a new DataColumn with the given name that does not
 	 * belong to a certain DataSource
 	 * @param name Human-friendly name for column
-	 * @throws DuplicateNameException There is already a column in this DataSource with the same name
 	 */
-	public DataColumn(DataSource parent, String name) throws DuplicateNameException
+	public DataColumn(DataSource parent, String name)
 	{
 		this.parent = parent;
 		this.name = name;
@@ -79,18 +78,6 @@ public class DataColumn implements List<Object>
 		{
 			values.add(castToMode(v));
 		}
-	}
-
-	/**
-	 * Private function help create a copy of just a part of the column.
-	 * Points to the same parent but may not truly belong to it.
-	 * @param col Column to copy values from
-	 * @param fromIndex Beginning index to start copying at
-	 * @param toIndex Last index to include in new column
-	 */
-	private DataColumn(DataColumn col, int fromIndex, int toIndex)
-	{
-		throw new UnsupportedOperationException("Not yet implemented");
 	}
 
 	/**
@@ -283,7 +270,7 @@ public class DataColumn implements List<Object>
 	public boolean addAll(int index, Collection<? extends Object> c)
 	{
 		// Convert each value as it comes in
-		ArrayList<Object> converted = new ArrayList<Object>();
+		List<Object> converted = new ArrayList<Object>();
 		for(Object val : c)
 		{
 			converted.add(castToMode(val));
@@ -451,7 +438,7 @@ public class DataColumn implements List<Object>
 	@Override
 	public DataColumn subList(int fromIndex, int toIndex)
 	{
-		throw new UnsupportedOperationException("Not supported yet.");
+		throw new UnsupportedOperationException("DataColumn slicing is not supported.");
 	}
 
 	/**

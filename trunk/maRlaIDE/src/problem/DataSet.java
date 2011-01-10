@@ -64,10 +64,9 @@ public final class DataSet extends JLabel implements DataSource, Changeable
 
 	/**
 	 * Creates a blank dataset with the given name.
-	 *
 	 * @param name New dataset name
 	 */
-	public DataSet(String name)
+	public DataSet(String name) throws DuplicateNameException
 	{
 		this(null, name);
 	}
@@ -77,10 +76,10 @@ public final class DataSet extends JLabel implements DataSource, Changeable
 	 * @param parent The problem set this dataset is used by
 	 * @param name New dataset name
 	 */
-	public DataSet(Changeable parent, String name)
+	public DataSet(Changeable parent, String name) throws DuplicateNameException
 	{
 		this.parent = parent;
-		setName(name);
+		setDataName(name);
 	}
 
 	/**
@@ -115,7 +114,7 @@ public final class DataSet extends JLabel implements DataSource, Changeable
 	 * @throws RProcessorException Unable to bring in R processor to import file
 	 * @throws RProcessorParseException R was unable to parse the file in some way
 	 */
-	public static DataSet importFile(String filePath) throws FileNotFoundException, CalcException, RProcessorException, RProcessorParseException
+	public static DataSet importFile(String filePath) throws FileNotFoundException, RProcessorException, RProcessorParseException, DuplicateNameException
 	{
 		// Open file ourselves to determine the type and settings we'll be handing R
 		File file = new File(filePath);
@@ -190,7 +189,7 @@ public final class DataSet extends JLabel implements DataSource, Changeable
 
 		// Read it back in
 		DataSet ds = DataSet.fromRFrame(varName);
-		ds.setName(file.getName());
+		ds.setDataName(file.getName());
 
 		return ds;
 	}
@@ -271,7 +270,7 @@ public final class DataSet extends JLabel implements DataSource, Changeable
 	 * @param varName Variable name within the global RProcessor instance to work with
 	 * @return New DataSet containing the loaded data
 	 */
-	public static DataSet fromRFrame(String varName) throws RProcessorException, RProcessorParseException, DuplicateNameException, CalcException
+	public static DataSet fromRFrame(String varName) throws RProcessorException, RProcessorParseException, DuplicateNameException
 	{
 		DataSet ds = new DataSet(varName);
 
@@ -325,8 +324,7 @@ public final class DataSet extends JLabel implements DataSource, Changeable
 	 * Sets the dataset name
 	 * @param newName New name to call this DataSet by
 	 */
-	@Override
-	public final void setName(String newName)
+	public final void setDataName(String newName) throws DuplicateNameException
 	{
 		// Make sure no other datasets have this name
 		if(parent != null && parent instanceof ProblemPart)
@@ -368,7 +366,7 @@ public final class DataSet extends JLabel implements DataSource, Changeable
 	 * @param colName Name for new column
 	 * @return Newly created data column
 	 */
-	public DataColumn addColumn(String colName)
+	public DataColumn addColumn(String colName) throws DuplicateNameException
 	{
 		// Ensure the name of this new column is ok
 		if(!isUniqueColumnName(colName))
@@ -393,9 +391,8 @@ public final class DataSet extends JLabel implements DataSource, Changeable
 	 * @param index Position to insert the column at
 	 * @param colName Name of the new Column to create and add to set
 	 * @return Column that was added (same as passed in)
-	 * @throws CalcException Unable to recompute the data with this new column
 	 */
-	public DataColumn addColumn(int index, String colName) throws CalcException
+	public DataColumn addColumn(int index, String colName) throws DuplicateNameException
 	{
 		// Ensure the name of this new column is ok
 		if(!isUniqueColumnName(colName))
@@ -547,7 +544,7 @@ public final class DataSet extends JLabel implements DataSource, Changeable
 	}
 
 	@Override
-	public Operation addOperationToEnd(Operation op) throws CalcException
+	public Operation addOperationToEnd(Operation op)
 	{
 		if(solutionOps.isEmpty())
 		{

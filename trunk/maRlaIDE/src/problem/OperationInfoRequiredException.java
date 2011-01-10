@@ -21,15 +21,10 @@ package problem;
  * @author Ryan Morehart
  * // TODO make this not internal
  */
-public class OperationInfoRequiredException extends InternalMarlaException
+public class OperationInfoRequiredException extends MarlaException
 {
 	private final Operation op;
 	
-	public OperationInfoRequiredException(Operation op)
-	{
-		this.op = op;
-	}
-
 	public OperationInfoRequiredException(String msg, Operation op)
 	{
 		super(msg);
@@ -42,7 +37,7 @@ public class OperationInfoRequiredException extends InternalMarlaException
 		this.op = op;
 	}
 
-	public Operation getOperation()
+	public final Operation getOperation()
 	{
 		return op;
 	}

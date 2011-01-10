@@ -24,10 +24,6 @@ import problem.OperationException;
  */
 public class OperationXMLException extends OperationException
 {
-	public OperationXMLException()
-	{
-	}
-
 	public OperationXMLException(String msg)
 	{
 		super(msg);
