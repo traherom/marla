@@ -21,7 +21,6 @@ package problem;
  * Used to indicate when a method doesn't have the necessary information
  * to complete the request, typically because prior setting methods need
  * to be called first.
- * 
  * @author Ryan Morehart
  */
 public class IncompleteInitializationException extends MarlaException

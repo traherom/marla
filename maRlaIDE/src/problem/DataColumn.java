@@ -92,7 +92,6 @@ public class DataColumn implements List<Object>
 	/**
 	 * Changes the name this data column goes by.
 	 * @param newName New name for column.
-	 * @throws DuplicateNameException Another DataColumn with the given name already exists
 	 */
 	public final void setName(String newName) throws DuplicateNameException, MarlaException
 	{

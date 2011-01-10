@@ -222,7 +222,7 @@ public class ProblemTest
 		assertFalse(instance.isSaved());
 	}
 
-	@Test(expected=FileException.class)
+	@Test(expected=ProblemException.class)
 	public void testSaveAndLoadNoPath() throws Exception
 	{
 		// Make a sort of complex Problem

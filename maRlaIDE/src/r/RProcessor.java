@@ -157,7 +157,6 @@ public final class RProcessor
 	 * R directory, so the R executable is at R/bin/R), then in common system install
 	 * locations for Windows, Linux, and OSX.
 	 * @return Instance of RProcessor that can be used for calculations
-	 * @throws RProcessorException Thrown in the R process cannot be located and/or launched
 	 */
 	public static RProcessor getInstance() throws RProcessorException
 	{
@@ -204,7 +203,6 @@ public final class RProcessor
 	 * Creates a new instance of R at the given path which can be fed commands
 	 * @param rPath Path to the R executable
 	 * @return Instance of RProcessor that can be used for calculations
-	 * @throws RProcessorException Unable to load R processor
 	 */
 	public static RProcessor getInstance(String rPath) throws RProcessorException
 	{
@@ -219,7 +217,6 @@ public final class RProcessor
 	/**
 	 * Kills any existing instances of the RProcessor and starts a new one.
 	 * @return Newly created RProcessor instance
-	 * @throws RProcessorException Unable to load R process
 	 */
 	public static RProcessor restartInstance() throws RProcessorException
 	{
@@ -312,7 +309,6 @@ public final class RProcessor
 	 * group, use execute(ArrayList<String>).
 	 * @param cmd R command to execute
 	 * @return String output from R. Use one of the parse functions to processor further
-	 * @throws RProcessorException Thrown if called with more than one command
 	 */
 	public String execute(String cmd) throws RProcessorException
 	{
@@ -408,8 +404,6 @@ public final class RProcessor
 	 * be automatically terminated with a newline if they does not have one.
 	 * @param cmds List of R commands to execute
 	 * @return ArrayList of Strings, where each entry is the output from one of the commands given.
-	 * @throws RProcessorException Thrown if one of the commands in cmds contains more than
-	 *		one command or we encounter an error executing command itself
 	 */
 	public ArrayList<String> execute(ArrayList<String> cmds) throws RProcessorException
 	{
@@ -423,12 +417,10 @@ public final class RProcessor
 	}
 
 	/**
-	 * Convenience function that executes the given command and parses the result as a double
+	 * Convenience function that executes the given command and parses the result as a single double
+	 * value. An exception is thrown if there is not exactly one double in the output.
 	 * @param cmd R command to execute
 	 * @return Double value of the R call
-	 * @throws RProcessorException Thrown if called with more than one command
-	 * @throws RProcessorParseException Thrown if the given output does not contain a single double
-	 *		value. This includes if the output has multiple doubles
 	 */
 	public Double executeDouble(String cmd) throws RProcessorException, RProcessorParseException
 	{
@@ -436,12 +428,10 @@ public final class RProcessor
 	}
 
 	/**
-	 * Convenience function that executes the given command and parses the result as a double
+	 * Convenience function that executes the given command and parses the result as a vector
+	 * of doubles. An exception is thrown if the output does not contain numerical values.
 	 * @param cmd R command to execute
 	 * @return ArrayList of doubles that the R command returned
-	 * @throws RProcessorException Thrown if called with more than one command
-	 * @throws RProcessorParseException Thrown if the given output does not contain a vector of
-	 *		numerical values.
 	 */
 	public ArrayList<Double> executeDoubleArray(String cmd) throws RProcessorException, RProcessorParseException
 	{
@@ -449,12 +439,10 @@ public final class RProcessor
 	}
 
 	/**
-	 * Convenience function that executes the given command and parses the result as a string
+	 * Convenience function that executes the given command and parses the result as a string. An
+	 * exception is thrown if there is not exactly one string in the output.
 	 * @param cmd R command to execute
 	 * @return String value of the R call
-	 * @throws RProcessorException Thrown if called with more than one command
-	 * @throws RProcessorParseException Thrown if the given output does not contain a single string
-	 *		value. This includes if the output has multiple string
 	 */
 	public String executeString(String cmd) throws RProcessorException, RProcessorParseException
 	{
@@ -462,12 +450,10 @@ public final class RProcessor
 	}
 
 	/**
-	 * Convenience function that executes the given command and parses the result as a string
+	 * Convenience function that executes the given command and parses the result as a vector of
+	 * strings. An exception is thrown if there are no strings in the output.
 	 * @param cmd R command to execute
 	 * @return ArrayList of strings that the R command returned
-	 * @throws RProcessorException Thrown if called with more than one command
-	 * @throws RProcessorParseException Thrown if the given output does not contain a vector of
-	 *		strings
 	 */
 	public ArrayList<String> executeStringArray(String cmd) throws RProcessorException, RProcessorParseException
 	{
@@ -476,10 +462,10 @@ public final class RProcessor
 
 	/**
 	 * Runs the given command and saves it into a new, unique variable. The variable name used
-	 * is returned as a string.
+	 * is returned as a string. Only one command may be given, an exception is thrown if this
+	 * isn't true.
 	 * @param cmd R command to execute
 	 * @return R variable name that contains the results of the executed command
-	 * @throws RProcessorException Thrown if called with more than one command
 	 */
 	public String executeSave(String cmd) throws RProcessorException
 	{
@@ -489,11 +475,10 @@ public final class RProcessor
 	}
 
 	/**
-	 * Takes the given R output and attempts to parse it as a single double val
+	 * Takes the given R output and attempts to parse it as a single double value. An exception is
+	 * thrown if there isn't exactly one numerical value in the output.
 	 * @param rOutput R output, as returned by execute(String)
 	 * @return Double value contained in the output
-	 * @throws RProcessorParseException Thrown if the given output does not contain a single double
-	 *		value. This includes if the output has multiple doubles
 	 */
 	public Double parseDouble(String rOutput) throws RProcessorParseException
 	{
@@ -506,10 +491,10 @@ public final class RProcessor
 	}
 
 	/**
-	 * Takes the given R output and attempts to parse it as an array of doubles
+	 * Takes the given R output and attempts to parse it as a vector of doubles. An exception is
+	 * thrown if there are no numerical values.
 	 * @param rOutput R output, as returned by execute(String)
 	 * @return ArrayList of Doubles from the output
-	 * @throws RProcessorParseException Thrown if the output does not contain double values
 	 */
 	public ArrayList<Double> parseDoubleArray(String rOutput) throws RProcessorParseException
 	{
@@ -538,11 +523,10 @@ public final class RProcessor
 	}
 
 	/**
-	 * Takes the given R output and attempts to parse it as a single string value
+	 * Takes the given R output and attempts to parse it as a single string value. An exception
+	 * is thrown if there isn't exactly one string value in the output.
 	 * @param rOutput R output, as returned by execute(String)
 	 * @return String value contained in the output
-	 * @throws RProcessorParseException Thrown if the given output does not contain a single string
-	 *		value. This includes if the output has multiple strings
 	 */
 	public String parseString(String rOutput) throws RProcessorParseException
 	{
@@ -555,10 +539,10 @@ public final class RProcessor
 	}
 
 	/**
-	 * Takes the given R output and attempts to parse it as an array of strings
+	 * Takes the given R output and attempts to parse it as a vector of strings. An exception is
+	 * thrown if the output contains no strings.
 	 * @param rOutput R output, as returned by execute(String)
 	 * @return ArrayList of Strings from the output
-	 * @throws RProcessorParseException Thrown if the output does not contain string values
 	 */
 	public ArrayList<String> parseStringArray(String rOutput) throws RProcessorParseException
 	{
@@ -591,7 +575,6 @@ public final class RProcessor
 	 * @param name R-conforming variable name
 	 * @param val Value to store in the variable
 	 * @return Name of the variable used
-	 * @throws RProcessorException Thrown if an internal error occur
 	 */
 	public String setVariable(String name, Double val) throws RProcessorException
 	{
@@ -604,7 +587,6 @@ public final class RProcessor
 	 * Sets the given variable with the value given
 	 * @param val Value to store in the variable
 	 * @return Name of the variable used
-	 * @throws RProcessorException Thrown if an internal error occur
 	 */
 	public String setVariable(Object val) throws RProcessorException
 	{
@@ -616,7 +598,6 @@ public final class RProcessor
 	 * @param name R-conforming variable name
 	 * @param val Value to store in the variable
 	 * @return Name of the variable used
-	 * @throws RProcessorException Thrown if an internal error occur
 	 */
 	public String setVariable(String name, Object val) throws RProcessorException
 	{
@@ -632,7 +613,6 @@ public final class RProcessor
 	 * Sets a new unique variable with a vector of the values given
 	 * @param vals Array of values to store in the variable
 	 * @return Name of the variable used
-	 * @throws RProcessorException Thrown if an internal error occur
 	 */
 	public String setVariable(List<Object> vals) throws RProcessorException
 	{
@@ -645,7 +625,6 @@ public final class RProcessor
 	 * @param name R-conforming variable name
 	 * @param vals Array of values to store in the variable
 	 * @return Name of the variable used
-	 * @throws RProcessorException Thrown if an internal error occur
 	 */
 	public String setVariable(String name, List<Object> vals) throws RProcessorException
 	{
@@ -682,10 +661,10 @@ public final class RProcessor
 	}
 
 	/**
-	 * Creates a new graphic device with the necessary options for passing
+	 * Creates a new graphic device with the necessary options for passing. An exception is thrown
+	 * if the device creation fails.
 	 * back to the GUI. Returns the path to the file that will hold the output.
 	 * @return Path where the new graphics device will write to
-	 * @throws RProcessorException An error occurred creating the device
 	 */
 	public String startGraphicOutput() throws RProcessorException
 	{
@@ -697,7 +676,6 @@ public final class RProcessor
 	/**
 	 * Stops the current graphic device, flushing it to disk.
 	 * @return Path where the new graphic has been written to
-	 * @throws RProcessorException An error occurred closing the device
 	 */
 	public String stopGraphicOutput() throws RProcessorException
 	{

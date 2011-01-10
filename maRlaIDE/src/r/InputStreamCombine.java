@@ -46,7 +46,6 @@ public class InputStreamCombine extends PipedReader
 
 	/**
 	 * Creates a new stream combiner
-	 * @throws IOException Thrown if unable to wrap components with appropriate stream layers
 	 */
 	public InputStreamCombine() throws IOException
 	{
@@ -57,7 +56,6 @@ public class InputStreamCombine extends PipedReader
 	/**
 	 * Adds another stream to combine with others.
 	 * @param is New input stream to add
-	 * @throws IOException A error working with the stream occurred
 	 */
 	public void addStream(InputStream is) throws IOException
 	{
@@ -68,7 +66,6 @@ public class InputStreamCombine extends PipedReader
 
 	/**
 	 * Closes all threads and streams associated with this stream combiner
-	 * @throws IOException Thrown if an error occurs during closing
 	 */
 	@Override
 	public void close() throws IOException

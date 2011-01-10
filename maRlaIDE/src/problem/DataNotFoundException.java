@@ -18,6 +18,7 @@
 package problem;
 
 /**
+ * The DataColumn or DataSet requested could not be located.
  * @author Ryan Morehart
  */
 public class DataNotFoundException extends MarlaException

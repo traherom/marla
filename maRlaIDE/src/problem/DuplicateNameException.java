@@ -18,8 +18,9 @@
 package problem;
 
 /**
+ * Another DataSet or DataColumn has been found in the same parent with the same
+ * name.
  * @author Ryan Morehart
- * // TODO make this not internal
  */
 public class DuplicateNameException extends MarlaException
 {

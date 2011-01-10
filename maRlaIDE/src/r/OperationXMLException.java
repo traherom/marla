@@ -20,6 +20,8 @@ package r;
 import problem.OperationException;
 
 /**
+ * Thrown when an error occurs within XML operations, often due to improper XML
+ * specification.
  * @author Ryan Morehart
  */
 public class OperationXMLException extends OperationException
