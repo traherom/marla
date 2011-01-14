@@ -310,11 +310,11 @@ public final class RProcessor
 	 * @param cmd R command to execute
 	 * @return String output from R. Use one of the parse functions to processor further
 	 */
-	public String execute(String cmd) throws RProcessorException
+	public String execute(String cmd) throws RProcessorException, RProcessorDeadException
 	{
 		// Ensure the processor is still running
 		if(!isRunning())
-			throw new RProcessorException("R process has been closed.");
+			throw new RProcessorDeadException("R process has been closed.");
 
 		// Check if there are multiple commands in the string.
 		// Seriously, that's dangerous for us, could make us hang.
@@ -668,7 +668,11 @@ public final class RProcessor
 	 */
 	public String startGraphicOutput() throws RProcessorException
 	{
+		// Figure out path and request that it be removed once we close
 		lastPngName = getUniqueName() + ".png";
+		new File(lastPngName).deleteOnExit();
+
+		// Tell R to start a new device
 		execute("png(filename='" + lastPngName + "')");
 		return lastPngName;
 	}
