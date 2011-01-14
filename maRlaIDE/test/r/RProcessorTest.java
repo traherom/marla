@@ -46,18 +46,23 @@ public class RProcessorTest
 			proc = RProcessor.restartInstance();
 	}
 
-	@Test(expected=RProcessorException.class)
+	@Test(expected=RProcessorDeadException.class)
 	public void testCloseExecute() throws Exception
 	{
+		assertTrue(proc.isRunning());
 		proc.close();
+		assertFalse(proc.isRunning());
 		proc.execute("'a'");
 	}
 
 	@Test
 	public void testCloseDouble()
 	{
+		assertTrue(proc.isRunning());
 		proc.close();
+		assertFalse(proc.isRunning());
 		proc.close();
+		assertFalse(proc.isRunning());
 	}
 
 	@Test
