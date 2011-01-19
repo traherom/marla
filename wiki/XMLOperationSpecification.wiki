@@ -86,8 +86,17 @@ be assigned the string name of the column they are looping over.
 
 A loop may then use any of the other elements inside itself, including other loops.
 
+=== Conditionals ===
+Conditional work is supported through the `<if />` element. Ifs specify their `type`, which may be either `vartype` or `expr` (see subsections for details). If the condition specified is true, then commands in a `<then />` block are executed. If it is false, then commands in the `<else />` block are executed. Either block may be left out if not needed.
+
+==== Variable type ====
+Variable type ifs require a `var` and an `expected` attribute to be supplied. `var` must be a valid R variable which is to be examined. `expected` may either by "string" or "numeric". The condition then evaluates to true if the R variable is the expected type. No distinction is currently made between arrays and single values.
+
+==== Expression ====
+Expression ifs are more flexible and allow any R command to be specified in an `expr` attribute. This command must evaluate to a single numeric value. A result of 0 is considered false, anything else is true.
+
 === Save ===
-Fourth, to set the actual values for the operation, `<save />` elements may be specified. The
+To set the actual values for the operation, `<save />` elements may be specified. The
 result to save must be a single R command inside the element. The example below illustrates this.
 {{{
 <comuptation>
