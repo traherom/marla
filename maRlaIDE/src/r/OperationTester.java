@@ -36,27 +36,17 @@ public class OperationTester
 
 			// Load operations from XML
 			if(args.length < 1)
-			{
-				System.out.print("XML operation file: ");
-				OperationXML.loadXML(tty.nextLine());
-			}
+				OperationXML.loadXML("ops.xml");
 			else
-			{
 				OperationXML.loadXML(args[0]);
-			}
 
 			// Create test dataset from a CSV
 			DataSet testData = null;
 			RecordMode prevMode = proc.setDebug(RecordMode.DISABLED);
 			if(args.length < 2)
-			{
-				System.out.print("CSV file to use for data: ");
-				testData = DataSet.importFile(tty.nextLine());
-			}
+				testData = DataSet.importFile("test.csv");
 			else
-			{
 				testData = DataSet.importFile(args[1]);
-			}
 			proc.setDebug(prevMode);
 
 			// Choose operation
@@ -94,7 +84,7 @@ public class OperationTester
 			
 			// Run against it
 			System.out.println("------- R commands -------");
-			System.out.println(op.toRString());
+			System.out.println(op.getRCommands());
 			System.out.println("--------------------------\n");
 
 			// Final result

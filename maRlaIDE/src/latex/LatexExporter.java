@@ -316,8 +316,8 @@ public class LatexExporter
 		{
 			sweaveBlock.append("<<label=main>>\n");
 
-			// Pull in all the R from every operation in the system
-			sweaveBlock.append("TBD");
+			// Pull in all the R from every leaf operation in the system
+			
 
 			// End block
 			sweaveBlock.append("@\n");
@@ -330,7 +330,7 @@ public class LatexExporter
 			sweaveBlock.append(">>=\n");
 
 			// Make sure there's a denoted solution
-			sweaveBlock.append(currentSub.getSolutionEnd().toRString());
+			sweaveBlock.append(currentSub.getSolutionEnd().getRCommands(currentSub.getSolutionStart()));
 
 			// End block
 			sweaveBlock.append("@\n");

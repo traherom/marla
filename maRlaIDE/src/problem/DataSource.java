@@ -17,7 +17,7 @@
  */
 package problem;
 
-import java.io.IOException;
+import java.util.List;
 import org.jdom.Element;
 
 /**
@@ -86,7 +86,7 @@ public interface DataSource
 	 * @param op Operation to add to perform on DataSet
 	 * @return Newly added operation
 	 */
-	public Operation addOperation(Operation op);
+	public Operation addOperation(Operation op) throws MarlaException;
 
 	/**
 	 * Appends the given operation to the end of the "left" (first) chain
@@ -96,21 +96,21 @@ public interface DataSource
 	 * @deprecated Instead call addOperation() on the appropriate Operation
 	 */
 	@Deprecated
-	public Operation addOperationToEnd(Operation op);
+	public Operation addOperationToEnd(Operation op) throws MarlaException;
 
 	/**
 	 * Removes an operation from the data
 	 * @param op Operation to remove from data
 	 * @return The removed Operation
 	 */
-	public Operation removeOperation(Operation op);
+	public Operation removeOperation(Operation op) throws MarlaException;
 
 	/**
 	 * Removes an operation from the data
 	 * @param index Index of the operation to remove
 	 * @return The removed Operation
 	 */
-	public Operation removeOperation(int index);
+	public Operation removeOperation(int index) throws MarlaException;
 
 	/**
 	 * Get the Operation at the specified index
@@ -127,10 +127,25 @@ public interface DataSource
 	public int getOperationCount();
 
 	/**
-	 * Outputs this DataSet as the string of R commands needed to turn it into a data frame
-	 * @return R commands
+	 * Returns a flat list of every operation that is a child of this one,
+	 * directly or indirectly. Easy way to get access to an entire subtree
+	 * @return List of every operation below this one in the tree
 	 */
-	public String toRString() throws MarlaException;
+	public List<Operation> getAllChildOperations();
+
+	/**
+	 * Outputs this DataSource as the string of R commands needed to do whatever
+	 * work it performs internally
+	 * @return String of R commands
+	 */
+	public String getRCommands() throws MarlaException;
+
+	/**
+	 * Outputs this DataSource as the string of R commands needed to perform
+	 * the calculations for itself and higher up the data chain, up to the given limit
+	 * @return String of R commands
+	 */
+	public String getRCommands(DataSource upTo) throws MarlaException;
 
 	/**
 	 * Outputs this DataSet as a constructed R data frame and returns the

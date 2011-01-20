@@ -57,7 +57,7 @@ public abstract class Operation extends JLabel implements DataSource, Changeable
 	private DataSource parent;
 	/**
 	 * Saves the R operations used the last time refreshCache() was called. This
-	 * string can then be dumped out by toRString() to give an idea of how to perform
+	 * string can then be dumped out by getRCommands() to give an idea of how to perform
 	 * the calculations
 	 */
 	private String operationRecord = null;
@@ -249,7 +249,7 @@ public abstract class Operation extends JLabel implements DataSource, Changeable
 	 * operation into its array.
 	 * @param newParent Parent DataSet/Operation we're a part of
 	 */
-	protected final void setParentData(DataSource newParent)
+	protected final void setParentData(DataSource newParent) throws MarlaException
 	{
 		// If we're already a part of this parent, ignore request
 		if(parent == newParent)
@@ -467,14 +467,11 @@ public abstract class Operation extends JLabel implements DataSource, Changeable
 
 	/**
 	 * Returns true if this operation has graphical output. The path to the graphic
-	 * file can be obtained via getPlot(). An exception is thrown if an error occurs during
-	 * computations.
-	 * @return true if there is available graphical output, false otherwise
+	 * file can be obtained via getPlot(). An exception is thrown if an error occurs
+	 * determining answer.
+	 * @return true if there is available graphical output via getPlot(), false otherwise
 	 */
-	public boolean hasPlot() throws MarlaException
-	{
-		return getPlot() != null;
-	}
+	public abstract boolean hasPlot() throws MarlaException;
 
 	/**
 	 * Returns the path to the graphical plot this operation generated. An exception
@@ -483,7 +480,10 @@ public abstract class Operation extends JLabel implements DataSource, Changeable
 	 */
 	public String getPlot() throws MarlaException
 	{
-		checkCache();
+		// Check derivative implementation
+		if(hasPlot())
+			throw new InternalMarlaException("Operation indictates it has a plot but has not overriden getPlot()");
+
 		return null;
 	}
 
@@ -587,20 +587,26 @@ public abstract class Operation extends JLabel implements DataSource, Changeable
 		}
 	}
 
-	/**
-	 * Outputs this Operation as the string of R commands it took to produce it
-	 * @return R commands
-	 */
 	@Override
-	public final String toRString() throws MarlaException
+	public final String getRCommands() throws MarlaException
+	{
+		return getRCommands(null);
+	}
+	
+	@Override
+	public final String getRCommands(DataSource upTo) throws MarlaException
 	{
 		checkCache();
 
 		StringBuilder sb = new StringBuilder();
-		if(parent != null)
-			sb.append(parent.toString());
+
+		// Get the operations needed for the parent, as long as we aren't the limit and
+		// we actually do have a parent
+		if(upTo != this && parent != null)
+			sb.append(parent.getRCommands(upTo));
+
 		sb.append(operationRecord);
-		return operationRecord;
+		return operationRecord.toString();
 	}
 
 	/**
@@ -612,6 +618,10 @@ public abstract class Operation extends JLabel implements DataSource, Changeable
 	{
 		try
 		{
+			// We only output ourselves as a DataSet if we don't have a plot
+			if(hasPlot())
+				throw new InternalMarlaException("This operation generates a plot, it must be displayed with getPlot()");
+
 			checkCache();
 
 			// Just display the results as a normal DataSet
@@ -662,8 +672,12 @@ public abstract class Operation extends JLabel implements DataSource, Changeable
 	}
 
 	@Override
-	public final Operation addOperation(Operation op)
+	public final Operation addOperation(Operation op) throws MarlaException
 	{
+		// We may only have child operations if we don't generate a plot
+		if(hasPlot())
+			throw new OperationException("This operation generates a plot, it may not have child operations");
+
 		// Tell the operation to set us as the parent
 		op.setParentData(this);
 
@@ -679,7 +693,7 @@ public abstract class Operation extends JLabel implements DataSource, Changeable
 
 	@Override
 	@Deprecated
-	public final Operation addOperationToEnd(Operation op)
+	public final Operation addOperationToEnd(Operation op) throws MarlaException
 	{
 		if(solutionOps.isEmpty())
 		{
@@ -692,7 +706,7 @@ public abstract class Operation extends JLabel implements DataSource, Changeable
 	}
 
 	@Override
-	public final Operation removeOperation(Operation op)
+	public final Operation removeOperation(Operation op) throws MarlaException
 	{
 		// Tell operation to we're not its parent any more
 		op.setParentData(null);
@@ -707,7 +721,7 @@ public abstract class Operation extends JLabel implements DataSource, Changeable
 	}
 
 	@Override
-	public final Operation removeOperation(int index)
+	public final Operation removeOperation(int index) throws MarlaException
 	{
 		return removeOperation(solutionOps.get(index));
 	}
@@ -716,5 +730,21 @@ public abstract class Operation extends JLabel implements DataSource, Changeable
 	public final Operation getOperation(int index)
 	{
 		return solutionOps.get(index);
+	}
+
+	@Override
+	public List<Operation> getAllChildOperations()
+	{
+		List<Operation> myOps = new ArrayList<Operation>();
+
+		// Copy my operations over, plus ask each child to get their own
+		// children. Append whatever they return
+		for(Operation op : solutionOps)
+		{
+			myOps.add(op);
+			myOps.addAll(op.getAllChildOperations());
+		}
+
+		return myOps;
 	}
 }

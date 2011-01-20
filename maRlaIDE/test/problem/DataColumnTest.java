@@ -21,8 +21,7 @@ import org.junit.*;
 import static org.junit.Assert.*;
 
 /**
- *
- * @author traherom
+ * @author Ryan Morehart
  */
 public class DataColumnTest
 {
