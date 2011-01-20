@@ -499,20 +499,24 @@ public abstract class Operation extends JLabel implements DataSource, Changeable
 		if(other == this)
 			return true;
 
-		// TODO determine the best way to tell equality
-		// The problem is that a user should be able to add multiple
-		// ops of the same type to the parent dataset. Sometimes it would be ok
-		// to restrict this, but I'd rather not. So for now, we're just saying
-		// object equality is good enough.
-		//return false;
-
 		// Actually an operation?
 		if(!(other instanceof Operation))
 			return false;
 
 		Operation otherOp = (Operation) other;
+
+		// Different derivative operation types?
+		if(this.getClass() != otherOp.getClass())
+			return false;
+
+		// Two operations of the same type and assigned to the _same_ parent must be different
+		if(parent == otherOp.parent)
+			return false;
+
+		// Well, are our children all the same then?
 		if(!solutionOps.equals(otherOp.solutionOps))
 			return false;
+		
 		return true;
 	}
 

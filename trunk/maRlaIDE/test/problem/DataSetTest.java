@@ -17,6 +17,7 @@
  */
 package problem;
 
+import java.util.List;
 import org.junit.*;
 import static org.junit.Assert.*;
 import org.jdom.Element;
@@ -369,5 +370,31 @@ public class DataSetTest
 		assertEquals(1, testDS2.getOperationCount());
 		assertEquals(newOp, testDS2.getOperation(0));
 		assertEquals(testDS2, newOp.getParentData());
+	}
+
+	@Test
+	public void testGetAllChildOperations() throws Exception
+	{
+		DataSet testDS1 = createDataSet(2, 10, 4);
+		
+		// Getting all right now should give us just the 4
+		assertEquals(4, testDS1.getOperationCount());
+		assertEquals(4, testDS1.getAllChildOperations().size());
+
+		// Now add 1 to it and double check
+		Operation newOp = testDS1.addOperation(Operation.createOperation("NOP"));
+		assertEquals(5, testDS1.getOperationCount());
+		List<Operation> insideOps = testDS1.getAllChildOperations();
+		assertEquals(5, insideOps.size());
+		assertTrue(insideOps.contains(newOp));
+
+		// Now tack one onto one of our inside operations. It should come out
+		// when we call the allChildOps
+		Operation secondOp = newOp.addOperation(Operation.createOperation("NOP"));
+		assertEquals(5, testDS1.getOperationCount());
+		insideOps = testDS1.getAllChildOperations();
+		assertEquals(6, insideOps.size());
+		assertTrue(insideOps.contains(newOp));
+		assertTrue(insideOps.contains(secondOp));
 	}
 }
