@@ -1,5 +1,5 @@
 #summary Covers the XML file that specifies operations for maRla
-#labels Featured
+#labels Featured,Administration,Operations
 <wiki:toc max_depth="3" />
 Operations in maRla may be specified using an XML format. The XML file should be similar
 to the following. A full example implementing a t-test is listed at the bottom.
@@ -8,7 +8,7 @@ to the following. A full example implementing a t-test is listed at the bottom.
 {{{
 <?xml version="1.0" encoding="UTF-8" ?>
 <operations>
-  <operation name="<operation name>">
+  <operation name="<operation name>" [plot="true"]>
     <query type="<column|checkbox|string|number|combo>" name="<internal name>" prompt="<User prompt>" />
     <computation>
       <set rvar="<variable name>" name="<internal name>" />
@@ -31,7 +31,7 @@ to the following. A full example implementing a t-test is listed at the bottom.
 = Operation =
 Each `<operation />` takes a name that will be displayed to the user and can be used to
 create that operation. It must be unique. If multiple with the same name exist an
-exception will be thrown.
+exception will be thrown. If an operation is going to output a plot, it must have `plot="true"` set as well.
 
 == Queries ==
 Inside of an operation there can be multiple `<query />` elements. These queries will be presented
@@ -51,7 +51,7 @@ operation. A combo requires that `<option />`s be specified. For example:
 The user's response will be returned back and saved under the name given. In the computation
 section of the operation specification these values can be sent to R to perform work.
 
-== Computaion ==
+== Computation ==
 There then is a `<computation />` section inside the operation. This section allows five types of
 elements, all of which may be specified in any number of times. Elements will be executed in the
 order they are encountered.
