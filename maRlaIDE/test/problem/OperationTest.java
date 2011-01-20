@@ -17,6 +17,7 @@
  */
 package problem;
 
+import problem.DataColumn.DataMode;
 import java.util.List;
 import gui.Domain.PromptType;
 import org.jdom.Element;
@@ -79,7 +80,16 @@ public class OperationTest
 					break;
 
 				case COMBO:
-					answers.add("Column 1");
+					// Find a column that's numerical
+					DataSource data = op.getParentData();
+					for(int i = 0; i < data.getColumnCount(); i++)
+					{
+						if(data.getColumn(i).getMode() == DataMode.NUMERICAL)
+						{
+							answers.add(data.getColumn(i).getName());
+							break;
+						}
+					}
 					break;
 
 				default:
@@ -108,9 +118,7 @@ public class OperationTest
 	public void testEquals() throws Exception
 	{
 		Operation op2 = Operation.createOperation(opName);
-		ds1.addOperation(op2);
-
-		assertEquals(op1, op2);
+		assertTrue(op1.equals(op2));
 	}
 
 	@Test
@@ -139,6 +147,11 @@ public class OperationTest
 	{
 		Operation op2 = Operation.createOperation(opName);
 		ds1.addOperation(op2);
+
+		// Unable to do test if operation has a plot, as we can't
+		// add children to it
+		if(op2.hasPlot())
+			return;
 
 		Operation op3 = Operation.createOperation(opName);
 		op2.addOperation(op3);
