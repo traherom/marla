@@ -116,7 +116,7 @@ public class ViewPanel extends JPanel
 			+ "new values when this dialog is closed.  More data sets can be added or current data sets may be removed.</html>";
 
 	/** The main frame of a stand-alone application.*/
-    public MainFrame mainFrame;
+    public maRlaIDE mainFrame;
 	/** The domain object reference performs generic actions specific to the GUI.*/
     protected Domain domain = new Domain (this);
 	/** The list in the New Problem Wizard of sub problems within the current problem.*/
@@ -153,7 +153,7 @@ public class ViewPanel extends JPanel
     /**
      * Creates new form MainFrame for a stand-alone application.
      */
-    public ViewPanel(MainFrame mainFrame)
+    public ViewPanel(maRlaIDE mainFrame)
     {
         this.mainFrame = mainFrame;
         init ();
@@ -231,7 +231,38 @@ public class ViewPanel extends JPanel
 		try		
 		{
 			OperationXML.loadXML(Domain.xmlPath);
-			operations = Operation.getAvailableOperations();
+			loadOperations ();
+		}
+		catch (MarlaException ex)
+		{
+			JOptionPane.showMessageDialog(this, ex.getMessage(), "Load Error", JOptionPane.WARNING_MESSAGE);
+		}
+    }
+
+	/**
+	 * Reloads the palette from the XML file.
+	 */
+	protected void reloadOperations()
+	{
+		try
+		{
+			OperationXML.reloadXML();
+			loadOperations ();
+		}
+		catch (MarlaException ex)
+		{
+			JOptionPane.showMessageDialog(this, ex.getMessage(), "Reload Error", JOptionPane.WARNING_MESSAGE);
+		}
+	}
+
+	/**
+	 * Load the operations into the palette.
+	 *
+	 * @throws MarlaException Throws any Marla exceptions to the calling function.
+	 */
+	private void loadOperations() throws MarlaException
+	{
+		operations = Operation.getAvailableOperations();
 
 			// Add all operation types to the palette, adding listeners to the labels as we go
 			for (int i = 0; i < operations.size (); ++i)
@@ -263,12 +294,7 @@ public class ViewPanel extends JPanel
 					System.err.println("Error loading operation '" + operations.get(i) + "'");
 				}
 			}
-		}
-		catch (MarlaException ex)
-		{
-			JOptionPane.showMessageDialog(this, ex.getMessage(), "Load Error", JOptionPane.WARNING_MESSAGE);
-		}
-    }
+	}
 
     /** This method is called from within the constructor to
      * initialize the form.

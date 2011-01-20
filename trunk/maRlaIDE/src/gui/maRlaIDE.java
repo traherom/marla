@@ -31,7 +31,7 @@ import javax.swing.UnsupportedLookAndFeelException;
  *
  * @author Alex Laird
  */
-public class MainFrame extends JFrame
+public class maRlaIDE extends JFrame
 {
 
 	/** The minimum size the window frame is allowed to be.*/
@@ -42,7 +42,7 @@ public class MainFrame extends JFrame
     /**
      * Constructs the frame for the stand-alone application.
      */
-    public MainFrame()
+    public maRlaIDE()
     {
 		// Construct the view panel
         viewPanel = new ViewPanel (this);
@@ -144,6 +144,8 @@ public class MainFrame extends JFrame
         newDataSetMenuItem = new javax.swing.JMenuItem();
         editDataSetMenuItem = new javax.swing.JMenuItem();
         toolsMenu = new javax.swing.JMenu();
+        reloadOperationgsMenuItem = new javax.swing.JMenuItem();
+        jSeparator1 = new javax.swing.JPopupMenu.Separator();
         viewRCodeMenuItem = new javax.swing.JMenuItem();
         viewLatexCodeMenuItem = new javax.swing.JMenuItem();
         helpMenu = new javax.swing.JMenu();
@@ -158,17 +160,17 @@ public class MainFrame extends JFrame
         fileMenu.setText("File");
         fileMenu.setFont(new java.awt.Font("Verdana", 0, 12));
         fileMenu.addMenuListener(new javax.swing.event.MenuListener() {
-            public void menuCanceled(javax.swing.event.MenuEvent evt) {
+            public void menuSelected(javax.swing.event.MenuEvent evt) {
+                fileMenuMenuSelected(evt);
             }
             public void menuDeselected(javax.swing.event.MenuEvent evt) {
             }
-            public void menuSelected(javax.swing.event.MenuEvent evt) {
-                fileMenuMenuSelected(evt);
+            public void menuCanceled(javax.swing.event.MenuEvent evt) {
             }
         });
 
         newProblemMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_N, java.awt.event.InputEvent.CTRL_MASK));
-        newProblemMenuItem.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        newProblemMenuItem.setFont(new java.awt.Font("Verdana", 0, 12));
         newProblemMenuItem.setText("New Problem...");
         newProblemMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -242,12 +244,12 @@ public class MainFrame extends JFrame
         editMenu.setText("Edit");
         editMenu.setFont(new java.awt.Font("Verdana", 0, 12));
         editMenu.addMenuListener(new javax.swing.event.MenuListener() {
-            public void menuCanceled(javax.swing.event.MenuEvent evt) {
+            public void menuSelected(javax.swing.event.MenuEvent evt) {
+                editMenuMenuSelected(evt);
             }
             public void menuDeselected(javax.swing.event.MenuEvent evt) {
             }
-            public void menuSelected(javax.swing.event.MenuEvent evt) {
-                editMenuMenuSelected(evt);
+            public void menuCanceled(javax.swing.event.MenuEvent evt) {
             }
         });
 
@@ -293,12 +295,12 @@ public class MainFrame extends JFrame
         problemMenu.setText("Problem");
         problemMenu.setFont(new java.awt.Font("Verdana", 0, 12));
         problemMenu.addMenuListener(new javax.swing.event.MenuListener() {
-            public void menuCanceled(javax.swing.event.MenuEvent evt) {
+            public void menuSelected(javax.swing.event.MenuEvent evt) {
+                problemMenuMenuSelected(evt);
             }
             public void menuDeselected(javax.swing.event.MenuEvent evt) {
             }
-            public void menuSelected(javax.swing.event.MenuEvent evt) {
-                problemMenuMenuSelected(evt);
+            public void menuCanceled(javax.swing.event.MenuEvent evt) {
             }
         });
 
@@ -350,14 +352,24 @@ public class MainFrame extends JFrame
         toolsMenu.setText("Tools");
         toolsMenu.setFont(new java.awt.Font("Verdana", 0, 12));
         toolsMenu.addMenuListener(new javax.swing.event.MenuListener() {
-            public void menuCanceled(javax.swing.event.MenuEvent evt) {
-            }
-            public void menuDeselected(javax.swing.event.MenuEvent evt) {
-            }
             public void menuSelected(javax.swing.event.MenuEvent evt) {
                 toolsMenuMenuSelected(evt);
             }
+            public void menuDeselected(javax.swing.event.MenuEvent evt) {
+            }
+            public void menuCanceled(javax.swing.event.MenuEvent evt) {
+            }
         });
+
+        reloadOperationgsMenuItem.setFont(new java.awt.Font("Verdana", 0, 12));
+        reloadOperationgsMenuItem.setText("Reload Operations");
+        reloadOperationgsMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                reloadOperationgsMenuItemActionPerformed(evt);
+            }
+        });
+        toolsMenu.add(reloadOperationgsMenuItem);
+        toolsMenu.add(jSeparator1);
 
         viewRCodeMenuItem.setFont(new java.awt.Font("Verdana", 0, 12));
         viewRCodeMenuItem.setText("View R Code");
@@ -490,11 +502,13 @@ public class MainFrame extends JFrame
 	private void toolsMenuMenuSelected(javax.swing.event.MenuEvent evt) {//GEN-FIRST:event_toolsMenuMenuSelected
 		if (viewPanel.domain.problem != null)
 		{
+			reloadOperationgsMenuItem.setEnabled (true);
 			viewRCodeMenuItem.setEnabled (true);
 			viewLatexCodeMenuItem.setEnabled (true);
 		}
 		else
 		{
+			reloadOperationgsMenuItem.setEnabled (false);
 			viewRCodeMenuItem.setEnabled (false);
 			viewLatexCodeMenuItem.setEnabled (false);
 		}
@@ -524,6 +538,10 @@ public class MainFrame extends JFrame
 		editProblemMenuItemActionPerformed (null);
 		viewPanel.editDataSet ();
 	}//GEN-LAST:event_editDataSetMenuItemActionPerformed
+
+	private void reloadOperationgsMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_reloadOperationgsMenuItemActionPerformed
+		viewPanel.reloadOperations ();
+	}//GEN-LAST:event_reloadOperationgsMenuItemActionPerformed
 
 	/**
 	 * Retrieves the default title, which is the program name with it's version number.
@@ -577,7 +595,7 @@ public class MainFrame extends JFrame
             {
 				try
 				{
-					new MainFrame ().setVisible (true);
+					new maRlaIDE ().setVisible (true);
 				}
 				catch (Exception ex)
 				{
@@ -608,6 +626,7 @@ public class MainFrame extends JFrame
     private javax.swing.JMenuItem helpContentsMenuItem;
     private javax.swing.JMenu helpMenu;
     private javax.swing.JPopupMenu.Separator helpSeparator1;
+    private javax.swing.JPopupMenu.Separator jSeparator1;
     private javax.swing.JMenuBar menuBar;
     private javax.swing.JMenuItem newDataSetMenuItem;
     private javax.swing.JMenuItem newProblemMenuItem;
@@ -616,6 +635,7 @@ public class MainFrame extends JFrame
     private javax.swing.JMenu problemMenu;
     private javax.swing.JPopupMenu.Separator problemSeparator1;
     private javax.swing.JMenuItem redoMenuItem;
+    private javax.swing.JMenuItem reloadOperationgsMenuItem;
     private javax.swing.JMenuItem saveAsMenuItem;
     private javax.swing.JMenuItem saveMenuItem;
     private javax.swing.JMenuItem selectAllMenuItem;
