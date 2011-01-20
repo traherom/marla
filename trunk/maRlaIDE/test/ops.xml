@@ -2,8 +2,15 @@
 <operations version="1">
 	<operation name="NOP">
 		<computation>
-			<loop type="parent" valueVar="col">
-				<save type="double_array" column="">col</save>
+			<loop type="parent" valueVar="col" nameVar="colName">
+				<if type="vartype" var="col" expected="numeric">
+					<then>
+						<save type="double_array" dynamic_column="colName">col</save>
+					</then>
+					<else>
+						<save type="string_array" dynamic_column="colName">col</save>
+					</else>
+				</if>
 			</loop>
 		</computation>
 	</operation>
@@ -13,12 +20,16 @@
 			<!-- Run t test on each column and save, plus prepare the top row -->
 			<cmd>t = list()</cmd>
 			<loop type="parent" valueVar="col" nameVar="colName" indexVar="i">
-				<cmd>t[[i]] = t.test(col)</cmd>
-				<save type="string" column="Column">colName</save>
+				<if type="vartype" var="col" expected="numeric">
+					<then>
+						<cmd>t[[i]] = t.test(col)</cmd>
+						<save type="string" column="Column">colName</save>
+					</then>
+				</if>
 			</loop>
 
 			<!-- Save each -->
-			<loop type="parent" indexVar="i">
+			<loop type="double_array" loopVar="1:length(t)" indexVar="i">
 				<save type="double" column="t">t[[i]]$statistic</save>
 				<save type="double" column="DF">t[[i]]$parameter</save>
 				<save type="double" column="P-Value">t[[i]]$p.value</save>

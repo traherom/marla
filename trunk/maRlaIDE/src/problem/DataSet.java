@@ -178,7 +178,7 @@ public final class DataSet extends JLabel implements DataSource, Changeable
 			cmd.append('T');
 		else
 			cmd.append('F');
-		cmd.append(')');
+		cmd.append(", stringsAsFactors=F)");
 
 		RProcessor proc = RProcessor.getInstance();
 		String varName = proc.executeSave(cmd.toString());
@@ -283,7 +283,17 @@ public final class DataSet extends JLabel implements DataSource, Changeable
 		for(String col : cols)
 		{
 			DataColumn dc = ds.addColumn(col);
-			dc.addAll(proc.executeDoubleArray(varName + "$" + col));
+			try
+			{
+				dc.setMode(DataMode.NUMERICAL);
+				dc.addAll(proc.executeDoubleArray(varName + "$" + col));
+			}
+			catch(RProcessorParseException ex)
+			{
+				// Doubles failed, probably strings
+				dc.setMode(DataMode.STRING);
+				dc.addAll(proc.executeStringArray(varName + "$" + col));
+			}
 		}
 
 		return ds;

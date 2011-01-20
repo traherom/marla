@@ -36,6 +36,7 @@ import problem.MarlaException;
 import problem.Operation;
 import problem.OperationException;
 import problem.OperationInfoRequiredException;
+import r.RProcessor.RecordMode;
 
 /**
  * @author Ryan Morehart
@@ -68,6 +69,12 @@ public class OperationXML extends Operation
 	 * Saves the answer from the GUI to any questions we asked
 	 */
 	private Map<String, Object[]> questionAnswers = null;
+	/**
+	 * Saves the RecordMode we should be saving in. XML ops have to perform 
+	 * extra R calls to do their work, we avoid saving those to the record
+	 * by switching back and forth from RecordMode.DISABLED and this
+	 */
+	private RecordMode intendedRecordMode = null;
 
 	/**
 	 * Types of queries we support from XML
@@ -82,7 +89,7 @@ public class OperationXML extends Operation
 	 */
 	private enum CommandType
 	{
-		CMD, SET, SAVE, LOOP, PLOT
+		CMD, SET, SAVE, LOOP, IF, PLOT
 	};
 
 	/**
@@ -177,7 +184,7 @@ public class OperationXML extends Operation
 
 			opNames.add(name);
 		}
-		
+
 		return opNames;
 	}
 
@@ -255,9 +262,17 @@ public class OperationXML extends Operation
 		// Clear out old plot
 		this.plotPath = null;
 
-		// Process away
+		// Get computation element
 		Element compEl = opConfig.getChild("computation");
+		if(compEl == null)
+			throw new OperationXMLException("Computation element not specified");
+
+		// Process away. Only record the R commands we explicitly say to
+		intendedRecordMode = proc.setRecorder(RecordMode.DISABLED);
 		processSequence(proc, compEl);
+
+		// Restore recording mode
+		proc.setRecorder(intendedRecordMode);
 	}
 
 	private void processSequence(RProcessor proc, Element compEl) throws RProcessorException, RProcessorParseException, OperationXMLException, MarlaException
@@ -285,6 +300,10 @@ public class OperationXML extends Operation
 					processLoop(proc, el);
 					break;
 
+				case IF:
+					processIf(proc, el);
+					break;
+
 				case PLOT:
 					processPlot(proc, el);
 					break;
@@ -297,7 +316,9 @@ public class OperationXML extends Operation
 
 	private void processCmd(RProcessor proc, Element cmdEl) throws RProcessorException
 	{
+		proc.setRecorder(intendedRecordMode);
 		proc.execute(cmdEl.getTextTrim());
+		proc.setRecorder(RecordMode.DISABLED);
 	}
 
 	private void processSet(RProcessor proc, Element cmdEl) throws OperationXMLException, OperationInfoRequiredException, RProcessorException, MarlaException
@@ -314,6 +335,9 @@ public class OperationXML extends Operation
 		{
 			throw new OperationInfoRequiredException("Required info is somehow null. Tell devs.", this);
 		}
+
+		// Record the set calls
+		proc.setRecorder(intendedRecordMode);
 
 		// Which setVariable() should we call?
 		String rVar = cmdEl.getAttributeValue("rvar");
@@ -343,6 +367,9 @@ public class OperationXML extends Operation
 			default:
 				throw new OperationXMLException("Unable to set '" + varType + "' yet.");
 		}
+
+		// Go back to old record mode
+		proc.setRecorder(RecordMode.DISABLED);
 	}
 
 	private void processSave(RProcessor proc, Element cmdEl) throws RProcessorException, RProcessorParseException, OperationXMLException, MarlaException
@@ -373,6 +400,9 @@ public class OperationXML extends Operation
 			col = addColumn(colName);
 		}
 
+		// Process the command we're saving
+		proc.setRecorder(intendedRecordMode);
+
 		SaveType type = SaveType.valueOf(cmdEl.getAttributeValue("type", "double").toUpperCase());
 		switch(type)
 		{
@@ -400,6 +430,9 @@ public class OperationXML extends Operation
 			default:
 				throw new OperationXMLException("Save type of '" + type + "' is unrecognized.");
 		}
+
+		// Disable again
+		proc.setRecorder(RecordMode.DISABLED);
 	}
 
 	private void processLoop(RProcessor proc, Element loopEl) throws RProcessorException, RProcessorParseException, OperationXMLException, MarlaException
@@ -416,12 +449,14 @@ public class OperationXML extends Operation
 				for(int i = 0; i < getParentData().getColumnCount(); i++)
 				{
 					// Assign the loop key and value
+					proc.setRecorder(intendedRecordMode);
 					if(nameVar != null)
 						proc.setVariable(nameVar, getParentData().getColumn(i).getName());
 					if(indexVar != null)
 						proc.setVariable(indexVar, new Double(i + 1));
 					if(valueVar != null)
 						proc.setVariable(valueVar, getParentData().getColumn(i));
+					proc.setRecorder(RecordMode.DISABLED);
 
 					// Now do what the XML says
 					processSequence(proc, loopEl);
@@ -433,10 +468,12 @@ public class OperationXML extends Operation
 				for(int i = 0; i < doubleVals.size(); i++)
 				{
 					// Assign the loop index
+					proc.setRecorder(intendedRecordMode);
 					if(indexVar != null)
 						proc.setVariable(indexVar, new Double(i + 1));
 					if(valueVar != null)
 						proc.setVariable(valueVar, doubleVals.get(i));
+					proc.setRecorder(RecordMode.DISABLED);
 
 					// Now do what the XML says
 					processSequence(proc, loopEl);
@@ -448,10 +485,12 @@ public class OperationXML extends Operation
 				for(int i = 0; i < stringVals.size(); i++)
 				{
 					// Assign the loop index
+					proc.setRecorder(intendedRecordMode);
 					if(indexVar != null)
 						proc.setVariable(indexVar, new Double(i + 1));
 					if(valueVar != null)
 						proc.setVariable(valueVar, stringVals.get(i));
+					proc.setRecorder(RecordMode.DISABLED);
 
 					// Now do what the XML says
 					processSequence(proc, loopEl);
@@ -460,6 +499,66 @@ public class OperationXML extends Operation
 
 			default:
 				throw new OperationXMLException("Loop type '" + type + "' not recognized.");
+		}
+	}
+
+	private void processIf(RProcessor proc, Element ifEl) throws RProcessorException, RProcessorParseException, OperationXMLException, MarlaException
+	{
+		// Check if the expression passes
+		boolean ifExprResult = false;
+		String type = ifEl.getAttributeValue("type");
+		if(type.equals("vartype"))
+		{
+			// Get the type of the variable given in "var"
+			String var = ifEl.getAttributeValue("var");
+			String strResult = proc.execute("str(" + var + ")");
+			String varType = strResult.substring(1, 4);
+
+			// And ensure we match
+			String expected = ifEl.getAttributeValue("expected");
+			if(expected.equals("numeric") && varType.equals("num"))
+				ifExprResult = true;
+			else if(expected.equals("string") && varType.equals("chr"))
+				ifExprResult = true;
+			else
+				ifExprResult = false;
+		}
+		else if(type.equals("expr"))
+		{
+			try
+			{
+				String expr = ifEl.getAttributeValue("expr");
+				Double res = proc.executeDouble(expr);
+
+				if(res != 0)
+					ifExprResult = true;
+				else
+					ifExprResult = false;
+			}
+			catch(RProcessorParseException ex)
+			{
+				throw new OperationXMLException("If expression did not return a numeric value", ex);
+			}
+		}
+		else
+		{
+			throw new OperationXMLException("If type '" + type + "' not recognized.");
+		}
+
+		// Run then then/else blocks as appropriate
+		if(ifExprResult)
+		{
+			// Is there a then?
+			Element thenEl = ifEl.getChild("then");
+			if(thenEl != null)
+				processSequence(proc, thenEl);
+		}
+		else
+		{
+			// Is there an else?
+			Element elseEl = ifEl.getChild("else");
+			if(elseEl != null)
+				processSequence(proc, elseEl);
 		}
 	}
 
