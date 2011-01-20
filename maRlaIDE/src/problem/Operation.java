@@ -385,10 +385,9 @@ public abstract class Operation extends JLabel implements DataSource, Changeable
 	}
 
 	/**
-	 * Recalculates cached columns and informs children to
-	 * refresh themselves as well.
+	 * Recalculates columns and saves the R operations needed for computation
 	 */
-	public final synchronized void refreshCache() throws OperationException, RProcessorException, MarlaException
+	private final synchronized void refreshCache() throws OperationException, RProcessorException, MarlaException
 	{
 		if(parent == null)
 			throw new OperationException("No parent for operation to get data from");
@@ -616,7 +615,7 @@ public abstract class Operation extends JLabel implements DataSource, Changeable
 			checkCache();
 
 			// Just display the results as a normal DataSet
-			return data.toString();
+			return DataSet.toString(this);
 		}
 		catch(MarlaException ex)
 		{

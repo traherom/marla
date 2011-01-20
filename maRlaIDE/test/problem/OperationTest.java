@@ -79,7 +79,7 @@ public class OperationTest
 					break;
 
 				case COMBO:
-					answers.add("blah");
+					answers.add("Column 1");
 					break;
 
 				default:

@@ -55,13 +55,13 @@ public class SubProblemTest
 	public void beforeTest() throws Exception
 	{
 		// Create a problem and some subproblems to work with
-		testProb1 = ProblemTest.createProblem(3, 3, 5);
+		testProb1 = ProblemTest.createProblem(0, 3, 3, 5);
 		testSub1 = testProb1.addSubProblem("a", "Test subproblem A.");
 		testSubIdentical1 = new SubProblem(null, "a", "Test subproblem A.");
 		testSub2 = testProb1.addSubProblem("b", "Test subproblem B.");
 
 		// And a stupid one to do other stuff to
-		testProb2 = ProblemTest.createProblem(3, 3, 5);
+		testProb2 = ProblemTest.createProblem(0, 3, 3, 5);
 	}
 
 	@Test

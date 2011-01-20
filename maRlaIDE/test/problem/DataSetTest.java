@@ -45,6 +45,12 @@ public class DataSetTest
 			assertEquals(rows, dc.size());
 		}
 
+		// Make last one a string?
+		if(columns != 1)
+		{
+			//ds.getColumn(0).setMode(DataColumn.DataMode.STRING);
+		}
+
 		// Add operations, just for giggles
 		for(int i = 0; i < opCount; i++)
 		{

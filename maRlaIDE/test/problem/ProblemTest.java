@@ -36,7 +36,7 @@ public class ProblemTest
 		r.OperationXML.loadXML("ops.xml");
 	}
 
-	public static Problem createProblem(int dataSetNum, int colNum, int valNum) throws Exception
+	public static Problem createProblem(int subProblemNum, int dataSetNum, int colNum, int valNum) throws Exception
 	{
 		Problem prob = new Problem("Test Problem");
 
@@ -49,22 +49,37 @@ public class ProblemTest
 		// Make sure it built correctly
 		assertEquals(dataSetNum, prob.getDataCount());
 
+		// Add subproblems
+		// Must be at least the number of datasets as subproblems
+		if(dataSetNum < subProblemNum)
+			throw new Exception("DataSet count must be the same or greater than subproblem count");
+		
+		for(int subNum = 0; subNum < subProblemNum; subNum++)
+		{
+			SubProblem sub = prob.addSubProblem("part " + subNum, "Part " + subNum + "statement");
+			sub.setSolutionStart(prob.getData(subNum));
+			sub.setSolutionEnd(prob.getData(subNum).getOperation(0));
+		}
+
+		// Make sure it built correctly
+		assertEquals(subProblemNum, prob.getSubProblemCount());
+
 		return prob;
 	}
 
 	@Test
 	public void testEquals() throws Exception
 	{
-		Problem prob1 = createProblem(2, 3, 10);
-		Problem prob2 = createProblem(2, 3, 10);
+		Problem prob1 = createProblem(2, 2, 3, 10);
+		Problem prob2 = createProblem(2, 2, 3, 10);
 		assertEquals(prob1, prob2);
 	}
 
 	@Test
 	public void testEqualsDifferentStatement() throws Exception
 	{
-		Problem prob1 = createProblem(2, 3, 10);
-		Problem prob2 = createProblem(2, 3, 10);
+		Problem prob1 = createProblem(2, 2, 3, 10);
+		Problem prob2 = createProblem(2, 2, 3, 10);
 		prob2.setStatement("different statement");
 		assertFalse(prob1.equals(prob2));
 	}
@@ -72,8 +87,8 @@ public class ProblemTest
 	@Test
 	public void testEqualsDifferentData() throws Exception
 	{
-		Problem prob1 = createProblem(2, 3, 10);
-		Problem prob2 = createProblem(2, 3, 10);
+		Problem prob1 = createProblem(2, 2, 3, 10);
+		Problem prob2 = createProblem(2, 2, 3, 10);
 		prob2.addData(DataSetTest.createDataSet(3, 5, 1));
 		assertFalse(prob1.equals(prob2));
 	}
@@ -81,8 +96,8 @@ public class ProblemTest
 	@Test
 	public void testEqualsDifferentSubProblem() throws Exception
 	{
-		Problem prob1 = createProblem(2, 3, 10);
-		Problem prob2 = createProblem(2, 3, 10);
+		Problem prob1 = createProblem(2, 2, 3, 10);
+		Problem prob2 = createProblem(2, 2, 3, 10);
 		prob2.addSubProblem("New Part", "sub problem statement");
 		assertFalse(prob1.equals(prob2));
 	}
@@ -162,7 +177,7 @@ public class ProblemTest
 	public void testIsSavedSimple() throws Exception
 	{
 		// Newly created problem, should be unsaved
-		Problem instance = createProblem(2, 3, 10);
+		Problem instance = createProblem(2, 2, 3, 10);
 		assertFalse(instance.isSaved());
 
 		// Save it to a temporary file and check it's now marked saved
@@ -175,7 +190,7 @@ public class ProblemTest
 	public void testIsSavedAddData() throws Exception
 	{
 		// Newly created problem, should be unsaved
-		Problem instance = createProblem(2, 3, 10);
+		Problem instance = createProblem(2, 2, 3, 10);
 		assertFalse(instance.isSaved());
 
 		// Save it to a temporary file and check it's now marked saved
@@ -192,7 +207,7 @@ public class ProblemTest
 	public void testIsSavedChangePath() throws Exception
 	{
 		// Newly created problem, should be unsaved
-		Problem instance = createProblem(2, 3, 10);
+		Problem instance = createProblem(2, 2, 3, 10);
 		assertFalse(instance.isSaved());
 
 		// Save it to a temporary file and check it's now marked saved
@@ -209,7 +224,7 @@ public class ProblemTest
 	public void testIsSavedChangeData() throws Exception
 	{
 		// Newly created problem, should be unsaved
-		Problem instance = createProblem(2, 3, 10);
+		Problem instance = createProblem(2, 2, 3, 10);
 		assertFalse(instance.isSaved());
 
 		// Save it to a temporary file and check it's now marked saved
@@ -226,7 +241,7 @@ public class ProblemTest
 	public void testSaveAndLoadNoPath() throws Exception
 	{
 		// Make a sort of complex Problem
-		Problem prob = createProblem(2, 3, 4);
+		Problem prob = createProblem(2, 2, 3, 4);
 
 		// Try saving without setting a path. This _should_ fail
 		prob.save();
@@ -237,7 +252,7 @@ public class ProblemTest
 	public void testToAndFromXML() throws Exception
 	{
 		// Make a sort of complex Problem
-		Problem prob = createProblem(2, 3, 4);
+		Problem prob = createProblem(2, 2, 3, 4);
 
 		Element el = prob.toXml();
 		Problem newProb = Problem.fromXml(el);
@@ -249,7 +264,7 @@ public class ProblemTest
 	public void testSaveAndLoad() throws Exception
 	{
 		// Make a sort of complex Problem
-		Problem prob = createProblem(2, 3, 4);
+		Problem prob = createProblem(2, 2, 3, 4);
 
 		// Save to disk, then read it back in. It should match up with
 		// the problem we just made
@@ -263,7 +278,7 @@ public class ProblemTest
 	@Test
 	public void testCopy() throws Exception
 	{
-		Problem instance = createProblem(3, 4, 10);
+		Problem instance = createProblem(2, 3, 4, 10);
 		Problem copied = new Problem(instance);
 		assertEquals(instance, copied);
 	}
