@@ -27,6 +27,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.InputMismatchException;
+import java.util.List;
 import javax.swing.JLabel;
 import org.jdom.Element;
 import problem.DataColumn.DataMode;
@@ -541,7 +542,7 @@ public final class DataSet extends JLabel implements DataSource, Changeable
 	}
 
 	@Override
-	public Operation addOperation(Operation op)
+	public Operation addOperation(Operation op) throws MarlaException
 	{
 		// Tell the operation to set us as the parent
 		op.setParentData(this);
@@ -557,7 +558,8 @@ public final class DataSet extends JLabel implements DataSource, Changeable
 	}
 
 	@Override
-	public Operation addOperationToEnd(Operation op)
+	@Deprecated
+	public Operation addOperationToEnd(Operation op) throws MarlaException
 	{
 		if(solutionOps.isEmpty())
 		{
@@ -570,7 +572,7 @@ public final class DataSet extends JLabel implements DataSource, Changeable
 	}
 
 	@Override
-	public Operation removeOperation(Operation op)
+	public Operation removeOperation(Operation op) throws MarlaException
 	{
 		// Tell operation to we're not its parent any more
 		op.setParentData(null);
@@ -585,7 +587,7 @@ public final class DataSet extends JLabel implements DataSource, Changeable
 	}
 
 	@Override
-	public Operation removeOperation(int index)
+	public Operation removeOperation(int index) throws MarlaException
 	{
 		return removeOperation(solutionOps.get(index));
 	}
@@ -594,6 +596,22 @@ public final class DataSet extends JLabel implements DataSource, Changeable
 	public Operation getOperation(int index)
 	{
 		return solutionOps.get(index);
+	}
+
+	@Override
+	public List<Operation> getAllChildOperations()
+	{
+		List<Operation> myOps = new ArrayList<Operation>();
+
+		// Copy my operations over, plus ask each child to get their own
+		// children. Append whatever they return
+		for(Operation op : solutionOps)
+		{
+			myOps.add(op);
+			myOps.addAll(op.getAllChildOperations());
+		}
+
+		return myOps;
 	}
 
 	@Override
@@ -607,13 +625,19 @@ public final class DataSet extends JLabel implements DataSource, Changeable
 	 * @return R commands
 	 */
 	@Override
-	public String toRString() throws RProcessorException, RProcessorParseException
+	public String getRCommands() throws RProcessorException, RProcessorParseException
 	{
 		RProcessor proc = RProcessor.getInstance();
 		RecordMode oldMode = proc.setRecorder(RecordMode.CMDS_ONLY);
 		toRFrame();
 		proc.setRecorder(oldMode);
 		return proc.fetchInteraction();
+	}
+
+	@Override
+	public String getRCommands(DataSource upTo) throws RProcessorException, RProcessorParseException
+	{
+		return getRCommands();
 	}
 
 	@Override
@@ -726,8 +750,9 @@ public final class DataSet extends JLabel implements DataSource, Changeable
 			}
 
 			// Output DataSet name
+			sb.append("Dataset ");
 			sb.append(ds.getName());
-			sb.append('\n');
+			sb.append(":\n");
 
 			// Print each row in the table
 			for(int row = 0; row < table.length; row++)

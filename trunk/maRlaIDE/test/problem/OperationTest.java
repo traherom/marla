@@ -259,7 +259,7 @@ public class OperationTest
 		if(op1.isInfoRequired())
 			fillRequiredInfo(op1);
 		
-		String opStr = op1.toRString();
+		String opStr = op1.getRCommands();
 		assertFalse(opStr.isEmpty());
 	}
 

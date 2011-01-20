@@ -652,8 +652,20 @@ public class OperationXML extends Operation
 	}
 
 	@Override
+	public boolean hasPlot() throws MarlaException
+	{
+		// Check if plot="true" is set for this op
+		return Boolean.parseBoolean(opConfig.getAttributeValue("plot", "false"));
+	}
+
+	@Override
 	public String getPlot() throws MarlaException
 	{
+		// Only bother if we have a plot
+		if(!hasPlot())
+			return null;
+
+		// Ensure it's computed then return
 		checkCache();
 		return plotPath;
 	}

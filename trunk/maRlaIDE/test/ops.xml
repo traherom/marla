@@ -43,28 +43,44 @@
 	<operation name="Mean">
 		<computation>
 			<loop type="parent" valueVar="col">
-				<save type="double" column="mean">mean(col)</save>
+				<if type="vartype" var="col" expected="numeric">
+					<then>
+						<save type="double" column="mean">mean(col)</save>
+					</then>
+				</if>
 			</loop>
 		</computation>
 	</operation>
 	<operation name="Standard Deviation">
 		<computation>
 			<loop type="parent" valueVar="col">
-				<save type="double" column="sd">sd(col)</save>
+				<if type="vartype" var="col" expected="numeric">
+					<then>
+						<save type="double" column="sd">sd(col)</save>
+					</then>
+				</if>
 			</loop>
 		</computation>
 	</operation>
 	<operation name="Sum">
 		<computation>
 			<loop type="parent" valueVar="col">
-				<save type="double" column="sum">sum(col)</save>
+				<if type="vartype" var="col" expected="numeric">
+					<then>
+						<save type="double" column="sum">sum(col)</save>
+					</then>
+				</if>
 			</loop>
 		</computation>
 	</operation>
 	<operation name="Summation">
 		<computation>
 			<loop type="parent" valueVar="col">
-				<save type="double" column="sum">sum(col)</save>
+				<if type="vartype" var="col" expected="numeric">
+					<then>
+						<save type="double" column="sum">sum(col)</save>
+					</then>
+				</if>
 			</loop>
 		</computation>
 	</operation>
@@ -79,7 +95,7 @@
 			</loop>
 		</computation>
 	</operation>
-	<operation name="XY Plot">
+	<operation name="XY Plot" plot="true">
 		<query type="column" name="x" prompt="X column" />
 		<query type="column" name="y" prompt="Y column" />
 		<computation>
