@@ -621,23 +621,23 @@ public final class DataSet extends JLabel implements DataSource, Changeable
 	}
 
 	/**
-	 * Outputs this DataSet as the string of R commands needed to turn it into a data frame
-	 * @return R commands
+	 * This should only be called as part of an Operation chaining up here
+	 * @throws chain false if we should output the R frame for this data, false for blank.
+	 * @return R commands to make an R data frame
 	 */
 	@Override
-	public String getRCommands() throws RProcessorException, RProcessorParseException
+	public final String getRCommands(boolean chain) throws MarlaException
 	{
-		RProcessor proc = RProcessor.getInstance();
-		RecordMode oldMode = proc.setRecorder(RecordMode.CMDS_ONLY);
-		toRFrame();
-		proc.setRecorder(oldMode);
-		return proc.fetchInteraction();
-	}
-
-	@Override
-	public String getRCommands(DataSource upTo) throws RProcessorException, RProcessorParseException
-	{
-		return getRCommands();
+		if(!chain)
+		{
+			RProcessor proc = RProcessor.getInstance();
+			RecordMode oldMode = proc.setRecorder(RecordMode.CMDS_ONLY);
+			toRFrame();
+			proc.setRecorder(oldMode);
+			return proc.fetchInteraction();
+		}
+		else
+			return "";
 	}
 
 	@Override

@@ -84,7 +84,7 @@ public class OperationTester
 			
 			// Run against it
 			System.out.println("------- R commands -------");
-			System.out.println(op.getRCommands());
+			System.out.println(op.getRCommands(true));
 			System.out.println("--------------------------\n");
 
 			// Final result

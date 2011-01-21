@@ -134,18 +134,13 @@ public interface DataSource
 	public List<Operation> getAllChildOperations();
 
 	/**
-	 * Outputs this DataSource as the string of R commands needed to do whatever
-	 * work it performs internally
-	 * @return String of R commands
-	 */
-	public String getRCommands() throws MarlaException;
-
-	/**
 	 * Outputs this DataSource as the string of R commands needed to perform
-	 * the calculations for itself and higher up the data chain, up to the given limit
+	 * the calculations for itself. If chain is true then R commands from higher
+	 * up the chain are also included in the string
+	 * @throws chain True if R commands from higher up the chain should be included
 	 * @return String of R commands
 	 */
-	public String getRCommands(DataSource upTo) throws MarlaException;
+	public String getRCommands(boolean chain) throws MarlaException;
 
 	/**
 	 * Outputs this DataSet as a constructed R data frame and returns the

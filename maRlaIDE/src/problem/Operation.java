@@ -592,24 +592,19 @@ public abstract class Operation extends JLabel implements DataSource, Changeable
 	}
 
 	@Override
-	public final String getRCommands() throws MarlaException
-	{
-		return getRCommands(null);
-	}
-	
-	@Override
-	public final String getRCommands(DataSource upTo) throws MarlaException
+	public final String getRCommands(boolean chain) throws MarlaException
 	{
 		checkCache();
 
 		StringBuilder sb = new StringBuilder();
 
-		// Get the operations needed for the parent, as long as we aren't the limit and
-		// we actually do have a parent
-		if(upTo != this && parent != null)
-			sb.append(parent.getRCommands(upTo));
+		// Get the operations needed for the parent, if desired
+		if(chain && parent != null)
+			sb.append(parent.getRCommands(chain));
 
+		// Ourselves
 		sb.append(operationRecord);
+		
 		return operationRecord.toString();
 	}
 

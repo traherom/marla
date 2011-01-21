@@ -24,11 +24,14 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
+import java.util.ArrayList;
+import java.util.List;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.Text;
 import org.jdom.input.SAXBuilder;
+import problem.Operation;
 import problem.SubProblem;
 
 /**
@@ -314,23 +317,36 @@ public class LatexExporter
 		// have a solution denoted though.
 		if(currentSub == null)
 		{
-			sweaveBlock.append("<<label=main>>\n");
+			// Get all operations, we'll skip ones that aren't leaves
+			List<Operation> allOps = new ArrayList<Operation>();
+			for(int i = 0; i < prob.getDataCount(); i++)
+			{
+				allOps.addAll(prob.getData(i).getAllChildOperations());
+			}
 
-			// Pull in all the R from every leaf operation in the system
-			
+			for(Operation op : allOps)
+			{
+				// Make sure it's a leaf
+				if(op.getOperationCount() != 0)
+					continue;
+				
+				sweaveBlock.append("\n<<label=");
+				sweaveBlock.append(op.getName());
+				sweaveBlock.append(">>=\n");
 
-			// End block
-			sweaveBlock.append("@\n");
+				sweaveBlock.append(op.getRCommands(true));
+
+				sweaveBlock.append("@\n\n");
+			}
 		}
 		else if(currentSub.getSolutionEnd() != null)
 		{
 			// Block beginning
-			sweaveBlock.append("<<label=");
+			sweaveBlock.append("\n<<label=");
 			sweaveBlock.append(currentSub.getSubproblemID());
 			sweaveBlock.append(">>=\n");
 
-			// Make sure there's a denoted solution
-			sweaveBlock.append(currentSub.getSolutionEnd().getRCommands(currentSub.getSolutionStart()));
+			sweaveBlock.append(currentSub.getSolutionEnd().getRCommands(true));
 
 			// End block
 			sweaveBlock.append("@\n");
