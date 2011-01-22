@@ -1,0 +1,37 @@
+<?xml version="1.0" ?>
+<template>
+\documentclass[10pt,letterpaper]{article}
+\usepackage{graphicx}
+\usepackage{enumerate}
+\usepackage{array}
+
+\begin{document}
+\begin{flushright}
+<name />\par
+<class type="short" /> --- <class type="long" />\par
+Chapter <chapter />-Section <section />-Problem \#<probnum />
+\end{flushright}
+
+\noindent\textbf{\Large Given}\par
+<statement type="main" />
+
+\vfil\noindent\textbf{\Large Required}\par
+\begin{enumerate}[(a)]
+<loop type="subproblem">
+\item <statement type="current" />
+</loop>
+\end{enumerate}
+
+\vfil\noindent\textbf{\Large Analysis and Solution}\par
+Everything:
+<solution type="current" />
+
+\begin{enumerate}[(a)]
+<loop type="subproblem">
+\item
+	<solution type="current" />
+</loop>
+\end{enumerate}
+
+\end{document}
+</template>
