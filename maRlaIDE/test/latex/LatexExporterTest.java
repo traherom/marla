@@ -49,6 +49,7 @@ public class LatexExporterTest
 	}
 
 	@Test
+	@Ignore
 	public void testCleanExport() throws Exception
 	{
 		testExp.cleanExport();
@@ -63,15 +64,14 @@ public class LatexExporterTest
 
 	@Ignore
 	@Test
-	public void testRefreshExport()
+	public void testRefreshExport() throws Exception
 	{
-
+		testExp.refreshExport();
 	}
 
-	@Ignore
 	@Test
-	public void testPDFExport()
+	public void testPDFExport() throws Exception
 	{
-
+		testExp.generatePDF();
 	}
 }

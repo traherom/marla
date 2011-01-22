@@ -18,6 +18,8 @@
 package latex;
 
 import java.io.BufferedWriter;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import problem.MarlaException;
 import problem.Problem;
 import java.io.File;
@@ -26,6 +28,8 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
@@ -33,6 +37,8 @@ import org.jdom.Text;
 import org.jdom.input.SAXBuilder;
 import problem.Operation;
 import problem.SubProblem;
+import r.RProcessor;
+import r.RProcessorException;
 
 /**
  * @author Ryan Morehart
@@ -165,22 +171,17 @@ public class LatexExporter
 	 */
 	public String export() throws LatexException, MarlaException
 	{
-		File exportFile = new File(exportDir + "/" + baseName + ".rnw");
-		if(exportFile.isFile())
-		{
-			return refreshExport();
-		}
-		else
-		{
-			return cleanExport();
-		}
+		return refreshExport();
 	}
 
 	/**
-	 * Completely exports the problem, overwriting any existing files.
-	 * @return Path to the main LaTeX file that has been exported
+	 * Moves the temporary export files to the actual location
+	 * @param fromPath File to move
+	 * @param newExt The extension of the file to move to. The export dir and base
+	 *			name will be used for the rest of the stuff
+	 * @returns New path of the moved file
 	 */
-	public String cleanExport() throws LatexException, MarlaException
+	private String moveFile(String fromPath, String newExt) throws LatexException
 	{
 		// Ensure everything is set
 		if(exportDir == null)
@@ -188,27 +189,54 @@ public class LatexExporter
 		if(baseName == null)
 			throw new LatexException("Export base name has not been set yet");
 
-		// Create directory if needed
-		File exportFile = new File(exportDir);
-		if(!exportFile.isDirectory() && !exportFile.mkdirs())
-			throw new LatexException("Unable to create directory '" + exportDir + "' to export to");
+		// Figure out file paths
+		File fromFile = new File(fromPath);
+		File toFile = new File(exportDir + "/" + baseName + "." + newExt);
 
 		try
 		{
-			// Write out the template until we find a marker to work with
-			BufferedWriter writer = new BufferedWriter(new FileWriter(exportDir + "/" + baseName + ".rnw"));
-
-			processSectionClean(templateXML, writer);
-
-			// Close the files
-			writer.close();
+			// Move file
+			FileUtils.deleteQuietly(toFile);
+			FileUtils.moveFile(fromFile, toFile);
 		}
 		catch(IOException ex)
 		{
-			throw new LatexException("Error occured during exporting", ex);
+			throw new LatexException("Unable to move the temporary file to '" + toFile + "'");
 		}
 
-		return exportFile.getAbsolutePath();
+		return toFile.getPath();
+	}
+
+	/**
+	 * Completely exports the problem as files
+	 * @return Path to the main LaTeX file that has been exported
+	 */
+	public String cleanExport() throws LatexException, MarlaException
+	{
+		// Export to the temporary file and them move
+		String tempFile = cleanTempExport();
+		return moveFile(tempFile, "rnw");
+	}
+
+	/**
+	 * Completely exports the problem as temporary files
+	 * @return Path to the main temporary LaTeX file that has been exported
+	 */
+	private String cleanTempExport() throws LatexException, MarlaException
+	{
+		try
+		{
+			// Write to a temporary file
+			File tempFile = File.createTempFile("marla", ".rnw");
+			BufferedWriter writer = new BufferedWriter(new FileWriter(tempFile));
+			processSectionClean(templateXML, writer);
+			writer.close();
+			return tempFile.getAbsolutePath();
+		}
+		catch(IOException ex)
+		{
+			throw new LatexException("File error occured during exporting", ex);
+		}
 	}
 
 	private void processSectionClean(Element el, Writer out) throws LatexException, MarlaException
@@ -405,18 +433,43 @@ public class LatexExporter
 	 * is returned.
 	 * @return Path to the newly created PDF
 	 */
-	public String generatePDF()
+	public String generatePDF() throws LatexException, RProcessorException, MarlaException
 	{
-		// Write it all to a temporary folder and write the PDF to the export location
-		String oldExportLoc = exportDir;
-		String oldBaseName = baseName;
+		// Create the rnw
+		String rnwPath = cleanTempExport();
 
-		File pdfFile = new File(exportDir + "/" + baseName + ".rnw");
+		// Sweave it
+		RProcessor proc = RProcessor.getInstance();
+		proc.execute("Sweave('" + rnwPath + "')");
 
-		// Restore old settings
-		exportDir = oldExportLoc;
-		baseName = oldBaseName;
+		// Run it through pdflatex
+		String rnwFileName = new File(rnwPath).getName();
+		String texPath = rnwFileName.replace(".rnw", ".tex");
+		String pdfPath = rnwFileName.replace(".rnw", ".pdf");
 
-		return pdfFile.getAbsolutePath();
+		proc.execute("system('pdflatex " + texPath + "')");
+
+		/*
+		try
+		{
+			Process sweaveProc = Runtime.getRuntime().exec(new String[]{"pdflatex", texPath});
+			sweaveProc.waitFor();
+		}
+		catch(IOException ex)
+		{
+			throw new LatexException("Unable to execute pdflatex for exporting", ex);
+		}
+		catch(InterruptedException ex)
+		{
+			// Bah. Dying anyway, just finish
+		}
+		finally
+		{
+			new File(texPath).delete();
+		}
+		*/
+		
+		// Move/remove temp files
+		return moveFile(pdfPath, "pdf");
 	}
 }
