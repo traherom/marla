@@ -6,7 +6,7 @@
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ *buid
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -130,9 +130,9 @@ public class ViewPanel extends JPanel
 	/** True if the current problem is being edited in the wizard, false if creating a new problem in the wizard.*/
 	protected boolean editing = false;
 	/** The operation being dragged.*/
-	private Operation operationDragging = null;
+	protected Operation operationDragging = null;
 	/** The data set being dragged.*/
-	private DataSet dataSetDragging = null;
+	protected DataSet dataSetDragging = null;
 	/** The operation currently selected.*/
 	private Operation selectedOperation = null;
 	/** The data set currently selected.*/
@@ -366,7 +366,7 @@ public class ViewPanel extends JPanel
         workspaceCardPanel = new javax.swing.JPanel();
         preWorkspacePanel = new javax.swing.JPanel();
         preWorkspaceLabel = new javax.swing.JLabel();
-        workspacePanel = new javax.swing.JPanel();
+        workspacePanel = new WorkspacePanel (this);
         trayPanel = new javax.swing.JPanel();
         outputScrollPane = new javax.swing.JScrollPane();
         outputTextArea = new javax.swing.JTextArea();
@@ -382,27 +382,27 @@ public class ViewPanel extends JPanel
         stepsLabel.setFont(new java.awt.Font("Verdana", 1, 12));
         stepsLabel.setText("Steps");
         stepsPanel.add(stepsLabel);
-        stepsLabel.setBounds(10, 10, 37, 16);
+        stepsLabel.setBounds(10, 10, 34, 15);
 
         welcomeLabel.setFont(new java.awt.Font("Verdana", 1, 12));
         welcomeLabel.setText("1. Welcome");
         stepsPanel.add(welcomeLabel);
-        welcomeLabel.setBounds(20, 40, 140, 16);
+        welcomeLabel.setBounds(20, 40, 140, 15);
 
         nameAndLocationLabel.setFont(new java.awt.Font("Verdana", 0, 12));
         nameAndLocationLabel.setText("2. Name and Location");
         stepsPanel.add(nameAndLocationLabel);
-        nameAndLocationLabel.setBounds(20, 60, 160, 16);
+        nameAndLocationLabel.setBounds(20, 60, 160, 15);
 
         descriptionLabel.setFont(new java.awt.Font("Verdana", 0, 12));
         descriptionLabel.setText("3. Description");
         stepsPanel.add(descriptionLabel);
-        descriptionLabel.setBounds(20, 80, 140, 16);
+        descriptionLabel.setBounds(20, 80, 140, 15);
 
         valuesLabel.setFont(new java.awt.Font("Verdana", 0, 12));
         valuesLabel.setText("5. Values");
         stepsPanel.add(valuesLabel);
-        valuesLabel.setBounds(20, 120, 140, 16);
+        valuesLabel.setBounds(20, 120, 140, 15);
 
         stepsLineLabel.setFont(new java.awt.Font("Verdana", 0, 12));
         stepsLineLabel.setText("_____________________");
@@ -412,7 +412,7 @@ public class ViewPanel extends JPanel
         subProblemsLabel.setFont(new java.awt.Font("Verdana", 0, 12));
         subProblemsLabel.setText("4. Sub Problems");
         stepsPanel.add(subProblemsLabel);
-        subProblemsLabel.setBounds(20, 100, 140, 16);
+        subProblemsLabel.setBounds(20, 100, 140, 15);
 
         wizardCardPanel.setBorder(javax.swing.BorderFactory.createEtchedBorder());
         wizardCardPanel.setLayout(new java.awt.CardLayout());
@@ -422,7 +422,7 @@ public class ViewPanel extends JPanel
         welcomeWizardLabel.setFont(new java.awt.Font("Verdana", 1, 12));
         welcomeWizardLabel.setText("Welcome");
         welcomeCardPanel.add(welcomeWizardLabel);
-        welcomeWizardLabel.setBounds(10, 10, 70, 16);
+        welcomeWizardLabel.setBounds(10, 10, 70, 15);
 
         wizardLineCard1.setFont(new java.awt.Font("Verdana", 0, 12));
         wizardLineCard1.setText("______________________________________________________");
@@ -464,7 +464,7 @@ public class ViewPanel extends JPanel
         nameAndLocationWizardLabel.setFont(new java.awt.Font("Verdana", 1, 12));
         nameAndLocationWizardLabel.setText("Name and Location");
         nameAndLocationCardPanel.add(nameAndLocationWizardLabel);
-        nameAndLocationWizardLabel.setBounds(10, 10, 130, 16);
+        nameAndLocationWizardLabel.setBounds(10, 10, 130, 15);
 
         problemNameLabel.setFont(new java.awt.Font("Verdana", 0, 12));
         problemNameLabel.setText("Problem Name:");
@@ -536,7 +536,7 @@ public class ViewPanel extends JPanel
         descriptionWizardLabel.setText("Description");
         descriptionWizardLabel.setToolTipText("description");
         descriptionCardPanel.add(descriptionWizardLabel);
-        descriptionWizardLabel.setBounds(10, 10, 80, 16);
+        descriptionWizardLabel.setBounds(10, 10, 80, 15);
 
         descriptionTextArea.setColumns(20);
         descriptionTextArea.setFont(new java.awt.Font("Verdana", 0, 12));
@@ -584,7 +584,7 @@ public class ViewPanel extends JPanel
         subProblemsWizardLabel.setFont(new java.awt.Font("Verdana", 1, 12));
         subProblemsWizardLabel.setText("Sub Problems");
         subProblemsCardPanel.add(subProblemsWizardLabel);
-        subProblemsWizardLabel.setBounds(10, 10, 130, 16);
+        subProblemsWizardLabel.setBounds(10, 10, 130, 15);
 
         subProblemsScrollPane.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 
@@ -616,7 +616,7 @@ public class ViewPanel extends JPanel
             }
         });
         subProblemsCardPanel.add(addSubProblemButton);
-        addSubProblemButton.setBounds(285, 330, 70, 29);
+        addSubProblemButton.setBounds(285, 330, 70, 27);
 
         removeSubProblemButton.setFont(new java.awt.Font("Verdana", 0, 12));
         removeSubProblemButton.setText("Remove");
@@ -628,7 +628,7 @@ public class ViewPanel extends JPanel
             }
         });
         subProblemsCardPanel.add(removeSubProblemButton);
-        removeSubProblemButton.setBounds(370, 330, 90, 29);
+        removeSubProblemButton.setBounds(370, 330, 90, 27);
 
         wizardCardPanel.add(subProblemsCardPanel, "card6");
 
@@ -643,7 +643,7 @@ public class ViewPanel extends JPanel
         valuesWizardLabel.setText("Values");
         valuesWizardLabel.setToolTipText("values");
         valuesCardPanel.add(valuesWizardLabel);
-        valuesWizardLabel.setBounds(10, 10, 50, 16);
+        valuesWizardLabel.setBounds(10, 10, 50, 15);
 
         dataSetTabbedPane.setFont(new java.awt.Font("Verdana", 0, 12));
         valuesCardPanel.add(dataSetTabbedPane);
@@ -658,7 +658,7 @@ public class ViewPanel extends JPanel
             }
         });
         valuesCardPanel.add(addDataSetButton);
-        addDataSetButton.setBounds(285, 330, 70, 29);
+        addDataSetButton.setBounds(285, 330, 70, 27);
 
         removeDataSetButton.setFont(new java.awt.Font("Verdana", 0, 12));
         removeDataSetButton.setText("Remove");
@@ -670,7 +670,7 @@ public class ViewPanel extends JPanel
             }
         });
         valuesCardPanel.add(removeDataSetButton);
-        removeDataSetButton.setBounds(370, 330, 90, 29);
+        removeDataSetButton.setBounds(370, 330, 90, 27);
 
         wizardCardPanel.add(valuesCardPanel, "card2");
 
@@ -770,7 +770,7 @@ public class ViewPanel extends JPanel
         );
         emptyPalettePanelLayout.setVerticalGroup(
             emptyPalettePanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(0, 242, Short.MAX_VALUE)
+            .add(0, 243, Short.MAX_VALUE)
         );
 
         componentsCardPanel.add(emptyPalettePanel, "card3");
@@ -796,7 +796,7 @@ public class ViewPanel extends JPanel
 
         preWorkspacePanel.setBackground(new java.awt.Color(204, 204, 204));
 
-        preWorkspaceLabel.setFont(new java.awt.Font("Verdana", 1, 14));
+        preWorkspaceLabel.setFont(new java.awt.Font("Verdana", 1, 14)); // NOI18N
         preWorkspaceLabel.setForeground(new java.awt.Color(102, 102, 102));
         preWorkspaceLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         preWorkspaceLabel.setText("<html><div align=\"center\">To get started, load a previous problem or use the<br /><em>New Problem Wizard</em> to create a new problem</div></html>");
@@ -807,14 +807,14 @@ public class ViewPanel extends JPanel
             preWorkspacePanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(preWorkspacePanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .add(preWorkspaceLabel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 132, Short.MAX_VALUE)
+                .add(preWorkspaceLabel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 152, Short.MAX_VALUE)
                 .addContainerGap())
         );
         preWorkspacePanelLayout.setVerticalGroup(
             preWorkspacePanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(preWorkspacePanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .add(preWorkspaceLabel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 213, Short.MAX_VALUE)
+                .add(preWorkspaceLabel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 236, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -849,7 +849,7 @@ public class ViewPanel extends JPanel
 
         outputTextArea.setColumns(20);
         outputTextArea.setEditable(false);
-        outputTextArea.setFont(new java.awt.Font("Monospaced", 0, 12)); // NOI18N
+        outputTextArea.setFont(new java.awt.Font("Monospaced", 0, 12));
         outputTextArea.setRows(5);
         outputScrollPane.setViewportView(outputTextArea);
 
@@ -857,9 +857,9 @@ public class ViewPanel extends JPanel
         trayPanel.setLayout(trayPanelLayout);
         trayPanelLayout.setHorizontalGroup(
             trayPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(0, 176, Short.MAX_VALUE)
+            .add(0, 180, Short.MAX_VALUE)
             .add(trayPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                .add(outputScrollPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 176, Short.MAX_VALUE))
+                .add(outputScrollPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 180, Short.MAX_VALUE))
         );
         trayPanelLayout.setVerticalGroup(
             trayPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
@@ -1206,11 +1206,23 @@ public class ViewPanel extends JPanel
 		if (dataSetDragging != null)
 		{
 			dataSetDragging.setLocation(evt.getX() - xDragOffset, evt.getY() - yDragOffset);
+			for (int i = 0; i < dataSetDragging.getOperationCount(); ++i)
+			{
+				int y = dataSetDragging.getY () + (i + 1) * 20;
+				dataSetDragging.getOperation (i).setLocation (dataSetDragging.getX (), y);
+			}
+			
 			domain.problem.markChanged();
 		}
 		else if (operationDragging != null)
 		{
 			operationDragging.setLocation(evt.getX() - xDragOffset, evt.getY() - yDragOffset);
+			for (int i = 0; i < operationDragging.getOperationCount(); ++i)
+			{
+				int y = operationDragging.getY () + (i + 1) * 20;
+				operationDragging.getOperation (i).setLocation (operationDragging.getX (), y);
+			}
+
 			domain.problem.markChanged();
 		}
 	}//GEN-LAST:event_workspacePanelMouseDragged
@@ -1237,6 +1249,7 @@ public class ViewPanel extends JPanel
 	private void workspacePanelMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_workspacePanelMouseReleased
 		dataSetDragging = null;
 		operationDragging = null;
+		workspacePanel.repaint ();
 	}//GEN-LAST:event_workspacePanelMouseReleased
 
 	private void workspacePanelMouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_workspacePanelMouseMoved
@@ -1598,9 +1611,10 @@ public class ViewPanel extends JPanel
 
 		int x = domain.currentDataSet.getX ();
 		int y = domain.currentDataSet.getY () + 20;
-		if (domain.currentDataSet.getOperationCount() > 0)
+		if (domain.currentDataSet.getOperationCount () > 0)
 		{
-			y += 20;
+			Operation lastOperation = domain.currentDataSet.getOperation (domain.currentDataSet.getOperationCount () - 1);
+			y = lastOperation.getY () +  20;
 		}
 		final Operation newOperation;
 		try
@@ -1608,7 +1622,7 @@ public class ViewPanel extends JPanel
 			newOperation = Operation.createOperation(operation.getName());
 			newOperation.setBounds (x, y, newOperation.getPreferredSize().width, newOperation.getPreferredSize().height);
 			
-			domain.currentDataSet.addOperationToEnd (newOperation);
+			domain.currentDataSet.addOperation (newOperation);
 
 			workspacePanel.add (newOperation);
 			workspacePanel.updateUI();
@@ -2021,6 +2035,9 @@ public class ViewPanel extends JPanel
 			if (domain.currentDataSet == null)
 			{
 				domain.currentDataSet = domain.problem.getData(0);
+				selectedDataSet = domain.currentDataSet;
+				selectedDataSet.setBorder (BorderFactory.createLineBorder(Color.RED));
+				selectedDataSet.setSize(selectedDataSet.getPreferredSize());
 			}
 
 			int numShow = getShownDataSetCount ();
@@ -2031,6 +2048,7 @@ public class ViewPanel extends JPanel
 					DataSet dataSet = domain.problem.getData (i);
 					// Add the new data set to the workspace
 					workspacePanel.add (dataSet);
+					((WorkspacePanel) workspacePanel).addDataSet(dataSet);
 
 					for (int j = 0; j < dataSet.getOperationCount(); ++j)
 					{
