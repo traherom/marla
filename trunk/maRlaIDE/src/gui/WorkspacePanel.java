@@ -24,6 +24,7 @@ import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.geom.Line2D;
 import java.util.ArrayList;
+import java.util.List;
 import javax.swing.JPanel;
 import problem.DataSet;
 import problem.Operation;
@@ -77,22 +78,23 @@ public class WorkspacePanel extends JPanel
 			Graphics2D g2 = (Graphics2D) g;
 			g2.setRenderingHint (RenderingHints.KEY_ANTIALIASING,
 					RenderingHints.VALUE_ANTIALIAS_ON);
-			g2.setPaint (Color.DARK_GRAY);
 			for (int i = 0; i < dataSets.size (); ++i)
 			{
+				g2.setPaint (Color.DARK_GRAY);
 				DataSet dataSet = dataSets.get (i);
-				for (int j = 0; j < dataSet.getOperationCount(); ++j)
+				List<Operation> childOperations = dataSet.getAllChildOperations();
+				for (int j = 0; j < childOperations.size (); ++j)
 				{
 					Operation firstOperation = null;
 					Operation secondOperation = null;
 					if (j == 0)
 					{
-						firstOperation = dataSet.getOperation (j);
+						firstOperation = childOperations.get (j);
 					}
 					else
 					{
-						firstOperation = dataSet.getOperation (j - 1);
-						secondOperation = dataSet.getOperation (j);
+						firstOperation = childOperations.get (j - 1);
+						secondOperation = childOperations.get (j);
 					}
 
 					int x1 = -1;
@@ -115,6 +117,7 @@ public class WorkspacePanel extends JPanel
 					}
 					g2.draw (new Line2D.Double (x1, y1, x2, y2));
 				}
+				g2.setPaint (Color.WHITE);
 			}
 		}
 	}
