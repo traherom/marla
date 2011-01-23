@@ -1,44 +1,39 @@
 #summary Covers the XML file that specifies operations for maRla
 #labels Featured,Administration,Operations
 <wiki:toc max_depth="4" />
-Operations in maRla may be specified using an XML format. The XML file should be similar
-to the following. A full example implementing a t-test is listed at the bottom.
-
-= Quick Reference = 
-{{{
-<?xml version="1.0" encoding="UTF-8" ?>
-<operations>
-  <operation name="<operation name>" [plot="true"]>
-    <query type="<column|checkbox|string|number|combo>" name="<internal name>" prompt="<User prompt>" />
-    <computation>
-      <set rvar="<variable name>" name="<internal name>" />
-      
-      <cmd>R command</cmd>
-      ...
-      <cmd>R command</cmd>
-      
-      <loop type="parent|double_array|string_array" [indexVar="<R variable name>"] [keyVar="<R variable name>"] [valueVar="<R variable name>"] [loopVar=""]>
-        <cmd>R command</cmd>
-        ...
-      </loop>
-      
-      <save type="double|string|double_array|string_array" [column="<Column name>"] [dynamic_column="<R command>"]>[<R command>]</save>
-    </computation>
-  </operation>
-</operations>
-}}}
+Operations in maRla may be specified using an XML format. In the discussion below, attributes given in bold are required. A full example implementing a t-test is listed at the bottom.
 
 = Operation =
+{{{
+<operation name="<operation name>" [plot="true"]>
+}}}
 Each `<operation />` takes a name that will be displayed to the user and can be used to
 create that operation. It must be unique. If multiple with the same name exist an
 exception will be thrown. If an operation is going to output a plot, it must have `plot="true"` set as well.
 
 == Queries ==
-Inside of an operation there can be multiple `<query />` elements. These queries will be presented
-to the user with the given `prompt` when they add the operation. Each query requires a `prompt`,
-a `type`, and a `name`. Prompt may be any arbitrary string to display to the user. The type
-should be one of `column`, `checkbox`, `string`, `number`, or `combo`.
+{{{
+<query type="<column|checkbox|string|number|combo>" [column_type="<all|numeric|string>"] name="<internal name>" prompt="<User prompt>" />
+}}}
 
+Inside of an operation there can be multiple `<query />` elements. These queries will be presented
+to the user with the given `prompt` when they add the operation.
+
+Attributes supported:
+* *`name`* - A unique name to identify the query by, may not be used by any other `query` in the operation.
+* *`prompt`* - Any arbitrary string to display to the user.
+* *`type`* - One of the following:
+	* `column` - Presents the user with a list of the parent columns. `column_type` must be given to specify which columns to display.
+	* `checkbox` - Simple checkbox that the user may select
+	* `string` - Arbitrary user-entered string
+	* `number` - Arbitrary user-entered number
+	* `combo` - Operation-specified selectable list. See [XMLOperationSpecification#Combo]
+* `column_type` - One of the following:
+	* `all` - All parent columns will be selectable
+	* `numeric` - All numeric parent columns
+	* `string` - All string parent columns
+
+=== Combo ===
 A column type allows the selection of one of the columns in the parent data set and/or
 operation. A combo requires that `<option />`s be specified. For example:
 {{{
@@ -48,56 +43,100 @@ operation. A combo requires that `<option />`s be specified. For example:
 </query>
 }}}
 
-The user's response will be returned back and saved under the name given. In the computation
-section of the operation specification these values can be sent to R to perform work.
+The user's response will be returned back and saved under the name given.
 
 == Computation ==
-There then is a `<computation />` section inside the operation. This section allows five types of
-elements, all of which may be specified in any number of times. Elements will be executed in the
-order they are encountered.
+{{{
+<computation>
+	<cmd />
+	<if />
+	<loop />
+	<set />
+	<save />
+	<plot />
+</comptation>
+}}}
+Inside each operation there must be a `<computation />` element. This section allows five types of elements which may be specified in any number of times and in any order. Elements will be executed in the order they are encountered.
 
 === Commands ===
-The first element type is the simplest, commands. A `<cmd />` takes a single R command and executes
+{{{<cmd>R code</cmd>}}}
+The simplest computation element is the command. A `<cmd />` takes a single R command and executes
 it. An exception will be thrown if more than one command is placed here. If a newline is needed
 in a string then use `\n`, not a hard line break.
 
 === Set ===
-Second, a `<set />` element allows for an R variable to be set from one of the user-prompted
-values. The attribute `rvar` specifies the R variable name to use and `name` should reference the
-same name as was used in the original `<query />`. For example, to ask a user to select a column
-and then save it for use:
+{{{<set rvar="<R variable name>" name="<query name>" [use="<name|values>"] />}}}
+A `<set />` element allows for an R variable to be set from one of the user-prompted
+query values.
+
+Attributes supported:
+* *`rvar`* - Specifies the R variable name to set
+* *`name`* - Name specified for the desired query element (see [XMLOperationSpecification#Queries].
+* `use` - For `column` queries, the R variable may be set with either the string name of the column selected or the actual values in that column. This attribute specifies which processing method to use.
+	* `name` - Use the column name
+	* `values` - Use the column values
+
+For example, to ask a user to select a column and then save the values for use:
 {{{
 <operation>
   <query type="column" name="selected_column" prompt="Select a column" />
   <computation>
-    <set rvar="col" name="selected_column" />
+    <set rvar="col" name="selected_column" use="values" />
   <computation>
 </operation>
 }}}
 
 === Loops ===
-Third, `<loop />`s allow repetition. Each loop must specify its `type` as either `parent`,
-`double_array`, or `string_array`. Parent loops go through every column of the parent data set
-and/or operation, assigning them in turn to the R variable given in `valueVar`. Array loops
-take the R command given in `loopVar` and iterate over the elements in it, setting each in turn
-as the value of valueVar. An `indexVar` may also be specified for any loop type which will
-keep an index (1 based) of the loop number. Parent loops may specify a `keyVar`, which will
-be assigned the string name of the column they are looping over.
+{{{
+<loop type="parent|double_array|string_array" [indexVar="<R variable name>"] [keyVar="<R variable name>"] 	 [valueVar="<R variable name>"] [loopVar="<R expression>"]>
+	...
+</loop>
+}}}
+`<loop />` elements allow repetition over parent data or arbitrary lists. A loop may use any of the other elements inside itself, including other loops.
 
-A loop may then use any of the other elements inside itself, including other loops.
+Attributes supported:
+* *`type`* - One of the following:
+	* `parent` - Loop over every column in the parent data
+	* `double_array` - Iterate over every element of the vector given by `loopVar`, processing them as numeric values
+	* `string_array` - Iterate over every element of the vector given by `loopVar`, processing them as string values
+* `loopVar` - If using one of the array loop types, this specifies an R statement that generates the vector to loop over
+* `indexVar` - Loop number the loop is on (1 based)
+* `keyVar` - For parent loops, gives the name of the current column. For array loops it is the same as indexVar
+* `valueVar` - For parent loops, gives the values in the current column. For array loops it gives the current value in the array
 
 === Conditionals ===
-Conditional work is supported through the `<if />` element. Ifs specify their `type`, which may be either `vartype` or `expr` (see subsections for details). If the condition specified is true, then commands in a `<then />` block are executed. If it is false, then commands in the `<else />` block are executed. Either block may be left out if not needed.
+{{{
+<if type=<vartype|expr>>
+	<then>...</then>
+	<else>...</else>
+</if>
+}}}
+Conditional work is supported through the `<if />` element. If the condition specified is true, then commands in a `<then />` block are executed. If it is false, then commands in the `<else />` block are executed. Either block may be left out if not needed.
 
-==== Variable type ====
-Variable type ifs require a `rvar` and an `expected` attribute to be supplied. `var` must be a valid R variable which is to be examined. `expected` may either by "string" or "numeric". The condition then evaluates to true if the R variable is the expected type. No distinction is currently made between arrays and single values.
-
-==== Expression ====
-Expression ifs are more flexible and allow any R command to be specified in an `expr` attribute. This command must evaluate to a single boolean value.
+Supported attributes:
+* *`type`* - One of the following:
+	* `vartype` - Switches on the type of an R variable, as deterimed by `str(rvar)`
+	* `expr` - Arbitrary R boolean expression will be used for evaluation
+* `rvar` - Used by `vartype`. Gives the R variable which should have its type examined
+* `expected` - Used by `vartype`. Gives the "true" type of the R variable. One of the following:
+	* `string` - String or multiple strings of data
+	* `numeric` - Number or multiple numbers
+* `expr` - R expression to evaluate. Must evaluate to a single TRUE or FALSE value and be only a single statement
 
 === Save ===
-To set the actual values for the operation, `<save />` elements may be specified. The
-result to save must be a single R command inside the element. The example below illustrates this.
+{{{<save type="double|string|double_array|string_array" [column="<Column name>"] [dynamic_column="<R command>"]>R command</save>}}}
+To save the final values for the computation, `<save />` elements may be specified. The value saved is given by the single R command inside the save element.
+
+Attributes supported:
+* *`type`* - One of the following
+	* `double` - Process the result as a single numeric value
+	* `string` - Process the result as a single string value
+	* `double_array` - Process the result as a vector of numeric values
+	* `string_array` - Process the result as a vector of string values
+* `column` - Static name of the column to save these values into
+* `dynamic_column` - R command from which to pull the name of the column to save into. Must return a single string
+
+For example:
 {{{
 <comuptation>
   <cmd>testing = 75.6</cmd>
@@ -105,17 +144,13 @@ result to save must be a single R command inside the element. The example below 
 </computation>
 }}}
 
-The `type` tells the operation how to process the result and may be one of `double`, `string`,
-`double_array`, or `string_array`. The `column` attribute gives the name of the result
-column to save into. Instead of plain `column`, `dynamic_column` maybe used, which may
-contain any R command that results in a single string.
-
 === Plots ===
-Finally, a single `<plot />` element is allowed in an operation. A plot creates a new
-device and commands may be placed inside may draw onto it. Commands should not manually change
-the device or close it, that will be taken care of by the plot. A plot takes no attributes
-but allows any of the other elements to be place inside it, just as with the main computation
-section.
+{{{
+<plot >
+	
+</plot>
+}}}
+A single `<plot />` element is allowed in an operation. A plot creates a new device and commands may be placed inside may draw onto it. Commands should not manually change the device or close it, that will be taken care of by the plot. A plot takes no attributes but allows any of the other elements to be place inside it, just as with the main computation section.
 
 = Example =
 Below is an example of implementing a t-test:
@@ -124,21 +159,27 @@ Below is an example of implementing a t-test:
 <operations>
   <operation name="t-test">
     <query type="checkbox" prompt="Is your data normal?" name="normal" />
+	
     <computation>
       <!-- Run t test on each column and save, plus prepare the top row -->
       <cmd>t = list()</cmd>
       <loop type="parent" valueVar="col" nameVar="colName" indexVar="i">
-        <cmd>t[[i]] = t.test(col)</cmd>
-        <save type="string" column="Column">colName</save>
+        <if type="vartype" rvar="col" expected="numeric">
+          <then>
+            <cmd>t[[i]] = t.test(col)</cmd>
+            <save type="string" column="Column">colName</save>
+          </then>
+        </if>
       </loop>
-      <!-- Save each -->
-      <loop type="parent" indexVar="i">
+
+      <!-- Save each t.test result -->
+      <loop type="double_array" loopVar="1:length(t)" indexVar="i">
         <save type="double" column="t">t[[i]]$statistic</save>
         <save type="double" column="DF">t[[i]]$parameter</save>
         <save type="double" column="P-Value">t[[i]]$p.value</save>
         <save type="double" column="Mean">t[[i]]$estimate</save>
         <save type="double" column="Lower CI">t[[i]]$conf.int[1]</save>
-        <save type="double" column="Upper CI">t[[i]]$conf.int[1]</save>
+        <save type="double" column="Upper CI">t[[i]]$conf.int[2]</save>
         <save type="double" column="alpha">attr(t[[i]]$conf.int, 'conf.level')</save>
       </loop>
     </computation>
