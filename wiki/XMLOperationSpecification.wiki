@@ -1,11 +1,11 @@
 #summary Covers the XML file that specifies operations for maRla
-#labels Featured,Administration,Operations
+#labels Featured
 <wiki:toc max_depth="4" />
 Operations in maRla may be specified using an XML format. In the discussion below, attributes given in bold are required. A full example implementing a t-test is listed at the bottom.
 
 = Operation =
 {{{
-<operation name="<operation name>" [plot="true"]>
+<operation name="operation name" [plot="true"]>
 }}}
 Each `<operation />` takes a name that will be displayed to the user and can be used to
 create that operation. It must be unique. If multiple with the same name exist an
@@ -17,7 +17,7 @@ Attributes supported:
 
 == Queries ==
 {{{
-<query type="<column|checkbox|string|number|combo>" [column_type="<all|numeric|string>"] name="<internal name>" prompt="<User prompt>" />
+<query type="column|checkbox|string|number|combo" [column_type="all|numeric|string"] name="internal name" prompt="User prompt" />
 }}}
 
 Inside of an operation there can be multiple `<query />` elements. These queries will be presented
@@ -58,18 +58,22 @@ The user's response will be returned back and saved under the name given.
 	<set />
 	<save />
 	<plot />
-</comptation>
+</computation>
 }}}
 Inside each operation there must be a `<computation />` element. This section allows five types of elements which may be specified in any number of times and in any order. Elements will be executed in the order they are encountered.
 
 === Commands ===
-{{{<cmd>R code</cmd>}}}
+{{{
+<cmd>R code</cmd>
+}}}
 The simplest computation element is the command. A `<cmd />` takes a single R command and executes
 it. An exception will be thrown if more than one command is placed here. If a newline is needed
 in a string then use `\n`, not a hard line break.
 
 === Set ===
-{{{<set rvar="<R variable name>" name="<query name>" [use="<name|values>"] />}}}
+{{{
+<set rvar="R variable name" name="query name" [use="name|values"] />
+}}}
 A `<set />` element allows for an R variable to be set from one of the user-prompted
 query values.
 
@@ -92,7 +96,7 @@ For example, to ask a user to select a column and then save the values for use:
 
 === Loops ===
 {{{
-<loop type="parent|double_array|string_array" [indexVar="<R variable name>"] [keyVar="<R variable name>"] 	 [valueVar="<R variable name>"] [loopVar="<R expression>"]>
+<loop type="parent|double_array|string_array" [indexVar="R variable name"] [keyVar="R variable name"] 	 [valueVar="R variable name"] [loopVar="R expression"]>
 	...
 </loop>
 }}}
@@ -110,7 +114,7 @@ Attributes supported:
 
 === Conditionals ===
 {{{
-<if type=<vartype|expr>>
+<if type="vartype|expr">
 	<then>...</then>
 	<else>...</else>
 </if>
@@ -128,7 +132,9 @@ Supported attributes:
 	* `expr` - R expression to evaluate. Must evaluate to a single TRUE or FALSE value and be only a single statement
 
 === Save ===
-{{{<save type="double|string|double_array|string_array" [column="<Column name>"] [dynamic_column="<R command>"]>R command</save>}}}
+{{{
+<save type="double|string|double_array|string_array" [column="<Column name>"] [dynamic_column="<R command>"]>R command</save>
+}}}
 To save the final values for the computation, `<save />` elements may be specified. The value saved is given by the single R command inside the save element.
 
 Attributes supported:
@@ -149,7 +155,9 @@ For example:
 }}}
 
 === Plots ===
-{{{<plot>...</plot>}}}
+{{{
+<plot>...</plot>
+}}}
 A single `<plot />` element is allowed in an operation. A plot creates a new device and commands may be placed inside may draw onto it. Commands should not manually change the device or close it, that will be taken care of by the plot. A plot takes no attributes but allows any of the other elements to be place inside it, just as with the main computation section.
 
 = Example =
