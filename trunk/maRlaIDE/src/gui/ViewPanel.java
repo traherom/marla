@@ -78,6 +78,7 @@ import problem.DuplicateNameException;
 import problem.ProblemException;
 import problem.MarlaException;
 import problem.Operation;
+import problem.Operation.PromptType;
 import problem.OperationException;
 import problem.Problem;
 import r.OperationXML;
@@ -1630,7 +1631,7 @@ public class ViewPanel extends JPanel
 	public void getRequiredInfoDialog(final Operation newOperation) throws MarlaException
 	{
 		// Create the dialog which will be launched to ask about requirements
-		final ArrayList<Object[]> prompt = newOperation.getRequiredInfoPrompt();
+		final List<Object[]> prompt = newOperation.getRequiredInfoPrompt();
 		final JDialog dialog = new JDialog ();
 		JPanel panel = new JPanel ();
 		panel.setLayout (new GridLayout (prompt.size () + 1, 2));
@@ -1640,16 +1641,16 @@ public class ViewPanel extends JPanel
 		dialog.add (panel);
 
 		// This array will contain references to objects that will hold the values
-		final ArrayList<Object> valueComponents = new ArrayList<Object> ();
+		final List<Object> valueComponents = new ArrayList<Object> ();
 
 		// Fill dialog with components
 		for (int i = 0; i < prompt.size(); ++i)
 		{
 			Object[] components = prompt.get (i);
-			if (components[1] == Domain.PromptType.TEXT)
+			if (components[0] == PromptType.STRING || components[0] == PromptType.NUMBER)
 			{
 				JPanel tempPanel = new JPanel (new FlowLayout (FlowLayout.LEFT));
-				JLabel label = new JLabel (components[0].toString ());
+				JLabel label = new JLabel (components[2].toString ());
 				JTextField textField = new JTextField ();
 				textField.setPreferredSize(new Dimension (150, textField.getPreferredSize().height));
 				tempPanel.add (label);
@@ -1657,21 +1658,21 @@ public class ViewPanel extends JPanel
 				valueComponents.add (textField);
 				panel.add (tempPanel);
 			}
-			else if(components[1] == Domain.PromptType.CHECKBOX)
+			else if(components[0] == PromptType.CHECKBOX)
 			{
 				JPanel tempPanel = new JPanel (new FlowLayout (FlowLayout.LEFT));
-				JCheckBox checkBox = new JCheckBox (components[0].toString ());
+				JCheckBox checkBox = new JCheckBox (components[2].toString ());
 				JLabel label = new JLabel ("");
 				tempPanel.add (checkBox);
 				tempPanel.add (label);
 				valueComponents.add (checkBox);
 				panel.add (tempPanel);
 			}
-			else if(components[1] == Domain.PromptType.COMBO)
+			else if(components[0] == PromptType.COMBO || components[0] == PromptType.COLUMN)
 			{
 				JPanel tempPanel = new JPanel (new FlowLayout (FlowLayout.LEFT));
-				JLabel label = new JLabel (components[0].toString ());
-				DefaultComboBoxModel model = new DefaultComboBoxModel ((Object[]) components[2]);
+				JLabel label = new JLabel (components[2].toString ());
+				DefaultComboBoxModel model = new DefaultComboBoxModel ((Object[]) components[3]);
 				JComboBox comboBox = new JComboBox (model);
 				tempPanel.add (label);
 				tempPanel.add (comboBox);
@@ -1688,11 +1689,11 @@ public class ViewPanel extends JPanel
 			@Override
 			public void actionPerformed(ActionEvent evt)
 			{
-				ArrayList<Object> values = new ArrayList<Object> ();
+				List<Object> values = new ArrayList<Object> ();
 				boolean pass = true;
 				for (int i = 0; i < prompt.size (); ++i)
 				{
-					if (prompt.get (i)[1] == Domain.PromptType.TEXT)
+					if (prompt.get (i)[0] == PromptType.NUMBER)
 					{
 						try
 						{
@@ -1707,11 +1708,15 @@ public class ViewPanel extends JPanel
 							pass = false;
 						}
 					}
-					else if(prompt.get (i)[1] == Domain.PromptType.CHECKBOX)
+					else if(prompt.get(i)[0] == PromptType.STRING)
+					{
+						values.add (((JTextField) valueComponents.get (i)).getText ());
+					}
+					else if(prompt.get (i)[0] == PromptType.CHECKBOX)
 					{
 						values.add (Boolean.valueOf (((JCheckBox) valueComponents.get (i)).isSelected ()));
 					}
-					else if(prompt.get (i)[1] == Domain.PromptType.COMBO)
+					else if(prompt.get (i)[0] == PromptType.COMBO || prompt.get (i)[0] == PromptType.COLUMN)
 					{
 						values.add (((JComboBox) valueComponents.get (i)).getSelectedItem());
 					}
@@ -1721,12 +1726,9 @@ public class ViewPanel extends JPanel
 				{
 					try
 					{
+						// Hide the dialog and set the data
 						newOperation.setRequiredInfo(values);
 						dialog.setVisible (false);
-					}
-					catch(OperationException ex)
-					{
-						JOptionPane.showMessageDialog(viewPanel, "Internal error, attempted to set required information when none was needed.\nPlease report to the developers.", "Internal Error", JOptionPane.WARNING_MESSAGE);
 					}
 					catch(MarlaException ex)
 					{
@@ -1921,11 +1923,7 @@ public class ViewPanel extends JPanel
 					{
 						domain.problem.save();
 					}
-					catch (ProblemException ex)
-					{
-						return false;
-					}
-					catch (IOException ex)
+					catch (MarlaException ex)
 					{
 						return false;
 					}

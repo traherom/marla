@@ -17,9 +17,9 @@
  */
 package problem;
 
+import problem.Operation.PromptType;
 import problem.DataColumn.DataMode;
 import java.util.List;
-import gui.Domain.PromptType;
 import org.jdom.Element;
 import java.util.ArrayList;
 import r.OperationXML;
@@ -61,35 +61,33 @@ public class OperationTest
 
 	private void fillRequiredInfo(Operation op) throws MarlaException
 	{
-		ArrayList<Object[]> info = op.getRequiredInfoPrompt();
+		List<Object[]> info = op.getRequiredInfoPrompt();
 
 		// Fill with some BS. Not every operation is nicely handled with this approach
 		// if it actually uses the data we're probably not going to have much fun
-		ArrayList<Object> answers = new ArrayList<Object>();
+		List<Object> answers = new ArrayList<Object>();
 		for(Object[] question : info)
 		{
-			PromptType questionType = (PromptType)question[1];
+			PromptType questionType = (PromptType)question[0];
 			switch(questionType)
 			{
 				case CHECKBOX:
 					answers.add(true);
 					break;
-					
-				case TEXT:
-					answers.add("50.0");
+
+				case NUMBER:
+					answers.add(50.0);
+					break;
+
+				case STRING:
+					answers.add("test string");
 					break;
 
 				case COMBO:
-					// Find a column that's numerical
-					DataSource data = op.getParentData();
-					for(int i = 0; i < data.getColumnCount(); i++)
-					{
-						if(data.getColumn(i).getMode() == DataMode.NUMERICAL)
-						{
-							answers.add(data.getColumn(i).getName());
-							break;
-						}
-					}
+				case COLUMN:
+					// Choose one of the values they offered us
+					String[] options = (String[])question[3];
+					answers.add(options[0]);
 					break;
 
 				default:
@@ -257,7 +255,7 @@ public class OperationTest
 			el = op1.toXml();
 			op2 = Operation.fromXml(el);
 
-			// Set it's parent so that if the assertion fails we get the real error,
+			// Set its parent so that if the assertion fails we get the real error,
 			// not something about not having a parent
 			ds1.addOperation(op2);
 

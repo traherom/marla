@@ -3,7 +3,7 @@
 	<operation name="NOP">
 		<computation>
 			<loop type="parent" valueVar="col" nameVar="colName">
-				<if type="vartype" var="col" expected="numeric">
+				<if type="vartype" rvar="col" expected="numeric">
 					<then>
 						<save type="double_array" dynamic_column="colName">col</save>
 					</then>
@@ -14,13 +14,134 @@
 			</loop>
 		</computation>
 	</operation>
+
+	<operation name="Divide">
+		<query type="column" name="col" prompt="Column?" />
+		<query type="number" name="val" prompt="Divide by" />
+
+		<computation>
+			<set name="col" rvar="colName" use="name" />
+			<set name="val" rvar="val" />
+
+			<loop type="parent" valueVar="currCol" nameVar="currColName">
+				<if type="expr" expr="currColName == colName">
+					<then>
+						<!-- This is the column we're supposed to divide -->
+						<save type="double_array" dynamic_column="currColName">currCol / val</save>
+					</then>
+					<else>
+						<!-- Not the column we're working with, just copy it over -->
+						<if type="vartype" rvar="currCol" expected="numeric">
+							<then>
+								<save type="double_array" dynamic_column="currColName">currCol</save>
+							</then>
+							<else>
+								<save type="string_array" dynamic_column="currColName">currCol</save>
+							</else>
+						</if>
+					</else>
+				</if>
+			</loop>
+		</computation>
+	</operation>
+
+	<operation name="Multiply">
+		<query type="column" name="col" prompt="Column?" />
+		<query type="number" name="val" prompt="Multiply by" />
+
+		<computation>
+			<set name="col" rvar="colName" use="name" />
+			<set name="val" rvar="val" />
+
+			<loop type="parent" valueVar="currCol" nameVar="currColName">
+				<if type="expr" expr="currColName == colName">
+					<then>
+						<!-- This is the column we're supposed to multiply -->
+						<save type="double_array" dynamic_column="currColName">currCol * val</save>
+					</then>
+					<else>
+						<!-- Not the column we're working with, just copy it over -->
+						<if type="vartype" rvar="currCol" expected="numeric">
+							<then>
+								<save type="double_array" dynamic_column="currColName">currCol</save>
+							</then>
+							<else>
+								<save type="string_array" dynamic_column="currColName">currCol</save>
+							</else>
+						</if>
+					</else>
+				</if>
+			</loop>
+		</computation>
+	</operation>
+
+	<operation name="Add">
+		<query type="column" name="col" prompt="Column?" />
+		<query type="number" name="val" prompt="Add" />
+
+		<computation>
+			<set name="col" rvar="colName" use="name" />
+			<set name="val" rvar="val" />
+
+			<loop type="parent" valueVar="currCol" nameVar="currColName">
+				<if type="expr" expr="currColName == colName">
+					<then>
+						<!-- This is the column we're supposed to add to -->
+						<save type="double_array" dynamic_column="currColName">currCol + val</save>
+					</then>
+					<else>
+						<!-- Not the column we're working with, just copy it over -->
+						<if type="vartype" rvar="currCol" expected="numeric">
+							<then>
+								<save type="double_array" dynamic_column="currColName">currCol</save>
+							</then>
+							<else>
+								<save type="string_array" dynamic_column="currColName">currCol</save>
+							</else>
+						</if>
+					</else>
+				</if>
+			</loop>
+		</computation>
+	</operation>
+
+	<operation name="Subtract">
+		<query type="column" name="col" prompt="Column?" />
+		<query type="number" name="val" prompt="Subtract" />
+
+		<computation>
+			<set name="col" rvar="colName" use="name" />
+			<set name="val" rvar="val" />
+
+			<loop type="parent" valueVar="currCol" nameVar="currColName">
+				<if type="expr" expr="currColName == colName">
+					<then>
+						<!-- This is the column we're supposed to add to -->
+						<save type="double_array" dynamic_column="currColName">currCol - val</save>
+					</then>
+					<else>
+						<!-- Not the column we're working with, just copy it over -->
+						<if type="vartype" rvar="currCol" expected="numeric">
+							<then>
+								<save type="double_array" dynamic_column="currColName">currCol</save>
+							</then>
+							<else>
+								<save type="string_array" dynamic_column="currColName">currCol</save>
+							</else>
+						</if>
+					</else>
+				</if>
+			</loop>
+		</computation>
+	</operation>
+
 	<operation name="t-test">
 		<query type="checkbox" prompt="Is your data normal?" name="normal" />
 		<computation>
 			<!-- Run t test on each column and save, plus prepare the top row -->
 			<cmd>t = list()</cmd>
 			<loop type="parent" valueVar="col" nameVar="colName" indexVar="i">
-				<if type="vartype" var="col" expected="numeric">
+				<if type="vartype" rvar="col" expected="numeric">
 					<then>
 						<cmd>t[[i]] = t.test(col)</cmd>
 						<save type="string" column="Column">colName</save>
@@ -40,10 +161,11 @@
 			</loop>
 		</computation>
 	</operation>
+
 	<operation name="Mean">
 		<computation>
 			<loop type="parent" valueVar="col">
-				<if type="vartype" var="col" expected="numeric">
+				<if type="vartype" rvar="col" expected="numeric">
 					<then>
 						<save type="double" column="mean">mean(col)</save>
 					</then>
@@ -51,10 +173,11 @@
 			</loop>
 		</computation>
 	</operation>
+
 	<operation name="Standard Deviation">
 		<computation>
 			<loop type="parent" valueVar="col">
-				<if type="vartype" var="col" expected="numeric">
+				<if type="vartype" rvar="col" expected="numeric">
 					<then>
 						<save type="double" column="sd">sd(col)</save>
 					</then>
@@ -62,10 +185,11 @@
 			</loop>
 		</computation>
 	</operation>
+
 	<operation name="Sum">
 		<computation>
 			<loop type="parent" valueVar="col">
-				<if type="vartype" var="col" expected="numeric">
+				<if type="vartype" rvar="col" expected="numeric">
 					<then>
 						<save type="double" column="sum">sum(col)</save>
 					</then>
@@ -73,10 +197,11 @@
 			</loop>
 		</computation>
 	</operation>
+
 	<operation name="Summation">
 		<computation>
 			<loop type="parent" valueVar="col">
-				<if type="vartype" var="col" expected="numeric">
+				<if type="vartype" rvar="col" expected="numeric">
 					<then>
 						<save type="double" column="sum">sum(col)</save>
 					</then>
@@ -84,6 +209,7 @@
 			</loop>
 		</computation>
 	</operation>
+
 	<operation name="Summary">
 		<computation>
 			<loop type="parent" indexVar="colName" valueVar="col">
@@ -95,6 +221,7 @@
 			</loop>
 		</computation>
 	</operation>
+
 	<operation name="XY Plot" plot="true">
 		<query type="column" name="x" prompt="X column" />
 		<query type="column" name="y" prompt="Y column" />

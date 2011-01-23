@@ -280,7 +280,7 @@ public final class DataSet extends JLabel implements DataSource, Changeable
 
 		// Get the column names
 		RProcessor proc = RProcessor.getInstance();
-		ArrayList<String> cols = proc.executeStringArray("colnames(" + varName + ")");
+		List<String> cols = proc.executeStringArray("colnames(" + varName + ")");
 		for(String col : cols)
 		{
 			DataColumn dc = ds.addColumn(col);
@@ -558,20 +558,6 @@ public final class DataSet extends JLabel implements DataSource, Changeable
 	}
 
 	@Override
-	@Deprecated
-	public Operation addOperationToEnd(Operation op) throws MarlaException
-	{
-		if(solutionOps.isEmpty())
-		{
-			return addOperation(op);
-		}
-		else
-		{
-			return solutionOps.get(0).addOperationToEnd(op);
-		}
-	}
-
-	@Override
 	public Operation removeOperation(Operation op) throws MarlaException
 	{
 		// Tell operation to we're not its parent any more
@@ -777,7 +763,7 @@ public final class DataSet extends JLabel implements DataSource, Changeable
 	}
 
 	@Override
-	public Element toXml()
+	public Element toXml() throws MarlaException
 	{
 		Element dataEl = new Element("data");
 		dataEl.setAttribute("name", name);

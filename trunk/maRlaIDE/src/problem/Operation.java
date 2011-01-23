@@ -78,6 +78,14 @@ public abstract class Operation extends JLabel implements DataSource, Changeable
 	private static Map<String, String> javaOps = initJavaOperationList();
 
 	/**
+	 * Prompts that can be requested, used by get and setPromptTypes()
+	 */
+	public enum PromptType
+	{
+		COLUMN, COMBO, STRING, NUMBER, CHECKBOX
+	};
+
+	/**
 	 * Initializes the list of available Java-based (hard coded) operations.
 	 * This list should contain key value pairs with the key being a friendly, user
 	 * readable name and the value being the class string, as would be passed to Class.forName().
@@ -446,7 +454,7 @@ public abstract class Operation extends JLabel implements DataSource, Changeable
 	 *			combo selection box), then the third element in Object[] will
 	 *			be whatever is needed.
 	 */
-	public ArrayList<Object[]> getRequiredInfoPrompt() throws MarlaException
+	public List<Object[]> getRequiredInfoPrompt() throws MarlaException
 	{
 		return new ArrayList<Object[]>();
 	}
@@ -459,7 +467,7 @@ public abstract class Operation extends JLabel implements DataSource, Changeable
 	 * is set incorrectly.
 	 * @param values ArrayList of Objects that answer the questions
 	 */
-	public void setRequiredInfo(ArrayList<Object> values) throws MarlaException
+	public void setRequiredInfo(List<Object> val) throws MarlaException
 	{
 		if(!isInfoRequired())
 			throw new OperationException("This operation does not require info, should not be set");
@@ -516,7 +524,7 @@ public abstract class Operation extends JLabel implements DataSource, Changeable
 		// Well, are our children all the same then?
 		if(!solutionOps.equals(otherOp.solutionOps))
 			return false;
-		
+
 		return true;
 	}
 
@@ -537,7 +545,7 @@ public abstract class Operation extends JLabel implements DataSource, Changeable
 	 * @return XML Element with all settings for this Operation
 	 */
 	@Override
-	public final Element toXml()
+	public final Element toXml() throws MarlaException
 	{
 		Element dataEl = new Element("operation");
 		dataEl.setAttribute("type", this.getClass().getName());
@@ -569,7 +577,7 @@ public abstract class Operation extends JLabel implements DataSource, Changeable
 	 * need by their operation type
 	 * @return null if no extra information, JDOM Element otherwise
 	 */
-	protected Element toXmlExtra()
+	protected Element toXmlExtra() throws MarlaException
 	{
 		return null;
 	}
@@ -604,7 +612,7 @@ public abstract class Operation extends JLabel implements DataSource, Changeable
 
 		// Ourselves
 		sb.append(operationRecord);
-		
+
 		return operationRecord.toString();
 	}
 
@@ -688,20 +696,6 @@ public abstract class Operation extends JLabel implements DataSource, Changeable
 		}
 
 		return op;
-	}
-
-	@Override
-	@Deprecated
-	public final Operation addOperationToEnd(Operation op) throws MarlaException
-	{
-		if(solutionOps.isEmpty())
-		{
-			return addOperation(op);
-		}
-		else
-		{
-			return solutionOps.get(0).addOperationToEnd(op);
-		}
 	}
 
 	@Override

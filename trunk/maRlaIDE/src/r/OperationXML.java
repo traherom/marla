@@ -17,7 +17,6 @@
  */
 package r;
 
-import gui.Domain.PromptType;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -68,21 +67,13 @@ public class OperationXML extends Operation
 	/**
 	 * Saves the answer from the GUI to any questions we asked
 	 */
-	private Map<String, Object[]> questionAnswers = null;
+	private Map<String, Object> questionAnswers = null;
 	/**
 	 * Saves the RecordMode we should be saving in. XML ops have to perform 
 	 * extra R calls to do their work, we avoid saving those to the record
 	 * by switching back and forth from RecordMode.DISABLED and this
 	 */
 	private RecordMode intendedRecordMode = null;
-
-	/**
-	 * Types of queries we support from XML
-	 */
-	private enum QueryType
-	{
-		CHECKBOX, STRING, NUMBER, COLUMN, COMBO
-	};
 
 	/**
 	 * Types of commands we support from XML
@@ -321,51 +312,59 @@ public class OperationXML extends Operation
 		proc.setRecorder(RecordMode.DISABLED);
 	}
 
-	private void processSet(RProcessor proc, Element cmdEl) throws OperationXMLException, OperationInfoRequiredException, RProcessorException, MarlaException
+	private void processSet(RProcessor proc, Element setEl) throws OperationXMLException, OperationInfoRequiredException, RProcessorException, MarlaException
 	{
-		Object[] answer = null;
+		// What answer are we looking for here?
+		String promptKey = setEl.getAttributeValue("name");
+		if(promptKey == null)
+			throw new OperationXMLException("XML specification does not mark '" + promptKey + "' as required information but uses it in computation.");
 
-		try
-		{
-			answer = questionAnswers.get(cmdEl.getAttributeValue("name"));
-			if(answer == null)
-				throw new OperationXMLException("XML specification does not mark '" + cmdEl.getAttributeValue("name") + "' as required information but uses it in computation.");
-		}
-		catch(NullPointerException ex)
-		{
-			throw new OperationInfoRequiredException("Required info is somehow null. Tell devs.", this);
-		}
-
+		// Read the answer
+		Object answerVal = questionAnswers.get(promptKey);
+		
 		// Record the set calls
 		proc.setRecorder(intendedRecordMode);
 
-		// Which setVariable() should we call?
-		String rVar = cmdEl.getAttributeValue("rvar");
-		QueryType varType = (QueryType) answer[0];
-		switch(varType)
+		// All of them will save to here
+		String rVar = setEl.getAttributeValue("rvar");
+
+		// Find out what type of query it was so we know where setVar to call
+		PromptType promptType = getPromptType(promptKey);
+		switch(promptType)
 		{
 			case COMBO: // A combo just gets returned as a string anyway
 			case STRING:
-				proc.setVariable(rVar, (String) answer[1]);
+				proc.setVariable(rVar, (String) answerVal);
 				break;
 
 			case NUMBER:
-				proc.setVariable(rVar, (Double) answer[1]);
+				proc.setVariable(rVar, (Double) answerVal);
 				break;
 
 			case COLUMN:
-				try
+				// Look for the modifier to only save the string
+				String useType = setEl.getAttributeValue("use");
+				if(useType == null || useType.equals("values"))
 				{
-					proc.setVariable(rVar, getParentData().getColumn((String) answer[1]));
+					// Save all the values in the column
+					try
+					{
+						proc.setVariable(rVar, getParentData().getColumn((String) answerVal));
+					}
+					catch(DataNotFoundException ex)
+					{
+						throw new OperationInfoRequiredException("A DataColumn with the given name '" + answerVal + "' could not be found.", this);
+					}
 				}
-				catch(DataNotFoundException ex)
+				else if(useType.equals("name"))
 				{
-					throw new OperationInfoRequiredException("A DataColumn with the given name ('" + answer[1] + "') could not be found.", this);
+					// Just save the column name
+					proc.setVariable(rVar, (String) answerVal);
 				}
 				break;
 
 			default:
-				throw new OperationXMLException("Unable to set '" + varType + "' yet.");
+				throw new OperationXMLException("Unable to set '" + promptType + "' yet.");
 		}
 
 		// Go back to old record mode
@@ -464,7 +463,7 @@ public class OperationXML extends Operation
 				break;
 
 			case DOUBLE_ARRAY: // Loop over an R vector, setting each element as the index var
-				ArrayList<Double> doubleVals = proc.executeDoubleArray(loopEl.getAttributeValue("loopVar"));
+				List<Double> doubleVals = proc.executeDoubleArray(loopEl.getAttributeValue("loopVar"));
 				for(int i = 0; i < doubleVals.size(); i++)
 				{
 					// Assign the loop index
@@ -481,7 +480,7 @@ public class OperationXML extends Operation
 				break;
 
 			case STRING_ARRAY: // Loop over an R vector, setting each element as the index var
-				ArrayList<String> stringVals = proc.executeStringArray(loopEl.getAttributeValue("loopVar"));
+				List<String> stringVals = proc.executeStringArray(loopEl.getAttributeValue("loopVar"));
 				for(int i = 0; i < stringVals.size(); i++)
 				{
 					// Assign the loop index
@@ -509,12 +508,12 @@ public class OperationXML extends Operation
 		String type = ifEl.getAttributeValue("type");
 		if(type.equals("vartype"))
 		{
-			// Get the type of the variable given in "var"
-			String var = ifEl.getAttributeValue("var");
+			// Get the type of the variable given in "rvar"
+			String var = ifEl.getAttributeValue("rvar");
 			String strResult = proc.execute("str(" + var + ")");
 			String varType = strResult.substring(1, 4);
 
-			// And ensure we match
+			// And ensure we match the expected value
 			String expected = ifEl.getAttributeValue("expected");
 			if(expected.equals("numeric") && varType.equals("num"))
 				ifExprResult = true;
@@ -527,17 +526,13 @@ public class OperationXML extends Operation
 		{
 			try
 			{
+				// Custom expression, pass to R and return that
 				String expr = ifEl.getAttributeValue("expr");
-				Double res = proc.executeDouble(expr);
-
-				if(res != 0)
-					ifExprResult = true;
-				else
-					ifExprResult = false;
+				ifExprResult = proc.executeBoolean(expr);
 			}
 			catch(RProcessorParseException ex)
 			{
-				throw new OperationXMLException("If expression did not return a numeric value", ex);
+				throw new OperationXMLException("If expression did not return a single boolean value", ex);
 			}
 		}
 		else
@@ -582,41 +577,36 @@ public class OperationXML extends Operation
 	 *		prompt - Question to actually present the user with
 	 */
 	@Override
-	public ArrayList<Object[]> getRequiredInfoPrompt() throws MarlaException
+	public List<Object[]> getRequiredInfoPrompt() throws MarlaException
 	{
-		ArrayList<Object[]> questions = new ArrayList<Object[]>();
+		List<Object[]> questions = new ArrayList<Object[]>();
 
+		// Build the array for each of the questions
 		for(Object queryElObj : opConfig.getChildren("query"))
 		{
 			Element queryEl = (Element) queryElObj;
-			QueryType type = QueryType.valueOf(queryEl.getAttributeValue("type").toUpperCase());
-			switch(type)
+
+			// Ask the GUI for the right type of value
+			PromptType type = PromptType.valueOf(queryEl.getAttributeValue("type").toUpperCase());
+			if(type == PromptType.COLUMN)
 			{
-				case CHECKBOX:
-					questions.add(new Object[]
-							{
-								queryEl.getAttributeValue("prompt"), PromptType.CHECKBOX
-							});
-					break;
-
-				case STRING: // Number and string both present a box, it varies
-				case NUMBER: // how we handle them after it's returned
-					questions.add(new Object[]
-							{
-								queryEl.getAttributeValue("prompt"), PromptType.TEXT
-							});
-					break;
-
-				case COLUMN:
-					// Build a list of the column names
-					questions.add(new Object[]
-							{
-								queryEl.getAttributeValue("prompt"), PromptType.COMBO, getParentData().getColumnNames()
-							});
-					break;
-
-				default:
-					throw new RuntimeException(new OperationXMLException("The query command type '" + type + "' is not yet handled."));
+				// Build a list of the column names
+				questions.add(new Object[]
+						{
+							PromptType.COLUMN, queryEl.getAttributeValue("name"), queryEl.getAttributeValue("prompt"), getParentData().getColumnNames()
+						});
+			}
+			else if(type == PromptType.COMBO)
+			{
+				throw new OperationXMLException("Combo prompts are not supported in XML yet");
+			}
+			else
+			{
+				// No processing needed
+				questions.add(new Object[]
+						{
+							type, queryEl.getAttributeValue("name"), queryEl.getAttributeValue("prompt")
+						});
 			}
 		}
 
@@ -629,26 +619,48 @@ public class OperationXML extends Operation
 	 * @param values ArrayList of Objects that answer the questions.
 	 */
 	@Override
-	public void setRequiredInfo(ArrayList<Object> values) throws OperationException, MarlaException
+	public void setRequiredInfo(List<Object> val) throws OperationException, MarlaException
 	{
 		// It would be an error to try to set when none is asked for
 		if(!isInfoRequired())
 			throw new OperationException("This operation does not require info, should not be set");
 
-		questionAnswers = new HashMap<String, Object[]>();
-		@SuppressWarnings("unchecked")
-		List<Element> queryEls = opConfig.getChildren("query");
-		for(int i = 0; i < queryEls.size(); i++)
+		// Create new answer map to fill with new answers
+		questionAnswers = new HashMap<String, Object>();
+
+		// Go through each asked for element to determine the name associated with it
+		List<Object[]> prompt = getRequiredInfoPrompt();
+		for(int i = 0; i < prompt.size(); i++)
 		{
-			Element queryEl = queryEls.get(i);
-			Object[] temp = new Object[2];
-			temp[0] = QueryType.valueOf(queryEl.getAttributeValue("type").toUpperCase());
-			temp[1] = values.get(i);
-			questionAnswers.put(queryEl.getAttributeValue("name"), temp);
+			questionAnswers.put((String)prompt.get(i)[1], val.get(i));
 		}
 
+		// We need to recompute
 		markChanged();
 		markUnsaved();
+	}
+
+
+	private Element getPromptEl(String key) throws OperationXMLException
+	{
+		for(Object queryElObj : opConfig.getChildren("query"))
+		{
+			Element queryEl = (Element) queryElObj;
+			if(key.equals(queryEl.getAttributeValue("name")))
+				return queryEl;
+		}
+
+		throw new OperationXMLException("Unable to find a prompt with the key '" + key + "'");
+	}
+
+	private PromptType getPromptType(String key) throws OperationXMLException
+	{
+		return getPromptType(getPromptEl(key));
+	}
+
+	private PromptType getPromptType(Element promptEl) throws OperationXMLException
+	{
+		return PromptType.valueOf(promptEl.getAttributeValue("type").toUpperCase());
 	}
 
 	@Override
@@ -723,7 +735,7 @@ public class OperationXML extends Operation
 	 * @return Element with the XML operation name
 	 */
 	@Override
-	protected Element toXmlExtra()
+	protected Element toXmlExtra() throws MarlaException
 	{
 		Element el = new Element("xmlop");
 		el.setAttribute("name", opConfig.getAttributeValue("name"));
@@ -735,13 +747,13 @@ public class OperationXML extends Operation
 			Iterator<String> it = keys.iterator();
 			while(it.hasNext())
 			{
-				String key = it.next();
-				Object[] answer = questionAnswers.get(key);
+				String promptKey = it.next();
+				Object answer = questionAnswers.get(promptKey);
 
 				Element answerEl = new Element("answer");
-				answerEl.setAttribute("key", key);
-				answerEl.setAttribute("type", answer[0].toString());
-				answerEl.setAttribute("answer", answer[1].toString());
+				answerEl.setAttribute("key", promptKey);
+				answerEl.setAttribute("type", getPromptType(promptKey).toString());
+				answerEl.setAttribute("answer", answer.toString());
 
 				el.addContent(answerEl);
 			}
@@ -767,26 +779,32 @@ public class OperationXML extends Operation
 			// Question answers
 			if(!xmlEl.getChildren("answer").isEmpty())
 			{
-				questionAnswers = new HashMap<String, Object[]>();
-				for(Object answer : xmlEl.getChildren("answer"))
+				questionAnswers = new HashMap<String, Object>();
+				for(Object answerObj : xmlEl.getChildren("answer"))
 				{
-					Element answerEl = (Element) answer;
+					Element answerEl = (Element) answerObj;
 
 					String key = answerEl.getAttributeValue("key");
-					Object[] an = new Object[2];
-					an[0] = QueryType.valueOf(answerEl.getAttributeValue("type"));
-
+					
 					// Covert the actual answer if needed
-					if(an[0] == QueryType.CHECKBOX)
+					Object answer = null;
+					PromptType type = getPromptType(key);
+					switch(type)
 					{
-						an[1] = Boolean.parseBoolean(answerEl.getAttributeValue("answer"));
-					}
-					else
-					{
-						an[1] = answerEl.getAttributeValue("answer");
+						case NUMBER:
+							answer = Double.parseDouble(answerEl.getAttributeValue("answer"));
+							break;
+							
+						case CHECKBOX:
+							answer = Boolean.parseBoolean(answerEl.getAttributeValue("answer"));
+							break;
+
+						default:
+							answer = answerEl.getAttributeValue("answer");
 					}
 
-					questionAnswers.put(key, an);
+					// Save to the new operation
+					questionAnswers.put(key, answer);
 				}
 			}
 		}

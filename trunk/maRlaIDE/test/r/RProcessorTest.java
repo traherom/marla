@@ -17,6 +17,7 @@
  */
 package r;
 
+import java.util.List;
 import java.io.File;
 import problem.DataColumn.DataMode;
 import problem.DataColumn;
@@ -124,6 +125,61 @@ public class RProcessorTest
 	public void testParseDoubleArrayInvalidString() throws Exception
 	{
 		proc.parseDoubleArray("[1]  \"haha\"\n");
+	}
+
+	@Test
+	public void testParseBoolean() throws Exception
+	{
+		Boolean d = proc.parseBoolean("[1] TRUE\n");
+		assertEquals(true, d);
+	}
+
+	@Test(expected=RProcessorParseException.class)
+	public void testParseBooleanInvalidExtraValues() throws Exception
+	{
+		proc.parseBoolean("[1]  TRUE FALSE\n");
+	}
+
+	@Test(expected=RProcessorParseException.class)
+	public void testParseBooleanInvalidString() throws Exception
+	{
+		proc.parseBoolean("[1]  \"aoeu\"\n");
+	}
+
+	@Test
+	public void testParseBooleanArray() throws Exception
+	{
+		List<Boolean> expectedVals = new ArrayList<Boolean>();
+		expectedVals.add(false);
+		expectedVals.add(true);
+		expectedVals.add(true);
+		expectedVals.add(false);
+		expectedVals.add(false);
+
+		List<Boolean> vals = proc.parseBooleanArray("[1]  FALSE TRUE\n[2]  TRUE FALSE FALSE\n");
+		assertEquals(expectedVals, vals);
+	}
+
+	@Test
+	public void testParseBooleanArraySingleValue() throws Exception
+	{
+		List<Boolean> expectedVals = new ArrayList<Boolean>();
+		expectedVals.add(false);
+
+		List<Boolean> vals = proc.parseBooleanArray("[1]  FALSE\n");
+		assertEquals(expectedVals, vals);
+	}
+
+	@Test(expected=RProcessorParseException.class)
+	public void testParseBooleanArrayInvalidString() throws Exception
+	{
+		proc.parseBooleanArray("[1]  \"haha\"\n");
+	}
+
+	@Test(expected=RProcessorParseException.class)
+	public void testParseBooleanArrayInvalidString2() throws Exception
+	{
+		proc.parseBooleanArray("[1]  \"FALSE\"\n");
 	}
 
 	@Test
