@@ -1,5 +1,6 @@
 #summary Covers the export template XML
 #labels Featured
+<wiki:toc max_depth="4" />
 
 = Introduction =
 The LaTeX export template format is essentially a LaTeX document with markers sprinkled throughout to designate where content should be substituted. The example at the bottom [ExportTemplateXML#Example] is a good way to get the overview quickly.
@@ -8,45 +9,62 @@ The root element is a `<template />` that takes no attributes. From there any of
 
 = Elements =
 == Name ==
-{{{<name />}}}
+{{{
+<name />
+}}}
 _Coming soon._
 
 Name of the creator of the document.
 
 == Class ==
-{{{<class type="short|long" />}}}
+{{{
+<class type="short|long" />
+}}}
 _Coming soon._
 
 Name of the class this problem is for. Classes may be given either short names (eg _MA2510_) or long names (eg, _Probability and Statistics_).
 
 == Chapter ==
-{{{<chapter />}}}
+{{{
+<chapter />
+}}}
 _Coming soon._
 
 Chapter this problem comes from.
 
 == Section ==
-{{{<section />}}}
+{{{
+<section />
+}}}
 _Coming soon._
 
 Chapter section this problem comes from.
 
 == Problem Number ==
-{{{<probnum />}}}
+{{{
+<probnum />
+}}}
 _Coming soon._
 
 This problem's problem number in the section/chapter. 
 
 == Statement ==
-{{{<statement />}}}
+{{{
+<statement />
+}}}
 Description of the problem from the book, as entered in the problem wizard. If done outside a loop (see [ExportTemplateXML#Loop]), this gives the main problem statement. If done inside a loop, returns the current subproblem's problem statement.
 
 == Solution ==
-{{{<solution />}}}
+{{{
+<solution />
+}}}
 R code to solve the problem. If done outside a loop (see [ExportTemplateXML#Loop]), this creates Sweave blocks for every operation in the problem. If done inside a loop, creates a Sweave block for the current subproblem's designated solution.
 
 == Loop ==
-{{{<loop type="subproblem">...</loop>}}}
+{{{
+<loop type="subproblem">...</loop>
+}}}
+
 Loops over each of the subproblems. Allows their individual statements and solutions to be examined. See [ExportTemplateXML#Statement] and [ExportTemplateXML#Solution].
 
 = Example = 
