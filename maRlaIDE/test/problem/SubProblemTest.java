@@ -99,7 +99,7 @@ public class SubProblemTest
 	}
 
 	@Test
-	public void testToAndFromXMLNoSolution()
+	public void testToAndFromXMLNoSolution() throws Exception
 	{
 		Element el = testSub1.toXml();
 		SubProblem newSub = SubProblem.fromXml(el, testProb2);
@@ -107,7 +107,7 @@ public class SubProblemTest
 	}
 
 	@Test
-	public void testToAndFromXMLWithSolution()
+	public void testToAndFromXMLWithSolution() throws Exception
 	{
 		// Hook up the start and ends in some places
 		testSub1.setSolutionStart(testProb1.getData(0));

@@ -109,5 +109,5 @@ public interface ProblemPart extends Changeable
 	 * @return JDOM element containing all information needed to rebuild
 	 *		this exact problem
 	 */
-	public Element toXml();
+	public Element toXml() throws MarlaException;
 }

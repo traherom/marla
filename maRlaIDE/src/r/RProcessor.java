@@ -59,9 +59,13 @@ public final class RProcessor
 	 */
 	private final Pattern doublePatt = Pattern.compile("(?<=\\s)-?[0-9]+(\\.[0-9]+)?(e-?[0-9]+)?(?=\\s|$)");
 	/**
-	 * Pattern used to recognize doubles in R output, mainly for use with vectors
+	 * Pattern used to recognize strings in R output, mainly for use with vectors
 	 */
 	private final Pattern stringPatt = Pattern.compile("\"(([^\\n]|\\\")+?)\"");
+	/**
+	 * Pattern used to recognize booleans in R output, mainly for use with vectors
+	 */
+	private final Pattern booleanPatt = Pattern.compile("(?<=\\s)(FALSE|TRUE)(?=\\s|$)");
 	/**
 	 * Path to the R executable, used if R has to be reloaded after it dies
 	 */
@@ -283,7 +287,7 @@ public final class RProcessor
 		{
 			// Make the process die even if it didn't want to
 			rProc.destroy();
-			
+
 			procIn = null;
 			procOut = null;
 			comboStream = null;
@@ -380,7 +384,7 @@ public final class RProcessor
 					throw new RProcessorException(results.toString());
 				}
 			}
-			
+
 			// Record interaction if needed
 			if(recordMode == RecordMode.OUTPUT_ONLY || recordMode == RecordMode.FULL)
 				interactionRecord.append(results);
@@ -405,9 +409,9 @@ public final class RProcessor
 	 * @param cmds List of R commands to execute
 	 * @return ArrayList of Strings, where each entry is the output from one of the commands given.
 	 */
-	public ArrayList<String> execute(ArrayList<String> cmds) throws RProcessorException
+	public List<String> execute(List<String> cmds) throws RProcessorException
 	{
-		ArrayList<String> output = new ArrayList<String>(cmds.size());
+		List<String> output = new ArrayList<String>(cmds.size());
 
 		for(String cmd : cmds)
 		{
@@ -433,7 +437,7 @@ public final class RProcessor
 	 * @param cmd R command to execute
 	 * @return ArrayList of doubles that the R command returned
 	 */
-	public ArrayList<Double> executeDoubleArray(String cmd) throws RProcessorException, RProcessorParseException
+	public List<Double> executeDoubleArray(String cmd) throws RProcessorException, RProcessorParseException
 	{
 		return parseDoubleArray(execute(cmd));
 	}
@@ -455,9 +459,31 @@ public final class RProcessor
 	 * @param cmd R command to execute
 	 * @return ArrayList of strings that the R command returned
 	 */
-	public ArrayList<String> executeStringArray(String cmd) throws RProcessorException, RProcessorParseException
+	public List<String> executeStringArray(String cmd) throws RProcessorException, RProcessorParseException
 	{
 		return parseStringArray(execute(cmd));
+	}
+
+	/**
+	 * Convenience function that executes the given command and parses the result as a boolean. An
+	 * exception is thrown if there is not exactly one boolean in the output.
+	 * @param cmd R command to execute
+	 * @return String value of the R call
+	 */
+	public Boolean executeBoolean(String cmd) throws RProcessorException, RProcessorParseException
+	{
+		return parseBoolean(execute(cmd));
+	}
+
+	/**
+	 * Convenience function that executes the given command and parses the result as a vector of
+	 * booleans. An exception is thrown if there are no booleans in the output.
+	 * @param cmd R command to execute
+	 * @return ArrayList of strings that the R command returned
+	 */
+	public List<Boolean> executeBooleanArray(String cmd) throws RProcessorException, RProcessorParseException
+	{
+		return parseBooleanArray(execute(cmd));
 	}
 
 	/**
@@ -506,13 +532,13 @@ public final class RProcessor
 
 			while(m.find())
 			{
-				vals.add(new Double(m.group()));
+				vals.add(Double.valueOf(m.group()));
 			}
 		}
 		catch(NumberFormatException ex)
 		{
 			// Should almost never be hit, as we recognized it with our regex
-			throw new RProcessorParseException("The R result was improperly processed internally. Please tell the developer");
+			throw new RProcessorParseException("The R result did not contain numeric values");
 		}
 
 		// We clearly weren't supposed to parse the output like this, it wasn't what we wanted
@@ -548,24 +574,64 @@ public final class RProcessor
 	{
 		ArrayList<String> vals = new ArrayList<String>();
 
-		try
-		{
-			Matcher m = stringPatt.matcher(rOutput);
+		Matcher m = stringPatt.matcher(rOutput);
 
-			while(m.find())
-			{
-				vals.add(m.group(1));
-			}
-		}
-		catch(NumberFormatException ex)
+		while(m.find())
 		{
-			// Should almost never be hit, as we recognized it with our regex
-			throw new RProcessorParseException("The R result was improperly processed internally. Please tell the developer");
+			vals.add(m.group(1));
 		}
 
 		// We clearly weren't supposed to parse the output like this, it wasn't what we wanted
 		if(vals.isEmpty())
 			throw new RProcessorParseException("The R result is not a vector of strings");
+
+		return vals;
+	}
+
+	/**
+	 * Takes the given R output and attempts to parse it as a single string value. An exception
+	 * is thrown if there isn't exactly one string value in the output.
+	 * @param rOutput R output, as returned by execute(String)
+	 * @return String value contained in the output
+	 */
+	public Boolean parseBoolean(String rOutput) throws RProcessorParseException
+	{
+		List<Boolean> arr = parseBooleanArray(rOutput);
+
+		if(arr.size() != 1)
+			throw new RProcessorParseException("The R result was not a single string value");
+
+		return arr.get(0);
+	}
+
+	/**
+	 * Takes the given R output and attempts to parse it as a vector of strings. An exception is
+	 * thrown if the output contains no strings.
+	 * @param rOutput R output, as returned by execute(String)
+	 * @return ArrayList of Strings from the output
+	 */
+	public List<Boolean> parseBooleanArray(String rOutput) throws RProcessorParseException
+	{
+		List<Boolean> vals = new ArrayList<Boolean>();
+
+		try
+		{
+			Matcher m = booleanPatt.matcher(rOutput);
+
+			while(m.find())
+			{
+				vals.add(Boolean.valueOf(m.group(1)));
+			}
+		}
+		catch(NumberFormatException ex)
+		{
+			// Should almost never be hit, as we recognized it with our regex
+			throw new RProcessorParseException("The R result did not contain boolean values");
+		}
+
+		// We clearly weren't supposed to parse the output like this, it wasn't what we wanted
+		if(vals.isEmpty())
+			throw new RProcessorParseException("The R result is not a vector of booleans");
 
 		return vals;
 	}

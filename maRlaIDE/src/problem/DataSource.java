@@ -86,17 +86,7 @@ public interface DataSource
 	 * @param op Operation to add to perform on DataSet
 	 * @return Newly added operation
 	 */
-	public Operation addOperation(Operation op) throws MarlaException;
-
-	/**
-	 * Appends the given operation to the end of the "left" (first) chain
-	 * on this dataset.
-	 * @param op Operation to add to perform on DataSet
-	 * @return Newly added operation
-	 * @deprecated Instead call addOperation() on the appropriate Operation
-	 */
-	@Deprecated
-	public Operation addOperationToEnd(Operation op) throws MarlaException;
+	public Operation addOperation(Operation op) throws MarlaException;;
 
 	/**
 	 * Removes an operation from the data
@@ -154,7 +144,7 @@ public interface DataSource
 	 * name, columns, and child operations
 	 * @return JDOM Element of this DataSet
 	 */
-	public Element toXml();
+	public Element toXml() throws MarlaException;
 
 	/**
 	 * Exports this DataSource to a CSV file at the given path. Use R to perform the export.

@@ -26,7 +26,6 @@ import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import org.jdom.JDOMException;
 import problem.DataSet;
-import problem.ProblemException;
 import problem.MarlaException;
 import problem.Operation;
 import problem.OperationInfoRequiredException;
@@ -57,10 +56,6 @@ public class Domain
 	public static final ArrayList<Exception> logger = new ArrayList<Exception>();
 	/** The path for the Operations XML file.*/
 	public static final String xmlPath = "ops.xml";
-
-	/** Types of questions Operations can ask a user.*/
-	public enum PromptType {CHECKBOX, TEXT, COMBO};
-
 	/** The last good problem directory.*/
 	public String lastGoodDir = HOME_DIR;
 	/** The last good file that was a CSV file.*/
@@ -120,13 +115,9 @@ public class Domain
 			{
 				problem.save();
 			}
-			catch(ProblemException ex)
+			catch(MarlaException ex)
 			{
-				// TBD. Unable to save
-			}
-			catch(IOException ex)
-			{
-				// TBD.
+				// TODO. Unable to save
 			}
 		}
 	}

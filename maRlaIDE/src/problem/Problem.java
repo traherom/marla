@@ -302,7 +302,7 @@ public class Problem implements ProblemPart
 	 * Attempts to save problem to file path given.
 	 * @param fileName Where to attempt to save the problem.
 	 */
-	private void save(String fileName) throws ProblemException, IOException
+	private void save(String fileName) throws MarlaException
 	{
 		if(fileName == null)
 			throw new ProblemException("File name may not be null");
@@ -310,20 +310,27 @@ public class Problem implements ProblemPart
 		// Build
 		Document doc = new Document(this.toXml());
 
-		// Output to file
-		OutputStreamWriter os = new OutputStreamWriter(new FileOutputStream(fileName));
-		BufferedWriter outputStream = new BufferedWriter(os);
+		try
+		{
+			// Output to file
+			OutputStreamWriter os = new OutputStreamWriter(new FileOutputStream(fileName));
+			BufferedWriter outputStream = new BufferedWriter(os);
 
-		Format formatter = Format.getPrettyFormat();
-		formatter.setEncoding(os.getEncoding());
-		XMLOutputter xml = new XMLOutputter(formatter);
-		xml.output(doc, outputStream);
+			Format formatter = Format.getPrettyFormat();
+			formatter.setEncoding(os.getEncoding());
+			XMLOutputter xml = new XMLOutputter(formatter);
+			xml.output(doc, outputStream);
+		}
+		catch(IOException ex)
+		{
+			throw new ProblemException("Problem occured writing to file during save", ex);
+		}
 	}
 
 	/**
 	 * Attempts to save problem to file specified by fileName
 	 */
-	public void save() throws ProblemException, IOException
+	public void save() throws MarlaException
 	{
 		save(fileName);
 		isSaved = true;
@@ -407,7 +414,7 @@ public class Problem implements ProblemPart
 	}
 
 	@Override
-	public Element toXml()
+	public Element toXml() throws MarlaException
 	{
 		Element rootEl = new Element("problem");
 		rootEl.addContent(new Element("statement").addContent(statement));

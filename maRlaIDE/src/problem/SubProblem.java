@@ -245,7 +245,7 @@ public class SubProblem implements ProblemPart
 	}
 
 	@Override
-	public Element toXml()
+	public Element toXml() throws MarlaException
 	{
 		Element subEl = new Element("part");
 		subEl.setAttribute("id", id);
