@@ -523,16 +523,24 @@ public class LatexExporter
 		String texPath = rnwFileName.replace(".rnw", ".tex");
 		String pdfPath = rnwFileName.replace(".rnw", ".pdf");
 
-		String pdfOutput = proc.execute("system('pdflatex " + texPath + "', show.output.on.console=T)");
+		String pdfOutput = proc.execute("system('pdflatex -halt-on-error " + texPath + "', intern=T)");
 
 		// Remove the tex file, it was temporary
 		FileUtils.deleteQuietly(new File(texPath));
 
 		// Ensure we actually succeeded
-		if(pdfOutput.isEmpty())
+		if(pdfOutput.contains("not found"))
 		{
 			// Unable to find pdflatex to run
 			throw new LatexException("Unable to find pdflatex on PATH, cannot do PDF export");
+		}
+
+		// Check the output file name reported by pdflatex
+		List<String> pdfOutputLines = proc.parseStringArray(pdfOutput);
+		String pdfFileLine = pdfOutputLines.get(pdfOutputLines.size() - 2);
+		if(!pdfFileLine.matches("^Output written on " + pdfPath + ".*"))
+		{
+			throw new LatexException("pdflatex reported a different output file ('" + pdfFileLine + "') than we expected ('" + pdfPath + "')");
 		}
 
 		// Move/remove temp files
