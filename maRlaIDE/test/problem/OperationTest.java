@@ -18,7 +18,6 @@
 package problem;
 
 import problem.Operation.PromptType;
-import problem.DataColumn.DataMode;
 import java.util.List;
 import org.jdom.Element;
 import java.util.ArrayList;
@@ -86,7 +85,7 @@ public class OperationTest
 				case COMBO:
 				case COLUMN:
 					// Choose one of the values they offered us
-					String[] options = (String[])question[3];
+					Object[] options = (Object[])question[3];
 					answers.add(options[0]);
 					break;
 

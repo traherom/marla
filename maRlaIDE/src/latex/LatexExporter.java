@@ -274,7 +274,7 @@ public class LatexExporter
 						break;
 
 					default:
-						throw new LatexException("'" + cmd + "' is not a supported element in template XML");
+						throw new LatexException("'" + cmd + "' is not a supported element in template XML yet");
 				}
 			}
 			else if(partObj instanceof Text)

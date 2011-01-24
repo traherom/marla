@@ -29,7 +29,9 @@ import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 import problem.DataColumn;
+import problem.DataColumn.DataMode;
 import problem.DataNotFoundException;
+import problem.DataSource;
 import problem.IncompleteInitializationException;
 import problem.MarlaException;
 import problem.Operation;
@@ -341,6 +343,10 @@ public class OperationXML extends Operation
 				proc.setVariable(rVar, (Double) answerVal);
 				break;
 
+			case CHECKBOX:
+				proc.execute(rVar + " = " + answerVal.toString().toUpperCase());
+				break;
+
 			case COLUMN:
 				// Look for the modifier to only save the string
 				String useType = setEl.getAttributeValue("use");
@@ -360,6 +366,10 @@ public class OperationXML extends Operation
 				{
 					// Just save the column name
 					proc.setVariable(rVar, (String) answerVal);
+				}
+				else
+				{
+					throw new OperationXMLException("Invalid setting '" + useType + "' for use attribute");
 				}
 				break;
 
@@ -569,6 +579,12 @@ public class OperationXML extends Operation
 		proc.stopGraphicOutput();
 	}
 
+	@Override
+	public boolean isInfoRequired() throws MarlaException
+	{
+		return !opConfig.getChildren("query").isEmpty();
+	}
+
 	/**
 	 * Prompts user for the data specified by <query /> XML in operations. Query
 	 * takes the following attributes:
@@ -590,15 +606,67 @@ public class OperationXML extends Operation
 			PromptType type = PromptType.valueOf(queryEl.getAttributeValue("type").toUpperCase());
 			if(type == PromptType.COLUMN)
 			{
-				// Build a list of the column names
+				// What type of column should we present to the user?
+				String colType = queryEl.getAttributeValue("column_type", "all");
+				DataSource parent = getParentData();
+				List<String> columnNames = new ArrayList<String>();
+
+				// Build a list of the column names of the correct type
+				if(colType.equals("numeric"))
+				{
+					// Numeric columns
+					for(int i = 0; i < parent.getColumnCount(); i++)
+					{
+						DataColumn currCol = parent.getColumn(i);
+						if(currCol.getMode() == DataMode.NUMERICAL)
+							columnNames.add(currCol.getName());
+					}
+				}
+				else if(colType.equals("string"))
+				{
+					// String columns
+					for(int i = 0; i < parent.getColumnCount(); i++)
+					{
+						DataColumn currCol = parent.getColumn(i);
+						if(currCol.getMode() == DataMode.STRING)
+							columnNames.add(currCol.getName());
+					}
+				}
+				else if(colType.equals("all"))
+				{
+					// All columns
+					for(int i = 0; i < parent.getColumnCount(); i++)
+					{
+						DataColumn currCol = parent.getColumn(i);
+						columnNames.add(currCol.getName());
+					}
+				}
+				else
+				{
+					throw new OperationXMLException("Invalid column type '" + colType + "' specified for query");
+				}
+
+				// Actually add the question to the array
 				questions.add(new Object[]
 						{
-							PromptType.COLUMN, queryEl.getAttributeValue("name"), queryEl.getAttributeValue("prompt"), getParentData().getColumnNames()
+							PromptType.COLUMN, queryEl.getAttributeValue("name"), queryEl.getAttributeValue("prompt"), columnNames.toArray()
 						});
 			}
 			else if(type == PromptType.COMBO)
 			{
-				throw new OperationXMLException("Combo prompts are not supported in XML yet");
+				// Build list of options
+				List<String> options = new ArrayList<String>();
+				for(Object opObj : queryEl.getChildren("option"))
+				{
+					Element opEl = (Element)opObj;
+					options.add(opEl.getText());
+				}
+
+				// Set question
+				questions.add(new Object[]
+						{
+							PromptType.COMBO, queryEl.getAttributeValue("name"), queryEl.getAttributeValue("prompt"), options.toArray()
+						});
 			}
 			else
 			{
