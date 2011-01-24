@@ -13,23 +13,23 @@ Chapter <chapter />-Section <section />-Problem \#<probnum />
 \end{flushright}
 
 \noindent\textbf{\Large Given}\par
-<statement type="main" />
+<statement />
 
 \vfil\noindent\textbf{\Large Required}\par
 \begin{enumerate}[(a)]
 <loop type="subproblem">
-\item <statement type="current" />
+\item <statement />
 </loop>
 \end{enumerate}
 
 \vfil\noindent\textbf{\Large Analysis and Solution}\par
 Everything:
-<solution type="current" />
+<solution />
 
 \begin{enumerate}[(a)]
 <loop type="subproblem">
 \item
-	<solution type="current" />
+	<solution />
 </loop>
 \end{enumerate}
 

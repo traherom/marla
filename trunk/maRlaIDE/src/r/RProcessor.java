@@ -23,6 +23,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -341,6 +342,9 @@ public final class RProcessor
 
 		try
 		{
+			// Indicate in R throws an error or warning
+			boolean errorOccurred = false;
+
 			// Only one thread may access the R input/output at one time
 			synchronized(processSync)
 			{
@@ -352,36 +356,15 @@ public final class RProcessor
 
 				// Get results back
 				String line = procOut.readLine();
-				while(line != null && !line.equals(this.SENTINEL_STRING_RETURN) && !line.startsWith("Error: "))
+				while(line != null && !line.equals(this.SENTINEL_STRING_RETURN))
 				{
 					results.append(line);
 					results.append('\n');
-					line = procOut.readLine();
-				}
 
-				// If we ended the loop because of an error, read until we hit our sentinel anyway
-				if(line.startsWith("Error: "))
-				{
-					// The last loop stopped before it added this
-					results.append(line);
-					results.append('\n');
+					if(line.startsWith("Error") || line.startsWith("Warning"))
+						errorOccurred = true;
 
 					line = procOut.readLine();
-					while(line != null && !line.equals(this.SENTINEL_STRING_RETURN))
-					{
-						results.append(line);
-						results.append('\n');
-						line = procOut.readLine();
-					}
-
-					// Record interaction if needed
-					if(recordMode == RecordMode.OUTPUT_ONLY || recordMode == RecordMode.FULL)
-						interactionRecord.append(results);
-					if(debugOutputMode == RecordMode.OUTPUT_ONLY || debugOutputMode == RecordMode.FULL)
-						System.out.print(results);
-
-					// Throw an exception about this
-					throw new RProcessorException(results.toString());
 				}
 			}
 
@@ -390,6 +373,10 @@ public final class RProcessor
 				interactionRecord.append(results);
 			if(debugOutputMode == RecordMode.OUTPUT_ONLY || debugOutputMode == RecordMode.FULL)
 				System.out.print(results);
+
+			// Throw an error if we encountered an error or warning
+			if(errorOccurred)
+				throw new RProcessorException(results.toString());
 
 			// Return results, the caller is responsible for processing further
 			return results.toString();
@@ -801,5 +788,37 @@ public final class RProcessor
 			uniqueValCounter = 0;
 
 		return "marlaUnique" + uniqueValCounter;
+	}
+
+	public static void main(String[] args) throws Exception
+	{
+		RProcessor proc = null;
+		try
+		{
+			proc = RProcessor.getInstance();
+			proc.setDebug(RecordMode.FULL);
+			Scanner sc = new Scanner(System.in);
+			
+			while(proc.isRunning())
+			{
+				// Get next command to execute
+				System.out.print("CMD: ");
+				String line = sc.nextLine();
+
+				// Execute
+				try
+				{
+					proc.execute(line);
+				}
+				catch(RProcessorException ex)
+				{
+					System.out.println("Ex handler: " + ex.getMessage());
+				}
+			}
+		}
+		finally
+		{
+			proc.close();
+		}
 	}
 }
