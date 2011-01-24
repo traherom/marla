@@ -138,7 +138,6 @@ public final class RProcessor
 			debugOutputMode = RecordMode.FULL;
 
 			// Hook up streams
-			//procOut = new BufferedReader(new InputStreamReader(rProc.getInputStream()));
 			comboStream = new InputStreamCombine();
 			procOut = new BufferedReader(comboStream);
 			comboStream.addStream(rProc.getInputStream());

@@ -175,9 +175,17 @@ public class OperationTest
 			fillRequiredInfo(op1);
 		op1.checkCache();
 
-		// Should be full now
-		assertFalse(op1.getColumnCount() == 0);
 		assertFalse(op1.isDirty());
+		if(!op1.hasPlot())
+		{
+			// Should be full now
+			assertFalse(op1.getColumnCount() == 0);
+		}
+		else
+		{
+			// Should have a plot
+			assertFalse(op1.getPlot().isEmpty());
+		}
 	}
 
 	@Test
@@ -253,10 +261,6 @@ public class OperationTest
 
 			el = op1.toXml();
 			op2 = Operation.fromXml(el);
-
-			// Set its parent so that if the assertion fails we get the real error,
-			// not something about not having a parent
-			ds1.addOperation(op2);
 
 			assertEquals(op1, op2);
 		}

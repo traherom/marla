@@ -765,20 +765,13 @@ public class OperationXML extends Operation
 		if(!opConfig.equals(otherOp.opConfig))
 			return false;
 
-		// Can only test if it's not null
-		if(questionAnswers != null)
-		{
-			if(questionAnswers.equals(otherOp.questionAnswers))
-				return false;
-		}
+		// Compare answers
+		if(questionAnswers == null && otherOp.questionAnswers == null)
+			return true; // Nobody has answers
+		else if(questionAnswers == null && otherOp.questionAnswers != null)
+			return false; // We don't have answers, they do. Yes, the test doesn't need the second part
 		else
-		{
-			// Other side had better be null too then...
-			if(otherOp.questionAnswers != null)
-				return false;
-		}
-
-		return true;
+			return questionAnswers.equals(otherOp.questionAnswers);
 	}
 
 	@Override

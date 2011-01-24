@@ -440,34 +440,24 @@ public class LatexExporter
 
 		// Sweave it
 		RProcessor proc = RProcessor.getInstance();
-		proc.execute("Sweave('" + rnwPath + "')");
+		proc.execute("Sweave('" + rnwPath.replaceAll("\\\\", "/") + "')");
 
 		// Run it through pdflatex
 		String rnwFileName = new File(rnwPath).getName();
 		String texPath = rnwFileName.replace(".rnw", ".tex");
 		String pdfPath = rnwFileName.replace(".rnw", ".pdf");
 
-		proc.execute("system('pdflatex " + texPath + "')");
+		String pdfOutput = proc.execute("system('pdflatex " + texPath + "', show.output.on.console=T)");
 
-		/*
-		try
+		// Remove the tex file, it was temporary
+		FileUtils.deleteQuietly(new File(texPath));
+
+		// Ensure we actually succeeded
+		if(pdfOutput.isEmpty())
 		{
-			Process sweaveProc = Runtime.getRuntime().exec(new String[]{"pdflatex", texPath});
-			sweaveProc.waitFor();
+			// Unable to find pdflatex to run
+			throw new LatexException("Unable to find pdflatex on PATH, cannot do PDF export");
 		}
-		catch(IOException ex)
-		{
-			throw new LatexException("Unable to execute pdflatex for exporting", ex);
-		}
-		catch(InterruptedException ex)
-		{
-			// Bah. Dying anyway, just finish
-		}
-		finally
-		{
-			new File(texPath).delete();
-		}
-		*/
 		
 		// Move/remove temp files
 		return moveFile(pdfPath, "pdf");
