@@ -47,11 +47,36 @@ public class Problem implements ProblemPart
 	/**
 	 * All datasets associated with this problem.
 	 */
-	private ArrayList<DataSet> datasets = new ArrayList<DataSet>();
+	private final ArrayList<DataSet> datasets = new ArrayList<DataSet>();
 	/**
 	 * All subproblems associated with this problem.
 	 */
-	private ArrayList<SubProblem> subProblems = new ArrayList<SubProblem>();
+	private final ArrayList<SubProblem> subProblems = new ArrayList<SubProblem>();
+	/**
+	 * Name of the person who is working on this problem. Arbitrary, used for
+	 * export and that's about it
+	 */
+	private String personName = null;
+	/**
+	 * Short name for the course this problem is for. For example, "MA2510"
+	 */
+	private String shortCourseName = null;
+	/**
+	 * Long name for the course this problem is for. For example, "Probability and Statistics"
+	 */
+	private String longCourseName = null;
+	/**
+	 * Chapter. Arbitrary
+	 */
+	private String probChapter = null;
+	/**
+	 * Section. Arbitrary
+	 */
+	private String probSection = null;
+	/**
+	 * Problem number. Arbitrary
+	 */
+	private String probNum = null;
 	/**
 	 * File this problem will be saved to.
 	 */
@@ -111,6 +136,135 @@ public class Problem implements ProblemPart
 	public void setStatement(String newStatement)
 	{
 		this.statement = newStatement;
+	}
+
+	/**
+	 * Returns the current name for the user creating this Problem
+	 * @return Name of person
+	 */
+	public String getPersonName()
+	{
+		return personName;
+	}
+
+	/**
+	 * Sets a new name for the person creating this Problem. (IE, the user/student)
+	 * @param newName New name to refer to the student by
+	 * @return Previously set name
+	 */
+	public String setPersonName(String newName)
+	{
+		String oldName = personName;
+		personName = newName;
+		return oldName;
+	}
+
+	/**
+	 * Gets the current short name of the course
+	 * @return String of the short name
+	 */
+	public String getShortCourse()
+	{
+		return shortCourseName;
+	}
+
+	/**
+	 * Sets the name of the course this problem comes from, in short form.
+	 * Typically the course number or an abbreviation, such as "MA2510"
+	 * @param newCourse New short name of the course
+	 * @return Previously set short name of the course
+	 */
+	public String setShortCourse(String newCourse)
+	{
+		String oldCourse = shortCourseName;
+		shortCourseName = newCourse;
+		return oldCourse;
+	}
+
+	/**
+	 * Current long name of the course
+	 * @return String with the full name of the course
+	 */
+	public String getLongCourse()
+	{
+		return longCourseName;
+	}
+
+	/**
+	 * Sets the name of the course this problem comes from, in long form.
+	 * Typically the full name of the class, such as "Probability and Statistics I"
+	 * @param newCourse New long name of the course
+	 * @return Previously set long name of the course
+	 */
+	public String setLongCourse(String newCourse)
+	{
+		String oldCourse = longCourseName;
+		longCourseName = newCourse;
+		return oldCourse;
+	}
+
+	/**
+	 * Gets the currently set chapter
+	 * @return String of the current chapter
+	 */
+	public String getChapter()
+	{
+		return probChapter;
+	}
+
+	/**
+	 * Sets the chapter this Problem comes from
+	 * @param newChapter New chapter to assign to this problem
+	 * @return Previously set chapter
+	 */
+	public String setChapter(String newChapter)
+	{
+		String oldChapter = probChapter;
+		probChapter = newChapter;
+		return oldChapter;
+	}
+
+	/**
+	 * Returns the current section this problem comes from
+	 * @return The current section
+	 */
+	public String getSection()
+	{
+		return probSection;
+	}
+
+	/**
+	 * Sets the section this problem comes from. The string is arbitrary
+	 * and not used internally by Problem in any way
+	 * @param newSection New section to assign to this Problem
+	 * @return previously assigned section
+	 */
+	public String setSection(String newSection)
+	{
+		String oldSection = probSection;
+		probSection = newSection;
+		return oldSection;
+	}
+
+	/**
+	 * Current problem number in the chapter/section
+	 * @return current problem number
+	 */
+	public String getProblemNumber()
+	{
+		return probSection;
+	}
+
+	/**
+	 * This Problem's number in the chapter/section
+	 * @param newNum New problem number
+	 * @return Previously set problem number
+	 */
+	public String setProblemNumber(String newNum)
+	{
+		String oldNum = probNum;
+		probNum = newNum;
+		return oldNum;
 	}
 
 	@Override

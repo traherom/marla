@@ -29,7 +29,6 @@ import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
@@ -229,7 +228,12 @@ public class LatexExporter
 			// Write to a temporary file
 			File tempFile = File.createTempFile("marla", ".rnw");
 			BufferedWriter writer = new BufferedWriter(new FileWriter(tempFile));
+
+			// Process, making sure it's reset properly
+			currentSub = null;
 			processSectionClean(templateXML, writer);
+
+			// Close it all out
 			writer.close();
 			return tempFile.getAbsolutePath();
 		}
@@ -267,10 +271,55 @@ public class LatexExporter
 						break;
 
 					case NAME:
+						try
+						{
+							if(prob.getPersonName() != null)
+								out.write(prob.getPersonName());
+						}
+						catch(IOException ex)
+						{
+							throw new LatexException("Unable to write person name during export", ex);
+						}
+						break;
+
 					case CLASS:
+						processClassClean(partEl, out);
+						break;
+
 					case CHAPTER:
+						try
+						{
+							if(prob.getChapter() != null)
+								out.write(prob.getChapter());
+						}
+						catch(IOException ex)
+						{
+							throw new LatexException("Unable to write problem chapter during export", ex);
+						}
+						break;
+
 					case SECTION:
+						try
+						{
+							if(prob.getSection() != null)
+								out.write(prob.getSection());
+						}
+						catch(IOException ex)
+						{
+							throw new LatexException("Unable to write problem section during export", ex);
+						}
+						break;
+
 					case PROBNUM:
+						try
+						{
+							if(prob.getProblemNumber() != null)
+								out.write(prob.getProblemNumber());
+						}
+						catch(IOException ex)
+						{
+							throw new LatexException("Unable to write problem number during export", ex);
+						}
 						break;
 
 					default:
@@ -288,7 +337,7 @@ public class LatexExporter
 				}
 				catch(IOException ex)
 				{
-					throw new LatexException("Unable to write to the output file during export");
+					throw new LatexException("Unable to write verbatim LaTeX to the output file during export", ex);
 				}
 			}
 		}
@@ -308,6 +357,33 @@ public class LatexExporter
 
 		// All done with loop
 		currentSub = null;
+	}
+
+	private void processClassClean(Element el, Writer out) throws LatexException, MarlaException
+	{
+		try
+		{
+			String courseNameType = el.getAttributeValue("type", "short");
+
+			if(courseNameType.equals("short"))
+			{
+				if(prob.getShortCourse() != null)
+					out.write(prob.getShortCourse());
+			}
+			else if(courseNameType.equals("long"))
+			{
+				if(prob.getLongCourse() != null)
+					out.write(prob.getLongCourse());
+			}
+			else
+			{
+				throw new LatexException("Course name type '" + courseNameType + "' is not supported");
+			}
+		}
+		catch(IOException ex)
+		{
+			throw new LatexException("Unable to write course name to template", ex);
+		}
 	}
 
 	private void processStatementClean(Element el, Writer out) throws LatexException
@@ -357,7 +433,7 @@ public class LatexExporter
 				// Make sure it's a leaf
 				if(op.getOperationCount() != 0)
 					continue;
-				
+
 				sweaveBlock.append("\n<<label=");
 				sweaveBlock.append(op.getName());
 				sweaveBlock.append(">>=\n");
@@ -458,7 +534,7 @@ public class LatexExporter
 			// Unable to find pdflatex to run
 			throw new LatexException("Unable to find pdflatex on PATH, cannot do PDF export");
 		}
-		
+
 		// Move/remove temp files
 		return moveFile(pdfPath, "pdf");
 	}
