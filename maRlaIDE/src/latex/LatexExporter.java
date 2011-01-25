@@ -18,8 +18,6 @@
 package latex;
 
 import java.io.BufferedWriter;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import problem.MarlaException;
 import problem.Problem;
 import java.io.File;
@@ -44,6 +42,15 @@ import r.RProcessorException;
  */
 public class LatexExporter
 {
+	/**
+	 * Unless specified otherwise in the constructor, this path will be used
+	 * as the template for new exporter instances
+	 */
+	private static String defaultTemplate = "export_template.xml";
+	/**
+	 * Path to the PDF LaTeX binary, used for PDF exports
+	 */
+	private static String pdflatexPath = "pdflatex";
 	/**
 	 * Problem this exporter is working with
 	 */
@@ -107,7 +114,11 @@ public class LatexExporter
 			throw new LatexException("Problem to export may not be null");
 
 		prob = problem;
-		setTemplate(templatePath);
+
+		if(templatePath != null)
+			setTemplate(templatePath);
+		else
+			setTemplate(defaultTemplate);
 	}
 
 	/**
@@ -120,9 +131,9 @@ public class LatexExporter
 		String oldPath = templatePath;
 		templatePath = newTemplatePath;
 
-		// Load the XML
 		try
 		{
+			// Load the XML
 			SAXBuilder parser = new SAXBuilder();
 			Document doc = parser.build(templatePath);
 			templateXML = doc.getRootElement();
@@ -137,6 +148,49 @@ public class LatexExporter
 		}
 
 		return oldPath;
+	}
+
+	/**
+	 * Sets the default LaTeX template to use for new exporters. May still be
+	 * changed for individual instances
+	 * @param newTemplatePath new default template to use
+	 */
+	public static void setDefaultTemplate(String newTemplatePath)
+	{
+		defaultTemplate = newTemplatePath;
+	}
+
+	/**
+	 * Sets the path to the pdflatex binary file
+	 * @param newPdfLatexPath New path to executable
+	 */
+	public static void setPdflatexPath(String newPdfLatexPath)
+	{
+		pdflatexPath = newPdfLatexPath;
+	}
+
+	/**
+	 * Configures the defaults for exporters based on the given XML configuration
+	 * @param configEl XML configuration element with settings as attributes
+	 */
+	public static void setConfig(Element configEl)
+	{
+		// Extract information from configuration XML and set appropriately
+		setDefaultTemplate(configEl.getAttributeValue("template"));
+		setPdflatexPath(configEl.getAttributeValue("pdflatex"));
+	}
+
+	/**
+	 * Creates an XML element that could be passed back to setConfig to configure
+	 * the LatexExporter defaults the same as currently
+	 * @param configEl XML configuration element upon which to add information
+	 * @return XML element with configuration data set
+	 */
+	public static Element getConfig(Element configEl)
+	{
+		configEl.setAttribute("template", defaultTemplate);
+		configEl.setAttribute("pdflatex", pdflatexPath);
+		return configEl;
 	}
 
 	/**
@@ -525,7 +579,7 @@ public class LatexExporter
 
 		try
 		{
-			String pdfOutput = proc.execute("system('pdflatex -halt-on-error " + texPath + "', intern=T)");
+			String pdfOutput = proc.execute("system('" + pdfPath + " -halt-on-error " + texPath + "', intern=T)");
 
 			// Ensure we actually succeeded
 			if(pdfOutput.contains("not found"))

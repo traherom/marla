@@ -102,6 +102,28 @@ public class OperationXML extends Operation
 	};
 
 	/**
+	 * Configures the defaults for XML operations based on the given XML configuration
+	 * @param configEl XML configuration element with settings as attributes
+	 */
+	public static void setConfig(Element configEl) throws OperationXMLException
+	{
+		// Extract information from configuration XML and set appropriately
+		loadXML(configEl.getAttributeValue("xml"));
+	}
+
+	/**
+	 * Creates an XML element that could be passed back to setConfig to configure
+	 * the LatexExporter defaults the same as currently
+	 * @param configEl XML configuration element upon which to add information
+	 * @return XML element with configuration data set
+	 */
+	public static Element getConfig(Element configEl)
+	{
+		configEl.setAttribute("xml", operationFilePath);
+		return configEl;
+	}
+
+	/**
 	 * Saves the passed XML file path and loads it from disk. An exception may
 	 * be thrown  when the version of the XML file is inappropriate or other parse errors
 	 * occur.
@@ -116,7 +138,7 @@ public class OperationXML extends Operation
 		}
 		catch(IncompleteInitializationException ex)
 		{
-			throw new OperationXMLException("Operation XML path not specified", ex);
+			throw new OperationXMLException("Operation XML path not specified or null", ex);
 		}
 	}
 
