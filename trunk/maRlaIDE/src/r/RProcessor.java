@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.jdom.Element;
 
 /**
  *
@@ -156,6 +157,40 @@ public final class RProcessor
 	}
 
 	/**
+	 * Sets the default location to look for R
+	 * @param newRPath New location of the R binary
+	 * @return The previously assigned location of R
+	 */
+	public static String setRLocation(String newRPath)
+	{
+		String oldPath = rPath;
+		rPath = newRPath;
+		return oldPath;
+	}
+
+	/**
+	 * Configures the RProcessor based on XML configuration, typically from a settings file
+	 * @param configEl XML element containing needed data
+	 */
+	public static void setConfig(Element configEl)
+	{
+		// Extract information from configuration XML and set appropriately
+		setRLocation(configEl.getAttributeValue("rpath"));
+	}
+
+	/**
+	 * Creates an XML element that could be passed back to setConfig to configure
+	 * the RProcessor the same way as before
+	 * @param configEl XML configuration element upon which to add information
+	 * @return XML element with configuration data set
+	 */
+	public static Element getConfig(Element configEl)
+	{
+		configEl.setAttribute("rpath", rPath);
+		return configEl;
+	}
+
+	/**
 	 * Creates a new instance of R which can be fed commands. Assumes R is accessible on the path.
 	 * If it isn't, RProcessor then searches for an installation alongside itself (in an
 	 * R directory, so the R executable is at R/bin/R), then in common system install
@@ -166,56 +201,16 @@ public final class RProcessor
 	{
 		try
 		{
-			return getInstance(rPath);
+			if(singleRProcessor == null)
+				singleRProcessor = new RProcessor(rPath);
+
+			return singleRProcessor;
 		}
 		catch(RProcessorException ex)
 		{
-			// Try to find it in all the common locations
-			System.err.print("R not found on path:\n\t");
-			System.err.println(System.getenv("PATH").replaceAll(";", "\n\t"));
-			System.err.print("Looking for R in common locations: ");
-			String[] commonLocs = new String[]
-			{
-				"R/bin/R", // Our own installation of it
-				"/Library/Frameworks/R.framework/Resources/R",
-				"/usr/lib/R/bin/R",
-				"C:\\Program Files\\R\\bin\\x64\\R.exe",
-				"C:\\Program Files\\R\\bin\\x32\\R.exe",
-				"D:\\Program Files\\R\\bin\\x64\\R.exe",
-				"D:\\Program Files\\R\\bin\\x32\\R.exe",
-				"C:\\Program Files\\R\\bin\\R.exe",
-				"D:\\Program Files\\R\\bin\\R.exe"
-			};
-			for(String s : commonLocs)
-			{
-				File f = new File(s);
-				System.err.print("\n\t" + s);
-				if(f.exists())
-				{
-					System.err.println("\nfound!");
-					return getInstance(s);
-				}
-			}
-
-			// Darn, no luck finding it
-			System.err.println("\nNo installation found, dying.");
+			System.err.println("\nNo R installation found, dying.");
 			throw ex;
 		}
-	}
-
-	/**
-	 * Creates a new instance of R at the given path which can be fed commands
-	 * @param rPath Path to the R executable
-	 * @return Instance of RProcessor that can be used for calculations
-	 */
-	public static RProcessor getInstance(String rPath) throws RProcessorException
-	{
-		if(singleRProcessor == null)
-		{
-			singleRProcessor = new RProcessor(rPath);
-		}
-
-		return singleRProcessor;
 	}
 
 	/**
