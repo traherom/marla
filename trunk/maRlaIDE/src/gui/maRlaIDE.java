@@ -25,6 +25,7 @@ import java.awt.event.WindowListener;
 import javax.swing.JFrame;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
+import problem.MarlaException;
 
 /**
  * The main frame of the stand-alone application.
@@ -407,6 +408,15 @@ public class maRlaIDE extends JFrame
 	private void exitMenuItemActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_exitMenuItemActionPerformed
 	{//GEN-HEADEREND:event_exitMenuItemActionPerformed
 		viewPanel.quit (true);
+
+		try
+		{
+			resource.Configuration.save();
+		}
+		catch(MarlaException ex)
+		{
+			Domain.logger.add(ex);
+		}
 	}//GEN-LAST:event_exitMenuItemActionPerformed
 
 	private void solveMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_solveMenuItemActionPerformed
@@ -587,6 +597,15 @@ public class maRlaIDE extends JFrame
         {
             Domain.logger.add (ex);
         }
+		
+		try
+		{
+			resource.Configuration.load();
+		}
+		catch(MarlaException ex)
+		{
+			Domain.logger.add(ex);
+		}
 
         EventQueue.invokeLater (new Runnable ()
         {
