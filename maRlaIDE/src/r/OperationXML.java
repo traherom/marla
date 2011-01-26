@@ -47,7 +47,7 @@ public class OperationXML extends Operation
 	/**
 	 * Path to the XML file that specifies the operations
 	 */
-	private static String operationFilePath = null;
+	private static String operationFilePath = "ops.xml";
 	/**
 	 * Storage location for parsed operation XML file
 	 */
@@ -124,38 +124,33 @@ public class OperationXML extends Operation
 	}
 
 	/**
-	 * Saves the passed XML file path and loads it from disk. An exception may
-	 * be thrown  when the version of the XML file is inappropriate or other parse errors
-	 * occur.
-	 * @param xmlPath Path to the operation XML file
+	 * Loads the XML operations from disk using the default/last used file.
+	 * An exception may be thrown when the version of the XML file is
+	 * inappropriate or other parse errors occur.
 	 */
-	public static void loadXML(String xmlPath) throws OperationXMLException
+	public static void loadXML() throws OperationXMLException
 	{
-		try
-		{
-			operationFilePath = xmlPath;
-			reloadXML();
-		}
-		catch(IncompleteInitializationException ex)
-		{
-			throw new OperationXMLException("Operation XML path not specified or null", ex);
-		}
+		loadXML(operationFilePath);
 	}
 
 	/**
 	 * Loads the XML. If the XML path has not been set by loadXML then an
 	 * IncompleteInitializationException is thrown. If the XML is contains
 	 * parse errors an exception will be thrown.
+	 * @param xmlPath Path to the operation XML file
 	 */
-	public static void reloadXML() throws IncompleteInitializationException, OperationXMLException
+	public static void loadXML(String xmlPath) throws OperationXMLException
 	{
 		try
 		{
+			// Save for future use again
+			operationFilePath = xmlPath;
+			
 			System.out.println("Loading XML operations from '" + operationFilePath + "'");
 			
 			// Make sure we know where we're looking for that there XML
 			if(operationFilePath == null)
-				throw new IncompleteInitializationException("XML file for operations has not been specified");
+				throw new OperationXMLException("XML file for operations has not been specified");
 
 			SAXBuilder parser = new SAXBuilder();
 			Document doc = parser.build(operationFilePath);
@@ -186,8 +181,11 @@ public class OperationXML extends Operation
 	 */
 	public static List<String> getAvailableOperations() throws OperationXMLException
 	{
+		// Attempt to load operations if it hasn't been done yet
 		if(operationXML == null)
-			throw new OperationXMLException("XML file has not been loaded yet.");
+		{
+			loadXML();
+		}
 
 		List<String> opNames = new ArrayList<String>();
 		for(Object opEl : operationXML.getChildren("operation"))

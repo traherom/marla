@@ -278,7 +278,7 @@ public class ViewPanel extends JPanel
 	{
 		try
 		{
-			OperationXML.reloadXML();
+			OperationXML.loadXML();
 			loadOperations ();
 		}
 		catch (MarlaException ex)
