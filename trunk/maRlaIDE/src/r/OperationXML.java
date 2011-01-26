@@ -195,6 +195,17 @@ public class OperationXML extends Operation
 			Element op = (Element) opEl;
 			String name = op.getAttributeValue("name");
 
+			try
+			{
+				// Ensure that we're supposed to actually list this one
+				if(!Boolean.parseBoolean(op.getAttributeValue("list", "true")))
+					continue;
+			}
+			catch(NumberFormatException ex)
+			{
+				throw new OperationXMLException("Operation '" + name + "': Invalid value '" + op.getAttributeValue("list") + "' for list attribute");
+			}
+
 			// Only allow a name to appear once
 			if(opNames.contains(name))
 				throw new OperationXMLException("Multiple XML operations with the name '" + name + "' found");

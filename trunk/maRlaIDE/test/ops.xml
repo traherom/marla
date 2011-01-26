@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <operations version="1">
-	<operation name="NOP">
+	<operation name="NOP" list="false">
 		<computation>
 			<loop type="parent" valueVar="col" nameVar="colName">
 				<if type="vartype" rvar="col" expected="numeric">

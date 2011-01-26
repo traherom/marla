@@ -1704,7 +1704,7 @@ public class ViewPanel extends JPanel
 		JPanel panel = new JPanel ();
 		panel.setLayout (new GridLayout (prompt.size () + 1, 2));
 
-		dialog.setTitle ("Information Required");
+		dialog.setTitle (newOperation.getName() + ": Information Required");
 		dialog.setModal (true);
 		dialog.add (panel);
 
