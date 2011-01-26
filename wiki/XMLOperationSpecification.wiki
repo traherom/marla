@@ -14,6 +14,7 @@ exception will be thrown. If an operation is going to output a plot, it must hav
 Attributes supported:
 	* *`name`* - Arbitary name of the operation. Must be unique within the XML file
 	* `plot` - Specifies if the operation will produce a plot. May be set to `true` or `false`. Default is `false`.
+	* `list` - Specifies if this operation is listed under normal displays. Maybe to set to `true` or `false`. Default is `true`.
 
 == Queries ==
 {{{
