@@ -188,31 +188,7 @@ public class DragDrop implements DragGestureListener, DragSourceListener, DropTa
 
 			try
 			{
-				Component comp = workspacePanel.getComponentAt(ev.getLocation ());
-				if (comp != null && (comp instanceof DataSet || comp instanceof Operation))
-				{
-					final Operation newOperation = Operation.createOperation(operation.getName());
-					int x = comp.getX ();
-					int y = comp.getY () + 20;
-					
-					if (comp instanceof DataSet)
-					{
-						DataSet dataSet = (DataSet) comp;
-						dataSet.addOperation(newOperation);
-						if (dataSet.getOperationCount() > 1)
-						{
-							x += (dataSet.getOperationCount () * 30);
-						}
-					}
-					else if (comp instanceof Operation)
-					{
-						((Operation) comp).addOperation(newOperation);
-					}
-
-					newOperation.setBounds (x, y, newOperation.getPreferredSize().width, newOperation.getPreferredSize().height);
-					workspacePanel.add (newOperation);
-					workspacePanel.updateUI();
-				}
+				viewPanel.drop (operation, true, ev.getLocation ());
 			}
 			catch(MarlaException ex)
 			{

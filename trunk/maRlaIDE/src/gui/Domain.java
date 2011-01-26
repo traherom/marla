@@ -81,6 +81,8 @@ public class Domain
 	public Domain(ViewPanel viewPanel)
 	{
 		this.viewPanel = viewPanel;
+
+		logFile = new File ("log.dat");
 	}
 
 	/**

@@ -30,7 +30,7 @@ import problem.DataSet;
 import problem.Operation;
 
 /**
- * 
+ * Paints the panel for the workspace with proper lines for all shown data sets and operations.
  *
  * @author Alex Laird
  */
@@ -77,47 +77,39 @@ public class WorkspacePanel extends JPanel
 		{
 			Graphics2D g2 = (Graphics2D) g;
 			g2.setRenderingHint (RenderingHints.KEY_ANTIALIASING,
-					RenderingHints.VALUE_ANTIALIAS_ON);
+								 RenderingHints.VALUE_ANTIALIAS_ON);
+			g2.setPaint (Color.DARK_GRAY);
 			for (int i = 0; i < dataSets.size (); ++i)
 			{
-				g2.setPaint (Color.DARK_GRAY);
 				DataSet dataSet = dataSets.get (i);
-				List<Operation> childOperations = dataSet.getAllChildOperations();
-				for (int j = 0; j < childOperations.size (); ++j)
+				for (int j = 0; j < dataSet.getOperationCount(); ++j)
 				{
-					Operation firstOperation = null;
-					Operation secondOperation = null;
-					if (j == 0)
-					{
-						firstOperation = childOperations.get (j);
-					}
-					else
-					{
-						firstOperation = childOperations.get (j - 1);
-						secondOperation = childOperations.get (j);
-					}
-
-					int x1 = -1;
-					int x2 = -1;
-					int y1 = -1;
-					int y2 = -1;
-					if (secondOperation == null)
-					{
-						x1 = (dataSet.getX () + dataSet.getX () + dataSet.getWidth ()) / 2;
-						y1 = dataSet.getY () + dataSet.getHeight ();
-						x2 = (firstOperation.getX () + firstOperation.getX () + firstOperation.getWidth ()) / 2;
-						y2 = firstOperation.getY ();
-					}
-					else
-					{
-						x1 = (firstOperation.getX () + firstOperation.getX () + firstOperation.getWidth ()) / 2;
-						y1 = firstOperation.getY () + firstOperation.getHeight();
-						x2 = (secondOperation.getX () + secondOperation.getX () + secondOperation.getWidth ()) / 2;
-						y2 = secondOperation.getY ();
-					}
+					int x1 = (dataSet.getX () + dataSet.getX () + dataSet.getWidth ()) / 2;
+					int y1 = dataSet.getY () + dataSet.getHeight ();
+					int x2 = (dataSet.getOperation (j).getX () + dataSet.getOperation (j).getX () + dataSet.getOperation (j).getWidth ()) / 2;
+					int y2 = dataSet.getOperation (j).getY ();
 					g2.draw (new Line2D.Double (x1, y1, x2, y2));
+
+					List<Operation> operations = dataSet.getOperation (j).getAllChildOperations();
+					for (int k = 0; k < operations.size (); ++k)
+					{
+						if (k == 0)
+						{
+							x1 = (dataSet.getOperation (j).getX () + dataSet.getOperation (j).getX () + dataSet.getOperation (j).getWidth ()) / 2;
+							y1 = dataSet.getOperation (j).getY () + dataSet.getOperation (j).getHeight ();
+							x2 = (operations.get (k).getX () + operations.get (k).getX () + operations.get (k).getWidth ()) / 2;
+							y2 = operations.get (k).getY ();
+						}
+						else
+						{
+							x1 = (operations.get (k - 1).getX () + operations.get (k - 1).getX () + operations.get (k - 1).getWidth ()) / 2;
+							y1 = operations.get (k - 1).getY () + operations.get (k - 1).getHeight ();
+							x2 = (operations.get (k).getX () + operations.get (k).getX () + operations.get (k).getWidth ()) / 2;
+							y2 = operations.get (k).getY ();
+						}
+						g2.draw (new Line2D.Double (x1, y1, x2, y2));
+					}
 				}
-				g2.setPaint (Color.WHITE);
 			}
 		}
 	}

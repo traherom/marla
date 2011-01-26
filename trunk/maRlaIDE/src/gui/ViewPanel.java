@@ -26,6 +26,7 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
+import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.dnd.DnDConstants;
@@ -75,7 +76,6 @@ import problem.DataNotFoundException;
 import problem.DataSet;
 import problem.DataSource;
 import problem.DuplicateNameException;
-import problem.ProblemException;
 import problem.MarlaException;
 import problem.Operation;
 import problem.Operation.PromptType;
@@ -203,6 +203,8 @@ public class ViewPanel extends JPanel
 				}
 			}
 		}, KeyEvent.KEY_EVENT_MASK);
+
+		workspacePanel.setDropTarget (new DropTarget (workspacePanel, DnDConstants.ACTION_MOVE, DND_LISTENER));
 
 		domain.loadSaveThread = new LoadSaveThread (this, domain);
 		// Launch the save thread
@@ -640,7 +642,7 @@ public class ViewPanel extends JPanel
             }
         });
         subProblemsCardPanel.add(addSubProblemButton);
-        addSubProblemButton.setBounds(285, 330, 70, 29);
+        addSubProblemButton.setBounds(285, 330, 70, 25);
 
         removeSubProblemButton.setFont(new java.awt.Font("Verdana", 0, 12));
         removeSubProblemButton.setText("Remove");
@@ -652,7 +654,7 @@ public class ViewPanel extends JPanel
             }
         });
         subProblemsCardPanel.add(removeSubProblemButton);
-        removeSubProblemButton.setBounds(370, 330, 90, 29);
+        removeSubProblemButton.setBounds(370, 330, 90, 25);
 
         wizardCardPanel.add(subProblemsCardPanel, "card6");
 
@@ -682,7 +684,7 @@ public class ViewPanel extends JPanel
             }
         });
         valuesCardPanel.add(addDataSetButton);
-        addDataSetButton.setBounds(285, 330, 70, 29);
+        addDataSetButton.setBounds(285, 330, 70, 25);
 
         removeDataSetButton.setFont(new java.awt.Font("Verdana", 0, 12));
         removeDataSetButton.setText("Remove");
@@ -694,7 +696,7 @@ public class ViewPanel extends JPanel
             }
         });
         valuesCardPanel.add(removeDataSetButton);
-        removeDataSetButton.setBounds(370, 330, 90, 29);
+        removeDataSetButton.setBounds(370, 330, 90, 25);
 
         wizardCardPanel.add(valuesCardPanel, "card2");
 
@@ -794,7 +796,7 @@ public class ViewPanel extends JPanel
         );
         emptyPalettePanelLayout.setVerticalGroup(
             emptyPalettePanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(0, 242, Short.MAX_VALUE)
+            .add(0, 241, Short.MAX_VALUE)
         );
 
         componentsCardPanel.add(emptyPalettePanel, "card3");
@@ -820,7 +822,7 @@ public class ViewPanel extends JPanel
 
         preWorkspacePanel.setBackground(new java.awt.Color(204, 204, 204));
 
-        preWorkspaceLabel.setFont(new java.awt.Font("Verdana", 1, 14));
+        preWorkspaceLabel.setFont(new java.awt.Font("Verdana", 1, 14)); // NOI18N
         preWorkspaceLabel.setForeground(new java.awt.Color(102, 102, 102));
         preWorkspaceLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         preWorkspaceLabel.setText("<html><div align=\"center\">To get started, load a previous problem or use the<br /><em>New Problem Wizard</em> to create a new problem</div></html>");
@@ -831,25 +833,21 @@ public class ViewPanel extends JPanel
             preWorkspacePanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(preWorkspacePanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .add(preWorkspaceLabel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 132, Short.MAX_VALUE)
+                .add(preWorkspaceLabel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 154, Short.MAX_VALUE)
                 .addContainerGap())
         );
         preWorkspacePanelLayout.setVerticalGroup(
             preWorkspacePanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(preWorkspacePanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .add(preWorkspaceLabel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 213, Short.MAX_VALUE)
+                .add(preWorkspaceLabel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 237, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
         workspaceCardPanel.add(preWorkspacePanel, "card3");
 
         workspacePanel.setBackground(new java.awt.Color(255, 255, 255));
-        workspacePanel.setDropTarget(new DropTarget (workspacePanel, DnDConstants.ACTION_MOVE, DND_LISTENER));
         workspacePanel.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                workspacePanelMouseClicked(evt);
-            }
             public void mousePressed(java.awt.event.MouseEvent evt) {
                 workspacePanelMousePressed(evt);
             }
@@ -882,9 +880,9 @@ public class ViewPanel extends JPanel
         trayPanel.setLayout(trayPanelLayout);
         trayPanelLayout.setHorizontalGroup(
             trayPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(0, 176, Short.MAX_VALUE)
+            .add(0, 178, Short.MAX_VALUE)
             .add(trayPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                .add(outputScrollPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 176, Short.MAX_VALUE))
+                .add(outputScrollPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 178, Short.MAX_VALUE))
         );
         trayPanelLayout.setVerticalGroup(
             trayPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
@@ -1226,32 +1224,52 @@ public class ViewPanel extends JPanel
 	}//GEN-LAST:event_removeDataSetButtonActionPerformed
 
 	private void workspacePanelMouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_workspacePanelMouseDragged
-		workspacePanelMouseClicked (evt);
+		if (hoveredComponent != null)
+		{
+			if (hoveredComponent instanceof Operation)
+			{
+				if (selectedOperation != null)
+				{
+					selectedOperation.setBorder(BorderFactory.createEmptyBorder());
+					selectedOperation.setSize(selectedOperation.getPreferredSize());
+				}
+				selectedOperation = (Operation) hoveredComponent;
+				domain.currentOperation = selectedOperation;
+				selectedOperation.setBorder(BorderFactory.createLineBorder(Color.BLUE));
+				selectedOperation.setSize(selectedOperation.getPreferredSize());
+				hoveredComponent = null;
+			}
+			else if (hoveredComponent instanceof DataSet)
+			{
+				if (selectedDataSet != null)
+				{
+					selectedDataSet.setBorder(BorderFactory.createEmptyBorder());
+					selectedDataSet.setSize(selectedDataSet.getPreferredSize());
+				}
+				selectedDataSet = (DataSet) hoveredComponent;
+				domain.currentDataSet = selectedDataSet;
+				selectedDataSet.setBorder(BorderFactory.createLineBorder(Color.RED));
+				selectedDataSet.setSize(selectedDataSet.getPreferredSize());
+				hoveredComponent = null;
+			}
+		}
 
 		if (dataSetDragging != null)
 		{
 			dataSetDragging.setLocation(evt.getX() - xDragOffset, evt.getY() - yDragOffset);
 			for (int i = 0; i < dataSetDragging.getOperationCount(); ++i)
 			{
-				List<Operation> operationsList = dataSetDragging.getOperation(i).getAllChildOperations();
-				for (int j = 0; j < operationsList.size (); ++i)
+				dataSetDragging.getOperation(i).setLocation (dataSetDragging.getX () + 20, dataSetDragging.getY () + (i * 30));
+				List<Operation> columnOperations = dataSetDragging.getOperation (i).getAllChildOperations();
+				for (int j = 0; j < columnOperations.size (); ++j)
 				{
-					operationsList.get (j).setLocation (dataSetDragging.getX () + (j * 20), dataSetDragging.getY () + (i + 1) * 20);
+					columnOperations.get (j).setLocation (dataSetDragging.getOperation (i).getX () + ((j + 1) * 20), dataSetDragging.getOperation (i).getY ());
 				}
 			}
-			
-			domain.problem.markChanged();
 		}
 		else if (operationDragging != null)
 		{
 			operationDragging.setLocation(evt.getX() - xDragOffset, evt.getY() - yDragOffset);
-			for (int i = 0; i < operationDragging.getAllChildOperations().size(); ++i)
-			{
-				int y = operationDragging.getY () + (i + 1) * 20;
-				operationDragging.getAllChildOperations ().get (i).setLocation (operationDragging.getX (), y);
-			}
-
-			domain.problem.markChanged();
 		}
 	}//GEN-LAST:event_workspacePanelMouseDragged
 
@@ -1262,8 +1280,25 @@ public class ViewPanel extends JPanel
 			if (component instanceof Operation)
 			{
 				operationDragging = (Operation) component;
+				try
+				{
+					Operation childOperation = null;
+					if (operationDragging.getOperationCount() > 0)
+					{
+						childOperation = operationDragging.getOperation(0);
+					}
+					DataSource parent = operationDragging.getParentData();
+					parent.removeOperation(operationDragging);
+					if (childOperation != null)
+					{
+						parent.addOperation(childOperation);
+					}
+				}
+				catch(MarlaException ex) {}
+				catch(NullPointerException ex) {}
 				xDragOffset = evt.getX() - operationDragging.getX();
                 yDragOffset = evt.getY() - operationDragging.getY();
+				workspacePanel.repaint ();
 			}
 			else if(component instanceof DataSet)
 			{
@@ -1271,12 +1306,32 @@ public class ViewPanel extends JPanel
 				xDragOffset = evt.getX() - dataSetDragging.getX();
                 yDragOffset = evt.getY() - dataSetDragging.getY();
 			}
+			domain.problem.markChanged();
 		}
 	}//GEN-LAST:event_workspacePanelMousePressed
 
 	private void workspacePanelMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_workspacePanelMouseReleased
 		dataSetDragging = null;
-		operationDragging = null;
+		if (operationDragging != null)
+		{
+			try
+			{
+				drop(operationDragging, false, evt.getPoint());
+			}
+			catch(OperationException ex)
+			{
+
+			}
+			catch(RProcessorException ex)
+			{
+
+			}
+			catch(MarlaException ex)
+			{
+				
+			}
+			operationDragging = null;
+		}
 		workspacePanel.repaint ();
 	}//GEN-LAST:event_workspacePanelMouseReleased
 
@@ -1317,38 +1372,6 @@ public class ViewPanel extends JPanel
 		}
 	}//GEN-LAST:event_workspacePanelMouseMoved
 
-	private void workspacePanelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_workspacePanelMouseClicked
-		if (hoveredComponent != null)
-		{
-			if (hoveredComponent instanceof Operation)
-			{
-				if (selectedOperation != null)
-				{
-					selectedOperation.setBorder (BorderFactory.createEmptyBorder());
-					selectedOperation.setSize(selectedOperation.getPreferredSize());
-				}
-				selectedOperation = (Operation) hoveredComponent;
-				domain.currentOperation = selectedOperation;
-				selectedOperation.setBorder (BorderFactory.createLineBorder(Color.BLUE));
-				selectedOperation.setSize(selectedOperation.getPreferredSize());
-				hoveredComponent = null;
-			}
-			else if (hoveredComponent instanceof DataSet)
-			{
-				if (selectedDataSet != null)
-				{
-					selectedDataSet.setBorder (BorderFactory.createEmptyBorder());
-					selectedDataSet.setSize(selectedDataSet.getPreferredSize());
-				}
-				selectedDataSet = (DataSet) hoveredComponent;
-				domain.currentDataSet = selectedDataSet;
-				selectedDataSet.setBorder (BorderFactory.createLineBorder(Color.RED));
-				selectedDataSet.setSize(selectedDataSet.getPreferredSize());
-				hoveredComponent = null;
-			}
-		}
-	}//GEN-LAST:event_workspacePanelMouseClicked
-
 	/**
 	 * Check if the given data set name exists (ignoring the current index, which is itself).
 	 *
@@ -1370,6 +1393,52 @@ public class ViewPanel extends JPanel
 			}
 		}
 		return false;
+	}
+
+	/**
+	 * 
+	 * @param operation
+	 * @param duplicate
+	 * @param location
+	 * @throws OperationException
+	 * @throws RProcessorException
+	 * @throws MarlaException
+	 */
+	protected void drop(Operation operation, boolean duplicate, Point location) throws OperationException, RProcessorException, MarlaException
+	{
+		Component comp = workspacePanel.getComponentAt(location);
+		if (comp != null && comp != operation && (comp instanceof DataSet || comp instanceof Operation))
+		{
+			final Operation newOperation;
+			if (duplicate)
+			{
+				newOperation = Operation.createOperation(operation.getName());
+			}
+			else
+			{
+				newOperation = operation;
+			}
+			int x = comp.getX ();
+			int y = comp.getY () + 20;
+
+			if (comp instanceof DataSet)
+			{
+				DataSet dataSet = (DataSet) comp;
+				dataSet.addOperation(newOperation);
+				if (dataSet.getOperationCount() > 1)
+				{
+					x += (dataSet.getOperationCount () * 30);
+				}
+			}
+			else if (comp instanceof Operation)
+			{
+				((Operation) comp).addOperation(newOperation);
+			}
+
+			newOperation.setBounds (x, y, newOperation.getPreferredSize().width, newOperation.getPreferredSize().height);
+			workspacePanel.add (newOperation);
+			workspacePanel.repaint();
+		}
 	}
 
 	/**
