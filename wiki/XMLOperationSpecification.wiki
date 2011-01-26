@@ -5,11 +5,11 @@ Operations in maRla may be specified using an XML format. In the discussion belo
 
 = Operation =
 {{{
-<operation name="operation name" [plot="true"]>
+<operation name="operation name" [plot="true|false"] [list="true|false"]>
 }}}
 Each `<operation />` takes a name that will be displayed to the user and can be used to
 create that operation. It must be unique. If multiple with the same name exist an
-exception will be thrown. If an operation is going to output a plot, it must have `plot="true"` set as well.
+exception will be thrown. If an operation is going to output a plot, it must have `plot="true"` set as well. If an operation should not appear on the side panel, set `list="false"`.
 
 Attributes supported:
 	* *`name`* - Arbitary name of the operation. Must be unique within the XML file
