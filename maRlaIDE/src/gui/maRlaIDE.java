@@ -408,15 +408,6 @@ public class maRlaIDE extends JFrame
 	private void exitMenuItemActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_exitMenuItemActionPerformed
 	{//GEN-HEADEREND:event_exitMenuItemActionPerformed
 		viewPanel.quit (true);
-
-		try
-		{
-			resource.Configuration.save();
-		}
-		catch(MarlaException ex)
-		{
-			Domain.logger.add(ex);
-		}
 	}//GEN-LAST:event_exitMenuItemActionPerformed
 
 	private void solveMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_solveMenuItemActionPerformed
