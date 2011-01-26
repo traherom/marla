@@ -158,6 +158,7 @@ public class LatexExporter
 	public static void setDefaultTemplate(String newTemplatePath)
 	{
 		defaultTemplate = newTemplatePath;
+		System.out.println("Using LaTeX export template at '" + defaultTemplate + "'");
 	}
 
 	/**
@@ -167,6 +168,7 @@ public class LatexExporter
 	public static void setPdflatexPath(String newPdfLatexPath)
 	{
 		pdflatexPath = newPdfLatexPath;
+		System.out.println("Using pdflatex binary at '" + pdflatexPath + "'");
 	}
 
 	/**
@@ -585,7 +587,7 @@ public class LatexExporter
 			if(pdfOutput.contains("not found"))
 			{
 				// Unable to find pdflatex to run
-				throw new LatexException("Unable to find pdflatex on PATH, cannot do PDF export");
+				throw new LatexException("Unable to find pdflatex at '" + pdfPath + "', cannot do PDF export");
 			}
 
 			// Check the output file name reported by pdflatex

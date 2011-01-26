@@ -151,6 +151,8 @@ public class OperationXML extends Operation
 	{
 		try
 		{
+			System.out.println("Loading XML operations from '" + operationFilePath + "'");
+			
 			// Make sure we know where we're looking for that there XML
 			if(operationFilePath == null)
 				throw new IncompleteInitializationException("XML file for operations has not been specified");

@@ -61,6 +61,8 @@ public class Configuration
 			SAXBuilder parser = new SAXBuilder();
 			Document doc = parser.build(configPath);
 			configXML = doc.getRootElement();
+
+			System.out.println("Using config file at '" + configPath + "'");
 		}
 		catch(JDOMException ex)
 		{

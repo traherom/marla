@@ -164,7 +164,10 @@ public final class RProcessor
 	public static String setRLocation(String newRPath)
 	{
 		String oldPath = rPath;
+		
 		rPath = newRPath;
+		System.out.println("Using R binary at '" + rPath + "'");
+
 		return oldPath;
 	}
 
@@ -208,7 +211,7 @@ public final class RProcessor
 		}
 		catch(RProcessorException ex)
 		{
-			System.err.println("\nNo R installation found, dying.");
+			System.err.println("No R installation found, dying.");
 			throw ex;
 		}
 	}
