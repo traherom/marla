@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF8"?>
+<marla>
+  <rprocessor rpath="R" />
+  <latex template="export_template.xml" pdflatex="pdflatex" />
+  <xmlops xml="ops.xml" />
+</marla>
+

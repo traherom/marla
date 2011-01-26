@@ -2387,6 +2387,16 @@ public class ViewPanel extends JPanel
      */
     protected void quit(boolean forceQuit)
     {
+		// Save the maRla configuration
+		try
+		{
+			resource.Configuration.save();
+		}
+		catch(MarlaException ex)
+		{
+			Domain.logger.add(ex);
+		}
+
 		if (Domain.logger.size () > 0)
 		{
 			try
