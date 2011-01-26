@@ -54,8 +54,6 @@ public class Domain
 	public static final String HOME_DIR = System.getProperty("user.home");
 	/** The logger holds all caught exceptions for recording in the log file.*/
 	public static final ArrayList<Exception> logger = new ArrayList<Exception>();
-	/** The path for the Operations XML file.*/
-	public static final String xmlPath = "ops.xml";
 	/** The last good problem directory.*/
 	public String lastGoodDir = HOME_DIR;
 	/** The last good file that was a CSV file.*/
