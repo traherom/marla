@@ -581,13 +581,13 @@ public class LatexExporter
 
 		try
 		{
-			String pdfOutput = proc.execute("system('" + pdfPath + " -halt-on-error " + texPath + "', intern=T)");
+			String pdfOutput = proc.execute("system('" + pdflatexPath + " -halt-on-error " + texPath + "', intern=T)");
 
 			// Ensure we actually succeeded
 			if(pdfOutput.contains("not found"))
 			{
 				// Unable to find pdflatex to run
-				throw new LatexException("Unable to find pdflatex at '" + pdfPath + "', cannot do PDF export");
+				throw new LatexException("Unable to find pdflatex at '" + pdflatexPath + "', cannot do PDF export");
 			}
 
 			// Check the output file name reported by pdflatex
