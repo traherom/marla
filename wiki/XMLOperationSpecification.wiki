@@ -50,6 +50,38 @@ operation. A combo requires that `<option />`s be specified. For example:
 
 The user's response will be returned back and saved under the name given.
 
+== Dynamic Name ==
+{{{
+<longname>Specification</longname>
+}}}
+Operations may have a name which changes based on what it is actually doing. For example, an operation which adds a user-specified value to a given column might be called "Add" but be displayed as "ColName + 5." This behavior is specified by the `<longname />` element.
+
+The main `longname` element takes no attributes. Inside it may have verbatim text--which will be copied as-is--or `<response />` elements. These may be intermixed freely as desired.
+
+An example of the add operation discussed above:
+{{{
+<operation name="Add">
+  <query type="column" name="col" prompt="Column?" />
+  <query type="number" name="val" prompt="Add" />
+
+  <longname><response name="col" default="Col" /> + <response name="val" default="X" /></longname>
+
+  <computation>
+    <!-- ...operations to perform addition... -->
+  </computation>
+</operation>
+}}}
+
+=== Response ===
+{{{
+<response name="query name" default="default value" />
+}}}
+The query referenced by `name` will be copied into the location of this element. If the user has not yet provided an answer to the query, the value given in `default` will be used instead.
+
+Supported attributes:
+	* *`name`* - Name used for a query (see [XMLOperationSpecification#Queries]). The text to this answer will be copied into the place of this element
+	* *`default`* - Default text to use if the query has not been answered yet.
+
 == Computation ==
 {{{
 <computation>
