@@ -174,7 +174,6 @@ public abstract class Operation extends JLabel implements DataSource, Changeable
 	 */
 	protected Operation(String newName)
 	{
-		super(newName);
 		setOperationName(newName);
 
 		try
@@ -207,7 +206,7 @@ public abstract class Operation extends JLabel implements DataSource, Changeable
 	 * @param opEl JDOM Element with the information to construct Operation
 	 * @return Constructed and initialized operation
 	 */
-	public static Operation fromXml(Element opEl) throws OperationException
+	public static Operation fromXml(Element opEl) throws MarlaException
 	{
 		String opName = opEl.getAttributeValue("type");
 
@@ -247,7 +246,7 @@ public abstract class Operation extends JLabel implements DataSource, Changeable
 	 * information saved for their type of Operation
 	 * @param opEl JDOM Element with all data for Operation
 	 */
-	protected void fromXmlExtra(Element opEl) throws OperationException
+	protected void fromXmlExtra(Element opEl) throws MarlaException
 	{
 	}
 

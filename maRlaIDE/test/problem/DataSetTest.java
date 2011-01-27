@@ -64,12 +64,6 @@ public class DataSetTest
 		return ds;
 	}
 
-	@BeforeClass
-	public static void initOperations() throws Exception
-	{
-		r.OperationXML.loadXML("ops.xml");
-	}
-
 	@Test
 	public void testEquals() throws Exception
 	{

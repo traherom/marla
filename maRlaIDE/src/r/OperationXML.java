@@ -27,12 +27,12 @@ import java.util.Set;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
+import org.jdom.Text;
 import org.jdom.input.SAXBuilder;
 import problem.DataColumn;
 import problem.DataColumn.DataMode;
 import problem.DataNotFoundException;
 import problem.DataSource;
-import problem.IncompleteInitializationException;
 import problem.MarlaException;
 import problem.Operation;
 import problem.OperationException;
@@ -60,6 +60,10 @@ public class OperationXML extends Operation
 	 * Configuration information for an instantiated operation
 	 */
 	private Element opConfig = null;
+	/**
+	 * Stores configuration data for a dynamic name/label for the operation
+	 */
+	private Element longNameEl = null;
 	/**
 	 * Used to store the name of the plot we (might) create. Unused
 	 * if the XML specification itself doesn't contain a <plot />
@@ -183,9 +187,7 @@ public class OperationXML extends Operation
 	{
 		// Attempt to load operations if it hasn't been done yet
 		if(operationXML == null)
-		{
 			loadXML();
-		}
 
 		List<String> opNames = new ArrayList<String>();
 		for(Object opEl : operationXML.getChildren("operation"))
@@ -238,8 +240,9 @@ public class OperationXML extends Operation
 	 */
 	protected static Element findConfiguration(String opName) throws OperationXMLException
 	{
+		// Attempt to load operations if it hasn't been done yet
 		if(operationXML == null)
-			throw new OperationXMLException("XML file has not been loaded yet.");
+			loadXML();
 
 		Element op = null;
 		for(Object opEl : operationXML.getChildren("operation"))
@@ -262,17 +265,20 @@ public class OperationXML extends Operation
 	public OperationXML() throws RProcessorException
 	{
 		super("Unconfigured");
-		opConfig = null;
 	}
 
 	/**
 	 * Creates a new operation with the given computational... stuff
 	 * @param newOpConfig JDOM XML Element that contains the needed configuration information
 	 */
-	protected void setConfiguration(Element newOpConfig)
+	protected void setConfiguration(Element newOpConfig) throws OperationXMLException
 	{
 		opConfig = newOpConfig;
 		setOperationName(opConfig.getAttributeValue("name"));
+
+		// Dynamic name set if specified, purely cosmetic
+		longNameEl = opConfig.getChild("longname");
+		updateDynamicName();
 	}
 
 	/**
@@ -381,19 +387,23 @@ public class OperationXML extends Operation
 				break;
 
 			case COLUMN:
+				// Ensure the column actually exists in the parent data
+				DataColumn parentCol = null;
+				try
+				{
+					parentCol = getParentData().getColumn((String) answerVal);
+				}
+				catch(DataNotFoundException ex)
+				{
+					throw new OperationInfoRequiredException("The column '" + answerVal + "' has been removed", ex, this);
+				}
+
 				// Look for the modifier to only save the string
 				String useType = setEl.getAttributeValue("use");
 				if(useType == null || useType.equals("values"))
 				{
 					// Save all the values in the column
-					try
-					{
-						proc.setVariable(rVar, getParentData().getColumn((String) answerVal));
-					}
-					catch(DataNotFoundException ex)
-					{
-						throw new OperationInfoRequiredException("A DataColumn with the given name '" + answerVal + "' could not be found.", this);
-					}
+					proc.setVariable(rVar, parentCol);
 				}
 				else if(useType.equals("name"))
 				{
@@ -619,11 +629,8 @@ public class OperationXML extends Operation
 	}
 
 	/**
-	 * Prompts user for the data specified by <query /> XML in operations. Query
-	 * takes the following attributes:
-	 *		type - checkbox, number, string, column, combo
-	 *		name - name to reference this value as after it is returned to setRequiredInfo()
-	 *		prompt - Question to actually present the user with
+	 * Prompts user for the data specified by <query /> XML in operations. See
+	 * documentation on wiki for more information
 	 */
 	@Override
 	public List<Object[]> getRequiredInfoPrompt() throws MarlaException
@@ -636,8 +643,11 @@ public class OperationXML extends Operation
 			Element queryEl = (Element) queryElObj;
 
 			// Ask the GUI for the right type of value
+			// For columns, if we don't have a parent then we just say we want a generic
+			// string basically. This case should only be hit when an operation is being
+			// restored from a save file
 			PromptType type = PromptType.valueOf(queryEl.getAttributeValue("type").toUpperCase());
-			if(type == PromptType.COLUMN)
+			if(type == PromptType.COLUMN && getParentData() != null)
 			{
 				// What type of column should we present to the user?
 				String colType = queryEl.getAttributeValue("column_type", "all");
@@ -730,17 +740,40 @@ public class OperationXML extends Operation
 		questionAnswers = new HashMap<String, Object>();
 
 		// Go through each asked for element to determine the name associated with it
+		// and ensure it is the proper type
 		List<Object[]> prompt = getRequiredInfoPrompt();
 		for(int i = 0; i < prompt.size(); i++)
 		{
-			questionAnswers.put((String)prompt.get(i)[1], val.get(i));
+			String answerKey = (String)prompt.get(i)[1];
+			PromptType promptType = (PromptType)prompt.get(i)[0];
+			switch(promptType)
+			{
+				case COMBO: // A combo just gets returned as a string anyway
+				case COLUMN: // Ditto with column, just need its name
+				case STRING:
+					questionAnswers.put(answerKey, val.get(i).toString());
+					break;
+
+				case NUMBER:
+					questionAnswers.put(answerKey, Double.parseDouble(val.get(i).toString()));
+					break;
+
+				case CHECKBOX:
+					questionAnswers.put(answerKey, Boolean.parseBoolean(val.get(i).toString()));
+					break;
+
+				default:
+					throw new OperationXMLException("Unable to set '" + promptType + "' yet.");
+			}
 		}
+
+		// Change the operation name so that the label is pretty
+		updateDynamicName();
 
 		// We need to recompute
 		markChanged();
 		markUnsaved();
 	}
-
 
 	private Element getPromptEl(String key) throws OperationXMLException
 	{
@@ -762,6 +795,53 @@ public class OperationXML extends Operation
 	private PromptType getPromptType(Element promptEl) throws OperationXMLException
 	{
 		return PromptType.valueOf(promptEl.getAttributeValue("type").toUpperCase());
+	}
+
+	/**
+	 * Sets the XML operation's name to the latest version, based on the data
+	 * given in the longname element and the answers to queries
+	 */
+	private void updateDynamicName() throws OperationXMLException
+	{
+		if(longNameEl != null)
+		{
+			StringBuilder newName = new StringBuilder(getName().length());
+			
+			for(Object partObj : longNameEl.getContent())
+			{
+				// We only deal with elements (stuff we need to replace/handle)
+				// and text, which we stick in verbatim. Ignore everything else, such as comments
+				if(partObj instanceof Element)
+				{
+					Element partEl = (Element)partObj;
+					if(partEl.getName().equals("response"))
+					{
+						// Pull data from one of the query answers unless they haven't been answered
+						if(questionAnswers != null)
+							newName.append(questionAnswers.get(partEl.getAttributeValue("name")).toString());
+						else
+							newName.append(partEl.getAttributeValue("default"));
+					}
+					else
+					{
+						throw new OperationXMLException("Invalid element '" + partEl.getName() + "' in long name XML");
+					}
+				}
+				else if(partObj instanceof Text)
+				{
+					Text partText = (Text)partObj;
+					newName.append(partText.getText());
+				}
+			}
+
+			// Make it visible externally, not interal though
+			super.setText(newName.toString());
+		}
+		else
+		{
+			// Just use the plain old name
+			super.setText(opConfig.getAttributeValue("name"));
+		}
 	}
 
 	@Override
@@ -846,7 +926,6 @@ public class OperationXML extends Operation
 
 				Element answerEl = new Element("answer");
 				answerEl.setAttribute("key", promptKey);
-				answerEl.setAttribute("type", getPromptType(promptKey).toString());
 				answerEl.setAttribute("answer", answer.toString());
 
 				el.addContent(answerEl);
@@ -861,50 +940,42 @@ public class OperationXML extends Operation
 	 * @param opEl Element with the needed name of the XML operation to use
 	 */
 	@Override
-	protected void fromXmlExtra(Element opEl)
+	protected void fromXmlExtra(Element opEl) throws MarlaException
 	{
-		try
+		Element xmlEl = opEl.getChild("xmlop");
+
+		// Load the correct XML specification
+		setConfiguration(findConfiguration(xmlEl.getAttributeValue("name")));
+
+		// Put togother the "response" to give to setRequiredInfo()
+		// based on what it asks for and what our save file has in it.
+		// Only do it though if we actually need to
+		List<Object[]> requiredInfo = getRequiredInfoPrompt();
+		if(requiredInfo.size() > 0)
 		{
-			Element xmlEl = opEl.getChild("xmlop");
+			List<Object> answersFromXML = new ArrayList<Object>();
 
-			// Load the correct XML specification
-			setConfiguration(findConfiguration(xmlEl.getAttributeValue("name")));
-
-			// Question answers
-			if(!xmlEl.getChildren("answer").isEmpty())
+			// Answer each question
+			for(Object[] question : requiredInfo)
 			{
-				questionAnswers = new HashMap<String, Object>();
+				// Could use XPath to find the answer, but we'd need to bring
+				// in jaxen (or some other engine). To avoid bloating for such
+				// a small need, we just loop
+				String questionName = (String)question[1];
 				for(Object answerObj : xmlEl.getChildren("answer"))
 				{
-					Element answerEl = (Element) answerObj;
-
-					String key = answerEl.getAttributeValue("key");
-					
-					// Covert the actual answer if needed
-					Object answer = null;
-					PromptType type = getPromptType(key);
-					switch(type)
-					{
-						case NUMBER:
-							answer = Double.parseDouble(answerEl.getAttributeValue("answer"));
-							break;
-							
-						case CHECKBOX:
-							answer = Boolean.parseBoolean(answerEl.getAttributeValue("answer"));
-							break;
-
-						default:
-							answer = answerEl.getAttributeValue("answer");
-					}
-
-					// Save to the new operation
-					questionAnswers.put(key, answer);
+					Element answerEl = (Element)answerObj;
+					if(questionName.equals(answerEl.getAttributeValue("key")))
+						answersFromXML.add(answerEl.getAttributeValue("answer"));
 				}
 			}
-		}
-		catch(OperationXMLException ex)
-		{
-			throw new RuntimeException("Unable to load operation '" + opEl.getAttributeValue("name") + "' from XML", ex);
+
+			// Ensure we answered everything. If we didn't, make the user answer again
+			if(answersFromXML.size() != requiredInfo.size())
+				return;
+
+			// Save the answers to the operation itself
+			setRequiredInfo(answersFromXML);
 		}
 	}
 }

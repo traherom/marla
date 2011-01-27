@@ -34,7 +34,6 @@ public class LatexExporterTest
 	@Before
 	public void setUp() throws Exception
 	{
-		OperationXML.loadXML("ops.xml");
 		testProb = ProblemTest.createProblem(2, 2, 3, 10);
 		testExp = new LatexExporter(testProb, "export_template.xml");
 		testExp.setExportBaseName("test");

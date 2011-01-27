@@ -302,7 +302,7 @@ public class LatexExporter
 	private void processSectionClean(Element el, Writer out) throws LatexException, MarlaException
 	{
 		// And start looking through the template
-		// Text nodes get placed in verbatim,
+		// Text nodes get placed in verbatim, XML elements get processing
 		for(Object partObj : el.getContent())
 		{
 			// We only deal with elements (stuff we need to replace/handle)
