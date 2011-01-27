@@ -19,6 +19,8 @@
 		<query type="column" name="col" prompt="Column?" />
 		<query type="number" name="val" prompt="Divide by" />
 
+		<longname><response name="col" default="Col" /> / <response name="val" default="X" /></longname>
+
 		<computation>
 			<set name="col" rvar="colName" use="name" />
 			<set name="val" rvar="val" />
@@ -48,6 +50,8 @@
 	<operation name="Multiply">
 		<query type="column" name="col" prompt="Column?" />
 		<query type="number" name="val" prompt="Multiply by" />
+
+		<longname><response name="col" default="Col" /> * <response name="val" default="X" /></longname>
 
 		<computation>
 			<set name="col" rvar="colName" use="name" />
@@ -79,6 +83,8 @@
 		<query type="column" name="col" prompt="Column?" />
 		<query type="number" name="val" prompt="Add" />
 
+		<longname><response name="col" default="Col" /> + <response name="val" default="X" /></longname>
+
 		<computation>
 			<set name="col" rvar="colName" use="name" />
 			<set name="val" rvar="val" />
@@ -109,6 +115,8 @@
 		<query type="column" name="col" prompt="Column?" />
 		<query type="number" name="val" prompt="Subtract" />
 
+		<longname><response name="col" default="Col" /> - <response name="val" default="X" /></longname>
+
 		<computation>
 			<set name="col" rvar="colName" use="name" />
 			<set name="val" rvar="val" />
@@ -137,6 +145,7 @@
 
 	<operation name="t-test">
 		<query type="checkbox" prompt="Is your data normal?" name="normal" />
+		
 		<computation>
 			<!-- Run t test on each column and save, plus prepare the top row -->
 			<cmd>t = list()</cmd>
@@ -225,6 +234,9 @@
 	<operation name="XY Plot" plot="true">
 		<query type="column" name="x" prompt="X column" />
 		<query type="column" name="y" prompt="Y column" />
+
+		<longname>Plot of <response name="x" default="X" /> vs <response name="y" default="Y" /></longname>
+
 		<computation>
 			<set rvar="x" name="x" />
 			<set rvar="y" name="y" />

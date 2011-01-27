@@ -30,12 +30,6 @@ public class ProblemTest
 {
 	private String tempFileName = "testing_temp_file.marlatemp";
 
-	@BeforeClass
-	public static void initOperations() throws Exception
-	{
-		r.OperationXML.loadXML("ops.xml");
-	}
-
 	public static Problem createProblem(int subProblemNum, int dataSetNum, int colNum, int valNum) throws Exception
 	{
 		Problem prob = new Problem("Test Problem");

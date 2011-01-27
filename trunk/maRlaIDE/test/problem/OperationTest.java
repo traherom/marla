@@ -21,7 +21,6 @@ import problem.Operation.PromptType;
 import java.util.List;
 import org.jdom.Element;
 import java.util.ArrayList;
-import r.OperationXML;
 import org.junit.runners.Parameterized.Parameters;
 import java.util.Collection;
 import org.junit.runners.Parameterized;
@@ -44,15 +43,13 @@ public class OperationTest
     public static Collection<Object[]> operationsAvailable() throws Exception
 	{
 		// Get the available operations
-		OperationXML.loadXML("ops.xml");
 		List<String> available = Operation.getAvailableOperations();
 
-		// Massage into the right format and remove "NOP" (we don't want to test it here)
+		// Massage into the right format
 		Collection<Object[]> objectArray = new ArrayList<Object[]>();
 		for(String op : available)
 		{
-			if(!op.equals("NOP"))
-				objectArray.add(new Object[]{op});
+			objectArray.add(new Object[]{op});
 		}
 
 		return objectArray;

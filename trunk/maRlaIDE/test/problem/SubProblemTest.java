@@ -44,12 +44,6 @@ public class SubProblemTest
 
 		return sub;
 	}
-
-	@BeforeClass
-	public static void initOperations() throws Exception
-	{
-		r.OperationXML.loadXML("ops.xml");
-	}
 	
 	@Before
 	public void beforeTest() throws Exception
