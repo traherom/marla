@@ -134,10 +134,6 @@ public final class RProcessor
 						rPath, "--slave", "--no-readline"
 					});
 
-			// TODO: set this in domain or someplace, so that the command line can be used
-			// to turn it on and off
-			debugOutputMode = RecordMode.FULL;
-
 			// Hook up streams
 			comboStream = new InputStreamCombine();
 			procOut = new BufferedReader(comboStream);
@@ -175,10 +171,14 @@ public final class RProcessor
 	 * Configures the RProcessor based on XML configuration, typically from a settings file
 	 * @param configEl XML element containing needed data
 	 */
-	public static void setConfig(Element configEl)
+	public static void setConfig(Element configEl) throws RProcessorException
 	{
 		// Extract information from configuration XML and set appropriately
 		setRLocation(configEl.getAttributeValue("rpath"));
+		
+		String debugMode = configEl.getAttributeValue("debug");
+		if(debugMode != null)
+			RProcessor.getInstance().setDebugMode(RecordMode.valueOf(debugMode.toUpperCase()));
 	}
 
 	/**
@@ -187,9 +187,10 @@ public final class RProcessor
 	 * @param configEl XML configuration element upon which to add information
 	 * @return XML element with configuration data set
 	 */
-	public static Element getConfig(Element configEl)
+	public static Element getConfig(Element configEl) throws RProcessorException
 	{
 		configEl.setAttribute("rpath", rPath);
+		configEl.setAttribute("debug", RProcessor.getInstance().getDebugMode().toString());
 		return configEl;
 	}
 
@@ -744,7 +745,7 @@ public final class RProcessor
 	 * @param mode RecordMode to place the processor in.
 	 * @return The mode the RProcessor was in before the switch
 	 */
-	public RecordMode setRecorder(RecordMode mode)
+	public RecordMode setRecorderMode(RecordMode mode)
 	{
 		RecordMode oldMode = recordMode;
 		recordMode = mode;
@@ -752,15 +753,33 @@ public final class RProcessor
 	}
 
 	/**
+	 * Returns the current processor recording mode
+	 * @return The mode the RProcessor is currently in
+	 */
+	public RecordMode getRecorderMode()
+	{
+		return recordMode;
+	}
+
+	/**
 	 * Sets how much the processor should output to the console. Useful debugging operations
 	 * @param mode RecordMode to place the processor in.
 	 * @return The mode the RProcessor was in before the switch
 	 */
-	public RecordMode setDebug(RecordMode mode)
+	public RecordMode setDebugMode(RecordMode mode)
 	{
 		RecordMode oldMode = debugOutputMode;
 		debugOutputMode = mode;
 		return oldMode;
+	}
+
+	/**
+	 * Returns how much the processor is outputting to the console
+	 * @return The mode the RProcessor is currently in
+	 */
+	public RecordMode getDebugMode()
+	{
+		return debugOutputMode;
 	}
 
 	/**
@@ -793,7 +812,7 @@ public final class RProcessor
 		try
 		{
 			proc = RProcessor.getInstance();
-			proc.setDebug(RecordMode.FULL);
+			proc.setDebugMode(RecordMode.FULL);
 			Scanner sc = new Scanner(System.in);
 			
 			while(proc.isRunning())

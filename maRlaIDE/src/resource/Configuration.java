@@ -22,6 +22,9 @@ import java.io.BufferedWriter;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import latex.LatexExporter;
 import org.jdom.Document;
 import org.jdom.Element;
@@ -32,6 +35,7 @@ import org.jdom.output.XMLOutputter;
 import problem.MarlaException;
 import r.OperationXML;
 import r.RProcessor;
+import r.RProcessorException;
 
 /**
  * @author Ryan Morehart
@@ -77,6 +81,27 @@ public class Configuration
 		RProcessor.setConfig(configXML.getChild("rprocessor"));
 		LatexExporter.setConfig(configXML.getChild("latex"));
 		OperationXML.setConfig(configXML.getChild("xmlops"));
+	}
+
+	/**
+	 * Sets configuration parameters based on command line
+	 * @param args Command line parameters, as given to main() by the VM
+	 */
+	public static void processCmdLine(String[] args) throws MarlaException
+	{
+		if(args.length >= 1)
+		{
+			if(args[0].equals("debug"))
+				RProcessor.getInstance().setDebugMode(RProcessor.RecordMode.FULL);
+			else if(args[0].equals("output"))
+				RProcessor.getInstance().setDebugMode(RProcessor.RecordMode.OUTPUT_ONLY);
+			else if(args[0].equals("cmds"))
+				RProcessor.getInstance().setDebugMode(RProcessor.RecordMode.CMDS_ONLY);
+			else if(args[0].equals("quiet"))
+				RProcessor.getInstance().setDebugMode(RProcessor.RecordMode.DISABLED);
+			else
+				throw new MarlaException("Unrecognized command line parameter '" + args[0] + "'");
+		}
 	}
 
 	/**

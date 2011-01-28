@@ -403,12 +403,12 @@ public abstract class Operation extends JLabel implements DataSource, Changeable
 		{
 			// Compute new columns and save the way we do so (R commands) for use by toString()
 			RProcessor proc = RProcessor.getInstance();
-			proc.setRecorder(RProcessor.RecordMode.CMDS_ONLY);
+			proc.setRecorderMode(RProcessor.RecordMode.CMDS_ONLY);
 			data.clearColumns();
 			inRecompute = true;
 			computeColumns(proc);
 			operationRecord = proc.fetchInteraction();
-			proc.setRecorder(RProcessor.RecordMode.DISABLED);
+			proc.setRecorderMode(RProcessor.RecordMode.DISABLED);
 
 			// We're clean!
 			isCacheDirty = false;

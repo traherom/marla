@@ -42,12 +42,12 @@ public class OperationTester
 
 			// Create test dataset from a CSV
 			DataSet testData = null;
-			RecordMode prevMode = proc.setDebug(RecordMode.DISABLED);
+			RecordMode prevMode = proc.setDebugMode(RecordMode.DISABLED);
 			if(args.length < 2)
 				testData = DataSet.importFile("test.csv");
 			else
 				testData = DataSet.importFile(args[1]);
-			proc.setDebug(prevMode);
+			proc.setDebugMode(prevMode);
 
 			// Choose operation
 			Operation op = null;
@@ -76,11 +76,11 @@ public class OperationTester
 			System.out.println("--------------------------\n");
 
 			// Fix cache (force so that we can show the full R log
-			proc.setDebug(RecordMode.FULL);
+			proc.setDebugMode(RecordMode.FULL);
 			System.out.println("------- Debug Log --------");
 			op.checkCache();
 			System.out.println("--------------------------\n");
-			proc.setDebug(RecordMode.DISABLED);
+			proc.setDebugMode(RecordMode.DISABLED);
 			
 			// Run against it
 			System.out.println("------- R commands -------");

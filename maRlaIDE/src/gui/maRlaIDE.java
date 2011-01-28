@@ -592,6 +592,7 @@ public class maRlaIDE extends JFrame
 		try
 		{
 			resource.Configuration.load();
+			resource.Configuration.processCmdLine(args);
 		}
 		catch(MarlaException ex)
 		{

@@ -303,7 +303,7 @@ public class RProcessorTest
 		// Clear it out
 		proc.fetchInteraction();
 		
-		proc.setRecorder(RProcessor.RecordMode.FULL);
+		proc.setRecorderMode(RProcessor.RecordMode.FULL);
 		proc.execute("print('test')");
 		String interaction = proc.fetchInteraction();
 
@@ -317,7 +317,7 @@ public class RProcessorTest
 		// Clear it out
 		proc.fetchInteraction();
 
-		proc.setRecorder(RProcessor.RecordMode.CMDS_ONLY);
+		proc.setRecorderMode(RProcessor.RecordMode.CMDS_ONLY);
 		proc.execute("print('test')");
 		String interaction = proc.fetchInteraction();
 
@@ -331,7 +331,7 @@ public class RProcessorTest
 		// Clear it out
 		proc.fetchInteraction();
 
-		proc.setRecorder(RProcessor.RecordMode.OUTPUT_ONLY);
+		proc.setRecorderMode(RProcessor.RecordMode.OUTPUT_ONLY);
 		proc.execute("print('test')");
 		String interaction = proc.fetchInteraction();
 
@@ -345,7 +345,7 @@ public class RProcessorTest
 		// Clear it out
 		proc.fetchInteraction();
 
-		proc.setRecorder(RProcessor.RecordMode.DISABLED);
+		proc.setRecorderMode(RProcessor.RecordMode.DISABLED);
 		proc.execute("print('test')");
 		String interaction = proc.fetchInteraction();
 
@@ -359,7 +359,7 @@ public class RProcessorTest
 		// Clear it out
 		proc.fetchInteraction();
 
-		proc.setRecorder(RProcessor.RecordMode.FULL);
+		proc.setRecorderMode(RProcessor.RecordMode.FULL);
 		proc.execute("print('test')");
 
 		// First time should have stuff

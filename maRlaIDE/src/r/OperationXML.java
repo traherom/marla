@@ -300,11 +300,11 @@ public class OperationXML extends Operation
 			throw new OperationXMLException("Computation element not specified");
 
 		// Process away. Only record the R commands we explicitly say to
-		intendedRecordMode = proc.setRecorder(RecordMode.DISABLED);
+		intendedRecordMode = proc.setRecorderMode(RecordMode.DISABLED);
 		processSequence(proc, compEl);
 
 		// Restore recording mode
-		proc.setRecorder(intendedRecordMode);
+		proc.setRecorderMode(intendedRecordMode);
 	}
 
 	private void processSequence(RProcessor proc, Element compEl) throws RProcessorException, RProcessorParseException, OperationXMLException, MarlaException
@@ -348,9 +348,9 @@ public class OperationXML extends Operation
 
 	private void processCmd(RProcessor proc, Element cmdEl) throws RProcessorException
 	{
-		proc.setRecorder(intendedRecordMode);
+		proc.setRecorderMode(intendedRecordMode);
 		proc.execute(cmdEl.getTextTrim());
-		proc.setRecorder(RecordMode.DISABLED);
+		proc.setRecorderMode(RecordMode.DISABLED);
 	}
 
 	private void processSet(RProcessor proc, Element setEl) throws OperationXMLException, OperationInfoRequiredException, RProcessorException, MarlaException
@@ -364,7 +364,7 @@ public class OperationXML extends Operation
 		Object answerVal = questionAnswers.get(promptKey);
 		
 		// Record the set calls
-		proc.setRecorder(intendedRecordMode);
+		proc.setRecorderMode(intendedRecordMode);
 
 		// All of them will save to here
 		String rVar = setEl.getAttributeValue("rvar");
@@ -421,7 +421,7 @@ public class OperationXML extends Operation
 		}
 
 		// Go back to old record mode
-		proc.setRecorder(RecordMode.DISABLED);
+		proc.setRecorderMode(RecordMode.DISABLED);
 	}
 
 	private void processSave(RProcessor proc, Element cmdEl) throws RProcessorException, RProcessorParseException, OperationXMLException, MarlaException
@@ -453,7 +453,7 @@ public class OperationXML extends Operation
 		}
 
 		// Process the command we're saving
-		proc.setRecorder(intendedRecordMode);
+		proc.setRecorderMode(intendedRecordMode);
 
 		SaveType type = SaveType.valueOf(cmdEl.getAttributeValue("type", "double").toUpperCase());
 		switch(type)
@@ -484,7 +484,7 @@ public class OperationXML extends Operation
 		}
 
 		// Disable again
-		proc.setRecorder(RecordMode.DISABLED);
+		proc.setRecorderMode(RecordMode.DISABLED);
 	}
 
 	private void processLoop(RProcessor proc, Element loopEl) throws RProcessorException, RProcessorParseException, OperationXMLException, MarlaException
@@ -501,14 +501,14 @@ public class OperationXML extends Operation
 				for(int i = 0; i < getParentData().getColumnCount(); i++)
 				{
 					// Assign the loop key and value
-					proc.setRecorder(intendedRecordMode);
+					proc.setRecorderMode(intendedRecordMode);
 					if(nameVar != null)
 						proc.setVariable(nameVar, getParentData().getColumn(i).getName());
 					if(indexVar != null)
 						proc.setVariable(indexVar, new Double(i + 1));
 					if(valueVar != null)
 						proc.setVariable(valueVar, getParentData().getColumn(i));
-					proc.setRecorder(RecordMode.DISABLED);
+					proc.setRecorderMode(RecordMode.DISABLED);
 
 					// Now do what the XML says
 					processSequence(proc, loopEl);
@@ -520,12 +520,12 @@ public class OperationXML extends Operation
 				for(int i = 0; i < doubleVals.size(); i++)
 				{
 					// Assign the loop index
-					proc.setRecorder(intendedRecordMode);
+					proc.setRecorderMode(intendedRecordMode);
 					if(indexVar != null)
 						proc.setVariable(indexVar, new Double(i + 1));
 					if(valueVar != null)
 						proc.setVariable(valueVar, doubleVals.get(i));
-					proc.setRecorder(RecordMode.DISABLED);
+					proc.setRecorderMode(RecordMode.DISABLED);
 
 					// Now do what the XML says
 					processSequence(proc, loopEl);
@@ -537,12 +537,12 @@ public class OperationXML extends Operation
 				for(int i = 0; i < stringVals.size(); i++)
 				{
 					// Assign the loop index
-					proc.setRecorder(intendedRecordMode);
+					proc.setRecorderMode(intendedRecordMode);
 					if(indexVar != null)
 						proc.setVariable(indexVar, new Double(i + 1));
 					if(valueVar != null)
 						proc.setVariable(valueVar, stringVals.get(i));
-					proc.setRecorder(RecordMode.DISABLED);
+					proc.setRecorderMode(RecordMode.DISABLED);
 
 					// Now do what the XML says
 					processSequence(proc, loopEl);
