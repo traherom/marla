@@ -17,7 +17,6 @@
  */
 package latex;
 
-import r.OperationXML;
 import problem.ProblemTest;
 import problem.Problem;
 import org.junit.*;
