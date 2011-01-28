@@ -617,9 +617,9 @@ public final class DataSet extends JLabel implements DataSource, Changeable
 		if(!chain)
 		{
 			RProcessor proc = RProcessor.getInstance();
-			RecordMode oldMode = proc.setRecorder(RecordMode.CMDS_ONLY);
+			RecordMode oldMode = proc.setRecorderMode(RecordMode.CMDS_ONLY);
 			toRFrame();
-			proc.setRecorder(oldMode);
+			proc.setRecorderMode(oldMode);
 			return proc.fetchInteraction();
 		}
 		else
