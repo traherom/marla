@@ -17,6 +17,10 @@
  */
 package problem;
 
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Deque;
+import java.util.List;
 import org.jdom.Element;
 
 /**
@@ -155,6 +159,40 @@ public class SubProblem implements ProblemPart
 	public DataSource getSolutionEnd()
 	{
 		return endSolutionStep;
+	}
+
+	public List<DataSource> getSolutionChain() throws MarlaException
+	{
+		if(startSolutionStep == null)
+			throw new IncompleteInitializationException("An starting solution step for this subproblem has not been set");
+		if(endSolutionStep == null)
+			throw new IncompleteInitializationException("An ending solution step for this subproblem has not been set");
+
+		// Find all the ops in order from the bottom of our chain to the top
+		Deque<DataSource> stack = new ArrayDeque<DataSource>();
+		DataSource currOp = endSolutionStep;
+		try
+		{
+			while(currOp != startSolutionStep)
+			{
+				stack.push(currOp);
+				currOp = ((Operation)currOp).getParentData();
+			}
+		}
+		catch(ClassCastException ex)
+		{
+			throw new ProblemException("The start and end of the subproblem solution appear to not be connected", ex);
+		}
+
+		// Put them in the list in the opposite order we found them, so
+		// the list runs from the top (start) operation to the bottom (end)
+		List<DataSource> ops = new ArrayList<DataSource>(stack.size());
+		while(!stack.isEmpty())
+		{
+			ops.add(stack.pop());
+		}
+		
+		return ops;
 	}
 
 	/**

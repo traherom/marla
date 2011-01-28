@@ -24,14 +24,21 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.List;
+import java.util.Queue;
+import java.util.concurrent.ArrayBlockingQueue;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.filefilter.NameFileFilter;
+import org.apache.commons.io.filefilter.PrefixFileFilter;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.Text;
 import org.jdom.input.SAXBuilder;
+import problem.DataSource;
 import problem.Operation;
 import problem.SubProblem;
 import r.RProcessor;
@@ -506,7 +513,12 @@ public class LatexExporter
 			sweaveBlock.append(currentSub.getSubproblemID());
 			sweaveBlock.append(">>=\n");
 
-			sweaveBlock.append(currentSub.getSolutionEnd().getRCommands(true));
+			// Pull out each R block for the operations inside the solution
+			List<DataSource> solOps = currentSub.getSolutionChain();
+			for(int i = 0; i < solOps.size(); i++)
+			{
+				sweaveBlock.append(solOps.get(i).getRCommands(false));
+			}
 
 			// End block
 			sweaveBlock.append("@\n");
@@ -575,9 +587,9 @@ public class LatexExporter
 		proc.execute("Sweave('" + rnwPath.replaceAll("\\\\", "/") + "')");
 
 		// Run it through pdflatex
-		String rnwFileName = new File(rnwPath).getName();
-		String texPath = rnwFileName.replace(".rnw", ".tex");
-		String pdfPath = rnwFileName.replace(".rnw", ".pdf");
+		String baseFileName = new File(rnwPath).getName().replace(".rnw", "");
+		String texPath = baseFileName + ".tex";
+		String pdfPath = baseFileName + ".pdf";
 
 		try
 		{
@@ -598,7 +610,7 @@ public class LatexExporter
 				throw new LatexException("pdflatex reported a different output file ('" + pdfFileLine + "') than we expected ('" + pdfPath + "')");
 			}
 
-			// Move/remove temp files
+			// Move the final PDF file
 			return moveFile(pdfPath, "pdf");
 		}
 		catch(RProcessorException ex)
@@ -608,8 +620,13 @@ public class LatexExporter
 		}
 		finally
 		{
-			// Remove the tex file, it was temporary
-			FileUtils.deleteQuietly(new File(texPath));
+			// Remove temp files
+			File dir = new File(".");
+			String[] files = dir.list(new PrefixFileFilter(baseFileName));
+			for(int i = 0; i < files.length; i++)
+			{
+				FileUtils.deleteQuietly(new File(files[i]));
+			}
 		}
 	}
 }
