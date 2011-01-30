@@ -73,7 +73,7 @@ public class WorkspacePanel extends JPanel
 	{
 		super.paintComponent (g);
 
-		if (!dataSets.isEmpty() && viewPanel.dataSetDragging == null && viewPanel.operationDragging == null)
+		if (!dataSets.isEmpty() && viewPanel.draggingComponent == null)
 		{
 			Graphics2D g2 = (Graphics2D) g;
 			g2.setRenderingHint (RenderingHints.KEY_ANTIALIASING,
