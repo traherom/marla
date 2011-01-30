@@ -124,6 +124,12 @@ public interface DataSource
 	public List<Operation> getAllChildOperations();
 
 	/**
+	 * Returns the DataSource that is at the top of the chain
+	 * @return DataSource without a parent (top of the chain)
+	 */
+	public DataSource getRootDataSource();
+
+	/**
 	 * Outputs this DataSource as the string of R commands needed to perform
 	 * the calculations for itself. If chain is true then R commands from higher
 	 * up the chain are also included in the string

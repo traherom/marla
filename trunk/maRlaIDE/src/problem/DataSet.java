@@ -319,9 +319,15 @@ public final class DataSet extends JLabel implements DataSource, Changeable
 	 * is null if there is no parent for this problem.
 	 * @return Parent problem, null if none
 	 */
-	public ProblemPart getParentProblem()
+	public final ProblemPart getParentProblem()
 	{
 		return (ProblemPart) parent;
+	}
+
+	@Override
+	public final DataSource getRootDataSource()
+	{
+		return this;
 	}
 
 	/**
@@ -329,7 +335,7 @@ public final class DataSet extends JLabel implements DataSource, Changeable
 	 * @return Dataset name
 	 */
 	@Override
-	public String getName()
+	public final String getName()
 	{
 		return name;
 	}
@@ -361,7 +367,7 @@ public final class DataSet extends JLabel implements DataSource, Changeable
 	}
 
 	@Override
-	public boolean isUniqueColumnName(String name)
+	public final boolean isUniqueColumnName(String name)
 	{
 		// Make sure no other columns have this name
 		for(DataColumn dc : columns)
