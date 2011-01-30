@@ -251,9 +251,7 @@ public abstract class Operation extends JLabel implements DataSource, Changeable
 	}
 
 	/**
-	 * Assigns this Operation to a new parent. Should only be called by
-	 * the new parent DataSet, as that needs to actually insert the
-	 * operation into its array.
+	 * Assigns this Operation to a new parent.
 	 * @param newParent Parent DataSet/Operation we're a part of
 	 */
 	public final void setParentData(DataSource newParent) throws MarlaException
@@ -286,6 +284,15 @@ public abstract class Operation extends JLabel implements DataSource, Changeable
 	public final DataSource getParentData()
 	{
 		return parent;
+	}
+
+	@Override
+	public final DataSource getRootDataSource()
+	{
+		if(parent != null)
+			return parent.getRootDataSource();
+		else
+			return this;
 	}
 
 	@Override
