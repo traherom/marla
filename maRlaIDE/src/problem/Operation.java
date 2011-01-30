@@ -256,7 +256,7 @@ public abstract class Operation extends JLabel implements DataSource, Changeable
 	 * operation into its array.
 	 * @param newParent Parent DataSet/Operation we're a part of
 	 */
-	protected final void setParentData(DataSource newParent) throws MarlaException
+	public final void setParentData(DataSource newParent) throws MarlaException
 	{
 		// If we're already a part of this parent, ignore request
 		if(parent == newParent)
