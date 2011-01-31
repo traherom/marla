@@ -33,6 +33,7 @@ import problem.DataColumn;
 import problem.DataColumn.DataMode;
 import problem.DataNotFoundException;
 import problem.DataSource;
+import problem.DuplicateNameException;
 import problem.MarlaException;
 import problem.Operation;
 import problem.OperationException;
@@ -82,30 +83,6 @@ public class OperationXML extends Operation
 	private RecordMode intendedRecordMode = null;
 
 	/**
-	 * Types of commands we support from XML
-	 */
-	private enum CommandType
-	{
-		CMD, SET, SAVE, LOOP, IF, PLOT
-	};
-
-	/**
-	 * Ways to process results from R
-	 */
-	private enum SaveType
-	{
-		DOUBLE, STRING, DOUBLE_ARRAY, STRING_ARRAY
-	};
-
-	/**
-	 * Different things we can loop over
-	 */
-	private enum LoopType
-	{
-		PARENT, DOUBLE_ARRAY, STRING_ARRAY
-	};
-
-	/**
 	 * Configures the defaults for XML operations based on the given XML configuration
 	 * @param configEl XML configuration element with settings as attributes
 	 */
@@ -149,9 +126,9 @@ public class OperationXML extends Operation
 		{
 			// Save for future use again
 			operationFilePath = xmlPath;
-			
+
 			System.out.println("Loading XML operations from '" + operationFilePath + "'");
-			
+
 			// Make sure we know where we're looking for that there XML
 			if(operationFilePath == null)
 				throw new OperationXMLException("XML file for operations has not been specified");
@@ -313,36 +290,24 @@ public class OperationXML extends Operation
 		for(Object elObj : compEl.getChildren())
 		{
 			Element el = (Element) elObj;
-			CommandType type = CommandType.valueOf(el.getName().toUpperCase());
-			switch(type)
-			{
-				case CMD:
-					processCmd(proc, el);
-					break;
 
-				case SET:
-					processSet(proc, el);
-					break;
-
-				case SAVE:
-					processSave(proc, el);
-					break;
-
-				case LOOP:
-					processLoop(proc, el);
-					break;
-
-				case IF:
-					processIf(proc, el);
-					break;
-
-				case PLOT:
-					processPlot(proc, el);
-					break;
-
-				default:
-					throw new OperationXMLException("Unknown computation command '" + type + "'");
-			}
+			String cmdName = el.getName();
+			if(cmdName.equals("cmd"))
+				processCmd(proc, el);
+			else if(cmdName.equals("set"))
+				processSet(proc, el);
+			else if(cmdName.equals("save"))
+				processSave(proc, el);
+			else if(cmdName.equals("loop"))
+				processLoop(proc, el);
+			else if(cmdName.equals("if"))
+				processIf(proc, el);
+			else if(cmdName.equals("copy"))
+				processCopy(proc, el);
+			else if(cmdName.equals("plot"))
+				processPlot(proc, el);
+			else
+				throw new OperationXMLException("Unrecognized command element '" + cmdName + "'");
 		}
 	}
 
@@ -362,7 +327,7 @@ public class OperationXML extends Operation
 
 		// Read the answer
 		Object answerVal = questionAnswers.get(promptKey);
-		
+
 		// Record the set calls
 		proc.setRecorderMode(intendedRecordMode);
 
@@ -454,36 +419,23 @@ public class OperationXML extends Operation
 
 		// Process the command we're saving
 		proc.setRecorderMode(intendedRecordMode);
+		String result = proc.execute(cmd);
 
-		SaveType type = SaveType.valueOf(cmdEl.getAttributeValue("type", "double").toUpperCase());
-		switch(type)
+		String processAs = cmdEl.getAttributeValue("type", "double");
+		if(processAs.equals("double"))
 		{
-			case DOUBLE: // Saves either the given R variable or command result into the given column
-				col.setMode(DataColumn.DataMode.NUMERICAL);
-				col.add(proc.executeDouble(cmd));
-				break;
-
-			case DOUBLE_ARRAY: // Saves either the given R variable or command result into the given column
-				// Get the value
-				col.setMode(DataColumn.DataMode.NUMERICAL);
-				col.addAll(proc.executeDoubleArray(cmd));
-				break;
-
-			case STRING:
-				col.setMode(DataColumn.DataMode.STRING);
-				col.add(proc.executeString(cmd));
-				break;
-
-			case STRING_ARRAY:
-				col.setMode(DataColumn.DataMode.STRING);
-				col.addAll(proc.executeStringArray(cmd));
-				break;
-
-			default:
-				throw new OperationXMLException("Save type of '" + type + "' is unrecognized.");
+			col.setMode(DataColumn.DataMode.NUMERICAL);
+			col.addAll(proc.parseDoubleArray(result));
 		}
-
-		// Disable again
+		else if(processAs.equals("string"))
+		{
+			col.setMode(DataMode.STRING);
+			col.addAll(proc.parseStringArray(result));
+		}
+		else
+			throw new OperationXMLException("Save type of '" + processAs + "' is unrecognized.");
+		
+		// Disable recorder again
 		proc.setRecorderMode(RecordMode.DISABLED);
 	}
 
@@ -494,64 +446,64 @@ public class OperationXML extends Operation
 		String indexVar = loopEl.getAttributeValue("indexVar");
 		String valueVar = loopEl.getAttributeValue("valueVar");
 
-		LoopType type = LoopType.valueOf(loopEl.getAttributeValue("type").toUpperCase());
-		switch(type)
+		String loopType = loopEl.getAttributeValue("type", "double");
+		if(loopType.equals("parent"))
 		{
-			case PARENT: // Loop over every column in parent
-				for(int i = 0; i < getParentData().getColumnCount(); i++)
-				{
-					// Assign the loop key and value
-					proc.setRecorderMode(intendedRecordMode);
-					if(nameVar != null)
-						proc.setVariable(nameVar, getParentData().getColumn(i).getName());
-					if(indexVar != null)
-						proc.setVariable(indexVar, new Double(i + 1));
-					if(valueVar != null)
-						proc.setVariable(valueVar, getParentData().getColumn(i));
-					proc.setRecorderMode(RecordMode.DISABLED);
+			// Loop over every column in parent
+			for(int i = 0; i < getParentData().getColumnCount(); i++)
+			{
+				// Assign the loop key and value
+				proc.setRecorderMode(intendedRecordMode);
+				if(nameVar != null)
+					proc.setVariable(nameVar, getParentData().getColumn(i).getName());
+				if(indexVar != null)
+					proc.setVariable(indexVar, new Double(i + 1));
+				if(valueVar != null)
+					proc.setVariable(valueVar, getParentData().getColumn(i));
+				proc.setRecorderMode(RecordMode.DISABLED);
 
-					// Now do what the XML says
-					processSequence(proc, loopEl);
-				}
-				break;
-
-			case DOUBLE_ARRAY: // Loop over an R vector, setting each element as the index var
-				List<Double> doubleVals = proc.executeDoubleArray(loopEl.getAttributeValue("loopVar"));
-				for(int i = 0; i < doubleVals.size(); i++)
-				{
-					// Assign the loop index
-					proc.setRecorderMode(intendedRecordMode);
-					if(indexVar != null)
-						proc.setVariable(indexVar, new Double(i + 1));
-					if(valueVar != null)
-						proc.setVariable(valueVar, doubleVals.get(i));
-					proc.setRecorderMode(RecordMode.DISABLED);
-
-					// Now do what the XML says
-					processSequence(proc, loopEl);
-				}
-				break;
-
-			case STRING_ARRAY: // Loop over an R vector, setting each element as the index var
-				List<String> stringVals = proc.executeStringArray(loopEl.getAttributeValue("loopVar"));
-				for(int i = 0; i < stringVals.size(); i++)
-				{
-					// Assign the loop index
-					proc.setRecorderMode(intendedRecordMode);
-					if(indexVar != null)
-						proc.setVariable(indexVar, new Double(i + 1));
-					if(valueVar != null)
-						proc.setVariable(valueVar, stringVals.get(i));
-					proc.setRecorderMode(RecordMode.DISABLED);
-
-					// Now do what the XML says
-					processSequence(proc, loopEl);
-				}
-				break;
-
-			default:
-				throw new OperationXMLException("Loop type '" + type + "' not recognized.");
+				// Now do what the XML says
+				processSequence(proc, loopEl);
+			}
 		}
+		else if(loopType.equals("double"))
+		{
+			// Loop over an R vector, setting each element as the index var
+			List<Double> doubleVals = proc.executeDoubleArray(loopEl.getAttributeValue("loopVar"));
+			for(int i = 0; i < doubleVals.size(); i++)
+			{
+				// Assign the loop index
+				proc.setRecorderMode(intendedRecordMode);
+				if(indexVar != null)
+					proc.setVariable(indexVar, new Double(i + 1));
+				if(valueVar != null)
+					proc.setVariable(valueVar, doubleVals.get(i));
+				proc.setRecorderMode(RecordMode.DISABLED);
+
+				// Now do what the XML says
+				processSequence(proc, loopEl);
+			}
+		}
+		else if(loopType.equals("string"))
+		{
+			// Loop over an R vector, setting each element as the index var
+			List<String> stringVals = proc.executeStringArray(loopEl.getAttributeValue("loopVar"));
+			for(int i = 0; i < stringVals.size(); i++)
+			{
+				// Assign the loop index
+				proc.setRecorderMode(intendedRecordMode);
+				if(indexVar != null)
+					proc.setVariable(indexVar, new Double(i + 1));
+				if(valueVar != null)
+					proc.setVariable(valueVar, stringVals.get(i));
+				proc.setRecorderMode(RecordMode.DISABLED);
+
+				// Now do what the XML says
+				processSequence(proc, loopEl);
+			}
+		}
+		else
+			throw new OperationXMLException("Loop type '" + loopType + "' not recognized.");
 	}
 
 	private void processIf(RProcessor proc, Element ifEl) throws RProcessorException, RProcessorParseException, OperationXMLException, MarlaException
@@ -614,12 +566,36 @@ public class OperationXML extends Operation
 	{
 		// An operation may only have one plot in it
 		if(plotPath != null)
-			throw new RProcessorParseException("An operation may only have one plot in it");
+			throw new OperationXMLException("An operation may only have one plot in it");
 
 		// Plot away
 		plotPath = proc.startGraphicOutput();
 		processSequence(proc, cmdEl);
 		proc.stopGraphicOutput();
+	}
+
+	private void processCopy(RProcessor proc, Element copyEl) throws OperationXMLException, RProcessorParseException, RProcessorException, MarlaException
+	{
+		// What column are we supposed to copy over?
+		String rNameCmd = copyEl.getAttributeValue("r_colname");
+		if(rNameCmd == null)
+			throw new OperationXMLException("No column name supplied for copy");
+
+		String colName = proc.executeString(rNameCmd);
+
+		try
+		{
+			// Copy it over, with the same name and data
+			copyColumn(colName);
+		}
+		catch(DataNotFoundException ex)
+		{
+			throw new OperationXMLException("Unable to locate column '" + colName + "' for copy");
+		}
+		catch(DuplicateNameException ex)
+		{
+			throw new OperationXMLException("A column copy must occur before any saves to a column of the same name");
+		}
 	}
 
 	@Override
@@ -701,7 +677,7 @@ public class OperationXML extends Operation
 				List<String> options = new ArrayList<String>();
 				for(Object opObj : queryEl.getChildren("option"))
 				{
-					Element opEl = (Element)opObj;
+					Element opEl = (Element) opObj;
 					options.add(opEl.getText());
 				}
 
@@ -744,8 +720,8 @@ public class OperationXML extends Operation
 		List<Object[]> prompt = getRequiredInfoPrompt();
 		for(int i = 0; i < prompt.size(); i++)
 		{
-			String answerKey = (String)prompt.get(i)[1];
-			PromptType promptType = (PromptType)prompt.get(i)[0];
+			String answerKey = (String) prompt.get(i)[1];
+			PromptType promptType = (PromptType) prompt.get(i)[0];
 			switch(promptType)
 			{
 				case COMBO: // A combo just gets returned as a string anyway
@@ -806,14 +782,14 @@ public class OperationXML extends Operation
 		if(longNameEl != null)
 		{
 			StringBuilder newName = new StringBuilder(getName().length());
-			
+
 			for(Object partObj : longNameEl.getContent())
 			{
 				// We only deal with elements (stuff we need to replace/handle)
 				// and text, which we stick in verbatim. Ignore everything else, such as comments
 				if(partObj instanceof Element)
 				{
-					Element partEl = (Element)partObj;
+					Element partEl = (Element) partObj;
 					if(partEl.getName().equals("response"))
 					{
 						// Pull data from one of the query answers unless they haven't been answered
@@ -829,7 +805,7 @@ public class OperationXML extends Operation
 				}
 				else if(partObj instanceof Text)
 				{
-					Text partText = (Text)partObj;
+					Text partText = (Text) partObj;
 					newName.append(partText.getText());
 				}
 			}
@@ -961,10 +937,10 @@ public class OperationXML extends Operation
 				// Could use XPath to find the answer, but we'd need to bring
 				// in jaxen (or some other engine). To avoid bloating for such
 				// a small need, we just loop
-				String questionName = (String)question[1];
+				String questionName = (String) question[1];
 				for(Object answerObj : xmlEl.getChildren("answer"))
 				{
-					Element answerEl = (Element)answerObj;
+					Element answerEl = (Element) answerObj;
 					if(questionName.equals(answerEl.getAttributeValue("key")))
 						answersFromXML.add(answerEl.getAttributeValue("answer"));
 				}

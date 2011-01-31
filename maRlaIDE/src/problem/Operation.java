@@ -206,7 +206,7 @@ public abstract class Operation extends JLabel implements DataSource, Changeable
 	 * @param opEl JDOM Element with the information to construct Operation
 	 * @return Constructed and initialized operation
 	 */
-	public static Operation fromXml(Element opEl) throws MarlaException
+	public static final Operation fromXml(Element opEl) throws MarlaException
 	{
 		String opName = opEl.getAttributeValue("type");
 
@@ -351,6 +351,16 @@ public abstract class Operation extends JLabel implements DataSource, Changeable
 	protected final DataColumn addColumn(String colName) throws DuplicateNameException
 	{
 		return data.addColumn(colName);
+	}
+
+	/**
+	 * Copies a parent column into this operation's result
+	 * @param colName Name of the column to copy
+	 * @return Newly created DataColumn copy
+	 */
+	protected final DataColumn copyColumn(String colName) throws DuplicateNameException, DataNotFoundException, MarlaException
+	{
+		return data.copyColumn(parent.getColumn(colName));
 	}
 
 	/**

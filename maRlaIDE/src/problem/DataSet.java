@@ -388,19 +388,7 @@ public final class DataSet extends JLabel implements DataSource, Changeable
 	 */
 	public DataColumn addColumn(String colName) throws DuplicateNameException
 	{
-		// Ensure the name of this new column is ok
-		if(!isUniqueColumnName(colName))
-		{
-			throw new DuplicateNameException("Data column with name '"
-					+ colName + "' already exists in dataset '" + name + "'");
-		}
-
-		// Create
-		DataColumn newColumn = new DataColumn(this, colName);
-		columns.add(newColumn);
-		markChanged();
-
-		return newColumn;
+		return addColumn(columns.size(), colName);
 	}
 
 	/**
@@ -427,6 +415,34 @@ public final class DataSet extends JLabel implements DataSource, Changeable
 		markChanged();
 
 		return newColumn;
+	}
+
+	/**
+	 * Copies the values and name of an existing column into this DataSet
+	 * @param oldCol Column to copy. Should not be part of this DataSet, as a DuplicateNameException will result
+	 * @return Newly created column that is a part of this DataSet
+	 */
+	public DataColumn copyColumn(DataColumn oldCol) throws DuplicateNameException
+	{
+		return copyColumn(columns.size(), oldCol);
+	}
+
+
+	/**
+	 * Copies the values and name of an existing column into this DataSet
+	 * at the given column index
+	 * @param index Column index to copy the column into
+	 * @param oldCol Column to copy. Should not be part of this DataSet, as a DuplicateNameException will result
+	 * @return Newly created column that is a part of this DataSet
+	 */
+	public DataColumn copyColumn(int index, DataColumn oldCol) throws DuplicateNameException
+	{
+		DataColumn newCol = addColumn(index, oldCol.getName());
+		
+		newCol.setMode(oldCol.getMode());
+		newCol.addAll(oldCol);
+
+		return newCol;
 	}
 
 	/**
