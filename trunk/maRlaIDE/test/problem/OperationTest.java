@@ -26,6 +26,7 @@ import java.util.Collection;
 import org.junit.runners.Parameterized;
 import org.junit.runner.RunWith;
 import org.junit.*;
+import r.RProcessor;
 import static org.junit.Assert.*;
 
 /**
@@ -45,11 +46,13 @@ public class OperationTest
 		// Get the available operations
 		List<String> available = Operation.getAvailableOperations();
 
-		// Massage into the right format
-		Collection<Object[]> objectArray = new ArrayList<Object[]>();
-		for(String op : available)
+		// Massage into the right format ando utput so we know the index references
+		System.out.println("Testing operation array: (" + available.size() + " operations)");
+		Collection<Object[]> objectArray = new ArrayList<Object[]>(available.size());
+		for(int i = 0; i < available.size(); i++)
 		{
-			objectArray.add(new Object[]{op});
+			System.out.println("  [" + i + "]: " + available.get(i));
+			objectArray.add(new Object[]{available.get(i)});
 		}
 
 		return objectArray;
@@ -60,7 +63,7 @@ public class OperationTest
 		List<Object[]> info = op.getRequiredInfoPrompt();
 
 		// Fill with some BS. Not every operation is nicely handled with this approach
-		// if it actually uses the data we're probably not going to have much fun
+		// if it actually uses the data we may not have much fun (tests will fail)
 		List<Object> answers = new ArrayList<Object>();
 		for(Object[] question : info)
 		{
@@ -87,7 +90,7 @@ public class OperationTest
 					break;
 
 				default:
-					fail("Unrecognized question type '" + questionType + "'");
+					fail("Unfillable question type '" + questionType + "'");
 			}
 		}
 
@@ -100,9 +103,19 @@ public class OperationTest
 		this.opName = opName;
 	}
 
+	@BeforeClass
+	public static void printOpArray() throws Exception
+	{
+		OperationTest.operationsAvailable();
+	}
+
 	@Before
 	public void setUp() throws Exception
 	{
+		// Ensure everything shows
+		RProcessor.getInstance().setDebugMode(RProcessor.RecordMode.FULL);
+
+		// Create fake dataset to work with
 		ds1 = DataSetTest.createDataSet(4, 10, 0);
 		op1 = Operation.createOperation(opName);
 		ds1.addOperation(op1);
