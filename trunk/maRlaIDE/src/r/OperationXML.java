@@ -306,6 +306,8 @@ public class OperationXML extends Operation
 				processCopy(proc, el);
 			else if(cmdName.equals("plot"))
 				processPlot(proc, el);
+			else if(cmdName.equals("load"))
+				processLoad(proc, el);
 			else
 				throw new OperationXMLException("Unrecognized command element '" + cmdName + "'");
 		}
@@ -595,6 +597,51 @@ public class OperationXML extends Operation
 		catch(DuplicateNameException ex)
 		{
 			throw new OperationXMLException("A column copy must occur before any saves to a column of the same name");
+		}
+	}
+
+	private void processLoad(RProcessor proc, Element loadEl) throws OperationXMLException, RProcessorParseException, RProcessorException, MarlaException
+	{
+		// Find what library the operation wants to load
+		String libToLoad = loadEl.getAttributeValue("library");
+		if(libToLoad == null)
+		{
+			// Ok, try for a dynamic version then
+			String dynamicName = loadEl.getAttributeValue("r_library");
+			if(dynamicName == null)
+				throw new OperationXMLException("No library specified for load");
+
+			// Actually find the string in that variable
+			libToLoad = proc.executeString(dynamicName);
+		}
+
+		Boolean loaded = false;
+		try
+		{
+			// Attempt to load.
+			loaded = proc.executeBoolean("library('" + libToLoad + "', logical.return=T)");
+		}
+		catch(RProcessorException ex)
+		{
+			// This is the "no package" error, right?
+			if(ex.getMessage().contains("no package"))
+				loaded = false;
+			else
+				throw ex;
+		}
+
+		// Install if needed and retry the load
+		if(!loaded)
+		{
+			try
+			{
+				proc.execute("install.packages('" + libToLoad + "', repos='http://cran.r-project.org')");
+				proc.execute("library('" + libToLoad + "')");
+			}
+			catch(RProcessorException ex)
+			{
+				throw new OperationXMLException("Unable to load library '" + libToLoad + "' and could not install it", ex);
+			}
 		}
 	}
 

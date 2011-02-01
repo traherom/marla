@@ -579,24 +579,38 @@ public class LatexExporter
 
 		// Sweave it
 		RProcessor proc = RProcessor.getInstance();
-		proc.execute("Sweave('" + rnwPath.replaceAll("\\\\", "/") + "')");
+		try
+		{
+			String sweaveOutput = proc.execute("Sweave('" + rnwPath.replaceAll("\\\\", "/") + "')");
+		}
+		catch(RProcessorException ex)
+		{
+			throw new LatexException("Unable to sweave file '" + rnwPath + "', likely an error in the template '" + templatePath + "'", ex);
+		}
 
-		// Run it through pdflatex
+		// Figure out the file names
 		String baseFileName = new File(rnwPath).getName().replace(".rnw", "");
 		String texPath = baseFileName + ".tex";
 		String pdfPath = baseFileName + ".pdf";
 
 		try
 		{
-			String pdfOutput = proc.execute("system('" + pdflatexPath + " -halt-on-error " + texPath + "', intern=T)");
+			// Run it through pdflatex
+			String pdfOutput = proc.execute("system('" + pdflatexPath + " -halt-on-error " + texPath + "', intern=T)", true);
 
-			// Ensure we actually succeeded
-			if(pdfOutput.contains("not found"))
+			// Ensure we actually succeeded. R on Windows returns an error (hence becomes
+			// an exception) and on Linux it says it cannot find R
+			if(!pdfOutput.startsWith(" [1] \"This is pdfTeX"))
 			{
 				// Unable to find pdflatex to run
 				throw new LatexException("Unable to find pdflatex at '" + pdflatexPath + "', cannot do PDF export");
 			}
-
+			else if(pdfOutput.contains(".sty' not found"))
+			{
+				// Sweave not tied into LaTeX properly
+				throw new LatexException("Sweave does not appear to be registered correctly with LaTeX");
+			}
+			
 			// Check the output file name reported by pdflatex
 			List<String> pdfOutputLines = proc.parseStringArray(pdfOutput);
 			String pdfFileLine = pdfOutputLines.get(pdfOutputLines.size() - 2);
@@ -607,11 +621,6 @@ public class LatexExporter
 
 			// Move the final PDF file
 			return moveFile(pdfPath, "pdf");
-		}
-		catch(RProcessorException ex)
-		{
-			// Unable to find pdflatex to run
-			throw new LatexException("Unable to find pdflatex on PATH, cannot do PDF export", ex);
 		}
 		finally
 		{

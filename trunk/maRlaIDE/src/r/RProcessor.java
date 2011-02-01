@@ -21,6 +21,7 @@ import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -42,14 +43,6 @@ public final class RProcessor
 	 * Return from R for the command given in SENTINEL_STRING_CMD, we watch for this result
 	 */
 	private final String SENTINEL_STRING_RETURN = "[1] \"---MARLA R OUTPUT END---\"";
-
-	/**
-	 * Enumeration denoting the record mode the R processor can use
-	 */
-	public enum RecordMode
-	{
-		DISABLED, CMDS_ONLY, OUTPUT_ONLY, FULL
-	};
 	/**
 	 * Pattern used to recognize single R commands. Used by execute() to protect from
 	 * hangs resulting from multiple commands being passed in. Does not allow
@@ -59,7 +52,7 @@ public final class RProcessor
 	/**
 	 * Pattern used to recognize doubles in R output, mainly for use with vectors
 	 */
-	private final Pattern doublePatt = Pattern.compile("(?<=\\s)-?[0-9]+(\\.[0-9]+)?(e[+-][0-9]+)?(?=\\s|$)");
+	private final Pattern doublePatt = Pattern.compile("(?<=\\s)(-?[0-9]+(\\.[0-9]+)?(e[+-][0-9]+)?|NaN)(?=\\s|$)");
 	/**
 	 * Pattern used to recognize strings in R output, mainly for use with vectors
 	 */
@@ -89,10 +82,6 @@ public final class RProcessor
 	 */
 	private BufferedOutputStream procIn = null;
 	/**
-	 * The class that combines R's stdout and stderr streams
-	 */
-	private InputStreamCombine comboStream = null;
-	/**
 	 * Synchronization variable
 	 */
 	private final Object processSync = new Object();
@@ -118,6 +107,14 @@ public final class RProcessor
 	private long uniqueValCounter = 0;
 
 	/**
+	 * Enumeration denoting the record mode the R processor can use
+	 */
+	public enum RecordMode
+	{
+		DISABLED, CMDS_ONLY, OUTPUT_ONLY, FULL
+	};
+
+	/**
 	 * Creates a new R instance that can be fed commands
 	 * @param newRPath R executable to run
 	 */
@@ -129,22 +126,20 @@ public final class RProcessor
 			rPath = newRPath;
 
 			// Start up R
-			rProc = Runtime.getRuntime().exec(new String[]
-					{
-						rPath, "--slave", "--no-readline"
-					});
+			ProcessBuilder builder = new ProcessBuilder(rPath, "--slave", "--no-readline");
+			builder.redirectErrorStream(true);
+			rProc = builder.start();
 
-			// Hook up streams
-			comboStream = new InputStreamCombine();
-			procOut = new BufferedReader(comboStream);
-			comboStream.addStream(rProc.getInputStream());
-			comboStream.addStream(rProc.getErrorStream());
-
+			// Hook up streams. I swear the names of these streams are
+			// confusing in the Java API. Input stream is the _output_ from the
+			// process. It's input to us, I guess.
+			procOut = new BufferedReader(new InputStreamReader(rProc.getInputStream()));
 			procIn = (BufferedOutputStream) rProc.getOutputStream();
 
 			// Set options and eat up an error about "no --no-readline"
 			// option on Windows if needed.
-			execute("options(error=dump.frames, device=png)");
+			// show.error.messages=F?
+			execute("options(error=dump.frames, warn=-1, device=png)");
 		}
 		catch(IOException ex)
 		{
@@ -160,7 +155,7 @@ public final class RProcessor
 	public static String setRLocation(String newRPath)
 	{
 		String oldPath = rPath;
-		
+
 		rPath = newRPath;
 		System.out.println("Using R binary at '" + rPath + "'");
 
@@ -175,7 +170,7 @@ public final class RProcessor
 	{
 		// Extract information from configuration XML and set appropriately
 		setRLocation(configEl.getAttributeValue("rpath"));
-		
+
 		String debugMode = configEl.getAttributeValue("debug");
 		if(debugMode != null)
 			RProcessor.getInstance().setDebugMode(RecordMode.valueOf(debugMode.toUpperCase()));
@@ -275,7 +270,6 @@ public final class RProcessor
 			// Close everything out
 			procIn.close();
 			procOut.close();
-			comboStream.close();
 			rProc.waitFor();
 		}
 		catch(Exception ex)
@@ -289,7 +283,6 @@ public final class RProcessor
 
 			procIn = null;
 			procOut = null;
-			comboStream = null;
 			System.gc();
 		}
 	}
@@ -315,6 +308,21 @@ public final class RProcessor
 	 */
 	public String execute(String cmd) throws RProcessorException, RProcessorDeadException
 	{
+		return execute(cmd, false);
+	}
+
+	/**
+	 * Passes the given string onto R just as if you typed it at the command line. Only a single
+	 * command may be executed by this command. If the user wants to run multiple commands as a
+	 * group, use execute(ArrayList<String>).
+	 * @param cmd R command to execute
+	 * @param ignoreErrors true if errors and warnings from R should be ignored and just
+	 *		be returned with the rest of the output. If false, exceptions are thrown
+	 *		on either occurrence
+	 * @return String output from R. Use one of the parse functions to processor further
+	 */
+	public String execute(String cmd, boolean ignoreErrors) throws RProcessorException, RProcessorDeadException
+	{
 		// Ensure the processor is still running
 		if(!isRunning())
 			throw new RProcessorDeadException("R process has been closed.");
@@ -335,12 +343,12 @@ public final class RProcessor
 		if(debugOutputMode == RecordMode.CMDS_ONLY || debugOutputMode == RecordMode.FULL)
 			System.out.print("> " + sentinelCmd);
 
-		// Save R output to here
-		StringBuilder results = new StringBuilder();
-
 		try
 		{
-			// Indicate in R throws an error or warning
+			// Final R return stored here
+			String results = null;
+			
+			// Indicate if R throws an error or warning
 			boolean errorOccurred = false;
 
 			// Only one thread may access the R input/output at one time
@@ -353,17 +361,21 @@ public final class RProcessor
 				procIn.flush();
 
 				// Get results back
+				StringBuilder sb = new StringBuilder();
 				String line = procOut.readLine();
 				while(line != null && !line.equals(this.SENTINEL_STRING_RETURN))
 				{
-					results.append(line);
-					results.append('\n');
+					sb.append(line);
+					sb.append('\n');
 
-					if(line.startsWith("Error") || line.startsWith("Warning"))
+					if(!ignoreErrors && (line.startsWith("Error") || line.startsWith("Warning")))
 						errorOccurred = true;
 
 					line = procOut.readLine();
 				}
+
+				// Convert to string
+				results = sb.toString();
 			}
 
 			// Record interaction if needed
@@ -374,10 +386,10 @@ public final class RProcessor
 
 			// Throw an error if we encountered an error or warning
 			if(errorOccurred)
-				throw new RProcessorException(results.toString());
+				throw new RProcessorException("R: " + results);
 
 			// Return results, the caller is responsible for processing further
-			return results.toString();
+			return results;
 		}
 		catch(IOException ex)
 		{
@@ -806,6 +818,9 @@ public final class RProcessor
 		return "marlaUnique" + uniqueValCounter;
 	}
 
+	/**
+	 * Allows for direct testing of the RProcessor execute() function
+	 */
 	public static void main(String[] args) throws Exception
 	{
 		RProcessor proc = null;
@@ -813,8 +828,9 @@ public final class RProcessor
 		{
 			proc = RProcessor.getInstance();
 			proc.setDebugMode(RecordMode.FULL);
+			proc.setRecorderMode(RecordMode.DISABLED);
 			Scanner sc = new Scanner(System.in);
-			
+
 			while(proc.isRunning())
 			{
 				// Get next command to execute
