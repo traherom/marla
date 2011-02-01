@@ -32,12 +32,14 @@ import org.jdom.input.SAXBuilder;
 import problem.DataColumn;
 import problem.DataColumn.DataMode;
 import problem.DataNotFoundException;
+import problem.DataSet;
 import problem.DataSource;
 import problem.DuplicateNameException;
 import problem.MarlaException;
 import problem.Operation;
 import problem.OperationException;
 import problem.OperationInfoRequiredException;
+import problem.Problem;
 import r.RProcessor.RecordMode;
 
 /**
@@ -865,6 +867,11 @@ public class OperationXML extends Operation
 			// Just use the plain old name
 			super.setText(opConfig.getAttributeValue("name"));
 		}
+
+		// Tell the problem to rebuild the displayed tree, rearranging as needed
+		DataSource rootDS = getRootDataSource();
+		if(rootDS instanceof DataSet)
+			Problem.getDomain().rebuildTree((DataSet)rootDS);
 	}
 
 	@Override

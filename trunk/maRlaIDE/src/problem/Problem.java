@@ -17,6 +17,7 @@
  */
 package problem;
 
+import gui.Domain;
 import java.io.BufferedWriter;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -40,6 +41,10 @@ import org.jdom.output.XMLOutputter;
  */
 public class Problem implements ProblemPart
 {
+	/**
+	 * Domain that this Problem is working with
+	 */
+	private static Domain domain = null;
 	/**
 	 * Problem statement.
 	 */
@@ -124,6 +129,26 @@ public class Problem implements ProblemPart
 		{
 			subProblems.add(new SubProblem(sp, this));
 		}
+	}
+
+	/**
+	 * Sets all Problems to work with a new Domain
+	 * @return Previous Domain. Null if there was none
+	 */
+	public static Domain setDomain(Domain newDomain)
+	{
+		Domain oldDomain = domain;
+		domain = newDomain;
+		return oldDomain;
+	}
+
+	/**
+	 * Returns the current Domain Problems are associated with
+	 * @return Currently active Domain. Null if there is none
+	 */
+	public static Domain getDomain()
+	{
+		return domain;
 	}
 
 	@Override

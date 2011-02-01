@@ -1379,6 +1379,9 @@ public class ViewPanel extends JPanel
 				}
 			}
 		}
+
+		// Redraw everything
+		workspacePanel.repaint();
 	}
 
 	/**
