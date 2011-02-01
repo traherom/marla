@@ -80,6 +80,8 @@ public class Domain
 	{
 		this.viewPanel = viewPanel;
 
+		Problem.setDomain(this);
+
 		logFile = new File ("log.dat");
 	}
 
@@ -120,6 +122,17 @@ public class Domain
 				// TODO. Unable to save
 			}
 		}
+	}
+
+	/**
+	 * Tells the view to rebuild and repaint the tree.
+	 *
+	 * @param dataSet The data set to rebuild in the tree.
+	 */
+	public void rebuildTree(DataSet dataSet)
+	{
+		viewPanel.rebuildTree (dataSet);
+		//viewPanel.workspacePanel.repaint ();
 	}
 
 	/**
