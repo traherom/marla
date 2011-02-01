@@ -411,7 +411,7 @@ public abstract class Operation extends JLabel implements DataSource, Changeable
 	/**
 	 * Recalculates columns and saves the R operations needed for computation
 	 */
-	private final synchronized void refreshCache() throws OperationException, RProcessorException, MarlaException
+	private synchronized void refreshCache() throws OperationException, RProcessorException, MarlaException
 	{
 		if(parent == null)
 			throw new OperationException("No parent for operation to get data from");

@@ -511,5 +511,29 @@
 			</plot>
 		</computation>
 	</operation>
+
+	<operation name="Single Var Plot" plot="true">
+		<query type="column" name="x" prompt="Column" />
+
+		<longname>Plot of <response name="x" default="Col" /></longname>
+
+		<computation>
+			<set rvar="x" name="x" />
+			<plot>
+				<cmd>plot(x)</cmd>
+			</plot>
+		</computation>
+	</operation>
+
+	<operation name="Load library">
+		<query type="string" name="lib" prompt="Library name" />
+
+		<longname>Load <response name="lib" default="lib" /></longname>
+
+		<computation>
+			<set rvar="lib" name="lib" />
+			<load r_library="lib" />
+		</computation>
+	</operation>
 </operations>
 
