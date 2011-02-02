@@ -1756,7 +1756,7 @@ public class ViewPanel extends JPanel
 		for (int i = 0; i < prompt.size(); ++i)
 		{
 			Object[] components = prompt.get (i);
-			if (components[0] == PromptType.STRING || components[0] == PromptType.NUMBER)
+			if (components[0] == PromptType.STRING || components[0] == PromptType.NUMERIC)
 			{
 				JPanel tempPanel = new JPanel (new FlowLayout (FlowLayout.LEFT));
 				JLabel label = new JLabel (components[2].toString ());
@@ -1802,7 +1802,7 @@ public class ViewPanel extends JPanel
 				boolean pass = true;
 				for (int i = 0; i < prompt.size (); ++i)
 				{
-					if (prompt.get (i)[0] == PromptType.NUMBER)
+					if (prompt.get (i)[0] == PromptType.NUMERIC)
 					{
 						try
 						{

@@ -347,7 +347,7 @@ public class OperationXML extends Operation
 				proc.setVariable(rVar, (String) answerVal);
 				break;
 
-			case NUMBER:
+			case NUMERIC:
 				proc.setVariable(rVar, (Double) answerVal);
 				break;
 
@@ -593,11 +593,16 @@ public class OperationXML extends Operation
 		else
 		{
 			// Single column copy
-			String rNameCmd = copyEl.getAttributeValue("r_colname");
-			if(rNameCmd == null)
-				throw new OperationXMLException("No column name supplied for copy");
+			String colName = copyEl.getAttributeValue("column");
+			if(colName == null)
+			{
+				// Rats, dynamic one?
+				String dynamicColumnName = copyEl.getAttributeValue("r_column");
+				if(dynamicColumnName == null)
+					throw new OperationXMLException("No column name supplied for copy");
 
-			String colName = proc.executeString(rNameCmd);
+				colName = proc.executeString(dynamicColumnName);
+			}
 
 			try
 			{
@@ -792,7 +797,7 @@ public class OperationXML extends Operation
 					questionAnswers.put(answerKey, val.get(i).toString());
 					break;
 
-				case NUMBER:
+				case NUMERIC:
 					questionAnswers.put(answerKey, Double.parseDouble(val.get(i).toString()));
 					break;
 

@@ -74,7 +74,7 @@ public class OperationTest
 					answers.add(true);
 					break;
 
-				case NUMBER:
+				case NUMERIC:
 					answers.add(50.0);
 					break;
 
@@ -154,11 +154,6 @@ public class OperationTest
 	{
 		Operation op2 = Operation.createOperation(opName);
 		ds1.addOperation(op2);
-
-		// Unable to do test if operation has a plot, as we can't
-		// add children to it
-		if(op2.hasPlot())
-			return;
 
 		Operation op3 = Operation.createOperation(opName);
 		op2.addOperation(op3);

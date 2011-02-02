@@ -82,7 +82,7 @@ public abstract class Operation extends JLabel implements DataSource, Changeable
 	 */
 	public enum PromptType
 	{
-		COLUMN, COMBO, STRING, NUMBER, CHECKBOX
+		COLUMN, COMBO, STRING, NUMERIC, CHECKBOX
 	};
 
 	/**
@@ -707,10 +707,6 @@ public abstract class Operation extends JLabel implements DataSource, Changeable
 	@Override
 	public final Operation addOperation(Operation op) throws MarlaException
 	{
-		// We may only have child operations if we don't generate a plot
-		if(hasPlot())
-			throw new OperationException("This operation generates a plot, it may not have child operations");
-
 		// Tell the operation to set us as the parent
 		op.setParentData(this);
 
