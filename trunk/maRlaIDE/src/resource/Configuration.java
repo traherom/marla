@@ -22,9 +22,6 @@ import java.io.BufferedWriter;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import latex.LatexExporter;
 import org.jdom.Document;
 import org.jdom.Element;
@@ -33,9 +30,9 @@ import org.jdom.input.SAXBuilder;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 import problem.MarlaException;
+import problem.Problem;
 import r.OperationXML;
 import r.RProcessor;
-import r.RProcessorException;
 
 /**
  * @author Ryan Morehart

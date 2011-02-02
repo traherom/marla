@@ -96,7 +96,7 @@ public class OperationXML extends Operation
 
 	/**
 	 * Creates an XML element that could be passed back to setConfig to configure
-	 * the LatexExporter defaults the same as currently
+	 * the OperationXML defaults the same as currently
 	 * @param configEl XML configuration element upon which to add information
 	 * @return XML element with configuration data set
 	 */
@@ -399,15 +399,15 @@ public class OperationXML extends Operation
 		String cmd = cmdEl.getTextTrim();
 
 		// Get Column, create if needed
-		String colName = null;
-		String dynamicColumnCmd = cmdEl.getAttributeValue("dynamic_column");
-		if(dynamicColumnCmd != null)
+		String colName = cmdEl.getAttributeValue("column");
+		if(colName == null)
 		{
+			// Rats, dynamic one?
+			String dynamicColumnCmd = cmdEl.getAttributeValue("r_column");
+			if(dynamicColumnCmd == null)
+				throw new OperationXMLException("No column name supplied for save");
+
 			colName = proc.executeString(dynamicColumnCmd);
-		}
-		else
-		{
-			colName = cmdEl.getAttributeValue("column");
 		}
 
 		DataColumn col = null;
@@ -580,25 +580,38 @@ public class OperationXML extends Operation
 
 	private void processCopy(RProcessor proc, Element copyEl) throws OperationXMLException, RProcessorParseException, RProcessorException, MarlaException
 	{
-		// What column are we supposed to copy over?
-		String rNameCmd = copyEl.getAttributeValue("r_colname");
-		if(rNameCmd == null)
-			throw new OperationXMLException("No column name supplied for copy");
-
-		String colName = proc.executeString(rNameCmd);
-
-		try
+		// What column(s) are we supposed to copy?
+		if(Boolean.parseBoolean(copyEl.getAttributeValue("all", "false")))
 		{
-			// Copy it over, with the same name and data
-			copyColumn(colName);
+			// Copy all columns
+			DataSource parent = getParentData();
+			for(int i = 0; i < parent.getColumnCount(); i++)
+			{
+				copyColumn(parent.getColumn(i));
+			}
 		}
-		catch(DataNotFoundException ex)
+		else
 		{
-			throw new OperationXMLException("Unable to locate column '" + colName + "' for copy");
-		}
-		catch(DuplicateNameException ex)
-		{
-			throw new OperationXMLException("A column copy must occur before any saves to a column of the same name");
+			// Single column copy
+			String rNameCmd = copyEl.getAttributeValue("r_colname");
+			if(rNameCmd == null)
+				throw new OperationXMLException("No column name supplied for copy");
+
+			String colName = proc.executeString(rNameCmd);
+
+			try
+			{
+				// Copy it over, with the same name and data
+				copyColumn(colName);
+			}
+			catch(DataNotFoundException ex)
+			{
+				throw new OperationXMLException("Unable to locate column '" + colName + "' for copy");
+			}
+			catch(DuplicateNameException ex)
+			{
+				throw new OperationXMLException("A column copy must occur before any saves to a column of the same name");
+			}
 		}
 	}
 
@@ -870,7 +883,7 @@ public class OperationXML extends Operation
 
 		// Tell the problem to rebuild the displayed tree, rearranging as needed
 		DataSource rootDS = getRootDataSource();
-		if(rootDS instanceof DataSet)
+		if(rootDS instanceof DataSet && Problem.getDomain() != null)
 			Problem.getDomain().rebuildTree((DataSet)rootDS);
 	}
 

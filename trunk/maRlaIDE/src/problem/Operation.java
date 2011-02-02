@@ -360,13 +360,23 @@ public abstract class Operation extends JLabel implements DataSource, Changeable
 	 */
 	protected final DataColumn copyColumn(String colName) throws DuplicateNameException, DataNotFoundException, MarlaException
 	{
-		return data.copyColumn(parent.getColumn(colName));
+		return copyColumn(parent.getColumn(colName));
+	}
+
+	/**
+	 * Copies a parent column into this operation's result
+	 * @param col DataColumn to copy into this operation
+	 * @return Newly created DataColumn copy
+	 */
+	protected final DataColumn copyColumn(DataColumn col) throws DuplicateNameException, DataNotFoundException, MarlaException
+	{
+		return data.copyColumn(col);
 	}
 
 	/**
 	 * Duplicates an operation. Derivative classes should override this
 	 * if additional information needs to be copied.
-	 * @return Duplicated Operation
+	 * @return Newly created duplicate Operation
 	 */
 	@Override
 	public Operation clone()
