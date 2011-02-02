@@ -12,31 +12,31 @@ create that operation. It must be unique. If multiple with the same name exist a
 exception will be thrown. If an operation is going to output a plot, it must have `plot="true"` set as well. If an operation should not appear on the side panel, set `list="false"`.
 
 Attributes supported:
-	* *`name`* - Arbitary name of the operation. Must be unique within the XML file
-	* `plot` - Specifies if the operation will produce a plot. May be set to `true` or `false`. Default is `false`.
-	* `list` - Specifies if this operation is listed under normal displays. Maybe to set to `true` or `false`. Default is `true`.
+  * *`name`* - Arbitary name of the operation. Must be unique within the XML file
+  * `plot` - Specifies if the operation will produce a plot. May be set to `true` or `false`. Default is `false`.
+  * `list` - Specifies if this operation is listed under normal displays. Maybe to set to `true` or `false`. Default is `true`.
 
 == Queries ==
 {{{
-<query type="column|checkbox|string|number|combo" [column_type="all|numeric|string"] name="internal name" prompt="User prompt" />
+<query type="column|checkbox|string|numeric|combo" [column_type="all|numeric|string"] name="internal name" prompt="User prompt" />
 }}}
 
 Inside of an operation there can be multiple `<query />` elements. These queries will be presented
 to the user with the given `prompt` when they add the operation.
 
 Attributes supported:
-	* *`name`* - A unique name to identify the query by, may not be used by any other `query` in the operation.
-	* *`prompt`* - Any arbitrary string to display to the user.
-	* *`type`* - One of the following:
-		* `column` - Presents the user with a list of the parent columns. `column_type` must be given to specify which columns to display.
-		* `checkbox` - Simple checkbox that the user may select
-		* `string` - Arbitrary user-entered string
-		* `number` - Arbitrary user-entered number
-		* `combo` - Operation-specified selectable list. See [XMLOperationSpecification#Combo]
-	* `column_type` - One of the following:
-		* `all` - All parent columns will be selectable
-		* `numeric` - All numeric parent columns
-		* `string` - All string parent columns
+  * *`name`* - A unique name to identify the query by, may not be used by any other `query` in the operation.
+  * *`prompt`* - Any arbitrary string to display to the user.
+  * *`type`* - One of the following:
+    * `column` - Presents the user with a list of the parent columns. `column_type` must be given to specify which columns to display.
+    * `checkbox` - Simple checkbox that the user may select
+    * `string` - Arbitrary user-entered string
+    * `numeric` - Arbitrary user-entered number
+    * `combo` - Operation-specified selectable list. See [XMLOperationSpecification#Combo]
+  * `column_type` - One of the following:
+    * `all` - All parent columns will be selectable
+    * `numeric` - All numeric parent columns
+    * `string` - All string parent columns
 
 === Combo ===
 A column type allows the selection of one of the columns in the parent data set and/or
@@ -62,7 +62,7 @@ An example of the add operation discussed above:
 {{{
 <operation name="Add">
   <query type="column" name="col" prompt="Column?" />
-  <query type="number" name="val" prompt="Add" />
+  <query type="numeric" name="val" prompt="Add" />
 
   <longname><response name="col" default="Col" /> + <response name="val" default="X" /></longname>
 
@@ -79,18 +79,19 @@ An example of the add operation discussed above:
 The query referenced by `name` will be copied into the location of this element. If the user has not yet provided an answer to the query, the value given in `default` will be used instead.
 
 Supported attributes:
-	* *`name`* - Name used for a query (see [XMLOperationSpecification#Queries]). The text to this answer will be copied into the place of this element
-	* *`default`* - Default text to use if the query has not been answered yet.
+  * *`name`* - Name used for a query (see [XMLOperationSpecification#Queries]). The text to this answer will be copied into the place of this element
+  * *`default`* - Default text to use if the query has not been answered yet.
 
 == Computation ==
 {{{
 <computation>
-	<cmd />
-	<if />
-	<loop />
-	<set />
-	<save />
-	<plot />
+  <cmd />
+  <if />
+  <loop />
+  <set />
+  <copy />
+  <save />
+  <plot />
 </computation>
 }}}
 Inside each operation there must be a `<computation />` element. This section allows five types of elements which may be specified in any number of times and in any order. Elements will be executed in the order they are encountered.
@@ -111,11 +112,11 @@ A `<set />` element allows for an R variable to be set from one of the user-prom
 query values.
 
 Attributes supported:
-	* *`rvar`* - Specifies the R variable name to set
-	* *`name`* - Name specified for the desired query element (see [XMLOperationSpecification#Queries].
-	* `use` - For `column` queries, the R variable may be set with either the string name of the column selected or the actual values in that column. This attribute specifies which processing method to use.
-		* `name` - Use the column name
-		* `values` - Use the column values
+  * *`rvar`* - Specifies the R variable name to set
+  * *`name`* - Name specified for the desired query element (see [XMLOperationSpecification#Queries].
+  * `use` - For `column` queries, the R variable may be set with either the string name of the column selected or the actual values in that column. This attribute specifies which processing method to use.
+    * `name` - Use the column name
+    * `values` - Use the column values
 
 For example, to ask a user to select a column and then save the values for use:
 {{{
@@ -129,55 +130,64 @@ For example, to ask a user to select a column and then save the values for use:
 
 === Loops ===
 {{{
-<loop type="parent|double_array|string_array" [indexVar="R variable name"] [keyVar="R variable name"] 	 [valueVar="R variable name"] [loopVar="R expression"]>
-	...
+<loop type="parent|double_array|string_array" [indexVar="R variable name"] [keyVar="R variable name"]    [valueVar="R variable name"] [loopVar="R expression"]>
+  ...
 </loop>
 }}}
 `<loop />` elements allow repetition over parent data or arbitrary lists. A loop may use any of the other elements inside itself, including other loops.
 
 Attributes supported:
-	* *`type`* - One of the following:
-		* `parent` - Loop over every column in the parent data
-		* `double_array` - Iterate over every element of the vector given by `loopVar`, processing them as numeric values
-		* `string_array` - Iterate over every element of the vector given by `loopVar`, processing them as string values
-	* `loopVar` - If using one of the array loop types, this specifies an R statement that generates the vector to loop over
-	* `indexVar` - Loop number the loop is on (1 based)
-	* `keyVar` - For parent loops, gives the name of the current column. For array loops it is the same as indexVar
-	* `valueVar` - For parent loops, gives the values in the current column. For array loops it gives the current value in the array
+  * *`type`* - One of the following:
+    * `parent` - Loop over every column in the parent data
+    * `double_array` - Iterate over every element of the vector given by `loopVar`, processing them as numeric values
+    * `string_array` - Iterate over every element of the vector given by `loopVar`, processing them as string values
+  * `loopVar` - If using one of the array loop types, this specifies an R statement that generates the vector to loop over
+  * `indexVar` - Loop number the loop is on (1 based)
+  * `keyVar` - For parent loops, gives the name of the current column. For array loops it is the same as indexVar
+  * `valueVar` - For parent loops, gives the values in the current column. For array loops it gives the current value in the array
 
 === Conditionals ===
 {{{
 <if type="vartype|expr">
-	<then>...</then>
-	<else>...</else>
+  <then>...</then>
+  <else>...</else>
 </if>
 }}}
 Conditional work is supported through the `<if />` element. If the condition specified is true, then commands in a `<then />` block are executed. If it is false, then commands in the `<else />` block are executed. Either block may be left out if not needed.
 
 Supported attributes:
-	* *`type`* - One of the following:
-		* `vartype` - Switches on the type of an R variable, as deterimed by `str(rvar)`
-		* `expr` - Arbitrary R boolean expression will be used for evaluation
-	* `rvar` - Used by `vartype`. Gives the R variable which should have its type examined
-	* `expected` - Used by `vartype`. Gives the "true" type of the R variable. One of the following:
-		* `string` - String or multiple strings of data
-		* `numeric` - Number or multiple numbers
-	* `expr` - R expression to evaluate. Must evaluate to a single TRUE or FALSE value and be only a single statement
+  * *`type`* - One of the following:
+    * `vartype` - Switches on the type of an R variable, as deterimed by `str(rvar)`
+    * `expr` - Arbitrary R boolean expression will be used for evaluation
+  * `rvar` - Used by `vartype`. Gives the R variable which should have its type examined
+  * `expected` - Used by `vartype`. Gives the "true" type of the R variable. One of the following:
+    * `string` - String or multiple strings of data
+    * `numeric` - Number or multiple numbers
+  * `expr` - R expression to evaluate. Must evaluate to a single TRUE or FALSE value and be only a single statement
 
+== Copy ==
+{{{
+<copy [all="true|false"] [column="column name"] [r_column="R expression"] />
+}}}
+Copies the give column from the parent into the result for the operation. If `all="true"` is specified, copies all columns from the parent. The copied column will use the same name as the parent. A column with the same name must not already exist, although once the copy is done other elements may modify it.
+
+Supported attributes:
+  * *`column`* - Specifies a static name for the column to copy
+  * *`r_column`* - Specifies an R expression which returns a string to use as the column to copy
+  * `all` - Boolean value which specifies if all parent columns should be copied. Must be `true` or `false`. Defaults to `false`. If given, `column`/`r_column` are ignored.
+  
 === Save ===
 {{{
-<save type="double|string|double_array|string_array" [column="<Column name>"] [dynamic_column="<R command>"]>R command</save>
+<save type="double|string" [column="<Column name>"] [r_column="<R command>"]>R command</save>
 }}}
 To save the final values for the computation, `<save />` elements may be specified. The value saved is given by the single R command inside the save element.
 
 Attributes supported:
-	* *`type`* - One of the following
-		* `double` - Process the result as a single numeric value
-		* `string` - Process the result as a single string value
-		* `double_array` - Process the result as a vector of numeric values
-		* `string_array` - Process the result as a vector of string values
-	* `column` - Static name of the column to save these values into
-	* `dynamic_column` - R command from which to pull the name of the column to save into. Must return a single string
+  * *`type`* - One of the following
+    * `double` - Process the result as one or more numeric values
+    * `string` - Process the result as one or more string values
+  * `column` - Static name of the column to save these values into
+  * `r_column` - R command from which to pull the name of the column to save into. Must return a single string
 
 For example:
 {{{
@@ -200,7 +210,7 @@ Below is an example of implementing a t-test:
 <operations>
   <operation name="t-test">
     <query type="checkbox" prompt="Is your data normal?" name="normal" />
-	
+  
     <computation>
       <!-- Run t test on each column and save, plus prepare the top row -->
       <cmd>t = list()</cmd>
