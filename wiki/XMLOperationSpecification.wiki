@@ -141,10 +141,10 @@ Attributes supported:
     * `parent` - Loop over every column in the parent data
     * `double_array` - Iterate over every element of the vector given by `loopVar`, processing them as numeric values
     * `string_array` - Iterate over every element of the vector given by `loopVar`, processing them as string values
-  * `loopVar` - If using one of the array loop types, this specifies an R statement that generates the vector to loop over
-  * `indexVar` - Loop number the loop is on (1 based)
-  * `keyVar` - For parent loops, gives the name of the current column. For array loops it is the same as indexVar
-  * `valueVar` - For parent loops, gives the values in the current column. For array loops it gives the current value in the array
+  * `loop_var` - If using one of the array loop types, this specifies an R statement that generates the vector to loop over
+  * `index_var` - Loop number the loop is on (1 based)
+  * `key_var` - For parent loops, gives the name of the current column. For array loops it is the same as indexVar
+  * `value_var` - For parent loops, gives the values in the current column. For array loops it gives the current value in the array
 
 === Conditionals ===
 {{{
