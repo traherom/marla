@@ -130,7 +130,7 @@ For example, to ask a user to select a column and then save the values for use:
 
 === Loops ===
 {{{
-<loop type="parent|double_array|string_array" [indexVar="R variable name"] [keyVar="R variable name"]    [valueVar="R variable name"] [loopVar="R expression"]>
+<loop type="parent|double_array|string_array" [index_var="R variable name"] [key_var="R variable name"]    [value_var="R variable name"] [loop_var="R expression"]>
   ...
 </loop>
 }}}
@@ -165,7 +165,7 @@ Supported attributes:
     * `numeric` - Number or multiple numbers
   * `expr` - R expression to evaluate. Must evaluate to a single TRUE or FALSE value and be only a single statement
 
-== Copy ==
+=== Copy ===
 {{{
 <copy [all="true|false"] [column="column name"] [r_column="R expression"] />
 }}}
