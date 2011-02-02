@@ -2,17 +2,15 @@
 <operations version="1">
 	<operation name="NOP" list="false">
 		<computation>
-			<loop type="parent" nameVar="colName">
-				<copy r_colname="colName" />
-			</loop>
+			<copy all="true" />
 		</computation>
 	</operation>
 
 	<operation name="Divide">
-		<query type="column" name="col" prompt="Column?" />
+		<query type="column" name="col" prompt="Column?" column_type="numeric" />
 		<query type="number" name="val" prompt="Divide by" />
 
-		<longname><response name="col" default="Col" /> / <response name="val" default="X" /></longname>
+		<longname><response name="col" default="x" /> / <response name="val" default="X" /></longname>
 
 		<computation>
 			<set name="col" rvar="colName" use="name" />
@@ -22,7 +20,7 @@
 				<if type="expr" expr="currColName == colName">
 					<then>
 						<!-- This is the column we're supposed to divide -->
-						<save type="double" dynamic_column="currColName">currCol / val</save>
+						<save type="double" r_column="currColName">currCol / val</save>
 					</then>
 					<else>
 						<!-- Not the column we're working with, just copy it over -->
@@ -34,10 +32,10 @@
 	</operation>
 
 	<operation name="Multiply">
-		<query type="column" name="col" prompt="Column?" />
+		<query type="column" name="col" prompt="Column?" column_type="numeric" />
 		<query type="number" name="val" prompt="Multiply by" />
 
-		<longname><response name="col" default="Col" /> * <response name="val" default="X" /></longname>
+		<longname><response name="col" default="x" /> * <response name="val" default="X" /></longname>
 
 		<computation>
 			<set name="col" rvar="colName" use="name" />
@@ -47,7 +45,7 @@
 				<if type="expr" expr="currColName == colName">
 					<then>
 						<!-- This is the column we're supposed to multiply -->
-						<save type="double" dynamic_column="currColName">currCol * val</save>
+						<save type="double" r_column="currColName">currCol * val</save>
 					</then>
 					<else>
 						<!-- Not the column we're working with, just copy it over -->
@@ -59,10 +57,10 @@
 	</operation>
 
 	<operation name="Add">
-		<query type="column" name="col" prompt="Column?" />
+		<query type="column" name="col" prompt="Column?" column_type="numeric" />
 		<query type="number" name="val" prompt="Add" />
 
-		<longname><response name="col" default="Col" /> + <response name="val" default="X" /></longname>
+		<longname><response name="col" default="x" /> + <response name="val" default="X" /></longname>
 
 		<computation>
 			<set name="col" rvar="colName" use="name" />
@@ -72,7 +70,7 @@
 				<if type="expr" expr="currColName == colName">
 					<then>
 						<!-- This is the column we're supposed to add to -->
-						<save type="double" dynamic_column="currColName">currCol + val</save>
+						<save type="double" r_column="currColName">currCol + val</save>
 					</then>
 					<else>
 						<!-- Not the column we're working with, just copy it over -->
@@ -84,10 +82,10 @@
 	</operation>
 
 	<operation name="Subtract">
-		<query type="column" name="col" prompt="Column?" />
+		<query type="column" name="col" prompt="Column?" column_type="numeric" />
 		<query type="number" name="val" prompt="Subtract" />
 
-		<longname><response name="col" default="Col" /> - <response name="val" default="X" /></longname>
+		<longname><response name="col" default="x" /> - <response name="val" default="X" /></longname>
 
 		<computation>
 			<set name="col" rvar="colName" use="name" />
@@ -97,7 +95,7 @@
 				<if type="expr" expr="currColName == colName">
 					<then>
 						<!-- This is the column we're supposed to add to -->
-						<save type="double" dynamic_column="currColName">currCol - val</save>
+						<save type="double" r_column="currColName">currCol - val</save>
 					</then>
 					<else>
 						<!-- Not the column we're working with, just copy it over -->
@@ -109,10 +107,10 @@
 	</operation>
 
 	<operation name="Exponentiate">
-		<query type="column" name="col" prompt="Column?" />
+		<query type="column" name="col" prompt="Column?" column_type="numeric" />
 		<query type="number" name="val" prompt="Raise by" />
 
-		<longname><response name="col" default="Col" /> ^ <response name="val" default="X" /></longname>
+		<longname><response name="col" default="x" /> ^ <response name="val" default="X" /></longname>
 
 		<computation>
 			<set name="col" rvar="colName" use="name" />
@@ -122,7 +120,7 @@
 				<if type="expr" expr="currColName == colName">
 					<then>
 						<!-- This is the column we're supposed to compute on -->
-						<save type="double" dynamic_column="currColName">currCol^val</save>
+						<save type="double" r_column="currColName">currCol^val</save>
 					</then>
 					<else>
 						<!-- Not the column we're working with, just copy it over -->
@@ -134,278 +132,220 @@
 	</operation>
 
 	<operation name="sin()">
-		<query type="column" name="col" prompt="Column?" />
+		<query type="column" name="col" prompt="Column?" column_type="numeric" />
 
-		<longname>sin(<response name="col" default="Col" />)</longname>
+		<longname>sin(<response name="col" default="x" />)</longname>
 
 		<computation>
 			<set name="col" rvar="colName" use="name" />
+			<set name="col" rvar="colVals" use="values" />
 
-			<loop type="parent" valueVar="currCol" nameVar="currColName">
-				<if type="expr" expr="currColName == colName">
-					<then>
-						<!-- This is the column we're supposed to add to -->
-						<save type="double" dynamic_column="currColName">sin(currCol)</save>
-					</then>
-					<else>
-						<!-- Not the column we're working with, just copy it over -->
-						<copy r_colname="currColName" />
-					</else>
-				</if>
-			</loop>
+			<copy all="true" />
+
+			<save type="double" r_column="paste('sin(', colName, ')', sep='')">sin(colVals)</save>
 		</computation>
 	</operation>
 
 	<operation name="cos()">
-		<query type="column" name="col" prompt="Column?" />
+		<query type="column" name="col" prompt="Column?" column_type="numeric" />
 
-		<longname>cos(<response name="col" default="Col" />)</longname>
+		<longname>cos(<response name="col" default="x" />)</longname>
 
 		<computation>
 			<set name="col" rvar="colName" use="name" />
+			<set name="col" rvar="colVals" use="values" />
 
-			<loop type="parent" valueVar="currCol" nameVar="currColName">
-				<if type="expr" expr="currColName == colName">
-					<then>
-						<!-- This is the column we're supposed to add to -->
-						<save type="double" dynamic_column="currColName">cos(currCol)</save>
-					</then>
-					<else>
-						<!-- Not the column we're working with, just copy it over -->
-						<copy r_colname="currColName" />
-					</else>
-				</if>
-			</loop>
+			<copy all="true" />
+
+			<save type="double" r_column="paste('cos(', colName, ')', sep='')">cos(colVals)</save>
 		</computation>
 	</operation>
 
 	<operation name="tan()">
-		<query type="column" name="col" prompt="Column?" />
+		<query type="column" name="col" prompt="Column?" column_type="numeric" />
 
-		<longname>tan(<response name="col" default="Col" />)</longname>
+		<longname>tan(<response name="col" default="x" />)</longname>
 
 		<computation>
 			<set name="col" rvar="colName" use="name" />
+			<set name="col" rvar="colVals" use="values" />
 
-			<loop type="parent" valueVar="currCol" nameVar="currColName">
-				<if type="expr" expr="currColName == colName">
-					<then>
-						<!-- This is the column we're supposed to add to -->
-						<save type="double" dynamic_column="currColName">tan(currCol)</save>
-					</then>
-					<else>
-						<!-- Not the column we're working with, just copy it over -->
-						<copy r_colname="currColName" />
-					</else>
-				</if>
-			</loop>
+			<copy all="true" />
+
+			<save type="double" r_column="paste('tan(', colName, ')', sep='')">tan(colVals)</save>
 		</computation>
 	</operation>
 
 	<operation name="asin()">
-		<query type="column" name="col" prompt="Column?" />
+		<query type="column" name="col" prompt="Column?" column_type="numeric" />
 
-		<longname>asin(<response name="col" default="Col" />)</longname>
+		<longname>asin(<response name="col" default="x" />)</longname>
 
 		<computation>
 			<set name="col" rvar="colName" use="name" />
+			<set name="col" rvar="colVals" use="values" />
 
-			<loop type="parent" valueVar="currCol" nameVar="currColName">
-				<if type="expr" expr="currColName == colName">
-					<then>
-						<!-- This is the column we're supposed to add to -->
-						<save type="double" dynamic_column="currColName">asin(currCol)</save>
-					</then>
-					<else>
-						<!-- Not the column we're working with, just copy it over -->
-						<copy r_colname="currColName" />
-					</else>
-				</if>
-			</loop>
+			<copy all="true" />
+
+			<save type="double" r_column="paste('asin(', colName, ')', sep='')">asin(colVals)</save>
 		</computation>
 	</operation>
 
 	<operation name="acos()">
-		<query type="column" name="col" prompt="Column?" />
+		<query type="column" name="col" prompt="Column?" column_type="numeric" />
 
-		<longname>acos(<response name="col" default="Col" />)</longname>
+		<longname>acos(<response name="col" default="x" />)</longname>
 
 		<computation>
 			<set name="col" rvar="colName" use="name" />
+			<set name="col" rvar="colVals" use="values" />
 
-			<loop type="parent" valueVar="currCol" nameVar="currColName">
-				<if type="expr" expr="currColName == colName">
-					<then>
-						<!-- This is the column we're supposed to add to -->
-						<save type="double" dynamic_column="currColName">acos(currCol)</save>
-					</then>
-					<else>
-						<!-- Not the column we're working with, just copy it over -->
-						<copy r_colname="currColName" />
-					</else>
-				</if>
-			</loop>
+			<copy all="true" />
+
+			<save type="double" r_column="paste('acos(', colName, ')', sep='')">acos(colVals)</save>
 		</computation>
 	</operation>
 
 	<operation name="atan()">
-		<query type="column" name="col" prompt="Column?" />
+		<query type="column" name="col" prompt="Column?" column_type="numeric" />
 
-		<longname>atan(<response name="col" default="Col" />)</longname>
+		<longname>atan(<response name="col" default="x" />)</longname>
 
 		<computation>
 			<set name="col" rvar="colName" use="name" />
+			<set name="col" rvar="colVals" use="values" />
 
-			<loop type="parent" valueVar="currCol" nameVar="currColName">
-				<if type="expr" expr="currColName == colName">
-					<then>
-						<!-- This is the column we're supposed to add to -->
-						<save type="double" dynamic_column="currColName">atan(currCol)</save>
-					</then>
-					<else>
-						<!-- Not the column we're working with, just copy it over -->
-						<copy r_colname="currColName" />
-					</else>
-				</if>
-			</loop>
+			<copy all="true" />
+
+			<save type="double" r_column="paste('atan(', colName, ')', sep='')">atan(colVals)</save>
 		</computation>
 	</operation>
 
 	<operation name="atan2()">
-		<query type="column" name="x" prompt="X Column" />
-		<query type="column" name="y" prompt="Y Column" />
+		<query type="column" name="x" prompt="X Column" column_type="numeric" />
+		<query type="column" name="y" prompt="Y Column" column_type="numeric" />
 
 		<longname>atan2(<response name="y" default="Y" />, <response name="x" default="X" />)</longname>
 
 		<computation>
-			<loop type="parent" valueVar="currCol" nameVar="currColName">
-				<!-- Not the column we're working with, just copy it over -->
-				<copy r_colname="currColName" />
-			</loop>
-			
-			<!-- do the atan2() -->
 			<set name="x" rvar="xColName" use="name" />
 			<set name="y" rvar="yColName" use="name" />
 			<set name="x" rvar="x" use="values" />
 			<set name="y" rvar="y" use="values" />
-			<save type="double" dynamic_column="paste('atan2(', yColName, ', ',  xColName, ')')">atan2(y, x)</save>
+
+			<copy all="true" />
+
+			<save type="double" r_column="paste('atan2(', yColName, ', ',  xColName, ')')">atan2(y, x)</save>
 		</computation>
 	</operation>
 
 	<operation name="Natural Log">
-		<query type="column" name="col" prompt="Column?" />
+		<query type="column" name="col" prompt="Column?" column_type="numeric" />
 
-		<longname>log(<response name="col" default="Col" />)</longname>
+		<longname>log(<response name="col" default="x" />)</longname>
 
 		<computation>
 			<set name="col" rvar="colName" use="name" />
+			<set name="col" rvar="colVals" use="values" />
 
-			<loop type="parent" valueVar="currCol" nameVar="currColName">
-				<if type="expr" expr="currColName == colName">
-					<then>
-						<!-- This is the column we're supposed to add to -->
-						<save type="double" dynamic_column="currColName">log(currCol)</save>
-					</then>
-					<else>
-						<!-- Not the column we're working with, just copy it over -->
-						<copy r_colname="currColName" />
-					</else>
-				</if>
-			</loop>
+			<copy all="true" />
+
+			<save type="double" r_column="paste('log(', colName, ')', sep='')">log(colVals)</save>
+		</computation>
+	</operation>
+
+	<operation name="1-Var variance">
+		<query type="column" name="col" prompt="Column?" column_type="numeric" />
+
+		<longname>var(<response name="col" default="x" />)</longname>
+
+		<computation>
+			<set name="col" rvar="colName" use="name" />
+			<set name="col" rvar="colVals" use="values" />
+
+			<save type="double" r_column="paste('var(', colName, ')', sep='')">var(colVals)</save>
+			
+			<copy all="true" />
+		</computation>
+	</operation>
+
+	<operation name="2-Var variance">
+		<query type="column" name="x" prompt="X" column_type="numeric" />
+		<query type="column" name="y" prompt="Y" column_type="numeric" />
+
+		<longname>var(<response name="x" default="x" />, <response name="y" default="y" />)</longname>
+
+		<computation>
+			<set name="x" rvar="xName" use="name" />
+			<set name="y" rvar="yName" use="name" />
+			<set name="x" rvar="x" use="values" />
+			<set name="y" rvar="y" use="values" />
+
+			<copy all="true" />
+
+			<save type="double" r_column="paste('var(', xName, ', ', yName, ')', sep='')">var(x, y)</save>
 		</computation>
 	</operation>
 
 	<operation name="Log 10">
-		<query type="column" name="col" prompt="Column?" />
+		<query type="column" name="col" prompt="Column?" column_type="numeric" />
 
-		<longname>log10(<response name="col" default="Col" />)</longname>
+		<longname>log10(<response name="col" default="x" />)</longname>
 
 		<computation>
 			<set name="col" rvar="colName" use="name" />
+			<set name="col" rvar="colVals" use="values" />
 
-			<loop type="parent" valueVar="currCol" nameVar="currColName">
-				<if type="expr" expr="currColName == colName">
-					<then>
-						<!-- This is the column we're supposed to add to -->
-						<save type="double" dynamic_column="currColName">log10(currCol)</save>
-					</then>
-					<else>
-						<!-- Not the column we're working with, just copy it over -->
-						<copy r_colname="currColName" />
-					</else>
-				</if>
-			</loop>
+			<save type="double" r_column="paste('log10(', colName, ')', sep='')">log10(colVals)</save>
+
+			<copy all="true" />
 		</computation>
 	</operation>
 
 	<operation name="Log base X">
-		<query type="column" name="col" prompt="Column?" />
+		<query type="column" name="col" prompt="Column?" column_type="numeric" />
 		<query type="number" name="base" prompt="Base" />
 
-		<longname>log <response name="base" default="X" /> of <response name="col" default="Col" /></longname>
+		<longname>log <response name="base" default="X" /> of <response name="col" default="x" /></longname>
 
 		<computation>
 			<set name="col" rvar="colName" use="name" />
+			<set name="col" rvar="colVals" use="values" />
 			<set name="base" rvar="base" />
 
-			<loop type="parent" valueVar="currCol" nameVar="currColName">
-				<if type="expr" expr="currColName == colName">
-					<then>
-						<!-- This is the column we're supposed to add to -->
-						<save type="double" dynamic_column="currColName">log(currCol) / log(base)</save>
-					</then>
-					<else>
-						<!-- Not the column we're working with, just copy it over -->
-						<copy r_colname="currColName" />
-					</else>
-				</if>
-			</loop>
+			<copy all="true" />
+
+			<save type="double" r_column="paste('log', base, '(', colName, ')', sep='')">log(colVals) / log(base)</save>
 		</computation>
 	</operation>
 
 	<operation name="Exponential">
-		<query type="column" name="col" prompt="Column?" />
+		<query type="column" name="col" prompt="Column?" column_type="numeric" />
 
-		<longname>e^<response name="col" default="Col" /></longname>
+		<longname>e^<response name="col" default="x" /></longname>
 
 		<computation>
 			<set name="col" rvar="colName" use="name" />
+			<set name="col" rvar="colVals" use="values" />
 
-			<loop type="parent" valueVar="currCol" nameVar="currColName">
-				<if type="expr" expr="currColName == colName">
-					<then>
-						<!-- This is the column we're supposed to add to -->
-						<save type="double" dynamic_column="currColName">exp(currCol)</save>
-					</then>
-					<else>
-						<!-- Not the column we're working with, just copy it over -->
-						<copy r_colname="currColName" />
-					</else>
-				</if>
-			</loop>
+			<save type="double" r_column="paste('e^', colName, sep='')">exp(colVals)</save>
+
+			<copy all="true" />
 		</computation>
 	</operation>
 
 	<operation name="Absolute Value">
-		<query type="column" name="col" prompt="Column?" />
+		<query type="column" name="col" prompt="Column?" column_type="numeric" />
 
-		<longname>|<response name="col" default="Col" />|</longname>
+		<longname>abs(<response name="col" default="x" />)</longname>
 
 		<computation>
 			<set name="col" rvar="colName" use="name" />
+			<set name="col" rvar="colVals" use="values" />
 
-			<loop type="parent" valueVar="currCol" nameVar="currColName">
-				<if type="expr" expr="currColName == colName">
-					<then>
-						<!-- This is the column we're supposed to add to -->
-						<save type="double" dynamic_column="currColName">abs(currCol)</save>
-					</then>
-					<else>
-						<!-- Not the column we're working with, just copy it over -->
-						<copy r_colname="currColName" />
-					</else>
-				</if>
-			</loop>
+			<save type="double" r_column="paste('abs(', colName, ')', sep='')">abs(colVals)</save>
+
+			<copy all="true" />
 		</computation>
 	</operation>
 
@@ -438,50 +378,47 @@
 	</operation>
 
 	<operation name="Mean">
+		<query type="column" name="col" prompt="Column?" column_type="numeric" />
+
+		<longname>mean(<response name="col" default="x" />)</longname>
+
 		<computation>
-			<loop type="parent" valueVar="col">
-				<if type="vartype" rvar="col" expected="numeric">
-					<then>
-						<save type="double" column="mean">mean(col)</save>
-					</then>
-				</if>
-			</loop>
+			<set name="col" rvar="colName" use="name" />
+			<set name="col" rvar="colVals" use="values" />
+
+			<save type="double" r_column="paste('mean(', colName, ')', sep='')">mean(colVals)</save>
+
+			<copy all="true" />
 		</computation>
 	</operation>
 
-	<operation name="Standard Deviation">
+	<operation name="StdDev">
+		<query type="column" name="col" prompt="Column?" column_type="numeric" />
+
+		<longname>sd(<response name="col" default="x" />)</longname>
+
 		<computation>
-			<loop type="parent" valueVar="col">
-				<if type="vartype" rvar="col" expected="numeric">
-					<then>
-						<save type="double" column="sd">sd(col)</save>
-					</then>
-				</if>
-			</loop>
+			<set name="col" rvar="colName" use="name" />
+			<set name="col" rvar="colVals" use="values" />
+
+			<save type="double" r_column="paste('sd(', colName, ')', sep='')">sd(colVals)</save>
+
+			<copy all="true" />
 		</computation>
 	</operation>
 
 	<operation name="Sum">
-		<computation>
-			<loop type="parent" valueVar="col">
-				<if type="vartype" rvar="col" expected="numeric">
-					<then>
-						<save type="double" column="sum">sum(col)</save>
-					</then>
-				</if>
-			</loop>
-		</computation>
-	</operation>
+		<query type="column" name="col" prompt="Column?" column_type="numeric" />
 
-	<operation name="Summation">
+		<longname>sum(<response name="col" default="x" />)</longname>
+
 		<computation>
-			<loop type="parent" valueVar="col">
-				<if type="vartype" rvar="col" expected="numeric">
-					<then>
-						<save type="double" column="sum">sum(col)</save>
-					</then>
-				</if>
-			</loop>
+			<set name="col" rvar="colName" use="name" />
+			<set name="col" rvar="colVals" use="values" />
+
+			<save type="double" r_column="paste('sum(', colName, ')', sep='')">sum(colVals)</save>
+
+			<copy all="true" />
 		</computation>
 	</operation>
 
@@ -491,21 +428,24 @@
 				<cmd>s = summary(col)</cmd>
 				<cmd>n = names(s)</cmd>
 				<loop type="double" loopVar="s" indexVar="i">
-					<save type="double" dynamic_column="paste(colName, n[i])">s[i]</save>
+					<save type="double" r_column="paste(colName, n[i])">s[i]</save>
 				</loop>
 			</loop>
 		</computation>
 	</operation>
 
 	<operation name="XY Plot" plot="true">
-		<query type="column" name="x" prompt="X column" />
-		<query type="column" name="y" prompt="Y column" />
+		<query type="column" name="x" prompt="X column" column_type="numeric" />
+		<query type="column" name="y" prompt="Y column" column_type="numeric" />
 
 		<longname>Plot of <response name="x" default="X" /> vs <response name="y" default="Y" /></longname>
 
 		<computation>
 			<set rvar="x" name="x" />
 			<set rvar="y" name="y" />
+
+			<copy all="true" />
+
 			<plot>
 				<cmd>plot(x,y)</cmd>
 			</plot>
@@ -513,15 +453,153 @@
 	</operation>
 
 	<operation name="Single Var Plot" plot="true">
-		<query type="column" name="x" prompt="Column" />
+		<query type="column" name="x" prompt="Column" column_type="numeric" />
 
-		<longname>Plot of <response name="x" default="Col" /></longname>
+		<longname>Plot of <response name="x" default="x" /></longname>
 
 		<computation>
 			<set rvar="x" name="x" />
+
+			<copy all="true" />
+
 			<plot>
 				<cmd>plot(x)</cmd>
 			</plot>
+		</computation>
+	</operation>
+
+	<operation name="Sequence">
+		<query type="string" name="colName" prompt="Column Name" />
+		<query type="number" name="start" prompt="From" />
+		<query type="number" name="end" prompt="To" />
+
+		<longname>seq(<response name="start" default="from" />, <response name="end" default="to" />)</longname>
+
+		<computation>
+			<set rvar="col" name="colName" />
+			<set rvar="start" name="start" />
+			<set rvar="end" name="end" />
+
+			<copy all="true" />
+
+			<save type="double" r_column="col">seq(start, end)</save>
+		</computation>
+	</operation>
+
+	<operation name="Repeat">
+		<query type="string" name="colName" prompt="Column Name" />
+		<query type="number" name="val" prompt="Value" />
+		<query type="number" name="count" prompt="Count" />
+
+		<longname>rep(<response name="val" default="val" />, <response name="count" default="count" />)</longname>
+
+		<computation>
+			<set rvar="col" name="colName" />
+			<set rvar="val" name="val" />
+			<set rvar="count" name="count" />
+
+			<copy all="true" />
+
+			<save type="double" r_column="col">rep(val, count)</save>
+		</computation>
+	</operation>
+
+	<operation name="Median">
+		<query type="column" name="colName" prompt="Column" column_type="numeric" />
+
+		<longname>median(<response name="colName" default="x" />)</longname>
+
+		<computation>
+			<set rvar="colName" name="colName" use="name" />
+			<set rvar="colVals" name="colName" use="values" />
+
+			<copy all="true" />
+
+			<save type="double" r_column="paste('median(', colName, ')', sep='')">median(colVals)</save>
+		</computation>
+	</operation>
+
+	<operation name="Max">
+		<query type="column" name="colName" prompt="Column" column_type="numeric" />
+
+		<longname>max(<response name="colName" default="x" />)</longname>
+
+		<computation>
+			<set rvar="colName" name="colName" use="name" />
+			<set rvar="colVals" name="colName" use="values" />
+
+			<copy all="true" />
+
+			<save type="double" r_column="paste('max(', colName, ')', sep='')">max(colVals)</save>
+		</computation>
+	</operation>
+
+	<operation name="Min">
+		<query type="column" name="colName" prompt="Column" column_type="numeric" />
+
+		<longname>min(<response name="colName" default="x" />)</longname>
+
+		<computation>
+			<set rvar="colName" name="colName" use="name" />
+			<set rvar="colVals" name="colName" use="values" />
+
+			<copy all="true" />
+
+			<save type="double" r_column="paste('min(', colName, ')', sep='')">min(colVals)</save>
+		</computation>
+	</operation>
+
+	<operation name="Sort">
+		<query type="column" name="colName" prompt="Column" />
+		<query type="checkbox" name="desc" prompt="Descending" />
+
+		<longname>sort(<response name="colName" default="x" />)</longname>
+
+		<computation>
+			<set rvar="colName" name="colName" use="name" />
+			<set rvar="colVals" name="colName" use="values" />
+			<set rvar="desc" name="desc" />
+
+			<copy all="true" />
+
+			<if type="expr" expr="!desc">
+				<then>
+					<save type="double" r_column="paste('sort(', colName, ')', sep='')">sort(colVals)</save>
+				</then>
+				<else>
+					<save type="double" r_column="paste('sort(', colName, ')', sep='')">sort(colVals, decreasing=T)</save>
+				</else>
+			</if>
+		</computation>
+	</operation>
+
+	<operation name="Reverse">
+		<query type="column" name="colName" prompt="Column" />
+
+		<longname>rev(<response name="colName" default="x" />)</longname>
+
+		<computation>
+			<set rvar="colName" name="colName" use="name" />
+			<set rvar="colVals" name="colName" use="values" />
+
+			<copy all="true" />
+
+			<save type="double" r_column="paste('rev(', colName, ')', sep='')">rev(colVals)</save>
+		</computation>
+	</operation>
+
+	<operation name="Prod">
+		<query type="column" name="colName" prompt="Column" />
+
+		<longname>prod(<response name="colName" default="x" />)</longname>
+
+		<computation>
+			<set rvar="colName" name="colName" use="name" />
+			<set rvar="colVals" name="colName" use="values" />
+
+			<copy all="true" />
+
+			<save type="double" r_column="paste('prod(', colName, ')', sep='')">prod(colVals)</save>
 		</computation>
 	</operation>
 
