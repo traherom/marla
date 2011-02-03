@@ -6,6 +6,102 @@
 		</computation>
 	</operation>
 
+	<operation name="Histogram" plot="true">
+		<query type="column" name="col" prompt="Column?" />
+
+		<longname>hist(<response name="col" default="x" />)</longname>
+
+		<computation>
+			<set name="col" rvar="x" use="values" />
+
+			<copy all="true" />
+
+			<plot>
+				<cmd>hist(x)</cmd>
+			</plot>
+		</computation>
+	</operation>
+
+	<operation name="Boxplot" plot="true">
+		<query type="column" name="col" prompt="Column?" />
+
+		<longname>boxplot(<response name="col" default="x" />)</longname>
+
+		<computation>
+			<set name="col" rvar="x" use="values" />
+
+			<copy all="true" />
+
+			<plot>
+				<cmd>boxplot(x)</cmd>
+			</plot>
+		</computation>
+	</operation>
+
+	<operation name="Q-Q Norm" plot="true">
+		<query type="column" name="col" prompt="Column?" />
+
+		<longname>qqnorm(<response name="col" default="x" />)</longname>
+
+		<computation>
+			<set name="col" rvar="x" use="values" />
+
+			<copy all="true" />
+
+			<plot>
+				<cmd>qqnorm(x)</cmd>
+			</plot>
+		</computation>
+	</operation>
+
+	<operation name="Barplot" plot="true">
+		<query type="column" name="col" prompt="Column?" />
+
+		<longname>barplot(<response name="col" default="x" />)</longname>
+
+		<computation>
+			<set name="col" rvar="x" use="values" />
+
+			<copy all="true" />
+
+			<plot>
+				<cmd>barplot(x)</cmd>
+			</plot>
+		</computation>
+	</operation>
+
+	<operation name="Dot Chart" plot="true">
+		<query type="column" name="col" prompt="Column?" />
+
+		<longname>dotchart(<response name="col" default="x" />)</longname>
+
+		<computation>
+			<set name="col" rvar="x" use="values" />
+
+			<copy all="true" />
+
+			<plot>
+				<cmd>dotchart(x)</cmd>
+			</plot>
+		</computation>
+	</operation>
+
+	<operation name="Strip Chart" plot="true">
+		<query type="column" name="col" prompt="Column?" />
+
+		<longname>stripchart(<response name="col" default="x" />)</longname>
+
+		<computation>
+			<set name="col" rvar="x" use="values" />
+
+			<copy all="true" />
+
+			<plot>
+				<cmd>stripchart(x)</cmd>
+			</plot>
+		</computation>
+	</operation>
+
 	<operation name="Divide">
 		<query type="column" name="col" prompt="Column?" column_type="numeric" />
 		<query type="number" name="val" prompt="Divide by" />
@@ -16,7 +112,7 @@
 			<set name="col" rvar="colName" use="name" />
 			<set name="val" rvar="val" />
 
-			<loop type="parent" valueVar="currCol" nameVar="currColName">
+			<loop type="parent" value_var="currCol" name_var="currColName">
 				<if type="expr" expr="currColName == colName">
 					<then>
 						<!-- This is the column we're supposed to divide -->
@@ -41,7 +137,7 @@
 			<set name="col" rvar="colName" use="name" />
 			<set name="val" rvar="val" />
 
-			<loop type="parent" valueVar="currCol" nameVar="currColName">
+			<loop type="parent" value_var="currCol" name_var="currColName">
 				<if type="expr" expr="currColName == colName">
 					<then>
 						<!-- This is the column we're supposed to multiply -->
@@ -66,7 +162,7 @@
 			<set name="col" rvar="colName" use="name" />
 			<set name="val" rvar="val" />
 
-			<loop type="parent" valueVar="currCol" nameVar="currColName">
+			<loop type="parent" value_var="currCol" name_var="currColName">
 				<if type="expr" expr="currColName == colName">
 					<then>
 						<!-- This is the column we're supposed to add to -->
@@ -91,7 +187,7 @@
 			<set name="col" rvar="colName" use="name" />
 			<set name="val" rvar="val" />
 
-			<loop type="parent" valueVar="currCol" nameVar="currColName">
+			<loop type="parent" value_var="currCol" name_var="currColName">
 				<if type="expr" expr="currColName == colName">
 					<then>
 						<!-- This is the column we're supposed to add to -->
@@ -116,7 +212,7 @@
 			<set name="col" rvar="colName" use="name" />
 			<set name="val" rvar="val" />
 
-			<loop type="parent" valueVar="currCol" nameVar="currColName">
+			<loop type="parent" value_var="currCol" name_var="currColName">
 				<if type="expr" expr="currColName == colName">
 					<then>
 						<!-- This is the column we're supposed to compute on -->
@@ -355,7 +451,7 @@
 		<computation>
 			<!-- Run t test on each column and save, plus prepare the top row -->
 			<cmd>t = list()</cmd>
-			<loop type="parent" valueVar="col" nameVar="colName" indexVar="i">
+			<loop type="parent" value_var="col" name_var="colName" index_var="i">
 				<if type="vartype" rvar="col" expected="numeric">
 					<then>
 						<cmd>t[[i]] = t.test(col)</cmd>
@@ -365,7 +461,7 @@
 			</loop>
 
 			<!-- Save each -->
-			<loop type="double" loopVar="1:length(t)" indexVar="i">
+			<loop type="double" loop_var="1:length(t)" index_var="i">
 				<save type="double" column="t">t[[i]]$statistic</save>
 				<save type="double" column="DF">t[[i]]$parameter</save>
 				<save type="double" column="P-Value">t[[i]]$p.value</save>
@@ -424,13 +520,52 @@
 
 	<operation name="Summary">
 		<computation>
-			<loop type="parent" indexVar="colName" valueVar="col">
+			<loop type="parent" key_var="colName" value_var="col">
 				<cmd>s = summary(col)</cmd>
 				<cmd>n = names(s)</cmd>
-				<loop type="double" loopVar="s" indexVar="i">
+				<loop type="double" loop_var="s" index_var="i">
 					<save type="double" r_column="paste(colName, n[i])">s[i]</save>
 				</loop>
 			</loop>
+		</computation>
+	</operation>
+
+	<operation name="Five Nums">
+		<query type="column" name="col" prompt="Column?" column_type="numeric" />
+
+		<longname>fivenum(<response name="col" default="x" />)</longname>
+
+		<computation>
+			<set name="col" rvar="colName" use="name" />
+			<set name="col" rvar="colVals" use="values" />
+
+			<cmd>a = fivenum(colVals)</cmd>
+
+			<save type="double" r_column="paste('min(', colName, ')', sep='')">a[1]</save>
+			<save type="double" r_column="paste('Lower Hinge(', colName, ')', sep='')">a[2]</save>
+			<save type="double" r_column="paste('median(', colName, ')', sep='')">a[3]</save>
+			<save type="double" r_column="paste('Upper Hinge(', colName, ')', sep='')">a[4]</save>
+			<save type="double" r_column="paste('max(', colName, ')', sep='')">a[5]</save>
+
+			<copy all="true" />
+		</computation>
+	</operation>
+
+	<operation name="rnorm">
+		<query type="string" name="saveTo" prompt="Column name" />
+		<query type="numeric" name="samples" prompt="Sample count" />
+		<query type="numeric" name="mean" prompt="Mean" />
+
+		<longname>rnorm(<response name="samples" default="n" />, mean=<response name="mean" default="x" />)</longname>
+
+		<computation>
+			<set name="saveTo" rvar="saveTo" />
+			<set name="samples" rvar="n" />
+			<set name="mean" rvar="m" />
+
+			<copy all="true" />
+
+			<save type="double" r_column="saveTo">rnorm(n, m)</save>
 		</computation>
 	</operation>
 

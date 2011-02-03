@@ -146,11 +146,11 @@ public class OperationXML extends Operation
 		}
 		catch(JDOMException ex)
 		{
-			throw new OperationXMLException("An error while processing the operation XML file", ex);
+			throw new OperationXMLException("Operation XML file '" + operationFilePath + "' contains XML error(s)", ex);
 		}
 		catch(IOException ex)
 		{
-			throw new OperationXMLException("An error occurred in accessing the operation XML file", ex);
+			throw new OperationXMLException("An error occurred accessing the operation XML file '" + operationFilePath + "'", ex);
 		}
 	}
 
@@ -446,9 +446,9 @@ public class OperationXML extends Operation
 	private void processLoop(RProcessor proc, Element loopEl) throws RProcessorException, RProcessorParseException, OperationXMLException, MarlaException
 	{
 		// Make up the loop we're going to work over and pass iteration back to processSequence()
-		String nameVar = loopEl.getAttributeValue("nameVar");
-		String indexVar = loopEl.getAttributeValue("indexVar");
-		String valueVar = loopEl.getAttributeValue("valueVar");
+		String indexVar = loopEl.getAttributeValue("index_var");
+		String keyVar = loopEl.getAttributeValue("key_var");
+		String valueVar = loopEl.getAttributeValue("value_var");
 
 		String loopType = loopEl.getAttributeValue("type", "double");
 		if(loopType.equals("parent"))
@@ -458,10 +458,10 @@ public class OperationXML extends Operation
 			{
 				// Assign the loop key and value
 				proc.setRecorderMode(intendedRecordMode);
-				if(nameVar != null)
-					proc.setVariable(nameVar, getParentData().getColumn(i).getName());
+				if(keyVar != null)
+					proc.setVariable(keyVar, getParentData().getColumn(i).getName());
 				if(indexVar != null)
-					proc.setVariable(indexVar, new Double(i + 1));
+					proc.setVariable(indexVar, i + 1);
 				if(valueVar != null)
 					proc.setVariable(valueVar, getParentData().getColumn(i));
 				proc.setRecorderMode(RecordMode.DISABLED);
@@ -473,7 +473,7 @@ public class OperationXML extends Operation
 		else if(loopType.equals("double"))
 		{
 			// Loop over an R vector, setting each element as the index var
-			List<Double> doubleVals = proc.executeDoubleArray(loopEl.getAttributeValue("loopVar"));
+			List<Double> doubleVals = proc.executeDoubleArray(loopEl.getAttributeValue("loop_var"));
 			for(int i = 0; i < doubleVals.size(); i++)
 			{
 				// Assign the loop index
@@ -491,7 +491,7 @@ public class OperationXML extends Operation
 		else if(loopType.equals("string"))
 		{
 			// Loop over an R vector, setting each element as the index var
-			List<String> stringVals = proc.executeStringArray(loopEl.getAttributeValue("loopVar"));
+			List<String> stringVals = proc.executeStringArray(loopEl.getAttributeValue("loop_var"));
 			for(int i = 0; i < stringVals.size(); i++)
 			{
 				// Assign the loop index
