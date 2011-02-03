@@ -130,7 +130,7 @@ For example, to ask a user to select a column and then save the values for use:
 
 === Loops ===
 {{{
-<loop type="parent|double_array|string_array" [index_var="R variable name"] [key_var="R variable name"]    [value_var="R variable name"] [loop_var="R expression"]>
+<loop type="parent|numeric|string" [index_var="R variable name"] [key_var="R variable name"]    [value_var="R variable name"] [loop_var="R expression"]>
   ...
 </loop>
 }}}
@@ -139,8 +139,8 @@ For example, to ask a user to select a column and then save the values for use:
 Attributes supported:
   * *`type`* - One of the following:
     * `parent` - Loop over every column in the parent data
-    * `double_array` - Iterate over every element of the vector given by `loopVar`, processing them as numeric values
-    * `string_array` - Iterate over every element of the vector given by `loopVar`, processing them as string values
+    * `numeric` - Iterate over every element of the vector given by `loop_var`, processing them as numeric values
+    * `string` - Iterate over every element of the vector given by `loopVar`, processing them as string values
   * `loop_var` - If using one of the array loop types, this specifies an R statement that generates the vector to loop over
   * `index_var` - Loop number the loop is on (1 based)
   * `key_var` - For parent loops, gives the name of the current column. For array loops it is the same as indexVar
@@ -178,13 +178,13 @@ Supported attributes:
   
 === Save ===
 {{{
-<save type="double|string" [column="<Column name>"] [r_column="<R command>"]>R command</save>
+<save type="numeric|string" [column="<Column name>"] [r_column="<R command>"]>R command</save>
 }}}
 To save the final values for the computation, `<save />` elements may be specified. The value saved is given by the single R command inside the save element.
 
 Attributes supported:
   * *`type`* - One of the following
-    * `double` - Process the result as one or more numeric values
+    * `numeric` - Process the result as one or more numeric values
     * `string` - Process the result as one or more string values
   * `column` - Static name of the column to save these values into
   * `r_column` - R command from which to pull the name of the column to save into. Must return a single string
@@ -193,7 +193,7 @@ For example:
 {{{
 <comuptation>
   <cmd>testing = 75.6</cmd>
-  <save type="double" column="ex">testing</save>
+  <save type="numeric" column="ex">testing</save>
 </computation>
 }}}
 
@@ -224,14 +224,14 @@ Below is an example of implementing a t-test:
       </loop>
 
       <!-- Save each t.test result -->
-      <loop type="double_array" loopVar="1:length(t)" indexVar="i">
-        <save type="double" column="t">t[[i]]$statistic</save>
-        <save type="double" column="DF">t[[i]]$parameter</save>
-        <save type="double" column="P-Value">t[[i]]$p.value</save>
-        <save type="double" column="Mean">t[[i]]$estimate</save>
-        <save type="double" column="Lower CI">t[[i]]$conf.int[1]</save>
-        <save type="double" column="Upper CI">t[[i]]$conf.int[2]</save>
-        <save type="double" column="alpha">attr(t[[i]]$conf.int, 'conf.level')</save>
+      <loop type="numeric_array" loopVar="1:length(t)" indexVar="i">
+        <save type="numeric" column="t">t[[i]]$statistic</save>
+        <save type="numeric" column="DF">t[[i]]$parameter</save>
+        <save type="numeric" column="P-Value">t[[i]]$p.value</save>
+        <save type="numeric" column="Mean">t[[i]]$estimate</save>
+        <save type="numeric" column="Lower CI">t[[i]]$conf.int[1]</save>
+        <save type="numeric" column="Upper CI">t[[i]]$conf.int[2]</save>
+        <save type="numeric" column="alpha">attr(t[[i]]$conf.int, 'conf.level')</save>
       </loop>
     </computation>
   </operation>
