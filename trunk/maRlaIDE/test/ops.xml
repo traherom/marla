@@ -104,23 +104,23 @@
 
 	<operation name="Divide">
 		<query type="column" name="col" prompt="Column?" column_type="numeric" />
-		<query type="number" name="val" prompt="Divide by" />
+		<query type="numeric" name="val" prompt="Divide by" />
 
-		<longname><response name="col" default="x" /> / <response name="val" default="X" /></longname>
+		<longname><response name="col" default="column" /> / <response name="val" default="X" /></longname>
 
 		<computation>
 			<set name="col" rvar="colName" use="name" />
 			<set name="val" rvar="val" />
 
-			<loop type="parent" value_var="currCol" name_var="currColName">
+			<loop type="parent" value_var="currCol" key_var="currColName">
 				<if type="expr" expr="currColName == colName">
 					<then>
 						<!-- This is the column we're supposed to divide -->
-						<save type="double" r_column="currColName">currCol / val</save>
+						<save type="numeric" r_column="currColName">currCol / val</save>
 					</then>
 					<else>
 						<!-- Not the column we're working with, just copy it over -->
-						<copy r_colname="currColName" />
+						<copy r_column="currColName" />
 					</else>
 				</if>
 			</loop>
@@ -129,23 +129,23 @@
 
 	<operation name="Multiply">
 		<query type="column" name="col" prompt="Column?" column_type="numeric" />
-		<query type="number" name="val" prompt="Multiply by" />
+		<query type="numeric" name="val" prompt="Multiply by" />
 
-		<longname><response name="col" default="x" /> * <response name="val" default="X" /></longname>
+		<longname><response name="col" default="column" /> * <response name="val" default="X" /></longname>
 
 		<computation>
 			<set name="col" rvar="colName" use="name" />
 			<set name="val" rvar="val" />
 
-			<loop type="parent" value_var="currCol" name_var="currColName">
+			<loop type="parent" value_var="currCol" key_var="currColName">
 				<if type="expr" expr="currColName == colName">
 					<then>
 						<!-- This is the column we're supposed to multiply -->
-						<save type="double" r_column="currColName">currCol * val</save>
+						<save type="numeric" r_column="currColName">currCol * val</save>
 					</then>
 					<else>
 						<!-- Not the column we're working with, just copy it over -->
-						<copy r_colname="currColName" />
+						<copy r_column="currColName" />
 					</else>
 				</if>
 			</loop>
@@ -154,23 +154,23 @@
 
 	<operation name="Add">
 		<query type="column" name="col" prompt="Column?" column_type="numeric" />
-		<query type="number" name="val" prompt="Add" />
+		<query type="numeric" name="val" prompt="Add" />
 
-		<longname><response name="col" default="x" /> + <response name="val" default="X" /></longname>
+		<longname><response name="col" default="column" /> + <response name="val" default="X" /></longname>
 
 		<computation>
 			<set name="col" rvar="colName" use="name" />
 			<set name="val" rvar="val" />
 
-			<loop type="parent" value_var="currCol" name_var="currColName">
+			<loop type="parent" value_var="currCol" key_var="currColName">
 				<if type="expr" expr="currColName == colName">
 					<then>
 						<!-- This is the column we're supposed to add to -->
-						<save type="double" r_column="currColName">currCol + val</save>
+						<save type="numeric" r_column="currColName">currCol + val</save>
 					</then>
 					<else>
 						<!-- Not the column we're working with, just copy it over -->
-						<copy r_colname="currColName" />
+						<copy r_column="currColName" />
 					</else>
 				</if>
 			</loop>
@@ -179,23 +179,23 @@
 
 	<operation name="Subtract">
 		<query type="column" name="col" prompt="Column?" column_type="numeric" />
-		<query type="number" name="val" prompt="Subtract" />
+		<query type="numeric" name="val" prompt="Subtract" />
 
-		<longname><response name="col" default="x" /> - <response name="val" default="X" /></longname>
+		<longname><response name="col" default="column" /> - <response name="val" default="X" /></longname>
 
 		<computation>
 			<set name="col" rvar="colName" use="name" />
 			<set name="val" rvar="val" />
 
-			<loop type="parent" value_var="currCol" name_var="currColName">
+			<loop type="parent" value_var="currCol" key_var="currColName">
 				<if type="expr" expr="currColName == colName">
 					<then>
 						<!-- This is the column we're supposed to add to -->
-						<save type="double" r_column="currColName">currCol - val</save>
+						<save type="numeric" r_column="currColName">currCol - val</save>
 					</then>
 					<else>
 						<!-- Not the column we're working with, just copy it over -->
-						<copy r_colname="currColName" />
+						<copy r_column="currColName" />
 					</else>
 				</if>
 			</loop>
@@ -204,7 +204,7 @@
 
 	<operation name="Exponentiate">
 		<query type="column" name="col" prompt="Column?" column_type="numeric" />
-		<query type="number" name="val" prompt="Raise by" />
+		<query type="numeric" name="val" prompt="Raise by" />
 
 		<longname><response name="col" default="x" /> ^ <response name="val" default="X" /></longname>
 
@@ -212,15 +212,15 @@
 			<set name="col" rvar="colName" use="name" />
 			<set name="val" rvar="val" />
 
-			<loop type="parent" value_var="currCol" name_var="currColName">
+			<loop type="parent" value_var="currCol" key_var="currColName">
 				<if type="expr" expr="currColName == colName">
 					<then>
 						<!-- This is the column we're supposed to compute on -->
-						<save type="double" r_column="currColName">currCol^val</save>
+						<save type="numeric" r_column="currColName">currCol^val</save>
 					</then>
 					<else>
 						<!-- Not the column we're working with, just copy it over -->
-						<copy r_colname="currColName" />
+						<copy r_column="currColName" />
 					</else>
 				</if>
 			</loop>
@@ -238,7 +238,7 @@
 
 			<copy all="true" />
 
-			<save type="double" r_column="paste('sin(', colName, ')', sep='')">sin(colVals)</save>
+			<save type="numeric" r_column="paste('sin(', colName, ')', sep='')">sin(colVals)</save>
 		</computation>
 	</operation>
 
@@ -253,7 +253,7 @@
 
 			<copy all="true" />
 
-			<save type="double" r_column="paste('cos(', colName, ')', sep='')">cos(colVals)</save>
+			<save type="numeric" r_column="paste('cos(', colName, ')', sep='')">cos(colVals)</save>
 		</computation>
 	</operation>
 
@@ -268,7 +268,7 @@
 
 			<copy all="true" />
 
-			<save type="double" r_column="paste('tan(', colName, ')', sep='')">tan(colVals)</save>
+			<save type="numeric" r_column="paste('tan(', colName, ')', sep='')">tan(colVals)</save>
 		</computation>
 	</operation>
 
@@ -283,7 +283,7 @@
 
 			<copy all="true" />
 
-			<save type="double" r_column="paste('asin(', colName, ')', sep='')">asin(colVals)</save>
+			<save type="numeric" r_column="paste('asin(', colName, ')', sep='')">asin(colVals)</save>
 		</computation>
 	</operation>
 
@@ -298,7 +298,7 @@
 
 			<copy all="true" />
 
-			<save type="double" r_column="paste('acos(', colName, ')', sep='')">acos(colVals)</save>
+			<save type="numeric" r_column="paste('acos(', colName, ')', sep='')">acos(colVals)</save>
 		</computation>
 	</operation>
 
@@ -313,7 +313,7 @@
 
 			<copy all="true" />
 
-			<save type="double" r_column="paste('atan(', colName, ')', sep='')">atan(colVals)</save>
+			<save type="numeric" r_column="paste('atan(', colName, ')', sep='')">atan(colVals)</save>
 		</computation>
 	</operation>
 
@@ -331,7 +331,7 @@
 
 			<copy all="true" />
 
-			<save type="double" r_column="paste('atan2(', yColName, ', ',  xColName, ')')">atan2(y, x)</save>
+			<save type="numeric" r_column="paste('atan2(', yColName, ', ',  xColName, ')')">atan2(y, x)</save>
 		</computation>
 	</operation>
 
@@ -346,7 +346,7 @@
 
 			<copy all="true" />
 
-			<save type="double" r_column="paste('log(', colName, ')', sep='')">log(colVals)</save>
+			<save type="numeric" r_column="paste('log(', colName, ')', sep='')">log(colVals)</save>
 		</computation>
 	</operation>
 
@@ -359,7 +359,7 @@
 			<set name="col" rvar="colName" use="name" />
 			<set name="col" rvar="colVals" use="values" />
 
-			<save type="double" r_column="paste('var(', colName, ')', sep='')">var(colVals)</save>
+			<save type="numeric" r_column="paste('var(', colName, ')', sep='')">var(colVals)</save>
 			
 			<copy all="true" />
 		</computation>
@@ -379,7 +379,7 @@
 
 			<copy all="true" />
 
-			<save type="double" r_column="paste('var(', xName, ', ', yName, ')', sep='')">var(x, y)</save>
+			<save type="numeric" r_column="paste('var(', xName, ', ', yName, ')', sep='')">var(x, y)</save>
 		</computation>
 	</operation>
 
@@ -392,7 +392,7 @@
 			<set name="col" rvar="colName" use="name" />
 			<set name="col" rvar="colVals" use="values" />
 
-			<save type="double" r_column="paste('log10(', colName, ')', sep='')">log10(colVals)</save>
+			<save type="numeric" r_column="paste('log10(', colName, ')', sep='')">log10(colVals)</save>
 
 			<copy all="true" />
 		</computation>
@@ -400,7 +400,7 @@
 
 	<operation name="Log base X">
 		<query type="column" name="col" prompt="Column?" column_type="numeric" />
-		<query type="number" name="base" prompt="Base" />
+		<query type="numeric" name="base" prompt="Base" />
 
 		<longname>log <response name="base" default="X" /> of <response name="col" default="x" /></longname>
 
@@ -411,7 +411,7 @@
 
 			<copy all="true" />
 
-			<save type="double" r_column="paste('log', base, '(', colName, ')', sep='')">log(colVals) / log(base)</save>
+			<save type="numeric" r_column="paste('log', base, '(', colName, ')', sep='')">log(colVals) / log(base)</save>
 		</computation>
 	</operation>
 
@@ -424,7 +424,7 @@
 			<set name="col" rvar="colName" use="name" />
 			<set name="col" rvar="colVals" use="values" />
 
-			<save type="double" r_column="paste('e^', colName, sep='')">exp(colVals)</save>
+			<save type="numeric" r_column="paste('e^', colName, sep='')">exp(colVals)</save>
 
 			<copy all="true" />
 		</computation>
@@ -439,7 +439,7 @@
 			<set name="col" rvar="colName" use="name" />
 			<set name="col" rvar="colVals" use="values" />
 
-			<save type="double" r_column="paste('abs(', colName, ')', sep='')">abs(colVals)</save>
+			<save type="numeric" r_column="paste('abs(', colName, ')', sep='')">abs(colVals)</save>
 
 			<copy all="true" />
 		</computation>
@@ -451,7 +451,7 @@
 		<computation>
 			<!-- Run t test on each column and save, plus prepare the top row -->
 			<cmd>t = list()</cmd>
-			<loop type="parent" value_var="col" name_var="colName" index_var="i">
+			<loop type="parent" value_var="col" key_var="colName" index_var="i">
 				<if type="vartype" rvar="col" expected="numeric">
 					<then>
 						<cmd>t[[i]] = t.test(col)</cmd>
@@ -461,14 +461,14 @@
 			</loop>
 
 			<!-- Save each -->
-			<loop type="double" loop_var="1:length(t)" index_var="i">
-				<save type="double" column="t">t[[i]]$statistic</save>
-				<save type="double" column="DF">t[[i]]$parameter</save>
-				<save type="double" column="P-Value">t[[i]]$p.value</save>
-				<save type="double" column="Mean">t[[i]]$estimate</save>
-				<save type="double" column="Lower CI">t[[i]]$conf.int[1]</save>
-				<save type="double" column="Upper CI">t[[i]]$conf.int[2]</save>
-				<save type="double" column="alpha">attr(t[[i]]$conf.int, 'conf.level')</save>
+			<loop type="numeric" loop_var="1:length(t)" index_var="i">
+				<save type="numeric" column="t">t[[i]]$statistic</save>
+				<save type="numeric" column="DF">t[[i]]$parameter</save>
+				<save type="numeric" column="P-Value">t[[i]]$p.value</save>
+				<save type="numeric" column="Mean">t[[i]]$estimate</save>
+				<save type="numeric" column="Lower CI">t[[i]]$conf.int[1]</save>
+				<save type="numeric" column="Upper CI">t[[i]]$conf.int[2]</save>
+				<save type="numeric" column="alpha">attr(t[[i]]$conf.int, 'conf.level')</save>
 			</loop>
 		</computation>
 	</operation>
@@ -482,7 +482,7 @@
 			<set name="col" rvar="colName" use="name" />
 			<set name="col" rvar="colVals" use="values" />
 
-			<save type="double" r_column="paste('mean(', colName, ')', sep='')">mean(colVals)</save>
+			<save type="numeric" r_column="paste('mean(', colName, ')', sep='')">mean(colVals)</save>
 
 			<copy all="true" />
 		</computation>
@@ -497,7 +497,7 @@
 			<set name="col" rvar="colName" use="name" />
 			<set name="col" rvar="colVals" use="values" />
 
-			<save type="double" r_column="paste('sd(', colName, ')', sep='')">sd(colVals)</save>
+			<save type="numeric" r_column="paste('sd(', colName, ')', sep='')">sd(colVals)</save>
 
 			<copy all="true" />
 		</computation>
@@ -512,7 +512,7 @@
 			<set name="col" rvar="colName" use="name" />
 			<set name="col" rvar="colVals" use="values" />
 
-			<save type="double" r_column="paste('sum(', colName, ')', sep='')">sum(colVals)</save>
+			<save type="numeric" r_column="paste('sum(', colName, ')', sep='')">sum(colVals)</save>
 
 			<copy all="true" />
 		</computation>
@@ -523,8 +523,8 @@
 			<loop type="parent" key_var="colName" value_var="col">
 				<cmd>s = summary(col)</cmd>
 				<cmd>n = names(s)</cmd>
-				<loop type="double" loop_var="s" index_var="i">
-					<save type="double" r_column="paste(colName, n[i])">s[i]</save>
+				<loop type="numeric" loop_var="s" index_var="i">
+					<save type="numeric" r_column="paste(colName, n[i])">s[i]</save>
 				</loop>
 			</loop>
 		</computation>
@@ -541,11 +541,11 @@
 
 			<cmd>a = fivenum(colVals)</cmd>
 
-			<save type="double" r_column="paste('min(', colName, ')', sep='')">a[1]</save>
-			<save type="double" r_column="paste('Lower Hinge(', colName, ')', sep='')">a[2]</save>
-			<save type="double" r_column="paste('median(', colName, ')', sep='')">a[3]</save>
-			<save type="double" r_column="paste('Upper Hinge(', colName, ')', sep='')">a[4]</save>
-			<save type="double" r_column="paste('max(', colName, ')', sep='')">a[5]</save>
+			<save type="numeric" r_column="paste('min(', colName, ')', sep='')">a[1]</save>
+			<save type="numeric" r_column="paste('Lower Hinge(', colName, ')', sep='')">a[2]</save>
+			<save type="numeric" r_column="paste('median(', colName, ')', sep='')">a[3]</save>
+			<save type="numeric" r_column="paste('Upper Hinge(', colName, ')', sep='')">a[4]</save>
+			<save type="numeric" r_column="paste('max(', colName, ')', sep='')">a[5]</save>
 
 			<copy all="true" />
 		</computation>
@@ -565,7 +565,7 @@
 
 			<copy all="true" />
 
-			<save type="double" r_column="saveTo">rnorm(n, m)</save>
+			<save type="numeric" r_column="saveTo">rnorm(n, m)</save>
 		</computation>
 	</operation>
 
@@ -605,8 +605,8 @@
 
 	<operation name="Sequence">
 		<query type="string" name="colName" prompt="Column Name" />
-		<query type="number" name="start" prompt="From" />
-		<query type="number" name="end" prompt="To" />
+		<query type="numeric" name="start" prompt="From" />
+		<query type="numeric" name="end" prompt="To" />
 
 		<longname>seq(<response name="start" default="from" />, <response name="end" default="to" />)</longname>
 
@@ -617,14 +617,14 @@
 
 			<copy all="true" />
 
-			<save type="double" r_column="col">seq(start, end)</save>
+			<save type="numeric" r_column="col">seq(start, end)</save>
 		</computation>
 	</operation>
 
 	<operation name="Repeat">
 		<query type="string" name="colName" prompt="Column Name" />
-		<query type="number" name="val" prompt="Value" />
-		<query type="number" name="count" prompt="Count" />
+		<query type="numeric" name="val" prompt="Value" />
+		<query type="numeric" name="count" prompt="Count" />
 
 		<longname>rep(<response name="val" default="val" />, <response name="count" default="count" />)</longname>
 
@@ -635,7 +635,7 @@
 
 			<copy all="true" />
 
-			<save type="double" r_column="col">rep(val, count)</save>
+			<save type="numeric" r_column="col">rep(val, count)</save>
 		</computation>
 	</operation>
 
@@ -650,7 +650,7 @@
 
 			<copy all="true" />
 
-			<save type="double" r_column="paste('median(', colName, ')', sep='')">median(colVals)</save>
+			<save type="numeric" r_column="paste('median(', colName, ')', sep='')">median(colVals)</save>
 		</computation>
 	</operation>
 
@@ -665,7 +665,7 @@
 
 			<copy all="true" />
 
-			<save type="double" r_column="paste('max(', colName, ')', sep='')">max(colVals)</save>
+			<save type="numeric" r_column="paste('max(', colName, ')', sep='')">max(colVals)</save>
 		</computation>
 	</operation>
 
@@ -680,7 +680,7 @@
 
 			<copy all="true" />
 
-			<save type="double" r_column="paste('min(', colName, ')', sep='')">min(colVals)</save>
+			<save type="numeric" r_column="paste('min(', colName, ')', sep='')">min(colVals)</save>
 		</computation>
 	</operation>
 
@@ -699,10 +699,10 @@
 
 			<if type="expr" expr="!desc">
 				<then>
-					<save type="double" r_column="paste('sort(', colName, ')', sep='')">sort(colVals)</save>
+					<save type="numeric" r_column="paste('sort(', colName, ')', sep='')">sort(colVals)</save>
 				</then>
 				<else>
-					<save type="double" r_column="paste('sort(', colName, ')', sep='')">sort(colVals, decreasing=T)</save>
+					<save type="numeric" r_column="paste('sort(', colName, ')', sep='')">sort(colVals, decreasing=T)</save>
 				</else>
 			</if>
 		</computation>
@@ -719,7 +719,7 @@
 
 			<copy all="true" />
 
-			<save type="double" r_column="paste('rev(', colName, ')', sep='')">rev(colVals)</save>
+			<save type="numeric" r_column="paste('rev(', colName, ')', sep='')">rev(colVals)</save>
 		</computation>
 	</operation>
 
@@ -734,7 +734,7 @@
 
 			<copy all="true" />
 
-			<save type="double" r_column="paste('prod(', colName, ')', sep='')">prod(colVals)</save>
+			<save type="numeric" r_column="paste('prod(', colName, ')', sep='')">prod(colVals)</save>
 		</computation>
 	</operation>
 

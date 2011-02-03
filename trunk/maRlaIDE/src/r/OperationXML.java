@@ -425,8 +425,8 @@ public class OperationXML extends Operation
 		proc.setRecorderMode(intendedRecordMode);
 		String result = proc.execute(cmd);
 
-		String processAs = cmdEl.getAttributeValue("type", "double");
-		if(processAs.equals("double"))
+		String processAs = cmdEl.getAttributeValue("type", "numeric");
+		if(processAs.equals("numeric"))
 		{
 			col.setMode(DataColumn.DataMode.NUMERICAL);
 			col.addAll(proc.parseDoubleArray(result));
@@ -450,7 +450,7 @@ public class OperationXML extends Operation
 		String keyVar = loopEl.getAttributeValue("key_var");
 		String valueVar = loopEl.getAttributeValue("value_var");
 
-		String loopType = loopEl.getAttributeValue("type", "double");
+		String loopType = loopEl.getAttributeValue("type", "numeric");
 		if(loopType.equals("parent"))
 		{
 			// Loop over every column in parent
@@ -470,7 +470,7 @@ public class OperationXML extends Operation
 				processSequence(proc, loopEl);
 			}
 		}
-		else if(loopType.equals("double"))
+		else if(loopType.equals("numeric"))
 		{
 			// Loop over an R vector, setting each element as the index var
 			List<Double> doubleVals = proc.executeDoubleArray(loopEl.getAttributeValue("loop_var"));
