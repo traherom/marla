@@ -1,12 +1,15 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <operations version="1">
 	<operation name="NOP" list="false">
+		<!-- This operation is used for testing. It does nothing except print
+			that it was encountered -->
 		<computation>
+			<cmd>print("NOP happened")</cmd>
 			<copy all="true" />
 		</computation>
 	</operation>
 
-	<operation name="Histogram" plot="true">
+	<operation name="Histogram" category="Plots" plot="true">
 		<query type="column" name="col" prompt="Column?" />
 
 		<longname>hist(<response name="col" default="x" />)</longname>
@@ -22,7 +25,7 @@
 		</computation>
 	</operation>
 
-	<operation name="Boxplot" plot="true">
+	<operation name="Boxplot" category="Plots" plot="true">
 		<query type="column" name="col" prompt="Column?" />
 
 		<longname>boxplot(<response name="col" default="x" />)</longname>
@@ -38,7 +41,7 @@
 		</computation>
 	</operation>
 
-	<operation name="Q-Q Norm" plot="true">
+	<operation name="Q-Q Norm" category="Plots" plot="true">
 		<query type="column" name="col" prompt="Column?" />
 
 		<longname>qqnorm(<response name="col" default="x" />)</longname>
@@ -54,7 +57,7 @@
 		</computation>
 	</operation>
 
-	<operation name="Barplot" plot="true">
+	<operation name="Barplot" category="Plots" plot="true">
 		<query type="column" name="col" prompt="Column?" />
 
 		<longname>barplot(<response name="col" default="x" />)</longname>
@@ -70,7 +73,7 @@
 		</computation>
 	</operation>
 
-	<operation name="Dot Chart" plot="true">
+	<operation name="Dot Chart" category="Plots" plot="true">
 		<query type="column" name="col" prompt="Column?" />
 
 		<longname>dotchart(<response name="col" default="x" />)</longname>
@@ -86,7 +89,7 @@
 		</computation>
 	</operation>
 
-	<operation name="Strip Chart" plot="true">
+	<operation name="Strip Chart" category="Plots" plot="true">
 		<query type="column" name="col" prompt="Column?" />
 
 		<longname>stripchart(<response name="col" default="x" />)</longname>
@@ -102,7 +105,7 @@
 		</computation>
 	</operation>
 
-	<operation name="Divide">
+	<operation name="Divide" category="Basic Math">
 		<query type="column" name="col" prompt="Column?" column_type="numeric" />
 		<query type="numeric" name="val" prompt="Divide by" />
 
@@ -127,7 +130,7 @@
 		</computation>
 	</operation>
 
-	<operation name="Multiply">
+	<operation name="Multiply" category="Basic Math">
 		<query type="column" name="col" prompt="Column?" column_type="numeric" />
 		<query type="numeric" name="val" prompt="Multiply by" />
 
@@ -152,7 +155,7 @@
 		</computation>
 	</operation>
 
-	<operation name="Add">
+	<operation name="Add" category="Basic Math">
 		<query type="column" name="col" prompt="Column?" column_type="numeric" />
 		<query type="numeric" name="val" prompt="Add" />
 
@@ -177,7 +180,7 @@
 		</computation>
 	</operation>
 
-	<operation name="Subtract">
+	<operation name="Subtract" category="Basic Math">
 		<query type="column" name="col" prompt="Column?" column_type="numeric" />
 		<query type="numeric" name="val" prompt="Subtract" />
 
@@ -202,7 +205,7 @@
 		</computation>
 	</operation>
 
-	<operation name="Exponentiate">
+	<operation name="Exponentiate" category="Basic Math">
 		<query type="column" name="col" prompt="Column?" column_type="numeric" />
 		<query type="numeric" name="val" prompt="Raise by" />
 
@@ -227,7 +230,7 @@
 		</computation>
 	</operation>
 
-	<operation name="sin()">
+	<operation name="sin()" category="Trig">
 		<query type="column" name="col" prompt="Column?" column_type="numeric" />
 
 		<longname>sin(<response name="col" default="x" />)</longname>
@@ -242,7 +245,7 @@
 		</computation>
 	</operation>
 
-	<operation name="cos()">
+	<operation name="cos()" category="Trig">
 		<query type="column" name="col" prompt="Column?" column_type="numeric" />
 
 		<longname>cos(<response name="col" default="x" />)</longname>
@@ -257,7 +260,7 @@
 		</computation>
 	</operation>
 
-	<operation name="tan()">
+	<operation name="tan()" category="Trig">
 		<query type="column" name="col" prompt="Column?" column_type="numeric" />
 
 		<longname>tan(<response name="col" default="x" />)</longname>
@@ -272,7 +275,7 @@
 		</computation>
 	</operation>
 
-	<operation name="asin()">
+	<operation name="asin()" category="Trig">
 		<query type="column" name="col" prompt="Column?" column_type="numeric" />
 
 		<longname>asin(<response name="col" default="x" />)</longname>
@@ -287,7 +290,7 @@
 		</computation>
 	</operation>
 
-	<operation name="acos()">
+	<operation name="acos()" category="Trig">
 		<query type="column" name="col" prompt="Column?" column_type="numeric" />
 
 		<longname>acos(<response name="col" default="x" />)</longname>
@@ -302,7 +305,7 @@
 		</computation>
 	</operation>
 
-	<operation name="atan()">
+	<operation name="atan()" category="Trig">
 		<query type="column" name="col" prompt="Column?" column_type="numeric" />
 
 		<longname>atan(<response name="col" default="x" />)</longname>
@@ -317,7 +320,7 @@
 		</computation>
 	</operation>
 
-	<operation name="atan2()">
+	<operation name="atan2()" category="Trig">
 		<query type="column" name="x" prompt="X Column" column_type="numeric" />
 		<query type="column" name="y" prompt="Y Column" column_type="numeric" />
 
@@ -335,7 +338,7 @@
 		</computation>
 	</operation>
 
-	<operation name="Natural Log">
+	<operation name="Natural Log" category="Basic Math">
 		<query type="column" name="col" prompt="Column?" column_type="numeric" />
 
 		<longname>log(<response name="col" default="x" />)</longname>
@@ -350,7 +353,7 @@
 		</computation>
 	</operation>
 
-	<operation name="1-Var variance">
+	<operation name="1-Var variance" category="Basic Analysis">
 		<query type="column" name="col" prompt="Column?" column_type="numeric" />
 
 		<longname>var(<response name="col" default="x" />)</longname>
@@ -365,7 +368,7 @@
 		</computation>
 	</operation>
 
-	<operation name="2-Var variance">
+	<operation name="2-Var variance" category="Basic Analysis">
 		<query type="column" name="x" prompt="X" column_type="numeric" />
 		<query type="column" name="y" prompt="Y" column_type="numeric" />
 
@@ -383,7 +386,7 @@
 		</computation>
 	</operation>
 
-	<operation name="Log 10">
+	<operation name="Log 10" category="Basic Math">
 		<query type="column" name="col" prompt="Column?" column_type="numeric" />
 
 		<longname>log10(<response name="col" default="x" />)</longname>
@@ -398,7 +401,7 @@
 		</computation>
 	</operation>
 
-	<operation name="Log base X">
+	<operation name="Log base X" category="Basic Math">
 		<query type="column" name="col" prompt="Column?" column_type="numeric" />
 		<query type="numeric" name="base" prompt="Base" />
 
@@ -415,7 +418,7 @@
 		</computation>
 	</operation>
 
-	<operation name="Exponential">
+	<operation name="Exponential" category="Basic Math">
 		<query type="column" name="col" prompt="Column?" column_type="numeric" />
 
 		<longname>e^<response name="col" default="x" /></longname>
@@ -430,7 +433,7 @@
 		</computation>
 	</operation>
 
-	<operation name="Absolute Value">
+	<operation name="Absolute Value" category="Basic Math">
 		<query type="column" name="col" prompt="Column?" column_type="numeric" />
 
 		<longname>abs(<response name="col" default="x" />)</longname>
@@ -445,7 +448,7 @@
 		</computation>
 	</operation>
 
-	<operation name="t-test">
+	<operation name="t-test" category="Stats Tests">
 		<query type="checkbox" prompt="Is your data normal?" name="normal" />
 		
 		<computation>
@@ -473,7 +476,7 @@
 		</computation>
 	</operation>
 
-	<operation name="Mean">
+	<operation name="Mean" category="Basic Analysis">
 		<query type="column" name="col" prompt="Column?" column_type="numeric" />
 
 		<longname>mean(<response name="col" default="x" />)</longname>
@@ -488,7 +491,7 @@
 		</computation>
 	</operation>
 
-	<operation name="StdDev">
+	<operation name="StdDev" category="Basic Analysis">
 		<query type="column" name="col" prompt="Column?" column_type="numeric" />
 
 		<longname>sd(<response name="col" default="x" />)</longname>
@@ -503,7 +506,7 @@
 		</computation>
 	</operation>
 
-	<operation name="Sum">
+	<operation name="Sum" category="Basic Analysis">
 		<query type="column" name="col" prompt="Column?" column_type="numeric" />
 
 		<longname>sum(<response name="col" default="x" />)</longname>
@@ -518,7 +521,7 @@
 		</computation>
 	</operation>
 
-	<operation name="Summary">
+	<operation name="Summary" category="Basic Analysis">
 		<computation>
 			<loop type="parent" key_var="colName" value_var="col">
 				<cmd>s = summary(col)</cmd>
@@ -530,7 +533,7 @@
 		</computation>
 	</operation>
 
-	<operation name="Five Nums">
+	<operation name="Five Nums" category="Basic Analysis">
 		<query type="column" name="col" prompt="Column?" column_type="numeric" />
 
 		<longname>fivenum(<response name="col" default="x" />)</longname>
@@ -551,7 +554,7 @@
 		</computation>
 	</operation>
 
-	<operation name="rnorm">
+	<operation name="rnorm" category="Data Creation">
 		<query type="string" name="saveTo" prompt="Column name" />
 		<query type="numeric" name="samples" prompt="Sample count" />
 		<query type="numeric" name="mean" prompt="Mean" />
@@ -569,7 +572,7 @@
 		</computation>
 	</operation>
 
-	<operation name="XY Plot" plot="true">
+	<operation name="XY Plot" category="Plots" plot="true">
 		<query type="column" name="x" prompt="X column" column_type="numeric" />
 		<query type="column" name="y" prompt="Y column" column_type="numeric" />
 
@@ -587,7 +590,7 @@
 		</computation>
 	</operation>
 
-	<operation name="Single Var Plot" plot="true">
+	<operation name="Single Var Plot" category="Plots" plot="true">
 		<query type="column" name="x" prompt="Column" column_type="numeric" />
 
 		<longname>Plot of <response name="x" default="x" /></longname>
@@ -603,7 +606,7 @@
 		</computation>
 	</operation>
 
-	<operation name="Sequence">
+	<operation name="Sequence" category="Data Creation">
 		<query type="string" name="colName" prompt="Column Name" />
 		<query type="numeric" name="start" prompt="From" />
 		<query type="numeric" name="end" prompt="To" />
@@ -621,7 +624,7 @@
 		</computation>
 	</operation>
 
-	<operation name="Repeat">
+	<operation name="Repeat" category="Data Creation">
 		<query type="string" name="colName" prompt="Column Name" />
 		<query type="numeric" name="val" prompt="Value" />
 		<query type="numeric" name="count" prompt="Count" />
@@ -639,7 +642,7 @@
 		</computation>
 	</operation>
 
-	<operation name="Median">
+	<operation name="Median" category="Basic Analysis">
 		<query type="column" name="colName" prompt="Column" column_type="numeric" />
 
 		<longname>median(<response name="colName" default="x" />)</longname>
@@ -654,7 +657,7 @@
 		</computation>
 	</operation>
 
-	<operation name="Max">
+	<operation name="Max" category="Basic Analysis">
 		<query type="column" name="colName" prompt="Column" column_type="numeric" />
 
 		<longname>max(<response name="colName" default="x" />)</longname>
@@ -669,7 +672,7 @@
 		</computation>
 	</operation>
 
-	<operation name="Min">
+	<operation name="Min" category="Basic Analysis">
 		<query type="column" name="colName" prompt="Column" column_type="numeric" />
 
 		<longname>min(<response name="colName" default="x" />)</longname>
@@ -684,7 +687,7 @@
 		</computation>
 	</operation>
 
-	<operation name="Sort">
+	<operation name="Sort" category="Basic Analysis">
 		<query type="column" name="colName" prompt="Column" />
 		<query type="checkbox" name="desc" prompt="Descending" />
 
@@ -708,7 +711,7 @@
 		</computation>
 	</operation>
 
-	<operation name="Reverse">
+	<operation name="Reverse" category="Basic Analysis">
 		<query type="column" name="colName" prompt="Column" />
 
 		<longname>rev(<response name="colName" default="x" />)</longname>
@@ -723,7 +726,7 @@
 		</computation>
 	</operation>
 
-	<operation name="Prod">
+	<operation name="Prod" category="Basic Analysis">
 		<query type="column" name="colName" prompt="Column" />
 
 		<longname>prod(<response name="colName" default="x" />)</longname>
@@ -738,7 +741,7 @@
 		</computation>
 	</operation>
 
-	<operation name="Load library">
+	<operation name="Load library" category="Utility">
 		<query type="string" name="lib" prompt="Library name" />
 
 		<longname>Load <response name="lib" default="lib" /></longname>

@@ -301,7 +301,7 @@ public class ViewPanel extends JPanel
 	 */
 	private void loadOperations() throws MarlaException
 	{
-		operations = Operation.getAvailableOperations();
+		operations = Operation.getAvailableOperationsList();
 
 			// Add all operation types to the palette, adding listeners to the labels as we go
 			for (int i = 0; i < operations.size (); ++i)

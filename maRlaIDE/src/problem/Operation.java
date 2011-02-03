@@ -75,7 +75,11 @@ public abstract class Operation extends JLabel implements DataSource, Changeable
 	 * List of Java Operation derivative classes that may be created by
 	 * the GUI front end.
 	 */
-	private static Map<String, String> javaOps = initJavaOperationList();
+	private static Map<String, String> javaOps;
+	/**
+	 * Categorization of the Java operations
+	 */
+	private static Map<String, List<String>> javaOpCategories;
 
 	/**
 	 * Prompts that can be requested, used by get and setPromptTypes()
@@ -90,12 +94,12 @@ public abstract class Operation extends JLabel implements DataSource, Changeable
 	 * This list should contain key value pairs with the key being a friendly, user
 	 * readable name and the value being the class string, as would be passed to Class.forName().
 	 * For example, a mean operation in the the r package would be "Mean" => "r.OperationMean"
-	 * @return New Map to save into javaOps
+	 * Additionally, the categories Map must be filled with "Category" => {"op", "op", ...}
 	 */
-	private static Map<String, String> initJavaOperationList()
+	static
 	{
-		HashMap<String, String> ops = new HashMap<String, String>();
-		return ops;
+		javaOps = new HashMap<String, String>();
+		javaOpCategories = new HashMap<String, List<String>>();
 	}
 
 	/**
@@ -107,9 +111,11 @@ public abstract class Operation extends JLabel implements DataSource, Changeable
 	 *		operation with the same name as a Java operation exists then the XML version will
 	 *		be used. Otherwise an OperationException is thrown.
 	 */
-	public static List<String> getAvailableOperations() throws OperationException
+	public static List<String> getAvailableOperationsList() throws OperationException
 	{
 		List<String> ops = new ArrayList<String>();
+
+		getAvailableOperationsCategorized();
 
 		// Java
 		ops.addAll(javaOps.keySet());
@@ -125,6 +131,55 @@ public abstract class Operation extends JLabel implements DataSource, Changeable
 		Collections.sort(ops);
 
 		return ops;
+	}
+
+	/**
+	 * Returns a list of all the operations available, both from XML and Java. The
+	 * Map is categorized such that it looks like "Category" => {"op1", "op2", ...}.
+	 * An exception* is thrown when multiple operations with the same name are detected.
+	 * @return Map of the categories of operations available pointing to the operations
+	 *		in that category. Each name will be unique. If an XML operation with the
+	 *		same name as a Java operation exists then the XML version will
+	 *		be used. Otherwise an OperationException is thrown.
+	 */
+	public static Map<String, List<String>> getAvailableOperationsCategorized() throws OperationException
+	{
+		Map<String, List<String>> opCategories = new HashMap<String, List<String>>();
+
+		// Hardcoded java operations
+		for(String javaCat : javaOpCategories.keySet())
+		{
+			// Does this category already exist?
+			if(!opCategories.containsKey(javaCat))
+			{
+				// Not yet, create new category
+				opCategories.put(javaCat, javaOpCategories.get(javaCat));
+			}
+			else
+			{
+				// Add to existing category
+				opCategories.get(javaCat).addAll(javaOpCategories.get(javaCat));
+			}
+		}
+
+		// XML operations
+		Map<String, List<String>> xmlOpsCategories = OperationXML.getAvailableOperationsCategorized();
+		for(String xmlCat : xmlOpsCategories.keySet())
+		{
+			// Does this category already exist?
+			if(!opCategories.containsKey(xmlCat))
+			{
+				// Not yet, create new category
+				opCategories.put(xmlCat, xmlOpsCategories.get(xmlCat));
+			}
+			else
+			{
+				// Add to existing category
+				opCategories.get(xmlCat).addAll(xmlOpsCategories.get(xmlCat));
+			}
+		}
+
+		return opCategories;
 	}
 
 	/**
