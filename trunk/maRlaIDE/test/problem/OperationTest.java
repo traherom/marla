@@ -17,96 +17,29 @@
  */
 package problem;
 
-import problem.Operation.PromptType;
-import java.util.List;
-import org.jdom.Element;
 import java.util.ArrayList;
-import org.junit.runners.Parameterized.Parameters;
-import java.util.Collection;
-import org.junit.runners.Parameterized;
-import org.junit.runner.RunWith;
+import java.util.List;
+import java.util.Map;
+import r.ImplementedOperationTest;
+import org.jdom.Element;
 import org.junit.*;
 import r.RProcessor;
 import static org.junit.Assert.*;
 
 /**
- * Test each available operation in the same battery of hair-raising trials
+ * Test a very basic operation, exercising the abstract Operation more than anything
  * @author Ryan Morehart
  */
-@RunWith(Parameterized.class)
 public class OperationTest
 {
 	private String opName = null;
 	private DataSet ds1 = null;
 	private Operation op1 = null;
-	
-	@Parameters
-    public static Collection<Object[]> operationsAvailable() throws Exception
+
+	public OperationTest() throws OperationException
 	{
-		// Get the available operations
-		List<String> available = Operation.getAvailableOperations();
-
-		// Massage into the right format ando utput so we know the index references
-		System.out.println("Testing operation array: (" + available.size() + " operations)");
-		Collection<Object[]> objectArray = new ArrayList<Object[]>(available.size());
-		for(int i = 0; i < available.size(); i++)
-		{
-			System.out.println("  [" + i + "]: " + available.get(i));
-			objectArray.add(new Object[]{available.get(i)});
-		}
-
-		return objectArray;
-	}
-
-	private void fillRequiredInfo(Operation op) throws MarlaException
-	{
-		List<Object[]> info = op.getRequiredInfoPrompt();
-
-		// Fill with some BS. Not every operation is nicely handled with this approach
-		// if it actually uses the data we may not have much fun (tests will fail)
-		List<Object> answers = new ArrayList<Object>();
-		for(Object[] question : info)
-		{
-			PromptType questionType = (PromptType)question[0];
-			switch(questionType)
-			{
-				case CHECKBOX:
-					answers.add(true);
-					break;
-
-				case NUMERIC:
-					answers.add(50.0);
-					break;
-
-				case STRING:
-					answers.add("test string");
-					break;
-
-				case COMBO:
-				case COLUMN:
-					// Choose one of the values they offered us
-					Object[] options = (Object[])question[3];
-					answers.add(options[0]);
-					break;
-
-				default:
-					fail("Unfillable question type '" + questionType + "'");
-			}
-		}
-
-		op.setRequiredInfo(answers);
-	}
-
-	public OperationTest(String opName) throws OperationException
-	{
+		this.opName = "NOP";
 		System.out.println("Testing operation '" + opName + "'");
-		this.opName = opName;
-	}
-
-	@BeforeClass
-	public static void printOpArray() throws Exception
-	{
-		OperationTest.operationsAvailable();
 	}
 
 	@Before
@@ -122,6 +55,40 @@ public class OperationTest
 	}
 
 	@Test
+	public void testAvailableOps() throws Exception
+	{
+		Map<String, List<String>> opCats = Operation.getAvailableOperationsCategorized();
+		List<String> opList = Operation.getAvailableOperationsList();
+
+		// Should have the same number of operations and nothing different in either one
+		int totalOpsInList = opList.size();
+		int totalOpsInCats = 0;
+		for(String cat : opCats.keySet())
+		{
+			List<String> catList = opCats.get(cat);
+			totalOpsInCats += catList.size();
+
+			// Remove matching operations from the category and the list.
+			// eventually both should be totally empty
+			List<String> dupCatList = new ArrayList<String>(catList);
+			catList.removeAll(opList);
+			opList.removeAll(dupCatList);
+		}
+
+		// Same number of ops?
+		assertEquals("List and category returns of available operations differed in size", totalOpsInList, totalOpsInCats);
+
+		// If all ops were categorized, then there shouldn't be stuff left in the opList
+		assertTrue("Categorized map of ops had more than list", opList.isEmpty());
+
+		// If all ops were listed, then none of the categories should have stuff in them
+		for(String cat : opCats.keySet())
+		{
+			assertTrue("List of ops had more than categorized map", opCats.get(cat).isEmpty());
+		}
+	}
+
+	@Test
 	public void testEquals() throws Exception
 	{
 		Operation op2 = Operation.createOperation(opName);
@@ -131,7 +98,7 @@ public class OperationTest
 	@Test
 	public void testEqualsDifferentOps() throws Exception
 	{
-		Operation op2 = Operation.createOperation("NOP");
+		Operation op2 = Operation.createOperation(Operation.getAvailableOperationsList().get(0));
 		ds1.addOperation(op2);
 
 		assertFalse(op1.equals(op2));
@@ -145,7 +112,7 @@ public class OperationTest
 		Operation op2 = Operation.createOperation(opName);
 		ds2.addOperation(op2);
 
-		// TODO determine if this should be equal or not. I could see the arguement both ways
+		// TODO determine if this should be equal or not. I could see the argument both ways
 		assertEquals(op1, op2);
 	}
 
@@ -177,7 +144,7 @@ public class OperationTest
 
 		// Tell it to check
 		if(op1.isInfoRequired())
-			fillRequiredInfo(op1);
+			ImplementedOperationTest.fillRequiredInfo(op1);
 		op1.checkCache();
 
 		assertFalse(op1.isDirty());
@@ -208,7 +175,7 @@ public class OperationTest
 				// Good
 			}
 
-			fillRequiredInfo(op1);
+			ImplementedOperationTest.fillRequiredInfo(op1);
 
 			// Now it should compute fine
 			op1.checkCache();
@@ -225,7 +192,7 @@ public class OperationTest
 	{
 		if(!op1.isInfoRequired())
 		{
-			fillRequiredInfo(op1);
+			ImplementedOperationTest.fillRequiredInfo(op1);
 		}
 		else
 		{
@@ -238,7 +205,7 @@ public class OperationTest
 	{
 		// Fill info if needed
 		if(op1.isInfoRequired())
-			fillRequiredInfo(op1);
+			ImplementedOperationTest.fillRequiredInfo(op1);
 			
 		if(op1.hasPlot())
 		{
@@ -262,7 +229,7 @@ public class OperationTest
 		if(op1.isInfoRequired())
 		{
 			// Do again with the info assigned
-			fillRequiredInfo(op1);
+			ImplementedOperationTest.fillRequiredInfo(op1);
 
 			el = op1.toXml();
 			op2 = Operation.fromXml(el);
@@ -276,7 +243,7 @@ public class OperationTest
 	{
 		// Fill info if needed
 		if(op1.isInfoRequired())
-			fillRequiredInfo(op1);
+			ImplementedOperationTest.fillRequiredInfo(op1);
 		
 		String opStr = op1.getRCommands(true);
 		assertFalse(opStr.isEmpty());

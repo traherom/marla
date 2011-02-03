@@ -172,6 +172,7 @@ public class OperationXML extends Operation
 		for(Object opEl : operationXML.getChildren("operation"))
 		{
 			Element op = (Element) opEl;
+			
 			String name = op.getAttributeValue("name");
 
 			try
@@ -193,6 +194,66 @@ public class OperationXML extends Operation
 		}
 
 		return opNames;
+	}
+
+	/**
+	 * Returns a list of all the operations in the given XML file and the
+	 * elements in the XML that describe those operations. The Element or
+	 * the name can then be passed off to createOperation() to retrieve an object
+	 * that will perform the calculations. An exception is thrown if multiple operations
+	 * with the same name are detected.
+	 * @return ArrayList of the names of all available XML operations
+	 */
+	public static Map<String, List<String>> getAvailableOperationsCategorized() throws OperationXMLException
+	{
+		// Attempt to load operations if it hasn't been done yet
+		if(operationXML == null)
+			loadXML();
+
+		// This is just used to ensure there are no duplicate named operations in the XML
+		List<String> opNames = new ArrayList<String>();
+
+		Map<String, List<String>> opsCategorized = new HashMap<String, List<String>>();
+		for(Object opEl : operationXML.getChildren("operation"))
+		{
+			Element op = (Element) opEl;
+
+			// Operation name and category
+			String name = op.getAttributeValue("name");
+			String cat = op.getAttributeValue("category", "Uncategorized");
+
+			// Only allow a name to appear once
+			if(opNames.contains(name))
+				throw new OperationXMLException("Multiple XML operations with the name '" + name + "' found");
+			opNames.add(name);
+
+			try
+			{
+				// Ensure that we're supposed to actually list this one
+				if(!Boolean.parseBoolean(op.getAttributeValue("list", "true")))
+					continue;
+			}
+			catch(NumberFormatException ex)
+			{
+				throw new OperationXMLException("Operation '" + name + "': Invalid value '" + op.getAttributeValue("list") + "' for list attribute");
+			}
+
+			// Add to the categorized list.  Does this category already exist?
+			if(!opsCategorized.containsKey(cat))
+			{
+				// Not yet, create new category
+				List<String> newCat = new ArrayList<String>();
+				newCat.add(name);
+				opsCategorized.put(cat, newCat);
+			}
+			else
+			{
+				// Add to existing category
+				opsCategorized.get(cat).add(name);
+			}
+		}
+
+		return opsCategorized;
 	}
 
 	/**

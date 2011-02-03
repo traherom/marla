@@ -54,7 +54,7 @@ public class OperationTester
 			if(args.length < 3)
 			{
 				System.out.println("Available operations: ");
-				for(String opName : Operation.getAvailableOperations())
+				for(String opName : Operation.getAvailableOperationsList())
 				{
 					System.out.println("  " + opName);
 				}
