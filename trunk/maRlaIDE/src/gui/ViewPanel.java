@@ -152,6 +152,10 @@ public class ViewPanel extends JPanel
 	private ExtensionFileFilter csvFilter = new ExtensionFileFilter ("Comma Separated Values (.csv, .txt)", new String[] {"CSV", "TXT"});
 	/** The extensions file filter for CSV files.*/
 	protected ExtensionFileFilter marlaFilter = new ExtensionFileFilter ("The maRla Project Files (.marla)", new String[] {"MARLA"});
+	/** The extensions file filter for PDF files.*/
+	protected ExtensionFileFilter pdfFilter = new ExtensionFileFilter ("PDF Files (.pdf)", new String[] {"PDF"});
+	/** The extensions file filter for LaTeX files.*/
+	protected ExtensionFileFilter latexFilter = new ExtensionFileFilter ("LaTeX Files (.tex)", new String[] {"TEX"});
 	/** The width between two operations/data sets.*/
 	private final int SPACE_WIDTH = 70;
 	/** The height between two operations/data sets.*/
@@ -1474,6 +1478,21 @@ public class ViewPanel extends JPanel
 				rebuildTree(dataSet);
 			}
 			workspacePanel.repaint();
+		}
+		else
+		{
+			final Operation newOperation;
+			if (duplicate)
+			{
+				newOperation = Operation.createOperation(operation.getName());
+			}
+			else
+			{
+				newOperation = operation;
+			}
+			newOperation.setBounds ((int) location.getX (), (int) location.getY (), newOperation.getPreferredSize().width, newOperation.getPreferredSize().height);
+			workspacePanel.add (newOperation);
+			workspacePanel.repaint ();
 		}
 		if (hoveredComponent != null)
 		{
