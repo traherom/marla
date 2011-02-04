@@ -555,7 +555,7 @@
 	</operation>
 
 	<operation name="rnorm" category="Data Creation">
-		<query type="string" name="saveTo" prompt="Column name" />
+		<query type="string" name="saveTo" prompt="Save to" />
 		<query type="numeric" name="samples" prompt="Sample count" />
 		<query type="numeric" name="mean" prompt="Mean" />
 
@@ -569,6 +569,32 @@
 			<copy all="true" />
 
 			<save type="numeric" r_column="saveTo">rnorm(n, m)</save>
+		</computation>
+	</operation>
+
+	<operation name="Binomial Test">
+		<query type="string" name="saveTo" prompt="Save to" />
+		<query type="numeric" name="successes" prompt="Sucess Count" />
+		<query type="numeric" name="trials" prompt="Trial Count" />
+		<query type="numeric" name="alpha" prompt="Alpha" min="0" max="1" />
+
+		<longname>binom.test(<response name="successes" default="s" />, <response name="trials" default="n" />)</longname>
+
+		<computation>
+			<set name="saveTo" rvar="saveTo" />
+			<set name="successes" rvar="x" />
+			<set name="trials" rvar="n" />
+			<set name="alpha" rvar="a" />
+
+			<!-- check arguments -->
+			<if type="expr" expr="n &lt; x">
+				<then>
+					<error msg="Trials must be greater than successes" />
+				</then>
+			</if>
+
+			<cmd>res = binom.test(floor(x), floor(n), conf.level=1-a)</cmd>
+			<save type="double" r_column="saveTo">r$estimate</save>
 		</computation>
 	</operation>
 
