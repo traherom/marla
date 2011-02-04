@@ -184,7 +184,7 @@ Supported attributes:
 }}}
 The `error` element allows an operation to stop its own execution and present an error message to the user. For example, an operation might have additional requirements on query answers beyond what could be specified in the `query` element.
 
-Support attributes:
+Attributes supported:
   * *`msg`* - Arbitrary message to present to the user that explains the error
 
 Example:
