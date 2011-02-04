@@ -91,6 +91,7 @@ Supported attributes:
   <loop />
   <set />
   <copy />
+  <error />
   <save />
   <plot />
 </computation>
@@ -176,7 +177,29 @@ Supported attributes:
   * *`column`* - Specifies a static name for the column to copy
   * *`r_column`* - Specifies an R expression which returns a string to use as the column to copy
   * `all` - Boolean value which specifies if all parent columns should be copied. Must be `true` or `false`. Defaults to `false`. If given, `column`/`r_column` are ignored.
-  
+
+=== Error ===
+{{{
+<error msg="Message to display to user" />
+}}}
+The `error` element allows an operation to stop its own execution and present an error message to the user. For example, an operation might have additional requirements on query answers beyond what could be specified in the `query` element. Example:
+
+{{{
+<query type="numeric" name="i" prompt="Var 1" />
+<query type="numeric" name="j" prompt="Var 2" />
+
+<computation>
+  <set name="i" rvar="i" />
+  <set name="j" rvar="j" />
+
+  <if type="expr" expr="i &lt;= j">
+    <then>
+      <error msg="Var 1 must be greater than Var 2" />
+    </then>
+  </if>
+</computation>
+}}}
+
 === Save ===
 {{{
 <save type="numeric|string" [column="<Column name>"] [r_column="<R command>"]>R command</save>
