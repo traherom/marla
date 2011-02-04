@@ -59,45 +59,6 @@ public class ImplementedOperationTest
 		return objectArray;
 	}
 
-	public static void fillRequiredInfo(Operation op) throws MarlaException
-	{
-		List<Object[]> info = op.getRequiredInfoPrompt();
-
-		// Fill with some BS. Not every operation is nicely handled with this approach
-		// if it actually uses the data we may not have much fun (tests will fail)
-		List<Object> answers = new ArrayList<Object>();
-		for(Object[] question : info)
-		{
-			PromptType questionType = (PromptType)question[0];
-			switch(questionType)
-			{
-				case CHECKBOX:
-					answers.add(true);
-					break;
-
-				case NUMERIC:
-					answers.add(50.0);
-					break;
-
-				case STRING:
-					answers.add("test string");
-					break;
-
-				case COMBO:
-				case COLUMN:
-					// Choose one of the values they offered us
-					Object[] options = (Object[])question[3];
-					answers.add(options[0]);
-					break;
-
-				default:
-					fail("Unfillable question type '" + questionType + "'");
-			}
-		}
-
-		op.setRequiredInfo(answers);
-	}
-
 	public ImplementedOperationTest(String opName) throws OperationException
 	{
 		System.out.println("Testing operation '" + opName + "'");
@@ -178,7 +139,7 @@ public class ImplementedOperationTest
 
 		// Tell it to check
 		if(op1.isInfoRequired())
-			fillRequiredInfo(op1);
+			OperationTester.fillRequiredInfo(op1);
 		op1.checkCache();
 
 		assertFalse(op1.isDirty());
@@ -209,7 +170,7 @@ public class ImplementedOperationTest
 				// Good
 			}
 
-			fillRequiredInfo(op1);
+			OperationTester.fillRequiredInfo(op1);
 
 			// Now it should compute fine
 			op1.checkCache();
@@ -226,7 +187,7 @@ public class ImplementedOperationTest
 	{
 		if(!op1.isInfoRequired())
 		{
-			fillRequiredInfo(op1);
+			OperationTester.fillRequiredInfo(op1);
 		}
 		else
 		{
@@ -239,7 +200,7 @@ public class ImplementedOperationTest
 	{
 		// Fill info if needed
 		if(op1.isInfoRequired())
-			fillRequiredInfo(op1);
+			OperationTester.fillRequiredInfo(op1);
 			
 		if(op1.hasPlot())
 		{
@@ -263,7 +224,7 @@ public class ImplementedOperationTest
 		if(op1.isInfoRequired())
 		{
 			// Do again with the info assigned
-			fillRequiredInfo(op1);
+			OperationTester.fillRequiredInfo(op1);
 
 			el = op1.toXml();
 			op2 = Operation.fromXml(el);

@@ -115,8 +115,6 @@ public abstract class Operation extends JLabel implements DataSource, Changeable
 	{
 		List<String> ops = new ArrayList<String>();
 
-		getAvailableOperationsCategorized();
-
 		// Java
 		ops.addAll(javaOps.keySet());
 
@@ -177,6 +175,12 @@ public abstract class Operation extends JLabel implements DataSource, Changeable
 				// Add to existing category
 				opCategories.get(xmlCat).addAll(xmlOpsCategories.get(xmlCat));
 			}
+		}
+
+		// And sort 'em
+		for(String cat : opCategories.keySet())
+		{
+			Collections.sort(opCategories.get(cat));
 		}
 
 		return opCategories;

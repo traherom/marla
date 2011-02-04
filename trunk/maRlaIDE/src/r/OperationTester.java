@@ -17,9 +17,14 @@
  */
 package r;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 import java.util.Scanner;
 import problem.DataSet;
+import problem.MarlaException;
 import problem.Operation;
+import problem.Operation.PromptType;
 import r.RProcessor.RecordMode;
 
 /**
@@ -75,6 +80,10 @@ public class OperationTester
 			System.out.println(testData.toString());
 			System.out.println("--------------------------\n");
 
+			// Fill data if needed
+			if(op.isInfoRequired())
+				fillRequiredInfo(op);
+
 			// Fix cache (force so that we can show the full R log
 			proc.setDebugMode(RecordMode.FULL);
 			System.out.println("------- Debug Log --------");
@@ -96,5 +105,48 @@ public class OperationTester
 		{
 			proc.close();
 		}
+	}
+
+	public static void fillRequiredInfo(Operation op) throws MarlaException
+	{
+		List<Object[]> info = op.getRequiredInfoPrompt();
+
+		// Fill with some BS. Not every operation is nicely handled with this approach
+		// if it actually uses the data we may not have much fun (tests will fail)
+		Random rand = new Random();
+		List<Object> answers = new ArrayList<Object>();
+		for(Object[] question : info)
+		{
+			PromptType questionType = (PromptType)question[0];
+			switch(questionType)
+			{
+				case CHECKBOX:
+					answers.add(true);
+					break;
+
+				case NUMERIC:
+					// Get a random number within the limits
+					Double min = (Double)question[3];
+					Double max = (Double)question[4];
+					answers.add(rand.nextDouble() * (max - min) - min);
+					break;
+
+				case STRING:
+					answers.add("test string");
+					break;
+
+				case COMBO:
+				case COLUMN:
+					// Choose one of the values they offered us
+					Object[] options = (Object[])question[3];
+					answers.add(options[0]);
+					break;
+
+				default:
+					throw new MarlaException("Question type '" + questionType + "' not supported for filling yet");
+			}
+		}
+
+		op.setRequiredInfo(answers);
 	}
 }

@@ -174,6 +174,8 @@ public class OperationXML extends Operation
 			Element op = (Element) opEl;
 			
 			String name = op.getAttributeValue("name");
+			if(name == null)
+				throw new OperationXMLException("No name supplied for operation in XML file");
 
 			try
 			{
@@ -220,6 +222,9 @@ public class OperationXML extends Operation
 
 			// Operation name and category
 			String name = op.getAttributeValue("name");
+			if(name == null)
+				throw new OperationXMLException("No name supplied for operation in XML file");
+
 			String cat = op.getAttributeValue("category", "Uncategorized");
 
 			// Only allow a name to appear once
@@ -369,6 +374,8 @@ public class OperationXML extends Operation
 				processCopy(proc, el);
 			else if(cmdName.equals("plot"))
 				processPlot(proc, el);
+			else if(cmdName.equals("error"))
+				processError(proc, el);
 			else if(cmdName.equals("load"))
 				processLoad(proc, el);
 			else
@@ -681,6 +688,16 @@ public class OperationXML extends Operation
 		}
 	}
 
+	private void processError(RProcessor proc, Element errorEl) throws OperationXMLException
+	{
+		// The operation wants us to throw an error to the user
+		String msg = errorEl.getAttributeValue("msg", "");
+		if(msg != null)
+			throw new OperationXMLException(msg);
+		else
+			throw new OperationXMLException("No message supplied for error in operation '" + getName() + "'");
+	}
+
 	private void processLoad(RProcessor proc, Element loadEl) throws OperationXMLException, RProcessorParseException, RProcessorException, MarlaException
 	{
 		// Find what library the operation wants to load
@@ -746,6 +763,14 @@ public class OperationXML extends Operation
 		{
 			Element queryEl = (Element) queryElObj;
 
+			String name = queryEl.getAttributeValue("name");
+			if(name == null)
+				throw new OperationXMLException("Name not supplied for operation '" + getName() + "' query");
+
+			String prompt = queryEl.getAttributeValue("prompt");
+			if(prompt == null)
+				throw new OperationXMLException("Prompt not supplied for operation '" + getName() + "' query");
+
 			// Ask the GUI for the right type of value
 			// For columns, if we don't have a parent then we just say we want a generic
 			// string basically. This case should only be hit when an operation is being
@@ -796,7 +821,7 @@ public class OperationXML extends Operation
 				// Actually add the question to the array
 				questions.add(new Object[]
 						{
-							PromptType.COLUMN, queryEl.getAttributeValue("name"), queryEl.getAttributeValue("prompt"), columnNames.toArray()
+							PromptType.COLUMN, name, prompt, columnNames.toArray()
 						});
 			}
 			else if(type == PromptType.COMBO)
@@ -812,7 +837,29 @@ public class OperationXML extends Operation
 				// Set question
 				questions.add(new Object[]
 						{
-							PromptType.COMBO, queryEl.getAttributeValue("name"), queryEl.getAttributeValue("prompt"), options.toArray()
+							PromptType.COMBO, name, prompt, options.toArray()
+						});
+			}
+			else if(type == PromptType.NUMERIC)
+			{
+				// Are limits imposed?
+				Double min = Double.MIN_VALUE;
+				String minStr = queryEl.getAttributeValue("min");
+				if(minStr != null)
+					min = Double.valueOf(minStr);
+
+				Double max = Double.MAX_VALUE;
+				String maxStr = queryEl.getAttributeValue("max");
+				if(maxStr != null)
+					max = Double.valueOf(maxStr);
+
+				// Max had better be greater or equal to the min
+				if(max < min)
+					throw new OperationXMLException("Minimum for query '" + queryEl.getAttributeValue("name") + "' in operation '" + getName() + "' is greater than the maximum");
+
+				questions.add(new Object[]
+						{
+							PromptType.NUMERIC, name, prompt, min, max
 						});
 			}
 			else
@@ -820,7 +867,7 @@ public class OperationXML extends Operation
 				// No processing needed
 				questions.add(new Object[]
 						{
-							type, queryEl.getAttributeValue("name"), queryEl.getAttributeValue("prompt")
+							type, name, prompt
 						});
 			}
 		}
@@ -859,11 +906,11 @@ public class OperationXML extends Operation
 					break;
 
 				case NUMERIC:
-					questionAnswers.put(answerKey, Double.parseDouble(val.get(i).toString()));
+					questionAnswers.put(answerKey, Double.valueOf(val.get(i).toString()));
 					break;
 
 				case CHECKBOX:
-					questionAnswers.put(answerKey, Boolean.parseBoolean(val.get(i).toString()));
+					questionAnswers.put(answerKey, Boolean.valueOf(val.get(i).toString()));
 					break;
 
 				default:

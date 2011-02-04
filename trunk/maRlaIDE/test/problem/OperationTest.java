@@ -17,6 +17,7 @@
  */
 package problem;
 
+import r.OperationTester;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -144,7 +145,7 @@ public class OperationTest
 
 		// Tell it to check
 		if(op1.isInfoRequired())
-			ImplementedOperationTest.fillRequiredInfo(op1);
+			OperationTester.fillRequiredInfo(op1);
 		op1.checkCache();
 
 		assertFalse(op1.isDirty());
@@ -175,7 +176,7 @@ public class OperationTest
 				// Good
 			}
 
-			ImplementedOperationTest.fillRequiredInfo(op1);
+			OperationTester.fillRequiredInfo(op1);
 
 			// Now it should compute fine
 			op1.checkCache();
@@ -192,7 +193,7 @@ public class OperationTest
 	{
 		if(!op1.isInfoRequired())
 		{
-			ImplementedOperationTest.fillRequiredInfo(op1);
+			OperationTester.fillRequiredInfo(op1);
 		}
 		else
 		{
@@ -205,7 +206,7 @@ public class OperationTest
 	{
 		// Fill info if needed
 		if(op1.isInfoRequired())
-			ImplementedOperationTest.fillRequiredInfo(op1);
+			OperationTester.fillRequiredInfo(op1);
 			
 		if(op1.hasPlot())
 		{
@@ -229,7 +230,7 @@ public class OperationTest
 		if(op1.isInfoRequired())
 		{
 			// Do again with the info assigned
-			ImplementedOperationTest.fillRequiredInfo(op1);
+			OperationTester.fillRequiredInfo(op1);
 
 			el = op1.toXml();
 			op2 = Operation.fromXml(el);
@@ -243,7 +244,7 @@ public class OperationTest
 	{
 		// Fill info if needed
 		if(op1.isInfoRequired())
-			ImplementedOperationTest.fillRequiredInfo(op1);
+			OperationTester.fillRequiredInfo(op1);
 		
 		String opStr = op1.getRCommands(true);
 		assertFalse(opStr.isEmpty());
