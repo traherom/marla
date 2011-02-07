@@ -143,9 +143,9 @@ public class ViewPanel extends JPanel
 	/** The component currently being hovered over.*/
 	private JComponent hoveredComponent = null;
 	/** The x-offset for dragging an item*/
-	private int xDragOffset = -1;
+	protected int xDragOffset = -1;
 	/** The y-offset for dragging an item*/
-	private int yDragOffset = -1;
+	protected int yDragOffset = -1;
 	/** The default file filter for a JFileChooser open dialog.*/
 	private FileFilter defaultFilter;
 	/** The extensions file filter for CSV files.*/
@@ -312,7 +312,7 @@ public class ViewPanel extends JPanel
 			{
 				try
 				{
-					Operation operation = Operation.createOperation(operations.get (i));
+					final Operation operation = Operation.createOperation(operations.get (i));
 					DRAG_SOURCE.createDefaultDragGestureRecognizer (operation, DnDConstants.ACTION_MOVE, DND_LISTENER);
 
 					if (i % 2 == 0)
@@ -323,6 +323,15 @@ public class ViewPanel extends JPanel
 					{
 						rightPanel.add (operation);
 					}
+					operation.addMouseListener(new MouseAdapter ()
+					{
+						@Override
+						public void mousePressed(MouseEvent evt)
+						{
+							xDragOffset = (int) evt.getLocationOnScreen ().getX () - (int) operation.getLocationOnScreen ().getX ();
+							yDragOffset = (int) evt.getLocationOnScreen ().getY () - (int) operation.getLocationOnScreen ().getY ();
+						}
+					});
 				}
 				catch (OperationException ex)
 				{
@@ -1231,122 +1240,143 @@ public class ViewPanel extends JPanel
 	}//GEN-LAST:event_removeDataSetButtonActionPerformed
 
 	private void workspacePanelMouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_workspacePanelMouseDragged
-		Component component = workspacePanel.getComponentAt (evt.getPoint ());
-		if (component != null &&
-				component != workspacePanel &&
-				component != draggingComponent)
+		if (evt.getButton() == MouseEvent.BUTTON1)
 		{
-			hoveredComponent = (JComponent) workspacePanel.getComponentAt (evt.getPoint ());
-			hoveredComponent.setBorder (BLACK_BORDER);
-			hoveredComponent.setSize (hoveredComponent.getPreferredSize ());
-		}
-		else if (hoveredComponent != null)
-		{
-			hoveredComponent.setBorder (NO_BORDER);
-			hoveredComponent.setSize (hoveredComponent.getPreferredSize ());
-			hoveredComponent = null;
-		}
-
-		if (draggingComponent != null)
-		{
-			if (draggingComponent instanceof Operation)
+			Component component = workspacePanel.getComponentAt (evt.getPoint ());
+			if (component != null &&
+					component != workspacePanel &&
+					component != draggingComponent)
 			{
-				draggingComponent.setLocation(evt.getX() - xDragOffset, evt.getY() - yDragOffset);
+				if ((component instanceof Operation && ((Operation) component).getParent () != null) ||
+						component instanceof DataSet)
+				{
+					hoveredComponent = (JComponent) workspacePanel.getComponentAt (evt.getPoint ());
+					hoveredComponent.setBorder (BLACK_BORDER);
+					hoveredComponent.setSize (hoveredComponent.getPreferredSize ());
+				}
 			}
-			else if(draggingComponent instanceof DataSet)
+			else if (hoveredComponent != null)
 			{
-				DataSet dataSet = (DataSet) draggingComponent;
-				dataSet.setLocation(evt.getX() - xDragOffset, evt.getY() - yDragOffset);
-				rebuildTree (dataSet);
+				hoveredComponent.setBorder (NO_BORDER);
+				hoveredComponent.setSize (hoveredComponent.getPreferredSize ());
+				hoveredComponent = null;
+			}
+
+			if (draggingComponent != null)
+			{
+				if (draggingComponent instanceof Operation)
+				{
+					draggingComponent.setLocation(evt.getX() - xDragOffset, evt.getY() - yDragOffset);
+				}
+				else if(draggingComponent instanceof DataSet)
+				{
+					DataSet dataSet = (DataSet) draggingComponent;
+					dataSet.setLocation(evt.getX() - xDragOffset, evt.getY() - yDragOffset);
+					rebuildTree (dataSet);
+				}
 			}
 		}
 	}//GEN-LAST:event_workspacePanelMouseDragged
 
 	private void workspacePanelMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_workspacePanelMousePressed
-		JComponent component = (JComponent) workspacePanel.getComponentAt (evt.getPoint ());
-		if (component != null &&
-				component != workspacePanel)
+		if (evt.getButton() == MouseEvent.BUTTON1)
 		{
-			draggingComponent = component;
-			draggingComponent.setBorder (RED_BORDER);
-			draggingComponent.setSize (component.getPreferredSize ());
-			if (draggingComponent instanceof Operation)
+			JComponent component = (JComponent) workspacePanel.getComponentAt (evt.getPoint ());
+			if (component != null &&
+					component != workspacePanel)
 			{
-				DataSet parentData = null;
-				if (((Operation) draggingComponent).getParentData() != null)
+				draggingComponent = component;
+				draggingComponent.setBorder (RED_BORDER);
+				draggingComponent.setSize (component.getPreferredSize ());
+				if (draggingComponent instanceof Operation)
 				{
-					parentData = (DataSet) (((Operation) draggingComponent).getRootDataSource());
-				}
-				try
-				{
-					Operation childOperation = null;
-					if (((Operation) draggingComponent).getOperationCount() > 0)
+					DataSet parentData = null;
+					if (((Operation) draggingComponent).getParentData() != null)
 					{
-						childOperation = ((Operation) draggingComponent).getOperation(0);
+						parentData = (DataSet) (((Operation) draggingComponent).getRootDataSource());
 					}
-					DataSource parent = ((Operation) draggingComponent).getParentData();
-					if (parent != null)
+					try
 					{
-						parent.removeOperation((Operation) draggingComponent);
-						workspacePanel.setComponentZOrder(draggingComponent, workspacePanel.getComponentCount() - 1);
+						Operation childOperation = null;
+						if (((Operation) draggingComponent).getOperationCount() > 0)
+						{
+							childOperation = ((Operation) draggingComponent).getOperation(0);
+						}
+						DataSource parent = ((Operation) draggingComponent).getParentData();
+						if (parent != null)
+						{
+							parent.removeOperation((Operation) draggingComponent);
+							workspacePanel.setComponentZOrder(draggingComponent, workspacePanel.getComponentCount() - 1);
+						}
+						if (childOperation != null)
+						{
+							parent.addOperation(childOperation);
+						}
 					}
-					if (childOperation != null)
+					catch(MarlaException ex)
 					{
-						parent.addOperation(childOperation);
+						Domain.logger.add (ex);
 					}
+					catch(NullPointerException ex)
+					{
+						Domain.logger.add (ex);
+					}
+					xDragOffset = evt.getX() - draggingComponent.getX();
+					yDragOffset = evt.getY() - draggingComponent.getY();
+					if (parentData != null)
+					{
+						rebuildTree (parentData);
+					}
+					workspacePanel.repaint ();
 				}
-				catch(MarlaException ex)
+				else
 				{
-					Domain.logger.add (ex);
+					xDragOffset = evt.getX() - draggingComponent.getX();
+					yDragOffset = evt.getY() - draggingComponent.getY();
 				}
-				catch(NullPointerException ex)
-				{
-					Domain.logger.add (ex);
-				}
-				xDragOffset = evt.getX() - draggingComponent.getX();
-                yDragOffset = evt.getY() - draggingComponent.getY();
-				if (parentData != null)
-				{
-					rebuildTree (parentData);
-				}
-				workspacePanel.repaint ();
+				domain.problem.markChanged();
 			}
-			else
-			{
-				xDragOffset = evt.getX() - draggingComponent.getX();
-                yDragOffset = evt.getY() - draggingComponent.getY();
-			}
-			domain.problem.markChanged();
 		}
 	}//GEN-LAST:event_workspacePanelMousePressed
 
 	private void workspacePanelMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_workspacePanelMouseReleased
-		if (draggingComponent != null)
+		if (evt.getButton () == MouseEvent.BUTTON1)
 		{
-			if (draggingComponent instanceof Operation)
+			if (draggingComponent != null)
 			{
-				try
+				if (draggingComponent instanceof Operation)
 				{
-					drop((Operation) draggingComponent, false, evt.getPoint());
+					try
+					{
+						drop((Operation) draggingComponent, false, evt.getPoint());
+					}
+					catch(OperationException ex)
+					{
+						Domain.logger.add (ex);
+					}
+					catch(RProcessorException ex)
+					{
+						Domain.logger.add (ex);
+					}
+					catch(MarlaException ex)
+					{
+						Domain.logger.add (ex);
+					}
 				}
-				catch(OperationException ex)
-				{
-					Domain.logger.add (ex);
-				}
-				catch(RProcessorException ex)
-				{
-					Domain.logger.add (ex);
-				}
-				catch(MarlaException ex)
-				{
-					Domain.logger.add (ex);
-				}
+				draggingComponent.setBorder (NO_BORDER);
+				draggingComponent.setSize (draggingComponent.getPreferredSize ());
+				draggingComponent = null;
 			}
-			draggingComponent.setBorder (NO_BORDER);
-			draggingComponent.setSize (draggingComponent.getPreferredSize ());
-			draggingComponent = null;
+			workspacePanel.repaint ();
 		}
-		workspacePanel.repaint ();
+		else if (evt.getButton () == MouseEvent.BUTTON3)
+		{
+			JComponent component = (JComponent) workspacePanel.getComponentAt (evt.getPoint ());
+			if (component instanceof Operation)
+			{
+				outputTextArea.append (((Operation) component).toString ());
+			}
+		}
 	}//GEN-LAST:event_workspacePanelMouseReleased
 
 	/**
@@ -1361,11 +1391,13 @@ public class ViewPanel extends JPanel
 			int center = (dataSet.getX () + dataSet.getX () + dataSet.getWidth ()) / 2;
 			int width = ((dataSet.getOperationCount () - 1) * SPACE_WIDTH) + dataSet.getOperation (dataSet.getOperationCount () - 1).getWidth ();
 			int xStart = center - width / 2;
+			dataSet.setSize (dataSet.getPreferredSize ());
 
 			for (int i = 0; i < dataSet.getOperationCount (); ++i)
 			{
 				Operation operation = dataSet.getOperation (i);
 				operation.setLocation (xStart + (i * SPACE_WIDTH), dataSet.getY () + SPACE_HEIGHT);
+				operation.setSize (operation.getPreferredSize ());
 				List<Operation> children = operation.getAllChildOperations();
 				for (int j = 0; j < children.size (); ++j)
 				{
@@ -1378,8 +1410,9 @@ public class ViewPanel extends JPanel
 					{
 						parentWidth = dataSet.getOperation (i).getWidth ();
 					}
-					children.get (j).setLocation (((xStart + (i * SPACE_WIDTH) + xStart + (i * SPACE_WIDTH) + parentWidth) / 2) - (children.get (j).getWidth () / 2) ,
+					children.get (j).setLocation (((xStart + (i * SPACE_WIDTH) + xStart + (i * SPACE_WIDTH) + parentWidth) / 2) - (children.get (j).getWidth () / 2),
 							dataSet.getY () + ((j + 2) * SPACE_HEIGHT));
+					children.get (j).setSize (children.get (j).getPreferredSize ());
 				}
 			}
 		}
@@ -1439,30 +1472,35 @@ public class ViewPanel extends JPanel
 				newOperation = operation;
 			}
 			int x = component.getX ();
-			int y = component.getY () + SPACE_HEIGHT;
+			int y = component.getY ();
 
 			DataSet dataSet = null;
 			if (component instanceof Operation)
 			{
-				Operation dropOperation = (Operation) component;
-				if (dropOperation.getRootDataSource () instanceof DataSet)
+				if (((Operation) component).getParentData () != null)
 				{
-					dataSet = (DataSet) dropOperation.getRootDataSource();
-				}
-				if (dropOperation.getOperationCount() > 0)
-				{
-					dropOperation.addOperation (newOperation);
-					Operation childOperation = dropOperation.getOperation (0);
-					childOperation.setParentData (newOperation);
-					childOperation.setLocation (childOperation.getX (), childOperation.getY () + SPACE_HEIGHT);
-				}
-				else
-				{
-					dropOperation.addOperation (newOperation);
+					y = component.getY () + SPACE_HEIGHT;
+					Operation dropOperation = (Operation) component;
+					if (dropOperation.getRootDataSource () instanceof DataSet)
+					{
+						dataSet = (DataSet) dropOperation.getRootDataSource();
+					}
+					if (dropOperation.getOperationCount() > 0)
+					{
+						dropOperation.addOperation (newOperation);
+						Operation childOperation = dropOperation.getOperation (0);
+						childOperation.setParentData (newOperation);
+						childOperation.setLocation (childOperation.getX (), childOperation.getY () + SPACE_HEIGHT);
+					}
+					else
+					{
+						dropOperation.addOperation (newOperation);
+					}
 				}
 			}
 			else if(component instanceof DataSet)
 			{
+				y = component.getY () + SPACE_HEIGHT;
 				dataSet = (DataSet) component;
 				dataSet.addOperation(newOperation);
 				if (dataSet.getOperationCount() > 1)
@@ -1471,7 +1509,10 @@ public class ViewPanel extends JPanel
 				}
 			}
 
-			newOperation.setBounds (x, y, newOperation.getPreferredSize().width, newOperation.getPreferredSize().height);
+			if ((component instanceof Operation && ((Operation) component).getParentData () != null) || component instanceof DataSet)
+			{
+				newOperation.setBounds (x, y, newOperation.getPreferredSize().width, newOperation.getPreferredSize().height);
+			}
 			workspacePanel.add (newOperation);
 			if (dataSet != null)
 			{
@@ -1490,7 +1531,8 @@ public class ViewPanel extends JPanel
 			{
 				newOperation = operation;
 			}
-			newOperation.setBounds ((int) location.getX (), (int) location.getY (), newOperation.getPreferredSize().width, newOperation.getPreferredSize().height);
+			
+			newOperation.setBounds ((int) location.getX () - xDragOffset, (int) location.getY () - yDragOffset, newOperation.getPreferredSize().width, newOperation.getPreferredSize().height);
 			workspacePanel.add (newOperation);
 			workspacePanel.repaint ();
 		}

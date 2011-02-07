@@ -18,21 +18,10 @@
 
 package gui;
 
-import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.EventQueue;
-import java.awt.Font;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
-import javax.swing.JButton;
-import javax.swing.JDialog;
 import javax.swing.JFrame;
-import javax.swing.JOptionPane;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
-import problem.MarlaException;
 
 /**
  * The main frame of the stand-alone application.
@@ -228,6 +217,7 @@ public class MainFrame extends JFrame
         fileMenu.add(saveAsMenuItem);
         fileMenu.add(fileSeparator1);
 
+        exportToPdfMenuItem.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
         exportToPdfMenuItem.setText("Export to PDF...");
         exportToPdfMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -236,7 +226,7 @@ public class MainFrame extends JFrame
         });
         fileMenu.add(exportToPdfMenuItem);
 
-        exportForLatexMenuItem.setFont(new java.awt.Font("Verdana", 0, 12));
+        exportForLatexMenuItem.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
         exportForLatexMenuItem.setText("Export for LaTeX...");
         exportForLatexMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {

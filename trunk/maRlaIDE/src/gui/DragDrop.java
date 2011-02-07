@@ -20,7 +20,6 @@
 
 package gui;
 
-import java.awt.Component;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
@@ -31,15 +30,12 @@ import java.awt.dnd.DragSourceDragEvent;
 import java.awt.dnd.DragSourceDropEvent;
 import java.awt.dnd.DragSourceEvent;
 import java.awt.dnd.DragSourceListener;
-import java.awt.dnd.DropTarget;
 import java.awt.dnd.DropTargetDragEvent;
 import java.awt.dnd.DropTargetDropEvent;
 import java.awt.dnd.DropTargetEvent;
 import java.awt.dnd.DropTargetListener;
 import java.io.IOException;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import problem.DataSet;
 import problem.MarlaException;
 import problem.Operation;
 
@@ -180,7 +176,6 @@ public class DragDrop implements DragGestureListener, DragSourceListener, DropTa
         ev.acceptDrop (ev.getDropAction ());
         try
         {
-            JPanel workspacePanel = (JPanel) ((DropTarget) ev.getSource()).getComponent ();
             Object source = ev.getTransferable().getTransferData(supportedFlavors[0]);
             Operation operation = (Operation) ((DragSourceContext) source).getComponent();
 			
