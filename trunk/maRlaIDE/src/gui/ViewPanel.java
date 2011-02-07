@@ -125,7 +125,7 @@ public class ViewPanel extends JPanel
 			+ "new values when this dialog is closed.  More data sets can be added or current data sets may be removed.</html>";
 
 	/** The main frame of a stand-alone application.*/
-    public maRlaIDE mainFrame;
+    public MainFrame mainFrame;
 	/** The domain object reference performs generic actions specific to the GUI.*/
     protected Domain domain = new Domain (this);
 	/** The list in the New Problem Wizard of sub problems within the current problem.*/
@@ -176,7 +176,7 @@ public class ViewPanel extends JPanel
     /**
      * Creates new form MainFrame for a stand-alone application.
      */
-    public ViewPanel(maRlaIDE mainFrame)
+    public ViewPanel(MainFrame mainFrame)
     {
         this.mainFrame = mainFrame;
         init ();
