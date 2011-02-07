@@ -39,7 +39,7 @@ import problem.MarlaException;
  *
  * @author Alex Laird
  */
-public class maRlaIDE extends JFrame
+public class MainFrame extends JFrame
 {
 
 	/** The minimum size the window frame is allowed to be.*/
@@ -50,7 +50,7 @@ public class maRlaIDE extends JFrame
     /**
      * Constructs the frame for the stand-alone application.
      */
-    public maRlaIDE()
+    public MainFrame()
     {
 		// Construct the view panel
         viewPanel = new ViewPanel (this);
@@ -166,14 +166,14 @@ public class maRlaIDE extends JFrame
         getContentPane().setLayout(new java.awt.GridLayout(1, 1));
 
         fileMenu.setText("File");
-        fileMenu.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        fileMenu.setFont(new java.awt.Font("Verdana", 0, 12));
         fileMenu.addMenuListener(new javax.swing.event.MenuListener() {
-            public void menuCanceled(javax.swing.event.MenuEvent evt) {
+            public void menuSelected(javax.swing.event.MenuEvent evt) {
+                fileMenuMenuSelected(evt);
             }
             public void menuDeselected(javax.swing.event.MenuEvent evt) {
             }
-            public void menuSelected(javax.swing.event.MenuEvent evt) {
-                fileMenuMenuSelected(evt);
+            public void menuCanceled(javax.swing.event.MenuEvent evt) {
             }
         });
 
@@ -236,7 +236,7 @@ public class maRlaIDE extends JFrame
         });
         fileMenu.add(exportToPdfMenuItem);
 
-        exportForLatexMenuItem.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        exportForLatexMenuItem.setFont(new java.awt.Font("Verdana", 0, 12));
         exportForLatexMenuItem.setText("Export for LaTeX...");
         exportForLatexMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -261,12 +261,12 @@ public class maRlaIDE extends JFrame
         editMenu.setText("Edit");
         editMenu.setFont(new java.awt.Font("Verdana", 0, 12));
         editMenu.addMenuListener(new javax.swing.event.MenuListener() {
-            public void menuCanceled(javax.swing.event.MenuEvent evt) {
+            public void menuSelected(javax.swing.event.MenuEvent evt) {
+                editMenuMenuSelected(evt);
             }
             public void menuDeselected(javax.swing.event.MenuEvent evt) {
             }
-            public void menuSelected(javax.swing.event.MenuEvent evt) {
-                editMenuMenuSelected(evt);
+            public void menuCanceled(javax.swing.event.MenuEvent evt) {
             }
         });
 
@@ -312,12 +312,12 @@ public class maRlaIDE extends JFrame
         problemMenu.setText("Problem");
         problemMenu.setFont(new java.awt.Font("Verdana", 0, 12));
         problemMenu.addMenuListener(new javax.swing.event.MenuListener() {
-            public void menuCanceled(javax.swing.event.MenuEvent evt) {
+            public void menuSelected(javax.swing.event.MenuEvent evt) {
+                problemMenuMenuSelected(evt);
             }
             public void menuDeselected(javax.swing.event.MenuEvent evt) {
             }
-            public void menuSelected(javax.swing.event.MenuEvent evt) {
-                problemMenuMenuSelected(evt);
+            public void menuCanceled(javax.swing.event.MenuEvent evt) {
             }
         });
 
@@ -369,12 +369,12 @@ public class maRlaIDE extends JFrame
         toolsMenu.setText("Tools");
         toolsMenu.setFont(new java.awt.Font("Verdana", 0, 12));
         toolsMenu.addMenuListener(new javax.swing.event.MenuListener() {
-            public void menuCanceled(javax.swing.event.MenuEvent evt) {
+            public void menuSelected(javax.swing.event.MenuEvent evt) {
+                toolsMenuMenuSelected(evt);
             }
             public void menuDeselected(javax.swing.event.MenuEvent evt) {
             }
-            public void menuSelected(javax.swing.event.MenuEvent evt) {
-                toolsMenuMenuSelected(evt);
+            public void menuCanceled(javax.swing.event.MenuEvent evt) {
             }
         });
 
@@ -582,98 +582,6 @@ public class maRlaIDE extends JFrame
 		}
 		return title;
 	}
-
-    /**
-     * The method responsible for constructing the visual frame and maintaining
-     * the thread as long as the frame is open.
-     *
-     * @param args The command-line arguments.
-     */
-    public static void main(String args[])
-    {
-        // Define UI characteristics before the applicaiton is instantiated
-        try
-        {
-            UIManager.setLookAndFeel (UIManager.getCrossPlatformLookAndFeelClassName ());
-        }
-        catch (ClassNotFoundException ex)
-        {
-            Domain.logger.add (ex);
-        }
-        catch (InstantiationException ex)
-        {
-            Domain.logger.add (ex);
-        }
-        catch (IllegalAccessException ex)
-        {
-            Domain.logger.add (ex);
-        }
-        catch (UnsupportedLookAndFeelException ex)
-        {
-            Domain.logger.add (ex);
-        }
-		
-		try
-		{
-			resource.Configuration.load();
-			resource.Configuration.processCmdLine(args);
-		}
-		catch(MarlaException ex)
-		{
-			Domain.logger.add(ex);
-		}
-
-        EventQueue.invokeLater (new Runnable ()
-        {
-            @Override
-            public void run()
-            {
-				try
-				{
-					new maRlaIDE ().setVisible (true);
-				}
-				catch (Exception ex)
-				{
-					UIManager.put ("OptionPane.font", new Font ("Verdana", Font.PLAIN, 12));
-                    UIManager.put ("OptionPane.messageFont", new Font ("Verdana", Font.PLAIN, 12));
-                    UIManager.put ("OptionPane.buttonFont", new Font ("Verdana", Font.PLAIN, 12));
-
-                    /** The option pane which can be customized to have yes/no, ok/cancel, or just ok buttons in it.*/
-                    final JOptionPane optionPane = new JOptionPane ();
-                    JButton okButton = new JButton ("Ok");
-                    okButton.setBackground (new Color (245, 245, 245));
-                    okButton.setFont (new Font ("Verdana", Font.PLAIN, 12));
-                    okButton.addActionListener (new ActionListener ()
-                    {
-                        @Override
-                        public void actionPerformed(ActionEvent e)
-                        {
-                            optionPane.setValue (new Integer (JOptionPane.OK_OPTION));
-                        }
-                    });
-
-                    System.out.println ("Error: " + ex.getClass ());
-                    System.out.println ("Message: " + ex.getMessage () + "\n--\nTrace:");
-                    Object[] trace = ex.getStackTrace ();
-                    for (int j = 0; j < trace.length; ++j)
-                    {
-                        System.out.println ("  " + trace[j].toString ());
-                    }
-                    System.out.println ();
-
-                    optionPane.setOptions (new Object[] {okButton});
-                    optionPane.setMessage ("A fatal error occured while launching Get Organized. Your course data\n"
-                            + "should be safe.  Visit www.getorganizedapp.com to see if an update\n"
-                            + "is available to resolve this issue, otherwise contact the developer.");
-                    optionPane.setMessageType (JOptionPane.ERROR_MESSAGE);
-                    JDialog optionDialog = optionPane.createDialog ("Fatal Error");
-                    optionDialog.setVisible (true);
-
-                    System.exit (1);
-				}
-            }
-        });
-    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenuItem aboutMenuItem;
