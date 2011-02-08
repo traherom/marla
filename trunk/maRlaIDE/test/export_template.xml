@@ -15,32 +15,27 @@ Chapter <chapter />-Section <section />-Problem \#<probnum />
 \noindent\textbf{\Large Given}\par
 <statement />
 
-\vfil\noindent\textbf{\Large Required}\par
 <if has_subproblems="true">
-<then>
+	<then>
+	\vfil\noindent\textbf{\Large Required}\par
 	\begin{enumerate}[(a)]
 	<loop type="subproblem">
-	\item <statement />
+		\item <statement />
 	</loop>
 	\end{enumerate}
-</then>
+	</then>
 </if>
 
 \vfil\noindent\textbf{\Large Analysis and Solution}\par
 <if has_subproblems="false">
-<then>
-		<solution />
-</then>
-</if>
-
-<if has_subproblems="true">
-<then>
+	<then><solution /></then>
+	<else>
 	\begin{enumerate}[(a)]
 	<loop type="subproblem">
-	\item <solution />
+		\item <solution />
 	</loop>
 	\end{enumerate}
-</then>
+	</else>
 </if>
 
 \end{document}
