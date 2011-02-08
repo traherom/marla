@@ -370,9 +370,7 @@ public class LatexExporter
 					out.write(prob.getLongCourse());
 			}
 			else
-			{
 				throw new LatexException("Course name type '" + courseNameType + "' is not supported");
-			}
 		}
 		catch(IOException ex)
 		{
@@ -582,7 +580,7 @@ public class LatexExporter
 			// Check the output file name reported by pdflatex
 			List<String> pdfOutputLines = proc.parseStringArray(pdfOutput);
 			String pdfFileLine = pdfOutputLines.get(pdfOutputLines.size() - 2);
-			if(!pdfFileLine.matches("^Output written on " + pdfPath + ".*"))
+			if(!pdfFileLine.matches("^Output written on " + tempPdfPath + ".*"))
 			{
 				throw new LatexException("pdflatex reported a different output file ('" + pdfFileLine + "') than we expected ('" + pdfPath + "')");
 			}
