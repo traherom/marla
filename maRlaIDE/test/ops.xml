@@ -57,6 +57,55 @@
 		</computation>
 	</operation>
 
+	<operation name="Q-Q Line" category="Plots" plot="true">
+		<query type="column" name="col" prompt="Column?" />
+
+		<longname>qqline(<response name="col" default="x" />)</longname>
+
+		<computation>
+			<set name="col" rvar="x" use="values" />
+
+			<copy all="true" />
+
+			<plot>
+				<cmd>qqnorm(x)</cmd>
+				<cmd>qqline(x)</cmd>
+			</plot>
+		</computation>
+	</operation>
+
+	<operation name="Q-Q Plot" category="Plots" plot="true">
+		<query type="column" name="x" prompt="Column 1" />
+		<query type="column" name="y" prompt="Column 2" />
+
+		<longname>qqplot(<response name="x" default="x" />, <response name="y" default="y" />)</longname>
+
+		<computation>
+			<set name="x" rvar="x" use="values" />
+			<set name="y" rvar="y" use="values" />
+
+			<copy all="true" />
+
+			<plot>
+				<cmd>qqplot(x, y)</cmd>
+			</plot>
+		</computation>
+	</operation>
+
+	<operation name="Average" category="Basic Stats">
+		<query type="column" name="x" prompt="Column" />
+
+		<longname>ave(<response name="x" default="col" />)</longname>
+
+		<computation>
+			<set name="x" rvar="x" use="values" />
+
+			<copy all="true" />
+
+			<error msg="TBD. Need to work with factors for this" />
+		</computation>
+	</operation>
+
 	<operation name="Barplot" category="Plots" plot="true">
 		<query type="column" name="col" prompt="Column?" />
 
@@ -386,6 +435,24 @@
 		</computation>
 	</operation>
 
+	<operation name="Correlation" category="Basic Analysis">
+		<query type="column" name="x" prompt="Column 1" column_type="numeric" />
+		<query type="column" name="y" prompt="Column 2" column_type="numeric" />
+
+		<longname>cor(<response name="x" default="x" />, <response name="y" default="y" />)</longname>
+
+		<computation>
+			<set name="x" rvar="xName" use="name" />
+			<set name="y" rvar="yName" use="name" />
+			<set name="x" rvar="x" use="values" />
+			<set name="y" rvar="y" use="values" />
+
+			<copy all="true" />
+
+			<save type="numeric" r_column="paste('cor(', xName, ', ', yName, ')', sep='')">cor(x, y)</save>
+		</computation>
+	</operation>
+
 	<operation name="Log 10" category="Basic Math">
 		<query type="column" name="col" prompt="Column?" column_type="numeric" />
 
@@ -572,7 +639,7 @@
 		</computation>
 	</operation>
 
-	<operation name="Binomial Test">
+	<operation name="Binomial Test" category="Statistical Test">
 		<query type="string" name="saveTo" prompt="Save to" />
 		<query type="numeric" name="successes" prompt="Sucess Count" />
 		<query type="numeric" name="trials" prompt="Trial Count" />
@@ -593,8 +660,95 @@
 				</then>
 			</if>
 
+			<copy all="true" />
+			
 			<cmd>res = binom.test(floor(x), floor(n), conf.level=1-a)</cmd>
-			<save type="double" r_column="saveTo">r$estimate</save>
+			<save type="double" r_column="saveTo">res$estimate</save>
+		</computation>
+	</operation>
+
+	<operation name="Proportionality Test" category="Statistical Test">
+		<query type="string" name="saveTo" prompt="Save to" />
+		<query type="column" name="successes" prompt="Sucess Counts" column_type="numeric" />
+		<query type="column" name="trials" prompt="Trial Counts" column_type="numeric" />
+		<query type="numeric" name="alpha" prompt="Alpha" min="0" max="1" />
+
+		<longname>prop.test(<response name="successes" default="successes" />, <response name="trials" default="trials" />)</longname>
+
+		<computation>
+			<set name="saveTo" rvar="saveTo" />
+			<set name="successes" rvar="x" use="values" />
+			<set name="trials" rvar="n" use="values" />
+			<set name="alpha" rvar="a" />
+
+			<copy all="true" />
+
+			<cmd>res = prop.test(floor(x), floor(n), conf.level=1-a)</cmd>
+			<save type="double" r_column="saveTo">res$estimate</save>
+		</computation>
+	</operation>
+
+	<operation name="Correlation Test" category="Statistical Test">
+		<query type="string" name="saveTo" prompt="Save to" />
+		<query type="column" name="x" prompt="Column 1" column_type="numeric" />
+		<query type="column" name="y" prompt="Column 2" column_type="numeric" />
+		<query type="numeric" name="alpha" prompt="Alpha" min="0" max="1" />
+
+		<longname>cor.test(<response name="x" default="col 1" />, <response name="y" default="col 2" />)</longname>
+
+		<computation>
+			<set name="saveTo" rvar="saveTo" />
+			<set name="x" rvar="x" use="values" />
+			<set name="y" rvar="y" use="values" />
+			<set name="alpha" rvar="a" />
+
+			<copy all="true" />
+
+			<cmd>res = cor.test(x, y, conf.level=1-a)</cmd>
+			<save type="double" r_column="saveTo">res$estimate</save>
+		</computation>
+	</operation>
+
+	<operation name="Shapiro-Wilk Normality Test" category="Statistical Test">
+		<query type="string" name="saveTo" prompt="Save to" />
+		<query type="column" name="x" prompt="Column" column_type="numeric" />
+
+		<longname>shapiro.test(<response name="x" default="col" />)</longname>
+
+		<computation>
+			<set name="saveTo" rvar="saveTo" />
+			<set name="x" rvar="x" use="values" />
+
+			<copy all="true" />
+
+			<cmd>res = shapiro.test(x)</cmd>
+			<save type="double" r_column="saveTo">res$statistic</save>
+		</computation>
+	</operation>
+
+	<operation name="Power T-Test" category="Statistical Test">
+		<query type="string" name="saveTo" prompt="Save to" />
+		<query type="column" name="x" prompt="Column 1" column_type="numeric" />
+		<query type="column" name="y" prompt="Column 2" column_type="numeric" />
+		<query type="numeric" name="alpha" prompt="Alpha" min="0" max="1" />
+
+		<longname>cor.test(<response name="x" default="col 1" />, <response name="y" default="col 2" />)</longname>
+
+		<computation>
+			<error msg="Power T-Test: To be done" />
+		</computation>
+	</operation>
+
+	<operation name="Power Prop Test" category="Statistical Test">
+		<query type="string" name="saveTo" prompt="Save to" />
+		<query type="column" name="x" prompt="Column 1" column_type="numeric" />
+		<query type="column" name="y" prompt="Column 2" column_type="numeric" />
+		<query type="numeric" name="alpha" prompt="Alpha" min="0" max="1" />
+
+		<longname>cor.test(<response name="x" default="col 1" />, <response name="y" default="col 2" />)</longname>
+
+		<computation>
+			<error msg="Power Prop Test: To be done" />
 		</computation>
 	</operation>
 

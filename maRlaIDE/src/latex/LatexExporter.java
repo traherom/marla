@@ -58,16 +58,6 @@ public class LatexExporter
 	 */
 	private final Problem prob;
 	/**
-	 * Folder the exported files will actually be dropped
-	 */
-	private String exportDir = null;
-	/**
-	 * File name of the main file, minus the extension. Any additional files are
-	 * based off of this. This should not include a path component, that is set
-	 * in exportLocation
-	 */
-	private String baseName = null;
-	/**
 	 * Path to XML template to use for latex export
 	 */
 	private String templatePath = null;
@@ -79,22 +69,6 @@ public class LatexExporter
 	 * Used during processing to mark the subproblem we are working on
 	 */
 	private SubProblem currentSub = null;
-
-	/**
-	 * Types of substitutions and commands we support from XML
-	 */
-	private enum CommandType
-	{
-		LOOP, STATEMENT, SOLUTION, DATASET, NAME, CLASS, CHAPTER, SECTION, PROBNUM
-	};
-
-	/**
-	 * Types of loops we support
-	 */
-	private enum LoopType
-	{
-		SUBPROBLEM
-	};
 
 	/**
 	 * Creates a new Latex exporter for the given problem
@@ -198,81 +172,51 @@ public class LatexExporter
 	}
 
 	/**
-	 * Sets directory for the export. This should not include specifics on the actual
-	 * file name, that is set by setExportBaseName
-	 * @param fileName File name for the main file
-	 */
-	public String setExportDirectory(String newExportDir)
-	{
-		String oldDir = exportDir;
-		exportDir = newExportDir;
-		return oldDir;
-	}
-
-	/**
-	 * Changes the base name for the exporter. The base name is the primary
-	 * part of the file name, minus the extension. The actual directory that
-	 * the export will occur in is set by setExportDirectory
-	 * @param newBaseName File name for the main file
-	 */
-	public String setExportBaseName(String newBaseName)
-	{
-		String oldBase = baseName;
-		baseName = newBaseName;
-		return oldBase;
-	}
-
-	/**
 	 * Exports the problem using either cleanExport() if an existing export at this location
 	 * doesn't already exist or refreshExport() if there is one
+	 * @param rnwPath Path for new Sweave file
 	 */
-	public String export() throws LatexException, MarlaException
+	public String export(String rnwPath) throws LatexException, MarlaException
 	{
-		return refreshExport();
+		return refreshExport(rnwPath);
 	}
 
 	/**
 	 * Moves the temporary export files to the actual location
 	 * @param fromPath File to move
-	 * @param newExt The extension of the file to move to. The export dir and base
-	 *			name will be used for the rest of the stuff
+	 * @param toPath Path to move the file to
 	 * @returns New path of the moved file
 	 */
-	private String moveFile(String fromPath, String newExt) throws LatexException
+	private String moveFile(String fromPath, String toPath) throws LatexException
 	{
-		// Ensure everything is set
-		if(exportDir == null)
-			throw new LatexException("Export directory has not been set yet");
-		if(baseName == null)
-			throw new LatexException("Export base name has not been set yet");
-
 		// Figure out file paths
 		File fromFile = new File(fromPath);
-		File toFile = new File(exportDir + "/" + baseName + "." + newExt);
+		File toFile = new File(toPath);
 
 		try
 		{
 			// Move file
 			FileUtils.deleteQuietly(toFile);
 			FileUtils.moveFile(fromFile, toFile);
+
+			return toFile.getPath();
 		}
 		catch(IOException ex)
 		{
 			throw new LatexException("Unable to move the temporary file to '" + toFile + "'");
 		}
-
-		return toFile.getPath();
 	}
 
 	/**
 	 * Completely exports the problem as files
+	 * @param rnwPath Path at which to save the newly produced Sweave file
 	 * @return Path to the main LaTeX file that has been exported
 	 */
-	public String cleanExport() throws LatexException, MarlaException
+	public String cleanExport(String rnwPath) throws LatexException, MarlaException
 	{
 		// Export to the temporary file and them move
 		String tempFile = cleanTempExport();
-		return moveFile(tempFile, "rnw");
+		return moveFile(tempFile, rnwPath);
 	}
 
 	/**
@@ -289,7 +233,7 @@ public class LatexExporter
 
 			// Process, making sure it's reset properly
 			currentSub = null;
-			processSectionClean(templateXML, writer);
+			processSequenceClean(templateXML, writer);
 
 			// Close it all out
 			writer.close();
@@ -301,7 +245,7 @@ public class LatexExporter
 		}
 	}
 
-	private void processSectionClean(Element el, Writer out) throws LatexException, MarlaException
+	private void processSequenceClean(Element el, Writer out) throws LatexException, MarlaException
 	{
 		// And start looking through the template
 		// Text nodes get placed in verbatim, XML elements get processing
@@ -313,76 +257,68 @@ public class LatexExporter
 			{
 				// Process
 				Element partEl = (Element) partObj;
-				CommandType cmd = CommandType.valueOf(partEl.getName().toUpperCase());
-				switch(cmd)
+				String name = partEl.getName();
+
+				if(name.equals("loop"))
+					processLoopClean(partEl, out);
+				else if(name.equals("statement"))
+					processStatementClean(partEl, out);
+				else if(name.equals("solution"))
+					processSolutionClean(partEl, out);
+				else if(name.equals("if"))
+					processIfClean(partEl, out);
+				else if(name.equals("name"))
 				{
-					case LOOP:
-						processLoopClean(partEl, out);
-						break;
-
-					case STATEMENT:
-						processStatementClean(partEl, out);
-						break;
-
-					case SOLUTION:
-						processSolutionClean(partEl, out);
-						break;
-
-					case NAME:
-						try
-						{
-							if(prob.getPersonName() != null)
-								out.write(prob.getPersonName());
-						}
-						catch(IOException ex)
-						{
-							throw new LatexException("Unable to write person name during export", ex);
-						}
-						break;
-
-					case CLASS:
-						processClassClean(partEl, out);
-						break;
-
-					case CHAPTER:
-						try
-						{
-							if(prob.getChapter() != null)
-								out.write(prob.getChapter());
-						}
-						catch(IOException ex)
-						{
-							throw new LatexException("Unable to write problem chapter during export", ex);
-						}
-						break;
-
-					case SECTION:
-						try
-						{
-							if(prob.getSection() != null)
-								out.write(prob.getSection());
-						}
-						catch(IOException ex)
-						{
-							throw new LatexException("Unable to write problem section during export", ex);
-						}
-						break;
-
-					case PROBNUM:
-						try
-						{
-							if(prob.getProblemNumber() != null)
-								out.write(prob.getProblemNumber());
-						}
-						catch(IOException ex)
-						{
-							throw new LatexException("Unable to write problem number during export", ex);
-						}
-						break;
-
-					default:
-						throw new LatexException("'" + cmd + "' is not a supported element in template XML yet");
+					try
+					{
+						if(prob.getPersonName() != null)
+							out.write(prob.getPersonName());
+					}
+					catch(IOException ex)
+					{
+						throw new LatexException("Unable to write person name during export", ex);
+					}
 				}
+				else if(name.equals("class"))
+					processClassClean(partEl, out);
+				else if(name.equals("chapter"))
+				{
+					try
+					{
+						if(prob.getChapter() != null)
+							out.write(prob.getChapter());
+					}
+					catch(IOException ex)
+					{
+						throw new LatexException("Unable to write problem chapter during export", ex);
+					}
+				}
+				else if(name.equals("section"))
+				{
+					try
+					{
+						if(prob.getSection() != null)
+							out.write(prob.getSection());
+					}
+					catch(IOException ex)
+					{
+						throw new LatexException("Unable to write problem section during export", ex);
+					}
+				}
+				else if(name.equals("probnum"))
+				{
+					try
+					{
+						if(prob.getProblemNumber() != null)
+							out.write(prob.getProblemNumber());
+					}
+					catch(IOException ex)
+					{
+						throw new LatexException("Unable to write problem number during export", ex);
+					}
+				}
+				else
+					throw new LatexException("'" + name + "' is not a supported element in template XML yet");
 			}
 			else if(partObj instanceof Text)
 			{
@@ -410,7 +346,7 @@ public class LatexExporter
 		for(int i = 0; i < prob.getSubProblemCount(); i++)
 		{
 			currentSub = prob.getSubProblem(i);
-			processSectionClean(el, out);
+			processSequenceClean(el, out);
 		}
 
 		// All done with loop
@@ -474,6 +410,10 @@ public class LatexExporter
 	{
 		StringBuilder sweaveBlock = new StringBuilder();
 
+		// Stick in a newline. Sweave blocks must begin at the beginning of the line,
+		// but we don't want to have to require that in the template
+		sweaveBlock.append('\n');
+
 		// R code itself. First, use the main problem for the solution unless
 		// we are in a loop with a current subproblem. The subproblem must
 		// have a solution denoted though.
@@ -536,23 +476,50 @@ public class LatexExporter
 		}
 	}
 
+	public void processIfClean(Element ifEl, Writer out) throws LatexException, MarlaException
+	{
+		// Figure out what type of if we are and determine the truthiness of the statement
+		boolean ifExprResult = false;
+		String hasSub = ifEl.getAttributeValue("has_subproblems");
+
+		if(hasSub != null)
+		{
+			boolean hasSubRequired = Boolean.parseBoolean(hasSub);
+			boolean subExist = prob.getSubProblemCount() > 0;
+			ifExprResult = (subExist == hasSubRequired);
+		}
+		else
+			throw new LatexException("Type of if not recognized");
+
+		// Run then then/else blocks as appropriate
+		if(ifExprResult)
+		{
+			// Is there a then?
+			Element thenEl = ifEl.getChild("then");
+			if(thenEl != null)
+				processSequenceClean(thenEl, out);
+		}
+		else
+		{
+			// Is there an else?
+			Element elseEl = ifEl.getChild("else");
+			if(elseEl != null)
+				processSequenceClean(elseEl, out);
+		}
+	}
+	
 	/**
 	 * Replaces existing R portions in an exported problem and leaves everything else
 	 * untouched. If problem (or subproblem) statements have changed, nothing is done with
 	 * them. It is the responsibility of the user to change those after the initial export.
+	 * @param nnwPath Path for the new Sweave file
 	 */
-	public String refreshExport() throws LatexException, MarlaException
+	public String refreshExport(String rnwPath) throws LatexException, MarlaException
 	{
-		// Ensure everything is set
-		if(exportDir == null)
-			throw new LatexException("Export directory has not been set yet");
-		if(baseName == null)
-			throw new LatexException("Export base name has not been set yet");
-
 		// It must already exist or we just go ahead and do a clean export
-		File exportFile = new File(exportDir + "/" + baseName + ".rnw");
+		File exportFile = new File(rnwPath);
 		if(!exportFile.isFile())
-			return cleanExport();
+			return cleanExport(rnwPath);
 
 		// We must be able to read and write it
 		if(!exportFile.canRead())
@@ -570,9 +537,10 @@ public class LatexExporter
 	 * Does a clean export into a temporary directory, then runs the result through pdflatex.
 	 * The generated PDF file is then copied to the export location and the path to that file
 	 * is returned.
+	 * @param pdfPath Path for the newly created PDF file
 	 * @return Path to the newly created PDF
 	 */
-	public String generatePDF() throws LatexException, RProcessorException, MarlaException
+	public String generatePDF(String pdfPath) throws LatexException, RProcessorException, MarlaException
 	{
 		// Create the rnw
 		String rnwPath = cleanTempExport();
@@ -591,7 +559,7 @@ public class LatexExporter
 		// Figure out the file names
 		String baseFileName = new File(rnwPath).getName().replace(".rnw", "");
 		String texPath = baseFileName + ".tex";
-		String pdfPath = baseFileName + ".pdf";
+		String tempPdfPath = baseFileName + ".pdf";
 
 		try
 		{
@@ -610,7 +578,7 @@ public class LatexExporter
 				// Sweave not tied into LaTeX properly
 				throw new LatexException("Sweave does not appear to be registered correctly with LaTeX");
 			}
-			
+
 			// Check the output file name reported by pdflatex
 			List<String> pdfOutputLines = proc.parseStringArray(pdfOutput);
 			String pdfFileLine = pdfOutputLines.get(pdfOutputLines.size() - 2);
@@ -620,7 +588,7 @@ public class LatexExporter
 			}
 
 			// Move the final PDF file
-			return moveFile(pdfPath, "pdf");
+			return moveFile(tempPdfPath, pdfPath);
 		}
 		finally
 		{
