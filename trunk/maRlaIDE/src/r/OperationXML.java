@@ -583,7 +583,20 @@ public class OperationXML extends Operation
 		// Check if the expression passes
 		boolean ifExprResult = false;
 		String type = ifEl.getAttributeValue("type");
-		if(type.equals("vartype"))
+		if(type.equals("expr"))
+		{
+			try
+			{
+				// Custom expression, pass to R and return that
+				String expr = ifEl.getAttributeValue("expr");
+				ifExprResult = proc.executeBoolean(expr);
+			}
+			catch(RProcessorParseException ex)
+			{
+				throw new OperationXMLException("If expression did not return a single boolean value", ex);
+			}
+		}
+		else if(type.equals("vartype"))
 		{
 			// Get the type of the variable given in "rvar"
 			String var = ifEl.getAttributeValue("rvar");
@@ -598,19 +611,6 @@ public class OperationXML extends Operation
 				ifExprResult = true;
 			else
 				ifExprResult = false;
-		}
-		else if(type.equals("expr"))
-		{
-			try
-			{
-				// Custom expression, pass to R and return that
-				String expr = ifEl.getAttributeValue("expr");
-				ifExprResult = proc.executeBoolean(expr);
-			}
-			catch(RProcessorParseException ex)
-			{
-				throw new OperationXMLException("If expression did not return a single boolean value", ex);
-			}
 		}
 		else
 		{

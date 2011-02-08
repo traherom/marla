@@ -128,6 +128,11 @@ public class OperationTester
 					// Get a random number within the limits
 					Double min = (Double)question[3];
 					Double max = (Double)question[4];
+
+					// Limit it some to what people will reasonably use
+					min = min > -1000000 ? min : -1000000;
+					max = max < 1000000 ? max : 1000000;
+
 					answers.add(rand.nextDouble() * (max - min) - min);
 					break;
 

@@ -260,9 +260,7 @@ public class Domain
 					try
 					{
 						LatexExporter exporter = new LatexExporter (problem);
-						exporter.setExportDirectory(file.getPath ());
-						exporter.setExportBaseName(file.getName ());
-						File genFile = new File (exporter.generatePDF());
+						File genFile = new File (exporter.generatePDF(file.getPath()));
 						if (desktop != null)
 						{
 							desktop.open (genFile);
@@ -306,8 +304,8 @@ public class Domain
 			viewPanel.saveChooserDialog.resetChoosableFileFilters ();
 			viewPanel.saveChooserDialog.setFileFilter(viewPanel.latexFilter);
 			viewPanel.saveChooserDialog.setFileSelectionMode(JFileChooser.FILES_ONLY);
-			viewPanel.saveChooserDialog.setCurrentDirectory (new File (problem.getFileName ().substring (0, problem.getFileName ().lastIndexOf(".")) + ".tex"));
-			viewPanel.saveChooserDialog.setSelectedFile(new File (problem.getFileName ().substring (0, problem.getFileName ().lastIndexOf(".")) + ".tex"));
+			viewPanel.saveChooserDialog.setCurrentDirectory (new File (problem.getFileName ().substring (0, problem.getFileName ().lastIndexOf(".")) + ".rnw"));
+			viewPanel.saveChooserDialog.setSelectedFile(new File (problem.getFileName ().substring (0, problem.getFileName ().lastIndexOf(".")) + ".rnw"));
 			// Display the chooser and retrieve the selected file
 			int response = viewPanel.saveChooserDialog.showSaveDialog(viewPanel);
 			while (response == JFileChooser.APPROVE_OPTION)
@@ -316,12 +314,12 @@ public class Domain
 				// ensure an extension is on the file
 				if (file.getName ().indexOf (".") == -1)
 				{
-					file = new File (viewPanel.saveChooserDialog.getSelectedFile ().toString () + ".tex");
+					file = new File (viewPanel.saveChooserDialog.getSelectedFile ().toString () + ".rnw");
 				}
 				// ensure the file is a valid backup file
-				if (!file.toString ().endsWith (".tex"))
+				if (!file.toString ().endsWith (".rnw"))
 				{
-					JOptionPane.showMessageDialog(viewPanel, "The extension for the file must be .tex.", "Invalid Extension", JOptionPane.WARNING_MESSAGE);
+					JOptionPane.showMessageDialog(viewPanel, "The extension for the file must be .rnw.", "Invalid Extension", JOptionPane.WARNING_MESSAGE);
 					viewPanel.saveChooserDialog.setSelectedFile (new File (viewPanel.saveChooserDialog.getSelectedFile ().toString ().substring (0, viewPanel.saveChooserDialog.getSelectedFile ().toString ().lastIndexOf (".")) + ".tex"));
 					response = viewPanel.saveChooserDialog.showSaveDialog (viewPanel);
 					continue;
@@ -346,9 +344,7 @@ public class Domain
 					try
 					{
 						LatexExporter exporter = new LatexExporter (problem);
-						exporter.setExportDirectory(file.getPath ());
-						exporter.setExportBaseName(file.getName ());
-						File genFile = new File (exporter.cleanExport ());
+						File genFile = new File (exporter.cleanExport (file.getPath()));
 						if (desktop != null)
 						{
 							desktop.open (genFile);

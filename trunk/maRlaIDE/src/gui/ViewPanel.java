@@ -155,7 +155,7 @@ public class ViewPanel extends JPanel
 	/** The extensions file filter for PDF files.*/
 	protected ExtensionFileFilter pdfFilter = new ExtensionFileFilter ("PDF Files (.pdf)", new String[] {"PDF"});
 	/** The extensions file filter for LaTeX files.*/
-	protected ExtensionFileFilter latexFilter = new ExtensionFileFilter ("LaTeX Files (.tex)", new String[] {"TEX"});
+	protected ExtensionFileFilter latexFilter = new ExtensionFileFilter ("LaTeX Sweave Files (.rnw)", new String[] {"RNW"});
 	/** The width between two operations/data sets.*/
 	private final int SPACE_WIDTH = 70;
 	/** The height between two operations/data sets.*/
