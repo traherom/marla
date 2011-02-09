@@ -30,7 +30,6 @@ import java.util.regex.Pattern;
 import org.jdom.Element;
 
 /**
- *
  * @author Ryan Morehart
  */
 public final class RProcessor
@@ -596,7 +595,7 @@ public final class RProcessor
 		List<Boolean> arr = parseBooleanArray(rOutput);
 
 		if(arr.size() != 1)
-			throw new RProcessorParseException("The R result was not a single string value");
+			throw new RProcessorParseException("The R result was not a single boolean value");
 
 		return arr.get(0);
 	}
@@ -665,9 +664,9 @@ public final class RProcessor
 	public String setVariable(String name, Object val) throws RProcessorException
 	{
 		if(val instanceof Double)
-			execute(name + "=" + val);
+			execute(name + " = " + val);
 		else
-			execute(name + "=\"" + val + '"');
+			execute(name + " = \"" + val + '"');
 
 		return name;
 	}

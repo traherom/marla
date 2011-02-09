@@ -165,7 +165,7 @@
 			<set name="val" rvar="val" />
 
 			<loop type="parent" value_var="currCol" key_var="currColName">
-				<if type="expr" expr="currColName == colName">
+				<if expr="currColName == colName">
 					<then>
 						<!-- This is the column we're supposed to divide -->
 						<save type="numeric" r_column="currColName">currCol / val</save>
@@ -190,7 +190,7 @@
 			<set name="val" rvar="val" />
 
 			<loop type="parent" value_var="currCol" key_var="currColName">
-				<if type="expr" expr="currColName == colName">
+				<if expr="currColName == colName">
 					<then>
 						<!-- This is the column we're supposed to multiply -->
 						<save type="numeric" r_column="currColName">currCol * val</save>
@@ -215,7 +215,7 @@
 			<set name="val" rvar="val" />
 
 			<loop type="parent" value_var="currCol" key_var="currColName">
-				<if type="expr" expr="currColName == colName">
+				<if expr="currColName == colName">
 					<then>
 						<!-- This is the column we're supposed to add to -->
 						<save type="numeric" r_column="currColName">currCol + val</save>
@@ -240,7 +240,7 @@
 			<set name="val" rvar="val" />
 
 			<loop type="parent" value_var="currCol" key_var="currColName">
-				<if type="expr" expr="currColName == colName">
+				<if expr="currColName == colName">
 					<then>
 						<!-- This is the column we're supposed to add to -->
 						<save type="numeric" r_column="currColName">currCol - val</save>
@@ -265,7 +265,7 @@
 			<set name="val" rvar="val" />
 
 			<loop type="parent" value_var="currCol" key_var="currColName">
-				<if type="expr" expr="currColName == colName">
+				<if expr="currColName == colName">
 					<then>
 						<!-- This is the column we're supposed to compute on -->
 						<save type="numeric" r_column="currColName">currCol^val</save>
@@ -522,7 +522,7 @@
 			<!-- Run t test on each column and save, plus prepare the top row -->
 			<cmd>t = list()</cmd>
 			<loop type="parent" value_var="col" key_var="colName" index_var="i">
-				<if type="vartype" rvar="col" expected="numeric">
+				<if rvar="col" vartype="numeric">
 					<then>
 						<cmd>t[[i]] = t.test(col)</cmd>
 						<save type="string" column="Column">colName</save>
@@ -654,7 +654,7 @@
 			<set name="alpha" rvar="a" />
 
 			<!-- check arguments -->
-			<if type="expr" expr="n &lt; x">
+			<if expr="n &lt; x">
 				<then>
 					<error msg="Trials must be greater than successes" />
 				</then>
@@ -880,7 +880,7 @@
 
 			<copy all="true" />
 
-			<if type="expr" expr="!desc">
+			<if expr="!desc">
 				<then>
 					<save type="numeric" r_column="paste('sort(', colName, ')', sep='')">sort(colVals)</save>
 				</then>
