@@ -144,7 +144,6 @@ public class Domain
 	public void rebuildTree(DataSet dataSet)
 	{
 		viewPanel.rebuildTree (dataSet);
-		//viewPanel.workspacePanel.repaint ();
 	}
 
 	/**
