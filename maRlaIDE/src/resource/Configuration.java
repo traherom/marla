@@ -110,9 +110,8 @@ public class Configuration
 		// Unable to load config, so make sure we can find R and pdflatex
 		if(!configLoaded)
 		{
-			String rPath = findR();
-			if(rPath != null)
-				RProcessor.setRLocation(rPath);
+			RProcessor.setRLocation(findR());
+			LatexExporter.setPdflatexPath(findPdfLatex());
 		}
 	}
 
@@ -163,6 +162,7 @@ public class Configuration
 	public static boolean isOnPath(String exeName)
 	{
 		// Determines if a given file is somewhere on the system PATH
+		System.out.println("Looking for '" + exeName + "' on PATH");
 		String[] pathDirs = System.getenv("PATH").split(";|:");
 		for(String dirPath : pathDirs)
 		{
@@ -183,8 +183,8 @@ public class Configuration
 	public static String findR()
 	{
 		// See if it's on the path
-		if(isOnPath("R"))
-			return "R";
+		if(isOnPath("R.exe"))
+			return "R.exe";
 
 		// Try to find it in all the common locations
 		List<String> commonLocs = new ArrayList<String>();
@@ -204,20 +204,64 @@ public class Configuration
 			// The R folder has the version number, so look for anything similar
 			Collection<String> test = FileUtils.listFiles(progDir, FileFilterUtils.prefixFileFilter("R.exe"), new RegexFileFilter("R.*|bin|x64|x32"));
 
-			commonLocs.add(roots + "Program Files\\R\\R-2.12.1\\bin\\x64\\R.exe");
-			commonLocs.add(roots + "Program Files\\R\\R-2.12.1\\bin\\x32\\R.exe");
-			commonLocs.add(roots + "Program Files\\R\\R-2.12.1\\bin\\R.exe");
+			commonLocs.add(roots[i].getPath() + "Program Files\\R\\R-2.12.1\\bin\\x64\\R.exe");
+			commonLocs.add(roots[i].getPath() + "Program Files\\R\\R-2.12.1\\bin\\x32\\R.exe");
+			commonLocs.add(roots[i].getPath() + "Program Files\\R\\R-2.12.1\\bin\\R.exe");
 		}
 
+		System.out.println("Looking for R at ");
 		for(String s : commonLocs)
 		{
 			File f = new File(s);
-			System.err.print("\n\t" + s);
+			System.out.print("\n\t" + s);
 			if(f.exists())
-			{
-				System.err.println("\nfound!");
 				return s;
-			}
+		}
+
+		System.out.println("Unable to locate R");
+		return null;
+	}
+
+
+	/**
+	 * Returns a path to the pdflatex executable (or just "pdflatex" if it's on the path). Null
+	 * if it cannot be found
+	 * @return Path to pdflatex, as usable by createProcess(). Null if not found
+	 */
+	public static String findPdfLatex()
+	{
+		// See if it's on the path
+		if(isOnPath("pdflatex.exe"))
+			return "pdflatex.exe";
+
+		// Try to find it in all the common locations
+		List<String> commonLocs = new ArrayList<String>();
+		//commonLocs.add("/R/bin/R"); // Local copy
+		//commonLocs.add("/Library/Frameworks/R.framework/Resources/R"); // OS X
+		//commonLocs.add("/usr/lib/R/bin/R"); // Linux (Mint/Ubuntu)
+
+		// Add the program files directories for Windows
+		File[] roots = File.listRoots();
+		for(int i = 0; i < roots.length; i++)
+		{
+			// Ensure this program files director exists
+			File progDir = new File(roots[i] + "Program Files");
+			if(!progDir.isDirectory())
+				continue;
+
+			// The R folder has the version number, so look for anything similar
+			Collection<String> test = FileUtils.listFiles(progDir, FileFilterUtils.prefixFileFilter("R.exe"), new RegexFileFilter("R.*|bin|x64|x32"));
+
+			//commonLocs.add(roots[i].getPath() + "Program Files\\R\\R-2.12.1\\bin\\x64\\R.exe");
+		}
+
+		System.err.println("Looking for pdflatex on ");
+		for(String s : commonLocs)
+		{
+			File f = new File(s);
+			System.out.print("\n\t" + s);
+			if(f.exists())
+				return s;
 		}
 
 		return null;
@@ -225,6 +269,7 @@ public class Configuration
 
 	public static void main(String[] args)
 	{
-		System.out.println("Located at " + findR());
+		System.out.println("R Located at " + findR());
+		System.out.println("R Located at " + findPdfLatex());
 	}
 }
