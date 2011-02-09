@@ -152,17 +152,24 @@ public class MainFrame extends JFrame
         aboutMenuItem = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        addWindowFocusListener(new java.awt.event.WindowFocusListener() {
+            public void windowGainedFocus(java.awt.event.WindowEvent evt) {
+                formWindowGainedFocus(evt);
+            }
+            public void windowLostFocus(java.awt.event.WindowEvent evt) {
+            }
+        });
         getContentPane().setLayout(new java.awt.GridLayout(1, 1));
 
         fileMenu.setText("File");
         fileMenu.setFont(new java.awt.Font("Verdana", 0, 12));
         fileMenu.addMenuListener(new javax.swing.event.MenuListener() {
-            public void menuSelected(javax.swing.event.MenuEvent evt) {
-                fileMenuMenuSelected(evt);
+            public void menuCanceled(javax.swing.event.MenuEvent evt) {
             }
             public void menuDeselected(javax.swing.event.MenuEvent evt) {
             }
-            public void menuCanceled(javax.swing.event.MenuEvent evt) {
+            public void menuSelected(javax.swing.event.MenuEvent evt) {
+                fileMenuMenuSelected(evt);
             }
         });
 
@@ -217,7 +224,7 @@ public class MainFrame extends JFrame
         fileMenu.add(saveAsMenuItem);
         fileMenu.add(fileSeparator1);
 
-        exportToPdfMenuItem.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        exportToPdfMenuItem.setFont(new java.awt.Font("Verdana", 0, 12));
         exportToPdfMenuItem.setText("Export to PDF...");
         exportToPdfMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -226,7 +233,7 @@ public class MainFrame extends JFrame
         });
         fileMenu.add(exportToPdfMenuItem);
 
-        exportForLatexMenuItem.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        exportForLatexMenuItem.setFont(new java.awt.Font("Verdana", 0, 12));
         exportForLatexMenuItem.setText("Export for LaTeX...");
         exportForLatexMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -251,12 +258,12 @@ public class MainFrame extends JFrame
         editMenu.setText("Edit");
         editMenu.setFont(new java.awt.Font("Verdana", 0, 12));
         editMenu.addMenuListener(new javax.swing.event.MenuListener() {
-            public void menuSelected(javax.swing.event.MenuEvent evt) {
-                editMenuMenuSelected(evt);
+            public void menuCanceled(javax.swing.event.MenuEvent evt) {
             }
             public void menuDeselected(javax.swing.event.MenuEvent evt) {
             }
-            public void menuCanceled(javax.swing.event.MenuEvent evt) {
+            public void menuSelected(javax.swing.event.MenuEvent evt) {
+                editMenuMenuSelected(evt);
             }
         });
 
@@ -302,12 +309,12 @@ public class MainFrame extends JFrame
         problemMenu.setText("Problem");
         problemMenu.setFont(new java.awt.Font("Verdana", 0, 12));
         problemMenu.addMenuListener(new javax.swing.event.MenuListener() {
-            public void menuSelected(javax.swing.event.MenuEvent evt) {
-                problemMenuMenuSelected(evt);
+            public void menuCanceled(javax.swing.event.MenuEvent evt) {
             }
             public void menuDeselected(javax.swing.event.MenuEvent evt) {
             }
-            public void menuCanceled(javax.swing.event.MenuEvent evt) {
+            public void menuSelected(javax.swing.event.MenuEvent evt) {
+                problemMenuMenuSelected(evt);
             }
         });
 
@@ -359,12 +366,12 @@ public class MainFrame extends JFrame
         toolsMenu.setText("Tools");
         toolsMenu.setFont(new java.awt.Font("Verdana", 0, 12));
         toolsMenu.addMenuListener(new javax.swing.event.MenuListener() {
-            public void menuSelected(javax.swing.event.MenuEvent evt) {
-                toolsMenuMenuSelected(evt);
+            public void menuCanceled(javax.swing.event.MenuEvent evt) {
             }
             public void menuDeselected(javax.swing.event.MenuEvent evt) {
             }
-            public void menuCanceled(javax.swing.event.MenuEvent evt) {
+            public void menuSelected(javax.swing.event.MenuEvent evt) {
+                toolsMenuMenuSelected(evt);
             }
         });
 
@@ -557,6 +564,11 @@ public class MainFrame extends JFrame
 	private void exportForLatexMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exportForLatexMenuItemActionPerformed
 		viewPanel.domain.exportForLatex ();
 	}//GEN-LAST:event_exportForLatexMenuItemActionPerformed
+
+	private void formWindowGainedFocus(java.awt.event.WindowEvent evt)//GEN-FIRST:event_formWindowGainedFocus
+	{//GEN-HEADEREND:event_formWindowGainedFocus
+		viewPanel.answerDialog.dispose ();
+	}//GEN-LAST:event_formWindowGainedFocus
 
 	/**
 	 * Retrieves the default title, which is the program name with it's version number.

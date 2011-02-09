@@ -109,6 +109,26 @@ public class WorkspacePanel extends JPanel
 						}
 						g2.draw (new Line2D.Double (x1, y1, x2, y2));
 					}
+
+					//List<Operation> operations = dataSet.getOperation (j).getAllChildOperations();
+					for (int k = 0; k < operations.size(); ++k)
+					{
+						if (j == 0)
+						{
+							x1 = (dataSet.getOperation (j).getX () + dataSet.getOperation (j).getX () + dataSet.getOperation (j).getWidth ()) / 2;
+							y1 = dataSet.getOperation (j).getY () + dataSet.getOperation (j).getHeight();
+							x2 = (operations.get (k).getX () + operations.get (k).getX () + operations.get (k).getWidth ()) / 2;
+							y2 = operations.get (k).getY ();
+						}
+						else
+						{
+							x1 = (operations.get (k - 1).getOperation (j).getX () + operations.get (k - 1).getX () + operations.get (k - 1).getWidth ()) / 2;
+							y1 = operations.get (k - 1).getOperation (j).getY () + operations.get (k - 1).getHeight();
+							x2 = (operations.get (k).getX () + operations.get (k).getX () + operations.get (k).getWidth ()) / 2;
+							y2 = operations.get (k).getY ();
+						}
+						g2.draw (new Line2D.Double (x1, y1, x2, y2));
+					}
 				}
 			}
 		}
