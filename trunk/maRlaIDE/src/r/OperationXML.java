@@ -172,7 +172,7 @@ public class OperationXML extends Operation
 		for(Object opEl : operationXML.getChildren("operation"))
 		{
 			Element op = (Element) opEl;
-			
+
 			String name = op.getAttributeValue("name");
 			if(name == null)
 				throw new OperationXMLException("No name supplied for operation in XML file");
@@ -345,11 +345,21 @@ public class OperationXML extends Operation
 			throw new OperationXMLException("Computation element not specified");
 
 		// Process away. Only record the R commands we explicitly say to
-		intendedRecordMode = proc.setRecorderMode(RecordMode.DISABLED);
-		processSequence(proc, compEl);
-
-		// Restore recording mode
-		proc.setRecorderMode(intendedRecordMode);
+		try
+		{
+			intendedRecordMode = proc.setRecorderMode(RecordMode.DISABLED);
+			processSequence(proc, compEl);
+		}
+		catch(OperationXMLException ex)
+		{
+			// Add the operation name to exception for easier debugging
+			throw new OperationXMLException("Error in processing operation '" + getName() + "'. See inner exception for more information", ex);
+		}
+		finally
+		{
+			// Restore recording mode
+			proc.setRecorderMode(intendedRecordMode);
+		}
 	}
 
 	private void processSequence(RProcessor proc, Element compEl) throws RProcessorException, RProcessorParseException, OperationXMLException, MarlaException
@@ -366,12 +376,12 @@ public class OperationXML extends Operation
 				processSet(proc, el);
 			else if(cmdName.equals("save"))
 				processSave(proc, el);
+			else if(cmdName.equals("copy"))
+				processCopy(proc, el);
 			else if(cmdName.equals("loop"))
 				processLoop(proc, el);
 			else if(cmdName.equals("if"))
 				processIf(proc, el);
-			else if(cmdName.equals("copy"))
-				processCopy(proc, el);
 			else if(cmdName.equals("plot"))
 				processPlot(proc, el);
 			else if(cmdName.equals("error"))
@@ -506,7 +516,7 @@ public class OperationXML extends Operation
 		}
 		else
 			throw new OperationXMLException("Save type of '" + processAs + "' is unrecognized.");
-		
+
 		// Disable recorder again
 		proc.setRecorderMode(RecordMode.DISABLED);
 	}
@@ -548,6 +558,8 @@ public class OperationXML extends Operation
 				proc.setRecorderMode(intendedRecordMode);
 				if(indexVar != null)
 					proc.setVariable(indexVar, new Double(i + 1));
+				if(keyVar != null)
+					proc.setVariable(keyVar, new Double(i + 1));
 				if(valueVar != null)
 					proc.setVariable(valueVar, doubleVals.get(i));
 				proc.setRecorderMode(RecordMode.DISABLED);
@@ -566,6 +578,8 @@ public class OperationXML extends Operation
 				proc.setRecorderMode(intendedRecordMode);
 				if(indexVar != null)
 					proc.setVariable(indexVar, new Double(i + 1));
+				if(keyVar != null)
+					proc.setVariable(keyVar, new Double(i + 1));
 				if(valueVar != null)
 					proc.setVariable(valueVar, stringVals.get(i));
 				proc.setRecorderMode(RecordMode.DISABLED);
@@ -580,15 +594,17 @@ public class OperationXML extends Operation
 
 	private void processIf(RProcessor proc, Element ifEl) throws RProcessorException, RProcessorParseException, OperationXMLException, MarlaException
 	{
-		// Check if the expression passes
+		// Figure out what type of if it is and check if it's true or false
 		boolean ifExprResult = false;
-		String type = ifEl.getAttributeValue("type");
-		if(type.equals("expr"))
+
+		String expr = ifEl.getAttributeValue("expr");
+		String expectedVarType = ifEl.getAttributeValue("vartype");
+
+		if(expr != null)
 		{
 			try
 			{
 				// Custom expression, pass to R and return that
-				String expr = ifEl.getAttributeValue("expr");
 				ifExprResult = proc.executeBoolean(expr);
 			}
 			catch(RProcessorParseException ex)
@@ -596,25 +612,24 @@ public class OperationXML extends Operation
 				throw new OperationXMLException("If expression did not return a single boolean value", ex);
 			}
 		}
-		else if(type.equals("vartype"))
+		else if(expectedVarType != null)
 		{
 			// Get the type of the variable given in "rvar"
 			String var = ifEl.getAttributeValue("rvar");
 			String strResult = proc.execute("str(" + var + ")");
-			String varType = strResult.substring(1, 4);
+			String realVarType = strResult.substring(1, 4);
 
 			// And ensure we match the expected value
-			String expected = ifEl.getAttributeValue("expected");
-			if(expected.equals("numeric") && varType.equals("num"))
+			if(expectedVarType.equals("numeric") && realVarType.equals("num"))
 				ifExprResult = true;
-			else if(expected.equals("string") && varType.equals("chr"))
+			else if(expectedVarType.equals("string") && realVarType.equals("chr"))
 				ifExprResult = true;
 			else
 				ifExprResult = false;
 		}
 		else
 		{
-			throw new OperationXMLException("If type '" + type + "' not recognized.");
+			throw new OperationXMLException("If type not recognized.");
 		}
 
 		// Run then then/else blocks as appropriate
@@ -926,6 +941,12 @@ public class OperationXML extends Operation
 		markUnsaved();
 	}
 
+	@Override
+	public void clearRequiredInfo()
+	{
+		questionAnswers = null;
+	}
+
 	private Element getPromptEl(String key) throws OperationXMLException
 	{
 		for(Object queryElObj : opConfig.getChildren("query"))
@@ -997,7 +1018,7 @@ public class OperationXML extends Operation
 		// Tell the problem to rebuild the displayed tree, rearranging as needed
 		DataSource rootDS = getRootDataSource();
 		if(rootDS instanceof DataSet && Problem.getDomain() != null)
-			Problem.getDomain().rebuildTree((DataSet)rootDS);
+			Problem.getDomain().rebuildTree((DataSet) rootDS);
 	}
 
 	@Override

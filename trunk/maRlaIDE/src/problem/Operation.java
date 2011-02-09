@@ -524,10 +524,7 @@ public abstract class Operation extends JLabel implements DataSource, Changeable
 	 * getRequiredInfoPrompt() returns the actual ArrayList of data needed
 	 * @return true if additional information is required
 	 */
-	public boolean isInfoRequired() throws MarlaException
-	{
-		return !getRequiredInfoPrompt().isEmpty();
-	}
+	public abstract boolean isInfoRequired() throws MarlaException;
 
 	/**
 	 * Deriving classes should override this to prompt the user for the
@@ -556,6 +553,15 @@ public abstract class Operation extends JLabel implements DataSource, Changeable
 	{
 		if(!isInfoRequired())
 			throw new OperationException("This operation does not require info, should not be set");
+	}
+
+
+	/**
+	 * Clears any set answers to required information
+	 */
+	public void clearRequiredInfo()
+	{
+		// Nothing to do by default
 	}
 
 	/**

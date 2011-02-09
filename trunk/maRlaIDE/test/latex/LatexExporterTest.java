@@ -17,6 +17,7 @@
  */
 package latex;
 
+import java.io.File;
 import problem.ProblemTest;
 import problem.Problem;
 import org.junit.*;
@@ -35,8 +36,6 @@ public class LatexExporterTest
 	{
 		testProb = ProblemTest.createProblem(2, 2, 3, 10);
 		testExp = new LatexExporter(testProb, "export_template.xml");
-		testExp.setExportBaseName("test");
-		testExp.setExportDirectory("temp_dir");
 	}
 
 	@Ignore
@@ -47,29 +46,32 @@ public class LatexExporterTest
 	}
 
 	@Test
-	@Ignore
 	public void testCleanExport() throws Exception
 	{
-		testExp.cleanExport();
+		File tempFile = File.createTempFile("marla", "rnw");
+		testExp.cleanExport(tempFile.getPath());
 	}
 
 	@Test(expected=LatexException.class)
 	public void testCleanExportIncompleteInit() throws Exception
 	{
+		File tempFile = File.createTempFile("marla", "rnw");
 		LatexExporter testExp2 = new LatexExporter(testProb, "export_template.xml");
-		testExp2.cleanExport();
+		testExp2.cleanExport(tempFile.getPath());
 	}
 
 	@Ignore
 	@Test
 	public void testRefreshExport() throws Exception
 	{
-		testExp.refreshExport();
+		File tempFile = File.createTempFile("marla", "rnw");
+		testExp.refreshExport(tempFile.getPath());
 	}
 
 	@Test
 	public void testPDFExport() throws Exception
 	{
-		testExp.generatePDF();
+		File tempFile = File.createTempFile("marla", "pdf");
+		testExp.generatePDF(tempFile.getPath());
 	}
 }
