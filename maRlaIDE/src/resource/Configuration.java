@@ -15,14 +15,20 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package resource;
 
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import latex.LatexExporter;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.filefilter.FileFilterUtils;
+import org.apache.commons.io.filefilter.RegexFileFilter;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
@@ -38,47 +44,6 @@ import r.RProcessor;
  */
 public class Configuration
 {
-	/**
-	 * Loads maRla configuration from the default location, config.xml in the
-	 * current directory
-	 */
-	public static void load() throws MarlaException
-	{
-		load("config.xml");
-	}
-
-	/**
-	 * Loads maRla configuration from the specified config file
-	 * @param configPath XML file to load data from
-	 */
-	public static void load(String configPath) throws MarlaException
-	{
-		Element configXML = null;
-
-		try
-		{
-			// Load the XML
-			SAXBuilder parser = new SAXBuilder();
-			Document doc = parser.build(configPath);
-			configXML = doc.getRootElement();
-
-			System.out.println("Using config file at '" + configPath + "'");
-		}
-		catch(JDOMException ex)
-		{
-			throw new MarlaException("Config file could not be parsed, using default configuration", ex);
-		}
-		catch(IOException ex)
-		{
-			throw new MarlaException("Config file could not be read", ex);
-		}
-
-		// Tell various components about their settings
-		RProcessor.setConfig(configXML.getChild("rprocessor"));
-		LatexExporter.setConfig(configXML.getChild("latex"));
-		OperationXML.setConfig(configXML.getChild("xmlops"));
-	}
-
 	/**
 	 * Sets configuration parameters based on command line
 	 * @param args Command line parameters, as given to main() by the VM
@@ -97,6 +62,57 @@ public class Configuration
 				RProcessor.getInstance().setDebugMode(RProcessor.RecordMode.DISABLED);
 			else
 				throw new MarlaException("Unrecognized command line parameter '" + args[0] + "'");
+		}
+	}
+
+	/**
+	 * Loads maRla configuration from the default location, config.xml in the
+	 * current directory
+	 */
+	public static void load() throws MarlaException
+	{
+		load("config.xml");
+	}
+
+	/**
+	 * Loads maRla configuration from the specified config file
+	 * @param configPath XML file to load data from
+	 */
+	public static void load(String configPath) throws MarlaException
+	{
+		Element configXML = null;
+		boolean configLoaded = false;
+
+		try
+		{
+			// Load the XML
+			SAXBuilder parser = new SAXBuilder();
+			Document doc = parser.build(configPath);
+			configXML = doc.getRootElement();
+			configLoaded = true;
+
+			// Tell various components about their settings
+			RProcessor.setConfig(configXML.getChild("rprocessor"));
+			LatexExporter.setConfig(configXML.getChild("latex"));
+			OperationXML.setConfig(configXML.getChild("xmlops"));
+
+			System.out.println("Using config file at '" + configPath + "'");
+		}
+		catch(JDOMException ex)
+		{
+			configLoaded = false;
+		}
+		catch(IOException ex)
+		{
+			configLoaded = false;
+		}
+
+		// Unable to load config, so make sure we can find R and pdflatex
+		if(!configLoaded)
+		{
+			String rPath = findR();
+			if(rPath != null)
+				RProcessor.setRLocation(rPath);
 		}
 	}
 
@@ -137,5 +153,78 @@ public class Configuration
 		{
 			throw new MarlaException("Problem occured writing to configuration file", ex);
 		}
+	}
+
+	/**
+	 * Checks if the given executable is on the system's PATH
+	 * @param exeName executable to locate. On Windows this must include the extension
+	 * @return true if the executable is on the path, false otherwise
+	 */
+	public static boolean isOnPath(String exeName)
+	{
+		// Determines if a given file is somewhere on the system PATH
+		String[] pathDirs = System.getenv("PATH").split(";|:");
+		for(String dirPath : pathDirs)
+		{
+			File exe = new File(dirPath + "/" + exeName);
+			if(exe.exists())
+				return true;
+		}
+
+		// Didn't find it
+		return false;
+	}
+
+	/**
+	 * Returns a path to the R executable (or just "R" if it's on the path). Null
+	 * if it cannot be found
+	 * @return Path to R, as usable by createProcess(). Null if not found
+	 */
+	public static String findR()
+	{
+		// See if it's on the path
+		if(isOnPath("R"))
+			return "R";
+
+		// Try to find it in all the common locations
+		List<String> commonLocs = new ArrayList<String>();
+		commonLocs.add("/R/bin/R"); // Local copy
+		commonLocs.add("/Library/Frameworks/R.framework/Resources/R"); // OS X
+		commonLocs.add("/usr/lib/R/bin/R"); // Linux (Mint/Ubuntu)
+
+		// Add the program files directories for Windows
+		File[] roots = File.listRoots();
+		for(int i = 0; i < roots.length; i++)
+		{
+			// Ensure this program files director exists
+			File progDir = new File(roots[i] + "Program Files");
+			if(!progDir.isDirectory())
+				continue;
+
+			// The R folder has the version number, so look for anything similar
+			Collection<String> test = FileUtils.listFiles(progDir, FileFilterUtils.prefixFileFilter("R.exe"), new RegexFileFilter("R.*|bin|x64|x32"));
+
+			commonLocs.add(roots + "Program Files\\R\\R-2.12.1\\bin\\x64\\R.exe");
+			commonLocs.add(roots + "Program Files\\R\\R-2.12.1\\bin\\x32\\R.exe");
+			commonLocs.add(roots + "Program Files\\R\\R-2.12.1\\bin\\R.exe");
+		}
+
+		for(String s : commonLocs)
+		{
+			File f = new File(s);
+			System.err.print("\n\t" + s);
+			if(f.exists())
+			{
+				System.err.println("\nfound!");
+				return s;
+			}
+		}
+
+		return null;
+	}
+
+	public static void main(String[] args)
+	{
+		System.out.println("Located at " + findR());
 	}
 }
