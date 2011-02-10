@@ -625,7 +625,6 @@ public class ViewPanel extends JPanel
 					domain.ensureRequirementsMet((Operation) component);
 
 					answerPanel.removeAll ();
-					answerPanel.add (new JLabel ("-Solution to Point-"));
 					if (((Operation) component).hasPlot())
 					{
 						JLabel label = new JLabel ("");

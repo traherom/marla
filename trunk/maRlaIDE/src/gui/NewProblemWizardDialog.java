@@ -26,8 +26,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
@@ -45,6 +43,8 @@ import javax.swing.JTextArea;
 import javax.swing.JViewport;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableColumnModel;
 import javax.swing.table.TableColumn;
 import org.jdesktop.layout.GroupLayout;
@@ -79,13 +79,15 @@ public class NewProblemWizardDialog extends EscapeDialog
 	/** The list in the New Problem Wizard of sub problems within the current problem.*/
 	private ArrayList<JPanel> subProblemPanels = new ArrayList<JPanel>();
 	/** True if the New Problem Wizard is being opened and actions should be ignored.*/
-	private boolean openingWizard = false;
+	private boolean openCloseWizard = false;
 	/** True when a data set tab is being added, false otherwise.*/
 	private boolean addingDataSet = false;
 	/** Set true once the New Problem Wizard is told to overwrite existing files.*/
 	private boolean newProblemOverwrite = false;
 	/** True if the current problem is being edited in the wizard, false if creating a new problem in the wizard.*/
 	protected boolean editing = false;
+	/** The value last good value of the cell being edited.*/
+	private Object editTableValue = null;
 	/** A reference to the domain.*/
 	private Domain domain;
 
@@ -701,25 +703,45 @@ public class NewProblemWizardDialog extends EscapeDialog
 
 		// Add minimum columns to the table model
 		JTable table = ((JTable) ((JViewport) ((JScrollPane) panel.getComponent (0)).getComponent (0)).getComponent (0));
-		ExtendedTableModel newTableModel = new ExtendedTableModel ();
+		final ExtendedTableModel newModel = new ExtendedTableModel ();
+		newModel.addTableModelListener (new TableModelListener ()
+		{
+			@Override
+			public void tableChanged(TableModelEvent evt)
+			{
+				if (!openCloseWizard && !addingDataSet)
+				{
+					// Ensure the new value is a valid double, otherwise revert
+					try
+					{
+						Double.parseDouble (newModel.getValueAt (evt.getFirstRow(), evt.getColumn ()).toString ());
+					}
+					catch (NumberFormatException ex)
+					{
+						newModel.setValueAt (0, evt.getFirstRow(), evt.getColumn ());
+					}
+					catch (NullPointerException ex) {}
+				}
+			}
+		});
 		DefaultTableColumnModel newColumnModel = new DefaultTableColumnModel ();
 		for (int i = 0; i < columns; ++i)
 		{
 				index = i + 1;
-				while (columnNameExists(newTableModel, i, "Column " + (index)))
+				while (columnNameExists(newModel, i, "Column " + (index)))
 				{
 						++index;
 				}
 				newColumnModel.addColumn (new TableColumn ());
-				newTableModel.addColumn("Column " + index);
+				newModel.addColumn("Column " + index);
 		}
 		table.setColumnModel (newColumnModel);
 		// Add minimum rows to the table model
 		for (int i = 0; i < rows; ++i)
 		{
-				newTableModel.addRow (new Object[columns]);
+				newModel.addRow (new Object[columns]);
 		}
-		table.setModel (newTableModel);
+		table.setModel (newModel);
 		table.updateUI();
 		table.getTableHeader().resizeAndRepaint ();
 
@@ -740,10 +762,13 @@ public class NewProblemWizardDialog extends EscapeDialog
 }//GEN-LAST:event_removeDataSetButtonActionPerformed
 
 	private void closeWizardButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_closeWizardButtonActionPerformed
+		openCloseWizard = true;
+
 		dispose();
 		VIEW_PANEL.requestFocus();
 
 		editing = false;
+		openCloseWizard = false;
 }//GEN-LAST:event_closeWizardButtonActionPerformed
 
 	private void nextWizardButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nextWizardButtonActionPerformed
@@ -996,11 +1021,31 @@ public class NewProblemWizardDialog extends EscapeDialog
 	 */
 	private JPanel createValuesTabbedPanel()
 	{
-		openingWizard = true;
+		openCloseWizard = true;
 		
 		final JPanel valuesPanel = new JPanel();
 		final JScrollPane scrollPane = new JScrollPane();
-		ExtendedTableModel model = new ExtendedTableModel();
+		final ExtendedTableModel model = new ExtendedTableModel();
+		model.addTableModelListener (new TableModelListener ()
+		{
+			@Override
+			public void tableChanged(TableModelEvent evt)
+			{
+				if (!openCloseWizard && !addingDataSet)
+				{
+					// Ensure the new value is a valid double, otherwise revert
+					try
+					{
+						Double.parseDouble (model.getValueAt (evt.getFirstRow(), evt.getColumn ()).toString ());
+					}
+					catch (NumberFormatException ex)
+					{
+						model.setValueAt (0, evt.getFirstRow(), evt.getColumn ());
+					}
+					catch (NullPointerException ex) {}
+				}
+			}
+		});
 		final JTable table = new JTable(model);
 		table.getTableHeader().setFont(ViewPanel.FONT_PLAIN_12);
 		table.getTableHeader().addMouseListener(new MouseAdapter()
@@ -1030,18 +1075,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 				}
 			}
 		});
-		table.addPropertyChangeListener(new PropertyChangeListener ()
-		{
-			@Override
-			public void propertyChange(PropertyChangeEvent evt)
-			{
-				if (!openingWizard && !addingDataSet)
-				{
-					System.out.println ("test");
-				}
-			}
-			
-		});
+		
 		scrollPane.setViewportView(table);
 		final JLabel columnsLabel = new JLabel("Columns:");
 		columnsLabel.setFont(new java.awt.Font("Verdana", 0, 12));
@@ -1051,7 +1085,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 			@Override
 			public void stateChanged(ChangeEvent evt)
 			{
-				if(!openingWizard)
+				if(!openCloseWizard)
 				{
 					int value = Integer.parseInt(columnsSpinner.getValue().toString());
 					// Don't let column count be below 1
@@ -1075,10 +1109,10 @@ public class NewProblemWizardDialog extends EscapeDialog
 						{
 							++index;
 						}
-						table.getColumnModel().addColumn(new TableColumn());
+						TableColumn newColumn = new TableColumn ();
+						newColumn.setHeaderValue("Column " + index);
+						table.getColumnModel ().addColumn(newColumn);
 						model.addColumn ("Column " + index);
-						table.getColumnModel().getColumn(model.getColumnCount() - 1).setHeaderValue("Column " + index);
-						table.setModel (model);
 					}
 
 					table.updateUI();
@@ -1094,7 +1128,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 			@Override
 			public void stateChanged(ChangeEvent evt)
 			{
-				if(!openingWizard)
+				if(!openCloseWizard)
 				{
 					int value = Integer.parseInt(rowsSpinner.getValue().toString());
 					// Don't let row count be below 1
@@ -1156,7 +1190,27 @@ public class NewProblemWizardDialog extends EscapeDialog
 								columnsSpinner.setValue(importedDataSet.getColumnCount());
 								rowsSpinner.setValue(importedDataSet.getColumnLength());
 
-								ExtendedTableModel newModel = new ExtendedTableModel();
+								final ExtendedTableModel newModel = new ExtendedTableModel();
+								newModel.addTableModelListener (new TableModelListener ()
+								{
+									@Override
+									public void tableChanged(TableModelEvent evt)
+									{
+										if (!openCloseWizard && !addingDataSet)
+										{
+											// Ensure the new value is a valid double, otherwise revert
+											try
+											{
+												Double.parseDouble (newModel.getValueAt (evt.getFirstRow(), evt.getColumn ()).toString ());
+											}
+											catch (NumberFormatException ex)
+											{
+												newModel.setValueAt (0, evt.getFirstRow(), evt.getColumn ());
+											}
+											catch (NullPointerException ex) {}
+										}
+									}
+								});
 								// Set the column headers
 								String[] columnNames = importedDataSet.getColumnNames();
 								for(int i = 0; i < columnNames.length; ++i)
@@ -1247,7 +1301,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 	 */
 	protected void launchNewProblemWizard()
 	{
-		openingWizard = true;
+		openCloseWizard = true;
 
 		newProblemOverwrite = false;
 
@@ -1283,7 +1337,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 		setLocationRelativeTo(VIEW_PANEL);
 		setVisible(true);
 
-		openingWizard = false;
+		openCloseWizard = false;
 	}
 
 	/**
@@ -1307,25 +1361,45 @@ public class NewProblemWizardDialog extends EscapeDialog
 
 			// Add minimum columns to the table model
 			JTable table = ((JTable) ((JViewport) ((JScrollPane) ((JPanel) dataSetTabbedPane.getComponent (0)).getComponent (0)).getComponent (0)).getComponent (0));
-			ExtendedTableModel newTableModel = new ExtendedTableModel ();
+			final ExtendedTableModel newModel = new ExtendedTableModel ();
+			newModel.addTableModelListener (new TableModelListener ()
+			{
+				@Override
+				public void tableChanged(TableModelEvent evt)
+				{
+					if (!openCloseWizard && !addingDataSet)
+					{
+						// Ensure the new value is a valid double, otherwise revert
+						try
+						{
+							Double.parseDouble (newModel.getValueAt (evt.getFirstRow(), evt.getColumn ()).toString ());
+						}
+						catch (NumberFormatException ex)
+						{
+							newModel.setValueAt (0, evt.getFirstRow(), evt.getColumn ());
+						}
+						catch (NullPointerException ex) {}
+					}
+				}
+			});
 			DefaultTableColumnModel newColumnModel = new DefaultTableColumnModel ();
 			for (int i = 0; i < columns; ++i)
 			{
 				int index = i + 1;
-				while (columnNameExists(newTableModel, i, "Column " + (index)))
+				while (columnNameExists(newModel, i, "Column " + (index)))
 				{
 					++index;
 				}
 				newColumnModel.addColumn (new TableColumn ());
-				newTableModel.addColumn("Column " + index);
+				newModel.addColumn("Column " + index);
 			}
 			table.setColumnModel (newColumnModel);
 			// Add minimum rows to the table model
 			for (int i = 0; i < rows; ++i)
 			{
-				newTableModel.addRow (new Object[columns]);
+				newModel.addRow (new Object[columns]);
 			}
-			table.setModel (newTableModel);
+			table.setModel (newModel);
 			table.updateUI();
 			table.getTableHeader().resizeAndRepaint ();
 		}
@@ -1394,29 +1468,48 @@ public class NewProblemWizardDialog extends EscapeDialog
 
 				// Add minimum columns to the table model
 				JTable table = (JTable) ((JViewport) ((JScrollPane) panel.getComponent (0)).getComponent (0)).getComponent (0);
-				ExtendedTableModel newTableModel = new ExtendedTableModel ();
+				final ExtendedTableModel newModel = new ExtendedTableModel ();
+				newModel.addTableModelListener (new TableModelListener ()
+				{
+					@Override
+					public void tableChanged(TableModelEvent evt)
+					{
+						if (!openCloseWizard && !addingDataSet)
+						{
+							try
+							{
+								Double.parseDouble (newModel.getValueAt (evt.getFirstRow(), evt.getColumn ()).toString ());
+							}
+							catch (NumberFormatException ex)
+							{
+								newModel.setValueAt (0, evt.getFirstRow(), evt.getColumn ());
+							}
+							catch (NullPointerException ex) {}
+						}
+					}
+				});
 				DefaultTableColumnModel newColumnModel = new DefaultTableColumnModel ();
 				for (int j = 0; j < columns; ++j)
 				{
 					newColumnModel.addColumn (new TableColumn ());
-					newTableModel.addColumn(dataSet.getColumn(j).getName());
-					newColumnModel.getColumn (newTableModel.getColumnCount () - 1).setHeaderValue(dataSet.getColumn (j).getName ());
+					newModel.addColumn(dataSet.getColumn(j).getName());
+					newColumnModel.getColumn (newModel.getColumnCount () - 1).setHeaderValue(dataSet.getColumn (j).getName ());
 				}
 				table.setColumnModel (newColumnModel);
 				// Add minimum rows to the table model
 				for (int j = 0; j < rows; ++j)
 				{
-					newTableModel.addRow (new Object[columns]);
+					newModel.addRow (new Object[columns]);
 				}
 				// Fill in the values for all table elements
 				for (int j = 0; j < columns; ++j)
 				{
 					for (int k = 0; k < dataSet.getColumn (j).size(); ++k)
 					{
-						newTableModel.setValueAt(dataSet.getColumn (j).get (k), k, j);
+						newModel.setValueAt(dataSet.getColumn (j).get (k), k, j);
 					}
 				}
-				table.setModel (newTableModel);
+				table.setModel (newModel);
 				table.updateUI ();
 				table.getTableHeader().resizeAndRepaint ();
 			}
