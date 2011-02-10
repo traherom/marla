@@ -258,7 +258,7 @@
 		<query type="column" name="col" prompt="Column?" column_type="numeric" />
 		<query type="numeric" name="val" prompt="Raise by" />
 
-		<longname><response name="col" default="x" /> ^ <response name="val" default="X" /></longname>
+		<longname><response name="col" default="x" />&lt;sup&gt;<response name="val" default="X" />&lt;/sup&gt;</longname>
 
 		<computation>
 			<set name="col" rvar="colName" use="name" />
@@ -268,7 +268,7 @@
 				<if expr="currColName == colName">
 					<then>
 						<!-- This is the column we're supposed to compute on -->
-						<save type="numeric" r_column="currColName">currCol^val</save>
+						<save type="numeric" r_column="currColName">currCol&lt;sup&gt;val&lt;/sup&gt;</save>
 					</then>
 					<else>
 						<!-- Not the column we're working with, just copy it over -->
@@ -488,7 +488,7 @@
 	<operation name="Exponential" category="Basic Math">
 		<query type="column" name="col" prompt="Column?" column_type="numeric" />
 
-		<longname>e^<response name="col" default="x" /></longname>
+		<longname>e&lt;sup&gt;<response name="col" default="x" />&lt;/sup&gt;</longname>
 
 		<computation>
 			<set name="col" rvar="colName" use="name" />

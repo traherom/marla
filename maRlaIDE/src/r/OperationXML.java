@@ -1007,12 +1007,12 @@ public class OperationXML extends Operation
 			}
 
 			// Make it visible externally, not interal though
-			super.setText(newName.toString());
+			super.setText("<html>" + newName.toString() + "</html>");
 		}
 		else
 		{
 			// Just use the plain old name
-			super.setText(opConfig.getAttributeValue("name"));
+			super.setText("<html>" + opConfig.getAttributeValue("name") + "</html>");
 		}
 
 		// Tell the problem to rebuild the displayed tree, rearranging as needed

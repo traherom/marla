@@ -26,6 +26,7 @@ import javax.swing.Action;
 import javax.swing.InputMap;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
+import javax.swing.JFrame;
 import javax.swing.JRootPane;
 import javax.swing.KeyStroke;
 
@@ -38,7 +39,7 @@ import javax.swing.KeyStroke;
 public class EscapeDialog extends JDialog
 {
     /** A reference to the main panel of the application.*/
-    private ViewPanel viewPanel;
+    final protected ViewPanel VIEW_PANEL;
 
     /**
      * Constructs a standard Escape Dialog.
@@ -46,7 +47,7 @@ public class EscapeDialog extends JDialog
     public EscapeDialog(ViewPanel viewPanel)
     {
         super ();
-		setMainPanel (viewPanel);
+		this.VIEW_PANEL = viewPanel;
     }
 
     /**
@@ -57,17 +58,18 @@ public class EscapeDialog extends JDialog
     public EscapeDialog(JDialog parent, ViewPanel viewPanel)
     {
         super (parent);
-		setMainPanel (viewPanel);
+		this.VIEW_PANEL = viewPanel;
     }
 
-    /**
-     * Sets a reference to the main panel of the escape dialog.
+	/**
+     * Constructs an Escape Dialog with a JFrame as its parent.
      *
-     * @param viewPanel The main panel of the escape dialog.
+     * @param parent The dialog to be the parent.
      */
-    public final void setMainPanel(ViewPanel viewPanel)
+    public EscapeDialog(JFrame parent, ViewPanel viewPanel)
     {
-        this.viewPanel = viewPanel;
+        super (parent);
+		this.VIEW_PANEL = viewPanel;
     }
 
     /**
@@ -88,8 +90,8 @@ public class EscapeDialog extends JDialog
             public void actionPerformed(ActionEvent actionEvent)
             {
                 ((JDialog) rootPane.getParent ()).dispose ();
-                viewPanel.setEnabled (true);
-                viewPanel.requestFocus ();
+                VIEW_PANEL.setEnabled (true);
+                VIEW_PANEL.requestFocus ();
             }
         };
         rootPane = new JRootPane ();

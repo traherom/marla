@@ -65,9 +65,9 @@ public class ExtendedTableModel extends AbstractTableModel
         Object[][] newData = new Object[data.length][columnNames.length];
         for (int i = 0; i < data.length; ++i)
         {
-            for (int j = 0; j < columnNames.length - 1; ++j)
+            for (int j = 0; j < columnNames.length; ++j)
             {
-				if (data[i][j] != null)
+				if (j < data[i].length)
 				{
 					newData[i][j] = data[i][j];
 				}
@@ -79,11 +79,6 @@ public class ExtendedTableModel extends AbstractTableModel
         }
 		
         data = newData;
-		// Add default data values for new column
-		for (int i = 0; i < data.length; ++i)
-		{
-			data[i][columnNames.length - 1] = 0.0;
-		}
 		
 		fireTableDataChanged();
 	}
