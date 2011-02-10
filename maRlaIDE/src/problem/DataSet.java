@@ -362,7 +362,7 @@ public final class DataSet extends JLabel implements DataSource, Changeable
 
 		markChanged();
 
-		super.setText(newName);
+		super.setText("<html>" + newName + "</html>");
 		name = newName;
 	}
 

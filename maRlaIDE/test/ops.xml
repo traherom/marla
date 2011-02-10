@@ -16,7 +16,7 @@
 
 		<computation>
 			<set name="col" rvar="x" use="values" />
-
+x
 			<copy all="true" />
 
 			<plot>
@@ -268,7 +268,7 @@
 				<if expr="currColName == colName">
 					<then>
 						<!-- This is the column we're supposed to compute on -->
-						<save type="numeric" r_column="currColName">currCol&lt;sup&gt;val&lt;/sup&gt;</save>
+						<save type="numeric" r_column="currColName">currCol(val)</save>
 					</then>
 					<else>
 						<!-- Not the column we're working with, just copy it over -->
@@ -456,7 +456,7 @@
 	<operation name="Log 10" category="Basic Math">
 		<query type="column" name="col" prompt="Column?" column_type="numeric" />
 
-		<longname>log10(<response name="col" default="x" />)</longname>
+		<longname>log&lt;sub&gt;10&lt;/sub&gt;<response name="col" default="x" /></longname>
 
 		<computation>
 			<set name="col" rvar="colName" use="name" />
@@ -472,7 +472,7 @@
 		<query type="column" name="col" prompt="Column?" column_type="numeric" />
 		<query type="numeric" name="base" prompt="Base" />
 
-		<longname>log <response name="base" default="X" /> of <response name="col" default="x" /></longname>
+		<longname>log&lt;sub&gt;<response name="base" default="X" />&lt;/sub&gt;<response name="col" default="x" /></longname>
 
 		<computation>
 			<set name="col" rvar="colName" use="name" />
@@ -561,7 +561,7 @@
 	<operation name="StdDev" category="Basic Analysis">
 		<query type="column" name="col" prompt="Column?" column_type="numeric" />
 
-		<longname>sd(<response name="col" default="x" />)</longname>
+		<longname>&#963;(<response name="col" default="x" />)</longname>
 
 		<computation>
 			<set name="col" rvar="colName" use="name" />
@@ -576,7 +576,7 @@
 	<operation name="Sum" category="Basic Analysis">
 		<query type="column" name="col" prompt="Column?" column_type="numeric" />
 
-		<longname>sum(<response name="col" default="x" />)</longname>
+		<longname>&#8721;(<response name="col" default="x" />)</longname>
 
 		<computation>
 			<set name="col" rvar="colName" use="name" />

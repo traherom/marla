@@ -252,7 +252,7 @@ public abstract class Operation extends JLabel implements DataSource, Changeable
 	protected final void setOperationName(String newName)
 	{
 		// Set the label
-		super.setText(newName);
+		super.setText("<html>" + newName + "</html>");
 
 		// And save the op name
 		name = newName;
