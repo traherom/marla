@@ -17,6 +17,7 @@
  */
 package latex;
 
+import r.RProcessor;
 import java.io.File;
 import problem.ProblemTest;
 import problem.Problem;

@@ -1399,7 +1399,7 @@ public class ViewPanel extends JPanel
 					}
 					else
 					{
-						answerPanel.add(new JLabel("<html>" + ((Operation) component).toString().replaceAll("\n", "<br />") + "</html>"));
+						answerPanel.add(new JLabel("<html>" + ((DataSource) component).toHTML() + "</html>"));
 					}
 
 					answerDialog.pack ();

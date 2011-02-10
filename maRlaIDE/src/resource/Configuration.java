@@ -198,7 +198,7 @@ public class Configuration
 	public static String findExecutable(String exeName, String dirSearch, List<File> additional)
 	{
 		// Save all possible files that match the requested name
-		Pattern namePatt = Pattern.compile(exeName + "\\.(exe)?");
+		Pattern namePatt = Pattern.compile(exeName + "(\\.exe)?");
 		Pattern dirPatt = Pattern.compile(dirSearch);
 		List<File> checkPaths = new ArrayList<File>();
 

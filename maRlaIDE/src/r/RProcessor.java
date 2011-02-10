@@ -28,6 +28,7 @@ import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.jdom.Element;
+import resource.Configuration;
 
 /**
  * @author Ryan Morehart
@@ -159,6 +160,15 @@ public final class RProcessor
 		System.out.println("Using R binary at '" + rPath + "'");
 
 		return oldPath;
+	}
+
+	/**
+	 * Gets the currently set default location to look for R
+	 * @return The assigned location of R
+	 */
+	public static String getRLocation()
+	{
+		return rPath;
 	}
 
 	/**

@@ -17,6 +17,7 @@
  */
 package r;
 
+import resource.Configuration;
 import java.util.List;
 import java.io.File;
 import problem.DataColumn.DataMode;
@@ -36,7 +37,8 @@ public class RProcessorTest
 	@BeforeClass
 	public static void setUpClass() throws Exception
 	{
-		proc = RProcessor.restartInstance();
+		RProcessor.setRLocation(Configuration.findR());
+		proc = RProcessor.getInstance();
 	}
 
 	@Before

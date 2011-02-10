@@ -707,6 +707,19 @@ public abstract class Operation extends JLabel implements DataSource, Changeable
 		return operationRecord.toString();
 	}
 
+	@Override
+	public final String toHTML() throws MarlaException
+	{
+		// We only output ourselves as a DataSet if we don't have a plot
+		if(hasPlot())
+			throw new InternalMarlaException("This operation generates a plot, it must be displayed with getPlot()");
+
+		checkCache();
+
+		// Just display the results as a normal DataSet
+		return DataSet.toHTML(this);
+	}
+
 	/**
 	 * Returns the calculated result of this operation.
 	 * @return String of the R commands used to do computations
