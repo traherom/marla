@@ -1254,6 +1254,13 @@ public class ViewPanel extends JPanel
 	private void workspacePanelMouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_workspacePanelMouseDragged
 		if (evt.getButton() == 0 || evt.getButton () == MouseEvent.BUTTON1)
 		{
+			if (hoveredComponent != null)
+			{
+				hoveredComponent.setBorder (NO_BORDER);
+				hoveredComponent.setSize (hoveredComponent.getPreferredSize ());
+				hoveredComponent = null;
+			}
+
 			Component component = workspacePanel.getComponentAt (evt.getPoint ());
 			if (component != null &&
 					component != workspacePanel &&
@@ -1266,12 +1273,12 @@ public class ViewPanel extends JPanel
 					hoveredComponent.setBorder (BLACK_BORDER);
 					hoveredComponent.setSize (hoveredComponent.getPreferredSize ());
 				}
-			}
-			else if (hoveredComponent != null)
-			{
-				hoveredComponent.setBorder (NO_BORDER);
-				hoveredComponent.setSize (hoveredComponent.getPreferredSize ());
-				hoveredComponent = null;
+				else if (hoveredComponent != null)
+				{
+					hoveredComponent.setBorder (NO_BORDER);
+					hoveredComponent.setSize (hoveredComponent.getPreferredSize ());
+					hoveredComponent = null;
+				}
 			}
 
 			if (draggingComponent != null)
@@ -2258,7 +2265,6 @@ public class ViewPanel extends JPanel
 					DataSet dataSet = domain.problem.getData (i);
 					// Add the new data set to the workspace
 					workspacePanel.add (dataSet);
-					((WorkspacePanel) workspacePanel).addDataSet(dataSet);
 
 					for (int j = 0; j < dataSet.getOperationCount(); ++j)
 					{
