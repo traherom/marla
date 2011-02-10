@@ -23,7 +23,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -167,8 +166,9 @@ public class Configuration
 		String[] pathDirs = System.getenv("PATH").split(";|:");
 		for(String dirPath : pathDirs)
 		{
-			File exe = new File(dirPath + "/" + exeName);
-			if(exe.exists())
+			File exeNoExt = new File(dirPath + "/" + exeName);
+			File exeWithExt = new File(dirPath + "/" + exeName + ".exe");
+			if(exeNoExt.exists() || exeWithExt.exists())
 				return true;
 		}
 
@@ -176,12 +176,12 @@ public class Configuration
 		return false;
 	}
 
-	public static String findR()
+	public static String findR() throws ConfigurationException
 	{
-		return findExecutable("R", "R.*|bin|usr|local|lib|Program Files.*|x64|x32", null);
+		return findExecutable("R", "R.*|bin|usr|local|lib|Program Files.*|x64|i386", null);
 	}
 
-	public static String findPdflatex()
+	public static String findPdflatex() throws ConfigurationException
 	{
 		return findExecutable("pdflatex", "bin|usr|Program Files.*|[Mm]i[Kk][Tt]e[Xx].*", null);
 	}
@@ -195,8 +195,12 @@ public class Configuration
 	 * @param additional List of directories to manually add to the search
 	 * @return Path to executable, as usable by createProcess(). Null if not found
 	 */
-	public static String findExecutable(String exeName, String dirSearch, List<File> additional)
+	public static String findExecutable(String exeName, String dirSearch, List<File> additional) throws ConfigurationException
 	{
+		// Check if it's on the path, in which case we don't bother searching
+		//if(isOnPath(exeName))
+		//	return exeName;
+		
 		// Save all possible files that match the requested name
 		Pattern namePatt = Pattern.compile(exeName + "(\\.exe)?");
 		Pattern dirPatt = Pattern.compile(dirSearch);
@@ -206,9 +210,6 @@ public class Configuration
 		// Put them first as they're more likely to be correct
 		if(additional != null)
 			checkPaths.addAll(additional);
-
-		// Add all path locations
-		//checkPaths.addAll(Arrays.asList(System.getenv("PATH").split(";|:")));
 
 		// Loop to hit all the dives on Windows. On Linux/OSX this only happens once
 		File[] roots = File.listRoots();
@@ -227,20 +228,23 @@ public class Configuration
 		}
 
 		// Find one of our results that is executable
-		System.out.println("Looking for " + exeName + " at ");
+		String selection = null;
+		System.out.println(checkPaths.size() + " possibilities found for " + exeName + ": ");
 		for(File f : checkPaths)
 		{
 			System.out.println("\t" + f.getPath());
-			if(f.canExecute())
-				return f.getPath();
+			if(selection == null && f.canExecute())
+				selection = f.getPath();
 		}
 
-		// Failed
-		System.out.println("Unable to locate " + exeName);
-		return null;
+		// Failed?
+		if(selection == null)
+			throw new ConfigurationException("Unable to locate suitable instance of " + exeName);
+		
+		return selection;
 	}
 
-	public static void main(String[] args)
+	public static void main(String[] args) throws ConfigurationException
 	{
 		System.out.println("R located at " + findR());
 		System.out.println("pdflatex located at " + findPdflatex());

@@ -28,6 +28,7 @@ import org.junit.runners.Parameterized;
 import org.junit.runner.RunWith;
 import org.junit.*;
 import static org.junit.Assert.*;
+import resource.ConfigurationException;
 
 /**
  * Test each available operation in the same battery of hair-raising trials
@@ -59,7 +60,7 @@ public class ImplementedOperationTest
 	}
 
 	@BeforeClass
-	public static void configureR()
+	public static void configureR() throws ConfigurationException
 	{
 		RProcessor.setRLocation(Configuration.findR());
 	}
