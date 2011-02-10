@@ -678,6 +678,12 @@ public final class DataSet extends JLabel implements DataSource, Changeable
 		return frameName;
 	}
 
+	@Override
+	public String toHTML() throws MarlaException
+	{
+		return toHTML(this);
+	}
+
 	/**
 	 * Outputs this DataSet as a human readable display
 	 * @return DataSet as a string two dimensional array
@@ -696,9 +702,65 @@ public final class DataSet extends JLabel implements DataSource, Changeable
 	}
 
 	/**
+	 * Represents the given DataSet as an HTML table
+	 * @param ds DataSource to create string for
+	 * @return String of the data inside the given DataSource
+	 */
+	public static String toHTML(DataSource ds) throws MarlaException
+	{
+		StringBuilder sb = new StringBuilder();
+		sb.append("<table>\n");
+
+		// DataSource name
+		sb.append("\t<tr><td style='text-align: center' colspan='");
+		sb.append(ds.getColumnCount() + 1);
+		sb.append("'>");
+		sb.append(ds.getName());
+		sb.append("</td></tr>\n");
+
+		// Column names
+		sb.append("\t<tr><td></td>");
+		for(int i = 0; i < ds.getColumnCount(); i++)
+		{
+			sb.append("<td>");
+			sb.append(ds.getColumn(i).getName());
+			sb.append("</td>");
+		}
+		sb.append("</tr>\n");
+
+		// Data
+		for(int i = 0; i < ds.getColumnLength(); i++)
+		{
+			sb.append("\t<tr><td>");
+			sb.append(i + 1);
+			sb.append("</td>");
+
+			for(int j = 0; j < ds.getColumnCount(); j++)
+			{
+				sb.append("<td style='text-align: center'>");
+
+				// Ensure this column extends this far
+				DataColumn dc = ds.getColumn(j);
+				if(dc.size() > i)
+					sb.append(dc.get(i));
+				else
+					sb.append("&nbsp;");
+
+				sb.append("</td>");
+			}
+
+			sb.append("</tr>\n");
+		}
+
+		sb.append("</table>");
+
+		return sb.toString();
+	}
+	
+	/**
 	 * Represents the given DataSet as an easily readable string
-	 * @param ds DataSet to create string for
-	 * @return String of the data inside the DataSet with the given data
+	 * @param ds DataSource to create string for
+	 * @return String of the data inside the given DataSource
 	 */
 	public static String toString(DataSource ds) throws MarlaException
 	{

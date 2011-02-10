@@ -17,11 +17,11 @@
  */
 package problem;
 
+import resource.Configuration;
 import r.OperationTester;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import r.ImplementedOperationTest;
 import org.jdom.Element;
 import org.junit.*;
 import r.RProcessor;
@@ -41,6 +41,12 @@ public class OperationTest
 	{
 		this.opName = "NOP";
 		System.out.println("Testing operation '" + opName + "'");
+	}
+
+	@BeforeClass
+	public static void configureR()
+	{
+		RProcessor.setRLocation(Configuration.findR());
 	}
 
 	@Before

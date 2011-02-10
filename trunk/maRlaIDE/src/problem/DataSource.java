@@ -146,6 +146,12 @@ public interface DataSource
 	public String toRFrame() throws MarlaException;
 
 	/**
+	 * Outputs this DataSource as an HTML table with the contained data
+	 * @return String of the HTML table representing this DataSource
+	 */
+	public String toHTML() throws MarlaException;
+
+	/**
 	 * Returns a JDOM Element that encapsulates this DataSet's
 	 * name, columns, and child operations
 	 * @return JDOM Element of this DataSet

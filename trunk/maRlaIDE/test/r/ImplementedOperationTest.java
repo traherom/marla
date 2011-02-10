@@ -17,8 +17,8 @@
  */
 package r;
 
+import resource.Configuration;
 import problem.*;
-import problem.Operation.PromptType;
 import java.util.List;
 import org.jdom.Element;
 import java.util.ArrayList;
@@ -27,7 +27,6 @@ import java.util.Collection;
 import org.junit.runners.Parameterized;
 import org.junit.runner.RunWith;
 import org.junit.*;
-import r.RProcessor;
 import static org.junit.Assert.*;
 
 /**
@@ -57,6 +56,12 @@ public class ImplementedOperationTest
 		}
 
 		return objectArray;
+	}
+
+	@BeforeClass
+	public static void configureR()
+	{
+		RProcessor.setRLocation(Configuration.findR());
 	}
 
 	public ImplementedOperationTest(String opName) throws OperationException
