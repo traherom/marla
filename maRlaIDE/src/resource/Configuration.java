@@ -23,11 +23,12 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.regex.Pattern;
 import latex.LatexExporter;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.filefilter.FileFilterUtils;
 import org.apache.commons.io.filefilter.RegexFileFilter;
 import org.jdom.Document;
 import org.jdom.Element;
@@ -111,7 +112,7 @@ public class Configuration
 		if(!configLoaded)
 		{
 			RProcessor.setRLocation(findR());
-			LatexExporter.setPdflatexPath(findPdfLatex());
+			LatexExporter.setPdflatexPath(findPdflatex());
 		}
 	}
 
@@ -175,101 +176,73 @@ public class Configuration
 		return false;
 	}
 
-	/**
-	 * Returns a path to the R executable (or just "R" if it's on the path). Null
-	 * if it cannot be found
-	 * @return Path to R, as usable by createProcess(). Null if not found
-	 */
 	public static String findR()
 	{
-		// See if it's on the path
-		if(isOnPath("R.exe"))
-			return "R.exe";
-
-		// Try to find it in all the common locations
-		List<String> commonLocs = new ArrayList<String>();
-		commonLocs.add("/R/bin/R"); // Local copy
-		commonLocs.add("/Library/Frameworks/R.framework/Resources/R"); // OS X
-		commonLocs.add("/usr/lib/R/bin/R"); // Linux (Mint/Ubuntu)
-
-		// Add the program files directories for Windows
-		File[] roots = File.listRoots();
-		for(int i = 0; i < roots.length; i++)
-		{
-			// Ensure this program files director exists
-			File progDir = new File(roots[i] + "Program Files");
-			if(!progDir.isDirectory())
-				continue;
-
-			// The R folder has the version number, so look for anything similar
-			Collection<String> test = FileUtils.listFiles(progDir, FileFilterUtils.prefixFileFilter("R.exe"), new RegexFileFilter("R.*|bin|x64|x32"));
-
-			commonLocs.add(roots[i].getPath() + "Program Files\\R\\R-2.12.1\\bin\\x64\\R.exe");
-			commonLocs.add(roots[i].getPath() + "Program Files\\R\\R-2.12.1\\bin\\x32\\R.exe");
-			commonLocs.add(roots[i].getPath() + "Program Files\\R\\R-2.12.1\\bin\\R.exe");
-		}
-
-		System.out.println("Looking for R at ");
-		for(String s : commonLocs)
-		{
-			File f = new File(s);
-			System.out.print("\n\t" + s);
-			if(f.exists())
-				return s;
-		}
-
-		System.out.println("Unable to locate R");
-		return null;
+		return findExecutable("R", "R.*|bin|usr|local|lib|Program Files.*|x64|x32", null);
 	}
 
+	public static String findPdflatex()
+	{
+		return findExecutable("pdflatex", "bin|usr|Program Files.*|[Mm]i[Kk][Tt]e[Xx].*", null);
+	}
 
 	/**
-	 * Returns a path to the pdflatex executable (or just "pdflatex" if it's on the path). Null
-	 * if it cannot be found
-	 * @return Path to pdflatex, as usable by createProcess(). Null if not found
+	 * Returns a path to the given executable or null if none is found
+	 * @param exeName Name of the executable to find. Should not include the .exe portion
+	 *	(although that will still function)
+	 * @param dirSearch Regular expression of the directories to search. Any directory that
+	 *	matches this pattern will be recursed into
+	 * @param additional List of directories to manually add to the search
+	 * @return Path to executable, as usable by createProcess(). Null if not found
 	 */
-	public static String findPdfLatex()
+	public static String findExecutable(String exeName, String dirSearch, List<File> additional)
 	{
-		// See if it's on the path
-		if(isOnPath("pdflatex.exe"))
-			return "pdflatex.exe";
+		// Save all possible files that match the requested name
+		Pattern namePatt = Pattern.compile(exeName + "\\.(exe)?");
+		Pattern dirPatt = Pattern.compile(dirSearch);
+		List<File> checkPaths = new ArrayList<File>();
 
-		// Try to find it in all the common locations
-		List<String> commonLocs = new ArrayList<String>();
-		//commonLocs.add("/R/bin/R"); // Local copy
-		//commonLocs.add("/Library/Frameworks/R.framework/Resources/R"); // OS X
-		//commonLocs.add("/usr/lib/R/bin/R"); // Linux (Mint/Ubuntu)
+		// Add any additional paths the user specifically added
+		// Put them first as they're more likely to be correct
+		if(additional != null)
+			checkPaths.addAll(additional);
 
-		// Add the program files directories for Windows
+		// Add all path locations
+		//checkPaths.addAll(Arrays.asList(System.getenv("PATH").split(";|:")));
+
+		// Loop to hit all the dives on Windows. On Linux/OSX this only happens once
 		File[] roots = File.listRoots();
 		for(int i = 0; i < roots.length; i++)
 		{
-			// Ensure this program files director exists
-			File progDir = new File(roots[i] + "Program Files");
-			if(!progDir.isDirectory())
+			// Ensure this drive actually exists (for example, A: may be returned without being attached)
+			if(!roots[i].isDirectory())
 				continue;
 
 			// The R folder has the version number, so look for anything similar
-			Collection<String> test = FileUtils.listFiles(progDir, FileFilterUtils.prefixFileFilter("R.exe"), new RegexFileFilter("R.*|bin|x64|x32"));
-
-			//commonLocs.add(roots[i].getPath() + "Program Files\\R\\R-2.12.1\\bin\\x64\\R.exe");
+			Collection<File> driveSearchRes = FileUtils.listFiles(roots[i],
+					new RegexFileFilter(namePatt), // Find files with these names
+					new RegexFileFilter(dirPatt) // And recurse down directories with these names
+					);
+			checkPaths.addAll(driveSearchRes);
 		}
 
-		System.err.println("Looking for pdflatex on ");
-		for(String s : commonLocs)
+		// Find one of our results that is executable
+		System.out.println("Looking for " + exeName + " at ");
+		for(File f : checkPaths)
 		{
-			File f = new File(s);
-			System.out.print("\n\t" + s);
-			if(f.exists())
-				return s;
+			System.out.println("\t" + f.getPath());
+			if(f.canExecute())
+				return f.getPath();
 		}
 
+		// Failed
+		System.out.println("Unable to locate " + exeName);
 		return null;
 	}
 
 	public static void main(String[] args)
 	{
-		System.out.println("R Located at " + findR());
-		System.out.println("R Located at " + findPdfLatex());
+		System.out.println("R located at " + findR());
+		System.out.println("pdflatex located at " + findPdflatex());
 	}
 }
