@@ -17,7 +17,8 @@
  */
 package latex;
 
-import r.RProcessor;
+import problem.MarlaException;
+import resource.Configuration;
 import java.io.File;
 import problem.ProblemTest;
 import problem.Problem;
@@ -31,6 +32,12 @@ public class LatexExporterTest
 {
 	private Problem testProb = null;
 	private LatexExporter testExp = null;
+
+	@BeforeClass
+	public static void configure() throws MarlaException
+	{
+		Configuration.load();
+	}
 
 	@Before
 	public void setUp() throws Exception
@@ -51,12 +58,13 @@ public class LatexExporterTest
 	{
 		File tempFile = File.createTempFile("marla", "rnw");
 		testExp.cleanExport(tempFile.getPath());
+		System.out.println("Look at " + tempFile);
 	}
 
 	@Test(expected=LatexException.class)
 	public void testCleanExportIncompleteInit() throws Exception
 	{
-		File tempFile = File.createTempFile("marla", "rnw");
+		File tempFile = File.createTempFile("marla", ".rnw");
 		LatexExporter testExp2 = new LatexExporter(testProb, "export_template.xml");
 		testExp2.cleanExport(tempFile.getPath());
 	}
@@ -65,14 +73,16 @@ public class LatexExporterTest
 	@Test
 	public void testRefreshExport() throws Exception
 	{
-		File tempFile = File.createTempFile("marla", "rnw");
+		File tempFile = File.createTempFile("marla", ".rnw");
 		testExp.refreshExport(tempFile.getPath());
+		System.out.println("Look at " + tempFile);
 	}
 
 	@Test
 	public void testPDFExport() throws Exception
 	{
-		File tempFile = File.createTempFile("marla", "pdf");
+		File tempFile = File.createTempFile("marla", ".pdf");
 		testExp.generatePDF(tempFile.getPath());
+		System.out.println("Look at " + tempFile);
 	}
 }

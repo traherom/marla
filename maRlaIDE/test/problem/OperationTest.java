@@ -26,6 +26,7 @@ import org.jdom.Element;
 import org.junit.*;
 import r.RProcessor;
 import static org.junit.Assert.*;
+import resource.ConfigurationException;
 
 /**
  * Test a very basic operation, exercising the abstract Operation more than anything
@@ -44,7 +45,7 @@ public class OperationTest
 	}
 
 	@BeforeClass
-	public static void configureR()
+	public static void configureR() throws ConfigurationException
 	{
 		RProcessor.setRLocation(Configuration.findR());
 	}
