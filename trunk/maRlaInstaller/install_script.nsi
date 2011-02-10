@@ -50,6 +50,7 @@
 
 Section "Start Menu Shortcuts" StartShortcuts
 
+  SetOutPath "$INSTDIR"
   CreateDirectory "$SMPROGRAMS\maRla"
   CreateShortCut "$SMPROGRAMS\maRla\Uninstall.lnk" "$INSTDIR\uninstall.exe" "" "$INSTDIR\uninstall.exe" 1
   CreateShortCut "$SMPROGRAMS\maRla\maRla.lnk" "$INSTDIR\maRlaIDE.jar" "" "$INSTDIR\maRlaIDE.jar" 1
@@ -68,17 +69,22 @@ Section "Include MiKTeX" InstallMikTex
 
   NSISdl::download http://mirrors.ibiblio.org/pub/mirrors/CTAN/systems/win32/miktex/setup/setup.exe $TEMP\setup-mt.exe
   ExecWait "$TEMP\setup-mt.exe"
-  ;DetailPrint "Some Program returned $0"
+
   
 SectionEnd
 
 Section "Install maRla" InstallMarla
 
   SetOutPath "$INSTDIR"
-  
-  ;ADD YOUR OWN FILES HERE...
   File maRlaIDE.jar
   File ops.xml
+  File export_template.xml
+  File config.xml
+  CreateDirectory "$INSTDIR\lib"
+  SetOutPath "$INSTDIR\lib"
+  File lib\commons-io-1.4.jar
+  File lib\jdom.jar
+  File lib\swing-layout-1.0.4.jar
   
   ;Store installation folder
   WriteRegStr HKCU "Software\maRla" "" $INSTDIR
@@ -116,11 +122,17 @@ Section "Uninstall"
 
   Delete "$INSTDIR\Uninstall.exe"
   Delete "$INSTDIR\maRlaIDE.jar"
+  Delete "$INSTDIR\export_template.xml"
+  Delete "$INSTDIR\config.xml"
   Delete "$INSTDIR\ops.xml"
+  Delete "$INSTDIR\lib\commons-io-1.4.jar"
+  Delete "$INSTDIR\lib\jdom.jar"
+  Delete "$INSTDIR\lib\swing-layout-1.0.4.jar"
   Delete "$SMPROGRAMS\maRla\Uninstall.lnk"
   Delete "$SMPROGRAMS\maRla\maRla.lnk"
   
   RMDir "$SMPROGRAMS\maRla"
+  RMDir "$INSTDIR\lib"
   RMDir "$INSTDIR"
 
   DeleteRegKey /ifempty HKCU "Software\maRla"
