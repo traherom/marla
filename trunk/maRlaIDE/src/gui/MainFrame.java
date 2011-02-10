@@ -428,9 +428,9 @@ public class MainFrame extends JFrame
 	}//GEN-LAST:event_solveMenuItemActionPerformed
 
 	private void newProblemMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newProblemMenuItemActionPerformed
-		viewPanel.newProblemWizardDialog.setTitle ("New Problem Wizard");
-		viewPanel.welcomeTextLabel.setText (ViewPanel.welcomeNewText);
-		viewPanel.launchNewProblemWizard ();
+		viewPanel.NEW_PROBLEM_WIZARD_DIALOG.setTitle ("New Problem Wizard");
+		viewPanel.NEW_PROBLEM_WIZARD_DIALOG.welcomeTextLabel.setText (ViewPanel.welcomeNewText);
+		viewPanel.NEW_PROBLEM_WIZARD_DIALOG.launchNewProblemWizard ();
 	}//GEN-LAST:event_newProblemMenuItemActionPerformed
 
 	private void openProblemMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_openProblemMenuItemActionPerformed
@@ -533,24 +533,24 @@ public class MainFrame extends JFrame
 	}//GEN-LAST:event_closeProblemMenuItemActionPerformed
 
 	private void editProblemMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editProblemMenuItemActionPerformed
-		viewPanel.newProblemWizardDialog.setTitle ("Edit Problem");
-		viewPanel.welcomeTextLabel.setText (ViewPanel.welcomeEditText);
-		viewPanel.editing = true;
-		viewPanel.launchNewProblemWizard ();
+		viewPanel.NEW_PROBLEM_WIZARD_DIALOG.setTitle ("Edit Problem");
+		viewPanel.NEW_PROBLEM_WIZARD_DIALOG.welcomeTextLabel.setText (ViewPanel.welcomeEditText);
+		viewPanel.NEW_PROBLEM_WIZARD_DIALOG.editing = true;
+		viewPanel.NEW_PROBLEM_WIZARD_DIALOG.launchNewProblemWizard ();
 	}//GEN-LAST:event_editProblemMenuItemActionPerformed
 
 	private void newDataSetMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newDataSetMenuItemActionPerformed
-		viewPanel.newProblemWizardDialog.setTitle ("Edit Problem");
-		viewPanel.welcomeTextLabel.setText (ViewPanel.welcomeEditText);
+		viewPanel.NEW_PROBLEM_WIZARD_DIALOG.setTitle ("Edit Problem");
+		viewPanel.NEW_PROBLEM_WIZARD_DIALOG.welcomeTextLabel.setText (ViewPanel.welcomeEditText);
 		editProblemMenuItemActionPerformed (null);
-		viewPanel.addNewDataSet ();
+		viewPanel.NEW_PROBLEM_WIZARD_DIALOG.addNewDataSet ();
 	}//GEN-LAST:event_newDataSetMenuItemActionPerformed
 
 	private void editDataSetMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editDataSetMenuItemActionPerformed
-		viewPanel.newProblemWizardDialog.setTitle ("Edit Problem");
-		viewPanel.welcomeTextLabel.setText (ViewPanel.welcomeEditText);
+		viewPanel.NEW_PROBLEM_WIZARD_DIALOG.setTitle ("Edit Problem");
+		viewPanel.NEW_PROBLEM_WIZARD_DIALOG.welcomeTextLabel.setText (ViewPanel.welcomeEditText);
 		editProblemMenuItemActionPerformed (null);
-		viewPanel.editDataSet ();
+		viewPanel.NEW_PROBLEM_WIZARD_DIALOG.editDataSet ();
 	}//GEN-LAST:event_editDataSetMenuItemActionPerformed
 
 	private void reloadOperationgsMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_reloadOperationgsMenuItemActionPerformed
