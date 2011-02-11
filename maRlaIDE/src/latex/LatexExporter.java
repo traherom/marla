@@ -27,6 +27,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
@@ -43,6 +44,7 @@ import problem.DataSource;
 import problem.Operation;
 import problem.SubProblem;
 import r.RProcessor;
+import r.RProcessor.RecordMode;
 import r.RProcessorException;
 import resource.ConfigurationException;
 
@@ -437,14 +439,11 @@ public class LatexExporter
 				if(op.getOperationCount() != 0)
 					continue;
 
-				sweaveBlock.append("\n<<label=");
-				sweaveBlock.append(op.getName());
-
 				// Is the end result a plot?
 				if(op.hasPlot())
-					sweaveBlock.append(", fig=T");
-				
-				sweaveBlock.append(">>=\n");
+					sweaveBlock.append("\n<<fig=T>>=\n");
+				else
+					sweaveBlock.append("\n<<>>=\n");
 
 				sweaveBlock.append(op.getRCommands(true));
 
@@ -597,6 +596,7 @@ public class LatexExporter
 				procBuild.redirectErrorStream(true);
 				texProc = procBuild.start();
 				texOutStream = new BufferedReader(new InputStreamReader(texProc.getInputStream()));
+				texProc.getOutputStream().close();
 			}
 			catch(IOException ex)
 			{
@@ -606,10 +606,16 @@ public class LatexExporter
 			try
 			{
 				// Read the output and save the important parts
+				boolean output = (proc.getDebugMode() == RecordMode.FULL
+						|| proc.getDebugMode() == RecordMode.OUTPUT_ONLY);
+
 				StringBuilder sb = new StringBuilder();
 				String line = texOutStream.readLine();
 				while(line != null)
 				{
+					if(output)
+						System.out.println(line);
+					
 					sb.append(line);
 					sb.append('\n');
 					line = texOutStream.readLine();
@@ -618,12 +624,17 @@ public class LatexExporter
 				pdfOutput = sb.toString();
 
 				// Close process
+				texProc.waitFor();
 				texOutStream.close();
 				exitVal = texProc.exitValue();
 			}
 			catch(IOException ex)
 			{
 				throw new LatexException("Error occurred in reading output from pdflatex", ex);
+			}
+			catch(InterruptedException ex)
+			{
+				throw new LatexException("Interrupted while waiting for pdflatex to exit", ex);
 			}
 
 			// Ensure we actually succeeded. Check for the Sweave file error
