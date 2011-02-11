@@ -158,8 +158,8 @@ public final class RProcessor
 		rPath = newRPath;
 
 		// Ensure it at least exists
-		if(!(new File(rPath)).canExecute())
-			throw new ConfigurationException("R could not be located at '" + rPath + "'");
+		//if(!(new File(rPath)).canExecute())
+		//	throw new ConfigurationException("R could not be located at '" + rPath + "'");
 
 		System.out.println("Using R binary at '" + rPath + "'");
 

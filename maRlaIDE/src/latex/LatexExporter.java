@@ -157,8 +157,8 @@ public class LatexExporter
 		pdflatexPath = newPdfLatexPath;
 
 		// Ensure we could run this if wished
-		if(!(new File(pdflatexPath)).canExecute())
-			throw new ConfigurationException("pdflatex could not be located at '" + defaultTemplate + "'");
+		//if(!(new File(pdflatexPath)).canExecute())
+		//	throw new ConfigurationException("pdflatex could not be located at '" + defaultTemplate + "'");
 
 		System.out.println("Using pdflatex binary at '" + pdflatexPath + "'");
 	}
