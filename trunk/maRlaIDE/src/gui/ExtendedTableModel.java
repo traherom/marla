@@ -253,6 +253,17 @@ public class ExtendedTableModel extends AbstractTableModel
         }
     }
 
+	/**
+	 * Retrieves the array of objects in the given row.
+	 *
+	 * @param row The row to retrieve the data for.
+	 * @return The row data.
+	 */
+	public Object[] getRowAt(int row)
+	{
+		return data[row];
+	}
+
     /**
      * If the column is the first column and the list item type is an assignment,
      * the cell is editable, otherwise it is not.
