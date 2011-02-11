@@ -178,7 +178,7 @@ public class Configuration
 
 	public static String findR() throws ConfigurationException
 	{
-		return findExecutable("R", "R.*|bin|usr|local|lib|Program Files.*|x64|i386", null);
+		return findExecutable("R", "R.*|bin|usr|local|lib|Program Files.*|x64|i386|Library|Frameworks|Resources", null);
 	}
 
 	public static String findPdflatex() throws ConfigurationException

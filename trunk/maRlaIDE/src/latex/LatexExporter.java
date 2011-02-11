@@ -19,15 +19,12 @@ package latex;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import problem.MarlaException;
 import problem.Problem;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
@@ -83,7 +80,7 @@ public class LatexExporter
 	 * Creates a new Latex exporter for the given problem
 	 * @param problem Problem to export to
 	 */
-	public LatexExporter(Problem problem) throws LatexException
+	public LatexExporter(Problem problem) throws LatexException, ConfigurationException
 	{
 		this(problem, null);
 	}
@@ -93,7 +90,7 @@ public class LatexExporter
 	 * @param problem Problem to export to
 	 * @param templatePath Path to the template to use for exporting.
 	 */
-	public LatexExporter(Problem problem, String templatePath) throws LatexException
+	public LatexExporter(Problem problem, String templatePath) throws LatexException, ConfigurationException
 	{
 		if(problem == null)
 			throw new LatexException("Problem to export may not be null");
@@ -111,7 +108,7 @@ public class LatexExporter
 	 * @param newTemplatePath Path to the template file
 	 * @return Previously set template path
 	 */
-	public final String setTemplate(String newTemplatePath) throws LatexException
+	public final String setTemplate(String newTemplatePath) throws LatexException, ConfigurationException
 	{
 		String oldPath = templatePath;
 		templatePath = newTemplatePath;
@@ -129,7 +126,7 @@ public class LatexExporter
 		}
 		catch(IOException ex)
 		{
-			throw new LatexException("LaTeX template XML file could not be read", ex);
+			throw new ConfigurationException("LaTeX template '" + templatePath + "' XML file could not be read", ex);
 		}
 
 		return oldPath;
@@ -140,9 +137,14 @@ public class LatexExporter
 	 * changed for individual instances
 	 * @param newTemplatePath new default template to use
 	 */
-	public static void setDefaultTemplate(String newTemplatePath)
+	public static void setDefaultTemplate(String newTemplatePath) throws ConfigurationException
 	{
 		defaultTemplate = newTemplatePath;
+
+		// Ensure it at least exists
+		if(!(new File(defaultTemplate)).exists())
+			throw new ConfigurationException("LaTeX template '" + defaultTemplate + "' XML file does not exist");
+
 		System.out.println("Using LaTeX export template at '" + defaultTemplate + "'");
 	}
 
@@ -150,9 +152,14 @@ public class LatexExporter
 	 * Sets the path to the pdflatex binary file
 	 * @param newPdfLatexPath New path to executable
 	 */
-	public static void setPdflatexPath(String newPdfLatexPath)
+	public static void setPdflatexPath(String newPdfLatexPath) throws ConfigurationException
 	{
-		pdflatexPath = newPdfLatexPath	;
+		pdflatexPath = newPdfLatexPath;
+
+		// Ensure we could run this if wished
+		if(!(new File(pdflatexPath)).canExecute())
+			throw new ConfigurationException("pdflatex could not be located at '" + defaultTemplate + "'");
+
 		System.out.println("Using pdflatex binary at '" + pdflatexPath + "'");
 	}
 
@@ -160,7 +167,7 @@ public class LatexExporter
 	 * Configures the defaults for exporters based on the given XML configuration
 	 * @param configEl XML configuration element with settings as attributes
 	 */
-	public static void setConfig(Element configEl)
+	public static void setConfig(Element configEl) throws ConfigurationException
 	{
 		// Extract information from configuration XML and set appropriately
 		setDefaultTemplate(configEl.getAttributeValue("template"));

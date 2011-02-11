@@ -28,7 +28,7 @@ import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.jdom.Element;
-import resource.Configuration;
+import resource.ConfigurationException;
 
 /**
  * @author Ryan Morehart
@@ -118,7 +118,7 @@ public final class RProcessor
 	 * Creates a new R instance that can be fed commands
 	 * @param newRPath R executable to run
 	 */
-	private RProcessor(String newRPath) throws RProcessorException
+	private RProcessor(String newRPath) throws RProcessorException, ConfigurationException
 	{
 		try
 		{
@@ -143,7 +143,7 @@ public final class RProcessor
 		}
 		catch(IOException ex)
 		{
-			throw new RProcessorException("Unable to initialize R processor", ex);
+			throw new ConfigurationException("R could not be executed at '" + rPath + "'");
 		}
 	}
 
@@ -152,11 +152,15 @@ public final class RProcessor
 	 * @param newRPath New location of the R binary
 	 * @return The previously assigned location of R
 	 */
-	public static String setRLocation(String newRPath)
+	public static String setRLocation(String newRPath) throws ConfigurationException
 	{
 		String oldPath = rPath;
-
 		rPath = newRPath;
+
+		// Ensure it at least exists
+		if(!(new File(rPath)).canExecute())
+			throw new ConfigurationException("R could not be located at '" + rPath + "'");
+
 		System.out.println("Using R binary at '" + rPath + "'");
 
 		return oldPath;
@@ -175,7 +179,7 @@ public final class RProcessor
 	 * Configures the RProcessor based on XML configuration, typically from a settings file
 	 * @param configEl XML element containing needed data
 	 */
-	public static void setConfig(Element configEl) throws RProcessorException
+	public static void setConfig(Element configEl) throws RProcessorException, ConfigurationException
 	{
 		// Extract information from configuration XML and set appropriately
 		setRLocation(configEl.getAttributeValue("rpath"));
@@ -194,7 +198,10 @@ public final class RProcessor
 	public static Element getConfig(Element configEl) throws RProcessorException
 	{
 		configEl.setAttribute("rpath", rPath);
-		configEl.setAttribute("debug", RProcessor.getInstance().getDebugMode().toString());
+
+		if(singleRProcessor != null)
+			configEl.setAttribute("debug", singleRProcessor.getDebugMode().toString());
+
 		return configEl;
 	}
 
@@ -205,7 +212,7 @@ public final class RProcessor
 	 * locations for Windows, Linux, and OSX.
 	 * @return Instance of RProcessor that can be used for calculations
 	 */
-	public static RProcessor getInstance() throws RProcessorException
+	public static RProcessor getInstance() throws RProcessorException, ConfigurationException
 	{
 		try
 		{
@@ -225,7 +232,7 @@ public final class RProcessor
 	 * Kills any existing instances of the RProcessor and starts a new one.
 	 * @return Newly created RProcessor instance
 	 */
-	public static RProcessor restartInstance() throws RProcessorException
+	public static RProcessor restartInstance() throws RProcessorException, ConfigurationException
 	{
 		if(singleRProcessor != null)
 		{

@@ -65,6 +65,12 @@ public class ImplementedOperationTest
 		Configuration.load();
 	}
 
+	@AfterClass
+	public static void killR() throws Exception
+	{
+		RProcessor.getInstance().close();
+	}
+
 	public ImplementedOperationTest(String opName) throws OperationException
 	{
 		System.out.println("Testing operation '" + opName + "'");
