@@ -1553,6 +1553,12 @@ public class NewProblemWizardDialog extends EscapeDialog
 			}
 		}
 
+		// If a sub problem was remove, remove it from the problem object
+		while (editing && domain.problem.getSubProblemCount() > subProblemPanels.size ())
+		{
+			domain.problem.removeSubProblem(domain.problem.getSubProblem(domain.problem.getSubProblemCount() - 1));
+		}
+
 		String fileName = problemNameTextField.getText();
 		if(!fileName.endsWith(".marla"))
 		{
@@ -1563,7 +1569,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 		for(int i = 0; i < dataSetTabbedPane.getTabCount(); ++i)
 		{
 			DataSet dataSet = null;
-			ExtendedTableModel tableModel = null;
+			ExtendedTableModel tableModel = (ExtendedTableModel) ((JTable) ((JViewport) ((JScrollPane) ((JPanel) dataSetTabbedPane.getComponent(i)).getComponent(0)).getComponent(0)).getComponent(0)).getModel();;
 
 			try
 			{
@@ -1575,6 +1581,52 @@ public class NewProblemWizardDialog extends EscapeDialog
 					if(!dataSetTabbedPane.getTitleAt(i).equals(dataSet.getName()))
 					{
 						dataSet.setDataName(dataSetTabbedPane.getTitleAt(i));
+					}
+
+					// If columns were removed, loop and delete from the end
+					while(tableModel.getColumnCount() < dataSet.getColumnCount())
+					{
+						dataSet.removeColumn(dataSet.getColumnCount() - 1);
+					}
+					// If columns were added, loop and add to the end
+					while(tableModel.getColumnCount() > dataSet.getColumnCount())
+					{
+						dataSet.addColumn(tableModel.getColumnName (dataSet.getColumnCount ()));
+						// Add data in the new column to the data set object
+						for (int j = 0; j < tableModel.getRowCount(); ++j)
+						{
+							dataSet.getColumn (dataSet.getColumnCount() - 1).add (tableModel.getValueAt (j, dataSet.getColumnCount() - 1));
+						}
+					}
+					// If rows were removed, loop and delete from the end
+					for (int j = 0; j < tableModel.getColumnCount(); ++j)
+					{
+						while(tableModel.getRowCount() < dataSet.getColumn (j).size())
+						{
+							dataSet.getColumn(j).remove (dataSet.getColumn (j).size () - 1);
+						}
+					}
+					// If rows were added, loop and add to the end
+					int length = dataSet.getColumnLength();
+					while(tableModel.getRowCount() > dataSet.getColumnLength())
+					{
+						Object[] newRow = tableModel.getRowAt (length);
+						for (int j = 0; j < tableModel.getColumnCount(); ++j)
+						{
+							dataSet.getColumn(j).add (newRow[j]);
+						}
+					}
+					for (int j = 0; j < tableModel.getColumnCount (); ++j)
+					{
+						while(tableModel.getRowCount() > dataSet.getColumn (j).size ())
+						{
+							Object[] newRow = tableModel.getRowAt (dataSet.getColumn (j).size ());
+							for (int k = 0; k < newRow.length; ++k)
+							{
+
+							}
+							dataSet.getColumn(j).add (tableModel.getRowAt (dataSet.getColumnLength()));
+						}
 					}
 				}
 				// This is a new data set, so add it to the workspace and to the problem
@@ -1589,8 +1641,6 @@ public class NewProblemWizardDialog extends EscapeDialog
 					}
 					dataSet.setBounds(x, y, dataSet.getPreferredSize().width, dataSet.getPreferredSize().height);
 				}
-				// Add columns from the New Problem Wizard
-				tableModel = (ExtendedTableModel) ((JTable) ((JViewport) ((JScrollPane) ((JPanel) dataSetTabbedPane.getComponent(i)).getComponent(0)).getComponent(0)).getComponent(0)).getModel();
 			}
 			catch(DuplicateNameException ex)
 			{
@@ -1602,6 +1652,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 
 			try
 			{
+				// Add columns from the New Problem Wizard
 				for(int j = 0; j < tableModel.getColumnCount(); ++j)
 				{
 					if(j < dataSet.getColumnCount())
