@@ -1241,18 +1241,9 @@ public class NewProblemWizardDialog extends EscapeDialog
 								table.updateUI();
 								table.getTableHeader().resizeAndRepaint();
 							}
-							catch(RProcessorParseException ex)
+							catch(MarlaException ex)
 							{
-								JOptionPane.showMessageDialog(NEW_PROBLEM_WIZARD, "Loading of file failed, it may be invalid", "Load failed", JOptionPane.WARNING_MESSAGE);
-							}
-							catch(RProcessorException ex)
-							{
-								JOptionPane.showMessageDialog(NEW_PROBLEM_WIZARD, "Loading of file failed, R could not be loaded", "Load failed", JOptionPane.WARNING_MESSAGE);
-							}
-							catch(DuplicateNameException ex)
-							{
-								JOptionPane.showMessageDialog(NEW_PROBLEM_WIZARD, "The file contains duplicate column names and could not be loaded", "Load failed", JOptionPane.WARNING_MESSAGE);
-
+								JOptionPane.showMessageDialog(NEW_PROBLEM_WIZARD, ex.getMessage(), "Load failed", JOptionPane.WARNING_MESSAGE);
 							}
 						}
 					}
