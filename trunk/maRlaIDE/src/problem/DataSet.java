@@ -35,6 +35,7 @@ import r.RProcessor;
 import r.RProcessor.RecordMode;
 import r.RProcessorException;
 import r.RProcessorParseException;
+import resource.ConfigurationException;
 
 /**
  * Contains a simple dataset that essentially amounts to a table
@@ -111,7 +112,7 @@ public final class DataSet extends JLabel implements DataSource, Changeable
 	 * @param filePath Absolute or relative path to file to import.
 	 * @return New DataSet containing the imported values
 	 */
-	public static DataSet importFile(String filePath) throws FileNotFoundException, RProcessorException, RProcessorParseException, DuplicateNameException
+	public static DataSet importFile(String filePath) throws FileNotFoundException, RProcessorException, RProcessorParseException, DuplicateNameException, ConfigurationException
 	{
 		// Open file ourselves to determine the type and settings we'll be handing R
 		File file = new File(filePath);
@@ -274,7 +275,7 @@ public final class DataSet extends JLabel implements DataSource, Changeable
 	 * @param varName Variable name within the global RProcessor instance to work with
 	 * @return New DataSet containing the loaded data
 	 */
-	public static DataSet fromRFrame(String varName) throws RProcessorException, RProcessorParseException, DuplicateNameException
+	public static DataSet fromRFrame(String varName) throws RProcessorException, RProcessorParseException, DuplicateNameException, ConfigurationException
 	{
 		DataSet ds = new DataSet(varName);
 
@@ -649,7 +650,7 @@ public final class DataSet extends JLabel implements DataSource, Changeable
 	}
 
 	@Override
-	public String toRFrame() throws RProcessorException, RProcessorParseException
+	public String toRFrame() throws RProcessorException, RProcessorParseException, ConfigurationException
 	{
 		RProcessor proc = RProcessor.getInstance();
 
