@@ -70,10 +70,6 @@ public class Domain
 	protected LoadSaveThread loadSaveThread;
 	/** The user can only have one problem open a time, so here is our problem object reference.*/
 	protected Problem problem = null;
-	/** The current selected data set which operations are added to.*/
-	protected DataSet currentDataSet = null;
-	/** The current selected operation which.*/
-	protected Operation currentOperation = null;
 	/** The reference to the view of the application.*/
 	private ViewPanel viewPanel;
 
@@ -91,7 +87,6 @@ public class Domain
 		{
 			desktop = Desktop.getDesktop ();
 		}
-
 		Problem.setDomain(this);
 
 		logFile = new File ("log.dat");

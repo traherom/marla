@@ -141,51 +141,6 @@ public class ViewPanel extends JPanel
 	/** The New Problem Wizard dialog.*/
 	public final NewProblemWizardDialog NEW_PROBLEM_WIZARD_DIALOG = new NewProblemWizardDialog (this, domain);
 
-	/**
-	 * Retrieves the ith data set found in the workspace panel.
-	 *
-	 * @param i The data set index to return.
-	 * @return The data set, if it exists.
-	 */
-	protected DataSet getDisplayedDataSet(int i)
-	{
-		int count = 0;
-		for (int j = 0; j < workspacePanel.getComponentCount (); ++j)
-		{
-			if (workspacePanel.getComponent (j) instanceof DataSet &&
-					!(workspacePanel.getComponent (j) instanceof Operation))
-			{
-				if (count == i)
-				{
-					return (DataSet) workspacePanel.getComponent (j);
-				}
-				++count;
-			}
-		}
-		return null;
-	}
-
-	/**
-	 * Retrieve the number of data sets currently displayed in the workspace panel.
-	 *
-	 * @return The number of data sets currently displayed in the workspace panel.
-	 */
-	protected int getShownDataSetCount()
-	{
-		int count = 0;
-
-		for (int i = 0; i < workspacePanel.getComponentCount (); ++i)
-		{
-			if (workspacePanel.getComponent (i) instanceof DataSet &&
-					!(workspacePanel.getComponent (i) instanceof Operation))
-			{
-				++count;
-			}
-		}
-
-		return count;
-	}
-
     /**
      * Creates new form MainFrame for a stand-alone application.
      */
@@ -917,12 +872,6 @@ public class ViewPanel extends JPanel
 	{
 		if (domain.problem != null)
 		{
-			if (domain.currentDataSet == null)
-			{
-				domain.currentDataSet = domain.problem.getData(0);
-				domain.currentDataSet.setSize(domain.currentDataSet.getPreferredSize());
-			}
-
 			int numShow = getShownDataSetCount ();
 			for (int i = 0; i < domain.problem.getDataCount(); ++i)
 			{
@@ -999,8 +948,6 @@ public class ViewPanel extends JPanel
 				workspacePanel.setVisible (false);
 
 				domain.problem = null;
-				domain.currentDataSet = null;
-				domain.currentOperation = null;
 
 				mainFrame.setTitle (mainFrame.getDefaultTitle ());
 			}
@@ -1033,6 +980,51 @@ public class ViewPanel extends JPanel
 		{
 			JOptionPane.showMessageDialog(this, ex.getMessage(), "Computation Error", JOptionPane.WARNING_MESSAGE);
 		}
+	}
+
+	/**
+	 * Retrieves the ith data set found in the workspace panel.
+	 *
+	 * @param i The data set index to return.
+	 * @return The data set, if it exists.
+	 */
+	protected DataSet getDisplayedDataSet(int i)
+	{
+		int count = 0;
+		for (int j = 0; j < workspacePanel.getComponentCount (); ++j)
+		{
+			if (workspacePanel.getComponent (j) instanceof DataSet &&
+					!(workspacePanel.getComponent (j) instanceof Operation))
+			{
+				if (count == i)
+				{
+					return (DataSet) workspacePanel.getComponent (j);
+				}
+				++count;
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Retrieve the number of data sets currently displayed in the workspace panel.
+	 *
+	 * @return The number of data sets currently displayed in the workspace panel.
+	 */
+	protected int getShownDataSetCount()
+	{
+		int count = 0;
+
+		for (int i = 0; i < workspacePanel.getComponentCount (); ++i)
+		{
+			if (workspacePanel.getComponent (i) instanceof DataSet &&
+					!(workspacePanel.getComponent (i) instanceof Operation))
+			{
+				++count;
+			}
+		}
+
+		return count;
 	}
 
     /**
