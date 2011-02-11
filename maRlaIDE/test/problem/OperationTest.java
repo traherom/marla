@@ -45,9 +45,9 @@ public class OperationTest
 	}
 
 	@BeforeClass
-	public static void configureR() throws ConfigurationException
+	public static void configure() throws MarlaException
 	{
-		RProcessor.setRLocation(Configuration.findR());
+		Configuration.load();
 	}
 
 	@Before

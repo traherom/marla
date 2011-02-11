@@ -37,7 +37,7 @@ public class RProcessorTest
 	@BeforeClass
 	public static void setUpClass() throws Exception
 	{
-		RProcessor.setRLocation(Configuration.findR());
+		Configuration.load();
 		proc = RProcessor.getInstance();
 	}
 

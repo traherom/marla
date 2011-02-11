@@ -26,6 +26,8 @@ import problem.OperationException;
  */
 public class OperationXMLException extends OperationException
 {
+	private String opName = null;
+
 	public OperationXMLException(String msg)
 	{
 		super(msg);
@@ -34,5 +36,28 @@ public class OperationXMLException extends OperationException
 	public OperationXMLException(String msg, Throwable cause)
 	{
 		super(msg, cause);
+	}
+
+	public void addName(String newName)
+	{
+		opName = newName;
+	}
+
+	@Override
+	public String getMessage()
+	{
+		if(opName == null)
+			return super.getMessage();
+		else
+			return opName + ": " + super.getMessage();
+	}
+
+	@Override
+	public String toString()
+	{
+		if(opName == null)
+			return super.toString();
+		else
+			return opName + ": " + super.toString();
 	}
 }

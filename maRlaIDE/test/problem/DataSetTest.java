@@ -22,6 +22,7 @@ import org.junit.*;
 import static org.junit.Assert.*;
 import org.jdom.Element;
 import r.RProcessor;
+import resource.Configuration;
 
 /**
  *
@@ -62,6 +63,12 @@ public class DataSetTest
 		assertEquals(columns, ds.getColumnCount());
 
 		return ds;
+	}
+
+	@BeforeClass
+	public static void configure() throws MarlaException
+	{
+		Configuration.load();
 	}
 
 	@Test
