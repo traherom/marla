@@ -6,7 +6,7 @@
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *buid
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -751,10 +751,27 @@ public class NewProblemWizardDialog extends EscapeDialog
 }//GEN-LAST:event_addDataSetButtonActionPerformed
 
 	private void removeDataSetButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeDataSetButtonActionPerformed
-		dataSetTabbedPane.remove(dataSetTabbedPane.getTabCount() - 1);
-		if(dataSetTabbedPane.getTabCount() == 1)
+		boolean allowRemove = true;
+		if (dataSetTabbedPane.getSelectedIndex() != dataSetTabbedPane.getTabCount() - 1)
 		{
-			removeDataSetButton.setEnabled(false);
+			String name = dataSetTabbedPane.getTitleAt(dataSetTabbedPane.getTabCount () - 1);
+			dataSetTabbedPane.setSelectedIndex (dataSetTabbedPane.getTabCount () - 1);
+			int response = JOptionPane.showConfirmDialog(this, "<html>This will remove the <em>last</em> data set, " + name + ", which was not<br />"
+					+ "the data set you were currently viewing. Are you sure you wish<br />"
+					+ "to remove the <em>last</em> data set from the problem?</html>", "Removing Last Data Set", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+			if (response == JOptionPane.NO_OPTION)
+			{
+				allowRemove = false;
+			}
+		}
+		
+		if (allowRemove)
+		{
+			dataSetTabbedPane.remove(dataSetTabbedPane.getTabCount() - 1);
+			if(dataSetTabbedPane.getTabCount() == 1)
+			{
+				removeDataSetButton.setEnabled(false);
+			}
 		}
 }//GEN-LAST:event_removeDataSetButtonActionPerformed
 
@@ -1041,7 +1058,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 				}
 			}
 		});
-		final JTable table = new JTable(model);
+		final ExtendedJTable table = new ExtendedJTable(model);
 		table.getTableHeader().setFont(ViewPanel.FONT_PLAIN_12);
 		table.getTableHeader().addMouseListener(new MouseAdapter()
 		{
@@ -1608,18 +1625,6 @@ public class NewProblemWizardDialog extends EscapeDialog
 						for (int j = 0; j < tableModel.getColumnCount(); ++j)
 						{
 							dataSet.getColumn(j).add (newRow[j]);
-						}
-					}
-					for (int j = 0; j < tableModel.getColumnCount (); ++j)
-					{
-						while(tableModel.getRowCount() > dataSet.getColumn (j).size ())
-						{
-							Object[] newRow = tableModel.getRowAt (dataSet.getColumn (j).size ());
-							for (int k = 0; k < newRow.length; ++k)
-							{
-
-							}
-							dataSet.getColumn(j).add (tableModel.getRowAt (dataSet.getColumnLength()));
 						}
 					}
 				}

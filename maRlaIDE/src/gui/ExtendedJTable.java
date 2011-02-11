@@ -27,6 +27,7 @@ import javax.swing.JViewport;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableModel;
 
 /**
  * An extended JTable with additional functionality, including stripped rows.
@@ -39,6 +40,16 @@ public class ExtendedJTable extends JTable
     private Color rowColors[] = new Color[2];
     /** True if stripes should be drawn, false otherwise.*/
     private boolean drawStripes = false;
+
+	/**
+	 * Construct the JTable with a given table model.
+	 *
+	 * @param model The model to set by default.
+	 */
+	public ExtendedJTable(TableModel model)
+	{
+		super (model);
+	}
 
     /**
      * Sets the selected row in the table based on an index.
@@ -76,20 +87,20 @@ public class ExtendedJTable extends JTable
         final int h = getHeight () - insets.top - insets.bottom;
         final int x = insets.left;
         int y = insets.top;
-        int rowHeight = 16;
+        int localRowHeight = 16;
         final int nItems = getRowCount ();
-        for (int i = 0; i < nItems; i++, y += rowHeight)
+        for (int i = 0; i < nItems; i++, y += localRowHeight)
         {
-            rowHeight = getRowHeight (i);
+            localRowHeight = getRowHeight (i);
             g.setColor (rowColors[i & 1]);
-            g.fillRect (x, y, w, rowHeight);
+            g.fillRect (x, y, w, localRowHeight);
         }
 
-        final int nRows = nItems + (insets.top + h - y) / rowHeight;
-        for (int i = nItems; i < nRows; i++, y += rowHeight)
+        final int nRows = nItems + (insets.top + h - y) / localRowHeight;
+        for (int i = nItems; i < nRows; i++, y += localRowHeight)
         {
             g.setColor (rowColors[i & 1]);
-            g.fillRect (x, y, w, rowHeight);
+            g.fillRect (x, y, w, localRowHeight);
         }
         final int remainder = insets.top + h - y;
         if (remainder > 0)
@@ -178,19 +189,7 @@ public class ExtendedJTable extends JTable
      */
     private void updateColors()
     {
-        if ((rowColors[0] = getBackground ()) == null)
-        {
-            rowColors[0] = rowColors[1] = Color.white;
-            return;
-        }
-        final Color sel = getSelectionBackground ();
-        if (sel == null)
-        {
-            rowColors[1] = rowColors[0];
-            return;
-        }
-        final float[] bgHSB = Color.RGBtoHSB (rowColors[0].getRed (), rowColors[0].getGreen (), rowColors[0].getBlue (), null);
-        final float[] selHSB = java.awt.Color.RGBtoHSB (sel.getRed (), sel.getGreen (), sel.getBlue (), null);
-        rowColors[1] = Color.getHSBColor ((selHSB[1] == 0.0 || selHSB[2] == 0.0) ? bgHSB[0] : selHSB[0], 0.1f * selHSB[1] + 0.9f * bgHSB[1], bgHSB[2] + ((bgHSB[2] < 0.5f) ? 0.05f : -0.05f));
+        rowColors[0] = Color.WHITE;
+        rowColors[1] = new Color (237, 240, 242);
     }
 }
