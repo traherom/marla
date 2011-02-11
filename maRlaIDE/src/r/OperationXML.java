@@ -41,6 +41,7 @@ import problem.OperationException;
 import problem.OperationInfoRequiredException;
 import problem.Problem;
 import r.RProcessor.RecordMode;
+import resource.ConfigurationException;
 
 /**
  * @author Ryan Morehart
@@ -88,7 +89,7 @@ public class OperationXML extends Operation
 	 * Configures the defaults for XML operations based on the given XML configuration
 	 * @param configEl XML configuration element with settings as attributes
 	 */
-	public static void setConfig(Element configEl) throws OperationXMLException
+	public static void setConfig(Element configEl) throws OperationXMLException, ConfigurationException
 	{
 		// Extract information from configuration XML and set appropriately
 		loadXML(configEl.getAttributeValue("xml"));
@@ -111,7 +112,7 @@ public class OperationXML extends Operation
 	 * An exception may be thrown when the version of the XML file is
 	 * inappropriate or other parse errors occur.
 	 */
-	public static void loadXML() throws OperationXMLException
+	public static void loadXML() throws OperationXMLException, ConfigurationException
 	{
 		loadXML(operationFilePath);
 	}
@@ -122,7 +123,7 @@ public class OperationXML extends Operation
 	 * parse errors an exception will be thrown.
 	 * @param xmlPath Path to the operation XML file
 	 */
-	public static void loadXML(String xmlPath) throws OperationXMLException
+	public static void loadXML(String xmlPath) throws OperationXMLException, ConfigurationException
 	{
 		try
 		{
@@ -133,15 +134,15 @@ public class OperationXML extends Operation
 
 			// Make sure we know where we're looking for that there XML
 			if(operationFilePath == null)
-				throw new OperationXMLException("XML file for operations has not been specified");
+				throw new ConfigurationException("XML file for operations has not been specified");
 
 			SAXBuilder parser = new SAXBuilder();
 			Document doc = parser.build(operationFilePath);
 			operationXML = doc.getRootElement();
 
 			// TODO Check version. Maybe have to use old versions of parsers someday?
-			parserVersion = Integer.parseInt(operationXML.getAttributeValue("version"));
-			if(parserVersion != 1)
+			parserVersion = Integer.parseInt(operationXML.getAttributeValue("version", "-1"));
+			if(parserVersion > 1)
 				throw new OperationXMLException("Version " + parserVersion + " of operational XML cannot be parsed.");
 		}
 		catch(JDOMException ex)
@@ -150,7 +151,7 @@ public class OperationXML extends Operation
 		}
 		catch(IOException ex)
 		{
-			throw new OperationXMLException("An error occurred accessing the operation XML file '" + operationFilePath + "'", ex);
+			throw new ConfigurationException("Unable to read the operation XML file '" + operationFilePath + "'", ex);
 		}
 	}
 
@@ -162,7 +163,7 @@ public class OperationXML extends Operation
 	 * with the same name are detected.
 	 * @return ArrayList of the names of all available XML operations
 	 */
-	public static List<String> getAvailableOperations() throws OperationXMLException
+	public static List<String> getAvailableOperations() throws OperationXMLException, ConfigurationException
 	{
 		// Attempt to load operations if it hasn't been done yet
 		if(operationXML == null)
@@ -206,7 +207,7 @@ public class OperationXML extends Operation
 	 * with the same name are detected.
 	 * @return ArrayList of the names of all available XML operations
 	 */
-	public static Map<String, List<String>> getAvailableOperationsCategorized() throws OperationXMLException
+	public static Map<String, List<String>> getAvailableOperationsCategorized() throws OperationXMLException, ConfigurationException
 	{
 		// Attempt to load operations if it hasn't been done yet
 		if(operationXML == null)
@@ -270,7 +271,7 @@ public class OperationXML extends Operation
 	 * @param opName Name of the operation to load from the XML file
 	 * @return New operation that will perform the specified computations
 	 */
-	public static OperationXML createOperation(String opName) throws OperationXMLException, RProcessorException
+	public static OperationXML createOperation(String opName) throws OperationXMLException, RProcessorException, ConfigurationException
 	{
 		OperationXML newOp = new OperationXML();
 		newOp.setConfiguration(findConfiguration(opName));
@@ -283,7 +284,7 @@ public class OperationXML extends Operation
 	 * @param opName XML operation to find in the file, as specified by its "name" attribute.
 	 * @return Element holding the configuration information for the operation
 	 */
-	protected static Element findConfiguration(String opName) throws OperationXMLException
+	protected static Element findConfiguration(String opName) throws OperationXMLException, ConfigurationException
 	{
 		// Attempt to load operations if it hasn't been done yet
 		if(operationXML == null)

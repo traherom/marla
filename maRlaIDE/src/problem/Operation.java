@@ -29,6 +29,7 @@ import r.OperationXML;
 import r.OperationXMLException;
 import r.RProcessor;
 import r.RProcessorException;
+import resource.ConfigurationException;
 
 /**
  * Operation to perform on a parent object that implements
@@ -111,7 +112,7 @@ public abstract class Operation extends JLabel implements DataSource, Changeable
 	 *		operation with the same name as a Java operation exists then the XML version will
 	 *		be used. Otherwise an OperationException is thrown.
 	 */
-	public static List<String> getAvailableOperationsList() throws OperationException
+	public static List<String> getAvailableOperationsList() throws OperationException, ConfigurationException
 	{
 		List<String> ops = new ArrayList<String>();
 
@@ -140,7 +141,7 @@ public abstract class Operation extends JLabel implements DataSource, Changeable
 	 *		same name as a Java operation exists then the XML version will
 	 *		be used. Otherwise an OperationException is thrown.
 	 */
-	public static Map<String, List<String>> getAvailableOperationsCategorized() throws OperationException
+	public static Map<String, List<String>> getAvailableOperationsCategorized() throws OperationException, ConfigurationException
 	{
 		Map<String, List<String>> opCategories = new HashMap<String, List<String>>();
 
@@ -193,7 +194,7 @@ public abstract class Operation extends JLabel implements DataSource, Changeable
 	 * @param opName Name of operation to search for, usually taken from getAvailableOperations().
 	 * @return Newly created operation of the given type
 	 */
-	public static Operation createOperation(String opName) throws OperationException, RProcessorException
+	public static Operation createOperation(String opName) throws OperationException, RProcessorException, ConfigurationException
 	{
 		// Locate the operation
 		Operation op = null;
