@@ -55,8 +55,7 @@ import problem.DataSet;
 import problem.DuplicateNameException;
 import problem.MarlaException;
 import problem.Problem;
-import r.RProcessorException;
-import r.RProcessorParseException;
+import resource.ConfigurationException;
 
 /**
  * The New Problem Wizard Dialog.
@@ -86,8 +85,6 @@ public class NewProblemWizardDialog extends EscapeDialog
 	private boolean newProblemOverwrite = false;
 	/** True if the current problem is being edited in the wizard, false if creating a new problem in the wizard.*/
 	protected boolean editing = false;
-	/** The value last good value of the cell being edited.*/
-	private Object editTableValue = null;
 	/** A reference to the domain.*/
 	private Domain domain;
 
@@ -1021,8 +1018,6 @@ public class NewProblemWizardDialog extends EscapeDialog
 	 */
 	private JPanel createValuesTabbedPanel()
 	{
-		openCloseWizard = true;
-		
 		final JPanel valuesPanel = new JPanel();
 		final JScrollPane scrollPane = new JScrollPane();
 		final ExtendedTableModel model = new ExtendedTableModel();
@@ -1184,60 +1179,68 @@ public class NewProblemWizardDialog extends EscapeDialog
 							domain.lastGoodCsvFile = VIEW_PANEL.openChooserDialog.getSelectedFile().toString();
 							try
 							{
-								DataSet importedDataSet = DataSet.importFile(domain.lastGoodCsvFile);
-
-								// Setup the values table to be ready for the import
-								columnsSpinner.setValue(importedDataSet.getColumnCount());
-								rowsSpinner.setValue(importedDataSet.getColumnLength());
-
-								final ExtendedTableModel newModel = new ExtendedTableModel();
-								newModel.addTableModelListener (new TableModelListener ()
+								try
 								{
-									@Override
-									public void tableChanged(TableModelEvent evt)
+									DataSet importedDataSet = DataSet.importFile(domain.lastGoodCsvFile);
+
+									// Setup the values table to be ready for the import
+									columnsSpinner.setValue(importedDataSet.getColumnCount());
+									rowsSpinner.setValue(importedDataSet.getColumnLength());
+
+									final ExtendedTableModel newModel = new ExtendedTableModel();
+									newModel.addTableModelListener (new TableModelListener ()
 									{
-										if (!openCloseWizard && !addingDataSet)
+										@Override
+										public void tableChanged(TableModelEvent evt)
 										{
-											// Ensure the new value is a valid double, otherwise revert
-											try
+											if (!openCloseWizard && !addingDataSet)
 											{
-												Double.parseDouble (newModel.getValueAt (evt.getFirstRow(), evt.getColumn ()).toString ());
+												// Ensure the new value is a valid double, otherwise revert
+												try
+												{
+													Double.parseDouble (newModel.getValueAt (evt.getFirstRow(), evt.getColumn ()).toString ());
+												}
+												catch (NumberFormatException ex)
+												{
+													newModel.setValueAt (0, evt.getFirstRow(), evt.getColumn ());
+												}
+												catch (NullPointerException ex) {}
 											}
-											catch (NumberFormatException ex)
-											{
-												newModel.setValueAt (0, evt.getFirstRow(), evt.getColumn ());
-											}
-											catch (NullPointerException ex) {}
+										}
+									});
+
+									// Set the column headers
+									String[] columnNames = importedDataSet.getColumnNames();
+									for(int i = 0; i < columnNames.length; ++i)
+									{
+										newModel.addColumn(columnNames[i]);
+										table.getColumnModel().getColumn(i).setHeaderValue(columnNames[i]);
+									}
+									// Initialize number of rows
+									for(int i = 0; i < importedDataSet.getColumnLength(); ++i)
+									{
+										ArrayList<Integer> row = new ArrayList<Integer>();
+										for(int j = 0; j < importedDataSet.getColumnCount(); ++j)
+										{
+											row.add(0);
+										}
+										newModel.addRow(row.toArray());
+									}
+									// Load imported data into the values table
+									for(int i = 0; i < importedDataSet.getColumnCount(); ++i)
+									{
+										DataColumn column = importedDataSet.getColumn(i);
+										for(int j = 0; j < column.size(); ++j)
+										{
+											newModel.setValueAt(column.get(j), j, i);
 										}
 									}
-								});
-								// Set the column headers
-								String[] columnNames = importedDataSet.getColumnNames();
-								for(int i = 0; i < columnNames.length; ++i)
-								{
-									newModel.addColumn(columnNames[i]);
-									table.getColumnModel().getColumn(i).setHeaderValue(columnNames[i]);
+									table.setModel(newModel);
 								}
-								// Initialize number of rows
-								for(int i = 0; i < importedDataSet.getColumnLength(); ++i)
+								catch (ConfigurationException ex)
 								{
-									ArrayList<Integer> row = new ArrayList<Integer>();
-									for(int j = 0; j < importedDataSet.getColumnCount(); ++j)
-									{
-										row.add(0);
-									}
-									newModel.addRow(row.toArray());
+									// TODO add handling code here
 								}
-								// Load imported data into the values table
-								for(int i = 0; i < importedDataSet.getColumnCount(); ++i)
-								{
-									DataColumn column = importedDataSet.getColumn(i);
-									for(int j = 0; j < column.size(); ++j)
-									{
-										newModel.setValueAt(column.get(j), j, i);
-									}
-								}
-								table.setModel(newModel);
 								table.updateUI();
 								table.getTableHeader().resizeAndRepaint();
 							}
@@ -1560,7 +1563,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 		for(int i = 0; i < dataSetTabbedPane.getTabCount(); ++i)
 		{
 			DataSet dataSet = null;
-			ExtendedTableModel tableModel = (ExtendedTableModel) ((JTable) ((JViewport) ((JScrollPane) ((JPanel) dataSetTabbedPane.getComponent(i)).getComponent(0)).getComponent(0)).getComponent(0)).getModel();;
+			ExtendedTableModel tableModel = (ExtendedTableModel) ((JTable) ((JViewport) ((JScrollPane) ((JPanel) dataSetTabbedPane.getComponent(i)).getComponent(0)).getComponent(0)).getComponent(0)).getModel();
 
 			try
 			{
@@ -1788,7 +1791,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 	/**
 	 * Edit the currently selected data set.
 	 */
-	protected void editDataSet()
+	protected void editDataSet(DataSet dataSet)
 	{
 		// Transition to the values card panel
 		nextWizardButtonActionPerformed(null);
@@ -1799,7 +1802,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 		// Add the new data set
 		try
 		{
-			dataSetTabbedPane.setSelectedIndex (domain.problem.getDataIndex (domain.currentDataSet.getName ()));
+			dataSetTabbedPane.setSelectedIndex (domain.problem.getDataIndex (dataSet.getName ()));
 		}
 		catch (DataNotFoundException ex)
 		{

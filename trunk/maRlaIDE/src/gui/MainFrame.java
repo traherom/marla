@@ -139,7 +139,6 @@ public class MainFrame extends JFrame
         solveMenuItem = new javax.swing.JMenuItem();
         problemSeparator1 = new javax.swing.JPopupMenu.Separator();
         newDataSetMenuItem = new javax.swing.JMenuItem();
-        editDataSetMenuItem = new javax.swing.JMenuItem();
         toolsMenu = new javax.swing.JMenu();
         reloadOperationgsMenuItem = new javax.swing.JMenuItem();
         jSeparator1 = new javax.swing.JPopupMenu.Separator();
@@ -352,15 +351,6 @@ public class MainFrame extends JFrame
         });
         problemMenu.add(newDataSetMenuItem);
 
-        editDataSetMenuItem.setFont(new java.awt.Font("Verdana", 0, 12));
-        editDataSetMenuItem.setText("Edit Data Set...");
-        editDataSetMenuItem.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                editDataSetMenuItemActionPerformed(evt);
-            }
-        });
-        problemMenu.add(editDataSetMenuItem);
-
         menuBar.add(problemMenu);
 
         toolsMenu.setText("Tools");
@@ -501,7 +491,6 @@ public class MainFrame extends JFrame
 			setSelectionAsAnswerMenuItem.setEnabled (true);
 			solveMenuItem.setEnabled (true);
 			newDataSetMenuItem.setEnabled (true);
-			editDataSetMenuItem.setEnabled (true);
 		}
 		else
 		{
@@ -509,7 +498,6 @@ public class MainFrame extends JFrame
 			setSelectionAsAnswerMenuItem.setEnabled (false);
 			solveMenuItem.setEnabled (false);
 			newDataSetMenuItem.setEnabled (false);
-			editDataSetMenuItem.setEnabled (false);
 		}
 	}//GEN-LAST:event_problemMenuMenuSelected
 
@@ -545,13 +533,6 @@ public class MainFrame extends JFrame
 		editProblemMenuItemActionPerformed (null);
 		viewPanel.NEW_PROBLEM_WIZARD_DIALOG.addNewDataSet ();
 	}//GEN-LAST:event_newDataSetMenuItemActionPerformed
-
-	private void editDataSetMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editDataSetMenuItemActionPerformed
-		viewPanel.NEW_PROBLEM_WIZARD_DIALOG.setTitle ("Edit Problem");
-		viewPanel.NEW_PROBLEM_WIZARD_DIALOG.welcomeTextLabel.setText (ViewPanel.welcomeEditText);
-		editProblemMenuItemActionPerformed (null);
-		viewPanel.NEW_PROBLEM_WIZARD_DIALOG.editDataSet ();
-	}//GEN-LAST:event_editDataSetMenuItemActionPerformed
 
 	private void reloadOperationgsMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_reloadOperationgsMenuItemActionPerformed
 		viewPanel.reloadOperations ();
@@ -592,7 +573,6 @@ public class MainFrame extends JFrame
     private javax.swing.JMenuItem copyMenuItem;
     private javax.swing.JMenuItem cutMenuItem;
     private javax.swing.JMenuItem deleteMenuItem;
-    private javax.swing.JMenuItem editDataSetMenuItem;
     private javax.swing.JMenu editMenu;
     private javax.swing.JMenuItem editProblemMenuItem;
     private javax.swing.JPopupMenu.Separator editSeparator1;
