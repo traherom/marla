@@ -183,7 +183,7 @@ public class Configuration
 
 	public static String findPdflatex() throws ConfigurationException
 	{
-		return findExecutable("pdflatex", "bin|usr|Program Files.*|[Mm]i[Kk][Tt]e[Xx].*", null);
+		return findExecutable("pdflatex", "bin|usr|Program Files.*|tex|[Mm]i[Kk][Tt]e[Xx].*", null);
 	}
 
 	/**
