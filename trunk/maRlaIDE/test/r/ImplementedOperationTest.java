@@ -60,21 +60,15 @@ public class ImplementedOperationTest
 	}
 
 	@BeforeClass
-	public static void configureR() throws ConfigurationException
+	public static void configure() throws MarlaException
 	{
-		RProcessor.setRLocation(Configuration.findR());
+		Configuration.load();
 	}
 
 	public ImplementedOperationTest(String opName) throws OperationException
 	{
 		System.out.println("Testing operation '" + opName + "'");
 		this.opName = opName;
-	}
-
-	@BeforeClass
-	public static void printOpArray() throws Exception
-	{
-		ImplementedOperationTest.operationsAvailable();
 	}
 
 	@Before

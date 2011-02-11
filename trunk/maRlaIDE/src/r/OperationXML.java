@@ -353,7 +353,8 @@ public class OperationXML extends Operation
 		catch(OperationXMLException ex)
 		{
 			// Add the operation name to exception for easier debugging
-			throw new OperationXMLException("Error in processing operation '" + getName() + "'. See inner exception for more information", ex);
+			ex.addName(getName());
+			throw ex;
 		}
 		finally
 		{

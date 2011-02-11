@@ -26,6 +26,7 @@ import problem.MarlaException;
 import problem.Operation;
 import problem.Operation.PromptType;
 import r.RProcessor.RecordMode;
+import resource.Configuration;
 
 /**
  * @author Ryan Morehart
@@ -34,16 +35,12 @@ public class OperationTester
 {
 	public static void main(String[] args) throws Exception
 	{
+		Configuration.load();
 		RProcessor proc = RProcessor.getInstance();
+		
 		try
 		{
 			Scanner tty = new Scanner(System.in);
-
-			// Load operations from XML
-			if(args.length < 1)
-				OperationXML.loadXML("ops.xml");
-			else
-				OperationXML.loadXML(args[0]);
 
 			// Create test dataset from a CSV
 			DataSet testData = null;

@@ -258,7 +258,7 @@ x
 		<query type="column" name="col" prompt="Column?" column_type="numeric" />
 		<query type="numeric" name="val" prompt="Raise by" />
 
-		<longname><response name="col" default="x" />&lt;sup&gt;<response name="val" default="X" />&lt;/sup&gt;</longname>
+		<longname><response name="col" default="col" />&lt;sup&gt;<response name="val" default="X" />&lt;/sup&gt;</longname>
 
 		<computation>
 			<set name="col" rvar="colName" use="name" />
@@ -268,7 +268,7 @@ x
 				<if expr="currColName == colName">
 					<then>
 						<!-- This is the column we're supposed to compute on -->
-						<save type="numeric" r_column="currColName">currCol(val)</save>
+						<save type="numeric" r_column="currColName">currCol ^ val</save>
 					</then>
 					<else>
 						<!-- Not the column we're working with, just copy it over -->
@@ -663,7 +663,7 @@ x
 			<copy all="true" />
 			
 			<cmd>res = binom.test(floor(x), floor(n), conf.level=1-a)</cmd>
-			<save type="double" r_column="saveTo">res$estimate</save>
+			<save type="numeric" r_column="saveTo">res$estimate</save>
 		</computation>
 	</operation>
 
@@ -684,7 +684,7 @@ x
 			<copy all="true" />
 
 			<cmd>res = prop.test(floor(x), floor(n), conf.level=1-a)</cmd>
-			<save type="double" r_column="saveTo">res$estimate</save>
+			<save type="numeric" r_column="saveTo">res$estimate</save>
 		</computation>
 	</operation>
 
@@ -705,7 +705,7 @@ x
 			<copy all="true" />
 
 			<cmd>res = cor.test(x, y, conf.level=1-a)</cmd>
-			<save type="double" r_column="saveTo">res$estimate</save>
+			<save type="numeric" r_column="saveTo">res$estimate</save>
 		</computation>
 	</operation>
 
@@ -722,7 +722,7 @@ x
 			<copy all="true" />
 
 			<cmd>res = shapiro.test(x)</cmd>
-			<save type="double" r_column="saveTo">res$statistic</save>
+			<save type="numeric" r_column="saveTo">res$statistic</save>
 		</computation>
 	</operation>
 
