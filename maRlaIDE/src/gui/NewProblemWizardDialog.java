@@ -55,6 +55,7 @@ import problem.DataSet;
 import problem.DuplicateNameException;
 import problem.MarlaException;
 import problem.Problem;
+import problem.ProblemException;
 import resource.ConfigurationException;
 
 /**
@@ -1196,68 +1197,61 @@ public class NewProblemWizardDialog extends EscapeDialog
 							domain.lastGoodCsvFile = VIEW_PANEL.openChooserDialog.getSelectedFile().toString();
 							try
 							{
-								try
+								DataSet importedDataSet = DataSet.importFile(domain.lastGoodCsvFile);
+
+								// Setup the values table to be ready for the import
+								columnsSpinner.setValue(importedDataSet.getColumnCount());
+								rowsSpinner.setValue(importedDataSet.getColumnLength());
+
+								final ExtendedTableModel newModel = new ExtendedTableModel();
+								newModel.addTableModelListener (new TableModelListener ()
 								{
-									DataSet importedDataSet = DataSet.importFile(domain.lastGoodCsvFile);
-
-									// Setup the values table to be ready for the import
-									columnsSpinner.setValue(importedDataSet.getColumnCount());
-									rowsSpinner.setValue(importedDataSet.getColumnLength());
-
-									final ExtendedTableModel newModel = new ExtendedTableModel();
-									newModel.addTableModelListener (new TableModelListener ()
+									@Override
+									public void tableChanged(TableModelEvent evt)
 									{
-										@Override
-										public void tableChanged(TableModelEvent evt)
+										if (!openCloseWizard && !addingDataSet)
 										{
-											if (!openCloseWizard && !addingDataSet)
+											// Ensure the new value is a valid double, otherwise revert
+											try
 											{
-												// Ensure the new value is a valid double, otherwise revert
-												try
-												{
-													Double.parseDouble (newModel.getValueAt (evt.getFirstRow(), evt.getColumn ()).toString ());
-												}
-												catch (NumberFormatException ex)
-												{
-													newModel.setValueAt (0, evt.getFirstRow(), evt.getColumn ());
-												}
-												catch (NullPointerException ex) {}
+												Double.parseDouble (newModel.getValueAt (evt.getFirstRow(), evt.getColumn ()).toString ());
 											}
+											catch (NumberFormatException ex)
+											{
+												newModel.setValueAt (0, evt.getFirstRow(), evt.getColumn ());
+											}
+											catch (NullPointerException ex) {}
 										}
-									});
+									}
+								});
 
-									// Set the column headers
-									String[] columnNames = importedDataSet.getColumnNames();
-									for(int i = 0; i < columnNames.length; ++i)
-									{
-										newModel.addColumn(columnNames[i]);
-										table.getColumnModel().getColumn(i).setHeaderValue(columnNames[i]);
-									}
-									// Initialize number of rows
-									for(int i = 0; i < importedDataSet.getColumnLength(); ++i)
-									{
-										ArrayList<Integer> row = new ArrayList<Integer>();
-										for(int j = 0; j < importedDataSet.getColumnCount(); ++j)
-										{
-											row.add(0);
-										}
-										newModel.addRow(row.toArray());
-									}
-									// Load imported data into the values table
-									for(int i = 0; i < importedDataSet.getColumnCount(); ++i)
-									{
-										DataColumn column = importedDataSet.getColumn(i);
-										for(int j = 0; j < column.size(); ++j)
-										{
-											newModel.setValueAt(column.get(j), j, i);
-										}
-									}
-									table.setModel(newModel);
-								}
-								catch (ConfigurationException ex)
+								// Set the column headers
+								String[] columnNames = importedDataSet.getColumnNames();
+								for(int i = 0; i < columnNames.length; ++i)
 								{
-									// TODO add handling code here
+									newModel.addColumn(columnNames[i]);
+									table.getColumnModel().getColumn(i).setHeaderValue(columnNames[i]);
 								}
+								// Initialize number of rows
+								for(int i = 0; i < importedDataSet.getColumnLength(); ++i)
+								{
+									ArrayList<Integer> row = new ArrayList<Integer>();
+									for(int j = 0; j < importedDataSet.getColumnCount(); ++j)
+									{
+										row.add(0);
+									}
+									newModel.addRow(row.toArray());
+								}
+								// Load imported data into the values table
+								for(int i = 0; i < importedDataSet.getColumnCount(); ++i)
+								{
+									DataColumn column = importedDataSet.getColumn(i);
+									for(int j = 0; j < column.size(); ++j)
+									{
+										newModel.setValueAt(column.get(j), j, i);
+									}
+								}
+								table.setModel(newModel);
 								table.updateUI();
 								table.getTableHeader().resizeAndRepaint();
 							}

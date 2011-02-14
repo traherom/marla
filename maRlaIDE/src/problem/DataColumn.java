@@ -22,7 +22,6 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
-import org.jdom.Element;
 
 /**
  * Simple named list of data that belongs to a DataSource. List
@@ -47,12 +46,12 @@ public class DataColumn implements List<Object>
 	/**
 	 * Mode this column is in
 	 */
-	private DataMode mode = DataMode.NUMERICAL;
+	private DataMode mode = DataMode.NUMERIC;
 	/**
 	 * Valid storage modes for a column to be in. Every value in it will
 	 * be interpreted this way.
 	 */
-	public enum DataMode {NUMERICAL, STRING};
+	public enum DataMode {NUMERIC, STRING};
 
 	/**
 	 * Creates a new DataColumn with the given name that does not
@@ -76,7 +75,7 @@ public class DataColumn implements List<Object>
 		name = col.name;
 		for(Object v : col.values)
 		{
-			values.add(castToMode(v));
+			values.add(v);
 		}
 	}
 
@@ -121,7 +120,7 @@ public class DataColumn implements List<Object>
 	 */
 	public boolean isNumerical()
 	{
-		return mode == DataMode.NUMERICAL;
+		return mode == DataMode.NUMERIC;
 	}
 
 	/**
@@ -154,19 +153,42 @@ public class DataColumn implements List<Object>
 		DataMode oldMode = mode;
 		mode = newMode;
 
-		// Only do the rest if they actually changed it
+		// Only changed if they actually switched modes
 		if(oldMode != newMode)
-		{
 			markChanged();
-			
-			// Convert all values to the new mode
-			for(int i = 0; i < values.size(); i++)
-			{
-				values.set(i, castToMode(values.get(i)));
-			}
-		}
 
 		return oldMode;
+	}
+
+	/**
+	 * Changes the interpretation mode of the DataColumn to the mode which
+	 * matches the data. For example, if all elements can be interpreted as
+	 * numbers, it will be put into NUMERIC mode.
+	 * @return DataMode the DataColumn is now operating under
+	 */
+	public DataMode autodetectMode()
+	{
+		// Try to interpret everything as a number. If this fails then
+		// we switch to STRING
+		DataMode oldMode = mode;
+		mode = DataMode.NUMERIC;
+
+		// Try to cast everything
+		try
+		{
+			for(Object o : values)
+				castToMode(o);
+		}
+		catch(NumberFormatException ex)
+		{
+			mode = DataMode.STRING;
+		}
+
+		// Only changed if we actually switched modes
+		if(oldMode != mode)
+			markChanged();
+
+		return mode;
 	}
 
 	/**
@@ -178,7 +200,7 @@ public class DataColumn implements List<Object>
 	public boolean add(Object val)
 	{
 		markChanged();
-		return values.add(castToMode(val));
+		return values.add(val);
 	}
 
 	/**
@@ -216,12 +238,24 @@ public class DataColumn implements List<Object>
 	@Override
 	public Object[] toArray()
 	{
+		// Convert all values to the correct mode
+		for(int i = 0; i < values.size(); i++)
+		{
+			values.set(i, castToMode(values.get(i)));
+		}
+
 		return values.toArray();
 	}
 
 	@Override
 	public <T> T[] toArray(T[] a)
 	{
+		// Convert all values to the correct mode
+		for(int i = 0; i < values.size(); i++)
+		{
+			values.set(i, castToMode(values.get(i)));
+		}
+		
 		return values.toArray(a);
 	}
 
@@ -248,15 +282,7 @@ public class DataColumn implements List<Object>
 	@Override
 	public boolean addAll(Collection<? extends Object> c)
 	{
-		// Convert each value as it comes in
-		ArrayList<Object> converted = new ArrayList<Object>();
-		for(Object val : c)
-		{
-			converted.add(castToMode(val));
-		}
-
-		// And add them
-		if(values.addAll(converted))
+		if(values.addAll(c))
 		{
 			markChanged();
 			return true;
@@ -268,15 +294,7 @@ public class DataColumn implements List<Object>
 	@Override
 	public boolean addAll(int index, Collection<? extends Object> c)
 	{
-		// Convert each value as it comes in
-		List<Object> converted = new ArrayList<Object>();
-		for(Object val : c)
-		{
-			converted.add(castToMode(val));
-		}
-
-		// Add
-		if(values.addAll(index, converted))
+		if(values.addAll(index, c))
 		{
 			markChanged();
 			return true;
@@ -337,7 +355,7 @@ public class DataColumn implements List<Object>
 	@Override
 	public Object get(int index)
 	{
-		return values.get(index);
+		return castToMode(values.get(index));
 	}
 
 	/**
@@ -348,7 +366,7 @@ public class DataColumn implements List<Object>
 	 */
 	private Object castToMode(Object val)
 	{
-		if(mode == DataMode.NUMERICAL)
+		if(mode == DataMode.NUMERIC)
 			return Double.valueOf(val.toString());
 		else
 			return val.toString();
@@ -365,7 +383,7 @@ public class DataColumn implements List<Object>
 	public Object set(int index, Object element)
 	{
 		// Only mark unsaved if it actually set a new value
-		Object old = values.set(index, castToMode(element));
+		Object old = values.set(index, element);
 		if(!old.equals(element) && parent != null)
 		{
 			markChanged();
@@ -384,7 +402,7 @@ public class DataColumn implements List<Object>
 	public void add(int index, Object element)
 	{
 		markChanged();
-		values.add(index, castToMode(element));
+		values.add(index, element);
 	}
 
 	/**
@@ -453,7 +471,7 @@ public class DataColumn implements List<Object>
 		{
 			if(mode == DataMode.STRING)
 				sb.append('"');
-			sb.append(values.get(i));
+			sb.append(castToMode(values.get(i)));
 			if(mode == DataMode.STRING)
 				sb.append('"');
 
@@ -486,8 +504,15 @@ public class DataColumn implements List<Object>
 			return false;
 		if(!name.equals(otherCol.name))
 			return false;
+
+		// Convert all values to the correct mode, to ensure we compare fairly
+		for(int i = 0; i < values.size(); i++)
+			values.set(i, castToMode(values.get(i)));
+		for(int i = 0; i < otherCol.values.size(); i++)
+			otherCol.values.set(i, otherCol.castToMode(otherCol.values.get(i)));
 		if(!values.equals(otherCol.values))
 			return false;
+
 		return true;
 	}
 
