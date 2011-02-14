@@ -250,7 +250,9 @@ public class ProblemTest
 
 		Element el = prob.toXml();
 		Problem newProb = Problem.fromXml(el);
-		
+
+		prob.equals(newProb);
+
 		assertEquals(prob, newProb);
 	}
 

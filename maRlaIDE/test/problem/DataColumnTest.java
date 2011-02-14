@@ -102,13 +102,13 @@ public class DataColumnTest
 		// To string
 		testDC1.setMode(DataColumn.DataMode.STRING);
 		assertTrue(testDC1.isString());
-		assertEquals("0.0", testDC1.get(0));
-		assertEquals("3.0", testDC1.get(3));
-		assertEquals("4.0", testDC1.get(4));
+		assertEquals("0", testDC1.get(0));
+		assertEquals("3", testDC1.get(3));
+		assertEquals("4", testDC1.get(4));
 
 		// To doubles
 		testDC1.setMode(DataColumn.DataMode.NUMERIC);
-		assertTrue(testDC1.isNumerical());
+		assertTrue(testDC1.isNumeric());
 		assertEquals(0D, testDC1.get(0));
 		assertEquals(3D, testDC1.get(3));
 		assertEquals(4D, testDC1.get(4));
@@ -116,9 +116,9 @@ public class DataColumnTest
 		// And back to string
 		testDC1.setMode(DataColumn.DataMode.STRING);
 		assertTrue(testDC1.isString());
-		assertEquals("0.0", testDC1.get(0));
-		assertEquals("3.0", testDC1.get(3));
-		assertEquals("4.0", testDC1.get(4));
+		assertEquals("0", testDC1.get(0));
+		assertEquals("3", testDC1.get(3));
+		assertEquals("4", testDC1.get(4));
 	}
 
 	@Test
