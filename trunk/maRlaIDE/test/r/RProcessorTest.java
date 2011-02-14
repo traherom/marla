@@ -255,12 +255,12 @@ public class RProcessorTest
 	public void testSetVariableListDouble() throws Exception
 	{
 		DataColumn col = DataColumnTest.createDataColumn(50);
-		assertEquals(DataMode.NUMERICAL, col.getMode());
+		assertEquals(DataMode.NUMERIC, col.getMode());
 		String var = proc.setVariable(col);
 
 		// Check
 		DataColumn ret = DataColumnTest.createDataColumn(0);
-		assertEquals(DataMode.NUMERICAL, ret.getMode());
+		assertEquals(DataMode.NUMERIC, ret.getMode());
 		ret.addAll(proc.executeDoubleArray(var));
 		assertEquals(col, ret);
 	}

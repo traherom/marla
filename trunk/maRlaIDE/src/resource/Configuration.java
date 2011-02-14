@@ -211,7 +211,8 @@ public class Configuration
 		if(additional != null)
 			checkPaths.addAll(additional);
 
-		// Loop to hit all the dives on Windows. On Linux/OSX this only happens once
+		// Loop to hit all the drives on Windows.
+		// On Linux/OSX this only happens once for '/'
 		File[] roots = File.listRoots();
 		for(int i = 0; i < roots.length; i++)
 		{

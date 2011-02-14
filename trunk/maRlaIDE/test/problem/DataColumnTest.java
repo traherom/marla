@@ -107,7 +107,7 @@ public class DataColumnTest
 		assertEquals("4.0", testDC1.get(4));
 
 		// To doubles
-		testDC1.setMode(DataColumn.DataMode.NUMERICAL);
+		testDC1.setMode(DataColumn.DataMode.NUMERIC);
 		assertTrue(testDC1.isNumerical());
 		assertEquals(0D, testDC1.get(0));
 		assertEquals(3D, testDC1.get(3));

@@ -508,7 +508,7 @@ public class OperationXML extends Operation
 		String processAs = cmdEl.getAttributeValue("type", "numeric");
 		if(processAs.equals("numeric"))
 		{
-			col.setMode(DataColumn.DataMode.NUMERICAL);
+			col.setMode(DataColumn.DataMode.NUMERIC);
 			col.addAll(proc.parseDoubleArray(result));
 		}
 		else if(processAs.equals("string"))
@@ -807,7 +807,7 @@ public class OperationXML extends Operation
 					for(int i = 0; i < parent.getColumnCount(); i++)
 					{
 						DataColumn currCol = parent.getColumn(i);
-						if(currCol.getMode() == DataMode.NUMERICAL)
+						if(currCol.getMode() == DataMode.NUMERIC)
 							columnNames.add(currCol.getName());
 					}
 				}

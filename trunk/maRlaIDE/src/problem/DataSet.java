@@ -26,8 +26,9 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.InputMismatchException;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.swing.JLabel;
 import org.jdom.Element;
 import problem.DataColumn.DataMode;
@@ -112,84 +113,83 @@ public final class DataSet extends JLabel implements DataSource, Changeable
 	 * @param filePath Absolute or relative path to file to import.
 	 * @return New DataSet containing the imported values
 	 */
-	public static DataSet importFile(String filePath) throws FileNotFoundException, RProcessorException, RProcessorParseException, DuplicateNameException, ConfigurationException
+	public static DataSet importFile(String filePath) throws FileNotFoundException, DuplicateNameException, ProblemException
 	{
-		// Open file ourselves to determine the type and settings we'll be handing R
-		File file = new File(filePath);
-		BufferedReader is = new BufferedReader(new FileReader(file));
-
-		// Read top line of file so we can look for column headers
-		String firstLine;
 		try
 		{
-			firstLine = is.readLine();
+			// Open file ourselves to determine the type and settings we'll be handing R
+			File file = new File(filePath);
+			BufferedReader is = new BufferedReader(new FileReader(file));
+
+			// Read top line of file so we can look for column headers
+			// Basically just see if the top is parsable as numbers, in which case
+			// we assume no header
+			String line = is.readLine();
+			Pattern splitPatt = Pattern.compile(",|;");
+			Pattern trimPatt = Pattern.compile("^\\s*([\"']?)(.*)\\1\\s*$");
+			String[] headers = splitPatt.split(line);
+			boolean hasHeader = false;
+			try
+			{
+				// Do these work as numbers?
+				Double.parseDouble(headers[0]);
+			}
+			catch(NumberFormatException e)
+			{
+				// Well, we certainly can't use the columns as numbers, so they must be headers
+				hasHeader = true;
+			}
+
+			// Create columns and add to our new DataSet
+			DataSet ds = new DataSet(file.getName());
+			Matcher cellMatcher = trimPatt.matcher("");
+			for(int i = 0; i < headers.length; i++)
+			{
+				cellMatcher.reset(headers[i]);
+				cellMatcher.find();
+				String cell = cellMatcher.group(2);
+				if(hasHeader)
+				{
+					ds.addColumn(cell);
+				}
+				else
+				{
+					// Make up a name and add the number we read in accidentally
+					DataColumn dc = ds.addColumn("Column " + (i + 1));
+					dc.add(cell);
+				}
+			}
+
+			// Read through the rest of the numbers
+			line = is.readLine();
+			while(line != null)
+			{
+				String[] row = splitPatt.split(line);
+
+				for(int i = 0; i < row.length; i++)
+				{
+					cellMatcher.reset(row[i]);
+					cellMatcher.find();
+					String cell = cellMatcher.group(2);
+					if(!cell.isEmpty())
+						ds.getColumn(i).add(cell);
+				}
+
+				line = is.readLine();
+			}
+
+			// Set the DataColumn modes as appropriate
+			for(int i = 0; i < ds.getColumnCount(); i++)
+			{
+				ds.getColumn(i).autodetectMode();
+			}
+
+			return ds;
 		}
 		catch(IOException ex)
 		{
-			throw new InputMismatchException("File is empty");
+			throw new ProblemException("Error occured working with import file", ex);
 		}
-
-		// Is this a CSV?
-		boolean isCSV = true;
-		String[] lineEntries = null;
-		lineEntries = firstLine.split(",|;");
-		if(lineEntries.length == 1)
-		{
-			// Well, maybe it's a table then
-			isCSV = false;
-			lineEntries = firstLine.split("\\w+");
-		}
-
-		// Is this row parsable as names?
-		boolean hasHeader = false;
-		try
-		{
-			// Do these work as numbers?
-			Double.parseDouble(lineEntries[0]);
-		}
-		catch(NumberFormatException e)
-		{
-			// Well, we certainly can't use the columns as numbers, so they must be headers
-			hasHeader = true;
-		}
-
-		// Done with file
-		try
-		{
-			is.close();
-		}
-		catch(IOException ex)
-		{
-			// Crap. Maybe this'll close it
-			is = null;
-		}
-
-		// Now actually use R to pull in the file as appropriate
-		StringBuilder cmd = new StringBuilder("read.");
-		if(isCSV)
-			cmd.append("csv(\"");
-		else
-			cmd.append("table(\"");
-
-		// I swear to god this is right: \ to \\. The extra slashes are first
-		// to get through the Java string, then through the regex, then to R
-		cmd.append(filePath.replaceAll("\\\\", "\\\\\\\\"));
-
-		cmd.append("\", header=");
-		if(hasHeader)
-			cmd.append('T');
-		else
-			cmd.append('F');
-		cmd.append(", stringsAsFactors=F)");
-
-		RProcessor proc = RProcessor.getInstance();
-		String varName = proc.executeSave(cmd.toString());
-
-		// Read it back in
-		DataSet ds = DataSet.fromRFrame(varName);
-		ds.setDataName(file.getName());
-
-		return ds;
 	}
 
 	/**
@@ -287,7 +287,7 @@ public final class DataSet extends JLabel implements DataSource, Changeable
 			DataColumn dc = ds.addColumn(col);
 			try
 			{
-				dc.setMode(DataMode.NUMERICAL);
+				dc.setMode(DataMode.NUMERIC);
 				dc.addAll(proc.executeDoubleArray(varName + "$" + col));
 			}
 			catch(RProcessorParseException ex)
@@ -428,7 +428,6 @@ public final class DataSet extends JLabel implements DataSource, Changeable
 		return copyColumn(columns.size(), oldCol);
 	}
 
-
 	/**
 	 * Copies the values and name of an existing column into this DataSet
 	 * at the given column index
@@ -439,7 +438,7 @@ public final class DataSet extends JLabel implements DataSource, Changeable
 	public DataColumn copyColumn(int index, DataColumn oldCol) throws DuplicateNameException
 	{
 		DataColumn newCol = addColumn(index, oldCol.getName());
-		
+
 		newCol.setMode(oldCol.getMode());
 		newCol.addAll(oldCol);
 
@@ -757,7 +756,7 @@ public final class DataSet extends JLabel implements DataSource, Changeable
 
 		return sb.toString();
 	}
-	
+
 	/**
 	 * Represents the given DataSet as an easily readable string
 	 * @param ds DataSource to create string for
@@ -804,7 +803,7 @@ public final class DataSet extends JLabel implements DataSource, Changeable
 					try
 					{
 						DataColumn dc = ds.getColumn(col - 1);
-						if(dc.getMode() == DataMode.NUMERICAL)
+						if(dc.getMode() == DataMode.NUMERIC)
 							table[row][col] = dc.get(row - 1).toString();
 						else
 							table[row][col] = '"' + dc.get(row - 1).toString() + '"';
