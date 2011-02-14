@@ -26,6 +26,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
@@ -55,8 +57,6 @@ import problem.DataSet;
 import problem.DuplicateNameException;
 import problem.MarlaException;
 import problem.Problem;
-import problem.ProblemException;
-import resource.ConfigurationException;
 
 /**
  * The New Problem Wizard Dialog.
@@ -82,6 +82,10 @@ public class NewProblemWizardDialog extends EscapeDialog
 	private boolean openCloseWizard = false;
 	/** True when a data set tab is being added, false otherwise.*/
 	private boolean addingDataSet = false;
+	/** True when a data set value is being changed, false otherwise.*/
+	private boolean changingDataSet = false;
+	/** During a change, set with the old value of the table.*/
+	private Object changingValue = null;
 	/** Set true once the New Problem Wizard is told to overwrite existing files.*/
 	private boolean newProblemOverwrite = false;
 	/** True if the current problem is being edited in the wizard, false if creating a new problem in the wizard.*/
@@ -707,19 +711,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 			@Override
 			public void tableChanged(TableModelEvent evt)
 			{
-				if (!openCloseWizard && !addingDataSet)
-				{
-					// Ensure the new value is a valid double, otherwise revert
-					try
-					{
-						Double.parseDouble (newModel.getValueAt (evt.getFirstRow(), evt.getColumn ()).toString ());
-					}
-					catch (NumberFormatException ex)
-					{
-						newModel.setValueAt (0, evt.getFirstRow(), evt.getColumn ());
-					}
-					catch (NullPointerException ex) {}
-				}
+				fireTableChanged (newModel, evt);
 			}
 		});
 		DefaultTableColumnModel newColumnModel = new DefaultTableColumnModel ();
@@ -1044,22 +1036,18 @@ public class NewProblemWizardDialog extends EscapeDialog
 			@Override
 			public void tableChanged(TableModelEvent evt)
 			{
-				if (!openCloseWizard && !addingDataSet)
-				{
-					// Ensure the new value is a valid double, otherwise revert
-					try
-					{
-						Double.parseDouble (model.getValueAt (evt.getFirstRow(), evt.getColumn ()).toString ());
-					}
-					catch (NumberFormatException ex)
-					{
-						model.setValueAt (0, evt.getFirstRow(), evt.getColumn ());
-					}
-					catch (NullPointerException ex) {}
-				}
+				fireTableChanged (model, evt);
 			}
 		});
 		final ExtendedJTable table = new ExtendedJTable(model);
+		table.addPropertyChangeListener(new PropertyChangeListener ()
+		{
+			@Override
+			public void propertyChange(PropertyChangeEvent evt)
+			{
+				firePropertyChanged (evt);
+			}
+		});
 		table.getTableHeader().setFont(ViewPanel.FONT_PLAIN_12);
 		table.getTableHeader().addMouseListener(new MouseAdapter()
 		{
@@ -1209,19 +1197,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 									@Override
 									public void tableChanged(TableModelEvent evt)
 									{
-										if (!openCloseWizard && !addingDataSet)
-										{
-											// Ensure the new value is a valid double, otherwise revert
-											try
-											{
-												Double.parseDouble (newModel.getValueAt (evt.getFirstRow(), evt.getColumn ()).toString ());
-											}
-											catch (NumberFormatException ex)
-											{
-												newModel.setValueAt (0, evt.getFirstRow(), evt.getColumn ());
-											}
-											catch (NullPointerException ex) {}
-										}
+										fireTableChanged (newModel, evt);
 									}
 								});
 
@@ -1302,6 +1278,67 @@ public class NewProblemWizardDialog extends EscapeDialog
 	}
 
 	/**
+	 * 
+	 * @param evt
+	 */
+	private void firePropertyChanged(PropertyChangeEvent evt)
+	{
+		if (evt.getPropertyName().equals ("tableCellEditor"))
+		{
+			if (changingValue != null)
+			{
+				changingValue = evt.getNewValue();
+			}
+			else
+			{
+				changingValue = null;
+			}
+		}
+	}
+
+	/**
+	 * Ensure the new value for the table change event is valid, otherwise revert it.
+	 *
+	 * @param model
+	 * @param evt
+	 */
+	private void fireTableChanged(ExtendedTableModel model, TableModelEvent evt)
+	{
+		if (!openCloseWizard && !addingDataSet && !changingDataSet)
+		{
+			// Ensure the new value is a valid double, otherwise revert
+			try
+			{
+				Object value = model.getValueAt (evt.getFirstRow(), evt.getColumn ()).toString ();
+				try
+				{
+					int intValue = Integer.parseInt(value.toString ());
+					changingDataSet = true;
+					model.setValueAt (intValue, evt.getFirstRow(), evt.getColumn ());
+					changingDataSet = false;
+				}
+				catch (NumberFormatException ex)
+				{
+					try
+					{
+						double doubleValue = Double.parseDouble(value.toString ());
+						changingDataSet = true;
+						model.setValueAt (doubleValue, evt.getFirstRow(), evt.getColumn ());
+						changingDataSet = false;
+					}
+					catch (NumberFormatException innerEx)
+					{
+						changingDataSet = true;
+						model.setValueAt (0.0/*changingValue*/, evt.getFirstRow(), evt.getColumn ());
+						changingDataSet = false;
+					}
+				}
+			}
+			catch (NullPointerException ex) {}
+		}
+	}
+
+	/**
 	 * Launch the New Problem Wizard with the default characteristics.
 	 */
 	protected void launchNewProblemWizard()
@@ -1372,19 +1409,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 				@Override
 				public void tableChanged(TableModelEvent evt)
 				{
-					if (!openCloseWizard && !addingDataSet)
-					{
-						// Ensure the new value is a valid double, otherwise revert
-						try
-						{
-							Double.parseDouble (newModel.getValueAt (evt.getFirstRow(), evt.getColumn ()).toString ());
-						}
-						catch (NumberFormatException ex)
-						{
-							newModel.setValueAt (0, evt.getFirstRow(), evt.getColumn ());
-						}
-						catch (NullPointerException ex) {}
-					}
+					fireTableChanged (newModel, evt);
 				}
 			});
 			DefaultTableColumnModel newColumnModel = new DefaultTableColumnModel ();
@@ -1479,18 +1504,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 					@Override
 					public void tableChanged(TableModelEvent evt)
 					{
-						if (!openCloseWizard && !addingDataSet)
-						{
-							try
-							{
-								Double.parseDouble (newModel.getValueAt (evt.getFirstRow(), evt.getColumn ()).toString ());
-							}
-							catch (NumberFormatException ex)
-							{
-								newModel.setValueAt (0, evt.getFirstRow(), evt.getColumn ());
-							}
-							catch (NullPointerException ex) {}
-						}
+						fireTableChanged (newModel, evt);
 					}
 				});
 				DefaultTableColumnModel newColumnModel = new DefaultTableColumnModel ();

@@ -24,6 +24,7 @@ import java.awt.Graphics;
 import java.awt.Insets;
 import javax.swing.JTable;
 import javax.swing.JViewport;
+import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
@@ -162,12 +163,9 @@ public class ExtendedJTable extends JTable
     @Override
     public TableCellRenderer getCellRenderer(int row, int column)
     {
-        Object value = getValueAt (row, column);
-        if (value != null)
-        {
-            return getDefaultRenderer (value.getClass ());
-        }
-        return super.getCellRenderer (row, column);
+		TableCellRenderer renderer = super.getCellRenderer (row, column);
+		((DefaultTableCellRenderer) renderer).setHorizontalAlignment (SwingConstants.LEFT);
+		return renderer;
     }
 
     /**
