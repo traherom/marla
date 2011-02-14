@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package r;
+package operation;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,8 +23,8 @@ import java.util.Random;
 import java.util.Scanner;
 import problem.DataSet;
 import problem.MarlaException;
-import problem.Operation;
-import problem.Operation.PromptType;
+import operation.Operation.PromptType;
+import r.RProcessor;
 import r.RProcessor.RecordMode;
 import resource.Configuration;
 

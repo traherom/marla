@@ -17,6 +17,10 @@
  */
 package r;
 
+import operation.OperationTester;
+import operation.OperationException;
+import operation.Operation;
+import operation.OperationInfoRequiredException;
 import resource.Configuration;
 import problem.*;
 import java.util.List;

@@ -60,10 +60,10 @@ import javax.swing.filechooser.FileFilter;
 import problem.DataSet;
 import problem.DataSource;
 import problem.MarlaException;
-import problem.Operation;
-import problem.Operation.PromptType;
-import problem.OperationException;
-import r.OperationXML;
+import operation.Operation;
+import operation.Operation.PromptType;
+import operation.OperationException;
+import operation.OperationXML;
 import r.RProcessorException;
 import resource.LoadSaveThread;
 

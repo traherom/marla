@@ -37,7 +37,7 @@ import java.awt.dnd.DropTargetListener;
 import java.io.IOException;
 import javax.swing.JOptionPane;
 import problem.MarlaException;
-import problem.Operation;
+import operation.Operation;
 
 /**
  * The drag and drop class handles the construction and destruction of drag/drop

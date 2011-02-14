@@ -17,6 +17,7 @@
  */
 package problem;
 
+import operation.Operation;
 import java.awt.Rectangle;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;

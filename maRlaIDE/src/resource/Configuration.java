@@ -36,7 +36,7 @@ import org.jdom.input.SAXBuilder;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 import problem.MarlaException;
-import r.OperationXML;
+import operation.OperationXML;
 import r.RProcessor;
 
 /**

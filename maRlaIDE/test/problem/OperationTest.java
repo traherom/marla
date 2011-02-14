@@ -17,8 +17,11 @@
  */
 package problem;
 
+import operation.OperationException;
+import operation.Operation;
+import operation.OperationInfoRequiredException;
 import resource.Configuration;
-import r.OperationTester;
+import operation.OperationTester;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;

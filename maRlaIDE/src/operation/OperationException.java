@@ -15,32 +15,23 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package problem;
+package operation;
+
+import problem.MarlaException;
 
 /**
- * Thrown when an operation needs information to be set before it can perform
- * any calculations. getOperation() in this exception returns the operation
- * that needs information.
+ * Thrown when an error occurs within an operation, usually during calculations.
  * @author Ryan Morehart
  */
-public class OperationInfoRequiredException extends MarlaException
+public class OperationException extends MarlaException
 {
-	private final Operation op;
-	
-	public OperationInfoRequiredException(String msg, Operation op)
+	public OperationException(String msg)
 	{
 		super(msg);
-		this.op = op;
 	}
 
-	public OperationInfoRequiredException(String msg, Throwable cause, Operation op)
+	public OperationException(String msg, Throwable cause)
 	{
 		super(msg, cause);
-		this.op = op;
-	}
-
-	public final Operation getOperation()
-	{
-		return op;
 	}
 }
