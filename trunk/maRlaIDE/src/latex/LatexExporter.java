@@ -38,7 +38,7 @@ import org.jdom.JDOMException;
 import org.jdom.Text;
 import org.jdom.input.SAXBuilder;
 import problem.DataSource;
-import problem.Operation;
+import operation.Operation;
 import problem.SubProblem;
 import r.RProcessor;
 import r.RProcessor.RecordMode;

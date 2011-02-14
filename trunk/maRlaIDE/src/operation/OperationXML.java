@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package r;
+package operation;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -36,11 +36,11 @@ import problem.DataSet;
 import problem.DataSource;
 import problem.DuplicateNameException;
 import problem.MarlaException;
-import problem.Operation;
-import problem.OperationException;
-import problem.OperationInfoRequiredException;
 import problem.Problem;
+import r.RProcessor;
 import r.RProcessor.RecordMode;
+import r.RProcessorException;
+import r.RProcessorParseException;
 import resource.ConfigurationException;
 
 /**
@@ -335,7 +335,34 @@ public class OperationXML extends Operation
 	{
 		// Ensure any requirements were met already
 		if(isInfoRequired() && questionAnswers == null)
-			throw new OperationInfoRequiredException("Required info has not been set yet", this);
+		{
+			// Can we automatically fill anything? (for example, selecting a column when
+			// there's only one option)
+
+			List<Object[]> info = getRequiredInfoPrompt();
+			List<Object> answers = new ArrayList<Object>();
+			for(Object[] question : info)
+			{
+				boolean satisfied = false;
+
+				PromptType questionType = (PromptType)question[0];
+				switch(questionType)
+				{
+					case COMBO:
+					case COLUMN:
+						// Is there only one option for the column/combo?
+						// TODO move to new operation question objects
+						break;
+
+					default:
+						satisfied = false;
+				}
+
+				// Has the question been answered successfully?
+				if(!satisfied)
+					throw new OperationInfoRequiredException("Required info has not been set yet", this);
+			}
+		}
 
 		// Clear out old plot
 		this.plotPath = null;

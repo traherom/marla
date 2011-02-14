@@ -17,6 +17,7 @@
  */
 package problem;
 
+import operation.Operation;
 import java.util.List;
 import org.jdom.Element;
 

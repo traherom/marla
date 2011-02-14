@@ -26,7 +26,7 @@ import java.awt.geom.Line2D;
 import java.util.List;
 import javax.swing.JPanel;
 import problem.DataSet;
-import problem.Operation;
+import operation.Operation;
 
 /**
  * Paints the panel for the workspace with proper lines for all shown data sets and operations.

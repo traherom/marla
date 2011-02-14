@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package problem;
+package operation;
 
 import java.awt.Rectangle;
 import java.util.ArrayList;
@@ -25,8 +25,14 @@ import java.util.List;
 import java.util.Map;
 import javax.swing.JLabel;
 import org.jdom.Element;
-import r.OperationXML;
-import r.OperationXMLException;
+import problem.Changeable;
+import problem.DataColumn;
+import problem.DataNotFoundException;
+import problem.DataSet;
+import problem.DataSource;
+import problem.DuplicateNameException;
+import problem.InternalMarlaException;
+import problem.MarlaException;
 import r.RProcessor;
 import r.RProcessorException;
 import resource.ConfigurationException;

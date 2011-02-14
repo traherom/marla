@@ -15,21 +15,45 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package problem;
+package operation;
+
+import java.util.Collections;
+import java.util.List;
 
 /**
- * Thrown when an error occurs within an operation, usually during calculations.
  * @author Ryan Morehart
  */
-public class OperationException extends MarlaException
+public class OperationInfoCombo implements OperationInformation
 {
-	public OperationException(String msg)
+	private String prompt = null;
+	private String name = null;
+	List<String> options = null;
+
+	public OperationInfoCombo(String name, String prompt, List<String> options)
 	{
-		super(msg);
+		this.name = name;
+		this.prompt = prompt;
+		this.options = options;
 	}
 
-	public OperationException(String msg, Throwable cause)
+	@Override
+	public String getPrompt()
 	{
-		super(msg, cause);
+		return prompt;
+	}
+
+	@Override
+	public String getName()
+	{
+		return name;
+	}
+
+	/**
+	 * Returns the possible options for this combo
+	 * @return List of options
+	 */
+	public List<String> getOptions()
+	{
+		return Collections.unmodifiableList(options);
 	}
 }

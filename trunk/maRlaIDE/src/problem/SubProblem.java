@@ -17,6 +17,7 @@
  */
 package problem;
 
+import operation.Operation;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;

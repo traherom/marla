@@ -15,49 +15,34 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package r;
+package operation;
 
-import problem.OperationException;
+import problem.MarlaException;
 
 /**
- * Thrown when an error occurs within XML operations, often due to improper XML
- * specification.
+ * Thrown when an operation needs information to be set before it can perform
+ * any calculations. getOperation() in this exception returns the operation
+ * that needs information.
  * @author Ryan Morehart
  */
-public class OperationXMLException extends OperationException
+public class OperationInfoRequiredException extends MarlaException
 {
-	private String opName = null;
-
-	public OperationXMLException(String msg)
+	private final Operation op;
+	
+	public OperationInfoRequiredException(String msg, Operation op)
 	{
 		super(msg);
+		this.op = op;
 	}
 
-	public OperationXMLException(String msg, Throwable cause)
+	public OperationInfoRequiredException(String msg, Throwable cause, Operation op)
 	{
 		super(msg, cause);
+		this.op = op;
 	}
 
-	public void addName(String newName)
+	public final Operation getOperation()
 	{
-		opName = newName;
-	}
-
-	@Override
-	public String getMessage()
-	{
-		if(opName == null)
-			return super.getMessage();
-		else
-			return opName + ": " + super.getMessage();
-	}
-
-	@Override
-	public String toString()
-	{
-		if(opName == null)
-			return super.toString();
-		else
-			return opName + ": " + super.toString();
+		return op;
 	}
 }
