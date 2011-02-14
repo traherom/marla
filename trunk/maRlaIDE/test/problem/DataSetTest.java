@@ -144,11 +144,6 @@ public class DataSetTest
 		// Export to file. Change column names to match the way it will
 		// be imported. We also don't export operations, so dump those.
 		DataSet testDS1 = createDataSet(5, 50, 0);
-		testDS1.getColumn(0).setName("Column.1");
-		testDS1.getColumn(1).setName("Column.2");
-		testDS1.getColumn(2).setName("Column.3");
-		testDS1.getColumn(3).setName("Column.4");
-		testDS1.getColumn(4).setName("Column.5");
 		testDS1.exportFile("test.csv");
 
 		// Import and make name match (otherwise it's based on the file name,

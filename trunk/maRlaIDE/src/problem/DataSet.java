@@ -206,9 +206,8 @@ public final class DataSet extends JLabel implements DataSource, Changeable
 			StringBuilder line = new StringBuilder();
 			for(int i = 0; i < ds.getColumnCount(); i++)
 			{
-				line.append('"');
 				line.append(ds.getColumn(i).getName());
-				line.append("\", ");
+				line.append(", ");
 			}
 
 			// Remove the final comma and terminate
@@ -231,7 +230,7 @@ public final class DataSet extends JLabel implements DataSource, Changeable
 					// Actually more items in this column?
 					if(i < dc.size())
 					{
-						if(dc.isNumerical())
+						if(dc.isNumeric())
 						{
 							line.append(dc.get(i));
 						}

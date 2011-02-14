@@ -200,7 +200,9 @@ public class Configuration
 		// Check if it's on the path, in which case we don't bother searching
 		//if(isOnPath(exeName))
 		//	return exeName;
-		
+
+		System.out.println("Looking for '" + exeName + "', please wait");
+
 		// Save all possible files that match the requested name
 		Pattern namePatt = Pattern.compile(exeName + "(\\.exe)?");
 		Pattern dirPatt = Pattern.compile(dirSearch);

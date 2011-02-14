@@ -118,7 +118,7 @@ public class DataColumn implements List<Object>
 	 * by other functions)
 	 * @return true if the data should be interpreted as Doubles
 	 */
-	public boolean isNumerical()
+	public boolean isNumeric()
 	{
 		return mode == DataMode.NUMERIC;
 	}
@@ -238,24 +238,14 @@ public class DataColumn implements List<Object>
 	@Override
 	public Object[] toArray()
 	{
-		// Convert all values to the correct mode
-		for(int i = 0; i < values.size(); i++)
-		{
-			values.set(i, castToMode(values.get(i)));
-		}
-
+		castAllToMode();
 		return values.toArray();
 	}
 
 	@Override
 	public <T> T[] toArray(T[] a)
 	{
-		// Convert all values to the correct mode
-		for(int i = 0; i < values.size(); i++)
-		{
-			values.set(i, castToMode(values.get(i)));
-		}
-		
+		castAllToMode();
 		return values.toArray(a);
 	}
 
@@ -370,6 +360,18 @@ public class DataColumn implements List<Object>
 			return Double.valueOf(val.toString());
 		else
 			return val.toString();
+	}
+
+	/**
+	 * Forces all objects to be cast to the correct mode now,
+	 * rather than lazily when the values are retrieved
+	 */
+	private void castAllToMode()
+	{
+		// Convert all values to the correct mode now,
+		// rather than waiting for the lazy cast
+		for(int i = 0; i < values.size(); i++)
+			values.set(i, castToMode(values.get(i)));
 	}
 
 	/**
@@ -506,10 +508,8 @@ public class DataColumn implements List<Object>
 			return false;
 
 		// Convert all values to the correct mode, to ensure we compare fairly
-		for(int i = 0; i < values.size(); i++)
-			values.set(i, castToMode(values.get(i)));
-		for(int i = 0; i < otherCol.values.size(); i++)
-			otherCol.values.set(i, otherCol.castToMode(otherCol.values.get(i)));
+		castAllToMode();
+		otherCol.castAllToMode();
 		if(!values.equals(otherCol.values))
 			return false;
 
@@ -519,6 +519,8 @@ public class DataColumn implements List<Object>
 	@Override
 	public int hashCode()
 	{
+		castAllToMode();
+
 		int hash = 5;
 		hash = 11 * hash + (this.name != null ? this.name.hashCode() : 0);
 		hash = 11 * hash + (this.values != null ? this.values.hashCode() : 0);
