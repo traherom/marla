@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF8"?>
+<marla>
+  <rprocessor rpath="/Library/Frameworks/R.framework/R" debug="FULL" />
+  <latex template="export_template.xml" pdflatex="/usr/texbin/pdflatex" />
+  <xmlops xml="ops.xml" />
+</marla>
+

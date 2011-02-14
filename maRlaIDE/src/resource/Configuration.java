@@ -178,12 +178,14 @@ public class Configuration
 
 	public static String findR() throws ConfigurationException
 	{
-		return findExecutable("R", "R.*|bin|usr|local|lib|Program Files.*|x64|i386|Library|Frameworks|Resources", null);
+		return findExecutable("R", "R.*|bin|usr|local|lib|Program Files.*|x64|i386|Library|Frameworks", null);
 	}
 
 	public static String findPdflatex() throws ConfigurationException
 	{
-		return findExecutable("pdflatex", "bin|usr|Program Files.*|tex|[Mm]i[Kk][Tt]e[Xx].*", null);
+		// /usr/local/texlive/2010/bin/x86_64-darwin/pdftex
+
+		return findExecutable("pdflatex", "bin|usr|Program Files.*|.*[Tt]e[Xx].*|local|20[0-9]{2}|.*darwin|Contents|Resources", null);
 	}
 
 	/**
