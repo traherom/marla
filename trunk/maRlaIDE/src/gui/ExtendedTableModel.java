@@ -79,8 +79,6 @@ public class ExtendedTableModel extends AbstractTableModel
         }
 		
         data = newData;
-		
-		fireTableDataChanged();
 	}
 
 	/**

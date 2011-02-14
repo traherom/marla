@@ -573,14 +573,17 @@ public class ViewPanel extends JPanel
 		else if (evt.getButton () == MouseEvent.BUTTON3)
 		{
 			JComponent component = (JComponent) workspacePanel.getComponentAt (evt.getPoint ());
-			if (component instanceof Operation)
+			if (component != null)
 			{
 				try
 				{
-					domain.ensureRequirementsMet((Operation) component);
+					if (component instanceof Operation)
+					{
+						domain.ensureRequirementsMet((Operation) component);
+					}
 
 					answerPanel.removeAll ();
-					if (((Operation) component).hasPlot())
+					if (component instanceof Operation && ((Operation) component).hasPlot())
 					{
 						JLabel label = new JLabel ("");
 						label.setIcon(new ImageIcon (((Operation) component).getPlot()));
@@ -591,6 +594,14 @@ public class ViewPanel extends JPanel
 						answerPanel.add(new JLabel("<html>" + ((DataSource) component).toHTML() + "</html>"));
 					}
 
+					if (component instanceof Operation)
+					{
+						answerDialog.setTitle ("Solution to Point");
+					}
+					else if (component instanceof DataSet)
+					{
+						answerDialog.setTitle ("Data Set Summary");
+					}
 					answerDialog.pack ();
 					answerDialog.setLocation (evt.getLocationOnScreen());
 					answerDialog.setVisible (true);
