@@ -224,11 +224,30 @@ public class Configuration
 	public static void save(String configPath) throws MarlaException
 	{
 		// Build document
-		Element root = new Element("marla");
-		root.addContent(RProcessor.getConfig(new Element("rprocessor")));
-		root.addContent(LatexExporter.getConfig(new Element("latex")));
-		root.addContent(OperationXML.getConfig(new Element("xmlops")));
-		Document doc = new Document(root);
+		Element rootEl = new Element("marla");
+		Document doc = new Document(rootEl);
+
+		// R
+		Element rEl = new Element("r");
+		rootEl.addContent(rEl);
+		if(RProcessor.getRLocation() != null)
+			rEl.setAttribute("rpath", RProcessor.getRLocation());
+		if(RProcessor.hasInstance())
+			rEl.setAttribute("debug", RProcessor.getInstance().getDebugMode().toString());
+
+		// Latex
+		Element latexEl = new Element("latex");
+		rootEl.addContent(latexEl);
+		if(LatexExporter.getDefaultTemplate() != null)
+			latexEl.setAttribute("template", LatexExporter.getDefaultTemplate());
+		if(LatexExporter.getPdfTexPath() != null)
+			latexEl.setAttribute("pdftex", LatexExporter.getPdfTexPath());
+
+		// XML operations
+		Element opsEl = new Element("ops");
+		rootEl.addContent(opsEl);
+		if(OperationXML.getXMLPath() != null)
+			opsEl.setAttribute("xml", OperationXML.getXMLPath());
 
 		try
 		{
@@ -302,7 +321,7 @@ public class Configuration
 
 	public static String findAndSetOpsXML() throws ConfigurationException
 	{
-		List<String> possibilities = findExecutable("ops.xml", "config|xml", null);
+		List<String> possibilities = findExecutable("ops.xml", "config|xml|test", null);
 
 		// Test each possibility until one loads
 		for(String path : possibilities)
@@ -332,7 +351,7 @@ public class Configuration
 
 	public static String findAndSetLatexTemplate() throws ConfigurationException
 	{
-		List<String> possibilities = findExecutable("export_template.xml", "config|xml", null);
+		List<String> possibilities = findExecutable("export_template.xml", "config|xml|test", null);
 
 		// Test each possibility until one loads
 		for(String path : possibilities)
@@ -439,9 +458,11 @@ public class Configuration
 		return exes;
 	}
 
-	public static void main(String[] args) throws ConfigurationException
+	public static void main(String[] args) throws MarlaException
 	{
-		System.out.println("R located at " + findAndSetR());
-		System.out.println("pdflatex located at " + findAndSetPdfTex());
+		if(args.length == 0)
+			Configuration.load();
+		else
+			Configuration.load(args[0]);
 	}
 }
