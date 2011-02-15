@@ -162,7 +162,6 @@ public class LatexExporter
 	{
 		String oldPath = pdfTexPath;
 		pdfTexPath = newPdfTexPath;
-		
 
 		// Ensure we could run this if wished
 		if(!newPdfTexPath.equals(oldPath))
@@ -220,8 +219,10 @@ public class LatexExporter
 	 */
 	public static Element getConfig(Element configEl)
 	{
-		configEl.setAttribute("template", defaultTemplate);
-		configEl.setAttribute("pdftex", pdfTexPath);
+		if(defaultTemplate != null)
+			configEl.setAttribute("template", defaultTemplate);
+		if(pdfTexPath != null)
+			configEl.setAttribute("pdftex", pdfTexPath);
 		return configEl;
 	}
 
