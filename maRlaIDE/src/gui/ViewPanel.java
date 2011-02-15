@@ -52,6 +52,7 @@ import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
@@ -64,6 +65,7 @@ import operation.Operation;
 import operation.Operation.PromptType;
 import operation.OperationException;
 import operation.OperationXML;
+import problem.SubProblem;
 import r.RProcessorException;
 import resource.LoadSaveThread;
 
@@ -108,6 +110,8 @@ public class ViewPanel extends JPanel
 	protected JComponent draggingComponent = null;
 	/** The component currently being hovered over.*/
 	private JComponent hoveredComponent = null;
+	/** The component that has been right-clicked on.*/
+	private JComponent rightClickedComponent = null;
 	/** The x-offset for dragging an item*/
 	protected int xDragOffset = -1;
 	/** The y-offset for dragging an item*/
@@ -287,6 +291,9 @@ public class ViewPanel extends JPanel
         saveChooserDialog = new javax.swing.JFileChooser();
         answerDialog = new javax.swing.JDialog();
         answerPanel = new javax.swing.JPanel();
+        rightClickMenu = new javax.swing.JPopupMenu();
+        solutionMenuItem = new javax.swing.JMenuItem();
+        subProblemSubMenu = new javax.swing.JMenu();
         toolBar = new javax.swing.JToolBar();
         componentsCardPanel = new javax.swing.JPanel();
         emptyPalettePanel = new javax.swing.JPanel();
@@ -313,10 +320,22 @@ public class ViewPanel extends JPanel
         answerDialog.setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         answerDialog.setTitle("Solution to Point");
         answerDialog.setAlwaysOnTop(true);
+        answerDialog.setUndecorated(true);
         answerDialog.getContentPane().setLayout(new java.awt.GridLayout(1, 1));
 
         answerPanel.setLayout(new javax.swing.BoxLayout(answerPanel, javax.swing.BoxLayout.PAGE_AXIS));
         answerDialog.getContentPane().add(answerPanel);
+
+        solutionMenuItem.setText("jMenuItem1");
+        solutionMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                solutionMenuItemActionPerformed(evt);
+            }
+        });
+        rightClickMenu.add(solutionMenuItem);
+
+        subProblemSubMenu.setText("jMenu1");
+        rightClickMenu.add(subProblemSubMenu);
 
         setLayout(new java.awt.BorderLayout());
 
@@ -333,11 +352,11 @@ public class ViewPanel extends JPanel
         emptyPalettePanel.setLayout(emptyPalettePanelLayout);
         emptyPalettePanelLayout.setHorizontalGroup(
             emptyPalettePanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(0, 204, Short.MAX_VALUE)
+            .add(0, 208, Short.MAX_VALUE)
         );
         emptyPalettePanelLayout.setVerticalGroup(
             emptyPalettePanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(0, 238, Short.MAX_VALUE)
+            .add(0, 243, Short.MAX_VALUE)
         );
 
         componentsCardPanel.add(emptyPalettePanel, "card3");
@@ -374,14 +393,14 @@ public class ViewPanel extends JPanel
             preWorkspacePanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(preWorkspacePanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .add(preWorkspaceLabel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 154, Short.MAX_VALUE)
+                .add(preWorkspaceLabel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 152, Short.MAX_VALUE)
                 .addContainerGap())
         );
         preWorkspacePanelLayout.setVerticalGroup(
             preWorkspacePanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(preWorkspacePanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .add(preWorkspaceLabel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 237, Short.MAX_VALUE)
+                .add(preWorkspaceLabel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 236, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -418,9 +437,9 @@ public class ViewPanel extends JPanel
         trayPanel.setLayout(trayPanelLayout);
         trayPanelLayout.setHorizontalGroup(
             trayPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(0, 178, Short.MAX_VALUE)
+            .add(0, 180, Short.MAX_VALUE)
             .add(trayPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                .add(outputScrollPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 178, Short.MAX_VALUE))
+                .add(outputScrollPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 180, Short.MAX_VALUE))
         );
         trayPanelLayout.setVerticalGroup(
             trayPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
@@ -575,44 +594,83 @@ public class ViewPanel extends JPanel
 			JComponent component = (JComponent) workspacePanel.getComponentAt (evt.getPoint ());
 			if (component != null)
 			{
-				try
+				rightClickedComponent = component;
+				solutionMenuItem.setEnabled (true);
+				subProblemSubMenu.removeAll ();
+				if (domain.problem.getSubProblemCount() == 0)
 				{
-					if (component instanceof Operation)
-					{
-						domain.ensureRequirementsMet((Operation) component);
-					}
-
-					answerPanel.removeAll ();
-					if (component instanceof Operation && ((Operation) component).hasPlot())
-					{
-						JLabel label = new JLabel ("");
-						label.setIcon(new ImageIcon (((Operation) component).getPlot()));
-						answerPanel.add (label);
-					}
-					else
-					{
-						answerPanel.add(new JLabel("<html>" + ((DataSource) component).toHTML() + "</html>"));
-					}
-
-					if (component instanceof Operation)
-					{
-						answerDialog.setTitle ("Solution to Point");
-					}
-					else if (component instanceof DataSet)
-					{
-						answerDialog.setTitle ("Data Set Summary");
-					}
-					answerDialog.pack ();
-					answerDialog.setLocation (evt.getLocationOnScreen());
-					answerDialog.setVisible (true);
+					subProblemSubMenu.setEnabled (false);
 				}
-				catch (MarlaException ex)
+				else if (rightClickedComponent instanceof Operation)
 				{
-					Domain.logger.add (ex);
+					subProblemSubMenu.setEnabled (true);
+					for (int i = 0; i < domain.problem.getSubProblemCount(); ++i)
+					{
+						final SubProblem subProblem = domain.problem.getSubProblem(i);
+						JMenuItem item = new JMenuItem (subProblem.getSubproblemID());
+						item.addActionListener (new ActionListener ()
+						{
+							@Override
+							public void actionPerformed(ActionEvent evt)
+							{
+								//subProblem.addData (((Operation) rightClickedComponent).getRootDataSource());
+							}
+						});
+						subProblemSubMenu.add (item);
+					}
 				}
+			}
+			else
+			{
+				rightClickedComponent = component;
+				solutionMenuItem.setEnabled (false);
+				subProblemSubMenu.setEnabled (false);
+				subProblemSubMenu.removeAll ();
 			}
 		}
 	}//GEN-LAST:event_workspacePanelMouseReleased
+
+	private void solutionMenuItemActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_solutionMenuItemActionPerformed
+	{//GEN-HEADEREND:event_solutionMenuItemActionPerformed
+		if (rightClickedComponent != null)
+		{
+			try
+			{
+				if (rightClickedComponent instanceof Operation)
+				{
+					domain.ensureRequirementsMet((Operation) rightClickedComponent);
+				}
+
+				answerPanel.removeAll ();
+				if (rightClickedComponent instanceof Operation && ((Operation) rightClickedComponent).hasPlot())
+				{
+					JLabel label = new JLabel ("");
+					label.setIcon(new ImageIcon (((Operation) rightClickedComponent).getPlot()));
+					answerPanel.add (label);
+				}
+				else
+				{
+					answerPanel.add(new JLabel("<html>" + ((DataSource) rightClickedComponent).toHTML() + "</html>"));
+				}
+
+				if (rightClickedComponent instanceof Operation)
+				{
+					answerDialog.setTitle ("Solution to Point");
+				}
+				else if (rightClickedComponent instanceof DataSet)
+				{
+					answerDialog.setTitle ("Data Set Summary");
+				}
+				answerDialog.pack ();
+				answerDialog.setLocation (((JMenuItem) evt.getSource()).getLocationOnScreen());
+				answerDialog.setVisible (true);
+			}
+			catch (MarlaException ex)
+			{
+				Domain.logger.add (ex);
+			}
+		}
+	}//GEN-LAST:event_solutionMenuItemActionPerformed
 
 	/**
 	 * Rebuild the tree in the interface for the given data set.
@@ -1109,8 +1167,11 @@ public class ViewPanel extends JPanel
     private javax.swing.JTextArea outputTextArea;
     private javax.swing.JLabel preWorkspaceLabel;
     protected javax.swing.JPanel preWorkspacePanel;
+    private javax.swing.JPopupMenu rightClickMenu;
     private javax.swing.JPanel rightPanel;
     protected javax.swing.JFileChooser saveChooserDialog;
+    private javax.swing.JMenuItem solutionMenuItem;
+    private javax.swing.JMenu subProblemSubMenu;
     private javax.swing.JToolBar toolBar;
     private javax.swing.JPanel trayPanel;
     private javax.swing.JPanel workspaceCardPanel;
