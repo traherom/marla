@@ -22,11 +22,11 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Deque;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import latex.LatexExporter;
 import operation.OperationXMLException;
@@ -41,6 +41,7 @@ import org.jdom.output.XMLOutputter;
 import problem.MarlaException;
 import operation.OperationXML;
 import r.RProcessor;
+import r.RProcessor.RecordMode;
 import r.RProcessorException;
 import resource.ConfigurationException.ConfigType;
 
@@ -49,6 +50,8 @@ import resource.ConfigurationException.ConfigType;
  */
 public class Configuration
 {
+	private static Deque<ConfigurationException> errors = new ArrayDeque<ConfigurationException>();
+
 	/**
 	 * Sets configuration parameters based on command line
 	 * @param args Command line parameters, as given to main() by the VM
@@ -74,19 +77,24 @@ public class Configuration
 	 * Loads maRla configuration from the default location, config.xml in the
 	 * current directory
 	 */
-	public static void load() throws MarlaException
+	public static boolean load() throws MarlaException
 	{
-		load("config.xml");
+		return load("config.xml");
 	}
 
 	/**
-	 * Loads maRla configuration from the specified config file
+	 * Loads maRla configuration from the specified config file. If any errors
+	 * occur false is returned. Errors may be retrieved via getNextError()
 	 * @param configPath XML file to load data from
+	 * @return true if load succeeds, false otherwise
 	 */
-	public static void load(String configPath) throws MarlaException
+	public static boolean load(String configPath) throws MarlaException
 	{
 		Element configXML = null;
 		boolean configLoaded = false;
+
+		// Clear any errors
+		errors.clear();
 
 		try
 		{
@@ -97,11 +105,6 @@ public class Configuration
 			Document doc = parser.build(configPath);
 			configXML = doc.getRootElement();
 			configLoaded = true;
-
-			// Tell various components about their settings
-			RProcessor.setConfig(configXML.getChild("rprocessor"));
-			LatexExporter.setConfig(configXML.getChild("latex"));
-			OperationXML.setConfig(configXML.getChild("xmlops"));
 		}
 		catch(JDOMException ex)
 		{
@@ -112,14 +115,97 @@ public class Configuration
 			configLoaded = false;
 		}
 
-		// Unable to load config, try to find them
-		if(!configLoaded)
+		// R
+		try
 		{
-			findAndSetR();
-			findAndSetPdfTex();
-			findAndSetOpsXML();
-			findAndSetLatexTemplate();
+			if(configLoaded)
+			{
+				// Tell various components about their settings
+				Element rEl = configXML.getChild("r");
+				RProcessor.setRLocation(rEl.getAttributeValue("rpath"));
+				RProcessor.getInstance().setDebugMode(RecordMode.valueOf(rEl.getAttributeValue("debug", "disabled").toUpperCase()));
+			}
+			else
+			{
+				findAndSetR();
+			}
 		}
+		catch(ConfigurationException ex)
+		{
+			errors.push(ex);
+		}
+
+		// Latex template
+		try
+		{
+			if(configLoaded)
+			{
+				// Tell various components about their settings
+				Element latexEl = configXML.getChild("latex");
+				LatexExporter.setDefaultTemplate(latexEl.getAttributeValue("template"));
+			}
+			else
+			{
+				findAndSetLatexTemplate();
+			}
+		}
+		catch(ConfigurationException ex)
+		{
+			errors.push(ex);
+		}
+
+		// pdfTeX
+		try
+		{
+			if(configLoaded)
+			{
+				// Tell various components about their settings
+				Element latexEl = configXML.getChild("latex");
+				LatexExporter.setPdfTexPath(latexEl.getAttributeValue("pdftex"));
+			}
+			else
+			{
+				findAndSetPdfTex();
+			}
+		}
+		catch(ConfigurationException ex)
+		{
+			errors.push(ex);
+		}
+
+		// XML operations
+		try
+		{
+			if(configLoaded)
+			{
+				// Tell various components about their settings
+				Element opsEl = configXML.getChild("ops");
+				OperationXML.loadXML(opsEl.getAttributeValue("xml"));
+			}
+			else
+			{
+				findAndSetOpsXML();
+			}
+		}
+		catch(ConfigurationException ex)
+		{
+			errors.push(ex);
+		}
+
+		// Tell the caller if anything bad happened that we couldn't automatically correct
+		return errors.isEmpty();
+	}
+
+	/**
+	 * Returns the next error from the load or null if there are no more
+	 * @return ConfigurationException giving details of error
+	 */
+	public static ConfigurationException getNextError()
+	{
+		if(!errors.isEmpty())
+			return errors.pop();
+		else
+			return null;
 	}
 
 	/**
