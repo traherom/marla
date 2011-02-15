@@ -64,7 +64,7 @@ public final class RProcessor
 	/**
 	 * Path to the R executable, used if R has to be reloaded after it dies
 	 */
-	private static String rPath = "R";
+	private static String rPath = null;
 	/**
 	 * Single instance of RProcessor that we allow
 	 */
@@ -158,7 +158,7 @@ public final class RProcessor
 		rPath = newRPath;
 
 		// Restart RProcessor if needed
-		if(!oldPath.equals(newRPath))
+		if(singleRProcessor != null)
 			restartInstance();
 
 		System.out.println("Using R binary at '" + rPath + "'");

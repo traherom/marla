@@ -118,14 +118,25 @@ public class Configuration
 		// R
 		try
 		{
+			boolean configSuccess = false;
 			if(configLoaded)
 			{
-				// Tell various components about their settings
-				Element rEl = configXML.getChild("r");
-				RProcessor.setRLocation(rEl.getAttributeValue("rpath"));
-				RProcessor.getInstance().setDebugMode(RecordMode.valueOf(rEl.getAttributeValue("debug", "disabled").toUpperCase()));
+				try
+				{
+					// Tell various components about their settings
+					Element rEl = configXML.getChild("r");
+					RProcessor.setRLocation(rEl.getAttributeValue("rpath"));
+					RProcessor.getInstance().setDebugMode(RecordMode.valueOf(rEl.getAttributeValue("debug", "disabled").toUpperCase()));
+
+					configSuccess = true;
+				}
+				catch(NullPointerException ex)
+				{
+					configSuccess = false;
+				}
 			}
-			else
+
+			if(!configSuccess)
 			{
 				findAndSetR();
 			}
@@ -138,13 +149,25 @@ public class Configuration
 		// Latex template
 		try
 		{
+			boolean configSuccess = false;
+
 			if(configLoaded)
 			{
-				// Tell various components about their settings
-				Element latexEl = configXML.getChild("latex");
-				LatexExporter.setDefaultTemplate(latexEl.getAttributeValue("template"));
+				try
+				{
+					// Tell various components about their settings
+					Element latexEl = configXML.getChild("latex");
+					LatexExporter.setDefaultTemplate(latexEl.getAttributeValue("template"));
+			
+					configSuccess = true;
+				}
+				catch(NullPointerException ex)
+				{
+					configSuccess = false;
+				}
 			}
-			else
+
+			if(!configSuccess)
 			{
 				findAndSetLatexTemplate();
 			}
@@ -157,13 +180,25 @@ public class Configuration
 		// pdfTeX
 		try
 		{
+			boolean configSuccess = false;
+
 			if(configLoaded)
 			{
-				// Tell various components about their settings
-				Element latexEl = configXML.getChild("latex");
-				LatexExporter.setPdfTexPath(latexEl.getAttributeValue("pdftex"));
+				try
+				{
+					// Tell various components about their settings
+					Element latexEl = configXML.getChild("latex");
+					LatexExporter.setPdfTexPath(latexEl.getAttributeValue("pdftex"));
+
+					configSuccess = true;
+				}
+				catch(NullPointerException ex)
+				{
+					configSuccess = false;
+				}
 			}
-			else
+
+			if(!configSuccess)
 			{
 				findAndSetPdfTex();
 			}
@@ -176,13 +211,25 @@ public class Configuration
 		// XML operations
 		try
 		{
+			boolean configSuccess = false;
+			
 			if(configLoaded)
 			{
-				// Tell various components about their settings
-				Element opsEl = configXML.getChild("ops");
-				OperationXML.loadXML(opsEl.getAttributeValue("xml"));
+				try
+				{
+					// Tell various components about their settings
+					Element opsEl = configXML.getChild("ops");
+					OperationXML.loadXML(opsEl.getAttributeValue("xml"));
+
+					configSuccess = true;
+				}
+				catch(NullPointerException ex)
+				{
+					configSuccess = false;
+				}
 			}
-			else
+
+			if(!configSuccess)
 			{
 				findAndSetOpsXML();
 			}
@@ -290,7 +337,7 @@ public class Configuration
 
 	public static String findAndSetR() throws ConfigurationException
 	{
-		List<String> possibilities = findExecutable("R", "R.*|bin|usr|local|lib|Program Files.*|x64|i386|Library|Frameworks", null);
+		List<String> possibilities = findFile("R(\\.exe)?", "R.*|bin|usr|local|lib|Program Files.*|x64|i386|Library|Frameworks", null);
 
 		// Test each possibility until one runs properly
 		for(String exe : possibilities)
@@ -321,7 +368,7 @@ public class Configuration
 
 	public static String findAndSetOpsXML() throws ConfigurationException
 	{
-		List<String> possibilities = findExecutable("ops.xml", "config|xml|test", null);
+		List<String> possibilities = findFile("ops\\.xml", "config|xml|test", null);
 
 		// Test each possibility until one loads
 		for(String path : possibilities)
@@ -351,7 +398,7 @@ public class Configuration
 
 	public static String findAndSetLatexTemplate() throws ConfigurationException
 	{
-		List<String> possibilities = findExecutable("export_template.xml", "config|xml|test", null);
+		List<String> possibilities = findFile("export_template\\.xml", "config|xml|test", null);
 
 		// Test each possibility until one loads
 		for(String path : possibilities)
@@ -377,7 +424,7 @@ public class Configuration
 
 	public static String findAndSetPdfTex() throws ConfigurationException
 	{
-		List<String> possibilities = findExecutable("pdf(la)?tex", "bin|usr|Program Files.*|.*[Tt]e[Xx].*|local|20[0-9]{2}|.*darwin|Contents|Resources", null);
+		List<String> possibilities = findFile("pdf(la)?tex(\\.exe)?", "bin|usr|Program Files.*|.*[Tt]e[Xx].*|local|20[0-9]{2}|.*darwin|Contents|Resources", null);
 
 		// Test each possibility until one runs properly
 		for(String exe : possibilities)
@@ -403,23 +450,23 @@ public class Configuration
 
 	/**
 	 * Returns a path to the given executable or null if none is found
-	 * @param exeName Name of the executable to find. Should not include the .exe portion
+	 * @param fileName Name of the executable to find. Should not include the .exe portion
 	 *	(although that will still function)
 	 * @param dirSearch Regular expression of the directories to search. Any directory that
 	 *	matches this pattern will be recursed into
 	 * @param additional List of directories to manually add to the search
 	 * @return Path to executable, as usable by createProcess(). Null if not found
 	 */
-	public static List<String> findExecutable(String exeName, String dirSearch, List<File> additional) throws ConfigurationException
+	public static List<String> findFile(String fileName, String dirSearch, List<File> additional) throws ConfigurationException
 	{
 		// Check if it's on the path, in which case we don't bother searching
 		//if(isOnPath(exeName))
 		//	return exeName;
 
-		System.out.println("Looking for '" + exeName + "', please wait");
+		System.out.println("Looking for '" + fileName + "', please wait");
 
 		// Save all possible files that match the requested name
-		Pattern namePatt = Pattern.compile("(" + exeName + ")(\\.exe)?");
+		Pattern namePatt = Pattern.compile(fileName);
 		Pattern dirPatt = Pattern.compile(dirSearch);
 		List<File> checkPaths = new ArrayList<File>();
 
@@ -427,6 +474,13 @@ public class Configuration
 		// Put them first as they're more likely to be correct
 		if(additional != null)
 			checkPaths.addAll(additional);
+
+		// From current dir
+		Collection<File> currDirSearchRes = FileUtils.listFiles(new File("."),
+				new RegexFileFilter(namePatt), // Find files with these names
+				new RegexFileFilter(dirPatt) // And recurse down directories with these names
+				);
+		checkPaths.addAll(currDirSearchRes);
 
 		// Loop to hit all the drives on Windows.
 		// On Linux/OSX this only happens once for '/'
@@ -445,17 +499,16 @@ public class Configuration
 			checkPaths.addAll(driveSearchRes);
 		}
 
-		// Find results that are executable
-		List<String> exes = new ArrayList<String>(checkPaths.size());
-		System.out.println(checkPaths.size() + " possibilities found for " + exeName + ": ");
+		// Convert all to just the paths
+		List<String> files = new ArrayList<String>(checkPaths.size());
+		System.out.println(checkPaths.size() + " possibilities found for " + fileName + ": ");
 		for(File f : checkPaths)
 		{
 			System.out.println("\t" + f.getPath());
-			if(f.canExecute())
-				exes.add(f.getPath());
+			files.add(f.getPath());
 		}
 		
-		return exes;
+		return files;
 	}
 
 	public static void main(String[] args) throws MarlaException
