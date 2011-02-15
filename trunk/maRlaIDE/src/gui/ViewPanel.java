@@ -317,7 +317,7 @@ public class ViewPanel extends JPanel
         answerPanel.setLayout(new javax.swing.BoxLayout(answerPanel, javax.swing.BoxLayout.PAGE_AXIS));
         answerDialog.getContentPane().add(answerPanel);
 
-        solutionMenuItem.setText("jMenuItem1");
+        solutionMenuItem.setText("Solution");
         solutionMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 solutionMenuItemActionPerformed(evt);
@@ -325,7 +325,7 @@ public class ViewPanel extends JPanel
         });
         rightClickMenu.add(solutionMenuItem);
 
-        subProblemSubMenu.setText("jMenu1");
+        subProblemSubMenu.setText("Tie to Sub Problem");
         rightClickMenu.add(subProblemSubMenu);
 
         setLayout(new java.awt.BorderLayout());
@@ -583,9 +583,21 @@ public class ViewPanel extends JPanel
 		else if (evt.getButton () == MouseEvent.BUTTON3)
 		{
 			JComponent component = (JComponent) workspacePanel.getComponentAt (evt.getPoint ());
-			if (component != null)
+			if (component != null && component != workspacePanel)
 			{
 				rightClickedComponent = component;
+				if (rightClickedComponent instanceof Operation)
+				{
+					rightClickedComponent.setBorder (BLACK_BORDER);
+					rightClickedComponent.setSize (rightClickedComponent.getPreferredSize ());
+					DataSource source = ((Operation) rightClickedComponent).getRootDataSource().getOperation (((Operation) rightClickedComponent).getIndexFromDataSet ());
+					List<Operation> tempOperations = source.getRootDataSource().getOperation (((Operation) source).getIndexFromDataSet ()).getAllChildOperations();
+					for (int i = 0; i < tempOperations.size (); ++i)
+					{
+						tempOperations.get (i).setBorder (BLACK_BORDER);
+						tempOperations.get (i).setSize (tempOperations.get (i).getPreferredSize ());
+					}
+				}
 				solutionMenuItem.setEnabled (true);
 				subProblemSubMenu.removeAll ();
 				if (domain.problem.getSubProblemCount() == 0)
@@ -607,7 +619,13 @@ public class ViewPanel extends JPanel
 								DataSource source = (DataSource) rightClickedComponent;
 								if (source instanceof Operation)
 								{
-									//source = source.getRootDataSource().getOperation (((Operation) source).getIndexFromDataSet ());
+									source = source.getRootDataSource().getOperation (((Operation) source).getIndexFromDataSet ());
+									List<Operation> tempOperations = source.getAllChildOperations();
+									for (int i = 0; i < tempOperations.size (); ++i)
+									{
+										tempOperations.get (i).setBorder (NO_BORDER);
+										tempOperations.get (i).setSize (tempOperations.get (i).getPreferredSize ());
+									}
 								}
 								subProblem.setSolutionStart(source);
 								if (source instanceof Operation)
@@ -623,10 +641,11 @@ public class ViewPanel extends JPanel
 						subProblemSubMenu.add (item);
 					}
 				}
+				rightClickMenu.show (workspacePanel, evt.getX (), evt.getY());
 			}
 			else
 			{
-				rightClickedComponent = component;
+				rightClickedComponent = null;
 				solutionMenuItem.setEnabled (false);
 				subProblemSubMenu.setEnabled (false);
 				subProblemSubMenu.removeAll ();
