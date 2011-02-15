@@ -31,7 +31,6 @@ import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
-import problem.MarlaException;
 
 /*
  * The maRla Project - Graphical problem solver for statistics and probability problems.
@@ -64,7 +63,7 @@ public class maRlaIDE
      *
      * @param args The command-line arguments.
      */
-    public static void main(String args[])
+    public static void main(final String args[])
     {
         // Define UI characteristics before the applicaiton is instantiated
         try
@@ -88,16 +87,6 @@ public class maRlaIDE
             Domain.logger.add (ex);
         }
 
-		try
-		{
-			resource.Configuration.load();
-			resource.Configuration.processCmdLine(args);
-		}
-		catch(MarlaException ex)
-		{
-			Domain.logger.add(ex);
-		}
-
         EventQueue.invokeLater (new Runnable ()
         {
             @Override
@@ -105,7 +94,7 @@ public class maRlaIDE
             {
 				try
 				{
-					new MainFrame ().setVisible (true);
+					new MainFrame (args).setVisible (true);
 				}
 				catch (Exception ex)
 				{

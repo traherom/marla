@@ -21,7 +21,11 @@ package gui;
 import java.awt.Dimension;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import problem.MarlaException;
+import resource.Configuration;
+import resource.ConfigurationException;
 
 /**
  * The main frame of the stand-alone application.
@@ -39,7 +43,7 @@ public class MainFrame extends JFrame
     /**
      * Constructs the frame for the stand-alone application.
      */
-    public MainFrame()
+    public MainFrame(String[] args)
     {
 		// Construct the view panel
         viewPanel = new ViewPanel (this);
@@ -59,6 +63,43 @@ public class MainFrame extends JFrame
 		// Initialize frame components
         initComponents ();
         initMyComponents ();
+
+		try
+		{
+			Configuration.load();
+			Configuration.processCmdLine(args);
+		}
+		catch(MarlaException ex)
+		{
+			if (ex instanceof ConfigurationException)
+			{
+				boolean configError = true;
+				while (configError)
+				{
+					try
+					{
+						configError = false;
+						viewPanel.openChooserDialog.setDialogTitle(ex.getName ());
+						viewPanel.openChooserDialog.resetChoosableFileFilters ();
+						viewPanel.openChooserDialog.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+						// Display the chooser and retrieve the selected file
+						int response = viewPanel.openChooserDialog.showOpenDialog(viewPanel);
+						if (response == JFileChooser.APPROVE_OPTION)
+						{
+							((ConfigurationException) ex).setPath (viewPanel.openChooserDialog.getSelectedFile());
+						}
+						else
+						{
+							break;
+						}
+					}
+					catch (ConfigurationException innerEx)
+					{
+						configError = true;
+					}
+				}
+			}
+		}
     }
 
     /**
