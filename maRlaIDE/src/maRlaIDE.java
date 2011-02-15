@@ -126,9 +126,8 @@ public class maRlaIDE
                     System.out.println ();
 
                     optionPane.setOptions (new Object[] {okButton});
-                    optionPane.setMessage ("A fatal error occured while launching Get Organized. Your course data\n"
-                            + "should be safe.  Visit www.getorganizedapp.com to see if an update\n"
-                            + "is available to resolve this issue, otherwise contact the developer.");
+                    optionPane.setMessage ("A fatal error occured while launching The maRla Project.\n"
+							+ "Please contact the developer.");
                     optionPane.setMessageType (JOptionPane.ERROR_MESSAGE);
                     JDialog optionDialog = optionPane.createDialog ("Fatal Error");
                     optionDialog.setVisible (true);

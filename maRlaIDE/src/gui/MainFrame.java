@@ -23,6 +23,7 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import problem.MarlaException;
 import resource.Configuration;
 import resource.ConfigurationException;
@@ -47,16 +48,6 @@ public class MainFrame extends JFrame
     {
 		// Construct the view panel
         viewPanel = new ViewPanel (this);
-		// Add the shutdown hook to ensure saving prior to a close
-        Runtime.getRuntime ().addShutdownHook (new Thread ()
-        {
-            @Override
-            public void run()
-            {
-                viewPanel.quit (false);
-            }
-        });
-
 		// Add the view to the frame
         add (viewPanel);
 
@@ -69,43 +60,56 @@ public class MainFrame extends JFrame
 			Configuration.load();
 			Configuration.processCmdLine(args);
 		}
-		catch(ConfigurationException ex)
-		{
-			boolean configError = true;
-			while (configError)
-			{
-				try
-				{
-					configError = false;
-					viewPanel.openChooserDialog.setDialogTitle(ex.getName ());
-					viewPanel.openChooserDialog.resetChoosableFileFilters ();
-					viewPanel.openChooserDialog.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
-					// Display the chooser and retrieve the selected file
-					int response = viewPanel.openChooserDialog.showOpenDialog(viewPanel);
-					if (response == JFileChooser.APPROVE_OPTION)
-					{
-						ex.setPath(viewPanel.openChooserDialog.getSelectedFile().getPath());
-					}
-					else
-					{
-						break;
-					}
-				}
-				catch (ConfigurationException innerEx)
-				{
-					configError = true;
-				}
-				catch(MarlaException innerEx)
-				{
-					System.out.println(innerEx.getMessage());
-					configError = true;
-				}
-			}
-		}
 		catch(MarlaException ex)
 		{
 			System.out.println(ex.getMessage());
 		}
+
+		ConfigurationException configEx = null;
+		while ((configEx = Configuration.getNextError ()) != null)
+		{
+			try
+			{
+				viewPanel.openChooserDialog.setDialogTitle(configEx.getName ());
+				viewPanel.openChooserDialog.resetChoosableFileFilters ();
+				viewPanel.openChooserDialog.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+				// Display the chooser and retrieve the selected file
+				int response = viewPanel.openChooserDialog.showOpenDialog(viewPanel);
+				if (response == JFileChooser.APPROVE_OPTION)
+				{
+					configEx.setPath(viewPanel.openChooserDialog.getSelectedFile().getPath());
+					Configuration.load();
+				}
+				else
+				{
+					JOptionPane.showMessageDialog(viewPanel, "The maRla Project cannot run without these resources.", "Fatal Error", JOptionPane.ERROR_MESSAGE);
+					System.exit (1);
+				}
+			}
+			catch(MarlaException ex)
+			{
+				System.out.println(ex.getMessage());
+			}
+		}
+
+		try
+		{
+			viewPanel.loadOperations ();
+		}
+		catch (MarlaException ex)
+		{
+			JOptionPane.showMessageDialog(viewPanel, ex.getMessage(), "Load Error", JOptionPane.WARNING_MESSAGE);
+		}
+
+		// Add the shutdown hook to ensure saving prior to a close
+        Runtime.getRuntime ().addShutdownHook (new Thread ()
+        {
+            @Override
+            public void run()
+            {
+                viewPanel.quit (false);
+            }
+        });
     }
 
     /**
