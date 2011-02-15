@@ -25,8 +25,11 @@ import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import latex.LatexExporter;
+import operation.OperationXMLException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.RegexFileFilter;
 import org.jdom.Document;
@@ -109,13 +112,13 @@ public class Configuration
 			configLoaded = false;
 		}
 
-		// Unable to load config, so make sure we can find R and pdflatex
+		// Unable to load config, try to find them
 		if(!configLoaded)
 		{
 			findAndSetR();
 			findAndSetPdfTex();
-
-			
+			findAndSetOpsXML();
+			findAndSetLatexTemplate();
 		}
 	}
 
@@ -209,6 +212,62 @@ public class Configuration
 
 		// Couldn't find one that worked
 		throw new ConfigurationException("Unable to find a suitable R installation", ConfigType.R);
+	}
+
+	public static String findAndSetOpsXML() throws ConfigurationException
+	{
+		List<String> possibilities = findExecutable("ops.xml", "config|xml", null);
+
+		// Test each possibility until one loads
+		for(String path : possibilities)
+		{
+			try
+			{
+				// Try to launch
+				System.out.println("Checking '" + path + "'");
+				OperationXML.loadXML(path);
+
+				// Must have launched successfully, use this one
+				return path;
+			}
+			catch(OperationXMLException ex)
+			{
+				// Try next one
+			}
+			catch(ConfigurationException ex)
+			{
+				// Try the next one
+			}
+		}
+
+		// Couldn't find one that worked
+		throw new ConfigurationException("Unable to find a suitable operation XML file installation", ConfigType.OpsXML);
+	}
+
+	public static String findAndSetLatexTemplate() throws ConfigurationException
+	{
+		List<String> possibilities = findExecutable("export_template.xml", "config|xml", null);
+
+		// Test each possibility until one loads
+		for(String path : possibilities)
+		{
+			try
+			{
+				// Try to launch
+				System.out.println("Checking '" + path + "'");
+				LatexExporter.setDefaultTemplate(path);
+
+				// Must have launched successfully, use this one
+				return path;
+			}
+			catch(ConfigurationException ex)
+			{
+				// Try the next one
+			}
+		}
+
+		// Couldn't find one that worked
+		throw new ConfigurationException("Unable to find a suitable LaTeX exporter template", ConfigType.TexTemplate);
 	}
 
 	public static String findAndSetPdfTex() throws ConfigurationException
