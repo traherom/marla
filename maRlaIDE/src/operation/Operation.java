@@ -361,6 +361,30 @@ public abstract class Operation extends JLabel implements DataSource, Changeable
 			return this;
 	}
 
+	/**
+	 * Runs up the chain and finds what index from the root DataSet this
+	 * operation falls under
+	 * @return Index of the "branch" off point
+	 */
+	public final int getIndexFromDataSet()
+	{
+		DataSource currOp = this;
+		Operation prevOp = null;
+		while(!(currOp instanceof DataSet))
+		{
+			prevOp = (Operation)currOp;
+			currOp = prevOp.getParentData();
+		}
+
+		return currOp.getOperationIndex(prevOp);
+	}
+	
+	@Override
+	public final int getOperationIndex(Operation op)
+	{
+		return solutionOps.indexOf(op);
+	}
+
 	@Override
 	public final boolean isUniqueColumnName(String name) throws MarlaException
 	{
