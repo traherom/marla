@@ -382,6 +382,12 @@ public final class DataSet extends JLabel implements DataSource, Changeable
 		return true;
 	}
 
+	@Override
+	public final int getOperationIndex(Operation op)
+	{
+		return solutionOps.indexOf(op);
+	}
+
 	/**
 	 * Adds another column to this dataset
 	 * @param colName Name for new column

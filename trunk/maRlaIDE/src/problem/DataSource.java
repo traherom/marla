@@ -111,6 +111,13 @@ public interface DataSource
 	public Operation getOperation(int index);
 
 	/**
+	 * Finds the index of the specified operation within the DataSource
+	 * @param op Operation to locate within the DataSource
+	 * @return index of the operation or -1 if not found
+	 */
+	public int getOperationIndex(Operation op);
+
+	/**
 	 * Returns the number of top-level operations working on this
 	 * DataSet
 	 * @return Number of Operations in DataSet

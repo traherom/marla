@@ -36,11 +36,13 @@ public class ConfigurationException extends MarlaException
 	public ConfigurationException(String msg, ConfigType type)
 	{
 		super(msg);
+		this.type = type;
 	}
 
 	public ConfigurationException(String msg, ConfigType type, Throwable cause)
 	{
 		super(msg, cause);
+		this.type = type;
 	}
 
 	public String getName()
