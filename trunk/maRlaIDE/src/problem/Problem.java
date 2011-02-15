@@ -522,19 +522,30 @@ public class Problem implements ProblemPart
 	 * @param fileName Path to save file
 	 * @return Restored Problem object
 	 */
-	public static Problem load(String fileName) throws FileNotFoundException, IOException, JDOMException, MarlaException
+	public static Problem load(String fileName) throws FileNotFoundException, MarlaException
 	{
-		// Load file into JDOM
-		SAXBuilder parser = new SAXBuilder();
-		Document doc = parser.build(fileName);
+		try
+		{
+			// Load file into JDOM
+			SAXBuilder parser = new SAXBuilder();
+			Document doc = parser.build(fileName);
 
-		// Make problem
-		Problem newProb = Problem.fromXml(doc.getRootElement());
-		newProb.markChanged();
-		newProb.setFileName(fileName);
-		newProb.isSaved = true;
+			// Make problem
+			Problem newProb = Problem.fromXml(doc.getRootElement());
+			newProb.markChanged();
+			newProb.setFileName(fileName);
+			newProb.isSaved = true;
 
-		return newProb;
+			return newProb;
+		}
+		catch(JDOMException ex)
+		{
+			throw new ProblemException("Save file contains unparsable XML errors", ex);
+		}
+		catch(IOException ex)
+		{
+			throw new ProblemException("Error reading save file from disk", ex);
+		}
 	}
 
 	/**

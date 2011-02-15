@@ -39,6 +39,7 @@ import problem.MarlaException;
 import operation.OperationXML;
 import r.RProcessor;
 import r.RProcessorException;
+import resource.ConfigurationException.ConfigType;
 
 /**
  * @author Ryan Morehart
@@ -86,6 +87,8 @@ public class Configuration
 
 		try
 		{
+			System.out.println("Using config file at '" + configPath + "'");
+
 			// Load the XML
 			SAXBuilder parser = new SAXBuilder();
 			Document doc = parser.build(configPath);
@@ -96,8 +99,6 @@ public class Configuration
 			RProcessor.setConfig(configXML.getChild("rprocessor"));
 			LatexExporter.setConfig(configXML.getChild("latex"));
 			OperationXML.setConfig(configXML.getChild("xmlops"));
-
-			System.out.println("Using config file at '" + configPath + "'");
 		}
 		catch(JDOMException ex)
 		{
@@ -111,8 +112,10 @@ public class Configuration
 		// Unable to load config, so make sure we can find R and pdflatex
 		if(!configLoaded)
 		{
-			findR();
-			findPdfTex();
+			findAndSetR();
+			findAndSetPdfTex();
+
+			
 		}
 	}
 
@@ -177,7 +180,7 @@ public class Configuration
 		return false;
 	}
 
-	public static String findR() throws ConfigurationException
+	public static String findAndSetR() throws ConfigurationException
 	{
 		List<String> possibilities = findExecutable("R", "R.*|bin|usr|local|lib|Program Files.*|x64|i386|Library|Frameworks", null);
 
@@ -205,10 +208,10 @@ public class Configuration
 		}
 
 		// Couldn't find one that worked
-		throw new ConfigurationException("Unable to find a suitable R installation");
+		throw new ConfigurationException("Unable to find a suitable R installation", ConfigType.R);
 	}
 
-	public static String findPdfTex() throws ConfigurationException
+	public static String findAndSetPdfTex() throws ConfigurationException
 	{
 		List<String> possibilities = findExecutable("pdf(la)?tex", "bin|usr|Program Files.*|.*[Tt]e[Xx].*|local|20[0-9]{2}|.*darwin|Contents|Resources", null);
 
@@ -231,7 +234,7 @@ public class Configuration
 		}
 
 		// Couldn't find one that worked
-		throw new ConfigurationException("Unable to find a suitable pdfTeX installation");
+		throw new ConfigurationException("Unable to find a suitable pdfTeX installation", ConfigType.PdfTex);
 	}
 
 	/**
@@ -287,17 +290,13 @@ public class Configuration
 			if(f.canExecute())
 				exes.add(f.getPath());
 		}
-
-		// Failed?
-		if(exes.isEmpty())
-			throw new ConfigurationException("Unable to locate suitable instance of " + exeName);
 		
 		return exes;
 	}
 
 	public static void main(String[] args) throws ConfigurationException
 	{
-		System.out.println("R located at " + findR());
-		System.out.println("pdflatex located at " + findPdfTex());
+		System.out.println("R located at " + findAndSetR());
+		System.out.println("pdflatex located at " + findAndSetPdfTex());
 	}
 }

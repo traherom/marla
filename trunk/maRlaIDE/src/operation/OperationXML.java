@@ -42,6 +42,7 @@ import r.RProcessor.RecordMode;
 import r.RProcessorException;
 import r.RProcessorParseException;
 import resource.ConfigurationException;
+import resource.ConfigurationException.ConfigType;
 
 /**
  * @author Ryan Morehart
@@ -51,7 +52,7 @@ public class OperationXML extends Operation
 	/**
 	 * Path to the XML file that specifies the operations
 	 */
-	private static String operationFilePath = "ops.xml";
+	private static String operationFilePath = null;
 	/**
 	 * Storage location for parsed operation XML file
 	 */
@@ -134,13 +135,13 @@ public class OperationXML extends Operation
 
 			// Make sure we know where we're looking for that there XML
 			if(operationFilePath == null)
-				throw new ConfigurationException("XML file for operations has not been specified");
+				throw new ConfigurationException("XML file for operations has not been specified", ConfigType.OpsXML);
 
 			SAXBuilder parser = new SAXBuilder();
 			Document doc = parser.build(operationFilePath);
 			operationXML = doc.getRootElement();
 
-			// TODO Check version. Maybe have to use old versions of parsers someday?
+			// Check version. Maybe have to use old versions of parsers someday?
 			parserVersion = Integer.parseInt(operationXML.getAttributeValue("version", "-1"));
 			if(parserVersion > 1)
 				throw new OperationXMLException("Version " + parserVersion + " of operational XML cannot be parsed.");
@@ -151,7 +152,7 @@ public class OperationXML extends Operation
 		}
 		catch(IOException ex)
 		{
-			throw new ConfigurationException("Unable to read the operation XML file '" + operationFilePath + "'", ex);
+			throw new ConfigurationException("Unable to read the operation XML file '" + operationFilePath + "'", ConfigType.OpsXML, ex);
 		}
 	}
 

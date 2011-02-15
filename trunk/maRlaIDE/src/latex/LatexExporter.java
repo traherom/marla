@@ -44,6 +44,7 @@ import r.RProcessor;
 import r.RProcessor.RecordMode;
 import r.RProcessorException;
 import resource.ConfigurationException;
+import resource.ConfigurationException.ConfigType;
 
 /**
  * @author Ryan Morehart
@@ -126,7 +127,7 @@ public class LatexExporter
 		}
 		catch(IOException ex)
 		{
-			throw new ConfigurationException("LaTeX template '" + templatePath + "' XML file could not be read", ex);
+			throw new ConfigurationException("LaTeX template '" + templatePath + "' XML file could not be read", ConfigType.TexTemplate, ex);
 		}
 
 		return oldPath;
@@ -145,7 +146,7 @@ public class LatexExporter
 
 		// Ensure it at least exists
 		if(!(new File(defaultTemplate)).exists())
-			throw new ConfigurationException("LaTeX template '" + defaultTemplate + "' XML file does not exist");
+			throw new ConfigurationException("LaTeX template '" + defaultTemplate + "' XML file does not exist", ConfigType.TexTemplate);
 
 		System.out.println("Using LaTeX export template at '" + defaultTemplate + "'");
 
@@ -192,7 +193,7 @@ public class LatexExporter
 			}
 
 			if(!validInstall)
-				throw new ConfigurationException("pdfTeX could not be located at '" + defaultTemplate + "'");
+				throw new ConfigurationException("pdfTeX could not be located at '" + defaultTemplate + "'", ConfigType.PdfTex);
 		}
 
 		System.out.println("Using pdfTeX binary at '" + pdfTexPath + "'");
@@ -644,7 +645,7 @@ public class LatexExporter
 			}
 			catch(IOException ex)
 			{
-				throw new ConfigurationException("Unable to run '" + pdfTexPath + "'", ex);
+				throw new ConfigurationException("Unable to run '" + pdfTexPath + "'", ConfigType.PdfTex, ex);
 			}
 
 			try
@@ -685,7 +686,7 @@ public class LatexExporter
 			if(pdfOutput.contains(".sty' not found"))
 			{
 				// Sweave not tied into LaTeX properly
-				throw new ConfigurationException("Sweave does not appear to be registered correctly with LaTeX");
+				throw new LatexException("Sweave does not appear to be registered correctly with LaTeX");
 			}
 
 			// Get the output file name reported by pdflatex

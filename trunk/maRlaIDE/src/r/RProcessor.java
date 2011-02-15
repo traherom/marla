@@ -29,6 +29,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.jdom.Element;
 import resource.ConfigurationException;
+import resource.ConfigurationException.ConfigType;
 
 /**
  * @author Ryan Morehart
@@ -143,7 +144,7 @@ public final class RProcessor
 		}
 		catch(IOException ex)
 		{
-			throw new ConfigurationException("R could not be executed at '" + rPath + "'");
+			throw new ConfigurationException("R could not be executed at '" + rPath + "'", ConfigType.R);
 		}
 	}
 
@@ -224,7 +225,7 @@ public final class RProcessor
 		catch(RProcessorException ex)
 		{
 			System.err.println("No R installation found, dying.");
-			throw new ConfigurationException("R installion not found", ex);
+			throw new ConfigurationException("R installion not found", ConfigType.R);
 		}
 	}
 
