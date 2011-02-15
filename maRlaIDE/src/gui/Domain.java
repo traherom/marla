@@ -419,16 +419,11 @@ public class Domain
 		}
 		catch (MarlaException ex)
 		{
-			JOptionPane.showMessageDialog(viewPanel, "The requested R package either cannot be located or is not installed.", "Missing Package", JOptionPane.WARNING_MESSAGE);
+			JOptionPane.showMessageDialog(viewPanel, ex.getMessage(), "Error loading save file", JOptionPane.WARNING_MESSAGE);
 		}
 		catch(FileNotFoundException ex)
 		{
-		}
-		catch(IOException ex)
-		{
-		}
-		catch(JDOMException ex)
-		{
+			JOptionPane.showMessageDialog(viewPanel, "Unable to locate ", "Error loading save file", JOptionPane.WARNING_MESSAGE);
 		}
 	}
 
