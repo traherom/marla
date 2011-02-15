@@ -152,14 +152,14 @@ public final class RProcessor
 	 * @param newRPath New location of the R binary
 	 * @return The previously assigned location of R
 	 */
-	public static String setRLocation(String newRPath) throws ConfigurationException
+	public static String setRLocation(String newRPath) throws ConfigurationException, RProcessorException
 	{
 		String oldPath = rPath;
 		rPath = newRPath;
 
-		// Ensure it at least exists
-		//if(!(new File(rPath)).canExecute())
-		//	throw new ConfigurationException("R could not be located at '" + rPath + "'");
+		// Restart RProcessor if needed
+		if(!oldPath.equals(newRPath))
+			restartInstance();
 
 		System.out.println("Using R binary at '" + rPath + "'");
 
@@ -212,7 +212,7 @@ public final class RProcessor
 	 * locations for Windows, Linux, and OSX.
 	 * @return Instance of RProcessor that can be used for calculations
 	 */
-	public static RProcessor getInstance() throws RProcessorException, ConfigurationException
+	public static RProcessor getInstance() throws RProcessorDeadException, ConfigurationException
 	{
 		try
 		{
@@ -224,7 +224,7 @@ public final class RProcessor
 		catch(RProcessorException ex)
 		{
 			System.err.println("No R installation found, dying.");
-			throw ex;
+			throw new ConfigurationException("R installion not found", ex);
 		}
 	}
 

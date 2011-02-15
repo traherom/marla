@@ -38,6 +38,7 @@ import org.jdom.output.XMLOutputter;
 import problem.MarlaException;
 import operation.OperationXML;
 import r.RProcessor;
+import r.RProcessorException;
 
 /**
  * @author Ryan Morehart
@@ -110,8 +111,8 @@ public class Configuration
 		// Unable to load config, so make sure we can find R and pdflatex
 		if(!configLoaded)
 		{
-			RProcessor.setRLocation(findR());
-			LatexExporter.setPdflatexPath(findPdflatex());
+			findR();
+			findPdfTex();
 		}
 	}
 
@@ -178,14 +179,59 @@ public class Configuration
 
 	public static String findR() throws ConfigurationException
 	{
-		return findExecutable("R", "R.*|bin|usr|local|lib|Program Files.*|x64|i386|Library|Frameworks", null);
+		List<String> possibilities = findExecutable("R", "R.*|bin|usr|local|lib|Program Files.*|x64|i386|Library|Frameworks", null);
+
+		// Test each possibility until one runs properly
+		for(String exe : possibilities)
+		{
+			try
+			{
+				// Try to launch
+				System.out.println("Checking '" + exe + "'");
+				RProcessor.setRLocation(exe);
+				RProcessor.getInstance();
+
+				// Must have launched successfully, use this one
+				return exe;
+			}
+			catch(RProcessorException ex)
+			{
+				// Try the next one
+			}
+			catch(ConfigurationException ex)
+			{
+				// Try the next one
+			}
+		}
+
+		// Couldn't find one that worked
+		throw new ConfigurationException("Unable to find a suitable R installation");
 	}
 
-	public static String findPdflatex() throws ConfigurationException
+	public static String findPdfTex() throws ConfigurationException
 	{
-		// /usr/local/texlive/2010/bin/x86_64-darwin/pdftex
+		List<String> possibilities = findExecutable("pdf(la)?tex", "bin|usr|Program Files.*|.*[Tt]e[Xx].*|local|20[0-9]{2}|.*darwin|Contents|Resources", null);
 
-		return findExecutable("pdflatex", "bin|usr|Program Files.*|.*[Tt]e[Xx].*|local|20[0-9]{2}|.*darwin|Contents|Resources", null);
+		// Test each possibility until one runs properly
+		for(String exe : possibilities)
+		{
+			try
+			{
+				// Try to launch
+				System.out.println("Checking '" + exe + "'");
+				LatexExporter.setPdfTexPath(exe);
+				
+				// Must have launched successfully, use this one
+				return exe;
+			}
+			catch(ConfigurationException ex)
+			{
+				// Try the next one
+			}
+		}
+
+		// Couldn't find one that worked
+		throw new ConfigurationException("Unable to find a suitable pdfTeX installation");
 	}
 
 	/**
@@ -197,7 +243,7 @@ public class Configuration
 	 * @param additional List of directories to manually add to the search
 	 * @return Path to executable, as usable by createProcess(). Null if not found
 	 */
-	public static String findExecutable(String exeName, String dirSearch, List<File> additional) throws ConfigurationException
+	public static List<String> findExecutable(String exeName, String dirSearch, List<File> additional) throws ConfigurationException
 	{
 		// Check if it's on the path, in which case we don't bother searching
 		//if(isOnPath(exeName))
@@ -206,7 +252,7 @@ public class Configuration
 		System.out.println("Looking for '" + exeName + "', please wait");
 
 		// Save all possible files that match the requested name
-		Pattern namePatt = Pattern.compile(exeName + "(\\.exe)?");
+		Pattern namePatt = Pattern.compile("(" + exeName + ")(\\.exe)?");
 		Pattern dirPatt = Pattern.compile(dirSearch);
 		List<File> checkPaths = new ArrayList<File>();
 
@@ -232,26 +278,26 @@ public class Configuration
 			checkPaths.addAll(driveSearchRes);
 		}
 
-		// Find one of our results that is executable
-		String selection = null;
+		// Find results that are executable
+		List<String> exes = new ArrayList<String>(checkPaths.size());
 		System.out.println(checkPaths.size() + " possibilities found for " + exeName + ": ");
 		for(File f : checkPaths)
 		{
 			System.out.println("\t" + f.getPath());
-			if(selection == null && f.canExecute())
-				selection = f.getPath();
+			if(f.canExecute())
+				exes.add(f.getPath());
 		}
 
 		// Failed?
-		if(selection == null)
+		if(exes.isEmpty())
 			throw new ConfigurationException("Unable to locate suitable instance of " + exeName);
 		
-		return selection;
+		return exes;
 	}
 
 	public static void main(String[] args) throws ConfigurationException
 	{
 		System.out.println("R located at " + findR());
-		System.out.println("pdflatex located at " + findPdflatex());
+		System.out.println("pdflatex located at " + findPdfTex());
 	}
 }
