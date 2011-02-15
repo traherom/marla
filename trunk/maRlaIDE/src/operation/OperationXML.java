@@ -87,25 +87,12 @@ public class OperationXML extends Operation
 	private RecordMode intendedRecordMode = null;
 
 	/**
-	 * Configures the defaults for XML operations based on the given XML configuration
-	 * @param configEl XML configuration element with settings as attributes
+	 * Gets the current XML operation file path
+	 * @return path to the XML file that contains operations
 	 */
-	public static void setConfig(Element configEl) throws OperationXMLException, ConfigurationException
+	public static String getXMLPath()
 	{
-		// Extract information from configuration XML and set appropriately
-		loadXML(configEl.getAttributeValue("xml"));
-	}
-
-	/**
-	 * Creates an XML element that could be passed back to setConfig to configure
-	 * the OperationXML defaults the same as currently
-	 * @param configEl XML configuration element upon which to add information
-	 * @return XML element with configuration data set
-	 */
-	public static Element getConfig(Element configEl)
-	{
-		configEl.setAttribute("xml", operationFilePath);
-		return configEl;
+		return operationFilePath;
 	}
 
 	/**

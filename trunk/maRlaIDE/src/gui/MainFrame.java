@@ -78,7 +78,6 @@ public class MainFrame extends JFrame
 				if (response == JFileChooser.APPROVE_OPTION)
 				{
 					configEx.setPath(viewPanel.openChooserDialog.getSelectedFile().getPath());
-					Configuration.load();
 				}
 				else
 				{

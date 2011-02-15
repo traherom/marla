@@ -154,6 +154,15 @@ public class LatexExporter
 	}
 
 	/**
+	 * Returns the current default LaTeX export template path
+	 * @return path to export template
+	 */
+	public static String getDefaultTemplate()
+	{
+		return defaultTemplate;
+	}
+
+	/**
 	 * Sets the path to the pdflatex binary file
 	 * @param newPdfTexPath New path to executable
 	 * @return Previously set path to pdflatex
@@ -201,29 +210,12 @@ public class LatexExporter
 	}
 
 	/**
-	 * Configures the defaults for exporters based on the given XML configuration
-	 * @param configEl XML configuration element with settings as attributes
+	 * Returns the current pdfTeX path
+	 * @return path to pdfTeX executable
 	 */
-	public static void setConfig(Element configEl) throws ConfigurationException
+	public static String getPdfTexPath()
 	{
-		// Extract information from configuration XML and set appropriately
-		setDefaultTemplate(configEl.getAttributeValue("template"));
-		setPdfTexPath(configEl.getAttributeValue("pdftex"));
-	}
-
-	/**
-	 * Creates an XML element that could be passed back to setConfig to configure
-	 * the LatexExporter defaults the same as currently
-	 * @param configEl XML configuration element upon which to add information
-	 * @return XML element with configuration data set
-	 */
-	public static Element getConfig(Element configEl)
-	{
-		if(defaultTemplate != null)
-			configEl.setAttribute("template", defaultTemplate);
-		if(pdfTexPath != null)
-			configEl.setAttribute("pdftex", pdfTexPath);
-		return configEl;
+		return pdfTexPath;
 	}
 
 	/**

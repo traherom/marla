@@ -27,7 +27,6 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.jdom.Element;
 import resource.ConfigurationException;
 import resource.ConfigurationException.ConfigType;
 
@@ -177,36 +176,6 @@ public final class RProcessor
 	}
 
 	/**
-	 * Configures the RProcessor based on XML configuration, typically from a settings file
-	 * @param configEl XML element containing needed data
-	 */
-	public static void setConfig(Element configEl) throws RProcessorException, ConfigurationException
-	{
-		// Extract information from configuration XML and set appropriately
-		setRLocation(configEl.getAttributeValue("rpath"));
-
-		String debugMode = configEl.getAttributeValue("debug");
-		if(debugMode != null)
-			RProcessor.getInstance().setDebugMode(RecordMode.valueOf(debugMode.toUpperCase()));
-	}
-
-	/**
-	 * Creates an XML element that could be passed back to setConfig to configure
-	 * the RProcessor the same way as before
-	 * @param configEl XML configuration element upon which to add information
-	 * @return XML element with configuration data set
-	 */
-	public static Element getConfig(Element configEl) throws RProcessorException
-	{
-		configEl.setAttribute("rpath", rPath);
-
-		if(singleRProcessor != null)
-			configEl.setAttribute("debug", singleRProcessor.getDebugMode().toString());
-
-		return configEl;
-	}
-
-	/**
 	 * Creates a new instance of R which can be fed commands. Assumes R is accessible on the path.
 	 * If it isn't, RProcessor then searches for an installation alongside itself (in an
 	 * R directory, so the R executable is at R/bin/R), then in common system install
@@ -243,6 +212,15 @@ public final class RProcessor
 		}
 
 		return getInstance();
+	}
+
+	/**
+	 * Returns true if there is a running RProcessor instance
+	 * @return true if there is an instance, false otherwise
+	 */
+	public static boolean hasInstance()
+	{
+		return (singleRProcessor != null);
 	}
 
 	/**
