@@ -54,7 +54,7 @@
       <SubComponents>
         <MenuItem class="javax.swing.JMenuItem" name="solutionMenuItem">
           <Properties>
-            <Property name="text" type="java.lang.String" value="jMenuItem1"/>
+            <Property name="text" type="java.lang.String" value="Solution"/>
           </Properties>
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="solutionMenuItemActionPerformed"/>
@@ -62,7 +62,7 @@
         </MenuItem>
         <Menu class="javax.swing.JMenu" name="subProblemSubMenu">
           <Properties>
-            <Property name="text" type="java.lang.String" value="jMenu1"/>
+            <Property name="text" type="java.lang.String" value="Tie to Sub Problem"/>
           </Properties>
         </Menu>
       </SubComponents>
