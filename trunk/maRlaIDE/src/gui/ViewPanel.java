@@ -208,15 +208,6 @@ public class ViewPanel extends JPanel
 		((JButton) access.getComponent (1)).setToolTipText ("Cancel open");
 		access = (JPanel) ((JPanel) saveChooserDialog.getComponent(3)).getComponent(3);
 		((JButton) access.getComponent (1)).setToolTipText ("Cancel save");
-		
-		try		
-		{
-			loadOperations ();
-		}
-		catch (MarlaException ex)
-		{
-			JOptionPane.showMessageDialog(this, ex.getMessage(), "Load Error", JOptionPane.WARNING_MESSAGE);
-		}
     }
 
 	/**
@@ -240,42 +231,42 @@ public class ViewPanel extends JPanel
 	 *
 	 * @throws MarlaException Throws any Marla exceptions to the calling function.
 	 */
-	private void loadOperations() throws MarlaException
+	protected void loadOperations() throws MarlaException
 	{
 		operations = Operation.getAvailableOperationsList();
 
-			// Add all operation types to the palette, adding listeners to the labels as we go
-			for (int i = 0; i < operations.size (); ++i)
+		// Add all operation types to the palette, adding listeners to the labels as we go
+		for (int i = 0; i < operations.size (); ++i)
+		{
+			try
 			{
-				try
-				{
-					final Operation operation = Operation.createOperation(operations.get (i));
-					DRAG_SOURCE.createDefaultDragGestureRecognizer (operation, DnDConstants.ACTION_MOVE, DND_LISTENER);
+				final Operation operation = Operation.createOperation(operations.get (i));
+				DRAG_SOURCE.createDefaultDragGestureRecognizer (operation, DnDConstants.ACTION_MOVE, DND_LISTENER);
 
-					if (i % 2 == 0)
-					{
-						leftPanel.add (operation);
-					}
-					else
-					{
-						rightPanel.add (operation);
-					}
-					operation.addMouseListener(new MouseAdapter ()
-					{
-						@Override
-						public void mousePressed(MouseEvent evt)
-						{
-							xDragOffset = (int) evt.getLocationOnScreen ().getX () - (int) operation.getLocationOnScreen ().getX ();
-							yDragOffset = (int) evt.getLocationOnScreen ().getY () - (int) operation.getLocationOnScreen ().getY ();
-						}
-					});
-				}
-				catch (OperationException ex)
+				if (i % 2 == 0)
 				{
-					// Unable to load, not a real operation
-					System.err.println("Error loading operation '" + operations.get(i) + "'");
+					leftPanel.add (operation);
 				}
+				else
+				{
+					rightPanel.add (operation);
+				}
+				operation.addMouseListener(new MouseAdapter ()
+				{
+					@Override
+					public void mousePressed(MouseEvent evt)
+					{
+						xDragOffset = (int) evt.getLocationOnScreen ().getX () - (int) operation.getLocationOnScreen ().getX ();
+						yDragOffset = (int) evt.getLocationOnScreen ().getY () - (int) operation.getLocationOnScreen ().getY ();
+					}
+				});
 			}
+			catch (OperationException ex)
+			{
+				// Unable to load, not a real operation
+				System.err.println("Error loading operation '" + operations.get(i) + "'");
+			}
+		}
 	}
 
     /** This method is called from within the constructor to
@@ -601,7 +592,7 @@ public class ViewPanel extends JPanel
 				{
 					subProblemSubMenu.setEnabled (false);
 				}
-				else if (rightClickedComponent instanceof Operation)
+				else
 				{
 					subProblemSubMenu.setEnabled (true);
 					for (int i = 0; i < domain.problem.getSubProblemCount(); ++i)
@@ -613,7 +604,20 @@ public class ViewPanel extends JPanel
 							@Override
 							public void actionPerformed(ActionEvent evt)
 							{
-								//subProblem.addData (((Operation) rightClickedComponent).getRootDataSource());
+								DataSource source = (DataSource) rightClickedComponent;
+								if (source instanceof Operation)
+								{
+									//source = source.getRootDataSource().getOperation (((Operation) source).getIndexFromDataSet ());
+								}
+								subProblem.setSolutionStart(source);
+								if (source instanceof Operation)
+								{
+									subProblem.setSolutionEnd(source.getAllChildOperations().get (source.getAllChildOperations().size () - 1));
+								}
+								else
+								{
+									subProblem.setSolutionEnd(source);
+								}
 							}
 						});
 						subProblemSubMenu.add (item);
