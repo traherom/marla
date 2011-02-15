@@ -55,11 +55,11 @@ public class LatexExporter
 	 * Unless specified otherwise in the constructor, this path will be used
 	 * as the template for new exporter instances
 	 */
-	private static String defaultTemplate = "export_template.xml";
+	private static String defaultTemplate = null;
 	/**
 	 * Path to the PDF LaTeX binary, used for PDF exports
 	 */
-	private static String pdfTexPath = "pdftex";
+	private static String pdfTexPath = null;
 	/**
 	 * Problem this exporter is working with
 	 */
