@@ -69,36 +69,42 @@ public class MainFrame extends JFrame
 			Configuration.load();
 			Configuration.processCmdLine(args);
 		}
-		catch(MarlaException ex)
+		catch(ConfigurationException ex)
 		{
-			if (ex instanceof ConfigurationException)
+			boolean configError = true;
+			while (configError)
 			{
-				boolean configError = true;
-				while (configError)
+				try
 				{
-					try
+					configError = false;
+					viewPanel.openChooserDialog.setDialogTitle(ex.getName ());
+					viewPanel.openChooserDialog.resetChoosableFileFilters ();
+					viewPanel.openChooserDialog.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+					// Display the chooser and retrieve the selected file
+					int response = viewPanel.openChooserDialog.showOpenDialog(viewPanel);
+					if (response == JFileChooser.APPROVE_OPTION)
 					{
-						configError = false;
-						viewPanel.openChooserDialog.setDialogTitle(ex.getName ());
-						viewPanel.openChooserDialog.resetChoosableFileFilters ();
-						viewPanel.openChooserDialog.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
-						// Display the chooser and retrieve the selected file
-						int response = viewPanel.openChooserDialog.showOpenDialog(viewPanel);
-						if (response == JFileChooser.APPROVE_OPTION)
-						{
-							((ConfigurationException) ex).setPath (viewPanel.openChooserDialog.getSelectedFile());
-						}
-						else
-						{
-							break;
-						}
+						ex.setPath(viewPanel.openChooserDialog.getSelectedFile().getPath());
 					}
-					catch (ConfigurationException innerEx)
+					else
 					{
-						configError = true;
+						break;
 					}
 				}
+				catch (ConfigurationException innerEx)
+				{
+					configError = true;
+				}
+				catch(MarlaException innerEx)
+				{
+					System.out.println(innerEx.getMessage());
+					configError = true;
+				}
 			}
+		}
+		catch(MarlaException ex)
+		{
+			System.out.println(ex.getMessage());
 		}
     }
 
