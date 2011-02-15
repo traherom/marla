@@ -126,6 +126,8 @@ public class ViewPanel extends JPanel
 	protected ExtensionFileFilter pdfFilter = new ExtensionFileFilter ("PDF Files (.pdf)", new String[] {"PDF"});
 	/** The extensions file filter for LaTeX files.*/
 	protected ExtensionFileFilter latexFilter = new ExtensionFileFilter ("LaTeX Sweave Files (.rnw)", new String[] {"RNW"});
+	/** The point in the view where the answer dialog shall appear.*/
+	private Point answerDialogLocation = null;
 	/** The width between two operations/data sets.*/
 	private final int SPACE_WIDTH = 130;
 	/** The height between two operations/data sets.*/
@@ -296,6 +298,7 @@ public class ViewPanel extends JPanel
         preWorkspacePanel = new javax.swing.JPanel();
         preWorkspaceLabel = new javax.swing.JLabel();
         workspacePanel = new WorkspacePanel (this);
+        trashCan = new javax.swing.JLabel();
         trayPanel = new javax.swing.JPanel();
         outputScrollPane = new javax.swing.JScrollPane();
         outputTextArea = new javax.swing.JTextArea();
@@ -326,6 +329,16 @@ public class ViewPanel extends JPanel
         rightClickMenu.add(solutionMenuItem);
 
         subProblemSubMenu.setText("Tie to Sub Problem");
+        subProblemSubMenu.addMenuListener(new javax.swing.event.MenuListener() {
+            public void menuCanceled(javax.swing.event.MenuEvent evt) {
+            }
+            public void menuDeselected(javax.swing.event.MenuEvent evt) {
+                subProblemSubMenuMenuDeselected(evt);
+            }
+            public void menuSelected(javax.swing.event.MenuEvent evt) {
+                subProblemSubMenuMenuSelected(evt);
+            }
+        });
         rightClickMenu.add(subProblemSubMenu);
 
         setLayout(new java.awt.BorderLayout());
@@ -347,7 +360,7 @@ public class ViewPanel extends JPanel
         );
         emptyPalettePanelLayout.setVerticalGroup(
             emptyPalettePanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(0, 243, Short.MAX_VALUE)
+            .add(0, 241, Short.MAX_VALUE)
         );
 
         componentsCardPanel.add(emptyPalettePanel, "card3");
@@ -384,14 +397,14 @@ public class ViewPanel extends JPanel
             preWorkspacePanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(preWorkspacePanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .add(preWorkspaceLabel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 152, Short.MAX_VALUE)
+                .add(preWorkspaceLabel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 154, Short.MAX_VALUE)
                 .addContainerGap())
         );
         preWorkspacePanelLayout.setVerticalGroup(
             preWorkspacePanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(preWorkspacePanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .add(preWorkspaceLabel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 236, Short.MAX_VALUE)
+                .add(preWorkspaceLabel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 237, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -406,12 +419,27 @@ public class ViewPanel extends JPanel
                 workspacePanelMouseReleased(evt);
             }
         });
+        workspacePanel.addComponentListener(new java.awt.event.ComponentAdapter() {
+            public void componentResized(java.awt.event.ComponentEvent evt) {
+                workspacePanelComponentResized(evt);
+            }
+        });
         workspacePanel.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
             public void mouseDragged(java.awt.event.MouseEvent evt) {
                 workspacePanelMouseDragged(evt);
             }
         });
+        workspacePanel.addContainerListener(new java.awt.event.ContainerAdapter() {
+            public void componentAdded(java.awt.event.ContainerEvent evt) {
+                workspacePanelComponentAdded(evt);
+            }
+        });
         workspacePanel.setLayout(null);
+
+        trashCan.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/trash.png"))); // NOI18N
+        workspacePanel.add(trashCan);
+        trashCan.setBounds(140, 220, 32, 40);
+
         workspaceCardPanel.add(workspacePanel, "card2");
 
         workspaceSplitPane.setTopComponent(workspaceCardPanel);
@@ -428,9 +456,9 @@ public class ViewPanel extends JPanel
         trayPanel.setLayout(trayPanelLayout);
         trayPanelLayout.setHorizontalGroup(
             trayPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(0, 180, Short.MAX_VALUE)
+            .add(0, 178, Short.MAX_VALUE)
             .add(trayPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                .add(outputScrollPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 180, Short.MAX_VALUE))
+                .add(outputScrollPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 178, Short.MAX_VALUE))
         );
         trayPanelLayout.setVerticalGroup(
             trayPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
@@ -445,48 +473,7 @@ public class ViewPanel extends JPanel
     }// </editor-fold>//GEN-END:initComponents
 
 	private void workspacePanelMouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_workspacePanelMouseDragged
-		if (evt.getButton() == 0 || evt.getButton () == MouseEvent.BUTTON1)
-		{
-			if (hoveredComponent != null)
-			{
-				hoveredComponent.setBorder (NO_BORDER);
-				hoveredComponent.setSize (hoveredComponent.getPreferredSize ());
-				hoveredComponent = null;
-			}
-
-			Component component = workspacePanel.getComponentAt (evt.getPoint ());
-			if (component != null &&
-					component != workspacePanel &&
-					component != draggingComponent)
-			{
-				if ((component instanceof Operation && ((Operation) component).getParent () != null) ||
-						component instanceof DataSet)
-				{
-					hoveredComponent = (JComponent) workspacePanel.getComponentAt (evt.getPoint ());
-					hoveredComponent.setBorder (BLACK_BORDER);
-					hoveredComponent.setSize (hoveredComponent.getPreferredSize ());
-				}
-				else if (hoveredComponent != null)
-				{
-					hoveredComponent.setBorder (NO_BORDER);
-					hoveredComponent.setSize (hoveredComponent.getPreferredSize ());
-					hoveredComponent = null;
-				}
-			}
-
-			if (draggingComponent != null)
-			{
-				if (draggingComponent instanceof Operation)
-				{
-					draggingComponent.setLocation(evt.getX() - xDragOffset, evt.getY() - yDragOffset);
-				}
-				else if(draggingComponent instanceof DataSet)
-				{
-					draggingComponent.setLocation(evt.getX() - xDragOffset, evt.getY() - yDragOffset);
-					rebuildTree ((DataSet) draggingComponent);
-				}
-			}
-		}
+		dragInWorkspace(evt);
 	}//GEN-LAST:event_workspacePanelMouseDragged
 
 	private void workspacePanelMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_workspacePanelMousePressed
@@ -494,7 +481,8 @@ public class ViewPanel extends JPanel
 		{
 			JComponent component = (JComponent) workspacePanel.getComponentAt (evt.getPoint ());
 			if (component != null &&
-					component != workspacePanel)
+					component != workspacePanel &&
+					component != trashCan)
 			{
 				draggingComponent = component;
 				draggingComponent.setBorder (RED_BORDER);
@@ -555,27 +543,48 @@ public class ViewPanel extends JPanel
 		{
 			if (draggingComponent != null)
 			{
-				if (draggingComponent instanceof Operation)
+				if (trashCan.getBounds().contains(evt.getPoint()))
 				{
-					try
+					if (draggingComponent instanceof DataSet)
 					{
-						drop((Operation) draggingComponent, false, evt.getPoint());
+						DataSet dataSet = (DataSet) draggingComponent;
+						for (int i = 0; i < dataSet.getOperationCount(); ++i)
+						{
+							Operation operation = dataSet.getOperation(i);
+							List<Operation> children = operation.getAllChildOperations();
+							for (int j = 0; j < children.size(); ++j)
+							{
+								workspacePanel.remove (children.get (j));
+							}
+							workspacePanel.remove (operation);
+						}
 					}
-					catch(OperationException ex)
-					{
-						Domain.logger.add (ex);
-					}
-					catch(RProcessorException ex)
-					{
-						Domain.logger.add (ex);
-					}
-					catch(MarlaException ex)
-					{
-						Domain.logger.add (ex);
-					}
+					workspacePanel.remove (draggingComponent);
 				}
-				draggingComponent.setBorder (NO_BORDER);
-				draggingComponent.setSize (draggingComponent.getPreferredSize ());
+				else
+				{
+					if (draggingComponent instanceof Operation)
+					{
+						try
+						{
+							drop((Operation) draggingComponent, false, evt.getPoint());
+						}
+						catch(OperationException ex)
+						{
+							Domain.logger.add (ex);
+						}
+						catch(RProcessorException ex)
+						{
+							Domain.logger.add (ex);
+						}
+						catch(MarlaException ex)
+						{
+							Domain.logger.add (ex);
+						}
+					}
+					draggingComponent.setBorder (NO_BORDER);
+					draggingComponent.setSize (draggingComponent.getPreferredSize ());
+				}
 				draggingComponent = null;
 			}
 			workspacePanel.repaint ();
@@ -583,21 +592,13 @@ public class ViewPanel extends JPanel
 		else if (evt.getButton () == MouseEvent.BUTTON3)
 		{
 			JComponent component = (JComponent) workspacePanel.getComponentAt (evt.getPoint ());
-			if (component != null && component != workspacePanel)
+			if (component != null &&
+					component != workspacePanel &&
+					component != trashCan)
 			{
 				rightClickedComponent = component;
-				if (rightClickedComponent instanceof Operation)
-				{
-					rightClickedComponent.setBorder (BLACK_BORDER);
-					rightClickedComponent.setSize (rightClickedComponent.getPreferredSize ());
-					DataSource source = ((Operation) rightClickedComponent).getRootDataSource().getOperation (((Operation) rightClickedComponent).getIndexFromDataSet ());
-					List<Operation> tempOperations = source.getRootDataSource().getOperation (((Operation) source).getIndexFromDataSet ()).getAllChildOperations();
-					for (int i = 0; i < tempOperations.size (); ++i)
-					{
-						tempOperations.get (i).setBorder (BLACK_BORDER);
-						tempOperations.get (i).setSize (tempOperations.get (i).getPreferredSize ());
-					}
-				}
+				answerDialogLocation = evt.getLocationOnScreen();
+
 				solutionMenuItem.setEnabled (true);
 				subProblemSubMenu.removeAll ();
 				if (domain.problem.getSubProblemCount() == 0)
@@ -610,32 +611,37 @@ public class ViewPanel extends JPanel
 					for (int i = 0; i < domain.problem.getSubProblemCount(); ++i)
 					{
 						final SubProblem subProblem = domain.problem.getSubProblem(i);
-						JMenuItem item = new JMenuItem (subProblem.getSubproblemID());
+						String name = subProblem.getSubproblemID();
+						/*if ()
+						{
+						    // TODO implement this condition
+							name = "(Current) " + name;
+						}*/
+						JMenuItem item = new JMenuItem (name);
 						item.addActionListener (new ActionListener ()
 						{
 							@Override
 							public void actionPerformed(ActionEvent evt)
 							{
 								DataSource source = (DataSource) rightClickedComponent;
-								if (source instanceof Operation)
+								if (rightClickedComponent instanceof Operation)
 								{
-									source = source.getRootDataSource().getOperation (((Operation) source).getIndexFromDataSet ());
-									List<Operation> tempOperations = source.getAllChildOperations();
-									for (int i = 0; i < tempOperations.size (); ++i)
+									source = ((Operation) rightClickedComponent).getRootDataSource().getOperation (((Operation) rightClickedComponent).getIndexFromDataSet ());
+									List<Operation> children = source.getAllChildOperations();
+									if (children.size () > 0)
 									{
-										tempOperations.get (i).setBorder (NO_BORDER);
-										tempOperations.get (i).setSize (tempOperations.get (i).getPreferredSize ());
+										subProblem.setSolutionEnd(source.getAllChildOperations().get (source.getAllChildOperations().size () - 1));
 									}
-								}
-								subProblem.setSolutionStart(source);
-								if (source instanceof Operation)
-								{
-									subProblem.setSolutionEnd(source.getAllChildOperations().get (source.getAllChildOperations().size () - 1));
+									else
+									{
+										subProblem.setSolutionEnd(source);
+									}
 								}
 								else
 								{
 									subProblem.setSolutionEnd(source);
 								}
+								subProblem.setSolutionStart(source);
 							}
 						});
 						subProblemSubMenu.add (item);
@@ -685,7 +691,7 @@ public class ViewPanel extends JPanel
 					answerDialog.setTitle ("Data Set Summary");
 				}
 				answerDialog.pack ();
-				answerDialog.setLocation (((JMenuItem) evt.getSource()).getLocationOnScreen());
+				answerDialog.setLocation (answerDialogLocation);
 				answerDialog.setVisible (true);
 			}
 			catch (MarlaException ex)
@@ -695,12 +701,152 @@ public class ViewPanel extends JPanel
 		}
 	}//GEN-LAST:event_solutionMenuItemActionPerformed
 
+	private void subProblemSubMenuMenuSelected(javax.swing.event.MenuEvent evt)//GEN-FIRST:event_subProblemSubMenuMenuSelected
+	{//GEN-HEADEREND:event_subProblemSubMenuMenuSelected
+		if (rightClickedComponent != null && subProblemSubMenu.isEnabled())
+		{
+			rightClickedComponent.setBorder (BLACK_BORDER);
+			rightClickedComponent.setSize (rightClickedComponent.getPreferredSize ());
+			if (rightClickedComponent instanceof Operation)
+			{
+				DataSource source = ((Operation) rightClickedComponent).getRootDataSource().getOperation (((Operation) rightClickedComponent).getIndexFromDataSet ());
+				((JComponent) source).setBorder (BLACK_BORDER);
+				((JComponent) source).setSize (((JComponent) source).getPreferredSize ());
+				List<Operation> tempOperations = source.getRootDataSource().getOperation (((Operation) source).getIndexFromDataSet ()).getAllChildOperations();
+				for (int i = 0; i < tempOperations.size (); ++i)
+				{
+					tempOperations.get (i).setBorder (BLACK_BORDER);
+					tempOperations.get (i).setSize (tempOperations.get (i).getPreferredSize ());
+				}
+			}
+			else
+			{
+				DataSet root = (DataSet) rightClickedComponent;
+				root.setBorder (BLACK_BORDER);
+				root.setSize (root.getPreferredSize());
+				for (int i = 0; i < root.getOperationCount(); ++i)
+				{
+					Operation operation = root.getOperation (i);
+					operation.setBorder (BLACK_BORDER);
+					operation.setSize (operation.getPreferredSize());
+					List<Operation> tempOperations = operation.getAllChildOperations();
+					for (int j = 0; j < tempOperations.size (); ++j)
+					{
+						tempOperations.get (j).setBorder (BLACK_BORDER);
+						tempOperations.get (j).setSize (tempOperations.get (j).getPreferredSize ());
+					}
+				}
+			}
+		}
+	}//GEN-LAST:event_subProblemSubMenuMenuSelected
+
+	private void subProblemSubMenuMenuDeselected(javax.swing.event.MenuEvent evt)//GEN-FIRST:event_subProblemSubMenuMenuDeselected
+	{//GEN-HEADEREND:event_subProblemSubMenuMenuDeselected
+		if (rightClickedComponent != null && subProblemSubMenu.isEnabled())
+		{
+			rightClickedComponent.setBorder (NO_BORDER);
+			rightClickedComponent.setSize (rightClickedComponent.getPreferredSize ());
+			if (rightClickedComponent instanceof Operation)
+			{
+				DataSource source = ((Operation) rightClickedComponent).getRootDataSource().getOperation (((Operation) rightClickedComponent).getIndexFromDataSet ());
+				((JComponent) source).setBorder (NO_BORDER);
+				((JComponent) source).setSize (((JComponent) source).getPreferredSize ());
+				List<Operation> tempOperations = source.getRootDataSource().getOperation (((Operation) source).getIndexFromDataSet ()).getAllChildOperations();
+				for (int i = 0; i < tempOperations.size (); ++i)
+				{
+					tempOperations.get (i).setBorder (NO_BORDER);
+					tempOperations.get (i).setSize (tempOperations.get (i).getPreferredSize ());
+				}
+			}
+			else
+			{
+				DataSet root = (DataSet) rightClickedComponent;
+				root.setBorder (NO_BORDER);
+				root.setSize (root.getPreferredSize());
+				for (int i = 0; i < root.getOperationCount(); ++i)
+				{
+					Operation operation = root.getOperation (i);
+					operation.setBorder (NO_BORDER);
+					operation.setSize (operation.getPreferredSize());
+					List<Operation> tempOperations = operation.getAllChildOperations();
+					for (int j = 0; j < tempOperations.size (); ++j)
+					{
+						tempOperations.get (j).setBorder (NO_BORDER);
+						tempOperations.get (j).setSize (tempOperations.get (j).getPreferredSize ());
+					}
+				}
+			}
+		}
+	}//GEN-LAST:event_subProblemSubMenuMenuDeselected
+
+	private void workspacePanelComponentResized(java.awt.event.ComponentEvent evt)//GEN-FIRST:event_workspacePanelComponentResized
+	{//GEN-HEADEREND:event_workspacePanelComponentResized
+		trashCan.setLocation (workspacePanel.getWidth () - 40, workspacePanel.getHeight () - 40);
+	}//GEN-LAST:event_workspacePanelComponentResized
+
+	private void workspacePanelComponentAdded(java.awt.event.ContainerEvent evt)//GEN-FIRST:event_workspacePanelComponentAdded
+	{//GEN-HEADEREND:event_workspacePanelComponentAdded
+		workspacePanel.setComponentZOrder(trashCan, workspacePanel.getComponentCount() - 1);
+	}//GEN-LAST:event_workspacePanelComponentAdded
+
+	/**
+	 * Manage drag events within the workspace panel
+	 *
+	 * @param evt The mouse event for the drag.
+	 */
+	protected void dragInWorkspace(MouseEvent evt)
+	{
+		if (evt.getButton() == 0 || evt.getButton () == MouseEvent.BUTTON1)
+		{
+			if (hoveredComponent != null)
+			{
+				hoveredComponent.setBorder (NO_BORDER);
+				hoveredComponent.setSize (hoveredComponent.getPreferredSize ());
+				hoveredComponent = null;
+			}
+
+			Component component = workspacePanel.getComponentAt (evt.getPoint ());
+			if (component != null &&
+					component != workspacePanel &&
+					component != trashCan &&
+					component != draggingComponent)
+			{
+				if ((component instanceof Operation && ((Operation) component).getParent () != null) ||
+						component instanceof DataSet)
+				{
+					hoveredComponent = (JComponent) workspacePanel.getComponentAt (evt.getPoint ());
+					hoveredComponent.setBorder (BLACK_BORDER);
+					hoveredComponent.setSize (hoveredComponent.getPreferredSize ());
+				}
+				else if (hoveredComponent != null)
+				{
+					hoveredComponent.setBorder (NO_BORDER);
+					hoveredComponent.setSize (hoveredComponent.getPreferredSize ());
+					hoveredComponent = null;
+				}
+			}
+
+			if (draggingComponent != null)
+			{
+				if (draggingComponent instanceof Operation)
+				{
+					draggingComponent.setLocation(evt.getX() - xDragOffset, evt.getY() - yDragOffset);
+				}
+				else if(draggingComponent instanceof DataSet)
+				{
+					draggingComponent.setLocation(evt.getX() - xDragOffset, evt.getY() - yDragOffset);
+					rebuildTree ((DataSet) draggingComponent);
+				}
+			}
+		}
+	}
+
 	/**
 	 * Rebuild the tree in the interface for the given data set.
 	 *
 	 * @param dataSet The data set to rebuild in the interface.
 	 */
-	protected void rebuildTree (DataSet dataSet)
+	protected void rebuildTree(DataSet dataSet)
 	{
 		if (dataSet.getOperationCount () > 0)
 		{
@@ -758,6 +904,7 @@ public class ViewPanel extends JPanel
 		if (component != null &&
 				component != workspacePanel &&
 				component != operation &&
+				component != trashCan &&
 				(component instanceof DataSet || component instanceof Operation))
 		{
 			final Operation newOperation;
@@ -818,7 +965,7 @@ public class ViewPanel extends JPanel
 			}
 			workspacePanel.repaint();
 		}
-		else
+		else if (component != trashCan)
 		{
 			final Operation newOperation;
 			if (duplicate)
@@ -1196,6 +1343,7 @@ public class ViewPanel extends JPanel
     private javax.swing.JMenuItem solutionMenuItem;
     private javax.swing.JMenu subProblemSubMenu;
     private javax.swing.JToolBar toolBar;
+    private javax.swing.JLabel trashCan;
     private javax.swing.JPanel trayPanel;
     private javax.swing.JPanel workspaceCardPanel;
     protected javax.swing.JPanel workspacePanel;

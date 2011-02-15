@@ -34,6 +34,7 @@ import java.awt.dnd.DropTargetDragEvent;
 import java.awt.dnd.DropTargetDropEvent;
 import java.awt.dnd.DropTargetEvent;
 import java.awt.dnd.DropTargetListener;
+import java.awt.event.MouseEvent;
 import java.io.IOException;
 import javax.swing.JOptionPane;
 import problem.MarlaException;
@@ -168,6 +169,8 @@ public class DragDrop implements DragGestureListener, DragSourceListener, DropTa
     void dropTargetDrag(DropTargetDragEvent ev)
     {
         ev.acceptDrag (ev.getDropAction ());
+
+		viewPanel.dragInWorkspace (new MouseEvent (viewPanel.workspacePanel, 0, System.currentTimeMillis(), 1, ev.getLocation().x, ev.getLocation().y, 1, false));
     }
 
     @Override
