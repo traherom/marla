@@ -58,7 +58,7 @@ public class LatexExporter
 	/**
 	 * Path to the PDF LaTeX binary, used for PDF exports
 	 */
-	private static String pdflatexPath = "pdflatex";
+	private static String pdfTexPath = "pdftex";
 	/**
 	 * Problem this exporter is working with
 	 */
@@ -136,9 +136,11 @@ public class LatexExporter
 	 * Sets the default LaTeX template to use for new exporters. May still be
 	 * changed for individual instances
 	 * @param newTemplatePath new default template to use
+	 * @return Previously set default template
 	 */
-	public static void setDefaultTemplate(String newTemplatePath) throws ConfigurationException
+	public static String setDefaultTemplate(String newTemplatePath) throws ConfigurationException
 	{
+		String oldTemplate = defaultTemplate;
 		defaultTemplate = newTemplatePath;
 
 		// Ensure it at least exists
@@ -146,21 +148,56 @@ public class LatexExporter
 			throw new ConfigurationException("LaTeX template '" + defaultTemplate + "' XML file does not exist");
 
 		System.out.println("Using LaTeX export template at '" + defaultTemplate + "'");
+
+		return oldTemplate;
 	}
 
 	/**
 	 * Sets the path to the pdflatex binary file
-	 * @param newPdfLatexPath New path to executable
+	 * @param newPdfTexPath New path to executable
+	 * @return Previously set path to pdflatex
 	 */
-	public static void setPdflatexPath(String newPdfLatexPath) throws ConfigurationException
+	public static String setPdfTexPath(String newPdfTexPath) throws ConfigurationException
 	{
-		pdflatexPath = newPdfLatexPath;
+		String oldPath = pdfTexPath;
+		pdfTexPath = newPdfTexPath;
+		
 
 		// Ensure we could run this if wished
-		//if(!(new File(pdflatexPath)).canExecute())
-		//	throw new ConfigurationException("pdflatex could not be located at '" + defaultTemplate + "'");
+		if(!newPdfTexPath.equals(oldPath))
+		{
+			boolean validInstall = false;
+			
+			try
+			{
+				// Create pdflatex instance
+				ProcessBuilder procBuild = new ProcessBuilder(pdfTexPath, "--version");
+				Process texProc = procBuild.start();
+				BufferedReader texOutStream = new BufferedReader(new InputStreamReader(texProc.getInputStream()));
+				texProc.getOutputStream().close();
 
-		System.out.println("Using pdflatex binary at '" + pdflatexPath + "'");
+				// See if it told us about itself
+				String firstLine = texOutStream.readLine();
+				if(firstLine != null && firstLine.contains("pdfTeX"))
+					validInstall = true;
+				else
+					validInstall = false;
+
+				// Good game boys, gg
+				texOutStream.close();
+			}
+			catch(IOException ex)
+			{
+				validInstall = false;
+			}
+
+			if(!validInstall)
+				throw new ConfigurationException("pdfTeX could not be located at '" + defaultTemplate + "'");
+		}
+
+		System.out.println("Using pdfTeX binary at '" + pdfTexPath + "'");
+
+		return oldPath;
 	}
 
 	/**
@@ -171,7 +208,7 @@ public class LatexExporter
 	{
 		// Extract information from configuration XML and set appropriately
 		setDefaultTemplate(configEl.getAttributeValue("template"));
-		setPdflatexPath(configEl.getAttributeValue("pdflatex"));
+		setPdfTexPath(configEl.getAttributeValue("pdftex"));
 	}
 
 	/**
@@ -183,7 +220,7 @@ public class LatexExporter
 	public static Element getConfig(Element configEl)
 	{
 		configEl.setAttribute("template", defaultTemplate);
-		configEl.setAttribute("pdflatex", pdflatexPath);
+		configEl.setAttribute("pdftex", pdfTexPath);
 		return configEl;
 	}
 
@@ -599,7 +636,7 @@ public class LatexExporter
 			try
 			{
 				// Create pdflatex instance
-				ProcessBuilder procBuild = new ProcessBuilder(pdflatexPath, texPath);
+				ProcessBuilder procBuild = new ProcessBuilder(pdfTexPath, texPath);
 				procBuild.redirectErrorStream(true);
 				texProc = procBuild.start();
 				texOutStream = new BufferedReader(new InputStreamReader(texProc.getInputStream()));
@@ -607,7 +644,7 @@ public class LatexExporter
 			}
 			catch(IOException ex)
 			{
-				throw new ConfigurationException("Unable to run '" + pdflatexPath + "'", ex);
+				throw new ConfigurationException("Unable to run '" + pdfTexPath + "'", ex);
 			}
 
 			try
@@ -637,11 +674,11 @@ public class LatexExporter
 			}
 			catch(IOException ex)
 			{
-				throw new LatexException("Error occurred in reading output from pdflatex", ex);
+				throw new LatexException("Error occurred in reading output from pdfTeX", ex);
 			}
 			catch(InterruptedException ex)
 			{
-				throw new LatexException("Interrupted while waiting for pdflatex to exit", ex);
+				throw new LatexException("Interrupted while waiting for pdfTeX to exit", ex);
 			}
 
 			// Ensure we actually succeeded. Check for the Sweave file error
@@ -655,7 +692,7 @@ public class LatexExporter
 			Pattern outfilePatt = Pattern.compile("^Output written on (.*\\.pdf)", Pattern.MULTILINE);
 			Matcher outfileMatch = outfilePatt.matcher(pdfOutput);
 			if(!outfileMatch.find())
-				throw new LatexException("pdflatex failed to write PDF file");
+				throw new LatexException("pdfTeX failed to write PDF file");
 
 			String tempPdfPath = outfileMatch.group(1);
 

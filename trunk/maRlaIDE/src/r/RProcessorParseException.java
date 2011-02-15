@@ -23,7 +23,7 @@ import problem.MarlaException;
  * Thrown when an R output cannot be parsed as specified.
  * @author Ryan Morehart
  */
-public class RProcessorParseException extends MarlaException
+public class RProcessorParseException extends RProcessorException
 {
 	public RProcessorParseException(String msg)
 	{
