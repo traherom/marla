@@ -147,6 +147,13 @@ public interface DataSource
 	public String getRCommands(boolean chain) throws MarlaException;
 
 	/**
+	 * Outputs this DataSource as the string of R commands needed to perform
+	 * the calculations for itself.
+	 * @return String of R commands
+	 */
+	public String getRCommands() throws MarlaException;
+
+	/**
 	 * Outputs this DataSet as a constructed R data frame and returns the
 	 * variable the data frame is stored in.
 	 * @return R variable the data frame is in

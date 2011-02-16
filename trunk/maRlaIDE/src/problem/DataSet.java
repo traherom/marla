@@ -634,6 +634,12 @@ public final class DataSet extends JLabel implements DataSource, Changeable
 		return solutionOps.size();
 	}
 
+	@Override
+	public String getRCommands() throws MarlaException
+	{
+		return getRCommands(false);
+	}
+
 	/**
 	 * This should only be called as part of an Operation chaining up here
 	 * @throws chain false if we should output the R frame for this data, false for blank.
