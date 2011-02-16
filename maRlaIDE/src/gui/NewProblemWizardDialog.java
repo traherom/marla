@@ -609,8 +609,8 @@ public class NewProblemWizardDialog extends EscapeDialog
 		// Construct the folder-based open chooser dialog
 		VIEW_PANEL.openChooserDialog.setFileFilter(VIEW_PANEL.defaultFilter);
 		VIEW_PANEL.openChooserDialog.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-		VIEW_PANEL.openChooserDialog.setCurrentDirectory(new File(domain.lastGoodDir));
 		VIEW_PANEL.openChooserDialog.setSelectedFile(new File(""));
+		VIEW_PANEL.openChooserDialog.setCurrentDirectory(new File(domain.lastGoodDir));
 		// Display the chooser and retrieve the selected folder
 		int response = VIEW_PANEL.openChooserDialog.showOpenDialog(this);
 		if(response == JFileChooser.APPROVE_OPTION)
@@ -1329,7 +1329,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 					catch (NumberFormatException innerEx)
 					{
 						changingDataSet = true;
-						model.setValueAt (0.0/*changingValue*/, evt.getFirstRow(), evt.getColumn ());
+						model.setValueAt (changingValue, evt.getFirstRow(), evt.getColumn ());
 						changingDataSet = false;
 					}
 				}
