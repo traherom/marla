@@ -308,9 +308,9 @@ public final class DataSet extends JLabel implements DataSource, Changeable
 	 * @param newParent Problem this dataset belongs to
 	 * @return Old parent this DataSet used to belong to, null if there was none
 	 */
-	ProblemPart setParentProblem(ProblemPart newParent)
+	Problem setParentProblem(Problem newParent)
 	{
-		ProblemPart oldParent = (ProblemPart) parent;
+		Problem oldParent = (Problem) parent;
 		parent = newParent;
 		return oldParent;
 	}
@@ -320,9 +320,9 @@ public final class DataSet extends JLabel implements DataSource, Changeable
 	 * is null if there is no parent for this problem.
 	 * @return Parent problem, null if none
 	 */
-	public final ProblemPart getParentProblem()
+	public final Problem getParentProblem()
 	{
-		return (ProblemPart) parent;
+		return (Problem) parent;
 	}
 
 	@Override

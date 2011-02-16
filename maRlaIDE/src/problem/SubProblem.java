@@ -350,7 +350,8 @@ public class SubProblem implements ProblemPart
 
 	/**
 	 * Find the DataSet/Operation with the given hashcode() value. Works
-	 * recursively to find it throughout the supplied DataSet
+	 * recursively to find it throughout the supplied DataSet. Used internally
+	 * for reattaching loaded problems
 	 * @param hash hashcode of DataSet/derivative to find
 	 * @param parent DataSet that we should search through to find it
 	 * @return DataSet located
@@ -419,5 +420,35 @@ public class SubProblem implements ProblemPart
 	public int getDataCount()
 	{
 		return parent.getDataCount();
+	}
+
+	/**
+	 * Checks if the given DataSource is somewhere in the chain of data
+	 * that is marked as the solution to this problem. Both start and end
+	 * must be set on the solution or false is returned.
+	 * @param ds DataSource to locate
+	 * @return true if the DataSource is in the the solution, false otherwise
+	 */
+	public boolean isDataSourceInSolution(DataSource ds)
+	{
+		if(startSolutionStep == null || endSolutionStep == null)
+			return false;
+
+		DataSource curr = endSolutionStep;
+		while(curr != startSolutionStep)
+		{
+			if(curr == ds)
+				return true;
+
+			// This cast should never fail because if it's actually a DataSet then the while
+			// loop will have hit the beginning
+			curr = ((Operation)curr).getParentData();
+		}
+
+		// And make sure it wasn't the starting step
+		if(curr == ds)
+			return true;
+
+		return false;
 	}
 }

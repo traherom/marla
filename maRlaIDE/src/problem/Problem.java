@@ -304,7 +304,7 @@ public class Problem implements ProblemPart
 		}
 
 		// Remove from the old problem if needed
-		ProblemPart oldParent = data.getParentProblem();
+		Problem oldParent = data.getParentProblem();
 		if(oldParent != null)
 			oldParent.removeData(data);
 
