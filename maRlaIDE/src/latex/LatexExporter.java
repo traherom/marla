@@ -490,16 +490,12 @@ public class LatexExporter
 		}
 		else if(currentSub.getSolutionEnd() != null)
 		{
-			// Block beginning
-			sweaveBlock.append("\n<<label=");
-			sweaveBlock.append(currentSub.getSubproblemID());
-			
 			// Is the end result a plot?
 			DataSource end = currentSub.getSolutionEnd();
 			if(end instanceof Operation && ((Operation)end).hasPlot())
-				sweaveBlock.append(", fig=T");
-
-			sweaveBlock.append(">>=\n");
+				sweaveBlock.append("\n<<fig=T>>=\n");
+			else
+				sweaveBlock.append("\n<<>>=\n");
 
 			// Pull out each R block for the operations inside the solution
 			List<DataSource> solOps = currentSub.getSolutionChain();
