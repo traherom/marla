@@ -488,10 +488,9 @@ public class NewProblemWizardDialog extends EscapeDialog
         valuesCardPanel.add(addDataSetButton);
         addDataSetButton.setBounds(285, 330, 70, 25);
 
-        removeDataSetButton.setFont(new java.awt.Font("Verdana", 0, 12));
+        removeDataSetButton.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
         removeDataSetButton.setText("Remove");
         removeDataSetButton.setToolTipText("Remove the last data set");
-        removeDataSetButton.setEnabled(false);
         removeDataSetButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 removeDataSetButtonActionPerformed(evt);
@@ -532,7 +531,7 @@ public class NewProblemWizardDialog extends EscapeDialog
         wizardControlPanelLayout.setHorizontalGroup(
             wizardControlPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, wizardControlPanelLayout.createSequentialGroup()
-                .addContainerGap(476, Short.MAX_VALUE)
+                .addContainerGap(491, Short.MAX_VALUE)
                 .addComponent(backWizardButton, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(nextWizardButton, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -555,7 +554,7 @@ public class NewProblemWizardDialog extends EscapeDialog
         newProblemPanel.setLayout(newProblemPanelLayout);
         newProblemPanelLayout.setHorizontalGroup(
             newProblemPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 759, Short.MAX_VALUE)
+            .addGap(0, 774, Short.MAX_VALUE)
             .addGroup(newProblemPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(newProblemPanelLayout.createSequentialGroup()
                     .addContainerGap()
@@ -563,18 +562,18 @@ public class NewProblemWizardDialog extends EscapeDialog
                         .addGroup(newProblemPanelLayout.createSequentialGroup()
                             .addComponent(stepsPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 193, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(wizardCardPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 540, Short.MAX_VALUE))
+                            .addComponent(wizardCardPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 555, Short.MAX_VALUE))
                         .addComponent(wizardControlPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addContainerGap()))
         );
         newProblemPanelLayout.setVerticalGroup(
             newProblemPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 439, Short.MAX_VALUE)
+            .addGap(0, 447, Short.MAX_VALUE)
             .addGroup(newProblemPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(newProblemPanelLayout.createSequentialGroup()
                     .addContainerGap()
                     .addGroup(newProblemPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(wizardCardPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 364, Short.MAX_VALUE)
+                        .addComponent(wizardCardPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 372, Short.MAX_VALUE)
                         .addComponent(stepsPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 364, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                     .addComponent(wizardControlPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -585,7 +584,7 @@ public class NewProblemWizardDialog extends EscapeDialog
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 759, Short.MAX_VALUE)
+            .addGap(0, 774, Short.MAX_VALUE)
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(layout.createSequentialGroup()
                     .addGap(0, 0, Short.MAX_VALUE)
@@ -594,7 +593,7 @@ public class NewProblemWizardDialog extends EscapeDialog
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 439, Short.MAX_VALUE)
+            .addGap(0, 447, Short.MAX_VALUE)
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(layout.createSequentialGroup()
                     .addGap(0, 0, Short.MAX_VALUE)
@@ -735,7 +734,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 		table.updateUI();
 		table.getTableHeader().resizeAndRepaint ();
 
-		if (dataSetTabbedPane.getTabCount() == 2)
+		if (dataSetTabbedPane.getTabCount() == 1)
 		{
 				removeDataSetButton.setEnabled (true);
 		}
@@ -761,7 +760,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 		if (allowRemove)
 		{
 			dataSetTabbedPane.remove(dataSetTabbedPane.getTabCount() - 1);
-			if(dataSetTabbedPane.getTabCount() == 1)
+			if(dataSetTabbedPane.getTabCount() == 0)
 			{
 				removeDataSetButton.setEnabled(false);
 			}
@@ -1532,7 +1531,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 				table.updateUI ();
 				table.getTableHeader().resizeAndRepaint ();
 			}
-			if (dataSetTabbedPane.getTabCount () > 1)
+			if (dataSetTabbedPane.getTabCount () > 0)
 			{
 				removeDataSetButton.setEnabled (true);
 			}
