@@ -410,7 +410,14 @@ public class Domain
 					viewPanel.closeProblem();
 				}
 
-				lastGoodDir = file.toString();
+				if (file.isDirectory())
+				{
+					lastGoodDir = file.toString ();
+				}
+				else
+				{
+					lastGoodDir = file.toString ().substring (0, file.toString ().lastIndexOf(File.separatorChar));
+				}
 				problem = Problem.load(file.toString ());
 
 				viewPanel.openProblem();
