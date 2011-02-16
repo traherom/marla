@@ -50,6 +50,9 @@ import resource.ConfigurationException.ConfigType;
  */
 public class Configuration
 {
+	/**
+	 * Saves any errors which occur during a load
+	 */
 	private static Deque<ConfigurationException> errors = new ArrayDeque<ConfigurationException>();
 
 	/**
