@@ -27,7 +27,6 @@ import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import latex.LatexException;
 import latex.LatexExporter;
-import org.jdom.JDOMException;
 import problem.DataSet;
 import problem.MarlaException;
 import operation.Operation;
@@ -386,8 +385,8 @@ public class Domain
 			{
 				curDir = problem.getFileName ();
 			}
-			viewPanel.openChooserDialog.setCurrentDirectory(new File (curDir));
 			viewPanel.openChooserDialog.setSelectedFile (new File (""));
+			viewPanel.openChooserDialog.setCurrentDirectory(new File (curDir));
 			// Display the chooser and retrieve the selected file
 			int response = viewPanel.openChooserDialog.showOpenDialog(viewPanel);
 			while (response == JFileChooser.APPROVE_OPTION)
@@ -410,7 +409,8 @@ public class Domain
 				{
 					viewPanel.closeProblem();
 				}
-				
+
+				lastGoodDir = file.toString();
 				problem = Problem.load(file.toString ());
 
 				viewPanel.openProblem();
