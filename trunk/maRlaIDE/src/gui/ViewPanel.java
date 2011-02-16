@@ -286,7 +286,8 @@ public class ViewPanel extends JPanel
         answerPanel = new javax.swing.JPanel();
         rightClickMenu = new javax.swing.JPopupMenu();
         solutionMenuItem = new javax.swing.JMenuItem();
-        subProblemSubMenu = new javax.swing.JMenu();
+        tieSubProblemSubMenu = new javax.swing.JMenu();
+        untieSubProblemSubMenu = new javax.swing.JMenu();
         toolBar = new javax.swing.JToolBar();
         componentsCardPanel = new javax.swing.JPanel();
         emptyPalettePanel = new javax.swing.JPanel();
@@ -328,18 +329,31 @@ public class ViewPanel extends JPanel
         });
         rightClickMenu.add(solutionMenuItem);
 
-        subProblemSubMenu.setText("Tie to Sub Problem");
-        subProblemSubMenu.addMenuListener(new javax.swing.event.MenuListener() {
+        tieSubProblemSubMenu.setText("Tie to Sub Problem");
+        tieSubProblemSubMenu.addMenuListener(new javax.swing.event.MenuListener() {
             public void menuCanceled(javax.swing.event.MenuEvent evt) {
             }
             public void menuDeselected(javax.swing.event.MenuEvent evt) {
-                subProblemSubMenuMenuDeselected(evt);
+                tieSubProblemSubMenuMenuDeselected(evt);
             }
             public void menuSelected(javax.swing.event.MenuEvent evt) {
-                subProblemSubMenuMenuSelected(evt);
+                tieSubProblemSubMenuMenuSelected(evt);
             }
         });
-        rightClickMenu.add(subProblemSubMenu);
+        rightClickMenu.add(tieSubProblemSubMenu);
+
+        untieSubProblemSubMenu.setText("Untie from Sub Problem");
+        untieSubProblemSubMenu.addMenuListener(new javax.swing.event.MenuListener() {
+            public void menuCanceled(javax.swing.event.MenuEvent evt) {
+            }
+            public void menuDeselected(javax.swing.event.MenuEvent evt) {
+                tieSubProblemSubMenuMenuDeselected(evt);
+            }
+            public void menuSelected(javax.swing.event.MenuEvent evt) {
+                tieSubProblemSubMenuMenuSelected(evt);
+            }
+        });
+        rightClickMenu.add(untieSubProblemSubMenu);
 
         setLayout(new java.awt.BorderLayout());
 
@@ -356,11 +370,11 @@ public class ViewPanel extends JPanel
         emptyPalettePanel.setLayout(emptyPalettePanelLayout);
         emptyPalettePanelLayout.setHorizontalGroup(
             emptyPalettePanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(0, 208, Short.MAX_VALUE)
+            .add(0, 204, Short.MAX_VALUE)
         );
         emptyPalettePanelLayout.setVerticalGroup(
             emptyPalettePanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(0, 241, Short.MAX_VALUE)
+            .add(0, 238, Short.MAX_VALUE)
         );
 
         componentsCardPanel.add(emptyPalettePanel, "card3");
@@ -601,22 +615,45 @@ public class ViewPanel extends JPanel
 				answerDialogLocation = evt.getLocationOnScreen();
 
 				solutionMenuItem.setEnabled (true);
-				subProblemSubMenu.removeAll ();
-				if (domain.problem.getSubProblemCount() == 0)
+				tieSubProblemSubMenu.removeAll ();
+				untieSubProblemSubMenu.removeAll();
+				for (int i = 0; i < domain.problem.getSubProblemCount(); ++i)
 				{
-					subProblemSubMenu.setEnabled (false);
-				}
-				else
-				{
-					subProblemSubMenu.setEnabled (true);
-					for (int i = 0; i < domain.problem.getSubProblemCount(); ++i)
+					final SubProblem subProblem = domain.problem.getSubProblem(i);
+					String name = subProblem.getSubproblemID();
+					if (subProblem.isDataSourceInSolution ((DataSource) rightClickedComponent))
 					{
-						final SubProblem subProblem = domain.problem.getSubProblem(i);
-						String name = subProblem.getSubproblemID();
-						if (subProblem.isDataSourceInSolution ((DataSource) rightClickedComponent))
+						JMenuItem item = new JMenuItem (name);
+						item.addActionListener (new ActionListener ()
 						{
-							name = "(Current) " + name;
-						}
+							@Override
+							public void actionPerformed(ActionEvent evt)
+							{
+								DataSource source = (DataSource) rightClickedComponent;
+								if (rightClickedComponent instanceof Operation)
+								{
+									source = ((Operation) rightClickedComponent).getRootDataSource().getOperation (((Operation) rightClickedComponent).getIndexFromDataSet ());
+									List<Operation> children = source.getAllChildOperations();
+									if (children.size () > 0)
+									{
+										subProblem.setSolutionEnd(null);
+									}
+									else
+									{
+										subProblem.setSolutionEnd(null);
+									}
+								}
+								else
+								{
+									subProblem.setSolutionEnd(null);
+								}
+								subProblem.setSolutionStart(null);
+							}
+						});
+						untieSubProblemSubMenu.add (item);
+					}
+					else
+					{
 						JMenuItem item = new JMenuItem (name);
 						item.addActionListener (new ActionListener ()
 						{
@@ -644,17 +681,36 @@ public class ViewPanel extends JPanel
 								subProblem.setSolutionStart(source);
 							}
 						});
-						subProblemSubMenu.add (item);
+						tieSubProblemSubMenu.add (item);
 					}
 				}
+
+				// Only enable the menu if there are components to tie/untie
+				if (tieSubProblemSubMenu.getMenuComponentCount() == 0)
+				{
+					tieSubProblemSubMenu.setEnabled (false);
+				}
+				else
+				{
+					tieSubProblemSubMenu.setEnabled (true);
+				}
+				if (untieSubProblemSubMenu.getMenuComponentCount() == 0)
+				{
+					untieSubProblemSubMenu.setEnabled (false);
+				}
+				else
+				{
+					untieSubProblemSubMenu.setEnabled (true);
+				}
+
 				rightClickMenu.show (workspacePanel, evt.getX (), evt.getY());
 			}
 			else
 			{
 				rightClickedComponent = null;
 				solutionMenuItem.setEnabled (false);
-				subProblemSubMenu.setEnabled (false);
-				subProblemSubMenu.removeAll ();
+				tieSubProblemSubMenu.setEnabled (false);
+				tieSubProblemSubMenu.removeAll ();
 			}
 		}
 	}//GEN-LAST:event_workspacePanelMouseReleased
@@ -701,9 +757,9 @@ public class ViewPanel extends JPanel
 		}
 	}//GEN-LAST:event_solutionMenuItemActionPerformed
 
-	private void subProblemSubMenuMenuSelected(javax.swing.event.MenuEvent evt)//GEN-FIRST:event_subProblemSubMenuMenuSelected
-	{//GEN-HEADEREND:event_subProblemSubMenuMenuSelected
-		if (rightClickedComponent != null && subProblemSubMenu.isEnabled())
+	private void tieSubProblemSubMenuMenuSelected(javax.swing.event.MenuEvent evt)//GEN-FIRST:event_tieSubProblemSubMenuMenuSelected
+	{//GEN-HEADEREND:event_tieSubProblemSubMenuMenuSelected
+		if (rightClickedComponent != null && tieSubProblemSubMenu.isEnabled())
 		{
 			rightClickedComponent.setBorder (BLACK_BORDER);
 			rightClickedComponent.setSize (rightClickedComponent.getPreferredSize ());
@@ -738,11 +794,11 @@ public class ViewPanel extends JPanel
 				}
 			}
 		}
-	}//GEN-LAST:event_subProblemSubMenuMenuSelected
+	}//GEN-LAST:event_tieSubProblemSubMenuMenuSelected
 
-	private void subProblemSubMenuMenuDeselected(javax.swing.event.MenuEvent evt)//GEN-FIRST:event_subProblemSubMenuMenuDeselected
-	{//GEN-HEADEREND:event_subProblemSubMenuMenuDeselected
-		if (rightClickedComponent != null && subProblemSubMenu.isEnabled())
+	private void tieSubProblemSubMenuMenuDeselected(javax.swing.event.MenuEvent evt)//GEN-FIRST:event_tieSubProblemSubMenuMenuDeselected
+	{//GEN-HEADEREND:event_tieSubProblemSubMenuMenuDeselected
+		if (rightClickedComponent != null && tieSubProblemSubMenu.isEnabled())
 		{
 			rightClickedComponent.setBorder (NO_BORDER);
 			rightClickedComponent.setSize (rightClickedComponent.getPreferredSize ());
@@ -777,7 +833,7 @@ public class ViewPanel extends JPanel
 				}
 			}
 		}
-	}//GEN-LAST:event_subProblemSubMenuMenuDeselected
+	}//GEN-LAST:event_tieSubProblemSubMenuMenuDeselected
 
 	private void workspacePanelComponentResized(java.awt.event.ComponentEvent evt)//GEN-FIRST:event_workspacePanelComponentResized
 	{//GEN-HEADEREND:event_workspacePanelComponentResized
@@ -1197,31 +1253,6 @@ public class ViewPanel extends JPanel
 	}
 
 	/**
-	 * Solve the data set as the currentDataSet in the domain.
-	 */
-	protected void solve()
-	{
-		try
-		{
-			outputTextArea.append ("Solution:\n");
-			for(int i = 0; i < domain.problem.getDataCount(); i++)
-			{
-				DataSource ds = domain.problem.getAnswer(i);
-				if(ds instanceof Operation)
-				{
-					domain.ensureRequirementsMet((Operation) ds);
-				}
-
-				outputTextArea.append(ds + "\n");
-			}
-		}
-		catch (MarlaException ex)
-		{
-			JOptionPane.showMessageDialog(this, ex.getMessage(), "Computation Error", JOptionPane.WARNING_MESSAGE);
-		}
-	}
-
-	/**
 	 * Retrieves the ith data set found in the workspace panel.
 	 *
 	 * @param i The data set index to return.
@@ -1341,10 +1372,11 @@ public class ViewPanel extends JPanel
     private javax.swing.JPanel rightPanel;
     protected javax.swing.JFileChooser saveChooserDialog;
     private javax.swing.JMenuItem solutionMenuItem;
-    private javax.swing.JMenu subProblemSubMenu;
+    private javax.swing.JMenu tieSubProblemSubMenu;
     private javax.swing.JToolBar toolBar;
     private javax.swing.JLabel trashCan;
     private javax.swing.JPanel trayPanel;
+    private javax.swing.JMenu untieSubProblemSubMenu;
     private javax.swing.JPanel workspaceCardPanel;
     protected javax.swing.JPanel workspacePanel;
     private javax.swing.JSplitPane workspaceSplitPane;

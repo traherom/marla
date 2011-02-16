@@ -35,7 +35,6 @@ import resource.ConfigurationException;
  */
 public class MainFrame extends JFrame
 {
-
 	/** The minimum size the window frame is allowed to be.*/
 	private final Dimension MINIMUM_WINDOW_SIZE = new Dimension (1000, 540);
     /** The panel that is added to the frame.*/
@@ -185,8 +184,6 @@ public class MainFrame extends JFrame
         selectAllMenuItem = new javax.swing.JMenuItem();
         problemMenu = new javax.swing.JMenu();
         editProblemMenuItem = new javax.swing.JMenuItem();
-        setSelectionAsAnswerMenuItem = new javax.swing.JMenuItem();
-        solveMenuItem = new javax.swing.JMenuItem();
         problemSeparator1 = new javax.swing.JPopupMenu.Separator();
         newDataSetMenuItem = new javax.swing.JMenuItem();
         toolsMenu = new javax.swing.JMenu();
@@ -356,7 +353,7 @@ public class MainFrame extends JFrame
         menuBar.add(editMenu);
 
         problemMenu.setText("Problem");
-        problemMenu.setFont(new java.awt.Font("Verdana", 0, 12));
+        problemMenu.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
         problemMenu.addMenuListener(new javax.swing.event.MenuListener() {
             public void menuCanceled(javax.swing.event.MenuEvent evt) {
             }
@@ -375,21 +372,6 @@ public class MainFrame extends JFrame
             }
         });
         problemMenu.add(editProblemMenuItem);
-
-        setSelectionAsAnswerMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_A, java.awt.event.InputEvent.SHIFT_MASK | java.awt.event.InputEvent.CTRL_MASK));
-        setSelectionAsAnswerMenuItem.setFont(new java.awt.Font("Verdana", 0, 12));
-        setSelectionAsAnswerMenuItem.setText("Set Selection as Answer");
-        problemMenu.add(setSelectionAsAnswerMenuItem);
-
-        solveMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_S, java.awt.event.InputEvent.SHIFT_MASK | java.awt.event.InputEvent.CTRL_MASK));
-        solveMenuItem.setFont(new java.awt.Font("Verdana", 0, 12));
-        solveMenuItem.setText("Solve");
-        solveMenuItem.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                solveMenuItemActionPerformed(evt);
-            }
-        });
-        problemMenu.add(solveMenuItem);
         problemMenu.add(problemSeparator1);
 
         newDataSetMenuItem.setFont(new java.awt.Font("Verdana", 0, 12));
@@ -463,10 +445,6 @@ public class MainFrame extends JFrame
 		viewPanel.quit (true);
 	}//GEN-LAST:event_exitMenuItemActionPerformed
 
-	private void solveMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_solveMenuItemActionPerformed
-		viewPanel.solve ();
-	}//GEN-LAST:event_solveMenuItemActionPerformed
-
 	private void newProblemMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newProblemMenuItemActionPerformed
 		viewPanel.NEW_PROBLEM_WIZARD_DIALOG.setTitle ("New Problem Wizard");
 		viewPanel.NEW_PROBLEM_WIZARD_DIALOG.welcomeTextLabel.setText (ViewPanel.welcomeNewText);
@@ -538,15 +516,11 @@ public class MainFrame extends JFrame
 		if (viewPanel.domain.problem != null)
 		{
 			editProblemMenuItem.setEnabled (true);
-			setSelectionAsAnswerMenuItem.setEnabled (true);
-			solveMenuItem.setEnabled (true);
 			newDataSetMenuItem.setEnabled (true);
 		}
 		else
 		{
 			editProblemMenuItem.setEnabled (false);
-			setSelectionAsAnswerMenuItem.setEnabled (false);
-			solveMenuItem.setEnabled (false);
 			newDataSetMenuItem.setEnabled (false);
 		}
 	}//GEN-LAST:event_problemMenuMenuSelected
@@ -649,8 +623,6 @@ public class MainFrame extends JFrame
     private javax.swing.JMenuItem saveAsMenuItem;
     private javax.swing.JMenuItem saveMenuItem;
     private javax.swing.JMenuItem selectAllMenuItem;
-    private javax.swing.JMenuItem setSelectionAsAnswerMenuItem;
-    private javax.swing.JMenuItem solveMenuItem;
     private javax.swing.JMenu toolsMenu;
     private javax.swing.JMenuItem undoMenuItem;
     private javax.swing.JMenuItem viewLatexCodeMenuItem;
