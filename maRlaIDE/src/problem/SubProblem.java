@@ -169,22 +169,47 @@ public class SubProblem implements ProblemPart
 		if(endSolutionStep == null)
 			throw new IncompleteInitializationException("An ending solution step for this subproblem has not been set");
 
-		// Find all the ops in order from the bottom of our chain to the top
+		// Push all the operations 0
 		Deque<DataSource> stack = new ArrayDeque<DataSource>();
-		DataSource currOp = endSolutionStep;
-		try
+
+		// If we are pointed at just a dataset as the start and end, then get the R for _everything_ underneath it
+		if(startSolutionStep == endSolutionStep)
 		{
-			while(currOp != startSolutionStep)
+			// Get all operations, we'll skip ones that aren't leaves
+			List<Operation> allOps = startSolutionStep.getAllChildOperations();
+
+			for(Operation op : allOps)
 			{
-				stack.push(currOp);
-				currOp = ((Operation)currOp).getParentData();
+				// Make sure it's a leaf
+				if(op.getOperationCount() != 0)
+					continue;
+
+				DataSource currOp = op;
+				while(currOp != startSolutionStep)
+				{
+					stack.push(currOp);
+					currOp = ((Operation)currOp).getParentData();
+				}
 			}
 		}
-		catch(ClassCastException ex)
+		else	
 		{
-			throw new ProblemException("The start and end of the subproblem solution appear to not be connected", ex);
+			// Find all the ops in order from the bottom of our chain to the top
+			DataSource currOp = endSolutionStep;
+			try
+			{
+				while(currOp != startSolutionStep)
+				{
+					stack.push(currOp);
+					currOp = ((Operation)currOp).getParentData();
+				}
+			}
+			catch(ClassCastException ex)
+			{
+				throw new ProblemException("The start and end of the subproblem solution appear to not be connected", ex);
+			}
 		}
-
+		
 		// Put them in the list in the opposite order we found them, so
 		// the list runs from the top (start) operation to the bottom (end)
 		List<DataSource> ops = new ArrayList<DataSource>(stack.size());
@@ -192,7 +217,7 @@ public class SubProblem implements ProblemPart
 		{
 			ops.add(stack.pop());
 		}
-		
+
 		return ops;
 	}
 
@@ -434,20 +459,28 @@ public class SubProblem implements ProblemPart
 		if(startSolutionStep == null || endSolutionStep == null)
 			return false;
 
-		DataSource curr = endSolutionStep;
-		while(curr != startSolutionStep)
+		if(startSolutionStep == endSolutionStep)
 		{
+			// Everything underneath the start is part of the solution
+			return (ds == startSolutionStep) || (startSolutionStep.getAllChildOperations().contains(ds));
+		}
+		else
+		{
+			DataSource curr = endSolutionStep;
+			while(curr != startSolutionStep)
+			{
+				if(curr == ds)
+					return true;
+
+				// This cast should never fail because if it's actually a DataSet then the while
+				// loop will have hit the beginning
+				curr = ((Operation)curr).getParentData();
+			}
+
+			// And make sure it wasn't the starting step
 			if(curr == ds)
 				return true;
-
-			// This cast should never fail because if it's actually a DataSet then the while
-			// loop will have hit the beginning
-			curr = ((Operation)curr).getParentData();
 		}
-
-		// And make sure it wasn't the starting step
-		if(curr == ds)
-			return true;
 
 		return false;
 	}
