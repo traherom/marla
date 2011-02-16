@@ -427,7 +427,7 @@ public class Configuration
 
 	public static String findAndSetPdfTex() throws ConfigurationException
 	{
-		List<String> possibilities = findFile("pdf(la)?tex(\\.exe)?", "bin|usr|Program Files.*|.*[Tt]e[Xx].*|local|20[0-9]{2}|.*darwin|Contents|Resources", null);
+		List<String> possibilities = findFile("pdf(la)?tex(\\.exe)?", "bin|usr|Program Files.*|.*[Tt][Ee][Xx].*|local|20[0-9]{2}|.*darwin|Contents|Resources|Portable.*", null);
 
 		// Test each possibility until one runs properly
 		for(String exe : possibilities)
