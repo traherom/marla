@@ -79,12 +79,7 @@ Section "Install maRla" InstallMarla
   File maRlaIDE.jar
   File ops.xml
   File export_template.xml
-  File config.xml
-  CreateDirectory "$INSTDIR\lib"
-  SetOutPath "$INSTDIR\lib"
-  File lib\commons-io-1.4.jar
-  File lib\jdom.jar
-  File lib\swing-layout-1.0.4.jar
+
   
   ;Store installation folder
   WriteRegStr HKCU "Software\maRla" "" $INSTDIR
@@ -123,16 +118,11 @@ Section "Uninstall"
   Delete "$INSTDIR\Uninstall.exe"
   Delete "$INSTDIR\maRlaIDE.jar"
   Delete "$INSTDIR\export_template.xml"
-  Delete "$INSTDIR\config.xml"
   Delete "$INSTDIR\ops.xml"
-  Delete "$INSTDIR\lib\commons-io-1.4.jar"
-  Delete "$INSTDIR\lib\jdom.jar"
-  Delete "$INSTDIR\lib\swing-layout-1.0.4.jar"
   Delete "$SMPROGRAMS\maRla\Uninstall.lnk"
   Delete "$SMPROGRAMS\maRla\maRla.lnk"
   
   RMDir "$SMPROGRAMS\maRla"
-  RMDir "$INSTDIR\lib"
   RMDir "$INSTDIR"
 
   DeleteRegKey /ifempty HKCU "Software\maRla"
