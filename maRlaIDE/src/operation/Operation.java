@@ -722,6 +722,12 @@ public abstract class Operation extends JLabel implements DataSource, Changeable
 	}
 
 	@Override
+	public String getRCommands() throws MarlaException
+	{
+		return getRCommands(true);
+	}
+
+	@Override
 	public final String getRCommands(boolean chain) throws MarlaException
 	{
 		checkCache();
