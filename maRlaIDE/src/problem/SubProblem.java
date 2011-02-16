@@ -462,7 +462,7 @@ public class SubProblem implements ProblemPart
 		if(startSolutionStep == endSolutionStep)
 		{
 			// Everything underneath the start is part of the solution
-			return (ds == startSolutionStep) || (startSolutionStep.getAllChildOperations().contains(ds));
+			return (ds == startSolutionStep) || (startSolutionStep.getAllChildOperations().contains((Operation)ds));
 		}
 		else
 		{
