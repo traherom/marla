@@ -558,6 +558,7 @@ public class ViewPanel extends JPanel
 							}
 							workspacePanel.remove (operation);
 						}
+						domain.problem.removeData (dataSet);
 					}
 					workspacePanel.remove (draggingComponent);
 				}
@@ -612,11 +613,10 @@ public class ViewPanel extends JPanel
 					{
 						final SubProblem subProblem = domain.problem.getSubProblem(i);
 						String name = subProblem.getSubproblemID();
-						/*if ()
+						if (subProblem.isDataSourceInSolution ((DataSource) rightClickedComponent))
 						{
-						    // TODO implement this condition
 							name = "(Current) " + name;
-						}*/
+						}
 						JMenuItem item = new JMenuItem (name);
 						item.addActionListener (new ActionListener ()
 						{
