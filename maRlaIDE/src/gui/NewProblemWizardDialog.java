@@ -488,7 +488,7 @@ public class NewProblemWizardDialog extends EscapeDialog
         valuesCardPanel.add(addDataSetButton);
         addDataSetButton.setBounds(285, 330, 70, 25);
 
-        removeDataSetButton.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        removeDataSetButton.setFont(new java.awt.Font("Verdana", 0, 12));
         removeDataSetButton.setText("Remove");
         removeDataSetButton.setToolTipText("Remove the last data set");
         removeDataSetButton.addActionListener(new java.awt.event.ActionListener() {
@@ -617,7 +617,15 @@ public class NewProblemWizardDialog extends EscapeDialog
 			// If the user selected a folder that exists, point the problem's location to the newly selected location
 			if(VIEW_PANEL.openChooserDialog.getSelectedFile().exists())
 			{
-				domain.lastGoodDir = VIEW_PANEL.openChooserDialog.getSelectedFile().toString();
+				File file = VIEW_PANEL.openChooserDialog.getSelectedFile();
+				if (file.isDirectory())
+				{
+					domain.lastGoodDir = file.toString ();
+				}
+				else
+				{
+					domain.lastGoodDir = file.toString ().substring (0, file.toString ().lastIndexOf(File.separatorChar));
+				}
 				problemLocationTextField.setText(domain.lastGoodDir);
 			}
 		}
@@ -974,7 +982,7 @@ public class NewProblemWizardDialog extends EscapeDialog
     protected javax.swing.JButton backWizardButton;
     private javax.swing.JButton browseButton;
     private javax.swing.JButton closeWizardButton;
-    private javax.swing.JTabbedPane dataSetTabbedPane;
+    protected javax.swing.JTabbedPane dataSetTabbedPane;
     protected javax.swing.JPanel descriptionCardPanel;
     protected javax.swing.JLabel descriptionLabel;
     private javax.swing.JPanel descriptionPanel;
@@ -1000,7 +1008,7 @@ public class NewProblemWizardDialog extends EscapeDialog
     protected javax.swing.JPanel subProblemsCardPanel;
     protected javax.swing.JLabel subProblemsLabel;
     private javax.swing.JPanel subProblemsPanel;
-    private javax.swing.JPanel subProblemsScollablePanel;
+    protected javax.swing.JPanel subProblemsScollablePanel;
     private javax.swing.JScrollPane subProblemsScrollPane;
     private javax.swing.JLabel subProblemsWizardLabel;
     protected javax.swing.JPanel valuesCardPanel;
@@ -1251,6 +1259,16 @@ public class NewProblemWizardDialog extends EscapeDialog
 				valuesPanelLayout.createParallelGroup(GroupLayout.LEADING).add(valuesPanelLayout.createSequentialGroup().add(scrollPane, GroupLayout.PREFERRED_SIZE, 238, GroupLayout.PREFERRED_SIZE).addPreferredGap(LayoutStyle.RELATED).add(valuesPanelLayout.createParallelGroup(GroupLayout.LEADING).add(button).add(valuesPanelLayout.createParallelGroup(GroupLayout.LEADING, false).add(columnsLabel, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE).add(columnsSpinner, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)).add(valuesPanelLayout.createParallelGroup(GroupLayout.LEADING, false).add(rowsLabel, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE).add(rowsSpinner, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))).addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)));
 
 		return valuesPanel;
+	}
+
+	/**
+	 * Empty all text fields of text.
+	 */
+	protected void emptyTextFields()
+	{
+		problemNameTextField.setText ("");
+		problemLocationTextField.setText ("");
+		descriptionTextArea.setText ("");
 	}
 
 	/**
@@ -1584,7 +1602,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 		}
 		domain.problem.setFileName(new File(problemLocationTextField.getText(), fileName).toString());
 
-		for(int i = 0; i < dataSetTabbedPane.getTabCount(); ++i)
+		for(int i = 0; i < dataSetTabbedPane.getTabCount (); ++i)
 		{
 			DataSet dataSet = null;
 			ExtendedTableModel tableModel = (ExtendedTableModel) ((JTable) ((JViewport) ((JScrollPane) ((JPanel) dataSetTabbedPane.getComponent(i)).getComponent(0)).getComponent(0)).getComponent(0)).getModel();
@@ -1820,5 +1838,16 @@ public class NewProblemWizardDialog extends EscapeDialog
 		{
 			Domain.logger.add (ex);
 		}
+	}
+
+	/**
+	 * Edit sub problems for the currently displayed problem.
+	 */
+	protected void editSubProblems()
+	{
+		// Transition to the values card panel
+		nextWizardButtonActionPerformed(null);
+		nextWizardButtonActionPerformed(null);
+		nextWizardButtonActionPerformed(null);
 	}
 }

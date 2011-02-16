@@ -288,6 +288,8 @@ public class ViewPanel extends JPanel
         solutionMenuItem = new javax.swing.JMenuItem();
         tieSubProblemSubMenu = new javax.swing.JMenu();
         untieSubProblemSubMenu = new javax.swing.JMenu();
+        menuSeparator = new javax.swing.JPopupMenu.Separator();
+        rCodeMenuItem = new javax.swing.JMenuItem();
         toolBar = new javax.swing.JToolBar();
         componentsCardPanel = new javax.swing.JPanel();
         emptyPalettePanel = new javax.swing.JPanel();
@@ -318,6 +320,7 @@ public class ViewPanel extends JPanel
         answerDialog.setUndecorated(true);
         answerDialog.getContentPane().setLayout(new java.awt.GridLayout(1, 1));
 
+        answerPanel.setBorder(javax.swing.BorderFactory.createEtchedBorder());
         answerPanel.setLayout(new javax.swing.BoxLayout(answerPanel, javax.swing.BoxLayout.PAGE_AXIS));
         answerDialog.getContentPane().add(answerPanel);
 
@@ -354,6 +357,15 @@ public class ViewPanel extends JPanel
             }
         });
         rightClickMenu.add(untieSubProblemSubMenu);
+        rightClickMenu.add(menuSeparator);
+
+        rCodeMenuItem.setText("View R Code");
+        rCodeMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                rCodeMenuItemActionPerformed(evt);
+            }
+        });
+        rightClickMenu.add(rCodeMenuItem);
 
         setLayout(new java.awt.BorderLayout());
 
@@ -391,7 +403,6 @@ public class ViewPanel extends JPanel
 
         add(componentsCardPanel, java.awt.BorderLayout.EAST);
 
-        workspaceSplitPane.setDividerLocation(450);
         workspaceSplitPane.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
         workspaceSplitPane.setResizeWeight(1.0);
 
@@ -418,7 +429,7 @@ public class ViewPanel extends JPanel
             preWorkspacePanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(preWorkspacePanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .add(preWorkspaceLabel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 237, Short.MAX_VALUE)
+                .add(preWorkspaceLabel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 215, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -426,9 +437,6 @@ public class ViewPanel extends JPanel
 
         workspacePanel.setBackground(new java.awt.Color(255, 255, 255));
         workspacePanel.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mousePressed(java.awt.event.MouseEvent evt) {
-                workspacePanelMousePressed(evt);
-            }
             public void mouseReleased(java.awt.event.MouseEvent evt) {
                 workspacePanelMouseReleased(evt);
             }
@@ -487,70 +495,72 @@ public class ViewPanel extends JPanel
     }// </editor-fold>//GEN-END:initComponents
 
 	private void workspacePanelMouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_workspacePanelMouseDragged
-		dragInWorkspace(evt);
-	}//GEN-LAST:event_workspacePanelMouseDragged
-
-	private void workspacePanelMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_workspacePanelMousePressed
-		if (evt.getButton () == 0 || evt.getButton () == MouseEvent.BUTTON1)
+		if (draggingComponent == null)
 		{
-			JComponent component = (JComponent) workspacePanel.getComponentAt (evt.getPoint ());
-			if (component != null &&
-					component != workspacePanel &&
-					component != trashCan)
+			if (evt.getButton () == 0 || evt.getButton () == MouseEvent.BUTTON1)
 			{
-				draggingComponent = component;
-				draggingComponent.setBorder (RED_BORDER);
-				draggingComponent.setSize (component.getPreferredSize ());
-				if (draggingComponent instanceof Operation)
+				JComponent component = (JComponent) workspacePanel.getComponentAt (evt.getPoint ());
+				if (component != null &&
+						component != workspacePanel &&
+						component != trashCan)
 				{
-					DataSet parentData = null;
-					if (((Operation) draggingComponent).getParentData() != null)
+					draggingComponent = component;
+					draggingComponent.setBorder (RED_BORDER);
+					draggingComponent.setSize (component.getPreferredSize ());
+					if (draggingComponent instanceof Operation)
 					{
-						parentData = (DataSet) (((Operation) draggingComponent).getRootDataSource());
-					}
-					try
-					{
-						Operation childOperation = null;
-						if (((Operation) draggingComponent).getOperationCount() > 0)
+						DataSet parentData = null;
+						if (((Operation) draggingComponent).getParentData() != null)
 						{
-							childOperation = ((Operation) draggingComponent).getOperation(0);
+							parentData = (DataSet) (((Operation) draggingComponent).getRootDataSource());
 						}
-						DataSource parent = ((Operation) draggingComponent).getParentData();
-						if (parent != null)
+						try
 						{
-							parent.removeOperation((Operation) draggingComponent);
-							workspacePanel.setComponentZOrder(draggingComponent, workspacePanel.getComponentCount() - 1);
+							Operation childOperation = null;
+							if (((Operation) draggingComponent).getOperationCount() > 0)
+							{
+								childOperation = ((Operation) draggingComponent).getOperation(0);
+							}
+							DataSource parent = ((Operation) draggingComponent).getParentData();
+							if (parent != null)
+							{
+								parent.removeOperation((Operation) draggingComponent);
+								workspacePanel.setComponentZOrder(draggingComponent, workspacePanel.getComponentCount() - 1);
+								workspacePanel.setComponentZOrder(trashCan, workspacePanel.getComponentCount() - 1);
+							}
+							if (childOperation != null)
+							{
+								parent.addOperation(childOperation);
+							}
 						}
-						if (childOperation != null)
+						catch(MarlaException ex)
 						{
-							parent.addOperation(childOperation);
+							Domain.logger.add (ex);
 						}
+						catch(NullPointerException ex)
+						{
+							Domain.logger.add (ex);
+						}
+						xDragOffset = evt.getX() - draggingComponent.getX();
+						yDragOffset = evt.getY() - draggingComponent.getY();
+						if (parentData != null)
+						{
+							rebuildTree (parentData);
+						}
+						workspacePanel.repaint ();
 					}
-					catch(MarlaException ex)
+					else
 					{
-						Domain.logger.add (ex);
+						xDragOffset = evt.getX() - draggingComponent.getX();
+						yDragOffset = evt.getY() - draggingComponent.getY();
 					}
-					catch(NullPointerException ex)
-					{
-						Domain.logger.add (ex);
-					}
-					xDragOffset = evt.getX() - draggingComponent.getX();
-					yDragOffset = evt.getY() - draggingComponent.getY();
-					if (parentData != null)
-					{
-						rebuildTree (parentData);
-					}
-					workspacePanel.repaint ();
+					domain.problem.markChanged();
 				}
-				else
-				{
-					xDragOffset = evt.getX() - draggingComponent.getX();
-					yDragOffset = evt.getY() - draggingComponent.getY();
-				}
-				domain.problem.markChanged();
 			}
 		}
-	}//GEN-LAST:event_workspacePanelMousePressed
+
+		dragInWorkspace(evt);
+	}//GEN-LAST:event_workspacePanelMouseDragged
 
 	private void workspacePanelMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_workspacePanelMouseReleased
 		if (evt.getButton () == 0 || evt.getButton () == MouseEvent.BUTTON1)
@@ -844,6 +854,31 @@ public class ViewPanel extends JPanel
 	{//GEN-HEADEREND:event_workspacePanelComponentAdded
 		workspacePanel.setComponentZOrder(trashCan, workspacePanel.getComponentCount() - 1);
 	}//GEN-LAST:event_workspacePanelComponentAdded
+
+	private void rCodeMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rCodeMenuItemActionPerformed
+		if (rightClickedComponent != null)
+		{
+			try
+			{
+				if (rightClickedComponent instanceof Operation)
+				{
+					domain.ensureRequirementsMet((Operation) rightClickedComponent);
+				}
+
+				answerPanel.removeAll ();
+				answerPanel.add(new JLabel("<html>" + ((DataSource) rightClickedComponent).getRCommands().replaceAll ("\n", "<br />") + "</html>"));
+
+				answerDialog.setTitle ("R Code");
+				answerDialog.pack ();
+				answerDialog.setLocation (answerDialogLocation);
+				answerDialog.setVisible (true);
+			}
+			catch (MarlaException ex)
+			{
+				Domain.logger.add (ex);
+			}
+		}
+	}//GEN-LAST:event_rCodeMenuItemActionPerformed
 
 	/**
 	 * Manage drag events within the workspace panel
@@ -1236,6 +1271,7 @@ public class ViewPanel extends JPanel
 			if (!NEW_PROBLEM_WIZARD_DIALOG.editing)
 			{
 				workspacePanel.removeAll();
+				workspacePanel.add (trashCan);
 
 				emptyPalettePanel.setVisible (true);
 				componentsPanel.setVisible (false);
@@ -1363,11 +1399,13 @@ public class ViewPanel extends JPanel
     protected javax.swing.JPanel componentsPanel;
     protected javax.swing.JPanel emptyPalettePanel;
     private javax.swing.JPanel leftPanel;
+    private javax.swing.JPopupMenu.Separator menuSeparator;
     protected javax.swing.JFileChooser openChooserDialog;
     private javax.swing.JScrollPane outputScrollPane;
     private javax.swing.JTextArea outputTextArea;
     private javax.swing.JLabel preWorkspaceLabel;
     protected javax.swing.JPanel preWorkspacePanel;
+    private javax.swing.JMenuItem rCodeMenuItem;
     private javax.swing.JPopupMenu rightClickMenu;
     private javax.swing.JPanel rightPanel;
     protected javax.swing.JFileChooser saveChooserDialog;

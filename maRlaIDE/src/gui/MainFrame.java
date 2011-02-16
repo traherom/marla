@@ -184,13 +184,11 @@ public class MainFrame extends JFrame
         selectAllMenuItem = new javax.swing.JMenuItem();
         problemMenu = new javax.swing.JMenu();
         editProblemMenuItem = new javax.swing.JMenuItem();
+        editSubProblemsMenuItem = new javax.swing.JMenuItem();
         problemSeparator1 = new javax.swing.JPopupMenu.Separator();
         newDataSetMenuItem = new javax.swing.JMenuItem();
         toolsMenu = new javax.swing.JMenu();
         reloadOperationgsMenuItem = new javax.swing.JMenuItem();
-        jSeparator1 = new javax.swing.JPopupMenu.Separator();
-        viewRCodeMenuItem = new javax.swing.JMenuItem();
-        viewLatexCodeMenuItem = new javax.swing.JMenuItem();
         helpMenu = new javax.swing.JMenu();
         helpContentsMenuItem = new javax.swing.JMenuItem();
         helpSeparator1 = new javax.swing.JPopupMenu.Separator();
@@ -208,7 +206,7 @@ public class MainFrame extends JFrame
         getContentPane().setLayout(new java.awt.GridLayout(1, 1));
 
         fileMenu.setText("File");
-        fileMenu.setFont(new java.awt.Font("Verdana", 0, 12));
+        fileMenu.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
         fileMenu.addMenuListener(new javax.swing.event.MenuListener() {
             public void menuCanceled(javax.swing.event.MenuEvent evt) {
             }
@@ -220,7 +218,7 @@ public class MainFrame extends JFrame
         });
 
         newProblemMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_N, java.awt.event.InputEvent.CTRL_MASK));
-        newProblemMenuItem.setFont(new java.awt.Font("Verdana", 0, 12));
+        newProblemMenuItem.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
         newProblemMenuItem.setText("New Problem...");
         newProblemMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -302,7 +300,8 @@ public class MainFrame extends JFrame
         menuBar.add(fileMenu);
 
         editMenu.setText("Edit");
-        editMenu.setFont(new java.awt.Font("Verdana", 0, 12));
+        editMenu.setEnabled(false);
+        editMenu.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
         editMenu.addMenuListener(new javax.swing.event.MenuListener() {
             public void menuCanceled(javax.swing.event.MenuEvent evt) {
             }
@@ -340,7 +339,7 @@ public class MainFrame extends JFrame
         editMenu.add(pasteMenuItem);
 
         deleteMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_DELETE, 0));
-        deleteMenuItem.setFont(new java.awt.Font("Verdana", 0, 12));
+        deleteMenuItem.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
         deleteMenuItem.setText("Delete");
         editMenu.add(deleteMenuItem);
         editMenu.add(editSeparator2);
@@ -365,16 +364,25 @@ public class MainFrame extends JFrame
         });
 
         editProblemMenuItem.setFont(new java.awt.Font("Verdana", 0, 12));
-        editProblemMenuItem.setText("Edit Problem");
+        editProblemMenuItem.setText("Edit Problem...");
         editProblemMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 editProblemMenuItemActionPerformed(evt);
             }
         });
         problemMenu.add(editProblemMenuItem);
+
+        editSubProblemsMenuItem.setFont(new java.awt.Font("Verdana", 0, 12));
+        editSubProblemsMenuItem.setText("Edit Sub Problems...");
+        editSubProblemsMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                editSubProblemsMenuItemActionPerformed(evt);
+            }
+        });
+        problemMenu.add(editSubProblemsMenuItem);
         problemMenu.add(problemSeparator1);
 
-        newDataSetMenuItem.setFont(new java.awt.Font("Verdana", 0, 12));
+        newDataSetMenuItem.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
         newDataSetMenuItem.setText("New Data Set...");
         newDataSetMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -405,15 +413,6 @@ public class MainFrame extends JFrame
             }
         });
         toolsMenu.add(reloadOperationgsMenuItem);
-        toolsMenu.add(jSeparator1);
-
-        viewRCodeMenuItem.setFont(new java.awt.Font("Verdana", 0, 12));
-        viewRCodeMenuItem.setText("View R Code");
-        toolsMenu.add(viewRCodeMenuItem);
-
-        viewLatexCodeMenuItem.setFont(new java.awt.Font("Verdana", 0, 12));
-        viewLatexCodeMenuItem.setText("View LaTeX Code");
-        toolsMenu.add(viewLatexCodeMenuItem);
 
         menuBar.add(toolsMenu);
 
@@ -516,11 +515,13 @@ public class MainFrame extends JFrame
 		if (viewPanel.domain.problem != null)
 		{
 			editProblemMenuItem.setEnabled (true);
+			editSubProblemsMenuItem.setEnabled (true);
 			newDataSetMenuItem.setEnabled (true);
 		}
 		else
 		{
 			editProblemMenuItem.setEnabled (false);
+			editSubProblemsMenuItem.setEnabled (false);
 			newDataSetMenuItem.setEnabled (false);
 		}
 	}//GEN-LAST:event_problemMenuMenuSelected
@@ -529,14 +530,10 @@ public class MainFrame extends JFrame
 		if (viewPanel.domain.problem != null)
 		{
 			reloadOperationgsMenuItem.setEnabled (true);
-			viewRCodeMenuItem.setEnabled (true);
-			viewLatexCodeMenuItem.setEnabled (true);
 		}
 		else
 		{
 			reloadOperationgsMenuItem.setEnabled (false);
-			viewRCodeMenuItem.setEnabled (false);
-			viewLatexCodeMenuItem.setEnabled (false);
 		}
 	}//GEN-LAST:event_toolsMenuMenuSelected
 
@@ -575,6 +572,13 @@ public class MainFrame extends JFrame
 		viewPanel.answerDialog.dispose ();
 	}//GEN-LAST:event_formWindowGainedFocus
 
+	private void editSubProblemsMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editSubProblemsMenuItemActionPerformed
+		viewPanel.NEW_PROBLEM_WIZARD_DIALOG.setTitle ("Edit Problem");
+		viewPanel.NEW_PROBLEM_WIZARD_DIALOG.welcomeTextLabel.setText (ViewPanel.welcomeEditText);
+		editProblemMenuItemActionPerformed (null);
+		viewPanel.NEW_PROBLEM_WIZARD_DIALOG.editSubProblems ();
+	}//GEN-LAST:event_editSubProblemsMenuItemActionPerformed
+
 	/**
 	 * Retrieves the default title, which is the program name with it's version number.
 	 *
@@ -601,6 +605,7 @@ public class MainFrame extends JFrame
     private javax.swing.JMenuItem editProblemMenuItem;
     private javax.swing.JPopupMenu.Separator editSeparator1;
     private javax.swing.JPopupMenu.Separator editSeparator2;
+    private javax.swing.JMenuItem editSubProblemsMenuItem;
     private javax.swing.JMenuItem exitMenuItem;
     private javax.swing.JMenuItem exportForLatexMenuItem;
     private javax.swing.JMenuItem exportToPdfMenuItem;
@@ -610,7 +615,6 @@ public class MainFrame extends JFrame
     private javax.swing.JMenuItem helpContentsMenuItem;
     private javax.swing.JMenu helpMenu;
     private javax.swing.JPopupMenu.Separator helpSeparator1;
-    private javax.swing.JPopupMenu.Separator jSeparator1;
     private javax.swing.JMenuBar menuBar;
     private javax.swing.JMenuItem newDataSetMenuItem;
     private javax.swing.JMenuItem newProblemMenuItem;
@@ -625,8 +629,6 @@ public class MainFrame extends JFrame
     private javax.swing.JMenuItem selectAllMenuItem;
     private javax.swing.JMenu toolsMenu;
     private javax.swing.JMenuItem undoMenuItem;
-    private javax.swing.JMenuItem viewLatexCodeMenuItem;
-    private javax.swing.JMenuItem viewRCodeMenuItem;
     // End of variables declaration//GEN-END:variables
 
 }
