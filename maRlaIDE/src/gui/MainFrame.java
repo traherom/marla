@@ -445,9 +445,7 @@ public class MainFrame extends JFrame
 	}//GEN-LAST:event_exitMenuItemActionPerformed
 
 	private void newProblemMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newProblemMenuItemActionPerformed
-		viewPanel.NEW_PROBLEM_WIZARD_DIALOG.setTitle ("New Problem Wizard");
-		viewPanel.NEW_PROBLEM_WIZARD_DIALOG.welcomeTextLabel.setText (ViewPanel.welcomeNewText);
-		viewPanel.NEW_PROBLEM_WIZARD_DIALOG.launchNewProblemWizard ();
+		viewPanel.newProblem ();
 	}//GEN-LAST:event_newProblemMenuItemActionPerformed
 
 	private void openProblemMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_openProblemMenuItemActionPerformed
