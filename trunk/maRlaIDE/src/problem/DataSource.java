@@ -34,6 +34,13 @@ public interface DataSource
 	public String getName();
 
 	/**
+	 * Returns a string that could be displayed to the user
+	 * @param abbrv If true, abreviate the returned string in order 
+	 * @return String suitable for display to user
+	 */
+	public String getDisplayString(boolean abbrv);
+
+	/**
 	 * Returns the column in the dataset with the given name.
 	 *
 	 * @param colName List of values in that column. Column manipulations will
