@@ -258,9 +258,6 @@ public abstract class Operation extends JLabel implements DataSource, Changeable
 	 */
 	protected final void setOperationName(String newName)
 	{
-		// Set the label
-		super.setText("<html>" + newName + "</html>");
-
 		// And save the op name
 		name = newName;
 	}
@@ -810,12 +807,6 @@ public abstract class Operation extends JLabel implements DataSource, Changeable
 	public final String getName()
 	{
 		return name;
-	}
-
-	@Override
-	public String getDisplayString(boolean abbrv)
-	{
-		return getName();
 	}
 
 	@Override

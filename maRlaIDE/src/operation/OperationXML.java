@@ -70,6 +70,11 @@ public class OperationXML extends Operation
 	 */
 	private Element longNameEl = null;
 	/**
+	 * Cache for the dynamic name that we build for the user. Because we read
+	 * it from the XML we don't want to recalculate every time
+	 */
+	private String dynamicName = null;
+	/**
 	 * Used to store the name of the plot we (might) create. Unused
 	 * if the XML specification itself doesn't contain a <plot />
 	 * element.
@@ -959,9 +964,25 @@ public class OperationXML extends Operation
 	}
 
 	@Override
-	public void clearRequiredInfo()
+	public String getDisplayString(boolean abbrv)
 	{
-		questionAnswers = null;
+		try
+		{
+			if(dynamicName == null)
+				updateDynamicName();
+		}
+		catch(OperationXMLException ex)
+		{
+			// TODO throw this instead and make viewpanel handle it
+			return ex.getMessage();
+		}
+
+		if(abbrv && dynamicName.length() > 4)
+		{
+			return dynamicName.substring(0, 2) + "-" + dynamicName.charAt(dynamicName.length() - 1);
+		}
+		else
+			return dynamicName;
 	}
 
 	private Element getPromptEl(String key) throws OperationXMLException
@@ -1024,12 +1045,12 @@ public class OperationXML extends Operation
 			}
 
 			// Make it visible externally, not interal though
-			super.setText("<html>" + newName.toString() + "</html>");
+			dynamicName = newName.toString();
 		}
 		else
 		{
 			// Just use the plain old name
-			super.setText("<html>" + opConfig.getAttributeValue("name") + "</html>");
+			dynamicName = opConfig.getAttributeValue("name");
 		}
 
 		// Tell the problem to rebuild the displayed tree, rearranging as needed
