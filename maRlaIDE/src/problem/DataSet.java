@@ -341,6 +341,12 @@ public final class DataSet extends JLabel implements DataSource, Changeable
 		return name;
 	}
 
+	@Override
+	public String getDisplayString(boolean abbrv)
+	{
+		return getName();
+	}
+
 	/**
 	 * Sets the dataset name
 	 * @param newName New name to call this DataSet by

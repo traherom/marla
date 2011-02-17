@@ -813,6 +813,12 @@ public abstract class Operation extends JLabel implements DataSource, Changeable
 	}
 
 	@Override
+	public String getDisplayString(boolean abbrv)
+	{
+		return getName();
+	}
+
+	@Override
 	public final int getColumnCount() throws MarlaException
 	{
 		checkCache();
