@@ -99,11 +99,29 @@ public class ViewPanel extends JPanel
 			+ "more or remove current sub problems.<br /><br />Values given for the data sets can be changed.  If these "
 			+ "values are already interacting with statistical interactions in the workspace, the results will be updated with "
 			+ "new values when this dialog is closed.  More data sets can be added or current data sets may be removed.</html>";
+	/** The width between two operations/data sets.*/
+	private final int SPACE_WIDTH = 130;
+	/** The height between two operations/data sets.*/
+	private final int SPACE_HEIGHT = 30;
+	/** No border.*/
+	private final Border NO_BORDER = BorderFactory.createEmptyBorder();
+	/** A red border display.*/
+	private final Border RED_BORDER = BorderFactory.createLineBorder(Color.RED);
+	/** A blue border display.*/
+	private final Border BLUE_BORDER = BorderFactory.createLineBorder(Color.BLUE);
+	/** A black border display.*/
+	private final Border BLACK_BORDER = BorderFactory.createLineBorder(Color.BLACK);
+	/** The source object for draggable assignments and events.*/
+    public final DragSource DRAG_SOURCE = new DragSource ();
+	/** The drag-and-drop listener for assignments and events.*/
+    public final DragDrop DND_LISTENER = new DragDrop (this);
 
 	/** The main frame of a stand-alone application.*/
     public MainFrame mainFrame;
 	/** The domain object reference performs generic actions specific to the GUI.*/
     protected Domain domain = new Domain (this);
+	/** The New Problem Wizard dialog.*/
+	public final NewProblemWizardDialog NEW_PROBLEM_WIZARD_DIALOG = new NewProblemWizardDialog (this, domain);
 	/** The set of operations contained in the XML file.*/
 	private List<String> operations;
 	/** The data set being dragged.*/
@@ -128,24 +146,8 @@ public class ViewPanel extends JPanel
 	protected ExtensionFileFilter latexFilter = new ExtensionFileFilter ("LaTeX Sweave Files (.rnw)", new String[] {"RNW"});
 	/** The point in the view where the answer dialog shall appear.*/
 	private Point answerDialogLocation = null;
-	/** The width between two operations/data sets.*/
-	private final int SPACE_WIDTH = 130;
-	/** The height between two operations/data sets.*/
-	private final int SPACE_HEIGHT = 30;
-	/** No border.*/
-	private final Border NO_BORDER = BorderFactory.createEmptyBorder();
-	/** A red border display.*/
-	private final Border RED_BORDER = BorderFactory.createLineBorder(Color.RED);
-	/** A blue border display.*/
-	private final Border BLUE_BORDER = BorderFactory.createLineBorder(Color.BLUE);
-	/** A black border display.*/
-	private final Border BLACK_BORDER = BorderFactory.createLineBorder(Color.BLACK);
-	/** The source object for draggable assignments and events.*/
-    public final DragSource DRAG_SOURCE = new DragSource ();
-	/** The drag-and-drop listener for assignments and events.*/
-    public final DragDrop DND_LISTENER = new DragDrop (this);
-	/** The New Problem Wizard dialog.*/
-	public final NewProblemWizardDialog NEW_PROBLEM_WIZARD_DIALOG = new NewProblemWizardDialog (this, domain);
+	/** True if operation and column names are abbreviated, false otherwise.*/
+	private boolean abbreviated = false;
 
     /**
      * Creates new form MainFrame for a stand-alone application.
@@ -291,6 +293,18 @@ public class ViewPanel extends JPanel
         menuSeparator = new javax.swing.JPopupMenu.Separator();
         rCodeMenuItem = new javax.swing.JMenuItem();
         toolBar = new javax.swing.JToolBar();
+        newButton = new javax.swing.JLabel();
+        openButton = new javax.swing.JLabel();
+        saveButton = new javax.swing.JLabel();
+        jSeparator1 = new javax.swing.JToolBar.Separator();
+        jLabel1 = new javax.swing.JLabel();
+        plusFontButton = new javax.swing.JLabel();
+        minusFontButton = new javax.swing.JLabel();
+        jSeparator3 = new javax.swing.JToolBar.Separator();
+        jLabel2 = new javax.swing.JLabel();
+        abbreviateButton = new javax.swing.JLabel();
+        jSeparator2 = new javax.swing.JToolBar.Separator();
+        settingsButton = new javax.swing.JLabel();
         componentsCardPanel = new javax.swing.JPanel();
         emptyPalettePanel = new javax.swing.JPanel();
         componentsPanel = new javax.swing.JPanel();
@@ -371,7 +385,150 @@ public class ViewPanel extends JPanel
 
         toolBar.setFloatable(false);
         toolBar.setRollover(true);
-        toolBar.setPreferredSize(new java.awt.Dimension(8, 30));
+        toolBar.setPreferredSize(new java.awt.Dimension(13, 35));
+
+        newButton.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        newButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/new.png"))); // NOI18N
+        newButton.setToolTipText("New Problem");
+        newButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                buttonMouseEntered(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                buttonMouseExited(evt);
+            }
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                buttonMousePressed(evt);
+            }
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                buttonMouseReleased(evt);
+            }
+        });
+        toolBar.add(newButton);
+
+        openButton.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        openButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/open.png"))); // NOI18N
+        openButton.setToolTipText("Open Problem");
+        openButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                buttonMouseEntered(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                buttonMouseExited(evt);
+            }
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                buttonMousePressed(evt);
+            }
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                buttonMouseReleased(evt);
+            }
+        });
+        toolBar.add(openButton);
+
+        saveButton.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        saveButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/save.png"))); // NOI18N
+        saveButton.setToolTipText("Save Problem");
+        saveButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                buttonMouseEntered(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                buttonMouseExited(evt);
+            }
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                buttonMousePressed(evt);
+            }
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                buttonMouseReleased(evt);
+            }
+        });
+        toolBar.add(saveButton);
+        toolBar.add(jSeparator1);
+
+        jLabel1.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        jLabel1.setText("Font Size:");
+        toolBar.add(jLabel1);
+
+        plusFontButton.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        plusFontButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/plus.png"))); // NOI18N
+        plusFontButton.setToolTipText("Increase font size");
+        plusFontButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                buttonMouseEntered(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                buttonMouseExited(evt);
+            }
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                buttonMousePressed(evt);
+            }
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                buttonMouseReleased(evt);
+            }
+        });
+        toolBar.add(plusFontButton);
+
+        minusFontButton.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        minusFontButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/minus.png"))); // NOI18N
+        minusFontButton.setToolTipText("Decrease font size");
+        minusFontButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                buttonMouseEntered(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                buttonMouseExited(evt);
+            }
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                buttonMousePressed(evt);
+            }
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                buttonMouseReleased(evt);
+            }
+        });
+        toolBar.add(minusFontButton);
+        toolBar.add(jSeparator3);
+        toolBar.add(jLabel2);
+
+        abbreviateButton.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        abbreviateButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/unchecked.png"))); // NOI18N
+        abbreviateButton.setText("Abbreviate");
+        abbreviateButton.setToolTipText("Show abbreviated operation and column names");
+        abbreviateButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                buttonMouseEntered(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                buttonMouseExited(evt);
+            }
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                buttonMousePressed(evt);
+            }
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                abbreviateButtonMouseReleased(evt);
+            }
+        });
+        toolBar.add(abbreviateButton);
+        toolBar.add(jSeparator2);
+
+        settingsButton.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        settingsButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/settings.png"))); // NOI18N
+        settingsButton.setToolTipText("Settings");
+        settingsButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                buttonMouseEntered(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                buttonMouseExited(evt);
+            }
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                buttonMousePressed(evt);
+            }
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                buttonMouseReleased(evt);
+            }
+        });
+        toolBar.add(settingsButton);
+
         add(toolBar, java.awt.BorderLayout.NORTH);
 
         componentsCardPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Palette", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Verdana", 0, 12))); // NOI18N
@@ -386,7 +543,7 @@ public class ViewPanel extends JPanel
         );
         emptyPalettePanelLayout.setVerticalGroup(
             emptyPalettePanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(0, 238, Short.MAX_VALUE)
+            .add(0, 473, Short.MAX_VALUE)
         );
 
         componentsCardPanel.add(emptyPalettePanel, "card3");
@@ -411,7 +568,7 @@ public class ViewPanel extends JPanel
 
         preWorkspacePanel.setBackground(new java.awt.Color(204, 204, 204));
 
-        preWorkspaceLabel.setFont(new java.awt.Font("Verdana", 1, 14));
+        preWorkspaceLabel.setFont(new java.awt.Font("Verdana", 1, 14)); // NOI18N
         preWorkspaceLabel.setForeground(new java.awt.Color(102, 102, 102));
         preWorkspaceLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         preWorkspaceLabel.setText("<html><div align=\"center\">To get started, load a previous problem or use the<br /><em>New Problem Wizard</em> to create a new problem</div></html>");
@@ -422,14 +579,14 @@ public class ViewPanel extends JPanel
             preWorkspacePanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(preWorkspacePanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .add(preWorkspaceLabel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 154, Short.MAX_VALUE)
+                .add(preWorkspaceLabel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 754, Short.MAX_VALUE)
                 .addContainerGap())
         );
         preWorkspacePanelLayout.setVerticalGroup(
             preWorkspacePanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(preWorkspacePanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .add(preWorkspaceLabel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 215, Short.MAX_VALUE)
+                .add(preWorkspaceLabel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 450, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -478,9 +635,9 @@ public class ViewPanel extends JPanel
         trayPanel.setLayout(trayPanelLayout);
         trayPanelLayout.setHorizontalGroup(
             trayPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(0, 178, Short.MAX_VALUE)
+            .add(0, 778, Short.MAX_VALUE)
             .add(trayPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                .add(outputScrollPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 178, Short.MAX_VALUE))
+                .add(outputScrollPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 778, Short.MAX_VALUE))
         );
         trayPanelLayout.setVerticalGroup(
             trayPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
@@ -879,6 +1036,43 @@ public class ViewPanel extends JPanel
 			}
 		}
 	}//GEN-LAST:event_rCodeMenuItemActionPerformed
+
+	private void abbreviateButtonMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_abbreviateButtonMouseReleased
+		if (abbreviated)
+		{
+			abbreviateButton.setIcon(new ImageIcon(getClass().getResource("/images/unchecked.png")));
+			abbreviated = false;
+		}
+		else
+		{
+			abbreviateButton.setIcon(new ImageIcon(getClass().getResource("/images/checked.png")));
+			abbreviated = true;
+		}
+
+		if (domain.problem != null)
+		{
+			for (int i = 0; i < domain.problem.getDataCount(); ++i)
+			{
+				rebuildTree(domain.problem.getData (i));
+			}
+		}
+	}//GEN-LAST:event_abbreviateButtonMouseReleased
+
+	private void buttonMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_buttonMousePressed
+		// TODO add your handling code here:
+	}//GEN-LAST:event_buttonMousePressed
+
+	private void buttonMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_buttonMouseReleased
+		// TODO add your handling code here:
+	}//GEN-LAST:event_buttonMouseReleased
+
+	private void buttonMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_buttonMouseEntered
+		// TODO add your handling code here:
+	}//GEN-LAST:event_buttonMouseEntered
+
+	private void buttonMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_buttonMouseExited
+		// TODO add your handling code here:
+	}//GEN-LAST:event_buttonMouseExited
 
 	/**
 	 * Manage drag events within the workspace panel
@@ -1393,22 +1587,34 @@ public class ViewPanel extends JPanel
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel abbreviateButton;
     protected javax.swing.JDialog answerDialog;
     private javax.swing.JPanel answerPanel;
     private javax.swing.JPanel componentsCardPanel;
     protected javax.swing.JPanel componentsPanel;
     protected javax.swing.JPanel emptyPalettePanel;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JToolBar.Separator jSeparator1;
+    private javax.swing.JToolBar.Separator jSeparator2;
+    private javax.swing.JToolBar.Separator jSeparator3;
     private javax.swing.JPanel leftPanel;
     private javax.swing.JPopupMenu.Separator menuSeparator;
+    private javax.swing.JLabel minusFontButton;
+    private javax.swing.JLabel newButton;
+    private javax.swing.JLabel openButton;
     protected javax.swing.JFileChooser openChooserDialog;
     private javax.swing.JScrollPane outputScrollPane;
     private javax.swing.JTextArea outputTextArea;
+    private javax.swing.JLabel plusFontButton;
     private javax.swing.JLabel preWorkspaceLabel;
     protected javax.swing.JPanel preWorkspacePanel;
     private javax.swing.JMenuItem rCodeMenuItem;
     private javax.swing.JPopupMenu rightClickMenu;
     private javax.swing.JPanel rightPanel;
+    private javax.swing.JLabel saveButton;
     protected javax.swing.JFileChooser saveChooserDialog;
+    private javax.swing.JLabel settingsButton;
     private javax.swing.JMenuItem solutionMenuItem;
     private javax.swing.JMenu tieSubProblemSubMenu;
     private javax.swing.JToolBar toolBar;
