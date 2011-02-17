@@ -17,6 +17,7 @@
  */
 package problem;
 
+import resource.Configuration;
 import org.jdom.Element;
 import org.junit.*;
 import static org.junit.Assert.*;
@@ -44,7 +45,13 @@ public class SubProblemTest
 
 		return sub;
 	}
-	
+
+	@BeforeClass
+	public static void configure() throws Exception
+	{
+		Configuration.load();
+	}
+
 	@Before
 	public void beforeTest() throws Exception
 	{
