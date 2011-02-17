@@ -152,7 +152,7 @@ public class OperationTest
 		assertTrue(op1.isDirty());
 
 		// Tell it to check
-		if(op1.isInfoRequired())
+		if(op1.isInfoUnanswered())
 			OperationTester.fillRequiredInfo(op1);
 		op1.checkCache();
 
@@ -172,7 +172,7 @@ public class OperationTest
 	@Test
 	public void testInfo() throws Exception
 	{
-		if(op1.isInfoRequired())
+		if(op1.isInfoUnanswered())
 		{
 			try
 			{
@@ -200,7 +200,7 @@ public class OperationTest
 	public void testPlot() throws Exception
 	{
 		// Fill info if needed
-		if(op1.isInfoRequired())
+		if(op1.isInfoUnanswered())
 			OperationTester.fillRequiredInfo(op1);
 			
 		if(op1.hasPlot())
@@ -238,7 +238,7 @@ public class OperationTest
 	public void testToRString() throws Exception
 	{
 		// Fill info if needed
-		if(op1.isInfoRequired())
+		if(op1.isInfoUnanswered())
 			OperationTester.fillRequiredInfo(op1);
 		
 		String opStr = op1.getRCommands(true);
