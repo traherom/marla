@@ -479,6 +479,7 @@ public class Configuration
 			checkPaths.addAll(additional);
 
 		// From current dir
+		@SuppressWarnings("unchecked")
 		Collection<File> currDirSearchRes = FileUtils.listFiles(new File("."),
 				new RegexFileFilter(namePatt), // Find files with these names
 				new RegexFileFilter(dirPatt) // And recurse down directories with these names
@@ -495,6 +496,7 @@ public class Configuration
 				continue;
 
 			// The R folder has the version number, so look for anything similar
+			@SuppressWarnings("unchecked")
 			Collection<File> driveSearchRes = FileUtils.listFiles(roots[i],
 					new RegexFileFilter(namePatt), // Find files with these names
 					new RegexFileFilter(dirPatt) // And recurse down directories with these names

@@ -15,70 +15,40 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package r;
+package operation;
 
-import operation.OperationTester;
-import operation.OperationException;
-import operation.Operation;
-import operation.OperationInfoRequiredException;
 import resource.Configuration;
-import problem.*;
-import java.util.List;
-import org.jdom.Element;
 import java.util.ArrayList;
-import org.junit.runners.Parameterized.Parameters;
-import java.util.Collection;
-import org.junit.runners.Parameterized;
-import org.junit.runner.RunWith;
+import java.util.List;
+import java.util.Map;
+import org.jdom.Element;
 import org.junit.*;
+import problem.DataSet;
+import problem.DataSetTest;
+import problem.MarlaException;
+import r.RProcessor;
 import static org.junit.Assert.*;
-import resource.ConfigurationException;
 
 /**
- * Test each available operation in the same battery of hair-raising trials
+ * Test a very basic operation, exercising the abstract Operation more than anything
  * @author Ryan Morehart
  */
-@RunWith(Parameterized.class)
-public class ImplementedOperationTest
+public class OperationTest
 {
 	private String opName = null;
 	private DataSet ds1 = null;
 	private Operation op1 = null;
-	
-	@Parameters
-    public static Collection<Object[]> operationsAvailable() throws Exception
+
+	public OperationTest() throws OperationException
 	{
-		// Get the available operations
-		List<String> available = Operation.getAvailableOperationsList();
-
-		// Massage into the right format and output so we know the index references
-		System.out.println("Testing operation array: (" + available.size() + " operations)");
-		Collection<Object[]> objectArray = new ArrayList<Object[]>(available.size());
-		for(int i = 0; i < available.size(); i++)
-		{
-			System.out.println("  [" + i + "]: " + available.get(i));
-			objectArray.add(new Object[]{available.get(i)});
-		}
-
-		return objectArray;
+		this.opName = "NOP";
+		System.out.println("Testing operation '" + opName + "'");
 	}
 
 	@BeforeClass
 	public static void configure() throws MarlaException
 	{
 		Configuration.load();
-	}
-
-	@AfterClass
-	public static void killR() throws Exception
-	{
-		RProcessor.getInstance().close();
-	}
-
-	public ImplementedOperationTest(String opName) throws OperationException
-	{
-		System.out.println("Testing operation '" + opName + "'");
-		this.opName = opName;
 	}
 
 	@Before
@@ -94,6 +64,40 @@ public class ImplementedOperationTest
 	}
 
 	@Test
+	public void testAvailableOps() throws Exception
+	{
+		Map<String, List<String>> opCats = Operation.getAvailableOperationsCategorized();
+		List<String> opList = Operation.getAvailableOperationsList();
+
+		// Should have the same number of operations and nothing different in either one
+		int totalOpsInList = opList.size();
+		int totalOpsInCats = 0;
+		for(String cat : opCats.keySet())
+		{
+			List<String> catList = opCats.get(cat);
+			totalOpsInCats += catList.size();
+
+			// Remove matching operations from the category and the list.
+			// eventually both should be totally empty
+			List<String> dupCatList = new ArrayList<String>(catList);
+			catList.removeAll(opList);
+			opList.removeAll(dupCatList);
+		}
+
+		// Same number of ops?
+		assertEquals("List and category returns of available operations differed in size", totalOpsInList, totalOpsInCats);
+
+		// If all ops were categorized, then there shouldn't be stuff left in the opList
+		assertTrue("Categorized map of ops had more than list", opList.isEmpty());
+
+		// If all ops were listed, then none of the categories should have stuff in them
+		for(String cat : opCats.keySet())
+		{
+			assertTrue("List of ops had more than categorized map", opCats.get(cat).isEmpty());
+		}
+	}
+
+	@Test
 	public void testEquals() throws Exception
 	{
 		Operation op2 = Operation.createOperation(opName);
@@ -103,7 +107,7 @@ public class ImplementedOperationTest
 	@Test
 	public void testEqualsDifferentOps() throws Exception
 	{
-		Operation op2 = Operation.createOperation("NOP");
+		Operation op2 = Operation.createOperation(Operation.getAvailableOperationsList().get(0));
 		ds1.addOperation(op2);
 
 		assertFalse(op1.equals(op2));
@@ -117,7 +121,7 @@ public class ImplementedOperationTest
 		Operation op2 = Operation.createOperation(opName);
 		ds2.addOperation(op2);
 
-		// TODO determine if this should be equal or not. I could see the arguement both ways
+		// TODO determine if this should be equal or not. I could see the argument both ways
 		assertEquals(op1, op2);
 	}
 
@@ -192,19 +196,6 @@ public class ImplementedOperationTest
 		}
 	}
 
-	@Test(expected=OperationException.class)
-	public void testSetInfoWhenNoneRequired() throws Exception
-	{
-		if(!op1.isInfoRequired())
-		{
-			OperationTester.fillRequiredInfo(op1);
-		}
-		else
-		{
-			throw new OperationException("Info is expected, this test passes");
-		}
-	}
-
 	@Test
 	public void testPlot() throws Exception
 	{
@@ -241,5 +232,32 @@ public class ImplementedOperationTest
 
 			assertEquals(op1, op2);
 		}
+	}
+
+	@Test
+	public void testToRString() throws Exception
+	{
+		// Fill info if needed
+		if(op1.isInfoRequired())
+			OperationTester.fillRequiredInfo(op1);
+		
+		String opStr = op1.getRCommands(true);
+		assertFalse(opStr.isEmpty());
+	}
+
+	@Test
+	public void testParentAssignment() throws Exception
+	{
+		DataSet ds2 = DataSetTest.createDataSet(3, 5, 0);
+		Operation op2 = Operation.createOperation(opName);
+
+		assertEquals(null, op2.getParentData());
+		assertEquals(0, ds2.getOperationCount());
+
+		ds2.addOperation(op2);
+
+		assertEquals(ds2, op2.getParentData());
+		assertEquals(1, ds2.getOperationCount());
+		assertEquals(op2, ds2.getOperation(0));
 	}
 }

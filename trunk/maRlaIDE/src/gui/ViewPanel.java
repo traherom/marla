@@ -62,8 +62,11 @@ import problem.DataSet;
 import problem.DataSource;
 import problem.MarlaException;
 import operation.Operation;
-import operation.Operation.PromptType;
 import operation.OperationException;
+import operation.OperationInfoCombo;
+import operation.OperationInfoRequiredException;
+import operation.OperationInformation;
+import operation.OperationInformation.PromptType;
 import operation.OperationXML;
 import problem.SubProblem;
 import r.RProcessorException;
@@ -1316,10 +1319,10 @@ public class ViewPanel extends JPanel
 	public void getRequiredInfoDialog(final Operation newOperation) throws MarlaException
 	{
 		// Create the dialog which will be launched to ask about requirements
-		final List<Object[]> prompt = newOperation.getRequiredInfoPrompt();
+		final List<OperationInformation> prompts = newOperation.getRequiredInfoPrompt();
 		final JDialog dialog = new JDialog ();
 		JPanel panel = new JPanel ();
-		panel.setLayout (new GridLayout (prompt.size () + 1, 2));
+		panel.setLayout (new GridLayout (prompts.size () + 1, 2));
 
 		dialog.setTitle (newOperation.getName() + ": Information Required");
 		dialog.setModal (true);
@@ -1329,13 +1332,12 @@ public class ViewPanel extends JPanel
 		final List<Object> valueComponents = new ArrayList<Object> ();
 
 		// Fill dialog with components
-		for (int i = 0; i < prompt.size(); ++i)
+		for (OperationInformation question : prompts)
 		{
-			Object[] components = prompt.get (i);
-			if (components[0] == PromptType.STRING || components[0] == PromptType.NUMERIC)
+			if (question.getType() == PromptType.STRING || question.getType() == PromptType.NUMERIC)
 			{
 				JPanel tempPanel = new JPanel (new FlowLayout (FlowLayout.LEFT));
-				JLabel label = new JLabel (components[2].toString ());
+				JLabel label = new JLabel (question.getPrompt());
 				JTextField textField = new JTextField ();
 				textField.setPreferredSize(new Dimension (150, textField.getPreferredSize().height));
 				tempPanel.add (label);
@@ -1343,21 +1345,21 @@ public class ViewPanel extends JPanel
 				valueComponents.add (textField);
 				panel.add (tempPanel);
 			}
-			else if(components[0] == PromptType.CHECKBOX)
+			else if(question.getType() == PromptType.CHECKBOX)
 			{
 				JPanel tempPanel = new JPanel (new FlowLayout (FlowLayout.LEFT));
-				JCheckBox checkBox = new JCheckBox (components[2].toString ());
+				JCheckBox checkBox = new JCheckBox (question.getPrompt());
 				JLabel label = new JLabel ("");
 				tempPanel.add (checkBox);
 				tempPanel.add (label);
 				valueComponents.add (checkBox);
 				panel.add (tempPanel);
 			}
-			else if(components[0] == PromptType.COMBO || components[0] == PromptType.COLUMN)
+			else if(question.getType() == PromptType.COMBO || question.getType() == PromptType.COLUMN)
 			{
 				JPanel tempPanel = new JPanel (new FlowLayout (FlowLayout.LEFT));
-				JLabel label = new JLabel (components[2].toString ());
-				DefaultComboBoxModel model = new DefaultComboBoxModel ((Object[]) components[3]);
+				JLabel label = new JLabel (question.getPrompt());
+				DefaultComboBoxModel model = new DefaultComboBoxModel (((OperationInfoCombo)question).getOptions().toArray());
 				JComboBox comboBox = new JComboBox (model);
 				tempPanel.add (label);
 				tempPanel.add (comboBox);
@@ -1374,51 +1376,39 @@ public class ViewPanel extends JPanel
 			@Override
 			public void actionPerformed(ActionEvent evt)
 			{
-				List<Object> values = new ArrayList<Object> ();
 				boolean pass = true;
-				for (int i = 0; i < prompt.size (); ++i)
+				for (int i = 0; i < prompts.size(); i++)
 				{
-					if (prompt.get (i)[0] == PromptType.NUMERIC)
+					OperationInformation question = prompts.get(i);
+
+					try
 					{
-						try
+						if(question.getType() == PromptType.CHECKBOX)
 						{
-							values.add (Double.parseDouble (((JTextField) valueComponents.get (i)).getText ()));
+							question.setAnswer(((JCheckBox) valueComponents.get (i)).isSelected());
 						}
-						catch (NumberFormatException ex)
+						else if(question.getType() == PromptType.COMBO || question.getType() == PromptType.COLUMN)
 						{
-							// If the users input was not valid, the form is not accepted and the dialog will not close
-							((JTextField) valueComponents.get (i)).requestFocus();
-							((JTextField) valueComponents.get (i)).selectAll();
-							JOptionPane.showMessageDialog(viewPanel, "You must enter a valid numerical value.", "Invalid Input", JOptionPane.ERROR_MESSAGE);
-							pass = false;
+							question.setAnswer(((JComboBox) valueComponents.get (i)).getSelectedItem());
+						}
+						else
+						{
+							question.setAnswer(((JTextField) valueComponents.get (i)).getText ());
 						}
 					}
-					else if(prompt.get(i)[0] == PromptType.STRING)
+					catch (OperationInfoRequiredException ex)
 					{
-						values.add (((JTextField) valueComponents.get (i)).getText ());
-					}
-					else if(prompt.get (i)[0] == PromptType.CHECKBOX)
-					{
-						values.add (Boolean.valueOf (((JCheckBox) valueComponents.get (i)).isSelected ()));
-					}
-					else if(prompt.get (i)[0] == PromptType.COMBO || prompt.get (i)[0] == PromptType.COLUMN)
-					{
-						values.add (((JComboBox) valueComponents.get (i)).getSelectedItem());
+						// If the users input was not valid, the form is not accepted and the dialog will not close
+						((JTextField) valueComponents.get (i)).requestFocus();
+						((JTextField) valueComponents.get (i)).selectAll();
+						JOptionPane.showMessageDialog(viewPanel, ex.getMessage(), "Invalid Input", JOptionPane.ERROR_MESSAGE);
+						pass = false;
 					}
 				}
 
 				if (pass)
 				{
-					try
-					{
-						// Hide the dialog and set the data
-						newOperation.setRequiredInfo(values);
-						dialog.setVisible (false);
-					}
-					catch(MarlaException ex)
-					{
-						JOptionPane.showMessageDialog(viewPanel, ex.getMessage(), "Error", JOptionPane.WARNING_MESSAGE);
-					}
+					dialog.setVisible (false);
 				}
 			}
 		});

@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import javax.swing.JLabel;
 import org.jdom.Element;
 import problem.Changeable;
@@ -63,6 +64,10 @@ public abstract class Operation extends JLabel implements DataSource, Changeable
 	 */
 	private DataSource parent;
 	/**
+	 * Saves the answer from the GUI to any questions we asked
+	 */
+	private final Map<String, OperationInformation> questions = new HashMap<String, OperationInformation>();
+	/**
 	 * Saves the R operations used the last time refreshCache() was called. This
 	 * string can then be dumped out by getRCommands() to give an idea of how to perform
 	 * the calculations
@@ -87,14 +92,6 @@ public abstract class Operation extends JLabel implements DataSource, Changeable
 	 * Categorization of the Java operations
 	 */
 	private static Map<String, List<String>> javaOpCategories;
-
-	/**
-	 * Prompts that can be requested, used by get and setPromptTypes()
-	 */
-	public enum PromptType
-	{
-		COLUMN, COMBO, STRING, NUMERIC, CHECKBOX
-	};
 
 	/**
 	 * Initializes the list of available Java-based (hard coded) operations.
@@ -200,7 +197,7 @@ public abstract class Operation extends JLabel implements DataSource, Changeable
 	 * @param opName Name of operation to search for, usually taken from getAvailableOperations().
 	 * @return Newly created operation of the given type
 	 */
-	public static Operation createOperation(String opName) throws OperationException, RProcessorException, ConfigurationException
+	public static Operation createOperation(String opName) throws MarlaException
 	{
 		// Locate the operation
 		Operation op = null;
@@ -269,7 +266,7 @@ public abstract class Operation extends JLabel implements DataSource, Changeable
 	 * @param opEl JDOM Element with the information to construct Operation
 	 * @return Constructed and initialized operation
 	 */
-	public static final Operation fromXml(Element opEl) throws MarlaException
+	public static Operation fromXml(Element opEl) throws MarlaException
 	{
 		String opName = opEl.getAttributeValue("type");
 
@@ -287,6 +284,10 @@ public abstract class Operation extends JLabel implements DataSource, Changeable
 
 			// Allow it to do its custom thing
 			newOp.fromXmlExtra(opEl);
+
+			// And restore the answers
+			OperationInformation.fromXml(opEl.getChild("info"), newOp);
+
 			return newOp;
 		}
 		catch(IllegalAccessException ex)
@@ -547,12 +548,52 @@ public abstract class Operation extends JLabel implements DataSource, Changeable
 	 */
 	protected abstract void computeColumns(RProcessor proc) throws MarlaException;
 
+
 	/**
-	 * Returns true if the Operation has questions/prompts for the user.
-	 * getRequiredInfoPrompt() returns the actual ArrayList of data needed
+	 * Adds the given information to the information this operation
+	 * expects. Intended to be called by derivative classes
+	 * @param info Question/information required from the user
+	 */
+	protected final void addQuestion(OperationInformation info)
+	{
+		// Ensure it's valid
+		if(info.getOperation() != this)
+			throw new InternalMarlaException("Attempt to add information that did not point to same operation");
+
+		questions.put(info.getName(), info);
+	}
+
+	/**
+	 * Returns the information with the given name
+	 * @param name
+	 */
+	public final OperationInformation getQuestion(String name)
+	{
+		return questions.get(name);
+	}
+
+	/**
+	 * Returns true if the Operation has questions/prompts for the user that
+	 * are still unanswered. getRequiredInfoPrompt() returns the actual
+	 * List of data needed
 	 * @return true if additional information is required
 	 */
-	public abstract boolean isInfoRequired() throws MarlaException;
+	public final boolean isInfoRequired() throws MarlaException
+	{
+		if(questions.isEmpty())
+			return false;
+
+		// Check if any are unanswered
+		Set<String> names = questions.keySet();
+		for(String key : names)
+		{
+			if(!questions.get(key).isAnswered())
+				return true;
+		}
+
+		// No problems were found, we're all good to go
+		return false;
+	}
 
 	/**
 	 * Deriving classes should override this to prompt the user for the
@@ -564,32 +605,30 @@ public abstract class Operation extends JLabel implements DataSource, Changeable
 	 *			combo selection box), then the third element in Object[] will
 	 *			be whatever is needed.
 	 */
-	public List<Object[]> getRequiredInfoPrompt() throws MarlaException
+	public final List<OperationInformation> getRequiredInfoPrompt() throws MarlaException
 	{
-		return new ArrayList<Object[]>();
-	}
+		// Converts the hashmap to an immutable list
+		List<OperationInformation> info = new ArrayList<OperationInformation>(questions.size());
+		Set<String> names = questions.keySet();
+		for(String key : names)
+		{
+			info.add(questions.get(key));
+		}
 
-	/**
-	 * After the user is prompted for additional values, their selections
-	 * are returned as an ArrayList where the index corresponds to the question
-	 * originally asked by getInforRequiredPrompt(). If a derived class needs
-	 * to handle them it should override this. An exception may be thrown if data
-	 * is set incorrectly.
-	 * @param values ArrayList of Objects that answer the questions
-	 */
-	public void setRequiredInfo(List<Object> val) throws MarlaException
-	{
-		if(!isInfoRequired())
-			throw new OperationException("This operation does not require info, should not be set");
+		return info;
 	}
-
 
 	/**
 	 * Clears any set answers to required information
 	 */
-	public void clearRequiredInfo()
+	public final void clearRequiredInfo() throws OperationInfoRequiredException
 	{
-		// Nothing to do by default
+		// Clear all the question answers
+		Set<String> names = questions.keySet();
+		for(String key : names)
+		{
+			questions.get(key).clearAnswer();
+		}
 	}
 
 	/**
@@ -636,8 +675,8 @@ public abstract class Operation extends JLabel implements DataSource, Changeable
 		if(this.getClass() != otherOp.getClass())
 			return false;
 
-		// Two operations of the same type and assigned to the _same_ parent must be different
-		if(parent == otherOp.parent)
+		// Questions and answers different?
+		if(!questions.equals(otherOp.questions))
 			return false;
 
 		// Well, are our children all the same then?
@@ -653,6 +692,7 @@ public abstract class Operation extends JLabel implements DataSource, Changeable
 		int hash = 5;
 		hash = 31 * hash + (this.name != null ? this.name.hashCode() : 0);
 		hash = 31 * hash + (this.solutionOps != null ? this.solutionOps.hashCode() : 0);
+		hash = 31 * hash + (this.questions != null ? this.questions.hashCode() : 0);
 		return hash;
 	}
 
@@ -666,29 +706,38 @@ public abstract class Operation extends JLabel implements DataSource, Changeable
 	@Override
 	public final Element toXml() throws MarlaException
 	{
-		Element dataEl = new Element("operation");
-		dataEl.setAttribute("type", this.getClass().getName());
+		Element opEl = new Element("operation");
+		opEl.setAttribute("type", this.getClass().getName());
 
 		Rectangle rect = getBounds();
-		dataEl.setAttribute("x", Integer.toString((int) rect.getX()));
-		dataEl.setAttribute("y", Integer.toString((int) rect.getY()));
-		dataEl.setAttribute("height", Integer.toString((int) rect.getHeight()));
-		dataEl.setAttribute("width", Integer.toString((int) rect.getWidth()));
+		opEl.setAttribute("x", Integer.toString((int) rect.getX()));
+		opEl.setAttribute("y", Integer.toString((int) rect.getY()));
+		opEl.setAttribute("height", Integer.toString((int) rect.getHeight()));
+		opEl.setAttribute("width", Integer.toString((int) rect.getWidth()));
 
 		// Add Ops
 		Element opEls = new Element("operations");
-		dataEl.addContent(opEls);
+		opEl.addContent(opEls);
 		for(Operation op : solutionOps)
 		{
 			opEls.addContent(op.toXml());
 		}
 
+		// Add question answers
+		Element questionEls = new Element("info");
+		opEl.addContent(questionEls);
+		Set<String> keys = questions.keySet();
+		for(String key : keys)
+		{
+			questionEls.addContent(questions.get(key).toXml());
+		}
+
 		// Extra info?
 		Element extraEl = toXmlExtra();
 		if(extraEl != null)
-			dataEl.addContent(extraEl);
+			opEl.addContent(extraEl);
 
-		return dataEl;
+		return opEl;
 	}
 
 	/**

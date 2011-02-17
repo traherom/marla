@@ -17,17 +17,15 @@
  */
 package operation;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.regex.Pattern;
 import org.jdom.Element;
 
 /**
  * @author Ryan Morehart
  */
-public class OperationInfoCombo extends OperationInformation
+public class OperationInfoString extends OperationInformation
 {
-	private final List<String> options;
+	private final Pattern mustMatchPatt;
 	private String answer = null;
 
 	/**
@@ -37,22 +35,15 @@ public class OperationInfoCombo extends OperationInformation
 	 * @param options Options to display to the user, will be presented in the
 	 *	order given, not sorted in any way.
 	 */
-	public OperationInfoCombo(Operation op, String name, String prompt, List<String> options)
+	public OperationInfoString(Operation op, String name, String prompt)
 	{
-		super(op, name, prompt, PromptType.COMBO);
-		this.options = options;
+		this(op, name, prompt, ".*");
 	}
 
-	/**
-	 * Constructs a new prompt with no options by default. Intended for
-	 * derivative classes who want to fill the options manually
-	 * @param name Unique reference name for this prompt
-	 * @param prompt User-visible prompt
-	 */
-	protected OperationInfoCombo(Operation op, String name, String prompt, PromptType type)
+	public OperationInfoString(Operation op, String name, String prompt, String mustMatch)
 	{
-		super(op, name, prompt, type);
-		this.options = new ArrayList<String>();
+		super(op, name, prompt, PromptType.STRING);
+		this.mustMatchPatt = Pattern.compile(mustMatch);
 	}
 
 	@Override
@@ -66,15 +57,16 @@ public class OperationInfoCombo extends OperationInformation
 	{
 		String oldAnswer = answer;
 
-		// Ensure it's within our options
-		if(!options.contains((String)newAnswer))
-			throw new OperationInfoRequiredException("'" + answer + "' not valid option for combo", getOperation());
+		// Ensure it matches the pattern
+		String a = newAnswer.toString();
+		if(!mustMatchPatt.matcher(a).matches())
+			throw new OperationInfoRequiredException("'" + a + "' may not be used as answer to '" + getName() + "'", getOperation());
 
-		answer = (String)newAnswer;
-		
+		// Save
+		answer = a;
 		getOperation().markChanged();
 		getOperation().markUnsaved();
-		
+
 		return oldAnswer;
 	}
 
@@ -85,22 +77,12 @@ public class OperationInfoCombo extends OperationInformation
 	}
 
 	/**
-	 * Returns the possible options for this combo
-	 * @return List of options
+	 * Returns the pattern that this string argument must meet to be accepted
+	 * @return Regular expression being checked
 	 */
-	public List<String> getOptions()
+	public String getPattern()
 	{
-		return Collections.unmodifiableList(options);
-	}
-
-	/**
-	 * Returns an editable list of the options in this prompt. Intended
-	 * for derivate class usage.
-	 * @return Modifiable list of options
-	 */
-	protected final List<String> getModifiableOptions()
-	{
-		return options;
+		return mustMatchPatt.pattern();
 	}
 
 	@Override
@@ -113,6 +95,16 @@ public class OperationInfoCombo extends OperationInformation
 	@Override
 	protected void fromXmlAnswer(Element answerEl)
 	{
-		answer = answerEl.getAttributeValue("answer");
+		try
+		{
+			String answerStr = answerEl.getAttributeValue("answer");
+			if(answerStr != null)
+				setAnswer(answerStr);
+		}
+		catch(OperationInfoRequiredException ex)
+		{
+			// Make them re-answer
+			clearAnswer();
+		}
 	}
 }

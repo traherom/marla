@@ -20,10 +20,9 @@ package operation;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
+import operation.OperationInformation.PromptType;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
@@ -81,10 +80,6 @@ public class OperationXML extends Operation
 	 */
 	private String plotPath = null;
 	/**
-	 * Saves the answer from the GUI to any questions we asked
-	 */
-	private Map<String, Object> questionAnswers = null;
-	/**
 	 * Saves the RecordMode we should be saving in. XML ops have to perform 
 	 * extra R calls to do their work, we avoid saving those to the record
 	 * by switching back and forth from RecordMode.DISABLED and this
@@ -123,11 +118,11 @@ public class OperationXML extends Operation
 			// Save for future use again
 			operationFilePath = xmlPath;
 
-			System.out.println("Loading XML operations from '" + operationFilePath + "'");
-
 			// Make sure we know where we're looking for that there XML
 			if(operationFilePath == null)
 				throw new ConfigurationException("XML file for operations has not been specified", ConfigType.OpsXML);
+
+			System.out.println("Loading XML operations from '" + operationFilePath + "'");
 
 			SAXBuilder parser = new SAXBuilder();
 			Document doc = parser.build(operationFilePath);
@@ -264,7 +259,7 @@ public class OperationXML extends Operation
 	 * @param opName Name of the operation to load from the XML file
 	 * @return New operation that will perform the specified computations
 	 */
-	public static OperationXML createOperation(String opName) throws OperationXMLException, RProcessorException, ConfigurationException
+	public static OperationXML createOperation(String opName) throws MarlaException
 	{
 		OperationXML newOp = new OperationXML();
 		newOp.setConfiguration(findConfiguration(opName));
@@ -310,10 +305,103 @@ public class OperationXML extends Operation
 	 * Creates a new operation with the given computational... stuff
 	 * @param newOpConfig JDOM XML Element that contains the needed configuration information
 	 */
-	protected void setConfiguration(Element newOpConfig) throws OperationXMLException
+	protected void setConfiguration(Element newOpConfig) throws OperationXMLException, MarlaException
 	{
 		opConfig = newOpConfig;
 		setOperationName(opConfig.getAttributeValue("name"));
+
+		// Parse all the questions
+		@SuppressWarnings("unchecked")
+		List<Element> queries = opConfig.getChildren("query");
+
+		// Build the array for each of the questions
+		for(Element queryEl : queries)
+		{
+			String name = queryEl.getAttributeValue("name");
+			if(name == null)
+				throw new OperationXMLException("Name not supplied for operation query");
+
+			String prompt = queryEl.getAttributeValue("prompt");
+			if(prompt == null)
+				throw new OperationXMLException("Prompt not supplied for operation's '" + name + "' query");
+
+			// Ask the GUI for the right type of value
+			// For columns, if we don't have a parent then we just say we want a generic
+			// string basically. This case should only be hit when an operation is being
+			// restored from a save file
+			PromptType type = PromptType.valueOf(queryEl.getAttributeValue("type").toUpperCase());
+			if(type == PromptType.COLUMN)
+			{
+				// What type of column should we present to the user?
+				String colType = queryEl.getAttributeValue("column_type", "all");
+				List<String> columnNames = new ArrayList<String>();
+
+				OperationInformation opQuery = null;
+
+				// Select correct type
+				if(colType.equals("numeric"))
+				{
+					opQuery = new OperationInfoColumn(this, name, prompt, DataMode.NUMERIC);
+				}
+				else if(colType.equals("string"))
+				{
+					opQuery = new OperationInfoColumn(this, name, prompt, DataMode.STRING);
+				}
+				else if(colType.equals("all"))
+				{
+					opQuery = new OperationInfoColumn(this, name, prompt);
+				}
+				else
+				{
+					throw new OperationXMLException("Invalid column type '" + colType + "' specified for query");
+				}
+
+				// Actually add the question to the array
+				addQuestion(opQuery);
+			}
+			else if(type == PromptType.COMBO)
+			{
+				// Build list of options
+				List<String> options = new ArrayList<String>();
+				for(Object opObj : queryEl.getChildren("option"))
+				{
+					Element opEl = (Element) opObj;
+					options.add(opEl.getText());
+				}
+
+				// Set question
+				addQuestion(new OperationInfoCombo(this, name, prompt, options));
+			}
+			else if(type == PromptType.NUMERIC)
+			{
+				// Are limits imposed?
+				Double min = Double.MIN_VALUE;
+				String minStr = queryEl.getAttributeValue("min");
+				if(minStr != null)
+					min = Double.valueOf(minStr);
+
+				Double max = Double.MAX_VALUE;
+				String maxStr = queryEl.getAttributeValue("max");
+				if(maxStr != null)
+					max = Double.valueOf(maxStr);
+
+				addQuestion(new OperationInfoNumeric(this, name, prompt, min, max));
+			}
+			else if(type == PromptType.STRING)
+			{
+				// No processing needed
+				addQuestion(new OperationInfoString(this, name, prompt));
+			}
+			else if(type == PromptType.CHECKBOX)
+			{
+				// No processing needed
+				addQuestion(new OperationInfoCheckbox(this, name, prompt));
+			}
+			else
+			{
+				throw new OperationXMLException("Unhandled operation prompt type '" + type + "'");
+			}
+		}
 
 		// Dynamic name set if specified, purely cosmetic
 		longNameEl = opConfig.getChild("longname");
@@ -327,35 +415,8 @@ public class OperationXML extends Operation
 	protected void computeColumns(RProcessor proc) throws RProcessorException, RProcessorParseException, OperationXMLException, OperationInfoRequiredException, MarlaException
 	{
 		// Ensure any requirements were met already
-		if(isInfoRequired() && questionAnswers == null)
-		{
-			// Can we automatically fill anything? (for example, selecting a column when
-			// there's only one option)
-
-			List<Object[]> info = getRequiredInfoPrompt();
-			List<Object> answers = new ArrayList<Object>();
-			for(Object[] question : info)
-			{
-				boolean satisfied = false;
-
-				PromptType questionType = (PromptType)question[0];
-				switch(questionType)
-				{
-					case COMBO:
-					case COLUMN:
-						// Is there only one option for the column/combo?
-						// TODO move to new operation question objects
-						break;
-
-					default:
-						satisfied = false;
-				}
-
-				// Has the question been answered successfully?
-				if(!satisfied)
-					throw new OperationInfoRequiredException("Required info has not been set yet", this);
-			}
-		}
+		if(isInfoRequired())
+			throw new OperationInfoRequiredException("Required info has not been set yet", this);
 
 		// Clear out old plot
 		this.plotPath = null;
@@ -365,9 +426,9 @@ public class OperationXML extends Operation
 		if(compEl == null)
 			throw new OperationXMLException("Computation element not specified");
 
-		// Process away. Only record the R commands we explicitly say to
 		try
 		{
+			// Process away. Only record the R commands we explicitly say to
 			intendedRecordMode = proc.setRecorderMode(RecordMode.DISABLED);
 			processSequence(proc, compEl);
 		}
@@ -430,7 +491,7 @@ public class OperationXML extends Operation
 			throw new OperationXMLException("XML specification does not mark '" + promptKey + "' as required information but uses it in computation.");
 
 		// Read the answer
-		Object answerVal = questionAnswers.get(promptKey);
+		OperationInformation answer = getQuestion(promptKey);
 
 		// Record the set calls
 		proc.setRecorderMode(intendedRecordMode);
@@ -439,45 +500,31 @@ public class OperationXML extends Operation
 		String rVar = setEl.getAttributeValue("rvar");
 
 		// Find out what type of query it was so we know where setVar to call
-		PromptType promptType = getPromptType(promptKey);
+		PromptType promptType = answer.getType();
 		switch(promptType)
 		{
-			case COMBO: // A combo just gets returned as a string anyway
+			case COMBO: // No processing needed for these
 			case STRING:
-				proc.setVariable(rVar, (String) answerVal);
-				break;
-
 			case NUMERIC:
-				proc.setVariable(rVar, (Double) answerVal);
+				proc.setVariable(rVar, answer.getAnswer());
 				break;
 
 			case CHECKBOX:
-				proc.execute(rVar + " = " + answerVal.toString().toUpperCase());
+				proc.execute(rVar + " = " + answer.getAnswer().toString().toUpperCase());
 				break;
 
 			case COLUMN:
-				// Ensure the column actually exists in the parent data
-				DataColumn parentCol = null;
-				try
-				{
-					parentCol = getParentData().getColumn((String) answerVal);
-				}
-				catch(DataNotFoundException ex)
-				{
-					throw new OperationInfoRequiredException("The column '" + answerVal + "' has been removed", ex, this);
-				}
-
 				// Look for the modifier to only save the string
 				String useType = setEl.getAttributeValue("use");
 				if(useType == null || useType.equals("values"))
 				{
 					// Save all the values in the column
-					proc.setVariable(rVar, parentCol);
+					proc.setVariable(rVar, getParentData().getColumn((String)answer.getAnswer()));
 				}
 				else if(useType.equals("name"))
 				{
 					// Just save the column name
-					proc.setVariable(rVar, (String) answerVal);
+					proc.setVariable(rVar, (String)answer.getAnswer());
 				}
 				else
 				{
@@ -781,189 +828,6 @@ public class OperationXML extends Operation
 	}
 
 	@Override
-	public boolean isInfoRequired() throws MarlaException
-	{
-		return !opConfig.getChildren("query").isEmpty();
-	}
-
-	/**
-	 * Prompts user for the data specified by <query /> XML in operations. See
-	 * documentation on wiki for more information
-	 */
-	@Override
-	public List<Object[]> getRequiredInfoPrompt() throws MarlaException
-	{
-		List<Object[]> questions = new ArrayList<Object[]>();
-
-		// Build the array for each of the questions
-		for(Object queryElObj : opConfig.getChildren("query"))
-		{
-			Element queryEl = (Element) queryElObj;
-
-			String name = queryEl.getAttributeValue("name");
-			if(name == null)
-				throw new OperationXMLException("Name not supplied for operation '" + getName() + "' query");
-
-			String prompt = queryEl.getAttributeValue("prompt");
-			if(prompt == null)
-				throw new OperationXMLException("Prompt not supplied for operation '" + getName() + "' query");
-
-			// Ask the GUI for the right type of value
-			// For columns, if we don't have a parent then we just say we want a generic
-			// string basically. This case should only be hit when an operation is being
-			// restored from a save file
-			PromptType type = PromptType.valueOf(queryEl.getAttributeValue("type").toUpperCase());
-			if(type == PromptType.COLUMN && getParentData() != null)
-			{
-				// What type of column should we present to the user?
-				String colType = queryEl.getAttributeValue("column_type", "all");
-				DataSource parent = getParentData();
-				List<String> columnNames = new ArrayList<String>();
-
-				// Build a list of the column names of the correct type
-				if(colType.equals("numeric"))
-				{
-					// Numeric columns
-					for(int i = 0; i < parent.getColumnCount(); i++)
-					{
-						DataColumn currCol = parent.getColumn(i);
-						if(currCol.getMode() == DataMode.NUMERIC)
-							columnNames.add(currCol.getName());
-					}
-				}
-				else if(colType.equals("string"))
-				{
-					// String columns
-					for(int i = 0; i < parent.getColumnCount(); i++)
-					{
-						DataColumn currCol = parent.getColumn(i);
-						if(currCol.getMode() == DataMode.STRING)
-							columnNames.add(currCol.getName());
-					}
-				}
-				else if(colType.equals("all"))
-				{
-					// All columns
-					for(int i = 0; i < parent.getColumnCount(); i++)
-					{
-						DataColumn currCol = parent.getColumn(i);
-						columnNames.add(currCol.getName());
-					}
-				}
-				else
-				{
-					throw new OperationXMLException("Invalid column type '" + colType + "' specified for query");
-				}
-
-				// Actually add the question to the array
-				questions.add(new Object[]
-						{
-							PromptType.COLUMN, name, prompt, columnNames.toArray()
-						});
-			}
-			else if(type == PromptType.COMBO)
-			{
-				// Build list of options
-				List<String> options = new ArrayList<String>();
-				for(Object opObj : queryEl.getChildren("option"))
-				{
-					Element opEl = (Element) opObj;
-					options.add(opEl.getText());
-				}
-
-				// Set question
-				questions.add(new Object[]
-						{
-							PromptType.COMBO, name, prompt, options.toArray()
-						});
-			}
-			else if(type == PromptType.NUMERIC)
-			{
-				// Are limits imposed?
-				Double min = Double.MIN_VALUE;
-				String minStr = queryEl.getAttributeValue("min");
-				if(minStr != null)
-					min = Double.valueOf(minStr);
-
-				Double max = Double.MAX_VALUE;
-				String maxStr = queryEl.getAttributeValue("max");
-				if(maxStr != null)
-					max = Double.valueOf(maxStr);
-
-				// Max had better be greater or equal to the min
-				if(max < min)
-					throw new OperationXMLException("Minimum for query '" + queryEl.getAttributeValue("name") + "' in operation '" + getName() + "' is greater than the maximum");
-
-				questions.add(new Object[]
-						{
-							PromptType.NUMERIC, name, prompt, min, max
-						});
-			}
-			else
-			{
-				// No processing needed
-				questions.add(new Object[]
-						{
-							type, name, prompt
-						});
-			}
-		}
-
-		return questions;
-	}
-
-	/**
-	 * Saves the returned values into a HashMap with keys from the name given in the query
-	 * XML. First element in the HashMap stores the type that the value actually represents
-	 * @param values ArrayList of Objects that answer the questions.
-	 */
-	@Override
-	public void setRequiredInfo(List<Object> val) throws OperationException, MarlaException
-	{
-		// It would be an error to try to set when none is asked for
-		if(!isInfoRequired())
-			throw new OperationException("This operation does not require info, should not be set");
-
-		// Create new answer map to fill with new answers
-		questionAnswers = new HashMap<String, Object>();
-
-		// Go through each asked for element to determine the name associated with it
-		// and ensure it is the proper type
-		List<Object[]> prompt = getRequiredInfoPrompt();
-		for(int i = 0; i < prompt.size(); i++)
-		{
-			String answerKey = (String) prompt.get(i)[1];
-			PromptType promptType = (PromptType) prompt.get(i)[0];
-			switch(promptType)
-			{
-				case COMBO: // A combo just gets returned as a string anyway
-				case COLUMN: // Ditto with column, just need its name
-				case STRING:
-					questionAnswers.put(answerKey, val.get(i).toString());
-					break;
-
-				case NUMERIC:
-					questionAnswers.put(answerKey, Double.valueOf(val.get(i).toString()));
-					break;
-
-				case CHECKBOX:
-					questionAnswers.put(answerKey, Boolean.valueOf(val.get(i).toString()));
-					break;
-
-				default:
-					throw new OperationXMLException("Unable to set '" + promptType + "' yet.");
-			}
-		}
-
-		// Change the operation name so that the label is pretty
-		updateDynamicName();
-
-		// We need to recompute
-		markChanged();
-		markUnsaved();
-	}
-
-	@Override
 	public String getDisplayString(boolean abbrv)
 	{
 		try
@@ -971,7 +835,7 @@ public class OperationXML extends Operation
 			if(dynamicName == null)
 				updateDynamicName();
 		}
-		catch(OperationXMLException ex)
+		catch(MarlaException ex)
 		{
 			// TODO throw this instead and make viewpanel handle it
 			return ex.getMessage();
@@ -985,33 +849,12 @@ public class OperationXML extends Operation
 			return dynamicName;
 	}
 
-	private Element getPromptEl(String key) throws OperationXMLException
-	{
-		for(Object queryElObj : opConfig.getChildren("query"))
-		{
-			Element queryEl = (Element) queryElObj;
-			if(key.equals(queryEl.getAttributeValue("name")))
-				return queryEl;
-		}
-
-		throw new OperationXMLException("Unable to find a prompt with the key '" + key + "'");
-	}
-
-	private PromptType getPromptType(String key) throws OperationXMLException
-	{
-		return getPromptType(getPromptEl(key));
-	}
-
-	private PromptType getPromptType(Element promptEl) throws OperationXMLException
-	{
-		return PromptType.valueOf(promptEl.getAttributeValue("type").toUpperCase());
-	}
-
 	/**
+>>>>>>> .r238
 	 * Sets the XML operation's name to the latest version, based on the data
 	 * given in the longname element and the answers to queries
 	 */
-	private void updateDynamicName() throws OperationXMLException
+	private void updateDynamicName() throws MarlaException
 	{
 		if(longNameEl != null)
 		{
@@ -1027,8 +870,8 @@ public class OperationXML extends Operation
 					if(partEl.getName().equals("response"))
 					{
 						// Pull data from one of the query answers unless they haven't been answered
-						if(questionAnswers != null)
-							newName.append(questionAnswers.get(partEl.getAttributeValue("name")).toString());
+						if(!isInfoRequired())
+							newName.append(getQuestion(partEl.getAttributeValue("name")).getAnswer());
 						else
 							newName.append(partEl.getAttributeValue("default"));
 					}
@@ -1089,17 +932,12 @@ public class OperationXML extends Operation
 		if(!(other instanceof OperationXML))
 			return false;
 
+		// Config we work with is the same?
 		OperationXML otherOp = (OperationXML) other;
 		if(!opConfig.equals(otherOp.opConfig))
 			return false;
 
-		// Compare answers
-		if(questionAnswers == null && otherOp.questionAnswers == null)
-			return true; // Nobody has answers
-		else if(questionAnswers == null && otherOp.questionAnswers != null)
-			return false; // We don't have answers, they do. Yes, the test doesn't need the second part
-		else
-			return questionAnswers.equals(otherOp.questionAnswers);
+		return true;
 	}
 
 	@Override
@@ -1115,7 +953,6 @@ public class OperationXML extends Operation
 	{
 		int hash = super.hashCode();
 		hash = 31 * hash + (this.opConfig != null ? this.opConfig.hashCode() : 0);
-		hash = 31 * hash + (this.questionAnswers != null ? this.questionAnswers.hashCode() : 0);
 		return hash;
 	}
 
@@ -1128,25 +965,6 @@ public class OperationXML extends Operation
 	{
 		Element el = new Element("xmlop");
 		el.setAttribute("name", opConfig.getAttributeValue("name"));
-
-		// Answers to prompts, if they exist
-		if(questionAnswers != null)
-		{
-			Set<String> keys = questionAnswers.keySet();
-			Iterator<String> it = keys.iterator();
-			while(it.hasNext())
-			{
-				String promptKey = it.next();
-				Object answer = questionAnswers.get(promptKey);
-
-				Element answerEl = new Element("answer");
-				answerEl.setAttribute("key", promptKey);
-				answerEl.setAttribute("answer", answer.toString());
-
-				el.addContent(answerEl);
-			}
-		}
-
 		return el;
 	}
 
@@ -1161,36 +979,5 @@ public class OperationXML extends Operation
 
 		// Load the correct XML specification
 		setConfiguration(findConfiguration(xmlEl.getAttributeValue("name")));
-
-		// Put togother the "response" to give to setRequiredInfo()
-		// based on what it asks for and what our save file has in it.
-		// Only do it though if we actually need to
-		List<Object[]> requiredInfo = getRequiredInfoPrompt();
-		if(requiredInfo.size() > 0)
-		{
-			List<Object> answersFromXML = new ArrayList<Object>();
-
-			// Answer each question
-			for(Object[] question : requiredInfo)
-			{
-				// Could use XPath to find the answer, but we'd need to bring
-				// in jaxen (or some other engine). To avoid bloating for such
-				// a small need, we just loop
-				String questionName = (String) question[1];
-				for(Object answerObj : xmlEl.getChildren("answer"))
-				{
-					Element answerEl = (Element) answerObj;
-					if(questionName.equals(answerEl.getAttributeValue("key")))
-						answersFromXML.add(answerEl.getAttributeValue("answer"));
-				}
-			}
-
-			// Ensure we answered everything. If we didn't, make the user answer again
-			if(answersFromXML.size() != requiredInfo.size())
-				return;
-
-			// Save the answers to the operation itself
-			setRequiredInfo(answersFromXML);
-		}
 	}
 }

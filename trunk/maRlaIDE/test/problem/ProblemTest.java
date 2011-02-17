@@ -17,6 +17,7 @@
  */
 package problem;
 
+import resource.Configuration;
 import org.jdom.Element;
 import org.junit.*;
 import static org.junit.Assert.*;
@@ -29,6 +30,12 @@ import static org.junit.Assert.*;
 public class ProblemTest
 {
 	private String tempFileName = "testing_temp_file.marlatemp";
+
+	@BeforeClass
+	public static void configure() throws Exception
+	{
+		Configuration.load();
+	}
 
 	public static Problem createProblem(int subProblemNum, int dataSetNum, int colNum, int valNum) throws Exception
 	{

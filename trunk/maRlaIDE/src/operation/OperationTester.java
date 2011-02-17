@@ -17,13 +17,12 @@
  */
 package operation;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.Scanner;
+import operation.OperationInformation.PromptType;
 import problem.DataSet;
 import problem.MarlaException;
-import operation.Operation.PromptType;
 import r.RProcessor;
 import r.RProcessor.RecordMode;
 import resource.Configuration;
@@ -106,49 +105,45 @@ public class OperationTester
 
 	public static void fillRequiredInfo(Operation op) throws MarlaException
 	{
-		List<Object[]> info = op.getRequiredInfoPrompt();
+		List<OperationInformation> info = op.getRequiredInfoPrompt();
 
 		// Fill with some BS. Not every operation is nicely handled with this approach
 		// if it actually uses the data we may not have much fun (tests will fail)
 		Random rand = new Random();
-		List<Object> answers = new ArrayList<Object>();
-		for(Object[] question : info)
+		for(OperationInformation question : info)
 		{
-			PromptType questionType = (PromptType)question[0];
+			PromptType questionType = question.getType();
 			switch(questionType)
 			{
 				case CHECKBOX:
-					answers.add(true);
+					question.setAnswer(true);
 					break;
 
 				case NUMERIC:
 					// Get a random number within the limits
-					Double min = (Double)question[3];
-					Double max = (Double)question[4];
+					Double min = (Double)((OperationInfoNumeric)question).getMin();
+					Double max = (Double)((OperationInfoNumeric)question).getMax();
 
 					// Limit it some to what people will reasonably use
-					min = min > -1000000 ? min : -1000000;
-					max = max < 1000000 ? max : 1000000;
+					min = min > -1000 ? min : -1000;
+					max = max < 1000 ? max : 1000;
 
-					answers.add(rand.nextDouble() * (max - min) - min);
+					question.setAnswer(rand.nextDouble() * (max - min) - min);
 					break;
 
 				case STRING:
-					answers.add("test string");
+					question.setAnswer("test string");
 					break;
 
 				case COMBO:
 				case COLUMN:
 					// Choose one of the values they offered us
-					Object[] options = (Object[])question[3];
-					answers.add(options[0]);
+					question.setAnswer(((OperationInfoCombo)question).getOptions().get(0));
 					break;
 
 				default:
 					throw new MarlaException("Question type '" + questionType + "' not supported for filling yet");
 			}
 		}
-
-		op.setRequiredInfo(answers);
 	}
 }
