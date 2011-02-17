@@ -245,6 +245,7 @@ public class ViewPanel extends JPanel
 			try
 			{
 				final Operation operation = Operation.createOperation(operations.get (i));
+				operation.setText("<html>" + operation.getDisplayString(abbreviated) + "</html>");
 				DRAG_SOURCE.createDefaultDragGestureRecognizer (operation, DnDConstants.ACTION_MOVE, DND_LISTENER);
 
 				if (i % 2 == 0)

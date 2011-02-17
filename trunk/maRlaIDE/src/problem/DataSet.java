@@ -344,7 +344,11 @@ public final class DataSet extends JLabel implements DataSource, Changeable
 	@Override
 	public String getDisplayString(boolean abbrv)
 	{
-		return getName();
+		String longName = getName();
+		if(abbrv && longName.length() > 4)
+			return longName.substring(0, 2) + "-" + longName.charAt(longName.length() - 1);
+		else
+			return longName;
 	}
 
 	/**
