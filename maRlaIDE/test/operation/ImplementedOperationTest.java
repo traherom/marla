@@ -140,7 +140,7 @@ public class ImplementedOperationTest
 		assertTrue(op1.isDirty());
 
 		// Tell it to check
-		if(op1.isInfoRequired())
+		if(op1.isInfoUnanswered())
 			OperationTester.fillRequiredInfo(op1);
 		op1.checkCache();
 
@@ -160,7 +160,7 @@ public class ImplementedOperationTest
 	@Test
 	public void testInfo() throws Exception
 	{
-		if(op1.isInfoRequired())
+		if(op1.isInfoUnanswered())
 		{
 			try
 			{
@@ -187,7 +187,7 @@ public class ImplementedOperationTest
 	@Test(expected=OperationException.class)
 	public void testSetInfoWhenNoneRequired() throws Exception
 	{
-		if(!op1.isInfoRequired())
+		if(!op1.isInfoUnanswered())
 		{
 			OperationTester.fillRequiredInfo(op1);
 		}
@@ -201,7 +201,7 @@ public class ImplementedOperationTest
 	public void testPlot() throws Exception
 	{
 		// Fill info if needed
-		if(op1.isInfoRequired())
+		if(op1.isInfoUnanswered())
 			OperationTester.fillRequiredInfo(op1);
 			
 		if(op1.hasPlot())

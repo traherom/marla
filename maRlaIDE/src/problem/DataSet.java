@@ -346,7 +346,7 @@ public final class DataSet extends JLabel implements DataSource, Changeable
 	{
 		String longName = getName();
 		if(abbrv && longName.length() > 4)
-			return longName.substring(0, 2) + "-" + longName.charAt(longName.length() - 1);
+			return longName.substring(0, 2) + "~" + longName.substring(longName.length() - 2);
 		else
 			return longName;
 	}

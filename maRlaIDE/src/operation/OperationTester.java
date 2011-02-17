@@ -32,6 +32,9 @@ import resource.Configuration;
  */
 public class OperationTester
 {
+	/**
+	 * Provides a command-line way to easily run a single operation and see results
+	 */
 	public static void main(String[] args) throws Exception
 	{
 		Configuration.load();
@@ -77,7 +80,7 @@ public class OperationTester
 			System.out.println("--------------------------\n");
 
 			// Fill data if needed
-			if(op.isInfoRequired())
+			if(op.isInfoUnanswered())
 				fillRequiredInfo(op);
 
 			// Fix cache (force so that we can show the full R log
@@ -103,6 +106,10 @@ public class OperationTester
 		}
 	}
 
+	/**
+	 * Automatically fills required information as best as possible
+	 * @param op Operation to answer questions to
+	 */
 	public static void fillRequiredInfo(Operation op) throws MarlaException
 	{
 		List<OperationInformation> info = op.getRequiredInfoPrompt();
@@ -145,5 +152,12 @@ public class OperationTester
 					throw new MarlaException("Question type '" + questionType + "' not supported for filling yet");
 			}
 		}
+	}
+
+	/**
+	 * Prevent class from being instantiated
+	 */
+	private OperationTester()
+	{
 	}
 }

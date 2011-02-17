@@ -573,12 +573,22 @@ public abstract class Operation extends JLabel implements DataSource, Changeable
 	}
 
 	/**
-	 * Returns true if the Operation has questions/prompts for the user that
-	 * are still unanswered. getRequiredInfoPrompt() returns the actual
-	 * List of data needed
+	 * Returns true if the Operation has questions/prompts for the user,
+	 * regardless of whether they are answered or not. getRequiredInfoPrompt()
+	 * returns the actual list of data needed
 	 * @return true if additional information is required
 	 */
 	public final boolean isInfoRequired() throws MarlaException
+	{
+		return !questions.isEmpty();
+	}
+
+	/**
+	 * Returns true if the Operation has questions/prompts for the user that are
+	 * unanswered. getRequiredInfoPrompt() returns the actual list of data needed
+	 * @return true if additional information is required
+	 */
+	public final boolean isInfoUnanswered() throws MarlaException
 	{
 		if(questions.isEmpty())
 			return false;
@@ -755,7 +765,7 @@ public abstract class Operation extends JLabel implements DataSource, Changeable
 	 * needing to recompute its values.
 	 */
 	@Override
-	public final void markChanged()
+	public void markChanged()
 	{
 		// Mark as dirty but don't actually recompute yet
 		isCacheDirty = true;
