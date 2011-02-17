@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF8"?>
-<marla>
-  <r rpath="/usr/lib/R/bin/R" debug="DISABLED" />
-  <latex template="./test/export_template.xml" pdftex="/usr/bin/pdflatex" />
-  <ops xml="./test/ops.xml" />
-</marla>
-

@@ -1181,7 +1181,7 @@ public class ViewPanel extends JPanel
 			for (int i = 0; i < dataSet.getOperationCount (); ++i)
 			{
 				Operation operation = dataSet.getOperation (i);
-				operation.setText (operation.getDisplayString (abbreviated));
+				operation.setText ("<html>" + operation.getDisplayString (abbreviated) + "</html>");
 				operation.setSize (operation.getPreferredSize ());
 				operation.setLocation (xStart + (i * SPACE_WIDTH), dataSet.getY () + SPACE_HEIGHT);
 				List<Operation> children = operation.getAllChildOperations();
