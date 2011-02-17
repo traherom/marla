@@ -387,7 +387,7 @@ public class ViewPanel extends JPanel
         toolBar.setRollover(true);
         toolBar.setPreferredSize(new java.awt.Dimension(13, 35));
 
-        newButton.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        newButton.setFont(new java.awt.Font("Verdana", 0, 12));
         newButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/new.png"))); // NOI18N
         newButton.setToolTipText("New Problem");
         newButton.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -406,7 +406,7 @@ public class ViewPanel extends JPanel
         });
         toolBar.add(newButton);
 
-        openButton.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        openButton.setFont(new java.awt.Font("Verdana", 0, 12));
         openButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/open.png"))); // NOI18N
         openButton.setToolTipText("Open Problem");
         openButton.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -425,7 +425,7 @@ public class ViewPanel extends JPanel
         });
         toolBar.add(openButton);
 
-        saveButton.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        saveButton.setFont(new java.awt.Font("Verdana", 0, 12));
         saveButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/save.png"))); // NOI18N
         saveButton.setToolTipText("Save Problem");
         saveButton.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -445,7 +445,7 @@ public class ViewPanel extends JPanel
         toolBar.add(saveButton);
         toolBar.add(jSeparator1);
 
-        jLabel1.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        jLabel1.setFont(new java.awt.Font("Verdana", 0, 12));
         jLabel1.setText("Font Size:");
         toolBar.add(jLabel1);
 
@@ -468,7 +468,7 @@ public class ViewPanel extends JPanel
         });
         toolBar.add(plusFontButton);
 
-        minusFontButton.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        minusFontButton.setFont(new java.awt.Font("Verdana", 0, 12));
         minusFontButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/minus.png"))); // NOI18N
         minusFontButton.setToolTipText("Decrease font size");
         minusFontButton.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -489,7 +489,7 @@ public class ViewPanel extends JPanel
         toolBar.add(jSeparator3);
         toolBar.add(jLabel2);
 
-        abbreviateButton.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        abbreviateButton.setFont(new java.awt.Font("Verdana", 0, 12));
         abbreviateButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/unchecked.png"))); // NOI18N
         abbreviateButton.setText("Abbreviate");
         abbreviateButton.setToolTipText("Show abbreviated operation and column names");
@@ -504,13 +504,13 @@ public class ViewPanel extends JPanel
                 buttonMousePressed(evt);
             }
             public void mouseReleased(java.awt.event.MouseEvent evt) {
-                abbreviateButtonMouseReleased(evt);
+                buttonMouseReleased(evt);
             }
         });
         toolBar.add(abbreviateButton);
         toolBar.add(jSeparator2);
 
-        settingsButton.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        settingsButton.setFont(new java.awt.Font("Verdana", 0, 12));
         settingsButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/settings.png"))); // NOI18N
         settingsButton.setToolTipText("Settings");
         settingsButton.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -539,11 +539,11 @@ public class ViewPanel extends JPanel
         emptyPalettePanel.setLayout(emptyPalettePanelLayout);
         emptyPalettePanelLayout.setHorizontalGroup(
             emptyPalettePanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(0, 204, Short.MAX_VALUE)
+            .add(0, 208, Short.MAX_VALUE)
         );
         emptyPalettePanelLayout.setVerticalGroup(
             emptyPalettePanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(0, 473, Short.MAX_VALUE)
+            .add(0, 478, Short.MAX_VALUE)
         );
 
         componentsCardPanel.add(emptyPalettePanel, "card3");
@@ -568,7 +568,7 @@ public class ViewPanel extends JPanel
 
         preWorkspacePanel.setBackground(new java.awt.Color(204, 204, 204));
 
-        preWorkspaceLabel.setFont(new java.awt.Font("Verdana", 1, 14)); // NOI18N
+        preWorkspaceLabel.setFont(new java.awt.Font("Verdana", 1, 14));
         preWorkspaceLabel.setForeground(new java.awt.Color(102, 102, 102));
         preWorkspaceLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         preWorkspaceLabel.setText("<html><div align=\"center\">To get started, load a previous problem or use the<br /><em>New Problem Wizard</em> to create a new problem</div></html>");
@@ -579,14 +579,14 @@ public class ViewPanel extends JPanel
             preWorkspacePanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(preWorkspacePanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .add(preWorkspaceLabel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 754, Short.MAX_VALUE)
+                .add(preWorkspaceLabel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 752, Short.MAX_VALUE)
                 .addContainerGap())
         );
         preWorkspacePanelLayout.setVerticalGroup(
             preWorkspacePanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(preWorkspacePanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .add(preWorkspaceLabel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 450, Short.MAX_VALUE)
+                .add(preWorkspaceLabel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 449, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -635,9 +635,9 @@ public class ViewPanel extends JPanel
         trayPanel.setLayout(trayPanelLayout);
         trayPanelLayout.setHorizontalGroup(
             trayPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(0, 778, Short.MAX_VALUE)
+            .add(0, 780, Short.MAX_VALUE)
             .add(trayPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                .add(outputScrollPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 778, Short.MAX_VALUE))
+                .add(outputScrollPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 780, Short.MAX_VALUE))
         );
         trayPanelLayout.setVerticalGroup(
             trayPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
@@ -763,9 +763,15 @@ public class ViewPanel extends JPanel
 						{
 							Domain.logger.add (ex);
 						}
+						draggingComponent.setBorder (NO_BORDER);
+						draggingComponent.setSize (draggingComponent.getPreferredSize ());
 					}
-					draggingComponent.setBorder (NO_BORDER);
-					draggingComponent.setSize (draggingComponent.getPreferredSize ());
+					else
+					{
+						draggingComponent.setBorder (NO_BORDER);
+						draggingComponent.setSize (draggingComponent.getPreferredSize ());
+						rebuildTree ((DataSet) draggingComponent);
+					}
 				}
 				draggingComponent = null;
 			}
@@ -1037,33 +1043,58 @@ public class ViewPanel extends JPanel
 		}
 	}//GEN-LAST:event_rCodeMenuItemActionPerformed
 
-	private void abbreviateButtonMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_abbreviateButtonMouseReleased
-		if (abbreviated)
-		{
-			abbreviateButton.setIcon(new ImageIcon(getClass().getResource("/images/unchecked.png")));
-			abbreviated = false;
-		}
-		else
-		{
-			abbreviateButton.setIcon(new ImageIcon(getClass().getResource("/images/checked.png")));
-			abbreviated = true;
-		}
-
-		if (domain.problem != null)
-		{
-			for (int i = 0; i < domain.problem.getDataCount(); ++i)
-			{
-				rebuildTree(domain.problem.getData (i));
-			}
-		}
-	}//GEN-LAST:event_abbreviateButtonMouseReleased
-
 	private void buttonMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_buttonMousePressed
 		// TODO add your handling code here:
 	}//GEN-LAST:event_buttonMousePressed
 
 	private void buttonMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_buttonMouseReleased
-		// TODO add your handling code here:
+		JLabel button = (JLabel) evt.getSource ();
+		if (button == newButton)
+		{
+			newProblem ();
+		}
+		else if(button == openButton)
+		{
+			domain.load ();
+		}
+		else if(button == saveButton)
+		{
+			domain.save ();
+		}
+		else if(button == plusFontButton)
+		{
+			
+		}
+		else if(button == minusFontButton)
+		{
+
+		}
+		else if(button == abbreviateButton)
+		{
+			if (abbreviated)
+			{
+				abbreviateButton.setIcon(new ImageIcon(getClass().getResource("/images/unchecked.png")));
+				abbreviated = false;
+			}
+			else
+			{
+				abbreviateButton.setIcon(new ImageIcon(getClass().getResource("/images/checked.png")));
+				abbreviated = true;
+			}
+
+			if (domain.problem != null)
+			{
+				for (int i = 0; i < domain.problem.getDataCount(); ++i)
+				{
+					rebuildTree(domain.problem.getData (i));
+				}
+			}
+		}
+		else if(button == settingsButton)
+		{
+
+		}
+
 	}//GEN-LAST:event_buttonMouseReleased
 
 	private void buttonMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_buttonMouseEntered
@@ -1149,10 +1180,13 @@ public class ViewPanel extends JPanel
 			for (int i = 0; i < dataSet.getOperationCount (); ++i)
 			{
 				Operation operation = dataSet.getOperation (i);
+				operation.setText (operation.getDisplayString (abbreviated));
+				operation.setSize (operation.getPreferredSize ());
 				operation.setLocation (xStart + (i * SPACE_WIDTH), dataSet.getY () + SPACE_HEIGHT);
 				List<Operation> children = operation.getAllChildOperations();
 				for (int j = 0; j < children.size (); ++j)
 				{
+					children.get (j).setText (children.get (j).getDisplayString (abbreviated));
 					children.get (j).setSize (children.get (j).getPreferredSize ());
 					int parentWidth;
 					if (j > 0)
@@ -1272,6 +1306,12 @@ public class ViewPanel extends JPanel
 		}
 	}
 
+	/**
+	 * Display the Info Required dialog for the given operation.
+	 *
+	 * @param newOperation The operation to get information for.
+	 * @throws MarlaException
+	 */
 	public void getRequiredInfoDialog(final Operation newOperation) throws MarlaException
 	{
 		// Create the dialog which will be launched to ask about requirements
@@ -1525,6 +1565,16 @@ public class ViewPanel extends JPanel
 		}
 
 		return count;
+	}
+
+	/**
+	 * Create a new problem.
+	 */
+	protected void newProblem()
+	{
+		NEW_PROBLEM_WIZARD_DIALOG.setTitle ("New Problem Wizard");
+		NEW_PROBLEM_WIZARD_DIALOG.welcomeTextLabel.setText (ViewPanel.welcomeNewText);
+		NEW_PROBLEM_WIZARD_DIALOG.launchNewProblemWizard ();
 	}
 
     /**

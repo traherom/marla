@@ -390,7 +390,7 @@ x
 	<operation name="Natural Log" category="Basic Math">
 		<query type="column" name="col" prompt="Column?" column_type="numeric" />
 
-		<longname>log(<response name="col" default="x" />)</longname>
+		<longname>ln(<response name="col" default="x" />)</longname>
 
 		<computation>
 			<set name="col" rvar="colName" use="name" />
@@ -472,7 +472,7 @@ x
 		<query type="column" name="col" prompt="Column?" column_type="numeric" />
 		<query type="numeric" name="base" prompt="Base" />
 
-		<longname>log&lt;sub&gt;<response name="base" default="X" />&lt;/sub&gt;<response name="col" default="x" /></longname>
+		<longname>log&lt;sub&gt;<response name="base" default="b" />&lt;/sub&gt;<response name="col" default="x" /></longname>
 
 		<computation>
 			<set name="col" rvar="colName" use="name" />
