@@ -586,24 +586,6 @@ public class Problem implements ProblemPart
 	}
 
 	@Override
-	@Deprecated
-	public DataSource getAnswer(int index) throws IncompleteInitializationException
-	{
-		if(datasets.isEmpty())
-			throw new IncompleteInitializationException("This problem has no datasets yet, unable to solve");
-
-		// Find the bottom operation. Assume the first one for any
-		// places where we find multiple ops or whatever
-		DataSource curr = datasets.get(index);
-		while(curr.getOperationCount() != 0)
-		{
-			curr = curr.getOperation(0);
-		}
-
-		return curr;
-	}
-
-	@Override
 	public Element toXml() throws MarlaException
 	{
 		Element rootEl = new Element("problem");

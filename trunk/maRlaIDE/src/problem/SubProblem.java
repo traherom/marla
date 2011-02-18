@@ -162,17 +162,35 @@ public class SubProblem implements ProblemPart
 		return endSolutionStep;
 	}
 
-	public List<DataSource> getSolutionChain() throws MarlaException
+	/**
+	 * Determines if the current subproblem has a solution denoted or not
+	 * @return true if a complete solution is marked, false otherwise
+	 */
+	public boolean hasSolution()
 	{
-		if(startSolutionStep == null)
-			throw new IncompleteInitializationException("An starting solution step for this subproblem has not been set");
-		if(endSolutionStep == null)
-			throw new IncompleteInitializationException("An ending solution step for this subproblem has not been set");
+		if(endSolutionStep != null && startSolutionStep != null)
+			return true;
+		else
+			return false;
+	}
 
-		// Push all the operations 0
+	/**
+	 * Gets the chain of operations that are the solution to this subproblem.
+	 * DataSets are never part of this--even if they are marked as the start
+	 * of a solution--because export of R code doesn't want to work with those.
+	 * @return Chain of operations, from start to finish, that solve this subproblem
+	 */
+	public List<Operation> getSolutionChain() throws MarlaException
+	{
+		if(!hasSolution())
+			throw new IncompleteInitializationException("An solution for this subproblem has not been set");
+
+		// Push all the operations unto here in reverse order
+		// (from the bottom of the chain to the top)
 		Deque<DataSource> stack = new ArrayDeque<DataSource>();
 
-		// If we are pointed at just a dataset as the start and end, then get the R for _everything_ underneath it
+		// If we are pointed at just a dataset as the start and end, then
+		// get the R for _everything_ underneath it
 		if(startSolutionStep == endSolutionStep)
 		{
 			// Get all operations, we'll skip ones that aren't leaves
@@ -191,6 +209,9 @@ public class SubProblem implements ProblemPart
 					currOp = ((Operation)currOp).getParentData();
 				}
 			}
+
+			// And add the start step
+			stack.push(startSolutionStep);
 		}
 		else	
 		{
@@ -203,6 +224,9 @@ public class SubProblem implements ProblemPart
 					stack.push(currOp);
 					currOp = ((Operation)currOp).getParentData();
 				}
+
+				// And add the start step
+				stack.push(currOp);
 			}
 			catch(ClassCastException ex)
 			{
@@ -212,10 +236,13 @@ public class SubProblem implements ProblemPart
 		
 		// Put them in the list in the opposite order we found them, so
 		// the list runs from the top (start) operation to the bottom (end)
-		List<DataSource> ops = new ArrayList<DataSource>(stack.size());
+		// Only push on operations, ignore the datasets
+		List<Operation> ops = new ArrayList<Operation>(stack.size());
 		while(!stack.isEmpty())
 		{
-			ops.add(stack.pop());
+			DataSource next = stack.pop();
+			if(next instanceof Operation)
+				ops.add((Operation)next);
 		}
 
 		return ops;
@@ -296,16 +323,6 @@ public class SubProblem implements ProblemPart
 		hash = 29 * hash + (this.startSolutionStep != null ? this.startSolutionStep.hashCode() : 0);
 		hash = 29 * hash + (this.endSolutionStep != null ? this.endSolutionStep.hashCode() : 0);
 		return hash;
-	}
-
-	@Override
-	@Deprecated
-	public DataSource getAnswer(int index) throws IncompleteInitializationException
-	{
-		if(endSolutionStep == null)
-			throw new IncompleteInitializationException("An ending solution step for this subproblem has not been set");
-
-		return endSolutionStep;
 	}
 
 	@Override
@@ -456,7 +473,7 @@ public class SubProblem implements ProblemPart
 	 */
 	public boolean isDataSourceInSolution(DataSource ds)
 	{
-		if(startSolutionStep == null || endSolutionStep == null)
+		if(!hasSolution())
 			return false;
 
 		if(startSolutionStep == endSolutionStep)
@@ -480,8 +497,8 @@ public class SubProblem implements ProblemPart
 			// And make sure it wasn't the starting step
 			if(curr == ds)
 				return true;
+			else
+				return false;
 		}
-
-		return false;
 	}
 }

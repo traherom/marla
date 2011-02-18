@@ -46,13 +46,6 @@ public class LatexExporterTest
 		testExp = new LatexExporter(testProb, "export_template.xml");
 	}
 
-	@Ignore
-	@Test
-	public void testExport()
-	{
-
-	}
-
 	@Test
 	public void testCleanExport() throws Exception
 	{
@@ -67,15 +60,6 @@ public class LatexExporterTest
 		File tempFile = File.createTempFile("marla", ".rnw");
 		LatexExporter testExp2 = new LatexExporter(testProb, "export_template.xml");
 		testExp2.cleanExport(tempFile.getPath());
-	}
-
-	@Ignore
-	@Test
-	public void testRefreshExport() throws Exception
-	{
-		File tempFile = File.createTempFile("marla", ".rnw");
-		testExp.refreshExport(tempFile.getPath());
-		System.out.println("Look at " + tempFile);
 	}
 
 	@Test

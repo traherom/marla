@@ -19,6 +19,8 @@ package latex;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import problem.MarlaException;
 import problem.Problem;
 import java.io.File;
@@ -179,7 +181,7 @@ public class LatexExporter
 			
 			try
 			{
-				// Create pdflatex instance
+				// Create pdflatex instance to see if this works
 				ProcessBuilder procBuild = new ProcessBuilder(pdfTexPath, "--version");
 				Process texProc = procBuild.start();
 				BufferedReader texOutStream = new BufferedReader(new InputStreamReader(texProc.getInputStream()));
@@ -225,7 +227,7 @@ public class LatexExporter
 	 */
 	public String export(String rnwPath) throws LatexException, MarlaException
 	{
-		return refreshExport(rnwPath);
+		return cleanExport(rnwPath);
 	}
 
 	/**
@@ -312,6 +314,8 @@ public class LatexExporter
 					processStatementClean(partEl, out);
 				else if(name.equals("solution"))
 					processSolutionClean(partEl, out);
+				else if(name.equals("data"))
+					processDataClean(partEl, out);
 				else if(name.equals("if"))
 					processIfClean(partEl, out);
 				else if(name.equals("name"))
@@ -451,72 +455,76 @@ public class LatexExporter
 		}
 	}
 
-	public void processSolutionClean(Element el, Writer out) throws LatexException, MarlaException
+	private void processSolutionClean(Element el, Writer out) throws LatexException, MarlaException
 	{
-		StringBuilder sweaveBlock = new StringBuilder();
+		StringBuilder solutionBlock = new StringBuilder();
 
 		// Stick in a newline. Sweave blocks must begin at the beginning of the line,
 		// but we don't want to have to require that in the template
-		sweaveBlock.append('\n');
+		solutionBlock.append('\n');
 
-		// R code itself. First, use the main problem for the solution unless
-		// we are in a loop with a current subproblem. The subproblem must
-		// have a solution denoted though.
+		// Find all the operations that are the "solution" right now.
+		List<Operation> solOps = null;
 		if(currentSub == null)
 		{
-			// Get all operations, we'll skip ones that aren't leaves
-			List<Operation> allOps = new ArrayList<Operation>();
+			// Get all operations in the problem
+			solOps = new ArrayList<Operation>();
 			for(int i = 0; i < prob.getDataCount(); i++)
 			{
-				allOps.addAll(prob.getData(i).getAllChildOperations());
+				solOps.addAll(prob.getData(i).getAllChildOperations());
 			}
 
-			for(Operation op : allOps)
-			{
-				// Make sure it's a leaf
-				if(op.getOperationCount() != 0)
-					continue;
-
-				// Is the end result a plot?
-				if(op.hasPlot())
-					sweaveBlock.append("\n<<fig=T>>=\n");
-				else
-					sweaveBlock.append("\n<<>>=\n");
-
-				sweaveBlock.append(op.getRCommands(true));
-
-				sweaveBlock.append("@\n\n");
-			}
+			// TODO probably need to run to leaves and then back up, similar
+			// getSolutionChain()
 		}
-		else if(currentSub.getSolutionEnd() != null)
+		else if(currentSub.hasSolution())
 		{
-			// Is the end result a plot?
-			DataSource end = currentSub.getSolutionEnd();
-			if(end instanceof Operation && ((Operation)end).hasPlot())
-				sweaveBlock.append("\n<<fig=T>>=\n");
-			else
-				sweaveBlock.append("\n<<>>=\n");
+			// Get all operations that are port of the current subproblem
+			solOps = currentSub.getSolutionChain();
+		}
 
-			// Pull out each R block for the operations inside the solution
-			List<DataSource> solOps = currentSub.getSolutionChain();
-			for(int i = 0; i < solOps.size(); i++)
+		if(solOps != null && !solOps.isEmpty())
+		{
+			// Walk through each operation in this solution and dump out
+			// their R code. If an operation has no remarks and doesn't produce
+			// a plot, then combine it with the previous Sweave block.
+			StringBuilder sweaveBlock = new StringBuilder();
+
+			for(Operation op : solOps)
 			{
-				sweaveBlock.append(solOps.get(i).getRCommands(false));
+				// Drop in the R for this command
+				sweaveBlock.append(op.getRCommands(false));
+
+				// Are we a plot operation? If so, we need to terminate
+				// the sweave block and save to the larger solution string
+				if(op.hasPlot())
+				{
+					// Special plot sweave start
+					solutionBlock.append("\n<<fig=T>>=\n");
+					solutionBlock.append(sweaveBlock);
+					solutionBlock.append("@\n");
+
+					// Clear out the sweave block
+					sweaveBlock = new StringBuilder();
+				}
 			}
 
-			// End block
-			sweaveBlock.append("@\n");
+			// Finish up any remaining R code as a normal block. A plot
+			// would have been terminated inside the loop
+			if(sweaveBlock.length() != 0)
+			{
+				solutionBlock.append("\n<<>>=\n");
+				solutionBlock.append(sweaveBlock);
+				solutionBlock.append("@\n");
+			}
 		}
 		else
-		{
-			// No solution yet
-			sweaveBlock.append("No solution yet\n");
-		}
-
+			solutionBlock.append("No solution yet\n");
+		
 		try
 		{
 			// Write it out
-			String sweave = sweaveBlock.toString();
+			String sweave = solutionBlock.toString();
 			out.write(sweave, 0, sweave.length());
 		}
 		catch(IOException ex)
@@ -525,7 +533,20 @@ public class LatexExporter
 		}
 	}
 
-	public void processIfClean(Element ifEl, Writer out) throws LatexException, MarlaException
+	private void processDataClean(Element el, Writer out) throws LatexException, MarlaException
+	{
+		try
+		{
+			// TODO do this
+			out.write("Data output TBD");
+		}
+		catch(IOException ex)
+		{
+			// bah
+		}
+	}
+
+	private void processIfClean(Element ifEl, Writer out) throws LatexException, MarlaException
 	{
 		// Figure out what type of if we are and determine the truthiness of the statement
 		boolean ifExprResult = false;
@@ -555,31 +576,6 @@ public class LatexExporter
 			if(elseEl != null)
 				processSequenceClean(elseEl, out);
 		}
-	}
-
-	/**
-	 * Replaces existing R portions in an exported problem and leaves everything else
-	 * untouched. If problem (or subproblem) statements have changed, nothing is done with
-	 * them. It is the responsibility of the user to change those after the initial export.
-	 * @param nnwPath Path for the new Sweave file
-	 */
-	public String refreshExport(String rnwPath) throws LatexException, MarlaException
-	{
-		// It must already exist or we just go ahead and do a clean export
-		File exportFile = new File(rnwPath);
-		if(!exportFile.isFile())
-			return cleanExport(rnwPath);
-
-		// We must be able to read and write it
-		if(!exportFile.canRead())
-			throw new LatexException("Unable to read '" + exportFile.getName() + "' to refresh the export");
-		if(!exportFile.canWrite())
-			throw new LatexException("Unable to write '" + exportFile.getName() + "' to refresh the export");
-
-		// TODO refresh, look for R sections, replace as needed
-		// TODO tack on new subproblems?
-
-		throw new RuntimeException("refreshExport() not implemented yet");
 	}
 
 	/**

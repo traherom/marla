@@ -719,6 +719,12 @@ public abstract class Operation extends JLabel implements DataSource, Changeable
 		if(this.getClass() != otherOp.getClass())
 			return false;
 
+		// Two operations of the same type and same parent must be
+		// _different_. This allows multiple operations of the same
+		// type to fall under the  the same parent
+		if(parent == otherOp.parent)
+			return false;
+
 		// Remarks different
 		if(remark != null && !remark.equals(otherOp.remark))
 			return false;
