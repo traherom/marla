@@ -902,7 +902,7 @@ public class OperationXML extends Operation
 
 						// Append to names
 						longName.append(val);
-						shortName.append(shortenString(val.toString(), 5));
+						shortName.append(DataSet.shortenString(val.toString(), 5));
 					}
 					else
 					{
@@ -925,42 +925,13 @@ public class OperationXML extends Operation
 		{
 			// Just use the plain old name
 			dynamicNameLong = opConfig.getAttributeValue("name");
-			dynamicNameShort = shortenString(dynamicNameLong, 5);
+			dynamicNameShort = DataSet.shortenString(dynamicNameLong, 5);
 		}
 
 		// Tell the problem to rebuild the displayed tree, rearranging as needed
 		DataSource rootDS = getRootDataSource();
 		if(rootDS instanceof DataSet && Problem.getDomain() != null)
 			Problem.getDomain().rebuildTree((DataSet) rootDS);
-	}
-
-	/**
-	 * Shortens the given string to the given length, using letters from the beginning and end
-	 * @param longForm String to be shortened
-	 * @param maxLen Maximum length of the shortened string
-	 * @return Newly created short sting
-	 */
-	private String shortenString(String longForm, int maxLen)
-	{
-		int longLen = longForm.length();
-
-		// Don't bother if we're the right length already
-		if(longLen <= maxLen)
-			return longForm;
-
-		if(maxLen < 4)
-		{
-			// No marker of the truncation
-			int firstHalf = (int)Math.ceil(maxLen/ 2.0);
-			int secondHalf = (int)Math.floor(maxLen / 2.0);
-			return longForm.substring(0, firstHalf) + longForm.substring(longForm.length() - secondHalf);
-		}
-		else
-		{
-			int firstHalf = (int)Math.ceil((maxLen - 1) / 2.0);
-			int secondHalf = (int)Math.floor((maxLen - 1) / 2.0);
-			return longForm.substring(0, firstHalf) + "~" + longForm.substring(longForm.length() - secondHalf);
-		}
 	}
 
 	@Override
