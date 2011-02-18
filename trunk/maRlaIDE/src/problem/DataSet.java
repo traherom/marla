@@ -386,9 +386,6 @@ public final class DataSet extends JLabel implements DataSource, Changeable
 	 */
 	public final void setDataName(String newName) throws DuplicateNameException
 	{
-		// TODO testing
-		setText("Out of date, new name set");
-		
 		// Make sure no other datasets have this name
 		if(parent != null && parent instanceof ProblemPart)
 		{

@@ -916,7 +916,7 @@ public class OperationXML extends Operation
 		}
 
 		// Did the name change?
-		return dynamicNameLong.equals(oldLongName);
+		return !dynamicNameLong.equals(oldLongName);
 	}
 
 	@Override
