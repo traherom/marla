@@ -68,6 +68,11 @@ public abstract class Operation extends JLabel implements DataSource, Changeable
 	 */
 	private final Map<String, OperationInformation> questions = new HashMap<String, OperationInformation>();
 	/**
+	 * A user-specified remark about this operation. Why it's here, whatever.
+	 * Intended to be used as a tool for analysis
+	 */
+	private String remark = null;
+	/**
 	 * Saves the R operations used the last time refreshCache() was called. This
 	 * string can then be dumped out by getRCommands() to give an idea of how to perform
 	 * the calculations
@@ -260,6 +265,28 @@ public abstract class Operation extends JLabel implements DataSource, Changeable
 	}
 
 	/**
+	 * Sets the remark for this Operation. Arbitrary, intended to be used
+	 * as an analysis comment
+	 * @param newRemark Remark to save for Operation
+	 * @return previously set remark, null if there was none
+	 */
+	public final String setRemark(String newRemark)
+	{
+		String oldRemark = remark;
+		remark = newRemark;
+		return oldRemark;
+	}
+
+	/**
+	 * Gets the currently set remark for the Operation
+	 * @return  Current remark, null if there is none
+	 */
+	public final String getRemark()
+	{
+		return remark;
+	}
+
+	/**
 	 * Creates the appropriate derivative Operation from the given JDOM XML. Class
 	 * must be specified as an attribute ("type") of the Element supplied. An exception
 	 * is thrown if the operation could not be created. The inner exception has more information.
@@ -281,6 +308,9 @@ public abstract class Operation extends JLabel implements DataSource, Changeable
 			int height = Integer.parseInt(opEl.getAttributeValue("height"));
 			int width = Integer.parseInt(opEl.getAttributeValue("width"));
 			newOp.setBounds(x, y, width, height);
+
+			// Restore remark
+			newOp.setRemark(opEl.getChildText("remark"));
 
 			// Allow it to do its custom thing
 			newOp.fromXmlExtra(opEl);
@@ -474,6 +504,10 @@ public abstract class Operation extends JLabel implements DataSource, Changeable
 			// Create an operation with the same type
 			Operation newOp = Operation.createOperation(name);
 
+			// Copy remark
+			newOp.setRemark(remark);
+
+			// Copy our child operations
 			for(Operation op : solutionOps)
 			{
 				newOp.addOperation(op.clone());
@@ -685,6 +719,10 @@ public abstract class Operation extends JLabel implements DataSource, Changeable
 		if(this.getClass() != otherOp.getClass())
 			return false;
 
+		// Remarks different
+		if(remark != null && !remark.equals(otherOp.remark))
+			return false;
+
 		// Questions and answers different?
 		if(!questions.equals(otherOp.questions))
 			return false;
@@ -724,6 +762,11 @@ public abstract class Operation extends JLabel implements DataSource, Changeable
 		opEl.setAttribute("y", Integer.toString((int) rect.getY()));
 		opEl.setAttribute("height", Integer.toString((int) rect.getHeight()));
 		opEl.setAttribute("width", Integer.toString((int) rect.getWidth()));
+
+		// Remark
+		Element remarkEl = new Element("remark");
+		remarkEl.addContent(remark);
+		opEl.addContent(remarkEl);
 
 		// Add Ops
 		Element opEls = new Element("operations");
