@@ -1169,7 +1169,7 @@ public class ViewPanel extends JPanel
 	protected void rebuildTree(DataSet dataSet)
 	{
 		// Set the label for the dataset itself
-		dataSet.setText(dataSet.getDisplayString(abbreviated));
+		dataSet.setText("<html>" + dataSet.getDisplayString(abbreviated) + "</html>");
 		
 		if (dataSet.getOperationCount () > 0)
 		{
@@ -1193,7 +1193,7 @@ public class ViewPanel extends JPanel
 				List<Operation> children = operation.getAllChildOperations();
 				for (int j = 0; j < children.size (); ++j)
 				{
-					children.get (j).setText (children.get (j).getDisplayString (abbreviated));
+					children.get (j).setText ("<html>" + children.get (j).getDisplayString (abbreviated) + "</html>");
 					children.get (j).setSize (children.get (j).getPreferredSize ());
 					int parentWidth;
 					if (j > 0)

@@ -41,15 +41,6 @@ public interface ProblemPart extends Changeable
 	public void setStatement(String newStatement);
 
 	/**
-	 * Returns the DataSource that is the "answer" to this Problem or SubProblem
-	 * @param index Undocumented
-	 * @return DataSource which may be iterated over to see the result
-	 * @deprecated Instead call toRString() on the appropriate Operation/DataSet
-	 */
-	@Deprecated
-	public DataSource getAnswer(int index) throws IncompleteInitializationException;
-
-	/**
 	 * Trues true if the problem has unsaved changes
 	 * @return true if the problem has changes that are not yet saved
 	 */
