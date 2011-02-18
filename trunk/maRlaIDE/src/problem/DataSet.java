@@ -373,7 +373,6 @@ public final class DataSet extends JLabel implements DataSource, Changeable
 
 		markChanged();
 
-		super.setText("<html>" + newName + "</html>");
 		name = newName;
 	}
 
@@ -564,6 +563,9 @@ public final class DataSet extends JLabel implements DataSource, Changeable
 		{
 			op.markChanged();
 		}
+
+		// Rebuild the tree
+		Problem.getDomain().rebuildTree(this);
 
 		markUnsaved();
 	}

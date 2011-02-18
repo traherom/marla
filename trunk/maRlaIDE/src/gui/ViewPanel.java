@@ -1168,6 +1168,9 @@ public class ViewPanel extends JPanel
 	 */
 	protected void rebuildTree(DataSet dataSet)
 	{
+		// Set the label for the dataset itself
+		dataSet.setText(dataSet.getDisplayString(abbreviated));
+		
 		if (dataSet.getOperationCount () > 0)
 		{
 			dataSet.setSize (dataSet.getPreferredSize ());
