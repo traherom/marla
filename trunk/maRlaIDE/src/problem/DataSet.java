@@ -386,6 +386,9 @@ public final class DataSet extends JLabel implements DataSource, Changeable
 	 */
 	public final void setDataName(String newName) throws DuplicateNameException
 	{
+		// TODO testing
+		setText("Out of date, new name set");
+		
 		// Make sure no other datasets have this name
 		if(parent != null && parent instanceof ProblemPart)
 		{
@@ -593,8 +596,8 @@ public final class DataSet extends JLabel implements DataSource, Changeable
 			op.markChanged();
 		}
 
-		// Rebuild the tree
-		if(Problem.getDomain() != null)
+		// Rebuild the tree, if we're not inside an operation
+		if(Problem.getDomain() != null && parent instanceof ProblemPart)
 			Problem.getDomain().rebuildTree(this);
 
 		markUnsaved();

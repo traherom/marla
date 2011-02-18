@@ -479,7 +479,14 @@ public class SubProblem implements ProblemPart
 		if(startSolutionStep == endSolutionStep)
 		{
 			// Everything underneath the start is part of the solution
-			return (ds == startSolutionStep) || (startSolutionStep.getAllChildOperations().contains((Operation)ds));
+			if(ds instanceof DataSet && ds != startSolutionStep)
+				return false;
+			else if(ds == startSolutionStep) // We are the start
+				return true;
+			else if(startSolutionStep.getAllChildOperations().contains((Operation)ds)) // We're below the start
+				return true;
+			else
+				return false;
 		}
 		else
 		{
