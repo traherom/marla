@@ -403,9 +403,11 @@ public final class DataSet extends JLabel implements DataSource, Changeable
 			}
 		}
 
-		markChanged();
-
+		// And update the name
 		name = newName;
+		checkDisplayName();
+
+		markChanged();
 	}
 
 	@Override
@@ -584,6 +586,18 @@ public final class DataSet extends JLabel implements DataSource, Changeable
 		return names;
 	}
 
+	@Override
+	public void checkDisplayName()
+	{
+		String currText = getText();
+		if(!currText.equals(name))
+		{
+			// We actually did change from what was being used
+			if(Problem.getDomain() != null)
+				Problem.getDomain().rebuildTree(this);
+		}
+	}
+
 	/**
 	 * Tells our child operations that their caches are dirty and need to be recomputed
 	 */
@@ -595,10 +609,6 @@ public final class DataSet extends JLabel implements DataSource, Changeable
 		{
 			op.markChanged();
 		}
-
-		// Rebuild the tree, if we're not inside an operation
-		if(Problem.getDomain() != null && parent instanceof ProblemPart)
-			Problem.getDomain().rebuildTree(this);
 
 		markUnsaved();
 	}
