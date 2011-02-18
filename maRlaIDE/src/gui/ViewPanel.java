@@ -1170,10 +1170,10 @@ public class ViewPanel extends JPanel
 	{
 		// Set the label for the dataset itself
 		dataSet.setText("<html>" + dataSet.getDisplayString(abbreviated) + "</html>");
-		
+		dataSet.setSize (dataSet.getPreferredSize ());
+
 		if (dataSet.getOperationCount () > 0)
 		{
-			dataSet.setSize (dataSet.getPreferredSize ());
 			// Ensure updated sizes
 			for (int i = 0; i < dataSet.getOperationCount(); ++i)
 			{
