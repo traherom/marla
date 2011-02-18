@@ -60,6 +60,7 @@ public class OperationTest
 		// Create fake dataset to work with
 		ds1 = DataSetTest.createDataSet(4, 10, 0);
 		op1 = Operation.createOperation(opName);
+		op1.setRemark("FAKE REMARK");
 		ds1.addOperation(op1);
 	}
 
@@ -101,6 +102,7 @@ public class OperationTest
 	public void testEquals() throws Exception
 	{
 		Operation op2 = Operation.createOperation(opName);
+		op2.setRemark(op1.getRemark());
 		assertTrue(op1.equals(op2));
 	}
 
@@ -119,6 +121,7 @@ public class OperationTest
 		DataSet ds2 = DataSetTest.createDataSet(3, 5, 0);
 		assertFalse(ds1.equals(ds2));
 		Operation op2 = Operation.createOperation(opName);
+		op2.setRemark(op1.getRemark());
 		ds2.addOperation(op2);
 
 		// TODO determine if this should be equal or not. I could see the argument both ways

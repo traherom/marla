@@ -565,7 +565,8 @@ public final class DataSet extends JLabel implements DataSource, Changeable
 		}
 
 		// Rebuild the tree
-		Problem.getDomain().rebuildTree(this);
+		if(Problem.getDomain() != null)
+			Problem.getDomain().rebuildTree(this);
 
 		markUnsaved();
 	}
