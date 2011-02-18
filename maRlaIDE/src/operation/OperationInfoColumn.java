@@ -86,6 +86,13 @@ public class OperationInfoColumn extends OperationInfoCombo
 	}
 
 	@Override
+	public String setAnswer(Object newAnswer) throws OperationInfoRequiredException
+	{
+		setOptions();
+		return super.setAnswer(newAnswer);
+	}
+
+	@Override
 	public String getAnswer()
 	{
 		// Recheck that the column selected is still in the parent data

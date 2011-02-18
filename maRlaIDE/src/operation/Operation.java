@@ -262,9 +262,6 @@ public abstract class Operation extends JLabel implements DataSource, Changeable
 	{
 		// And save the op name
 		name = newName;
-		
-		// TODO testing
-		setText("Out of date, new name set");
 	}
 
 	/**
