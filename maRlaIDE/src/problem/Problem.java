@@ -308,7 +308,7 @@ public class Problem implements ProblemPart
 		if(oldParent != null)
 			oldParent.removeData(data);
 
-		markChanged();
+		markUnsaved();
 		isSaved = false;
 		data.setParentProblem(this);
 		datasets.add(data);
@@ -325,7 +325,7 @@ public class Problem implements ProblemPart
 	public DataSet removeData(int index)
 	{
 		DataSet d = datasets.get(index);
-		markChanged();
+		markUnsaved();
 		d.setParentProblem(null);
 		datasets.remove(index);
 		return d;
@@ -381,7 +381,7 @@ public class Problem implements ProblemPart
 	 */
 	private SubProblem addSubProblem(SubProblem sub)
 	{
-		markChanged();
+		markUnsaved();
 		subProblems.add(sub);
 		return sub;
 	}
@@ -392,7 +392,7 @@ public class Problem implements ProblemPart
 	 */
 	public void removeSubProblem(SubProblem sub)
 	{
-		markChanged();
+		markUnsaved();
 		subProblems.remove(sub);
 	}
 
@@ -460,21 +460,9 @@ public class Problem implements ProblemPart
 	}
 
 	@Override
-	public void markChanged()
+	public void markUnsaved()
 	{
 		isSaved = false;
-	}
-
-	/**
-	 * Forces all DataSets to recompute their values the next time they are accessed
-	 */
-	public void markDirty()
-	{
-		// Tell all children to recompute themselves when they need to
-		for(DataSet ds : datasets)
-		{
-			ds.markChanged();
-		}
 	}
 
 	/**
@@ -532,7 +520,6 @@ public class Problem implements ProblemPart
 
 			// Make problem
 			Problem newProb = Problem.fromXml(doc.getRootElement());
-			newProb.markChanged();
 			newProb.setFileName(fileName);
 			newProb.isSaved = true;
 
@@ -619,16 +606,15 @@ public class Problem implements ProblemPart
 
 		for(Object dataEl : rootEl.getChildren("data"))
 		{
-			newProb.addData(DataSet.fromXml((Element) dataEl));
+			DataSet newDS = DataSet.fromXml((Element) dataEl);
+			newProb.addData(newDS);
+			getDomain().rebuildTree(newDS);
 		}
 
 		for(Object partEl : rootEl.getChildren("part"))
 		{
 			newProb.addSubProblem(SubProblem.fromXml((Element) partEl, newProb));
 		}
-
-		// Make sure we're all dirty and recompute when needed
-		newProb.markDirty();
 
 		return newProb;
 	}

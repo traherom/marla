@@ -234,7 +234,7 @@ public class ProblemTest
 		assertTrue(instance.isSaved());
 
 		// Now prentend we changed a value is a dataset we hold
-		instance.getData(0).markChanged();
+		instance.getData(0).markUnsaved();
 		assertFalse(instance.isSaved());
 	}
 

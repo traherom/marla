@@ -1575,7 +1575,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 			domain.problem = new Problem(descriptionTextArea.getText());
 		}
 
-		domain.problem.markChanged();
+		domain.problem.markUnsaved();
 		// Construct sub problems from the New Problem Wizard
 		for(int i = 0; i < subProblemPanels.size(); ++i)
 		{

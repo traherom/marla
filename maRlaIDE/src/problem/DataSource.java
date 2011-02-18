@@ -196,11 +196,6 @@ public interface DataSource
 	/**
 	 * Tell the DataSource that some aspect of it has changed
 	 */
-	public void markChanged();
-
-	/**
-	 * Tell the DataSource that some aspect of it has changed
-	 */
 	public void markUnsaved();
 
 	/**

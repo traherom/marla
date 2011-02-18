@@ -64,7 +64,9 @@ public class OperationInfoString extends OperationInformation
 
 		// Save
 		answer = a;
-		getOperation().markChanged();
+		
+		getOperation().checkDisplayName();
+		getOperation().markDirty();
 		getOperation().markUnsaved();
 
 		return oldAnswer;

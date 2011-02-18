@@ -405,13 +405,6 @@ public class OperationXML extends Operation
 	}
 
 	@Override
-	public void markChanged()
-	{
-		super.markChanged();
-		checkDisplayName();
-	}
-
-	@Override
 	public void checkDisplayName()
 	{
 		try
@@ -917,7 +910,7 @@ public class OperationXML extends Operation
 		}
 		else
 		{
-			// Just use the plain old name, if it exists)
+			// Just use the plain old name
 			dynamicNameLong = opConfig.getAttributeValue("name");
 			dynamicNameShort = DataSet.shortenString(dynamicNameLong, 5);
 		}
