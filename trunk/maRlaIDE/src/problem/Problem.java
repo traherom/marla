@@ -608,7 +608,8 @@ public class Problem implements ProblemPart
 		{
 			DataSet newDS = DataSet.fromXml((Element) dataEl);
 			newProb.addData(newDS);
-			getDomain().rebuildTree(newDS);
+			if(getDomain() != null)
+				getDomain().rebuildTree(newDS);
 		}
 
 		for(Object partEl : rootEl.getChildren("part"))

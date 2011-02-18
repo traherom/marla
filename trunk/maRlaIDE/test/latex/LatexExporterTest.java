@@ -43,7 +43,7 @@ public class LatexExporterTest
 	public void setUp() throws Exception
 	{
 		testProb = ProblemTest.createProblem(2, 2, 3, 10);
-		testExp = new LatexExporter(testProb, "export_template.xml");
+		testExp = new LatexExporter(testProb);
 	}
 
 	@Test
@@ -52,14 +52,6 @@ public class LatexExporterTest
 		File tempFile = File.createTempFile("marla", "rnw");
 		testExp.cleanExport(tempFile.getPath());
 		System.out.println("Look at " + tempFile);
-	}
-
-	@Test(expected=LatexException.class)
-	public void testCleanExportIncompleteInit() throws Exception
-	{
-		File tempFile = File.createTempFile("marla", ".rnw");
-		LatexExporter testExp2 = new LatexExporter(testProb, "export_template.xml");
-		testExp2.cleanExport(tempFile.getPath());
 	}
 
 	@Test

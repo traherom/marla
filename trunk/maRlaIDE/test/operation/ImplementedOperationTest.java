@@ -184,19 +184,6 @@ public class ImplementedOperationTest
 		}
 	}
 
-	@Test(expected=OperationException.class)
-	public void testSetInfoWhenNoneRequired() throws Exception
-	{
-		if(!op1.isInfoUnanswered())
-		{
-			OperationTester.fillRequiredInfo(op1);
-		}
-		else
-		{
-			throw new OperationException("Info is expected, this test passes");
-		}
-	}
-
 	@Test
 	public void testPlot() throws Exception
 	{
