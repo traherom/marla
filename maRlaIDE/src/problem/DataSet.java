@@ -346,9 +346,38 @@ public final class DataSet extends JLabel implements DataSource, Changeable
 	{
 		String longName = getName();
 		if(abbrv && longName.length() > 4)
-			return longName.substring(0, 2) + "~" + longName.substring(longName.length() - 2);
+			return shortenString(longName, 7);
 		else
 			return longName;
+	}
+
+	/**
+	 * Shortens the given string to the given length, using letters from the beginning and end
+	 * @param longForm String to be shortened
+	 * @param maxLen Maximum length of the shortened string
+	 * @return Newly created short sting
+	 */
+	public static String shortenString(String longForm, int maxLen)
+	{
+		int longLen = longForm.length();
+
+		// Don't bother if we're the right length already
+		if(longLen <= maxLen)
+			return longForm;
+
+		if(maxLen < 4)
+		{
+			// No marker of the truncation
+			int firstHalf = (int)Math.ceil(maxLen/ 2.0);
+			int secondHalf = (int)Math.floor(maxLen / 2.0);
+			return longForm.substring(0, firstHalf) + longForm.substring(longForm.length() - secondHalf);
+		}
+		else
+		{
+			int firstHalf = (int)Math.ceil((maxLen - 1) / 2.0);
+			int secondHalf = (int)Math.floor((maxLen - 1) / 2.0);
+			return longForm.substring(0, firstHalf) + "\u2026" + longForm.substring(longForm.length() - secondHalf);
+		}
 	}
 
 	/**
