@@ -211,8 +211,8 @@ public class ImplementedOperationTest
 		// Read back from XML and attach to the same parent (otherwise answers
 		// will be invalid)
 		Operation op2 = Operation.fromXml(el);
-		op1.getParentData().addOperation(op2);
 
+		op1.equals(op2);
 		assertEquals(op1, op2);
 
 		if(op1.isInfoRequired())
@@ -222,7 +222,6 @@ public class ImplementedOperationTest
 
 			el = op1.toXml();
 			op2 = Operation.fromXml(el);
-			op1.getParentData().addOperation(op2);
 
 			op1.equals(op2);
 
