@@ -27,6 +27,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Deque;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import latex.LatexExporter;
 import operation.OperationXMLException;
@@ -54,6 +56,11 @@ public class Configuration
 	 * Saves any errors which occur during a load
 	 */
 	private static Deque<ConfigurationException> errors = new ArrayDeque<ConfigurationException>();
+	/**
+	 * Saves where the last load() tried to load its configuration from.
+	 * Useful for saving back to the same location
+	 */
+	private static String loadedFrom = "config.xml";
 
 	/**
 	 * Sets configuration parameters based on command line
@@ -82,7 +89,20 @@ public class Configuration
 	 */
 	public static boolean load() throws MarlaException
 	{
-		return load("config.xml");
+		// Locate config file.
+		File[] configPaths = new File[] {
+			new File(System.getProperty("user.home") + "/" + ".marla/config.xml"),
+			new File("config.xml")
+		};
+
+		for(int i = 0; i < configPaths.length; i++)
+		{
+			if(configPaths[i].exists())
+				return load(configPaths[i].getPath());
+		}
+
+		// Doesn't exist, but pretend. It will write a new one here
+		return load(configPaths[0].getPath());
 	}
 
 	/**
@@ -102,6 +122,7 @@ public class Configuration
 		try
 		{
 			System.out.println("Using config file at '" + configPath + "'");
+			loadedFrom = configPath;
 
 			// Load the XML
 			SAXBuilder parser = new SAXBuilder();
@@ -264,7 +285,7 @@ public class Configuration
 	 */
 	public static void save() throws MarlaException
 	{
-		save("config.xml");
+		save(loadedFrom);
 	}
 
 	/**
@@ -301,6 +322,10 @@ public class Configuration
 
 		try
 		{
+			// Create directories to file if needed
+			System.out.println("Writing configuration to '" + configPath + "'");
+			FileUtils.forceMkdir(new File(configPath).getParentFile());
+			
 			// Output to file
 			OutputStreamWriter os = new OutputStreamWriter(new FileOutputStream(configPath));
 			BufferedWriter outputStream = new BufferedWriter(os);
@@ -504,23 +529,36 @@ public class Configuration
 			checkPaths.addAll(driveSearchRes);
 		}
 
-		// Convert all to just the paths
+		// Convert all to just the paths (not Files)
 		List<String> files = new ArrayList<String>(checkPaths.size());
 		System.out.println(checkPaths.size() + " possibilities found for " + fileName + ": ");
 		for(File f : checkPaths)
 		{
-			System.out.println("\t" + f.getPath());
-			files.add(f.getPath());
+			try
+			{
+				System.out.println("\t" + f.getPath());
+				files.add(f.getCanonicalPath());
+			}
+			catch(IOException ex)
+			{
+				files.add(f.getAbsolutePath());
+			}
 		}
 		
 		return files;
 	}
 
+	/**
+	 * Loads (including searching if needed) and saves configuration to
+	 * the given file. Useful for creating new configuration
+	 */
 	public static void main(String[] args) throws MarlaException
 	{
 		if(args.length == 0)
 			Configuration.load();
 		else
 			Configuration.load(args[0]);
+
+		Configuration.save();
 	}
 }

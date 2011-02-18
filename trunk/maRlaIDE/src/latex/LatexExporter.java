@@ -19,8 +19,6 @@ package latex;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import problem.MarlaException;
 import problem.Problem;
 import java.io.File;
@@ -39,7 +37,6 @@ import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.Text;
 import org.jdom.input.SAXBuilder;
-import problem.DataSource;
 import operation.Operation;
 import problem.SubProblem;
 import r.RProcessor;
@@ -488,12 +485,29 @@ public class LatexExporter
 			// Walk through each operation in this solution and dump out
 			// their R code. If an operation has no remarks and doesn't produce
 			// a plot, then combine it with the previous Sweave block.
-			StringBuilder sweaveBlock = new StringBuilder();
+			StringBuilder rCmdBlock = new StringBuilder();
 
 			for(Operation op : solOps)
 			{
-				// Drop in the R for this command
-				sweaveBlock.append(op.getRCommands(false));
+				// Are there comments for this operation?
+				if(op.hasRemark())
+				{
+					// End current sweave block if needed
+					if(rCmdBlock.length() != 0)
+					{
+						solutionBlock.append("\n<<>>=\n");
+						solutionBlock.append(rCmdBlock);
+						solutionBlock.append("@\n");
+						rCmdBlock = new StringBuilder();
+					}
+
+					// Add our remark
+					solutionBlock.append('\n');
+					solutionBlock.append(op.getRemark());
+				}
+
+				// Drop in the R for this operation
+				rCmdBlock.append(op.getRCommands(false));
 
 				// Are we a plot operation? If so, we need to terminate
 				// the sweave block and save to the larger solution string
@@ -501,20 +515,20 @@ public class LatexExporter
 				{
 					// Special plot sweave start
 					solutionBlock.append("\n<<fig=T>>=\n");
-					solutionBlock.append(sweaveBlock);
+					solutionBlock.append(rCmdBlock);
 					solutionBlock.append("@\n");
 
 					// Clear out the sweave block
-					sweaveBlock = new StringBuilder();
+					rCmdBlock = new StringBuilder();
 				}
 			}
 
 			// Finish up any remaining R code as a normal block. A plot
 			// would have been terminated inside the loop
-			if(sweaveBlock.length() != 0)
+			if(rCmdBlock.length() != 0)
 			{
 				solutionBlock.append("\n<<>>=\n");
-				solutionBlock.append(sweaveBlock);
+				solutionBlock.append(rCmdBlock);
 				solutionBlock.append("@\n");
 			}
 		}
