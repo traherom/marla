@@ -287,6 +287,15 @@ public abstract class Operation extends JLabel implements DataSource, Changeable
 	}
 
 	/**
+	 * Checks if this operation has a remark associated with it
+	 * @return true if it has a remark, false otherwise
+	 */
+	public final boolean hasRemark()
+	{
+		return remark != null;
+	}
+
+	/**
 	 * Creates the appropriate derivative Operation from the given JDOM XML. Class
 	 * must be specified as an attribute ("type") of the Element supplied. An exception
 	 * is thrown if the operation could not be created. The inner exception has more information.
