@@ -71,8 +71,9 @@ public class OperationInfoCombo extends OperationInformation
 			throw new OperationInfoRequiredException("'" + answer + "' not valid option for combo", getOperation());
 
 		answer = (String)newAnswer;
-		
-		getOperation().markChanged();
+
+		getOperation().checkDisplayName();
+		getOperation().markDirty();
 		getOperation().markUnsaved();
 		
 		return oldAnswer;

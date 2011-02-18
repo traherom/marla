@@ -78,7 +78,9 @@ public class OperationInfoNumeric extends OperationInformation
 
 		// Assign
 		answer = a;
-		getOperation().markChanged();
+		
+		getOperation().checkDisplayName();
+		getOperation().markDirty();
 		getOperation().markUnsaved();
 
 		return oldAnswer;

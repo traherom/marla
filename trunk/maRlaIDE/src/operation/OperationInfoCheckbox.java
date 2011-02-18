@@ -51,7 +51,8 @@ public class OperationInfoCheckbox extends OperationInformation
 		
 		answer = (Boolean)newAnswer;
 
-		getOperation().markChanged();
+		getOperation().checkDisplayName();
+		getOperation().markDirty();
 		getOperation().markUnsaved();
 
 		return oldAnswer;

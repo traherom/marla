@@ -34,7 +34,7 @@ public class DataColumn implements List<Object>
 	/**
 	 * The DataSource we belong to.
 	 */
-	private DataSource parent = null;
+	private DataSet parent = null;
 	/**
 	 * Name of the column
 	 */
@@ -58,7 +58,7 @@ public class DataColumn implements List<Object>
 	 * belong to a certain DataSource
 	 * @param name Human-friendly name for column
 	 */
-	public DataColumn(DataSource parent, String name)
+	public DataColumn(DataSet parent, String name)
 	{
 		this.parent = parent;
 		this.name = name;
@@ -69,7 +69,7 @@ public class DataColumn implements List<Object>
 	 * @param col Column to copy values from
 	 * @param parent DataSource the copy should belong to
 	 */
-	public DataColumn(DataColumn col, DataSource parent)
+	public DataColumn(DataColumn col, DataSet parent)
 	{
 		this.parent = parent;
 		name = col.name;
@@ -535,6 +535,6 @@ public class DataColumn implements List<Object>
 	public void markChanged()
 	{
 		if(parent != null)
-			parent.markChanged();
+			parent.markUnsaved();
 	}
 }

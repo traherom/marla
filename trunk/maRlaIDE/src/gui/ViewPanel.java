@@ -715,7 +715,7 @@ public class ViewPanel extends JPanel
 						xDragOffset = evt.getX() - draggingComponent.getX();
 						yDragOffset = evt.getY() - draggingComponent.getY();
 					}
-					domain.problem.markChanged();
+					domain.problem.markUnsaved();
 				}
 			}
 		}
@@ -1177,7 +1177,9 @@ public class ViewPanel extends JPanel
 			// Ensure updated sizes
 			for (int i = 0; i < dataSet.getOperationCount(); ++i)
 			{
-				dataSet.getOperation (i).setSize (dataSet.getOperation (i).getPreferredSize());
+				Operation operation = dataSet.getOperation (i);
+				operation.setText ("<html>" + operation.getDisplayString (abbreviated) + "</html>");
+				operation.setSize (operation.getPreferredSize());
 			}
 
 			int center = (dataSet.getX () + dataSet.getX () + dataSet.getWidth ()) / 2;
@@ -1187,8 +1189,6 @@ public class ViewPanel extends JPanel
 			for (int i = 0; i < dataSet.getOperationCount (); ++i)
 			{
 				Operation operation = dataSet.getOperation (i);
-				operation.setText ("<html>" + operation.getDisplayString (abbreviated) + "</html>");
-				operation.setSize (operation.getPreferredSize ());
 				operation.setLocation (xStart + (i * SPACE_WIDTH), dataSet.getY () + SPACE_HEIGHT);
 				List<Operation> children = operation.getAllChildOperations();
 				for (int j = 0; j < children.size (); ++j)

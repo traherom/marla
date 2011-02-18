@@ -407,7 +407,7 @@ public final class DataSet extends JLabel implements DataSource, Changeable
 		name = newName;
 		checkDisplayName();
 
-		markChanged();
+		markUnsaved();
 	}
 
 	@Override
@@ -462,7 +462,7 @@ public final class DataSet extends JLabel implements DataSource, Changeable
 		// Create
 		DataColumn newColumn = new DataColumn(this, colName);
 		columns.add(index, newColumn);
-		markChanged();
+		markUnsaved();
 
 		return newColumn;
 	}
@@ -500,7 +500,7 @@ public final class DataSet extends JLabel implements DataSource, Changeable
 	public void clearColumns()
 	{
 		columns.clear();
-		markChanged();
+		markUnsaved();
 	}
 
 	/**
@@ -513,7 +513,7 @@ public final class DataSet extends JLabel implements DataSource, Changeable
 		// Remove them from our list
 		if(columns.remove(column))
 		{
-			markChanged();
+			markUnsaved();
 		}
 
 		return column;
@@ -528,7 +528,7 @@ public final class DataSet extends JLabel implements DataSource, Changeable
 	public DataColumn removeColumn(int index)
 	{
 		DataColumn removedCol = columns.remove(index);
-		markChanged();
+		markUnsaved();
 		return removedCol;
 	}
 
@@ -599,29 +599,13 @@ public final class DataSet extends JLabel implements DataSource, Changeable
 	}
 
 	/**
-	 * Tells our child operations that their caches are dirty and need to be recomputed
-	 */
-	@Override
-	public void markChanged()
-	{
-		// Tell all children they need to recompute
-		for(Operation op : solutionOps)
-		{
-			op.markChanged();
-		}
-
-		markUnsaved();
-	}
-
-	/**
-	 * Tells the problem we belong to that we've changed. Used by DataColumns
-	 * under us to notify encapsulating problem.
+	 * Tells the problem we belong to that we've changed
 	 */
 	@Override
 	public void markUnsaved()
 	{
-		if(parent != null)
-			parent.markChanged();
+		if(parent instanceof Problem)
+			((ProblemPart)parent).markUnsaved();
 	}
 
 	@Override
@@ -985,7 +969,10 @@ public final class DataSet extends JLabel implements DataSource, Changeable
 
 		for(Object opEl : dataEl.getChildren("operation"))
 		{
-			newData.addOperation(Operation.fromXml((Element) opEl));
+			Operation newOp = Operation.fromXml((Element) opEl);
+			newData.addOperation(newOp);
+			newOp.checkDisplayName();
+			newOp.markDirty();
 		}
 
 		return newData;

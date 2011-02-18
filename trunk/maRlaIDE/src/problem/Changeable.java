@@ -22,5 +22,5 @@ package problem;
  */
 public interface Changeable
 {
-	public void markChanged();
+	public void markUnsaved();
 }

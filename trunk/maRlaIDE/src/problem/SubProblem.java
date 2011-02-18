@@ -103,10 +103,10 @@ public class SubProblem implements ProblemPart
 	}
 
 	@Override
-	public void markChanged()
+	public void markUnsaved()
 	{
 		if(parent != null)
-			parent.markChanged();
+			parent.markUnsaved();
 	}
 
 	@Override
@@ -127,7 +127,7 @@ public class SubProblem implements ProblemPart
 	public void setSolutionStart(DataSource op)
 	{
 		startSolutionStep = op;
-		markChanged();
+		markUnsaved();
 	}
 
 	/**
@@ -149,7 +149,7 @@ public class SubProblem implements ProblemPart
 	public void setSolutionEnd(DataSource op)
 	{
 		endSolutionStep = op;
-		markChanged();
+		markUnsaved();
 	}
 
 	/**

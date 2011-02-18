@@ -370,8 +370,8 @@ public abstract class Operation extends JLabel implements DataSource, Changeable
 		if(parent != null)
 			parent.addOperation(this);
 
+		markDirty();
 		markUnsaved();
-		markChanged();
 	}
 
 	/**
@@ -564,6 +564,10 @@ public abstract class Operation extends JLabel implements DataSource, Changeable
 
 			// We're clean!
 			isCacheDirty = false;
+
+			// Children aren't though
+			for(Operation op : solutionOps)
+				op.markDirty();
 		}
 		finally
 		{
@@ -816,17 +820,25 @@ public abstract class Operation extends JLabel implements DataSource, Changeable
 	 * Marks the Operation as having had something change about it and it
 	 * needing to recompute its values.
 	 */
-	@Override
-	public void markChanged()
+	public void markDirty()
 	{
 		// Mark as dirty but don't actually recompute yet
 		isCacheDirty = true;
 
 		// Tell all children they need to recompute
 		for(Operation op : solutionOps)
-		{
-			op.markChanged();
-		}
+			op.markDirty();
+	}
+
+	/**
+	 * Notes that something changed about the problem, tell parent we're not
+	 * saved any more
+	 */
+	@Override
+	public void markUnsaved()
+	{
+		if(parent != null)
+			parent.markUnsaved();
 	}
 
 	@Override
@@ -901,17 +913,6 @@ public abstract class Operation extends JLabel implements DataSource, Changeable
 	{
 		checkCache();
 		return data.toRFrame();
-	}
-
-	/**
-	 * Informs the parent source that a change has occurred that should be passed up
-	 * the chain to the Problem.
-	 */
-	@Override
-	public final void markUnsaved()
-	{
-		if(parent != null)
-			parent.markUnsaved();
 	}
 
 	@Override
