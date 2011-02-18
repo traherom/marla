@@ -22,6 +22,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import operation.OperationInformation.PromptType;
 import org.jdom.Document;
 import org.jdom.Element;
@@ -416,9 +418,20 @@ public class OperationXML extends Operation
 	{
 		super.markChanged();
 
-		// Clear dynamic names, will be regenerated when needed
-		dynamicNameLong = null;
-		dynamicNameShort = null;
+		try
+		{
+			// Clear dynamic names and attempt to regenerate, if we have already done it once
+			if(dynamicNameLong != null)
+			{
+				dynamicNameLong = null;
+				dynamicNameShort = null;
+				updateDynamicName();
+			}
+		}
+		catch(MarlaException ex)
+		{
+			// Ignore for now, it can attempt to redo the name later
+		}
 	}
 
 	/**
