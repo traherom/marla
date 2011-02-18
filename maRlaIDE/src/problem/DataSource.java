@@ -202,4 +202,10 @@ public interface DataSource
 	 * Tell the DataSource that some aspect of it has changed
 	 */
 	public void markUnsaved();
+
+	/**
+	 * Ensures that the displayed name for the DataSource is the
+	 * correct version and rebuilds the tree if needed
+	 */
+	public void checkDisplayName();
 }

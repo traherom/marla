@@ -22,8 +22,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import operation.OperationInformation.PromptType;
 import org.jdom.Document;
 import org.jdom.Element;
@@ -91,7 +89,7 @@ public class OperationXML extends Operation
 	 * by switching back and forth from RecordMode.DISABLED and this
 	 */
 	private RecordMode intendedRecordMode = null;
-
+	
 	/**
 	 * Gets the current XML operation file path
 	 * @return path to the XML file that contains operations
@@ -346,21 +344,13 @@ public class OperationXML extends Operation
 
 				// Select correct type
 				if(colType.equals("numeric"))
-				{
 					opQuery = new OperationInfoColumn(this, name, prompt, DataMode.NUMERIC);
-				}
 				else if(colType.equals("string"))
-				{
 					opQuery = new OperationInfoColumn(this, name, prompt, DataMode.STRING);
-				}
 				else if(colType.equals("all"))
-				{
 					opQuery = new OperationInfoColumn(this, name, prompt);
-				}
 				else
-				{
 					throw new OperationXMLException("Invalid column type '" + colType + "' specified for query");
-				}
 
 				// Actually add the question to the array
 				addQuestion(opQuery);
@@ -411,26 +401,34 @@ public class OperationXML extends Operation
 
 		// Dynamic name set if specified, purely cosmetic
 		longNameEl = opConfig.getChild("longname");
+		checkDisplayName();
 	}
 
 	@Override
 	public void markChanged()
 	{
 		super.markChanged();
+		checkDisplayName();
+	}
 
+	@Override
+	public void checkDisplayName()
+	{
 		try
 		{
-			// Clear dynamic names and attempt to regenerate, if we have already done it once
-			if(dynamicNameLong != null)
+			if(updateDynamicName())
 			{
-				dynamicNameLong = null;
-				dynamicNameShort = null;
-				updateDynamicName();
+				// We actually did change from what was being used
+				DataSource root = getRootDataSource();
+				if(Problem.getDomain() != null && root instanceof DataSet)
+					Problem.getDomain().rebuildTree((DataSet)root);
 			}
 		}
 		catch(MarlaException ex)
 		{
-			// Ignore for now, it can attempt to redo the name later
+			// Error occured
+			// TODO better handling
+			setText(ex.getMessage());
 		}
 	}
 
@@ -856,17 +854,6 @@ public class OperationXML extends Operation
 	@Override
 	public String getDisplayString(boolean abbrv)
 	{
-		try
-		{
-			if(dynamicNameLong == null)
-				updateDynamicName();
-		}
-		catch(MarlaException ex)
-		{
-			// TODO throw this instead and make viewpanel handle it
-			return ex.getMessage();
-		}
-
 		if(abbrv)
 			return dynamicNameShort;
 		else
@@ -876,9 +863,16 @@ public class OperationXML extends Operation
 	/**
 	 * Sets the XML operation's name to the latest version, based on the data
 	 * given in the longname element and the answers to queries
+	 * @return true if the dynamic name actually changed
 	 */
-	private void updateDynamicName() throws MarlaException
+	private boolean updateDynamicName() throws MarlaException
 	{
+		String oldLongName = dynamicNameLong;
+
+		// Only bother if we aren't still initializing
+		if(opConfig == null)
+			return false;
+
 		if(longNameEl != null)
 		{
 			StringBuilder shortName = new StringBuilder();
@@ -923,15 +917,13 @@ public class OperationXML extends Operation
 		}
 		else
 		{
-			// Just use the plain old name
+			// Just use the plain old name, if it exists)
 			dynamicNameLong = opConfig.getAttributeValue("name");
 			dynamicNameShort = DataSet.shortenString(dynamicNameLong, 5);
 		}
 
-		// Tell the problem to rebuild the displayed tree, rearranging as needed
-		DataSource rootDS = getRootDataSource();
-		if(rootDS instanceof DataSet && Problem.getDomain() != null)
-			Problem.getDomain().rebuildTree((DataSet) rootDS);
+		// Did the name change?
+		return dynamicNameLong.equals(oldLongName);
 	}
 
 	@Override

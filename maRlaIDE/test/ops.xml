@@ -921,7 +921,7 @@ x
 		</computation>
 	</operation>
 
-	<operation name="Load library" category="Utility">
+	<operation name="Load library" category="Utility" list="false">
 		<query type="string" name="lib" prompt="Library name" />
 
 		<longname>Load <response name="lib" default="lib" /></longname>
