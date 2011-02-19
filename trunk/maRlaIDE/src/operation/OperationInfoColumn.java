@@ -29,7 +29,7 @@ import problem.MarlaException;
 /**
  * @author Ryan Morehart
  */
-public class OperationInfoColumn extends OperationInformation
+public class OperationInfoColumn extends OperationInfoCombo
 {
 	private String answer = null;
 	private DataMode columnType = null;
@@ -83,7 +83,7 @@ public class OperationInfoColumn extends OperationInformation
 			}
 
 			// Check the type
-			if(columnType != null && dc.getMode() == columnType)
+			if(columnType != null && dc.getMode() != columnType)
 				throw new OperationInfoRequiredException("Column '" + answer + "' not correct type", getOperation());
 		}
 		
@@ -119,7 +119,7 @@ public class OperationInfoColumn extends OperationInformation
 			}
 
 			// Check the type
-			if(columnType != null && dc.getMode() == columnType)
+			if(columnType != null && dc.getMode() != columnType)
 			{
 				clearAnswer();
 				return null;
@@ -129,6 +129,7 @@ public class OperationInfoColumn extends OperationInformation
 		return answer;
 	}
 
+	@Override
 	public List<String> getOptions()
 	{
 		List<String> opts = new ArrayList<String>();

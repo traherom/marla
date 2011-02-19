@@ -17,20 +17,13 @@
  */
 package operation;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import org.jdom.Element;
-import problem.InternalMarlaException;
 
 /**
  * @author Ryan Morehart
  */
-public class OperationInfoCombo extends OperationInformation
+public abstract class OperationInfoCombo extends OperationInformation
 {
-	private final List<String> options;
-	private String answer = null;
-
 	/**
 	 * Constructs a new combo select prompt with the given options.
 	 * @param name Unique reference name for this prompt
@@ -38,77 +31,14 @@ public class OperationInfoCombo extends OperationInformation
 	 * @param options Options to display to the user, will be presented in the
 	 *	order given, not sorted in any way.
 	 */
-	public OperationInfoCombo(Operation op, String name, String prompt, List<String> options)
+	protected OperationInfoCombo(Operation op, String name, String prompt, PromptType type)
 	{
-		super(op, name, prompt, PromptType.COMBO);
-		this.options = options;
-	}
-
-	@Override
-	public String getAnswer()
-	{
-		return answer;
-	}
-
-	@Override
-	public String setAnswer(Object newAnswer) throws OperationInfoRequiredException
-	{
-		String oldAnswer = answer;
-
-		if(newAnswer == null)
-			throw new InternalMarlaException("Info may only be cleared by calling clearAnswer()");
-
-		// Ensure it's within our options
-		if(!options.contains((String)newAnswer))
-			throw new OperationInfoRequiredException("'" + answer + "' not valid option for combo", getOperation());
-
-		answer = (String)newAnswer;
-
-		getOperation().checkDisplayName();
-		getOperation().markDirty();
-		getOperation().markUnsaved();
-		
-		return oldAnswer;
-	}
-
-	@Override
-	public void clearAnswer()
-	{
-		answer = null;
-		getOperation().checkDisplayName();
-		getOperation().markDirty();
-		getOperation().markUnsaved();
+		super(op, name, prompt, type);
 	}
 
 	/**
-	 * Returns the possible options for this combo
+	 * Returns the possible options for this combo. List is unmodifiable
 	 * @return List of options
 	 */
-	public List<String> getOptions()
-	{
-		return Collections.unmodifiableList(options);
-	}
-
-	/**
-	 * Returns an editable list of the options in this prompt. Intended
-	 * for derivate class usage.
-	 * @return Modifiable list of options
-	 */
-	protected final List<String> getModifiableOptions()
-	{
-		return options;
-	}
-
-	@Override
-	protected void toXmlAnswer(Element saveEl)
-	{
-		if(answer != null)
-			saveEl.setAttribute("answer", answer);
-	}
-
-	@Override
-	protected void fromXmlAnswer(Element answerEl)
-	{
-		answer = answerEl.getAttributeValue("answer");
-	}
+	public abstract List<String> getOptions();
 }

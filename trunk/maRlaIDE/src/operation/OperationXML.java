@@ -366,7 +366,7 @@ public class OperationXML extends Operation
 				}
 
 				// Set question
-				addQuestion(new OperationInfoCombo(this, name, prompt, options));
+				addQuestion(new OperationInfoFixedOptionCombo(this, name, prompt, options));
 			}
 			else if(type == PromptType.NUMERIC)
 			{
