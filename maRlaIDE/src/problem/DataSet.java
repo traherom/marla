@@ -598,7 +598,7 @@ public final class DataSet extends JLabel implements DataSource, Changeable
 		if(!currText.equals(name))
 		{
 			// We actually did change from what was being used
-			if(Problem.getDomain() != null)
+			if(!isLoading() && Problem.getDomain() != null)
 				Problem.getDomain().rebuildTree(this);
 		}
 	}

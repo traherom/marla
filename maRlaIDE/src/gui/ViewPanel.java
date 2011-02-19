@@ -104,7 +104,7 @@ public class ViewPanel extends JPanel
 			+ "values are already interacting with statistical interactions in the workspace, the results will be updated with "
 			+ "new values when this dialog is closed.  More data sets can be added or current data sets may be removed.</html>";
 	/** The width between two operations/data sets.*/
-	private final int SPACE_WIDTH = 130;
+	private final int SPACE_WIDTH = 20;
 	/** The height between two operations/data sets.*/
 	private final int SPACE_HEIGHT = 30;
 	/** No border.*/
@@ -1173,46 +1173,87 @@ public class ViewPanel extends JPanel
 		dataSet.setText("<html>" + dataSet.getDisplayString(abbreviated) + "</html>");
 		dataSet.setSize (dataSet.getPreferredSize ());
 
-		if (dataSet.getOperationCount () > 0)
+		int opCount = dataSet.getOperationCount();
+		if(opCount > 0)
 		{
-			// Ensure updated sizes
-			for (int i = 0; i < dataSet.getOperationCount(); ++i)
+			// Find widths of all our columns
+			int[] widths = new int[opCount];
+			for (int i = 0; i < opCount; ++i)
 			{
-				Operation operation = dataSet.getOperation (i);
-				operation.setText ("<html>" + operation.getDisplayString (abbreviated) + "</html>");
-				operation.setSize (operation.getPreferredSize());
+				// Run down this operation chain in order to find the widest one
+				widths[i] = rebuildOperationColumn(dataSet.getOperation(i), 0);
 			}
 
-			int center = (dataSet.getX () + dataSet.getX () + dataSet.getWidth ()) / 2;
-			int width = ((dataSet.getOperationCount () - 1) * SPACE_WIDTH) + dataSet.getOperation (dataSet.getOperationCount () - 1).getWidth ();
-			int xStart = center - width / 2;
+			// Total width, including spacer between columns
+			int totalWidth = (widths.length - 1) * SPACE_WIDTH;
+			for(int i = 0; i < opCount; i++)
+				totalWidth += widths[i];
 
-			for (int i = 0; i < dataSet.getOperationCount (); ++i)
+			// Figure out where the columns should start based on our center
+			int dsWidth = dataSet.getWidth();
+			int dsCenterX = dataSet.getX() + dsWidth / 2;
+			int farLeftX = dsCenterX - totalWidth / 2;
+
+			int previousLeftX = farLeftX;
+			int[] centerXs = new int[opCount];
+			for(int i = 0; i < opCount; i++)
 			{
-				Operation operation = dataSet.getOperation (i);
-				operation.setLocation (xStart + (i * SPACE_WIDTH), dataSet.getY () + SPACE_HEIGHT);
-				List<Operation> children = operation.getAllChildOperations();
-				for (int j = 0; j < children.size (); ++j)
-				{
-					children.get (j).setText ("<html>" + children.get (j).getDisplayString (abbreviated) + "</html>");
-					children.get (j).setSize (children.get (j).getPreferredSize ());
-					int parentWidth;
-					if (j > 0)
-					{
-						parentWidth = children.get (j - 1).getWidth ();
-					}
-					else
-					{
-						parentWidth = dataSet.getOperation (i).getWidth ();
-					}
-					children.get (j).setLocation (((xStart + (i * SPACE_WIDTH) + xStart + (i * SPACE_WIDTH) + parentWidth) / 2) - (children.get (j).getWidth () / 2),
-							dataSet.getY () + ((j + 2) * SPACE_HEIGHT));
-				}
+				centerXs[i] = previousLeftX + widths[i] / 2;
+				previousLeftX += widths[i] + SPACE_WIDTH;
+			}
+
+			// Now rebuild each operation column, this time actually centering them
+			// based on the dataset
+			for(int i = 0; i < opCount; i++)
+			{
+				rebuildOperationColumn(dataSet.getOperation(i), centerXs[i]);
 			}
 		}
 
 		// Redraw everything
 		workspacePanel.repaint();
+	}
+
+	/**
+	 * Recursive portion of rebuildTree() that walks down the line of operations
+	 * and centers them all on the widest one. This function assumes a single
+	 * operation extends from each op, not a wide tree as is internally supported
+	 * @param op Start of operation chain we're checking
+	 * @param centerX x coordinate to center on
+	 * @return
+	 */
+	protected int rebuildOperationColumn(Operation op, int centerX)
+	{
+		Operation currOp = op;
+		int widest = 0;
+
+		boolean moreOps = true;
+		while(moreOps)
+		{
+			// Stop after this loop?
+			if(currOp.getOperationCount() == 0)
+				moreOps = false;
+
+			// Update label
+			currOp.setText ("<html>" + currOp.getDisplayString (abbreviated) + "</html>");
+			currOp.setSize (currOp.getPreferredSize());
+
+			// Get width
+			int width = currOp.getWidth();
+			if(width > widest)
+				widest = width;
+
+			// Center off the given center x
+			int x = centerX - width / 2;
+			int y = ((JComponent)currOp.getParentData()).getY() + SPACE_HEIGHT;
+			currOp.setLocation(x, y);
+
+			// Next op
+			if(moreOps)
+				currOp = currOp.getOperation(0);
+		}
+
+		return widest;
 	}
 
 	/**
