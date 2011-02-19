@@ -17,7 +17,6 @@
  */
 package operation;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import org.jdom.Element;
@@ -42,6 +41,10 @@ public class OperationInfoFixedOptionCombo extends OperationInfoCombo
 	{
 		super(op, name, prompt, PromptType.COMBO);
 		this.options = options;
+
+		// If there's only one possibility, then just set that as our answer
+		if(options.size() == 1)
+			answer = options.get(0);
 	}
 
 	@Override
