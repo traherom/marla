@@ -68,6 +68,7 @@ import operation.OperationInfoRequiredException;
 import operation.OperationInformation;
 import operation.OperationInformation.PromptType;
 import operation.OperationXML;
+import problem.InternalMarlaException;
 import problem.SubProblem;
 import r.RProcessorException;
 import resource.LoadSaveThread;
@@ -1369,6 +1370,8 @@ public class ViewPanel extends JPanel
 				valueComponents.add (comboBox);
 				panel.add (tempPanel);
 			}
+			else
+				Domain.logger.add(new InternalMarlaException("Unhandled PromptType in question dialog"));
 		}
 
 		JButton doneButton = new JButton ("Done");
