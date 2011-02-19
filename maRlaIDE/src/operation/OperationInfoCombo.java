@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import org.jdom.Element;
+import problem.InternalMarlaException;
 
 /**
  * @author Ryan Morehart
@@ -43,18 +44,6 @@ public class OperationInfoCombo extends OperationInformation
 		this.options = options;
 	}
 
-	/**
-	 * Constructs a new prompt with no options by default. Intended for
-	 * derivative classes who want to fill the options manually
-	 * @param name Unique reference name for this prompt
-	 * @param prompt User-visible prompt
-	 */
-	protected OperationInfoCombo(Operation op, String name, String prompt, PromptType type)
-	{
-		super(op, name, prompt, type);
-		this.options = new ArrayList<String>();
-	}
-
 	@Override
 	public String getAnswer()
 	{
@@ -65,6 +54,9 @@ public class OperationInfoCombo extends OperationInformation
 	public String setAnswer(Object newAnswer) throws OperationInfoRequiredException
 	{
 		String oldAnswer = answer;
+
+		if(newAnswer == null)
+			throw new InternalMarlaException("Info may only be cleared by calling clearAnswer()");
 
 		// Ensure it's within our options
 		if(!options.contains((String)newAnswer))
@@ -83,6 +75,9 @@ public class OperationInfoCombo extends OperationInformation
 	public void clearAnswer()
 	{
 		answer = null;
+		getOperation().checkDisplayName();
+		getOperation().markDirty();
+		getOperation().markUnsaved();
 	}
 
 	/**

@@ -48,6 +48,10 @@ import resource.ConfigurationException;
 public final class DataSet extends JLabel implements DataSource, Changeable
 {
 	/**
+	 * Denotes if this class is loading from XML
+	 */
+	private boolean isLoading = false;
+	/**
 	 * Dataset name.
 	 */
 	private String name = null;
@@ -532,11 +536,15 @@ public final class DataSet extends JLabel implements DataSource, Changeable
 	@Override
 	public DataColumn getColumn(String colName) throws DataNotFoundException
 	{
-		return getColumn(getColumnIndex(colName));
+		int index = getColumnIndex(colName);
+		if(index != -1)
+			return getColumn(index);
+		else
+			throw new DataNotFoundException("Unable to locate column '" + colName + "' in DataSet");
 	}
 
 	@Override
-	public int getColumnIndex(String colName) throws DataNotFoundException
+	public int getColumnIndex(String colName)
 	{
 		for(int i = 0; i < columns.size(); i++)
 		{
@@ -544,7 +552,7 @@ public final class DataSet extends JLabel implements DataSource, Changeable
 				return i;
 		}
 
-		throw new DataNotFoundException("Unable to locate data column named '" + colName + "'");
+		return -1;
 	}
 
 	@Override
@@ -942,6 +950,7 @@ public final class DataSet extends JLabel implements DataSource, Changeable
 	public static DataSet fromXml(Element dataEl) throws MarlaException
 	{
 		DataSet newData = new DataSet(dataEl.getAttributeValue("name"));
+		newData.isLoading = true;
 
 		int x = Integer.parseInt(dataEl.getAttributeValue("x"));
 		int y = Integer.parseInt(dataEl.getAttributeValue("y"));
@@ -968,11 +977,23 @@ public final class DataSet extends JLabel implements DataSource, Changeable
 		{
 			Operation newOp = Operation.fromXml((Element) opEl);
 			newData.addOperation(newOp);
-			newOp.checkDisplayName();
 			newOp.markDirty();
+			newOp.checkDisplayName();
 		}
 
+		newData.isLoading = false;
 		return newData;
+	}
+
+	@Override
+	public boolean isLoading()
+	{
+		if(isLoading)
+			return true;
+		else if(parent != null)
+			return ((Loadable)parent).isLoading();
+		else
+			return false;
 	}
 
 	/**

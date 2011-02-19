@@ -33,6 +33,10 @@ import org.jdom.Element;
 public class SubProblem implements ProblemPart
 {
 	/**
+	 * Denotes if we are in the middle of a load from XML
+	 */
+	private boolean isLoading = false;
+	/**
 	 * Description for this sub part in the problem
 	 */
 	private String partDesc;
@@ -354,39 +358,45 @@ public class SubProblem implements ProblemPart
 		SubProblem newSub = new SubProblem(parent,
 										   subEl.getAttributeValue("id"),
 										   subEl.getChildText("statement"));
+		newSub.isLoading = true;
 
 		// Now find our start and end Operation objects so we can point
 		// to them again
 		String startIDStr = subEl.getAttribute("start").getValue();
 		String endIDStr = subEl.getAttribute("end").getValue();
 
-		int startID = 0;
-		if(!startIDStr.isEmpty())
-			startID = Integer.parseInt(startIDStr);
-
-		int endID = 0;
-		if(!endIDStr.isEmpty())
-			endID = Integer.parseInt(endIDStr);
-
-		// Look for match in DataSets
-		for(int i = 0; i < parent.getDataCount(); i++)
+		// Don't waste time looking if these aren't hooked up at all
+		if(startIDStr.isEmpty() && endIDStr.isEmpty())
 		{
-			int hash = parent.getData(i).hashCode();
-			if(!startIDStr.isEmpty() && newSub.getSolutionStart() == null && hash == startID)
-				newSub.setSolutionStart(parent.getData(i));
-			if(!endIDStr.isEmpty() && newSub.getSolutionEnd() == null && hash == endID)
-				newSub.setSolutionEnd(parent.getData(i));
-		}
+			int startID = 0;
+			if(!startIDStr.isEmpty())
+				startID = Integer.parseInt(startIDStr);
 
-		// Look for it in operations
-		for(int i = 0; i < parent.getDataCount(); i++)
-		{
-			if(!startIDStr.isEmpty() && newSub.getSolutionStart() == null)
-				newSub.setSolutionStart(findDataSet(startID, parent.getData(i)));
-			if(!endIDStr.isEmpty() && newSub.getSolutionEnd() == null)
-				newSub.setSolutionEnd(findDataSet(endID, parent.getData(i)));
-		}
+			int endID = 0;
+			if(!endIDStr.isEmpty())
+				endID = Integer.parseInt(endIDStr);
 
+			// Look for match in DataSets
+			for(int i = 0; i < parent.getDataCount(); i++)
+			{
+				int hash = parent.getData(i).hashCode();
+				if(!startIDStr.isEmpty() && newSub.getSolutionStart() == null && hash == startID)
+					newSub.setSolutionStart(parent.getData(i));
+				if(!endIDStr.isEmpty() && newSub.getSolutionEnd() == null && hash == endID)
+					newSub.setSolutionEnd(parent.getData(i));
+			}
+
+			// Look for it in operations
+			for(int i = 0; i < parent.getDataCount(); i++)
+			{
+				if(!startIDStr.isEmpty() && newSub.getSolutionStart() == null)
+					newSub.setSolutionStart(findDataSet(startID, parent.getData(i)));
+				if(!endIDStr.isEmpty() && newSub.getSolutionEnd() == null)
+					newSub.setSolutionEnd(findDataSet(endID, parent.getData(i)));
+			}
+		}
+		
+		newSub.isLoading = false;
 		return newSub;
 	}
 
@@ -420,6 +430,17 @@ public class SubProblem implements ProblemPart
 		}
 
 		return null; // Not found
+	}
+
+	@Override
+	public boolean isLoading()
+	{
+		if(isLoading)
+			return true;
+		else if(parent != null)
+			return parent.isLoading();
+		else
+			return false;
 	}
 
 	@Override

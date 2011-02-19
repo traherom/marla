@@ -46,6 +46,10 @@ public class Problem implements ProblemPart
 	 */
 	private static Domain domain = null;
 	/**
+	 * Keeps track of whether this Problem is in the process of loading.
+	 */
+	private boolean isLoading = false;
+	/**
 	 * Problem statement.
 	 */
 	private String statement = null;
@@ -536,6 +540,22 @@ public class Problem implements ProblemPart
 	}
 
 	/**
+	 * Utility to determine if the current problem is in the process of loading
+	 * from XML. Use internally to prevent computations from trying to happen
+	 * (and usually failing).
+	 * @return true if the Problem is in the process of loading, false otherwise
+	 */
+	@Override
+	public boolean isLoading()
+	{
+		// debug message
+		if(isLoading)
+			System.out.println("BLOCKED SOMETHING FROM DOING SOMETHING BECAUSE WE'RE LOADING");
+		
+		return isLoading;
+	}
+
+	/**
 	 * A Problem is equal if all DataSets and the problem statements
 	 * match
 	 * @param other Object to compare against
@@ -601,20 +621,29 @@ public class Problem implements ProblemPart
 	public static Problem fromXml(Element rootEl) throws MarlaException
 	{
 		Problem newProb = new Problem();
+		newProb.isLoading = true;
 
 		newProb.setStatement(rootEl.getChild("statement").getText());
 
 		for(Object dataEl : rootEl.getChildren("data"))
 		{
-			DataSet newDS = DataSet.fromXml((Element) dataEl);
-			newProb.addData(newDS);
-			if(getDomain() != null)
-				getDomain().rebuildTree(newDS);
+			newProb.addData(DataSet.fromXml((Element) dataEl));
 		}
 
 		for(Object partEl : rootEl.getChildren("part"))
 		{
 			newProb.addSubProblem(SubProblem.fromXml((Element) partEl, newProb));
+		}
+
+		newProb.isLoading = false;
+
+		// After we're all done loading, rebuild the trees
+		if(getDomain() != null)
+		{
+			for(DataSet ds : newProb.datasets)
+			{
+				getDomain().rebuildTree(ds);
+			}
 		}
 
 		return newProb;

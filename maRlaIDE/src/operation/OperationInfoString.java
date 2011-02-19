@@ -19,6 +19,7 @@ package operation;
 
 import java.util.regex.Pattern;
 import org.jdom.Element;
+import problem.InternalMarlaException;
 
 /**
  * @author Ryan Morehart
@@ -57,13 +58,16 @@ public class OperationInfoString extends OperationInformation
 	{
 		String oldAnswer = answer;
 
+		if(newAnswer == null)
+			throw new InternalMarlaException("Info may only be cleared by calling clearAnswer()");
+
 		// Ensure it matches the pattern
 		String a = newAnswer.toString();
 		if(!mustMatchPatt.matcher(a).matches())
 			throw new OperationInfoRequiredException("'" + a + "' may not be used as answer to '" + getName() + "'", getOperation());
 
 		// Save
-		answer = a;
+		answer = newAnswer.toString();
 		
 		getOperation().checkDisplayName();
 		getOperation().markDirty();
@@ -76,6 +80,9 @@ public class OperationInfoString extends OperationInformation
 	public void clearAnswer()
 	{
 		answer = null;
+		getOperation().checkDisplayName();
+		getOperation().markDirty();
+		getOperation().markUnsaved();
 	}
 
 	/**

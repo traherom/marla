@@ -25,7 +25,7 @@ import org.jdom.Element;
  * Tie for any source of that contains columns
  * @author Ryan Morehart
  */
-public interface DataSource
+public interface DataSource extends Loadable
 {
 	/**
 	 * Gets the current DataSource name
@@ -53,9 +53,9 @@ public interface DataSource
 	 * Returns the column index (as would be passed to getColumn(int))
 	 * of the column with the given name
 	 * @param colName Column name to search for
-	 * @return index of corresponding column
+	 * @return index of corresponding column, -1 if not found
 	 */
-	public int getColumnIndex(String colName) throws DataNotFoundException, MarlaException;
+	public int getColumnIndex(String colName) throws MarlaException;
 
 	/**
 	 * Returns the column requested by index

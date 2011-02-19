@@ -409,7 +409,7 @@ public class OperationXML extends Operation
 	{
 		try
 		{
-			if(updateDynamicName())
+			if(updateDynamicName() && !isLoading())
 			{
 				// We actually did change from what was being used
 				DataSource root = getRootDataSource();

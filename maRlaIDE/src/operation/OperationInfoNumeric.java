@@ -18,6 +18,7 @@
 package operation;
 
 import org.jdom.Element;
+import problem.InternalMarlaException;
 
 /**
  * @author Ryan Morehart
@@ -63,7 +64,10 @@ public class OperationInfoNumeric extends OperationInformation
 	public Double setAnswer(Object newAnswer) throws OperationInfoRequiredException
 	{
 		Double oldAnswer = answer;
-		
+
+		if(newAnswer == null)
+			throw new InternalMarlaException("Info may only be cleared by calling clearAnswer()");
+
 		// Ensure it matches requirements
 		Double a;
 		if(newAnswer instanceof Double)
@@ -90,6 +94,9 @@ public class OperationInfoNumeric extends OperationInformation
 	public void clearAnswer()
 	{
 		answer = null;
+		getOperation().checkDisplayName();
+		getOperation().markDirty();
+		getOperation().markUnsaved();
 	}
 
 	public double getMin()
