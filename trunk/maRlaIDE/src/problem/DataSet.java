@@ -28,6 +28,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.swing.JLabel;
@@ -51,6 +52,10 @@ public final class DataSet extends JLabel implements DataSource, Changeable
 	 * Denotes if this class is loading from XML
 	 */
 	private boolean isLoading = false;
+	/**
+	 * "Unique" internal ID for this operation
+	 */
+	private Integer internalID = null;
 	/**
 	 * Dataset name.
 	 */
@@ -907,7 +912,9 @@ public final class DataSet extends JLabel implements DataSource, Changeable
 	{
 		Element dataEl = new Element("data");
 		dataEl.setAttribute("name", name);
-		dataEl.setAttribute("id", Integer.toString(hashCode()));
+
+		if(internalID != null)
+			dataEl.setAttribute("id", internalID.toString());
 
 		Rectangle rect = getBounds();
 		dataEl.setAttribute("x", Integer.toString((int) rect.getX()));
@@ -951,6 +958,10 @@ public final class DataSet extends JLabel implements DataSource, Changeable
 	{
 		DataSet newData = new DataSet(dataEl.getAttributeValue("name"));
 		newData.isLoading = true;
+		
+		String id = dataEl.getAttributeValue("id");
+		if(id != null)
+			newData.internalID = Integer.valueOf(id);
 
 		int x = Integer.parseInt(dataEl.getAttributeValue("x"));
 		int y = Integer.parseInt(dataEl.getAttributeValue("y"));
@@ -1030,5 +1041,23 @@ public final class DataSet extends JLabel implements DataSource, Changeable
 		hash = 97 * hash + (this.columns != null ? this.columns.hashCode() : 0);
 		hash = 97 * hash + (this.solutionOps != null ? this.solutionOps.hashCode() : 0);
 		return hash;
+	}
+
+	@Override
+	public Integer getID()
+	{
+		return internalID;
+	}
+
+	@Override
+	public Integer generateID()
+	{
+		// Only generate if it's not already done
+		if(internalID == null)
+		{
+			internalID = hashCode() + new Random().nextInt();
+		}
+
+		return internalID;
 	}
 }

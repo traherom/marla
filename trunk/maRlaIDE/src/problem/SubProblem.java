@@ -131,6 +131,11 @@ public class SubProblem implements ProblemPart
 	public void setSolutionStart(DataSource op)
 	{
 		startSolutionStep = op;
+
+		// Make sure it records a unique ID for itself now
+		if(op != null)
+			op.generateID();
+
 		markUnsaved();
 	}
 
@@ -153,6 +158,11 @@ public class SubProblem implements ProblemPart
 	public void setSolutionEnd(DataSource op)
 	{
 		endSolutionStep = op;
+
+		// Make sure it records a unique ID for itself now
+		if(op != null)
+			op.generateID();
+
 		markUnsaved();
 	}
 
@@ -334,14 +344,17 @@ public class SubProblem implements ProblemPart
 	{
 		Element subEl = new Element("part");
 		subEl.setAttribute("id", id);
+
 		if(startSolutionStep != null)
-			subEl.setAttribute("start", Integer.toString(startSolutionStep.hashCode()));
+			subEl.setAttribute("start", Integer.toString(startSolutionStep.getID()));
 		else
 			subEl.setAttribute("start", "");
+
 		if(endSolutionStep != null)
-			subEl.setAttribute("end", Integer.toString(endSolutionStep.hashCode()));
+			subEl.setAttribute("end", Integer.toString(endSolutionStep.getID()));
 		else
 			subEl.setAttribute("end", "");
+		
 		subEl.addContent(new Element("statement").addContent(partDesc));
 
 		return subEl;
@@ -350,12 +363,12 @@ public class SubProblem implements ProblemPart
 	/**
 	 * Creates a new SubProblem based on the data in the given JDOM element
 	 * @param subEl JDOM with information for this SubProblem
-	 * @param parent Parent Problem that this subproblem belongs to
+	 * @param prob Parent Problem that this subproblem belongs to
 	 * @return New SubProblem based on given data
 	 */
-	public static SubProblem fromXml(Element subEl, Problem parent)
+	public static SubProblem fromXml(Element subEl, Problem prob)
 	{
-		SubProblem newSub = new SubProblem(parent,
+		SubProblem newSub = new SubProblem(prob,
 										   subEl.getAttributeValue("id"),
 										   subEl.getChildText("statement"));
 		newSub.isLoading = true;
@@ -365,35 +378,36 @@ public class SubProblem implements ProblemPart
 		String startIDStr = subEl.getAttribute("start").getValue();
 		String endIDStr = subEl.getAttribute("end").getValue();
 
-		// Don't waste time looking if these aren't hooked up at all
-		if(startIDStr.isEmpty() && endIDStr.isEmpty())
+		Integer startID = null;
+		if(!startIDStr.isEmpty())
+			startID = Integer.valueOf(startIDStr);
+
+		Integer endID = null;
+		if(!endIDStr.isEmpty())
+			endID = Integer.valueOf(endIDStr);
+
+		// Look for match in DataSets
+		for(int i = 0; i < prob.getDataCount(); i++)
 		{
-			int startID = 0;
-			if(!startIDStr.isEmpty())
-				startID = Integer.parseInt(startIDStr);
+			Integer id = prob.getData(i).getID();
+			if(id == null)
+				continue;
+			
+			if(startID != null && newSub.getSolutionStart() == null && startID.equals(id))
+				newSub.setSolutionStart(prob.getData(i));
 
-			int endID = 0;
-			if(!endIDStr.isEmpty())
-				endID = Integer.parseInt(endIDStr);
+			if(!endIDStr.isEmpty() && newSub.getSolutionEnd() == null && endID.equals(id))
+				newSub.setSolutionEnd(prob.getData(i));
+		}
 
-			// Look for match in DataSets
-			for(int i = 0; i < parent.getDataCount(); i++)
-			{
-				int hash = parent.getData(i).hashCode();
-				if(!startIDStr.isEmpty() && newSub.getSolutionStart() == null && hash == startID)
-					newSub.setSolutionStart(parent.getData(i));
-				if(!endIDStr.isEmpty() && newSub.getSolutionEnd() == null && hash == endID)
-					newSub.setSolutionEnd(parent.getData(i));
-			}
+		// Look for it in operations
+		for(int i = 0; i < prob.getDataCount(); i++)
+		{
+			if(!startIDStr.isEmpty() && newSub.getSolutionStart() == null)
+				newSub.setSolutionStart(findDataSet(startID, prob.getData(i)));
 
-			// Look for it in operations
-			for(int i = 0; i < parent.getDataCount(); i++)
-			{
-				if(!startIDStr.isEmpty() && newSub.getSolutionStart() == null)
-					newSub.setSolutionStart(findDataSet(startID, parent.getData(i)));
-				if(!endIDStr.isEmpty() && newSub.getSolutionEnd() == null)
-					newSub.setSolutionEnd(findDataSet(endID, parent.getData(i)));
-			}
+			if(!endIDStr.isEmpty() && newSub.getSolutionEnd() == null)
+				newSub.setSolutionEnd(findDataSet(endID, prob.getData(i)));
 		}
 		
 		newSub.isLoading = false;
@@ -404,16 +418,16 @@ public class SubProblem implements ProblemPart
 	 * Find the DataSet/Operation with the given hashcode() value. Works
 	 * recursively to find it throughout the supplied DataSet. Used internally
 	 * for reattaching loaded problems
-	 * @param hash hashcode of DataSet/derivative to find
+	 * @param id hashcode of DataSet/derivative to find
 	 * @param parent DataSet that we should search through to find it
 	 * @return DataSet located
 	 */
-	private static DataSource findDataSet(int hash, DataSource parent)
+	private static DataSource findDataSet(Integer id, DataSource parent)
 	{
 		for(int i = 0; i < parent.getOperationCount(); i++)
 		{
 			Operation op = parent.getOperation(i);
-			if(op.hashCode() == hash)
+			if(id.equals(op.getID()))
 			{
 				// Found it
 				return op;
@@ -421,12 +435,10 @@ public class SubProblem implements ProblemPart
 			else
 			{
 				// Can we find it deeper? If not just try the next one I guess
-				DataSource d = findDataSet(hash, op);
+				DataSource d = findDataSet(id, op);
 				if(d != null)
 					return d;
 			}
-
-			// Sigh. Next one
 		}
 
 		return null; // Not found

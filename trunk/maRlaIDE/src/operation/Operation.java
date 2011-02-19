@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 import javax.swing.JLabel;
 import org.jdom.Element;
@@ -53,6 +54,10 @@ public abstract class Operation extends JLabel implements DataSource, Changeable
 	 * complete.
 	 */
 	private boolean isLoading = false;
+	/**
+	 * "Unique" internal ID for this operation
+	 */
+	private Integer internalID = null;
 	/**
 	 * Operation name.
 	 */
@@ -318,6 +323,10 @@ public abstract class Operation extends JLabel implements DataSource, Changeable
 			Class opClass = Class.forName(opName);
 			Operation newOp = (Operation) opClass.newInstance();
 			newOp.isLoading = true;
+
+			String id = opEl.getAttributeValue("id");
+			if(id != null)
+				newOp.internalID = Integer.valueOf(id);
 
 			int x = Integer.parseInt(opEl.getAttributeValue("x"));
 			int y = Integer.parseInt(opEl.getAttributeValue("y"));
@@ -798,6 +807,24 @@ public abstract class Operation extends JLabel implements DataSource, Changeable
 		return hash;
 	}
 
+	@Override
+	public Integer getID()
+	{
+		return internalID;
+	}
+
+	@Override
+	public Integer generateID()
+	{
+		// Only generate if it's not already done
+		if(internalID == null)
+		{
+			internalID = hashCode() + new Random().nextInt();
+		}
+
+		return internalID;
+	}
+
 	/**
 	 * Produces the XML Element for this operation. Derivative classes
 	 * should override toXmlExtra(Element) if they want to save additional
@@ -810,6 +837,9 @@ public abstract class Operation extends JLabel implements DataSource, Changeable
 	{
 		Element opEl = new Element("operation");
 		opEl.setAttribute("type", this.getClass().getName());
+
+		if(internalID != null)
+			opEl.setAttribute("id", internalID.toString());
 
 		Rectangle rect = getBounds();
 		opEl.setAttribute("x", Integer.toString((int) rect.getX()));

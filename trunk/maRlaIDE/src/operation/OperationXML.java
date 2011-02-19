@@ -34,6 +34,7 @@ import problem.DataNotFoundException;
 import problem.DataSet;
 import problem.DataSource;
 import problem.DuplicateNameException;
+import problem.InternalMarlaException;
 import problem.MarlaException;
 import problem.Problem;
 import r.RProcessor;
@@ -961,8 +962,9 @@ public class OperationXML extends Operation
 	public Operation clone()
 	{
 		OperationXML op = (OperationXML) super.clone();
-		// TODO op.questionAnswers = (HashMap<String, Object[]>) (questionAnswers == null ? null : questionAnswers.clone());
-		return op;
+		System.err.println("CLONE ON XML OP");
+		throw new InternalMarlaException("cloning xml op");
+		//return op;
 	}
 
 	@Override
