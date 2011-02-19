@@ -21,7 +21,7 @@ Name of the creator of the document.
 Name of the class this problem is for. Classes may be given either short names (eg _MA2510_) or long names (eg, _Probability and Statistics_).
 
 Supported attributes:
-  *`type`* - Specifies the type of class name to substitute in. May be `short` or `long`
+  * *`type`* - Specifies the type of class name to substitute in. May be `short` or `long`
 
 == Chapter ==
 {{{
@@ -60,7 +60,7 @@ R code to solve the problem. If done outside a loop (see [ExportTemplateXML#Loop
 Outputs the specified data as a formatted LaTeX table. If done outside a loop, this will display all starting datasets in a problem (if `type="start"`) or all data at the ends of processing (if `type="end"`). If done in a loop, the same thing occurs, only restricted to the space denoted by the start and end of the solution.
 
 Supported attributes:
-  *`type`* - Whether to show the starting or ending data. May be `start` or `end`
+  * *`type`* - Whether to show the starting or ending data. May be `start` or `end`
 
 == Loop ==
 {{{
@@ -79,7 +79,7 @@ Loops over each of the subproblems. Allows their individual statements and solut
 Allows parts of the template to be used only conditionally. If the expression in the `<if>` is true, then the LaTeX template within the `<then>` block is processed. If it is false, then the `<else>` block is used. Either block may be left off if not needed.
 
 Attributes supported:
-  *`has_subproblems`* - Checks if the problem being exported contains subproblems. May be `true` or `false`
+  * *`has_subproblems`* - Checks if the problem being exported contains subproblems. May be `true` or `false`
 
 = Example = 
 A complete, working example may be viewed at [http://code.google.com/p/marla/source/browse/trunk/maRlaIDE/test/export_template.xml export_template.xml]
