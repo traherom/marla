@@ -601,6 +601,14 @@ public abstract class Operation extends JLabel implements DataSource, Changeable
 		if(parent.isLoading())
 			return;
 
+		// Our parent must be computed
+		if(parent instanceof Operation)
+			((Operation)parent).checkCache();
+
+		// We must be fully answered
+		if(isInfoUnanswered())
+			throw new OperationInfoRequiredException("More information required for computation", this);
+
 		try
 		{
 			// Compute new columns and save the way we do so (R commands) for use by toString()
@@ -615,7 +623,7 @@ public abstract class Operation extends JLabel implements DataSource, Changeable
 			// We're clean!
 			isCacheDirty = false;
 
-			// Children aren't though
+			// Children aren't though. Dirty, dirty children
 			for(Operation op : solutionOps)
 				op.markDirty();
 		}

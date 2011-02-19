@@ -436,8 +436,8 @@ public class Domain
 
 	public void ensureRequirementsMet(Operation op) throws MarlaException
 	{
-		// Iteratively attempts to tell operation to recompute itself until noone that
-		// it depends on has missing requirements
+		// Iteratively attempts to tell operation to recompute itself until
+		// no operation that it depends on has missing requirements
 		boolean isSolved = false;
 		while(!isSolved)
 		{
