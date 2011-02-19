@@ -28,6 +28,19 @@ import org.jdom.Element;
 public interface DataSource extends Loadable
 {
 	/**
+	 * Gets the internal ID of this DataSource
+	 * @return ID assigned to DataSource, null if there is none
+	 */
+	public Integer getID();
+
+	/**
+	 * Creates an ID for this DataSource and saves it. If the DataSource
+	 * already has an ID then the current one is used.
+	 * @return ID assigned to DataSource
+	 */
+	public Integer generateID();
+
+	/**
 	 * Gets the current DataSource name
 	 * @return DataSource name
 	 */
