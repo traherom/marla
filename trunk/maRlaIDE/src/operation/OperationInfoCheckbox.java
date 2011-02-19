@@ -18,6 +18,7 @@
 package operation;
 
 import org.jdom.Element;
+import problem.InternalMarlaException;
 
 /**
  * @author Ryan Morehart
@@ -48,8 +49,14 @@ public class OperationInfoCheckbox extends OperationInformation
 	public Boolean setAnswer(Object newAnswer)
 	{
 		Boolean oldAnswer = answer;
+
+		if(newAnswer == null)
+			throw new InternalMarlaException("Info may only be cleared by calling clearAnswer()");
 		
-		answer = (Boolean)newAnswer;
+		if(newAnswer instanceof Boolean)
+			answer = (Boolean)newAnswer;
+		else
+			answer = Boolean.valueOf(newAnswer.toString());
 
 		getOperation().checkDisplayName();
 		getOperation().markDirty();
@@ -62,6 +69,9 @@ public class OperationInfoCheckbox extends OperationInformation
 	public void clearAnswer()
 	{
 		answer = null;
+		getOperation().checkDisplayName();
+		getOperation().markDirty();
+		getOperation().markUnsaved();
 	}
 
 	@Override
@@ -76,6 +86,6 @@ public class OperationInfoCheckbox extends OperationInformation
 	{
 		String answerStr = answerEl.getAttributeValue("answer");
 		if(answerStr != null)
-			setAnswer(Boolean.valueOf(answerStr));
+			setAnswer(answerStr);
 	}
 }

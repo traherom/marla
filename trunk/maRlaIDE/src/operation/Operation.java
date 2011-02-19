@@ -48,6 +48,12 @@ import resource.ConfigurationException;
 public abstract class Operation extends JLabel implements DataSource, Changeable
 {
 	/**
+	 * Denotes when this operation is in the middle of loading from XML,
+	 * blocks calculations and such from altering the structure until load is
+	 * complete.
+	 */
+	private boolean isLoading = false;
+	/**
 	 * Operation name.
 	 */
 	private String name;
@@ -311,6 +317,7 @@ public abstract class Operation extends JLabel implements DataSource, Changeable
 			// Create the correct type of Operation
 			Class opClass = Class.forName(opName);
 			Operation newOp = (Operation) opClass.newInstance();
+			newOp.isLoading = true;
 
 			int x = Integer.parseInt(opEl.getAttributeValue("x"));
 			int y = Integer.parseInt(opEl.getAttributeValue("y"));
@@ -325,8 +332,21 @@ public abstract class Operation extends JLabel implements DataSource, Changeable
 			newOp.fromXmlExtra(opEl);
 
 			// And restore the answers
-			OperationInformation.fromXml(opEl.getChild("info"), newOp);
+			for(Object questionEl : opEl.getChildren("question"))
+			{
+				OperationInformation.fromXml((Element) questionEl, newOp);
+			}
 
+			// Operations that chain off of here
+			for(Object opChildEl : opEl.getChildren("operation"))
+			{
+				Operation newChildOp = Operation.fromXml((Element) opChildEl);
+				newOp.addOperation(newChildOp);
+				newChildOp.markDirty();
+				newChildOp.checkDisplayName();
+			}
+
+			newOp.isLoading = false;
 			return newOp;
 		}
 		catch(IllegalAccessException ex)
@@ -351,6 +371,17 @@ public abstract class Operation extends JLabel implements DataSource, Changeable
 	 */
 	protected void fromXmlExtra(Element opEl) throws MarlaException
 	{
+	}
+
+	@Override
+	public boolean isLoading()
+	{
+		if(isLoading)
+			return true;
+		else if(parent != null)
+			return parent.isLoading();
+		else
+			return false;
 	}
 
 	/**
@@ -556,6 +587,10 @@ public abstract class Operation extends JLabel implements DataSource, Changeable
 	{
 		if(parent == null)
 			throw new OperationException("No parent for operation to get data from");
+
+		// Don't if everything is still loading
+		if(parent.isLoading())
+			return;
 
 		try
 		{
@@ -788,20 +823,16 @@ public abstract class Operation extends JLabel implements DataSource, Changeable
 		opEl.addContent(remarkEl);
 
 		// Add Ops
-		Element opEls = new Element("operations");
-		opEl.addContent(opEls);
 		for(Operation op : solutionOps)
 		{
-			opEls.addContent(op.toXml());
+			opEl.addContent(op.toXml());
 		}
 
 		// Add question answers
-		Element questionEls = new Element("info");
-		opEl.addContent(questionEls);
 		Set<String> keys = questions.keySet();
 		for(String key : keys)
 		{
-			questionEls.addContent(questions.get(key).toXml());
+			opEl.addContent(questions.get(key).toXml());
 		}
 
 		// Extra info?

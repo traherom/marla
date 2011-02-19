@@ -145,14 +145,9 @@ public abstract class OperationInformation
 	 * @param questionEls XML to read questions from
 	 * @param Operation Operation to fill in answers for
 	 */
-	public static void fromXml(Element infoEl, Operation op)
+	public static void fromXml(Element questionEl, Operation op)
 	{
-		for(Object questionObj : infoEl.getChildren("question"))
-		{
-			Element questionEl = (Element)questionObj;
-
-			op.getQuestion(questionEl.getAttributeValue("name")).fromXmlAnswer(questionEl);
-		}
+		op.getQuestion(questionEl.getAttributeValue("name")).fromXmlAnswer(questionEl);
 	}
 
 	/*

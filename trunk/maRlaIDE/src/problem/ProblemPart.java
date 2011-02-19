@@ -24,7 +24,7 @@ import org.jdom.Element;
  *
  * @author Ryan Morehart
  */
-public interface ProblemPart extends Changeable
+public interface ProblemPart extends Changeable, Loadable
 {
 	/**
 	 * Gets the description for this part of the problem

@@ -17,17 +17,21 @@
  */
 package operation;
 
+import java.util.ArrayList;
 import java.util.List;
+import org.jdom.Element;
 import problem.DataColumn;
 import problem.DataColumn.DataMode;
 import problem.DataSource;
+import problem.InternalMarlaException;
 import problem.MarlaException;
 
 /**
  * @author Ryan Morehart
  */
-public class OperationInfoColumn extends OperationInfoCombo
+public class OperationInfoColumn extends OperationInformation
 {
+	private String answer = null;
 	private DataMode columnType = null;
 
 	/**
@@ -55,21 +59,86 @@ public class OperationInfoColumn extends OperationInfoCombo
 		this.columnType = columnType;
 	}
 
-	/**
-	 * Retrieves the appropriate columns from the parent data
-	 */
-	private void setOptions()
+	@Override
+	public String setAnswer(Object newAnswer) throws OperationInfoRequiredException
 	{
-		// Clear anything existing out
-		List<String> opts = getModifiableOptions();
-		opts.clear();
+		String oldAnswer = answer;
+
+		if(newAnswer == null)
+			throw new InternalMarlaException("Info may only be cleared by calling clearAnswer()");
+		
+		if(!getOperation().isLoading())
+		{
+			DataColumn dc = null;
+
+			try
+			{
+				// Ensure it's a valid column in the parent
+				dc = getOperation().getParentData().getColumn(newAnswer.toString());
+			}
+			catch(MarlaException ex)
+			{
+				// Couldn't find it, don't save this answer
+				throw new OperationInfoRequiredException("Column '" + answer + "' does not exist in parent", getOperation());
+			}
+
+			// Check the type
+			if(columnType != null && dc.getMode() == columnType)
+				throw new OperationInfoRequiredException("Column '" + answer + "' not correct type", getOperation());
+		}
+		
+		answer = (String)newAnswer;
+
+		getOperation().checkDisplayName();
+		getOperation().markDirty();
+		getOperation().markUnsaved();
+
+		return oldAnswer;
+	}
+
+	@Override
+	public String getAnswer()
+	{
+		if(answer == null)
+			return null;
+		
+		if(!getOperation().isLoading())
+		{
+			// Recheck that the column selected is still in the parent data
+			DataColumn dc = null;
+
+			try
+			{
+				// Ensure it's a valid column in the parent
+				dc = getOperation().getParentData().getColumn(answer.toString());
+			}
+			catch(MarlaException ex)
+			{
+				clearAnswer();
+				return null;
+			}
+
+			// Check the type
+			if(columnType != null && dc.getMode() == columnType)
+			{
+				clearAnswer();
+				return null;
+			}
+		}
+
+		return answer;
+	}
+
+	public List<String> getOptions()
+	{
+		List<String> opts = new ArrayList<String>();
 
 		try
 		{
 			// Get columns in the given mode (if possible)
 			DataSource ds = getOperation().getParentData();
 			if(ds == null)
-				return;
+				return opts;
 
 			for(int i = 0; i < ds.getColumnCount(); i++)
 			{
@@ -77,44 +146,38 @@ public class OperationInfoColumn extends OperationInfoCombo
 				if(columnType == null || dc.getMode() == columnType)
 					opts.add(dc.getName());
 			}
+
+			return opts;
 		}
 		catch(MarlaException ex)
 		{
 			// Can't do anything right now
-			opts.clear();
+			return opts;
 		}
 	}
 
 	@Override
-	public String setAnswer(Object newAnswer) throws OperationInfoRequiredException
+	public void clearAnswer()
 	{
-		setOptions();
-		return super.setAnswer(newAnswer);
+		System.out.println("!!!!!!!!!!!!Clearing answer!!!!!!!!");
+		
+		answer = null;
+		
+		getOperation().checkDisplayName();
+		getOperation().markDirty();
+		getOperation().markUnsaved();
 	}
 
 	@Override
-	public String getAnswer()
+	protected void toXmlAnswer(Element saveEl)
 	{
-		// Recheck that the column selected is still in the parent data
-		setOptions();
-		String current = super.getAnswer();
-		if(super.getOptions().contains(current))
-		{
-			return current;
-		}
-		else
-		{
-			// Not found, clear answer
-			clearAnswer();
-			return null;
-		}
+		if(answer != null)
+			saveEl.setAttribute("answer", answer);
 	}
 
 	@Override
-	public List<String> getOptions()
+	protected void fromXmlAnswer(Element answerEl)
 	{
-		// Grab options if possible
-		setOptions();
-		return super.getOptions();
+		answer = answerEl.getAttributeValue("answer");
 	}
 }
