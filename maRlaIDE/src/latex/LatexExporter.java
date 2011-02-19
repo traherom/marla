@@ -38,6 +38,8 @@ import org.jdom.JDOMException;
 import org.jdom.Text;
 import org.jdom.input.SAXBuilder;
 import operation.Operation;
+import problem.DataColumn;
+import problem.DataSource;
 import problem.SubProblem;
 import r.RProcessor;
 import r.RProcessor.RecordMode;
@@ -464,15 +466,14 @@ public class LatexExporter
 		List<Operation> solOps = null;
 		if(currentSub == null)
 		{
-			// Get all operations in the problem
+			// For each dataset, get its leaf operations and get the chains
+			// running back up to the dataset
 			solOps = new ArrayList<Operation>();
 			for(int i = 0; i < prob.getDataCount(); i++)
 			{
-				solOps.addAll(prob.getData(i).getAllChildOperations());
+				DataSource top = prob.getData(i);
+				solOps.addAll(SubProblem.getOperationChain(top, top.getAllLeafOperations()));
 			}
-
-			// TODO probably need to run to leaves and then back up, similar
-			// getSolutionChain()
 		}
 		else if(currentSub.hasSolution())
 		{
@@ -543,20 +544,122 @@ public class LatexExporter
 		}
 		catch(IOException ex)
 		{
-			throw new LatexException("Unable to write statement to export file");
+			throw new LatexException("Unable to write solution to export file");
 		}
 	}
 
 	private void processDataClean(Element el, Writer out) throws LatexException, MarlaException
 	{
+		String type = el.getAttributeValue("type", "start");
+
+		List<DataSource> dsToShow = new ArrayList<DataSource>();
+		if(currentSub == null)
+		{
+			if(type.equals("start"))
+			{
+				// All DataSets
+				for(int i = 0; i < prob.getDataCount(); i++)
+					dsToShow.add(prob.getData(i));
+			}
+			else if(type.equals("end"))
+			{
+				// All leaf operations
+				for(int i = 0; i < prob.getDataCount(); i++)
+					dsToShow.addAll(prob.getData(i).getAllLeafOperations());
+			}
+			else
+				throw new LatexException("Unrecognized type of data '" + type + "' to display in LaTeX template");
+		}
+		else if(currentSub.hasSolution())
+		{
+			if(type.equals("start"))
+			{
+				dsToShow.add(currentSub.getSolutionStart());
+			}
+			else if(type.equals("end"))
+			{
+				if(currentSub.getSolutionStart() == currentSub.getSolutionEnd())
+				{
+					// All leaf operations from the marked point
+					DataSource start = currentSub.getSolutionStart();
+					dsToShow.addAll(start.getAllLeafOperations());
+				}
+				else
+					dsToShow.add(currentSub.getSolutionEnd());
+			}
+			else
+				throw new LatexException("Unrecognized type of data '" + type + "' to display in LaTeX template");
+		}
+
+		// Create latex array for each DataSource
+		StringBuilder sb = new StringBuilder();
+		for(DataSource ds : dsToShow)
+		{
+			int cols = ds.getColumnCount();
+
+			// Start tabular
+			sb.append("\\begin{tabular}{r || ");
+			for(int i = 0; i < cols; i++)
+				sb.append("r |");
+			sb.append("}\n");
+
+			// DataSource name
+			sb.append("\\multicolumn{");
+			sb.append(ds.getColumnCount() + 1);
+			sb.append("}{c}{\\bf ");
+			sb.append(ds.getName());
+			sb.append("} \\\\\n \\cline{2-");
+			sb.append(cols + 1);
+			sb.append("}\n");
+
+			// Column names
+			sb.append("   & ");
+			for(int i = 0; i < cols; i++)
+			{
+				sb.append("{\\it ");
+				sb.append(ds.getColumn(i).getName());
+				sb.append("} ");
+				
+				// Don't end the row with the cell separator
+				if(i + 1 < cols)
+					sb.append("& ");
+			}
+			sb.append("\\\\ \\hline\n");
+
+			// Data
+			for(int i = 0; i < ds.getColumnLength(); i++)
+			{
+				// Index in DataColumn
+				sb.append(i + 1);
+				sb.append(" & ");
+
+				for(int j = 0; j < cols; j++)
+				{
+					// Ensure this column extends this far
+					DataColumn dc = ds.getColumn(j);
+					if(dc.size() > i)
+						sb.append(dc.get(i));
+
+					// Don't end the row with the cell separator
+					if(j + 1 < cols)
+						sb.append(" & ");
+				}
+
+				sb.append("\\\\\n");
+			}
+
+			sb.append("\\end{tabular}\n");
+		}
+
 		try
 		{
-			// TODO do this
-			out.write("Data output TBD");
+			// Write it out
+			String data = sb.toString();
+			out.write(data, 0, data.length());
 		}
 		catch(IOException ex)
 		{
-			// bah
+			throw new LatexException("Unable to write data to export file");
 		}
 	}
 

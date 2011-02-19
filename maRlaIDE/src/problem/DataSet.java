@@ -678,6 +678,18 @@ public final class DataSet extends JLabel implements DataSource, Changeable
 	}
 
 	@Override
+	public List<Operation> getAllLeafOperations()
+	{
+		List<Operation> myLeaves = new ArrayList<Operation>();
+
+		// If I have children, then copy their leaves
+		for(Operation op : solutionOps)
+			myLeaves.addAll(op.getAllLeafOperations());
+
+		return myLeaves;
+	}
+
+	@Override
 	public int getOperationCount()
 	{
 		return solutionOps.size();

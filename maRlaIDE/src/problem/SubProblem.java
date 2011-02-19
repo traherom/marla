@@ -207,47 +207,52 @@ public class SubProblem implements ProblemPart
 		// get the R for _everything_ underneath it
 		if(startSolutionStep == endSolutionStep)
 		{
-			// Get all operations, we'll skip ones that aren't leaves
-			List<Operation> allOps = startSolutionStep.getAllChildOperations();
-
-			for(Operation op : allOps)
-			{
-				// Make sure it's a leaf
-				if(op.getOperationCount() != 0)
-					continue;
-
-				DataSource currOp = op;
-				while(currOp != startSolutionStep)
-				{
-					stack.push(currOp);
-					currOp = ((Operation)currOp).getParentData();
-				}
-			}
-
-			// And add the start step
-			stack.push(startSolutionStep);
+			// Get all leaves of the tree
+			return getOperationChain(startSolutionStep, startSolutionStep.getAllLeafOperations());
 		}
 		else	
 		{
-			// Find all the ops in order from the bottom of our chain to the top
-			DataSource currOp = endSolutionStep;
+			List<Operation> endOp = new ArrayList<Operation>();
+			endOp.add((Operation)endSolutionStep);
+			return getOperationChain(startSolutionStep, endOp);
+		}
+	}
+
+	/**
+	 * Gets the chain of operations that run from the operations listed in
+	 * allOps to chainTop, in order from first execution to last. IE, if the
+	 * R for this were to be executed, the List returned here could be executed
+	 * in order. DataSets are never part of this--even if they are marked as the start
+	 * of a solution--because export of R code doesn't want to work with those.
+	 * @return Chain of operations, from start to finish
+	 */
+	public static List<Operation> getOperationChain(DataSource chainTop, List<Operation> allOps) throws MarlaException
+	{
+		// Push all the operations unto here in reverse order
+		// (from the bottom of the chain to the top)
+		Deque<DataSource> stack = new ArrayDeque<DataSource>();
+
+		for(Operation op : allOps)
+		{
 			try
 			{
-				while(currOp != startSolutionStep)
+				// Read from this leaf up to the DataSource at the start of the solution
+				DataSource currOp = op;
+				while(currOp != chainTop)
 				{
 					stack.push(currOp);
 					currOp = ((Operation)currOp).getParentData();
 				}
 
 				// And add the start step
-				stack.push(currOp);
+				stack.push(chainTop);
 			}
 			catch(ClassCastException ex)
 			{
 				throw new ProblemException("The start and end of the subproblem solution appear to not be connected", ex);
 			}
 		}
-		
+
 		// Put them in the list in the opposite order we found them, so
 		// the list runs from the top (start) operation to the bottom (end)
 		// Only push on operations, ignore the datasets

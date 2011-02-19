@@ -13,7 +13,8 @@ Chapter <chapter />-Section <section />-Problem \#<probnum />
 \end{flushright}
 
 \noindent\textbf{\Large Given}\par
-<statement />
+<statement />\par
+<data type="start" />
 
 <if has_subproblems="true">
 	<then>
@@ -28,11 +29,16 @@ Chapter <chapter />-Section <section />-Problem \#<probnum />
 
 \vfil\noindent\textbf{\Large Analysis and Solution}\par
 <if has_subproblems="false">
-	<then><solution /></then>
+	<then>
+		<solution />\par
+		<data type="end" />
+	</then>
 	<else>
 	\begin{enumerate}[(a)]
 	<loop type="subproblem">
-		\item <solution />
+		\item
+		<solution />\par
+		<data type="end" />	
 	</loop>
 	\end{enumerate}
 	</else>

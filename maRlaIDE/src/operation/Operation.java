@@ -1053,4 +1053,22 @@ public abstract class Operation extends JLabel implements DataSource, Changeable
 
 		return myOps;
 	}
+
+	@Override
+	public List<Operation> getAllLeafOperations()
+	{
+		List<Operation> myLeaves = new ArrayList<Operation>();
+
+		// If I have children, then copy their leaves
+		// Otherwise _I_ am a leaf, so I should return myself
+		if(!solutionOps.isEmpty())
+		{
+			for(Operation op : solutionOps)
+				myLeaves.addAll(op.getAllLeafOperations());
+		}
+		else
+			myLeaves.add(this);
+
+		return myLeaves;
+	}
 }
