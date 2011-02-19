@@ -152,6 +152,13 @@ public interface DataSource extends Loadable
 	public List<Operation> getAllChildOperations();
 
 	/**
+	 * Returns a flat list of every operation that is a child of this
+	 * one--directly or indirectly--and has no child operations of its own.
+	 * @return List of every operation below this one in the tree
+	 */
+	public List<Operation> getAllLeafOperations();
+
+	/**
 	 * Returns the DataSource that is at the top of the chain
 	 * @return DataSource without a parent (top of the chain)
 	 */
