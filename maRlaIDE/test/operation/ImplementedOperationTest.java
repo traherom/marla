@@ -61,12 +61,6 @@ public class ImplementedOperationTest
 		return objectArray;
 	}
 
-	@AfterClass
-	public static void killR() throws Exception
-	{
-		RProcessor.getInstance().close();
-	}
-
 	public ImplementedOperationTest(String opName) throws OperationException
 	{
 		System.out.println("Testing operation '" + opName + "'");
@@ -221,7 +215,9 @@ public class ImplementedOperationTest
 			OperationTester.fillRequiredInfo(op1);
 
 			el = op1.toXml();
+			DataSet ds2 = new DataSet(ds1, ds1.getParentProblem());
 			op2 = Operation.fromXml(el);
+			ds2.addOperation(op2);
 
 			op1.equals(op2);
 
