@@ -548,10 +548,6 @@ public class Problem implements ProblemPart
 	@Override
 	public boolean isLoading()
 	{
-		// debug message
-		if(isLoading)
-			System.out.println("BLOCKED SOMETHING FROM DOING SOMETHING BECAUSE WE'RE LOADING");
-		
 		return isLoading;
 	}
 

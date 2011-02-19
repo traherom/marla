@@ -31,7 +31,13 @@ import problem.MarlaException;
  */
 public class OperationInfoColumn extends OperationInfoCombo
 {
+	/**
+	 * Answer for this question
+	 */
 	private String answer = null;
+	/**
+	 * Type of DataColumn we're limited to. If null, no limitation
+	 */
 	private DataMode columnType = null;
 
 	/**
@@ -47,7 +53,8 @@ public class OperationInfoColumn extends OperationInfoCombo
 	}
 
 	/**
-	 * Constructs a new combo select prompt with the given options.
+	 * Constructs a new combo select prompt with the columns of the given type
+	 * in the DataSource as options
 	 * @param name Unique reference name for this prompt
 	 * @param prompt User-visible prompt
 	 * @param ds DataSource from which to pull column information
@@ -66,7 +73,7 @@ public class OperationInfoColumn extends OperationInfoCombo
 
 		if(newAnswer == null)
 			throw new InternalMarlaException("Info may only be cleared by calling clearAnswer()");
-		
+
 		if(!getOperation().isLoading())
 		{
 			DataColumn dc = null;
@@ -86,8 +93,8 @@ public class OperationInfoColumn extends OperationInfoCombo
 			if(columnType != null && dc.getMode() != columnType)
 				throw new OperationInfoRequiredException("Column '" + answer + "' not correct type", getOperation());
 		}
-		
-		answer = (String)newAnswer;
+
+		answer = (String) newAnswer;
 
 		getOperation().checkDisplayName();
 		getOperation().markDirty();
@@ -99,33 +106,70 @@ public class OperationInfoColumn extends OperationInfoCombo
 	@Override
 	public String getAnswer()
 	{
-		if(answer == null)
-			return null;
-		
 		if(!getOperation().isLoading())
 		{
-			// Recheck that the column selected is still in the parent data
-			DataColumn dc = null;
+			DataSource parent = getOperation().getParentData();
+
+			// No parent? Don't clear here, if they move it to a new
+			// DataSet with the same column name then we can just start
+			// using that right away
+			if(parent == null)
+				return null;
 
 			try
 			{
-				// Ensure it's a valid column in the parent
-				dc = getOperation().getParentData().getColumn(answer.toString());
+				if(answer != null)
+				{
+					// Recheck that the column selected is still in the parent data
+					DataColumn dc = parent.getColumn(answer.toString());
+
+					// Check the type
+					if(columnType != null && dc.getMode() != columnType)
+					{
+						clearAnswer();
+					}
+				}
+				else
+				{
+					// If there's no answer and there's only one column of the
+					// correct type in the parent then assume that
+					boolean foundExactlyOne = false;
+					int goodCol = -1;
+
+					for(int i = 0; i < parent.getColumnCount(); i++)
+					{
+						if(columnType != null && parent.getColumn(i).getMode() == columnType)
+						{
+							// Is this the first one we've found that worked?
+							if(foundExactlyOne != true)
+							{
+								foundExactlyOne = true;
+								goodCol = i;
+							}
+							else
+							{
+								// Sorry, has to be exactly one. We've already
+								// seen one that did
+								foundExactlyOne = false;
+								goodCol = -1;
+								break;
+							}
+
+						}
+					}
+
+					// Did we find exactly one possibility?
+					if(foundExactlyOne)
+						setAnswer(parent.getColumn(goodCol).getName());
+				}
 			}
 			catch(MarlaException ex)
 			{
 				clearAnswer();
-				return null;
-			}
-
-			// Check the type
-			if(columnType != null && dc.getMode() != columnType)
-			{
-				clearAnswer();
-				return null;
 			}
 		}
 
+		// Either we're not checking (loading) or it's all good
 		return answer;
 	}
 
@@ -160,10 +204,8 @@ public class OperationInfoColumn extends OperationInfoCombo
 	@Override
 	public void clearAnswer()
 	{
-		System.out.println("!!!!!!!!!!!!Clearing answer!!!!!!!!");
-		
 		answer = null;
-		
+
 		getOperation().checkDisplayName();
 		getOperation().markDirty();
 		getOperation().markUnsaved();
