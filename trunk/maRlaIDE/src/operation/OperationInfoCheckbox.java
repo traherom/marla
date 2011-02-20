@@ -25,6 +25,9 @@ import problem.InternalMarlaException;
  */
 public class OperationInfoCheckbox extends OperationInformation
 {
+	/**
+	 * Answer to the question. Null if there is none
+	 */
 	private Boolean answer = null;
 
 	/**

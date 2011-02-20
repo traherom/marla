@@ -1,6 +1,5 @@
 <?xml version="1.0" ?>
-<template>
-\documentclass[10pt,letterpaper]{article}
+<template>\documentclass[10pt,letterpaper]{article}
 \usepackage{graphicx}
 \usepackage{enumerate}
 \usepackage{array}

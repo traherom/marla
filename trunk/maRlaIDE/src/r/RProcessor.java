@@ -52,7 +52,7 @@ public final class RProcessor
 	/**
 	 * Pattern used to recognize doubles in R output, mainly for use with vectors
 	 */
-	private final Pattern doublePatt = Pattern.compile("(?<=\\s)(-?[0-9]+(\\.[0-9]+)?(e[+-][0-9]+)?|NaN|[-]Inf)(?=\\s|$)");
+	private final Pattern doublePatt = Pattern.compile("(?<=\\s)(-?[0-9]+(\\.[0-9]+)?(e[+-][0-9]+)?|NaN|-?Inf)(?=\\s|$)");
 	/**
 	 * Pattern used to recognize strings in R output, mainly for use with vectors
 	 */

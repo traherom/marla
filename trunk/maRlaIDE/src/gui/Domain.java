@@ -268,15 +268,7 @@ public class Domain
 							desktop.open (genFile);
 						}
 					}
-					catch (LatexException ex)
-					{
-						Domain.logger.add (ex);
-					}
 					catch (IOException ex)
-					{
-						Domain.logger.add (ex);
-					}
-					catch (RProcessorException ex)
 					{
 						Domain.logger.add (ex);
 					}
@@ -360,15 +352,7 @@ public class Domain
 							desktop.open (genFile);
 						}
 					}
-					catch (LatexException ex)
-					{
-						Domain.logger.add (ex);
-					}
 					catch (IOException ex)
-					{
-						Domain.logger.add (ex);
-					}
-					catch (RProcessorException ex)
 					{
 						Domain.logger.add (ex);
 					}
