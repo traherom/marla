@@ -17,8 +17,10 @@
  */
 package latex;
 
+import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.OutputStream;
 import problem.MarlaException;
 import problem.Problem;
 import java.io.File;
@@ -27,6 +29,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Writer;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -143,14 +146,13 @@ public class LatexExporter
 	public static String setDefaultTemplate(String newTemplatePath) throws ConfigurationException
 	{
 		String oldTemplate = defaultTemplate;
-		defaultTemplate = newTemplatePath;
 
 		// Ensure it at least exists
-		if(!(new File(defaultTemplate)).exists())
-			throw new ConfigurationException("LaTeX template '" + defaultTemplate + "' XML file does not exist", ConfigType.TexTemplate);
+		if(!(new File(newTemplatePath)).exists())
+			throw new ConfigurationException("LaTeX template '" + newTemplatePath + "' XML file does not exist", ConfigType.TexTemplate);
 
-		System.out.println("Using LaTeX export template at '" + defaultTemplate + "'");
-
+		System.out.println("Using LaTeX export template at '" + newTemplatePath + "'");
+		defaultTemplate = newTemplatePath;
 		return oldTemplate;
 	}
 
@@ -171,7 +173,6 @@ public class LatexExporter
 	public static String setPdfTexPath(String newPdfTexPath) throws ConfigurationException
 	{
 		String oldPath = pdfTexPath;
-		pdfTexPath = newPdfTexPath;
 
 		// Ensure we could run this if wished
 		if(!newPdfTexPath.equals(oldPath))
@@ -180,23 +181,50 @@ public class LatexExporter
 			
 			try
 			{
-				// Create pdflatex instance to see if this works
-				ProcessBuilder procBuild = new ProcessBuilder(pdfTexPath, "--version");
+				// Get current files in dir. Any new files will be removed
+				File currentDir = new File(".");
+				File[] dirBefore = currentDir.listFiles();
+
+				// Test to see if pdflatex works by running a test file through it
+				ProcessBuilder procBuild = new ProcessBuilder(newPdfTexPath);
 				Process texProc = procBuild.start();
 				BufferedReader texOutStream = new BufferedReader(new InputStreamReader(texProc.getInputStream()));
-				texProc.getOutputStream().close();
 
-				// See if it told us about itself
-				String firstLine = texOutStream.readLine();
-				if(firstLine != null && firstLine.contains("pdfTeX"))
-					validInstall = true;
-				else
-					validInstall = false;
+				// Write out the test tex
+				String testTex = "\\documentclass{article}\\begin{document}Test\\end{document}";
+				BufferedOutputStream out = new BufferedOutputStream(texProc.getOutputStream());
+				out.write(testTex.getBytes(), 0, testTex.length());
+				out.close();
+
+				// Look for where it says that pdf output was produced
+				validInstall = false;
+				String line = texOutStream.readLine();
+				while(line != null)
+				{
+					if(line.startsWith("Output written on"))
+						validInstall = true;
+
+					line = texOutStream.readLine();
+				}
 
 				// Good game boys, gg
+				texProc.waitFor();
 				texOutStream.close();
+
+				// Clean up by removing any new files
+				File[] dirAfter = currentDir.listFiles();
+				List<File> dirBeforeList = Arrays.asList(dirBefore);
+				for(int i = 0; i < dirAfter.length; i++)
+				{
+					if(!dirBeforeList.contains(dirAfter[i]))
+						FileUtils.deleteQuietly(dirAfter[i]);
+				}
 			}
 			catch(IOException ex)
+			{
+				validInstall = false;
+			}
+			catch(InterruptedException ex)
 			{
 				validInstall = false;
 			}
@@ -205,8 +233,8 @@ public class LatexExporter
 				throw new ConfigurationException("pdfTeX could not be located at '" + defaultTemplate + "'", ConfigType.PdfTex);
 		}
 
-		System.out.println("Using pdfTeX binary at '" + pdfTexPath + "'");
-
+		System.out.println("Using pdfTeX binary at '" + newPdfTexPath + "'");
+		pdfTexPath = newPdfTexPath;
 		return oldPath;
 	}
 

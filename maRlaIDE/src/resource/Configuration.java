@@ -147,12 +147,17 @@ public class Configuration
 				{
 					// Tell various components about their settings
 					Element rEl = configXML.getChild("r");
-					RProcessor.setRLocation(rEl.getAttributeValue("rpath"));
-					RProcessor.getInstance().setDebugMode(RecordMode.valueOf(rEl.getAttributeValue("debug", "disabled").toUpperCase()));
-
-					configSuccess = true;
+					String path = rEl.getAttributeValue("rpath");
+					if(path != null)
+					{
+						RProcessor.setRLocation(path);
+						RProcessor.getInstance().setDebugMode(RecordMode.valueOf(rEl.getAttributeValue("debug", "disabled").toUpperCase()));
+						configSuccess = true;
+					}
+					else
+						configSuccess = false;
 				}
-				catch(NullPointerException ex)
+				catch(ConfigurationException ex)
 				{
 					configSuccess = false;
 				}
@@ -179,11 +184,16 @@ public class Configuration
 				{
 					// Tell various components about their settings
 					Element latexEl = configXML.getChild("latex");
-					LatexExporter.setDefaultTemplate(latexEl.getAttributeValue("template"));
-			
-					configSuccess = true;
+					String path = latexEl.getAttributeValue("template");
+					if(path != null)
+					{
+						LatexExporter.setDefaultTemplate(path);
+						configSuccess = true;
+					}
+					else
+						configSuccess = false;
 				}
-				catch(NullPointerException ex)
+				catch(ConfigurationException ex)
 				{
 					configSuccess = false;
 				}
@@ -210,11 +220,16 @@ public class Configuration
 				{
 					// Tell various components about their settings
 					Element latexEl = configXML.getChild("latex");
-					LatexExporter.setPdfTexPath(latexEl.getAttributeValue("pdftex"));
-
-					configSuccess = true;
+					String path = latexEl.getAttributeValue("pdftex");
+					if(path != null)
+					{
+						LatexExporter.setPdfTexPath(path);
+						configSuccess = true;
+					}
+					else
+						configSuccess = false;
 				}
-				catch(NullPointerException ex)
+				catch(ConfigurationException ex)
 				{
 					configSuccess = false;
 				}
@@ -241,11 +256,16 @@ public class Configuration
 				{
 					// Tell various components about their settings
 					Element opsEl = configXML.getChild("ops");
-					OperationXML.loadXML(opsEl.getAttributeValue("xml"));
-
-					configSuccess = true;
+					String path = opsEl.getAttributeValue("xml");
+					if(path != null)
+					{
+						OperationXML.loadXML(path);
+						configSuccess = true;
+					}
+					else
+						configSuccess = false;
 				}
-				catch(NullPointerException ex)
+				catch(ConfigurationException ex)
 				{
 					configSuccess = false;
 				}
@@ -545,10 +565,22 @@ public class Configuration
 	 */
 	public static void main(String[] args) throws MarlaException
 	{
+		boolean success = false;
 		if(args.length == 0)
-			Configuration.load();
+			success = Configuration.load();
 		else
-			Configuration.load(args[0]);
+			success = Configuration.load(args[0]);
+
+		if(!success)
+		{
+			System.out.println("Configuruation failed:");
+			ConfigurationException curr = Configuration.getNextError();
+			while(curr != null)
+			{
+				System.out.println(curr);
+				curr = Configuration.getNextError();
+			}
+		}
 
 		Configuration.save();
 	}

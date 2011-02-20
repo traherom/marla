@@ -120,27 +120,27 @@ public class OperationXML extends Operation
 	{
 		try
 		{
-			// Save for future use again
-			operationFilePath = xmlPath;
-
 			// Make sure we know where we're looking for that there XML
-			if(operationFilePath == null)
+			if(xmlPath == null)
 				throw new ConfigurationException("XML file for operations has not been specified", ConfigType.OpsXML);
 
-			System.out.println("Loading XML operations from '" + operationFilePath + "'");
+			System.out.println("Loading XML operations from '" + xmlPath + "'");
 
 			SAXBuilder parser = new SAXBuilder();
-			Document doc = parser.build(operationFilePath);
+			Document doc = parser.build(xmlPath);
 			operationXML = doc.getRootElement();
 
 			// Check version. Maybe have to use old versions of parsers someday?
 			parserVersion = Integer.parseInt(operationXML.getAttributeValue("version", "-1"));
 			if(parserVersion > 1)
 				throw new OperationXMLException("Version " + parserVersion + " of operational XML cannot be parsed.");
+
+			// Save for future use
+			operationFilePath = xmlPath;
 		}
 		catch(JDOMException ex)
 		{
-			throw new OperationXMLException("Operation XML file '" + operationFilePath + "' contains XML error(s)", ex);
+			throw new OperationXMLException("Operation XML file '" +xmlPath + "' contains XML error(s)", ex);
 		}
 		catch(IOException ex)
 		{

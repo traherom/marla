@@ -158,11 +158,11 @@ public final class RProcessor
 		rPath = newRPath;
 
 		// Restart RProcessor if needed
-		if(singleRProcessor != null)
+		if(singleRProcessor != null && !oldPath.equals(newRPath))
 			restartInstance();
 
+		// Apply change
 		System.out.println("Using R binary at '" + rPath + "'");
-
 		return oldPath;
 	}
 
