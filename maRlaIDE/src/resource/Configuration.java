@@ -324,7 +324,7 @@ public class Configuration
 		{
 			// Create directories to file if needed
 			System.out.println("Writing configuration to '" + configPath + "'");
-			FileUtils.forceMkdir(new File(configPath).getParentFile());
+			FileUtils.forceMkdir(new File(configPath).getAbsoluteFile().getParentFile());
 			
 			// Output to file
 			OutputStreamWriter os = new OutputStreamWriter(new FileOutputStream(configPath));
