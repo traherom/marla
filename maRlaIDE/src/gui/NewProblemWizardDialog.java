@@ -793,8 +793,8 @@ public class NewProblemWizardDialog extends EscapeDialog
 			welcomeCardPanel.setVisible(false);
 
 			// Shift the boldness in the Steps panel to the next card
-			welcomeLabel.setFont(ViewPanel.FONT_PLAIN_12);
-			nameAndLocationLabel.setFont(ViewPanel.FONT_BOLD_12);
+			welcomeLabel.setFont(ViewPanel.fontPlain12);
+			nameAndLocationLabel.setFont(ViewPanel.fontBold12);
 
 			// Set the focus properly for the new card
 			problemNameTextField.requestFocus();
@@ -864,8 +864,8 @@ public class NewProblemWizardDialog extends EscapeDialog
 				nameAndLocationCardPanel.setVisible(false);
 
 				// Shift the boldness in the Steps panel to the next card
-				nameAndLocationLabel.setFont(ViewPanel.FONT_PLAIN_12);
-				descriptionLabel.setFont(ViewPanel.FONT_BOLD_12);
+				nameAndLocationLabel.setFont(ViewPanel.fontPlain12);
+				descriptionLabel.setFont(ViewPanel.fontBold12);
 
 				// Set the focus properly for the new card
 				descriptionTextArea.requestFocus();
@@ -884,8 +884,8 @@ public class NewProblemWizardDialog extends EscapeDialog
 			descriptionCardPanel.setVisible(false);
 
 			// Shift the boldness in the Steps panel to the next card
-			descriptionLabel.setFont(ViewPanel.FONT_PLAIN_12);
-			subProblemsLabel.setFont(ViewPanel.FONT_BOLD_12);
+			descriptionLabel.setFont(ViewPanel.fontPlain12);
+			subProblemsLabel.setFont(ViewPanel.fontBold12);
 
 			try
 			{
@@ -903,8 +903,8 @@ public class NewProblemWizardDialog extends EscapeDialog
 			subProblemsCardPanel.setVisible(false);
 
 			// Shift the boldness in the Steps panel to the next card
-			subProblemsLabel.setFont(ViewPanel.FONT_PLAIN_12);
-			valuesLabel.setFont(ViewPanel.FONT_BOLD_12);
+			subProblemsLabel.setFont(ViewPanel.fontPlain12);
+			valuesLabel.setFont(ViewPanel.fontBold12);
 
 			nextWizardButton.setText("Finish");
 		}
@@ -922,8 +922,8 @@ public class NewProblemWizardDialog extends EscapeDialog
 			nameAndLocationCardPanel.setVisible(false);
 
 			// Shift the boldness in the Steps panel to the previous card
-			welcomeLabel.setFont(ViewPanel.FONT_BOLD_12);
-			nameAndLocationLabel.setFont(ViewPanel.FONT_PLAIN_12);
+			welcomeLabel.setFont(ViewPanel.fontBold12);
+			nameAndLocationLabel.setFont(ViewPanel.fontPlain12);
 
 			backWizardButton.setEnabled(false);
 		}
@@ -934,8 +934,8 @@ public class NewProblemWizardDialog extends EscapeDialog
 			descriptionCardPanel.setVisible(false);
 
 			// Shift the boldness in the Steps panel to the previous card
-			nameAndLocationLabel.setFont(ViewPanel.FONT_BOLD_12);
-			descriptionLabel.setFont(ViewPanel.FONT_PLAIN_12);
+			nameAndLocationLabel.setFont(ViewPanel.fontBold12);
+			descriptionLabel.setFont(ViewPanel.fontPlain12);
 
 			// Set the focus properly for the new card
 			problemNameTextField.requestFocus();
@@ -948,8 +948,8 @@ public class NewProblemWizardDialog extends EscapeDialog
 			subProblemsCardPanel.setVisible(false);
 
 			// Shift the boldness in the Steps panel to the previous card
-			descriptionLabel.setFont(ViewPanel.FONT_BOLD_12);
-			subProblemsLabel.setFont(ViewPanel.FONT_PLAIN_12);
+			descriptionLabel.setFont(ViewPanel.fontBold12);
+			subProblemsLabel.setFont(ViewPanel.fontPlain12);
 
 			// Set the focus properly for the new card
 			descriptionTextArea.requestFocus();
@@ -961,8 +961,8 @@ public class NewProblemWizardDialog extends EscapeDialog
 			valuesCardPanel.setVisible(false);
 
 			// Shift the boldness in the Steps panel to the previous card
-			subProblemsLabel.setFont(ViewPanel.FONT_BOLD_12);
-			valuesLabel.setFont(ViewPanel.FONT_PLAIN_12);
+			subProblemsLabel.setFont(ViewPanel.fontBold12);
+			valuesLabel.setFont(ViewPanel.fontPlain12);
 
 			nextWizardButton.setText("Next >");
 
@@ -1055,7 +1055,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 				firePropertyChanged (evt);
 			}
 		});
-		table.getTableHeader().setFont(ViewPanel.FONT_PLAIN_12);
+		table.getTableHeader().setFont(ViewPanel.fontPlain12);
 		table.getTableHeader().addMouseListener(new MouseAdapter()
 		{
 			@Override
@@ -1371,11 +1371,11 @@ public class NewProblemWizardDialog extends EscapeDialog
 		subProblemsCardPanel.setVisible(false);
 		valuesCardPanel.setVisible(false);
 		// Set the proper label to bold
-		welcomeLabel.setFont(ViewPanel.FONT_BOLD_12);
-		nameAndLocationLabel.setFont(ViewPanel.FONT_PLAIN_12);
-		descriptionLabel.setFont(ViewPanel.FONT_PLAIN_12);
-		subProblemsLabel.setFont(ViewPanel.FONT_PLAIN_12);
-		valuesLabel.setFont(ViewPanel.FONT_PLAIN_12);
+		welcomeLabel.setFont(ViewPanel.fontBold12);
+		nameAndLocationLabel.setFont(ViewPanel.fontPlain12);
+		descriptionLabel.setFont(ViewPanel.fontPlain12);
+		subProblemsLabel.setFont(ViewPanel.fontPlain12);
+		valuesLabel.setFont(ViewPanel.fontPlain12);
 		// Set forward/backward button states
 		backWizardButton.setEnabled(false);
 		nextWizardButton.setEnabled(true);
@@ -1575,7 +1575,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 			domain.problem = new Problem(descriptionTextArea.getText());
 		}
 
-		VIEW_PANEL.unsaved ();
+		domain.problem.markUnsaved();
 		// Construct sub problems from the New Problem Wizard
 		for(int i = 0; i < subProblemPanels.size(); ++i)
 		{
