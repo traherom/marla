@@ -467,6 +467,7 @@ public class Problem implements ProblemPart
 	public void markUnsaved()
 	{
 		isSaved = false;
+		getDomain().markUnsaved();
 	}
 
 	/**
@@ -505,6 +506,7 @@ public class Problem implements ProblemPart
 	{
 		save(fileName);
 		isSaved = true;
+		getDomain().markSaved();
 	}
 
 	/**
