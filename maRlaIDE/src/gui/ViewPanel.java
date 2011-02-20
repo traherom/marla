@@ -1169,6 +1169,10 @@ public class ViewPanel extends JPanel
 	 */
 	protected void rebuildTree(DataSet dataSet)
 	{
+		// Don't bother listening yet if the problem is still loading
+		if(dataSet.getParentProblem().isLoading())
+			return;
+
 		// Set the label for the dataset itself
 		dataSet.setText("<html>" + dataSet.getDisplayString(abbreviated) + "</html>");
 		dataSet.setSize (dataSet.getPreferredSize ());
@@ -1483,10 +1487,9 @@ public class ViewPanel extends JPanel
 					// Add the new data set to the workspace
 					workspacePanel.add (dataSet);
 
-					for (int j = 0; j < dataSet.getOperationCount(); ++j)
+					for (Operation op : dataSet.getAllChildOperations())
 					{
-						Operation operation = dataSet.getOperation(j);
-						workspacePanel.add (operation);
+						workspacePanel.add (op);
 					}
 				}
 			}
