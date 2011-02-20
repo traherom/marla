@@ -23,6 +23,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import latex.LatexException;
@@ -252,6 +253,14 @@ public class Domain
 				{
 					try
 					{
+						// Ensure all operations have been fulfilled, info wise
+						for(int i = 0; i < problem.getDataCount(); i++)
+						{
+							List<Operation> ops = problem.getData(i).getAllLeafOperations();
+							for(Operation op : ops)
+								ensureRequirementsMet(op);
+						}
+						
 						LatexExporter exporter = new LatexExporter (problem);
 						File genFile = new File (exporter.generatePDF(file.getPath()));
 						if (desktop != null)
@@ -336,6 +345,14 @@ public class Domain
 				{
 					try
 					{
+						// Ensure all operations have been fulfilled, info wise
+						for(int i = 0; i < problem.getDataCount(); i++)
+						{
+							List<Operation> ops = problem.getData(i).getAllLeafOperations();
+							for(Operation op : ops)
+								ensureRequirementsMet(op);
+						}
+
 						LatexExporter exporter = new LatexExporter (problem);
 						File genFile = new File (exporter.cleanExport (file.getPath()));
 						if (desktop != null)

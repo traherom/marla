@@ -291,6 +291,10 @@ public class LatexExporter
 		{
 			throw new LatexException("File error occured during exporting", ex);
 		}
+		catch(MarlaException ex)
+		{
+			throw ex;
+		}
 	}
 
 	private void processSequenceClean(Element el, Writer out) throws LatexException, MarlaException

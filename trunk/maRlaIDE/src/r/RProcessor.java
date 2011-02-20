@@ -52,7 +52,7 @@ public final class RProcessor
 	/**
 	 * Pattern used to recognize doubles in R output, mainly for use with vectors
 	 */
-	private final Pattern doublePatt = Pattern.compile("(?<=\\s)(-?[0-9]+(\\.[0-9]+)?(e[+-][0-9]+)?|NaN)(?=\\s|$)");
+	private final Pattern doublePatt = Pattern.compile("(?<=\\s)(-?[0-9]+(\\.[0-9]+)?(e[+-][0-9]+)?|NaN|[-]Inf)(?=\\s|$)");
 	/**
 	 * Pattern used to recognize strings in R output, mainly for use with vectors
 	 */
@@ -524,7 +524,13 @@ public final class RProcessor
 
 			while(m.find())
 			{
-				vals.add(Double.valueOf(m.group()));
+				String d = m.group();
+				if(d.endsWith("Inf"))
+					vals.add(Double.POSITIVE_INFINITY);
+				else if(d.endsWith("-Inf"))
+					vals.add(Double.NEGATIVE_INFINITY);
+				else
+					vals.add(Double.valueOf(d));
 			}
 		}
 		catch(NumberFormatException ex)
