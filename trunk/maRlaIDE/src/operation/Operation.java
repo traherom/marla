@@ -82,7 +82,7 @@ public abstract class Operation extends JLabel implements DataSource, Changeable
 	 * A user-specified remark about this operation. Why it's here, whatever.
 	 * Intended to be used as a tool for analysis
 	 */
-	private String remark = null;
+	private String remark = "";
 	/**
 	 * Saves the R operations used the last time refreshCache() was called. This
 	 * string can then be dumped out by getRCommands() to give an idea of how to perform
@@ -279,7 +279,7 @@ public abstract class Operation extends JLabel implements DataSource, Changeable
 	 * Sets the remark for this Operation. Arbitrary, intended to be used
 	 * as an analysis comment
 	 * @param newRemark Remark to save for Operation
-	 * @return previously set remark, null if there was none
+	 * @return previously set remark
 	 */
 	public final String setRemark(String newRemark)
 	{
@@ -303,7 +303,7 @@ public abstract class Operation extends JLabel implements DataSource, Changeable
 	 */
 	public final boolean hasRemark()
 	{
-		return remark != null;
+		return !remark.isEmpty();
 	}
 
 	/**
