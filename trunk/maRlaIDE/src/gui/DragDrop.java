@@ -182,7 +182,7 @@ public class DragDrop implements DragGestureListener, DragSourceListener, DropTa
             Object source = ev.getTransferable().getTransferData(supportedFlavors[0]);
             Operation operation = (Operation) ((DragSourceContext) source).getComponent();
 			
-			viewPanel.domain.problem.markUnsaved();
+			viewPanel.unsaved ();
 
 			try
 			{
