@@ -124,6 +124,8 @@ public class ViewPanel extends JPanel
     public MainFrame mainFrame;
 	/** The domain object reference performs generic actions specific to the GUI.*/
     protected Domain domain = new Domain (this);
+	/** True while the program is in startup, false otherwise.*/
+	protected boolean initLoading = true;
 	/** The New Problem Wizard dialog.*/
 	public final NewProblemWizardDialog NEW_PROBLEM_WIZARD_DIALOG = new NewProblemWizardDialog (this, domain);
 	/** The set of operations contained in the XML file.*/
@@ -216,6 +218,12 @@ public class ViewPanel extends JPanel
 		((JButton) access.getComponent (1)).setToolTipText ("Cancel open");
 		access = (JPanel) ((JPanel) saveChooserDialog.getComponent(3)).getComponent(3);
 		((JButton) access.getComponent (1)).setToolTipText ("Cancel save");
+
+		initLoading = false;
+		for (int i = 0; i < toolBar.getComponentCount(); ++i)
+		{
+			toolBar.getComponent (i).setEnabled(true);
+		}
     }
 
 	/**
@@ -395,6 +403,7 @@ public class ViewPanel extends JPanel
         newButton.setFont(new java.awt.Font("Verdana", 0, 12));
         newButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/new.png"))); // NOI18N
         newButton.setToolTipText("New Problem");
+        newButton.setEnabled(false);
         newButton.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 buttonMouseEntered(evt);
@@ -414,6 +423,7 @@ public class ViewPanel extends JPanel
         openButton.setFont(new java.awt.Font("Verdana", 0, 12));
         openButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/open.png"))); // NOI18N
         openButton.setToolTipText("Open Problem");
+        openButton.setEnabled(false);
         openButton.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 buttonMouseEntered(evt);
@@ -430,9 +440,10 @@ public class ViewPanel extends JPanel
         });
         toolBar.add(openButton);
 
-        saveButton.setFont(new java.awt.Font("Verdana", 0, 12));
+        saveButton.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
         saveButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/save.png"))); // NOI18N
         saveButton.setToolTipText("Save Problem");
+        saveButton.setEnabled(false);
         saveButton.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 buttonMouseEntered(evt);
@@ -448,15 +459,19 @@ public class ViewPanel extends JPanel
             }
         });
         toolBar.add(saveButton);
+
+        jSeparator1.setEnabled(false);
         toolBar.add(jSeparator1);
 
         jLabel1.setFont(new java.awt.Font("Verdana", 0, 12));
         jLabel1.setText("Font Size:");
+        jLabel1.setEnabled(false);
         toolBar.add(jLabel1);
 
-        plusFontButton.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        plusFontButton.setFont(new java.awt.Font("Verdana", 0, 12));
         plusFontButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/plus.png"))); // NOI18N
         plusFontButton.setToolTipText("Increase font size");
+        plusFontButton.setEnabled(false);
         plusFontButton.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 buttonMouseEntered(evt);
@@ -476,6 +491,7 @@ public class ViewPanel extends JPanel
         minusFontButton.setFont(new java.awt.Font("Verdana", 0, 12));
         minusFontButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/minus.png"))); // NOI18N
         minusFontButton.setToolTipText("Decrease font size");
+        minusFontButton.setEnabled(false);
         minusFontButton.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 buttonMouseEntered(evt);
@@ -491,6 +507,8 @@ public class ViewPanel extends JPanel
             }
         });
         toolBar.add(minusFontButton);
+
+        jSeparator3.setEnabled(false);
         toolBar.add(jSeparator3);
         toolBar.add(jLabel2);
 
@@ -498,6 +516,7 @@ public class ViewPanel extends JPanel
         abbreviateButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/unchecked.png"))); // NOI18N
         abbreviateButton.setText("Abbreviate");
         abbreviateButton.setToolTipText("Show abbreviated operation and column names");
+        abbreviateButton.setEnabled(false);
         abbreviateButton.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 buttonMouseEntered(evt);
@@ -513,11 +532,14 @@ public class ViewPanel extends JPanel
             }
         });
         toolBar.add(abbreviateButton);
+
+        jSeparator2.setEnabled(false);
         toolBar.add(jSeparator2);
 
-        settingsButton.setFont(new java.awt.Font("Verdana", 0, 12));
+        settingsButton.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
         settingsButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/settings.png"))); // NOI18N
         settingsButton.setToolTipText("Settings");
+        settingsButton.setEnabled(false);
         settingsButton.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 buttonMouseEntered(evt);
@@ -548,7 +570,7 @@ public class ViewPanel extends JPanel
         );
         emptyPalettePanelLayout.setVerticalGroup(
             emptyPalettePanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(0, 478, Short.MAX_VALUE)
+            .add(0, 476, Short.MAX_VALUE)
         );
 
         componentsCardPanel.add(emptyPalettePanel, "card3");
@@ -584,14 +606,14 @@ public class ViewPanel extends JPanel
             preWorkspacePanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(preWorkspacePanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .add(preWorkspaceLabel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 752, Short.MAX_VALUE)
+                .add(preWorkspaceLabel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 754, Short.MAX_VALUE)
                 .addContainerGap())
         );
         preWorkspacePanelLayout.setVerticalGroup(
             preWorkspacePanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(preWorkspacePanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .add(preWorkspaceLabel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 449, Short.MAX_VALUE)
+                .add(preWorkspaceLabel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 450, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -640,9 +662,9 @@ public class ViewPanel extends JPanel
         trayPanel.setLayout(trayPanelLayout);
         trayPanelLayout.setHorizontalGroup(
             trayPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(0, 780, Short.MAX_VALUE)
+            .add(0, 778, Short.MAX_VALUE)
             .add(trayPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                .add(outputScrollPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 780, Short.MAX_VALUE))
+                .add(outputScrollPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 778, Short.MAX_VALUE))
         );
         trayPanelLayout.setVerticalGroup(
             trayPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
@@ -1703,7 +1725,7 @@ public class ViewPanel extends JPanel
     private javax.swing.JMenuItem rCodeMenuItem;
     private javax.swing.JPopupMenu rightClickMenu;
     private javax.swing.JPanel rightPanel;
-    private javax.swing.JLabel saveButton;
+    protected javax.swing.JLabel saveButton;
     protected javax.swing.JFileChooser saveChooserDialog;
     private javax.swing.JLabel settingsButton;
     private javax.swing.JMenuItem solutionMenuItem;

@@ -26,14 +26,12 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
-import latex.LatexException;
 import latex.LatexExporter;
 import problem.DataSet;
 import problem.MarlaException;
 import operation.Operation;
 import operation.OperationInfoRequiredException;
 import problem.Problem;
-import r.RProcessorException;
 import resource.LoadSaveThread;
 
 /**
@@ -139,6 +137,22 @@ public class Domain
 	public void rebuildTree(DataSet dataSet)
 	{
 		viewPanel.rebuildTree (dataSet);
+	}
+
+	/**
+	 * Mark the View as unsaved.
+	 */
+	public void markUnsaved()
+	{
+		viewPanel.saveButton.setEnabled (true);
+	}
+
+	/**
+	 * Mark the View as saved.
+	 */
+	public void markSaved()
+	{
+		viewPanel.saveButton.setEnabled (false);
 	}
 
 	/**

@@ -206,7 +206,7 @@ public class MainFrame extends JFrame
         getContentPane().setLayout(new java.awt.GridLayout(1, 1));
 
         fileMenu.setText("File");
-        fileMenu.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        fileMenu.setFont(new java.awt.Font("Verdana", 0, 12));
         fileMenu.addMenuListener(new javax.swing.event.MenuListener() {
             public void menuCanceled(javax.swing.event.MenuEvent evt) {
             }
@@ -218,7 +218,7 @@ public class MainFrame extends JFrame
         });
 
         newProblemMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_N, java.awt.event.InputEvent.CTRL_MASK));
-        newProblemMenuItem.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        newProblemMenuItem.setFont(new java.awt.Font("Verdana", 0, 12));
         newProblemMenuItem.setText("New Problem...");
         newProblemMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -339,7 +339,7 @@ public class MainFrame extends JFrame
         editMenu.add(pasteMenuItem);
 
         deleteMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_DELETE, 0));
-        deleteMenuItem.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        deleteMenuItem.setFont(new java.awt.Font("Verdana", 0, 12));
         deleteMenuItem.setText("Delete");
         editMenu.add(deleteMenuItem);
         editMenu.add(editSeparator2);
@@ -352,7 +352,7 @@ public class MainFrame extends JFrame
         menuBar.add(editMenu);
 
         problemMenu.setText("Problem");
-        problemMenu.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        problemMenu.setFont(new java.awt.Font("Verdana", 0, 12));
         problemMenu.addMenuListener(new javax.swing.event.MenuListener() {
             public void menuCanceled(javax.swing.event.MenuEvent evt) {
             }
@@ -382,7 +382,7 @@ public class MainFrame extends JFrame
         problemMenu.add(editSubProblemsMenuItem);
         problemMenu.add(problemSeparator1);
 
-        newDataSetMenuItem.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        newDataSetMenuItem.setFont(new java.awt.Font("Verdana", 0, 12));
         newDataSetMenuItem.setText("New Data Set...");
         newDataSetMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -394,7 +394,7 @@ public class MainFrame extends JFrame
         menuBar.add(problemMenu);
 
         toolsMenu.setText("Tools");
-        toolsMenu.setFont(new java.awt.Font("Verdana", 0, 12));
+        toolsMenu.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
         toolsMenu.addMenuListener(new javax.swing.event.MenuListener() {
             public void menuCanceled(javax.swing.event.MenuEvent evt) {
             }
@@ -418,6 +418,15 @@ public class MainFrame extends JFrame
 
         helpMenu.setText("Help");
         helpMenu.setFont(new java.awt.Font("Verdana", 0, 12));
+        helpMenu.addMenuListener(new javax.swing.event.MenuListener() {
+            public void menuCanceled(javax.swing.event.MenuEvent evt) {
+            }
+            public void menuDeselected(javax.swing.event.MenuEvent evt) {
+            }
+            public void menuSelected(javax.swing.event.MenuEvent evt) {
+                helpMenuMenuSelected(evt);
+            }
+        });
 
         helpContentsMenuItem.setFont(new java.awt.Font("Verdana", 0, 12));
         helpContentsMenuItem.setText("Help Contents");
@@ -461,77 +470,121 @@ public class MainFrame extends JFrame
 	}//GEN-LAST:event_saveAsMenuItemActionPerformed
 
 	private void fileMenuMenuSelected(javax.swing.event.MenuEvent evt) {//GEN-FIRST:event_fileMenuMenuSelected
-		if (viewPanel.domain.problem != null)
+		if (viewPanel.initLoading)
 		{
-			exportForLatexMenuItem.setEnabled (true);
-			exportToPdfMenuItem.setEnabled (true);
-			closeProblemMenuItem.setEnabled (true);
-			saveAsMenuItem.setEnabled (true);
-			if (viewPanel.domain.problem.isChanged())
+			for (int i = 0; i < fileMenu.getMenuComponentCount(); ++i)
 			{
-				saveMenuItem.setEnabled (true);
-			}
-			else
-			{
-				saveMenuItem.setEnabled (false);
+				fileMenu.getMenuComponent(i).setEnabled (false);
 			}
 		}
 		else
 		{
-			closeProblemMenuItem.setEnabled (false);
-			saveMenuItem.setEnabled (false);
-			saveAsMenuItem.setEnabled (false);
-			exportForLatexMenuItem.setEnabled (false);
-			exportToPdfMenuItem.setEnabled (false);
+			newProblemMenuItem.setEnabled(true);
+			openProblemMenuItem.setEnabled(true);
+			exitMenuItem.setEnabled(true);
+			
+			if (viewPanel.domain.problem != null)
+			{
+				exportForLatexMenuItem.setEnabled (true);
+				exportToPdfMenuItem.setEnabled (true);
+				closeProblemMenuItem.setEnabled (true);
+				saveAsMenuItem.setEnabled (true);
+				if (viewPanel.domain.problem.isChanged())
+				{
+					saveMenuItem.setEnabled (true);
+				}
+				else
+				{
+					saveMenuItem.setEnabled (false);
+				}
+			}
+			else
+			{
+				closeProblemMenuItem.setEnabled (false);
+				saveMenuItem.setEnabled (false);
+				saveAsMenuItem.setEnabled (false);
+				exportForLatexMenuItem.setEnabled (false);
+				exportToPdfMenuItem.setEnabled (false);
+			}
 		}
 	}//GEN-LAST:event_fileMenuMenuSelected
 
 	private void editMenuMenuSelected(javax.swing.event.MenuEvent evt) {//GEN-FIRST:event_editMenuMenuSelected
-		if (viewPanel.domain.problem != null)
+		if (viewPanel.initLoading)
 		{
-			undoMenuItem.setEnabled (true);
-			redoMenuItem.setEnabled (true);
-			cutMenuItem.setEnabled (true);
-			copyMenuItem.setEnabled (true);
-			pasteMenuItem.setEnabled (true);
-			deleteMenuItem.setEnabled (true);
-			selectAllMenuItem.setEnabled (true);
+			for (int i = 0; i < fileMenu.getMenuComponentCount(); ++i)
+			{
+				fileMenu.getMenuComponent(i).setEnabled (false);
+			}
 		}
 		else
 		{
-			undoMenuItem.setEnabled (false);
-			redoMenuItem.setEnabled (false);
-			cutMenuItem.setEnabled (false);
-			copyMenuItem.setEnabled (false);
-			pasteMenuItem.setEnabled (false);
-			deleteMenuItem.setEnabled (false);
-			selectAllMenuItem.setEnabled (false);
+			if (viewPanel.domain.problem != null)
+			{
+				undoMenuItem.setEnabled (true);
+				redoMenuItem.setEnabled (true);
+				cutMenuItem.setEnabled (true);
+				copyMenuItem.setEnabled (true);
+				pasteMenuItem.setEnabled (true);
+				deleteMenuItem.setEnabled (true);
+				selectAllMenuItem.setEnabled (true);
+			}
+			else
+			{
+				undoMenuItem.setEnabled (false);
+				redoMenuItem.setEnabled (false);
+				cutMenuItem.setEnabled (false);
+				copyMenuItem.setEnabled (false);
+				pasteMenuItem.setEnabled (false);
+				deleteMenuItem.setEnabled (false);
+				selectAllMenuItem.setEnabled (false);
+			}
 		}
 	}//GEN-LAST:event_editMenuMenuSelected
 
 	private void problemMenuMenuSelected(javax.swing.event.MenuEvent evt) {//GEN-FIRST:event_problemMenuMenuSelected
-		if (viewPanel.domain.problem != null)
+		if (viewPanel.initLoading)
 		{
-			editProblemMenuItem.setEnabled (true);
-			editSubProblemsMenuItem.setEnabled (true);
-			newDataSetMenuItem.setEnabled (true);
+			for (int i = 0; i < fileMenu.getMenuComponentCount(); ++i)
+			{
+				fileMenu.getMenuComponent(i).setEnabled (false);
+			}
 		}
 		else
 		{
-			editProblemMenuItem.setEnabled (false);
-			editSubProblemsMenuItem.setEnabled (false);
-			newDataSetMenuItem.setEnabled (false);
+			if (viewPanel.domain.problem != null)
+			{
+				editProblemMenuItem.setEnabled (true);
+				editSubProblemsMenuItem.setEnabled (true);
+				newDataSetMenuItem.setEnabled (true);
+			}
+			else
+			{
+				editProblemMenuItem.setEnabled (false);
+				editSubProblemsMenuItem.setEnabled (false);
+				newDataSetMenuItem.setEnabled (false);
+			}
 		}
 	}//GEN-LAST:event_problemMenuMenuSelected
 
 	private void toolsMenuMenuSelected(javax.swing.event.MenuEvent evt) {//GEN-FIRST:event_toolsMenuMenuSelected
-		if (viewPanel.domain.problem != null)
+		if (viewPanel.initLoading)
 		{
-			reloadOperationgsMenuItem.setEnabled (true);
+			for (int i = 0; i < fileMenu.getMenuComponentCount(); ++i)
+			{
+				fileMenu.getMenuComponent(i).setEnabled (false);
+			}
 		}
 		else
 		{
-			reloadOperationgsMenuItem.setEnabled (false);
+			if (viewPanel.domain.problem != null)
+			{
+				reloadOperationgsMenuItem.setEnabled (true);
+			}
+			else
+			{
+				reloadOperationgsMenuItem.setEnabled (false);
+			}
 		}
 	}//GEN-LAST:event_toolsMenuMenuSelected
 
@@ -576,6 +629,24 @@ public class MainFrame extends JFrame
 		editProblemMenuItemActionPerformed (null);
 		viewPanel.NEW_PROBLEM_WIZARD_DIALOG.editSubProblems ();
 	}//GEN-LAST:event_editSubProblemsMenuItemActionPerformed
+
+	private void helpMenuMenuSelected(javax.swing.event.MenuEvent evt)//GEN-FIRST:event_helpMenuMenuSelected
+	{//GEN-HEADEREND:event_helpMenuMenuSelected
+		if (viewPanel.initLoading)
+		{
+			for (int i = 0; i < fileMenu.getMenuComponentCount(); ++i)
+			{
+				fileMenu.getMenuComponent(i).setEnabled (false);
+			}
+		}
+		else
+		{
+			for (int i = 0; i < fileMenu.getMenuComponentCount(); ++i)
+			{
+				fileMenu.getMenuComponent(i).setEnabled (true);
+			}
+		}
+	}//GEN-LAST:event_helpMenuMenuSelected
 
 	/**
 	 * Retrieves the default title, which is the program name with it's version number.

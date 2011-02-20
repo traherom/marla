@@ -138,6 +138,7 @@
               <Image iconType="3" name="/images/new.png"/>
             </Property>
             <Property name="toolTipText" type="java.lang.String" value="New Problem"/>
+            <Property name="enabled" type="boolean" value="false"/>
           </Properties>
           <Events>
             <EventHandler event="mouseEntered" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="buttonMouseEntered"/>
@@ -155,6 +156,7 @@
               <Image iconType="3" name="/images/open.png"/>
             </Property>
             <Property name="toolTipText" type="java.lang.String" value="Open Problem"/>
+            <Property name="enabled" type="boolean" value="false"/>
           </Properties>
           <Events>
             <EventHandler event="mouseEntered" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="buttonMouseEntered"/>
@@ -172,6 +174,7 @@
               <Image iconType="3" name="/images/save.png"/>
             </Property>
             <Property name="toolTipText" type="java.lang.String" value="Save Problem"/>
+            <Property name="enabled" type="boolean" value="false"/>
           </Properties>
           <Events>
             <EventHandler event="mouseEntered" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="buttonMouseEntered"/>
@@ -179,8 +182,14 @@
             <EventHandler event="mousePressed" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="buttonMousePressed"/>
             <EventHandler event="mouseReleased" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="buttonMouseReleased"/>
           </Events>
+          <AuxValues>
+            <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="4"/>
+          </AuxValues>
         </Component>
         <Component class="javax.swing.JToolBar$Separator" name="jSeparator1">
+          <Properties>
+            <Property name="enabled" type="boolean" value="false"/>
+          </Properties>
         </Component>
         <Component class="javax.swing.JLabel" name="jLabel1">
           <Properties>
@@ -188,6 +197,7 @@
               <Font name="Verdana" size="12" style="0"/>
             </Property>
             <Property name="text" type="java.lang.String" value="Font Size:"/>
+            <Property name="enabled" type="boolean" value="false"/>
           </Properties>
         </Component>
         <Component class="javax.swing.JLabel" name="plusFontButton">
@@ -199,6 +209,7 @@
               <Image iconType="3" name="/images/plus.png"/>
             </Property>
             <Property name="toolTipText" type="java.lang.String" value="Increase font size"/>
+            <Property name="enabled" type="boolean" value="false"/>
           </Properties>
           <Events>
             <EventHandler event="mouseEntered" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="buttonMouseEntered"/>
@@ -216,6 +227,7 @@
               <Image iconType="3" name="/images/minus.png"/>
             </Property>
             <Property name="toolTipText" type="java.lang.String" value="Decrease font size"/>
+            <Property name="enabled" type="boolean" value="false"/>
           </Properties>
           <Events>
             <EventHandler event="mouseEntered" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="buttonMouseEntered"/>
@@ -225,6 +237,9 @@
           </Events>
         </Component>
         <Component class="javax.swing.JToolBar$Separator" name="jSeparator3">
+          <Properties>
+            <Property name="enabled" type="boolean" value="false"/>
+          </Properties>
         </Component>
         <Component class="javax.swing.JLabel" name="jLabel2">
         </Component>
@@ -238,6 +253,7 @@
             </Property>
             <Property name="text" type="java.lang.String" value="Abbreviate"/>
             <Property name="toolTipText" type="java.lang.String" value="Show abbreviated operation and column names"/>
+            <Property name="enabled" type="boolean" value="false"/>
           </Properties>
           <Events>
             <EventHandler event="mouseEntered" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="buttonMouseEntered"/>
@@ -247,6 +263,9 @@
           </Events>
         </Component>
         <Component class="javax.swing.JToolBar$Separator" name="jSeparator2">
+          <Properties>
+            <Property name="enabled" type="boolean" value="false"/>
+          </Properties>
         </Component>
         <Component class="javax.swing.JLabel" name="settingsButton">
           <Properties>
@@ -257,6 +276,7 @@
               <Image iconType="3" name="/images/settings.png"/>
             </Property>
             <Property name="toolTipText" type="java.lang.String" value="Settings"/>
+            <Property name="enabled" type="boolean" value="false"/>
           </Properties>
           <Events>
             <EventHandler event="mouseEntered" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="buttonMouseEntered"/>
