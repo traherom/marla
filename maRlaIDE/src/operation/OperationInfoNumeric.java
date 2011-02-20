@@ -25,8 +25,17 @@ import problem.InternalMarlaException;
  */
 public class OperationInfoNumeric extends OperationInformation
 {
+	/**
+	 * Minimum value for the answer
+	 */
 	private final double min;
+	/**
+	 * Maximum value for the answer
+	 */
 	private final double max;
+	/**
+	 * Current answer to the question. Null if there is none
+	 */
 	private Double answer = null;
 
 	/**

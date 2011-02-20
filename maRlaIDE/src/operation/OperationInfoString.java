@@ -26,7 +26,13 @@ import problem.InternalMarlaException;
  */
 public class OperationInfoString extends OperationInformation
 {
+	/**
+	 * Pattern that our answer must match
+	 */
 	private final Pattern mustMatchPatt;
+	/**
+	 * Answer for this question, null if there is none
+	 */
 	private String answer = null;
 
 	/**

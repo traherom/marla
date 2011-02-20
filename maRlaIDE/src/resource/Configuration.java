@@ -27,8 +27,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Deque;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import latex.LatexExporter;
 import operation.OperationXMLException;
@@ -534,15 +532,8 @@ public class Configuration
 		System.out.println(checkPaths.size() + " possibilities found for " + fileName + ": ");
 		for(File f : checkPaths)
 		{
-			try
-			{
-				System.out.println("\t" + f.getPath());
-				files.add(f.getCanonicalPath());
-			}
-			catch(IOException ex)
-			{
-				files.add(f.getAbsolutePath());
-			}
+			System.out.println("\t" + f.getPath());
+			files.add(f.getAbsolutePath());
 		}
 		
 		return files;

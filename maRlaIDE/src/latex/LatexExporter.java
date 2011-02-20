@@ -291,10 +291,6 @@ public class LatexExporter
 		{
 			throw new LatexException("File error occured during exporting", ex);
 		}
-		catch(MarlaException ex)
-		{
-			throw ex;
-		}
 	}
 
 	private void processSequenceClean(Element el, Writer out) throws LatexException, MarlaException
@@ -743,6 +739,7 @@ public class LatexExporter
 			try
 			{
 				// Create pdflatex instance
+				System.out.println("Running '" + texPath + "' through '" + pdfTexPath + "'");
 				ProcessBuilder procBuild = new ProcessBuilder(pdfTexPath, texPath);
 				procBuild.redirectErrorStream(true);
 				texProc = procBuild.start();
