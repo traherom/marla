@@ -20,7 +20,6 @@ package latex;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.OutputStream;
 import problem.MarlaException;
 import problem.Problem;
 import java.io.File;

@@ -316,6 +316,10 @@ public class Problem implements ProblemPart
 		isSaved = false;
 		data.setParentProblem(this);
 		datasets.add(data);
+
+		if(!isLoading && getDomain() != null)
+			getDomain().rebuildTree(data);
+		
 		return data;
 	}
 
