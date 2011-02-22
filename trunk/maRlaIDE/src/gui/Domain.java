@@ -49,13 +49,13 @@ public class Domain
 	/** The pre-release version name of the application.*/
 	public static final String PRE_RELEASE = "Alpha";
 	/** The location of the application as it runs.*/
-	public static final String CWD = System.getProperty("user.dir");
+	public static final String CWD = System.getProperty ("user.dir");
 	/** The name of the operating system being used.*/
-	public static final String OS_NAME = System.getProperty("os.name");
+	public static final String OS_NAME = System.getProperty ("os.name");
 	/** The home directory for the current user.*/
-	public static final String HOME_DIR = System.getProperty("user.home");
+	public static final String HOME_DIR = System.getProperty ("user.home");
 	/** The logger holds all caught exceptions for recording in the log file.*/
-	public static final ArrayList<Exception> logger = new ArrayList<Exception>();
+	public static final ArrayList<Exception> logger = new ArrayList<Exception> ();
 	/** The last good problem directory.*/
 	public String lastGoodDir = HOME_DIR;
 	/** The last good file that was a CSV file.*/
@@ -85,7 +85,8 @@ public class Domain
 		{
 			desktop = Desktop.getDesktop ();
 		}
-		Problem.setDomain(this);
+		final Domain domain = this;
+		Problem.setDomain (domain);
 
 		logFile = new File ("log.dat");
 	}
@@ -120,9 +121,9 @@ public class Domain
 		{
 			try
 			{
-				problem.save();
+				problem.save ();
 			}
-			catch(MarlaException ex)
+			catch (MarlaException ex)
 			{
 				// TODO. Unable to save
 			}
@@ -161,7 +162,7 @@ public class Domain
 	 */
 	public void markUnsaved()
 	{
-		if(isEditing())
+		if (isEditing ())
 		{
 			viewPanel.saveButton.setEnabled (true);
 		}
@@ -183,17 +184,17 @@ public class Domain
 		if (problem != null)
 		{
 			// Construct the file-based open chooser dialog
-			viewPanel.saveChooserDialog.setDialogTitle("Save Problem As");
+			viewPanel.saveChooserDialog.setDialogTitle ("Save Problem As");
 			viewPanel.saveChooserDialog.resetChoosableFileFilters ();
-			viewPanel.saveChooserDialog.setFileFilter(viewPanel.marlaFilter);
-			viewPanel.saveChooserDialog.setFileSelectionMode(JFileChooser.FILES_ONLY);
+			viewPanel.saveChooserDialog.setFileFilter (viewPanel.marlaFilter);
+			viewPanel.saveChooserDialog.setFileSelectionMode (JFileChooser.FILES_ONLY);
 			viewPanel.saveChooserDialog.setCurrentDirectory (new File (problem.getFileName ()));
-			viewPanel.saveChooserDialog.setSelectedFile(new File (problem.getFileName ()));
+			viewPanel.saveChooserDialog.setSelectedFile (new File (problem.getFileName ()));
 			// Display the chooser and retrieve the selected file
-			int response = viewPanel.saveChooserDialog.showSaveDialog(viewPanel);
+			int response = viewPanel.saveChooserDialog.showSaveDialog (viewPanel);
 			while (response == JFileChooser.APPROVE_OPTION)
 			{
-				File file = viewPanel.saveChooserDialog.getSelectedFile();
+				File file = viewPanel.saveChooserDialog.getSelectedFile ();
 				// ensure an extension is on the file
 				if (file.getName ().indexOf (".") == -1)
 				{
@@ -202,7 +203,7 @@ public class Domain
 				// ensure the file is a valid backup file
 				if (!file.toString ().endsWith (".marla"))
 				{
-					JOptionPane.showMessageDialog(viewPanel, "The extension for the file must be .marla.", "Invalid Extension", JOptionPane.WARNING_MESSAGE);
+					JOptionPane.showMessageDialog (viewPanel, "The extension for the file must be .marla.", "Invalid Extension", JOptionPane.WARNING_MESSAGE);
 					viewPanel.saveChooserDialog.setSelectedFile (new File (viewPanel.saveChooserDialog.getSelectedFile ().toString ().substring (0, viewPanel.saveChooserDialog.getSelectedFile ().toString ().lastIndexOf (".")) + ".marla"));
 					response = viewPanel.saveChooserDialog.showSaveDialog (viewPanel);
 					continue;
@@ -211,11 +212,11 @@ public class Domain
 				boolean continueAllowed = true;
 				if (file.exists ())
 				{
-					response = JOptionPane.showConfirmDialog(viewPanel, "The selected file already exists.\n"
-							+ "Would you like to overwrite the existing file?",
-							"Overwrite Existing File",
-							JOptionPane.YES_NO_OPTION,
-							JOptionPane.QUESTION_MESSAGE);
+					response = JOptionPane.showConfirmDialog (viewPanel, "The selected file already exists.\n"
+																		 + "Would you like to overwrite the existing file?",
+															  "Overwrite Existing File",
+															  JOptionPane.YES_NO_OPTION,
+															  JOptionPane.QUESTION_MESSAGE);
 					if (response != JOptionPane.YES_OPTION)
 					{
 						continueAllowed = false;
@@ -224,7 +225,7 @@ public class Domain
 
 				if (continueAllowed)
 				{
-					problem.setFileName(file.toString ());
+					problem.setFileName (file.toString ());
 					save ();
 					break;
 				}
@@ -244,17 +245,17 @@ public class Domain
 		if (problem != null)
 		{
 			// Construct the file-based open chooser dialog
-			viewPanel.saveChooserDialog.setDialogTitle("Export to PDF");
+			viewPanel.saveChooserDialog.setDialogTitle ("Export to PDF");
 			viewPanel.saveChooserDialog.resetChoosableFileFilters ();
-			viewPanel.saveChooserDialog.setFileFilter(viewPanel.pdfFilter);
-			viewPanel.saveChooserDialog.setFileSelectionMode(JFileChooser.FILES_ONLY);
-			viewPanel.saveChooserDialog.setCurrentDirectory (new File (problem.getFileName ().substring (0, problem.getFileName ().lastIndexOf(".")) + ".pdf"));
-			viewPanel.saveChooserDialog.setSelectedFile(new File (problem.getFileName ().substring (0, problem.getFileName ().lastIndexOf(".")) + ".pdf"));
+			viewPanel.saveChooserDialog.setFileFilter (viewPanel.pdfFilter);
+			viewPanel.saveChooserDialog.setFileSelectionMode (JFileChooser.FILES_ONLY);
+			viewPanel.saveChooserDialog.setCurrentDirectory (new File (problem.getFileName ().substring (0, problem.getFileName ().lastIndexOf (".")) + ".pdf"));
+			viewPanel.saveChooserDialog.setSelectedFile (new File (problem.getFileName ().substring (0, problem.getFileName ().lastIndexOf (".")) + ".pdf"));
 			// Display the chooser and retrieve the selected file
-			int response = viewPanel.saveChooserDialog.showSaveDialog(viewPanel);
+			int response = viewPanel.saveChooserDialog.showSaveDialog (viewPanel);
 			while (response == JFileChooser.APPROVE_OPTION)
 			{
-				File file = viewPanel.saveChooserDialog.getSelectedFile();
+				File file = viewPanel.saveChooserDialog.getSelectedFile ();
 				// ensure an extension is on the file
 				if (file.getName ().indexOf (".") == -1)
 				{
@@ -263,7 +264,7 @@ public class Domain
 				// ensure the file is a valid backup file
 				if (!file.toString ().endsWith (".pdf"))
 				{
-					JOptionPane.showMessageDialog(viewPanel, "The extension for the file must be .pdf.", "Invalid Extension", JOptionPane.WARNING_MESSAGE);
+					JOptionPane.showMessageDialog (viewPanel, "The extension for the file must be .pdf.", "Invalid Extension", JOptionPane.WARNING_MESSAGE);
 					viewPanel.saveChooserDialog.setSelectedFile (new File (viewPanel.saveChooserDialog.getSelectedFile ().toString ().substring (0, viewPanel.saveChooserDialog.getSelectedFile ().toString ().lastIndexOf (".")) + ".pdf"));
 					response = viewPanel.saveChooserDialog.showSaveDialog (viewPanel);
 					continue;
@@ -272,11 +273,11 @@ public class Domain
 				boolean continueAllowed = true;
 				if (file.exists ())
 				{
-					response = JOptionPane.showConfirmDialog(viewPanel, "The selected file already exists.\n"
-							+ "Would you like to overwrite the existing file?",
-							"Overwrite Existing File",
-							JOptionPane.YES_NO_OPTION,
-							JOptionPane.QUESTION_MESSAGE);
+					response = JOptionPane.showConfirmDialog (viewPanel, "The selected file already exists.\n"
+																		 + "Would you like to overwrite the existing file?",
+															  "Overwrite Existing File",
+															  JOptionPane.YES_NO_OPTION,
+															  JOptionPane.QUESTION_MESSAGE);
 					if (response != JOptionPane.YES_OPTION)
 					{
 						continueAllowed = false;
@@ -288,15 +289,17 @@ public class Domain
 					try
 					{
 						// Ensure all operations have been fulfilled, info wise
-						for(int i = 0; i < problem.getDataCount(); i++)
+						for (int i = 0; i < problem.getDataCount (); i++)
 						{
-							List<Operation> ops = problem.getData(i).getAllLeafOperations();
-							for(Operation op : ops)
-								ensureRequirementsMet(op);
+							List<Operation> ops = problem.getData (i).getAllLeafOperations ();
+							for (Operation op : ops)
+							{
+								ensureRequirementsMet (op);
+							}
 						}
-						
+
 						LatexExporter exporter = new LatexExporter (problem);
-						File genFile = new File (exporter.generatePDF(file.getPath()));
+						File genFile = new File (exporter.generatePDF (file.getPath ()));
 						if (desktop != null)
 						{
 							desktop.open (genFile);
@@ -328,17 +331,17 @@ public class Domain
 		if (problem != null)
 		{
 			// Construct the file-based open chooser dialog
-			viewPanel.saveChooserDialog.setDialogTitle("Export for LaTeX");
+			viewPanel.saveChooserDialog.setDialogTitle ("Export for LaTeX");
 			viewPanel.saveChooserDialog.resetChoosableFileFilters ();
-			viewPanel.saveChooserDialog.setFileFilter(viewPanel.latexFilter);
-			viewPanel.saveChooserDialog.setFileSelectionMode(JFileChooser.FILES_ONLY);
-			viewPanel.saveChooserDialog.setCurrentDirectory (new File (problem.getFileName ().substring (0, problem.getFileName ().lastIndexOf(".")) + ".rnw"));
-			viewPanel.saveChooserDialog.setSelectedFile(new File (problem.getFileName ().substring (0, problem.getFileName ().lastIndexOf(".")) + ".rnw"));
+			viewPanel.saveChooserDialog.setFileFilter (viewPanel.latexFilter);
+			viewPanel.saveChooserDialog.setFileSelectionMode (JFileChooser.FILES_ONLY);
+			viewPanel.saveChooserDialog.setCurrentDirectory (new File (problem.getFileName ().substring (0, problem.getFileName ().lastIndexOf (".")) + ".rnw"));
+			viewPanel.saveChooserDialog.setSelectedFile (new File (problem.getFileName ().substring (0, problem.getFileName ().lastIndexOf (".")) + ".rnw"));
 			// Display the chooser and retrieve the selected file
-			int response = viewPanel.saveChooserDialog.showSaveDialog(viewPanel);
+			int response = viewPanel.saveChooserDialog.showSaveDialog (viewPanel);
 			while (response == JFileChooser.APPROVE_OPTION)
 			{
-				File file = viewPanel.saveChooserDialog.getSelectedFile();
+				File file = viewPanel.saveChooserDialog.getSelectedFile ();
 				// ensure an extension is on the file
 				if (file.getName ().indexOf (".") == -1)
 				{
@@ -347,7 +350,7 @@ public class Domain
 				// ensure the file is a valid backup file
 				if (!file.toString ().endsWith (".rnw"))
 				{
-					JOptionPane.showMessageDialog(viewPanel, "The extension for the file must be .rnw.", "Invalid Extension", JOptionPane.WARNING_MESSAGE);
+					JOptionPane.showMessageDialog (viewPanel, "The extension for the file must be .rnw.", "Invalid Extension", JOptionPane.WARNING_MESSAGE);
 					viewPanel.saveChooserDialog.setSelectedFile (new File (viewPanel.saveChooserDialog.getSelectedFile ().toString ().substring (0, viewPanel.saveChooserDialog.getSelectedFile ().toString ().lastIndexOf (".")) + ".tex"));
 					response = viewPanel.saveChooserDialog.showSaveDialog (viewPanel);
 					continue;
@@ -356,11 +359,11 @@ public class Domain
 				boolean continueAllowed = true;
 				if (file.exists ())
 				{
-					response = JOptionPane.showConfirmDialog(viewPanel, "The selected file already exists.\n"
-							+ "Would you like to overwrite the existing file?",
-							"Overwrite Existing File",
-							JOptionPane.YES_NO_OPTION,
-							JOptionPane.QUESTION_MESSAGE);
+					response = JOptionPane.showConfirmDialog (viewPanel, "The selected file already exists.\n"
+																		 + "Would you like to overwrite the existing file?",
+															  "Overwrite Existing File",
+															  JOptionPane.YES_NO_OPTION,
+															  JOptionPane.QUESTION_MESSAGE);
 					if (response != JOptionPane.YES_OPTION)
 					{
 						continueAllowed = false;
@@ -372,15 +375,17 @@ public class Domain
 					try
 					{
 						// Ensure all operations have been fulfilled, info wise
-						for(int i = 0; i < problem.getDataCount(); i++)
+						for (int i = 0; i < problem.getDataCount (); i++)
 						{
-							List<Operation> ops = problem.getData(i).getAllLeafOperations();
-							for(Operation op : ops)
-								ensureRequirementsMet(op);
+							List<Operation> ops = problem.getData (i).getAllLeafOperations ();
+							for (Operation op : ops)
+							{
+								ensureRequirementsMet (op);
+							}
 						}
 
 						LatexExporter exporter = new LatexExporter (problem);
-						File genFile = new File (exporter.cleanExport (file.getPath()));
+						File genFile = new File (exporter.cleanExport (file.getPath ()));
 						if (desktop != null)
 						{
 							desktop.open (genFile);
@@ -413,59 +418,59 @@ public class Domain
 		{
 			// Construct the file-based open chooser dialog
 			viewPanel.openChooserDialog.resetChoosableFileFilters ();
-			viewPanel.openChooserDialog.setFileFilter(viewPanel.marlaFilter);
-			viewPanel.openChooserDialog.setFileSelectionMode(JFileChooser.FILES_ONLY);
+			viewPanel.openChooserDialog.setFileFilter (viewPanel.marlaFilter);
+			viewPanel.openChooserDialog.setFileSelectionMode (JFileChooser.FILES_ONLY);
 			String curDir = lastGoodDir;
 			if (problem != null)
 			{
 				curDir = problem.getFileName ();
 			}
 			viewPanel.openChooserDialog.setSelectedFile (new File (""));
-			viewPanel.openChooserDialog.setCurrentDirectory(new File (curDir));
+			viewPanel.openChooserDialog.setCurrentDirectory (new File (curDir));
 			// Display the chooser and retrieve the selected file
-			int response = viewPanel.openChooserDialog.showOpenDialog(viewPanel);
+			int response = viewPanel.openChooserDialog.showOpenDialog (viewPanel);
 			while (response == JFileChooser.APPROVE_OPTION)
 			{
-				File file = viewPanel.openChooserDialog.getSelectedFile();
+				File file = viewPanel.openChooserDialog.getSelectedFile ();
 				if (!file.isFile () || !file.toString ().endsWith (".marla"))
 				{
-					JOptionPane.showMessageDialog(viewPanel, "The specified file does not exist.", "Does Not Exist", JOptionPane.WARNING_MESSAGE);
-					int lastIndex = viewPanel.openChooserDialog.getSelectedFile().toString().lastIndexOf(".");
+					JOptionPane.showMessageDialog (viewPanel, "The specified file does not exist.", "Does Not Exist", JOptionPane.WARNING_MESSAGE);
+					int lastIndex = viewPanel.openChooserDialog.getSelectedFile ().toString ().lastIndexOf (".");
 					if (lastIndex == -1)
 					{
-						lastIndex = viewPanel.openChooserDialog.getSelectedFile().toString().length();
+						lastIndex = viewPanel.openChooserDialog.getSelectedFile ().toString ().length ();
 					}
 					viewPanel.openChooserDialog.setSelectedFile (new File (viewPanel.openChooserDialog.getSelectedFile ().toString ().substring (0, lastIndex) + ".marla"));
-					response = viewPanel.openChooserDialog.showOpenDialog(viewPanel);
+					response = viewPanel.openChooserDialog.showOpenDialog (viewPanel);
 					continue;
 				}
-				
+
 				if (problem != null)
 				{
-					viewPanel.closeProblem(false);
+					viewPanel.closeProblem (false);
 				}
 
-				if (file.isDirectory())
+				if (file.isDirectory ())
 				{
 					lastGoodDir = file.toString ();
 				}
 				else
 				{
-					lastGoodDir = file.toString ().substring (0, file.toString ().lastIndexOf(File.separatorChar));
+					lastGoodDir = file.toString ().substring (0, file.toString ().lastIndexOf (File.separatorChar));
 				}
-				problem = Problem.load(file.toString ());
+				problem = Problem.load (file.toString ());
 
-				viewPanel.openProblem();
+				viewPanel.openProblem ();
 				break;
 			}
 		}
 		catch (MarlaException ex)
 		{
-			JOptionPane.showMessageDialog(viewPanel, ex.getMessage(), "Error loading save file", JOptionPane.WARNING_MESSAGE);
+			JOptionPane.showMessageDialog (viewPanel, ex.getMessage (), "Error loading save file", JOptionPane.WARNING_MESSAGE);
 		}
-		catch(FileNotFoundException ex)
+		catch (FileNotFoundException ex)
 		{
-			JOptionPane.showMessageDialog(viewPanel, "Unable to locate ", "Error loading save file", JOptionPane.WARNING_MESSAGE);
+			JOptionPane.showMessageDialog (viewPanel, "Unable to locate ", "Error loading save file", JOptionPane.WARNING_MESSAGE);
 		}
 	}
 
@@ -474,16 +479,16 @@ public class Domain
 		// Iteratively attempts to tell operation to recompute itself until
 		// no operation that it depends on has missing requirements
 		boolean isSolved = false;
-		while(!isSolved)
+		while (!isSolved)
 		{
 			try
 			{
-				op.checkCache();
+				op.checkCache ();
 				isSolved = true;
 			}
-			catch(OperationInfoRequiredException ex)
+			catch (OperationInfoRequiredException ex)
 			{
-				viewPanel.getRequiredInfoDialog(ex.getOperation());
+				viewPanel.getRequiredInfoDialog (ex.getOperation ());
 			}
 		}
 	}

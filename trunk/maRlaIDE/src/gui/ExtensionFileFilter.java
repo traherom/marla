@@ -29,86 +29,89 @@ import javax.swing.filechooser.FileFilter;
  */
 public class ExtensionFileFilter extends FileFilter
 {
-    /** Description of the extension filter.*/
-    String description;
-    /** Extensions accepted in the filter.*/
-    String extensions[];
+	/** Description of the extension filter.*/
+	String description;
+	/** Extensions accepted in the filter.*/
+	String extensions[];
 
-    /**
-     * Construct the extension filter with only one accepted extension.
-     *
-     * @param description Description of the extension filter.
-     * @param extension Accepted extensions.
-     */
-    public ExtensionFileFilter(String description, String extension)
-    {
-        this(description, new String[] { extension });
-    }
+	/**
+	 * Construct the extension filter with only one accepted extension.
+	 *
+	 * @param description Description of the extension filter.
+	 * @param extension Accepted extensions.
+	 */
+	public ExtensionFileFilter(String description, String extension)
+	{
+		this (description, new String[]
+				{
+					extension
+				});
+	}
 
-    /**
-     * Construct the extension filter with an array of accepted extensions.
-     *
-     * @param description Description of the extension filter.
-     * @param extensions Accepted extensions.
-     */
-    public ExtensionFileFilter(String description, String extensions[])
-    {
-        if (description == null)
-        {
-            this.description = extensions[0];
-        }
-        else
-        {
-            this.description = description;
-        }
+	/**
+	 * Construct the extension filter with an array of accepted extensions.
+	 *
+	 * @param description Description of the extension filter.
+	 * @param extensions Accepted extensions.
+	 */
+	public ExtensionFileFilter(String description, String extensions[])
+	{
+		if (description == null)
+		{
+			this.description = extensions[0];
+		}
+		else
+		{
+			this.description = description;
+		}
 
-        this.extensions = (String[]) extensions.clone();
+		this.extensions = (String[]) extensions.clone ();
 
-        for (int i = 0, n = this.extensions.length; i < n; i++)
-        {
-            this.extensions[i] = this.extensions[i].toLowerCase();
-        }
-    }
+		for (int i = 0, n = this.extensions.length; i < n; i++)
+		{
+			this.extensions[i] = this.extensions[i].toLowerCase ();
+		}
+	}
 
-    /**
-     * Check to see if the specified file is of the accepted extension.
-     *
-     * @param file The file to be checked.
-     * @return True if the file is acceptable, false otherwise.
-     */
-    @Override
-    public boolean accept(File file)
-    {
-        // always allow directories
-        if (file.isDirectory())
-        {
-            return true;
-        }
-        // allow only those extensions found in the accepted extensions array
-        else
-        {
-            String path = file.getAbsolutePath().toLowerCase();
-            for (int i = 0, n = extensions.length; i < n; i++)
-            {
-                String extension = extensions[i];
-                if((path.endsWith(extension) && (path.charAt(path.length() -
-                        extension.length() - 1)) == '.'))
-                {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
+	/**
+	 * Check to see if the specified file is of the accepted extension.
+	 *
+	 * @param file The file to be checked.
+	 * @return True if the file is acceptable, false otherwise.
+	 */
+	@Override
+	public boolean accept(File file)
+	{
+		// always allow directories
+		if (file.isDirectory ())
+		{
+			return true;
+		}
+		// allow only those extensions found in the accepted extensions array
+		else
+		{
+			String path = file.getAbsolutePath ().toLowerCase ();
+			for (int i = 0, n = extensions.length; i < n; i++)
+			{
+				String extension = extensions[i];
+				if ((path.endsWith (extension) && (path.charAt (path.length ()
+																- extension.length () - 1)) == '.'))
+				{
+					return true;
+				}
+			}
+		}
+		return false;
+	}
 
-    /**
-     * Retrieve the extension filter description.
-     *
-     * @return The description of the extension filter.
-     */
-    @Override
-    public String getDescription()
-    {
-        return description;
-    }
+	/**
+	 * Retrieve the extension filter description.
+	 *
+	 * @return The description of the extension filter.
+	 */
+	@Override
+	public String getDescription()
+	{
+		return description;
+	}
 }

@@ -38,68 +38,68 @@ import javax.swing.KeyStroke;
  */
 public class EscapeDialog extends JDialog
 {
-    /** A reference to the main panel of the application.*/
-    final protected ViewPanel VIEW_PANEL;
-
-    /**
-     * Constructs a standard Escape Dialog.
-     */
-    public EscapeDialog(ViewPanel viewPanel)
-    {
-        super ();
-		this.VIEW_PANEL = viewPanel;
-    }
-
-    /**
-     * Constructs an Escape Dialog with a dialog as its parent.
-     *
-     * @param parent The dialog to be the parent.
-     */
-    public EscapeDialog(JDialog parent, ViewPanel viewPanel)
-    {
-        super (parent);
-		this.VIEW_PANEL = viewPanel;
-    }
+	/** A reference to the main panel of the application.*/
+	final protected ViewPanel VIEW_PANEL;
 
 	/**
-     * Constructs an Escape Dialog with a JFrame as its parent.
-     *
-     * @param parent The dialog to be the parent.
-     */
-    public EscapeDialog(JFrame parent, ViewPanel viewPanel)
-    {
-        super (parent);
+	 * Constructs a standard Escape Dialog.
+	 */
+	public EscapeDialog(ViewPanel viewPanel)
+	{
+		super ();
 		this.VIEW_PANEL = viewPanel;
-    }
+	}
 
-    /**
-     * Overrides the root pane method to create it in the same way but with the
-     * added functionality that supports an escape key listener. This allows
-     * the dialog to perform some exit operations when escape is pressed prior
-     * to disposing the dialog, and this also allows the escape key to act
-     * the same way as pressing the close button.
-     *
-     * @return The root pane.
-     */
-    @Override
-    protected JRootPane createRootPane()
-    {
-        Action actionListener = new AbstractAction ()
-        {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent)
-            {
-                ((JDialog) rootPane.getParent ()).dispose ();
-                VIEW_PANEL.setEnabled (true);
-                VIEW_PANEL.requestFocus ();
-            }
-        };
-        rootPane = new JRootPane ();
-        KeyStroke stroke = KeyStroke.getKeyStroke ("ESCAPE");
-        InputMap inputMap = rootPane.getInputMap (JComponent.WHEN_IN_FOCUSED_WINDOW);
-        inputMap.put (stroke, "ESCAPE");
-        rootPane.getActionMap ().put ("ESCAPE", actionListener);
+	/**
+	 * Constructs an Escape Dialog with a dialog as its parent.
+	 *
+	 * @param parent The dialog to be the parent.
+	 */
+	public EscapeDialog(JDialog parent, ViewPanel viewPanel)
+	{
+		super (parent);
+		this.VIEW_PANEL = viewPanel;
+	}
 
-        return rootPane;
-    }
+	/**
+	 * Constructs an Escape Dialog with a JFrame as its parent.
+	 *
+	 * @param parent The dialog to be the parent.
+	 */
+	public EscapeDialog(JFrame parent, ViewPanel viewPanel)
+	{
+		super (parent);
+		this.VIEW_PANEL = viewPanel;
+	}
+
+	/**
+	 * Overrides the root pane method to create it in the same way but with the
+	 * added functionality that supports an escape key listener. This allows
+	 * the dialog to perform some exit operations when escape is pressed prior
+	 * to disposing the dialog, and this also allows the escape key to act
+	 * the same way as pressing the close button.
+	 *
+	 * @return The root pane.
+	 */
+	@Override
+	protected JRootPane createRootPane()
+	{
+		Action actionListener = new AbstractAction ()
+		{
+			@Override
+			public void actionPerformed(ActionEvent actionEvent)
+			{
+				((JDialog) rootPane.getParent ()).dispose ();
+				VIEW_PANEL.setEnabled (true);
+				VIEW_PANEL.requestFocus ();
+			}
+		};
+		rootPane = new JRootPane ();
+		KeyStroke stroke = KeyStroke.getKeyStroke ("ESCAPE");
+		InputMap inputMap = rootPane.getInputMap (JComponent.WHEN_IN_FOCUSED_WINDOW);
+		inputMap.put (stroke, "ESCAPE");
+		rootPane.getActionMap ().put ("ESCAPE", actionListener);
+
+		return rootPane;
+	}
 }

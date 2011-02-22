@@ -48,159 +48,159 @@ import operation.Operation;
  */
 public class DragDrop implements DragGestureListener, DragSourceListener, DropTargetListener, Transferable
 {
-    /** A reference to the view panel.*/
-    private ViewPanel viewPanel;
-    /** The supported flavors for dragging and dropping.*/
-    private static final DataFlavor[] supportedFlavors =
-    {
-        null
-    };
+	/** A reference to the view panel.*/
+	private ViewPanel viewPanel;
+	/** The supported flavors for dragging and dropping.*/
+	private static final DataFlavor[] supportedFlavors =
+	{
+		null
+	};
 
-    /** Set the main supported flavor for dragging and dropping.*/
-    static
-    {
-        try
-        {
-            supportedFlavors[0] = new DataFlavor (DataFlavor.javaJVMLocalObjectMimeType);
-        }
-        catch (Exception ex)
-        {
-        }
-    }
-    /** */
-    private Object object;
+	/** Set the main supported flavor for dragging and dropping.*/
+	static
+	{
+		try
+		{
+			supportedFlavors[0] = new DataFlavor (DataFlavor.javaJVMLocalObjectMimeType);
+		}
+		catch (Exception ex)
+		{
+		}
+	}
+	/** */
+	private Object object;
 
-    /**
-     * Construct the drag and drop class with a reference to the view panel.
-     *
-     * @param viewPanel The reference to the view panel.
-     */
-    public DragDrop(ViewPanel viewPanel)
-    {
-        this.viewPanel = viewPanel;
-    }
+	/**
+	 * Construct the drag and drop class with a reference to the view panel.
+	 *
+	 * @param viewPanel The reference to the view panel.
+	 */
+	public DragDrop(ViewPanel viewPanel)
+	{
+		this.viewPanel = viewPanel;
+	}
 
-    // Transferable methods.
-    @Override
-    public Object getTransferData(DataFlavor flavor)
-    {
-        if (flavor.isMimeTypeEqual (DataFlavor.javaJVMLocalObjectMimeType))
-        {
-            return object;
-        }
-        else
-        {
-            return null;
-        }
-    }
+	// Transferable methods.
+	@Override
+	public Object getTransferData(DataFlavor flavor)
+	{
+		if (flavor.isMimeTypeEqual (DataFlavor.javaJVMLocalObjectMimeType))
+		{
+			return object;
+		}
+		else
+		{
+			return null;
+		}
+	}
 
-    @Override
-    public DataFlavor[] getTransferDataFlavors()
-    {
-        return supportedFlavors;
-    }
+	@Override
+	public DataFlavor[] getTransferDataFlavors()
+	{
+		return supportedFlavors;
+	}
 
-    @Override
-    public boolean isDataFlavorSupported(DataFlavor flavor)
-    {
-        return flavor.isMimeTypeEqual (DataFlavor.javaJVMLocalObjectMimeType);
-    }
+	@Override
+	public boolean isDataFlavorSupported(DataFlavor flavor)
+	{
+		return flavor.isMimeTypeEqual (DataFlavor.javaJVMLocalObjectMimeType);
+	}
 
-    @Override
-    public void dragGestureRecognized(DragGestureEvent ev)
-    {
-        try
-        {
-            ev.startDrag (null, this, this);
-        }
-        catch (Exception ex)
-        {
-        }
-    }
+	@Override
+	public void dragGestureRecognized(DragGestureEvent ev)
+	{
+		try
+		{
+			ev.startDrag (null, this, this);
+		}
+		catch (Exception ex)
+		{
+		}
+	}
 
-    @Override
-    public void dragDropEnd(DragSourceDropEvent ev)
-    {
-    }
+	@Override
+	public void dragDropEnd(DragSourceDropEvent ev)
+	{
+	}
 
-    @Override
-    public void dragEnter(DragSourceDragEvent ev)
-    {
-    }
+	@Override
+	public void dragEnter(DragSourceDragEvent ev)
+	{
+	}
 
-    @Override
-    public void dragExit(DragSourceEvent ev)
-    {
-    }
+	@Override
+	public void dragExit(DragSourceEvent ev)
+	{
+	}
 
-    @Override
-    public void dragOver(DragSourceDragEvent ev)
-    {
-        object = ev.getSource ();
-    }
+	@Override
+	public void dragOver(DragSourceDragEvent ev)
+	{
+		object = ev.getSource ();
+	}
 
-    @Override
-    public void dropActionChanged(DragSourceDragEvent ev)
-    {
-    }
+	@Override
+	public void dropActionChanged(DragSourceDragEvent ev)
+	{
+	}
 
-    @Override
-    public void dragEnter(DropTargetDragEvent ev)
-    {
-    }
+	@Override
+	public void dragEnter(DropTargetDragEvent ev)
+	{
+	}
 
-    @Override
-    public void dragExit(DropTargetEvent ev)
-    {
-    }
+	@Override
+	public void dragExit(DropTargetEvent ev)
+	{
+	}
 
-    @Override
-    public void dragOver(DropTargetDragEvent ev)
-    {
-        dropTargetDrag (ev);
-    }
+	@Override
+	public void dragOver(DropTargetDragEvent ev)
+	{
+		dropTargetDrag (ev);
+	}
 
-    @Override
-    public void dropActionChanged(DropTargetDragEvent ev)
-    {
-        dropTargetDrag (ev);
-    }
+	@Override
+	public void dropActionChanged(DropTargetDragEvent ev)
+	{
+		dropTargetDrag (ev);
+	}
 
-    void dropTargetDrag(DropTargetDragEvent ev)
-    {
-        ev.acceptDrag (ev.getDropAction ());
+	void dropTargetDrag(DropTargetDragEvent ev)
+	{
+		ev.acceptDrag (ev.getDropAction ());
 
-		viewPanel.dragInWorkspace (new MouseEvent (viewPanel.workspacePanel, 0, System.currentTimeMillis(), 1, ev.getLocation().x, ev.getLocation().y, 1, false));
-    }
+		viewPanel.dragInWorkspace (new MouseEvent (viewPanel.workspacePanel, 0, System.currentTimeMillis (), 1, ev.getLocation ().x, ev.getLocation ().y, 1, false));
+	}
 
-    @Override
-    public void drop(DropTargetDropEvent ev)
-    {
-        ev.acceptDrop (ev.getDropAction ());
-        try
-        {
-            Object source = ev.getTransferable().getTransferData(supportedFlavors[0]);
-            Operation operation = (Operation) ((DragSourceContext) source).getComponent();
-			
-			viewPanel.domain.problem.markUnsaved();
+	@Override
+	public void drop(DropTargetDropEvent ev)
+	{
+		ev.acceptDrop (ev.getDropAction ());
+		try
+		{
+			Object source = ev.getTransferable ().getTransferData (supportedFlavors[0]);
+			Operation operation = (Operation) ((DragSourceContext) source).getComponent ();
+
+			viewPanel.domain.problem.markUnsaved ();
 
 			try
 			{
 				viewPanel.drop (operation, true, ev.getLocation ());
 			}
-			catch(MarlaException ex)
+			catch (MarlaException ex)
 			{
-				JOptionPane.showMessageDialog(viewPanel, "Unable to load the requested operation", "Missing Operation", JOptionPane.WARNING_MESSAGE);
+				JOptionPane.showMessageDialog (viewPanel, "Unable to load the requested operation", "Missing Operation", JOptionPane.WARNING_MESSAGE);
 			}
-			
-        }
-        catch (UnsupportedFlavorException ex)
-        {
-        }
-        catch (IOException ex)
-        {
-        }
 
-        ev.dropComplete (true);
-    }
+		}
+		catch (UnsupportedFlavorException ex)
+		{
+		}
+		catch (IOException ex)
+		{
+		}
+
+		ev.dropComplete (true);
+	}
 }

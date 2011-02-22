@@ -37,31 +37,31 @@ public class MainFrame extends JFrame
 {
 	/** The minimum size the window frame is allowed to be.*/
 	private final Dimension MINIMUM_WINDOW_SIZE = new Dimension (1000, 540);
-    /** The panel that is added to the frame.*/
-    private static ViewPanel viewPanel;
+	/** The panel that is added to the frame.*/
+	private static ViewPanel viewPanel;
 
-    /**
-     * Constructs the frame for the stand-alone application.
-     */
-    public MainFrame(String[] args)
-    {
+	/**
+	 * Constructs the frame for the stand-alone application.
+	 */
+	public MainFrame(String[] args)
+	{
 		// Construct the view panel
-        viewPanel = new ViewPanel (this);
+		viewPanel = new ViewPanel (this);
 		// Add the view to the frame
-        add (viewPanel);
+		add (viewPanel);
 
 		// Initialize frame components
-        initComponents ();
-        initMyComponents ();
+		initComponents ();
+		initMyComponents ();
 
 		try
 		{
-			Configuration.load();
-			Configuration.processCmdLine(args);
+			Configuration.load ();
+			Configuration.processCmdLine (args);
 		}
-		catch(MarlaException ex)
+		catch (MarlaException ex)
 		{
-			System.out.println(ex.getMessage());
+			System.out.println (ex.getMessage ());
 		}
 
 		ConfigurationException configEx = null;
@@ -69,24 +69,24 @@ public class MainFrame extends JFrame
 		{
 			try
 			{
-				viewPanel.openChooserDialog.setDialogTitle(configEx.getName ());
+				viewPanel.openChooserDialog.setDialogTitle (configEx.getName ());
 				viewPanel.openChooserDialog.resetChoosableFileFilters ();
-				viewPanel.openChooserDialog.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+				viewPanel.openChooserDialog.setFileSelectionMode (JFileChooser.FILES_AND_DIRECTORIES);
 				// Display the chooser and retrieve the selected file
-				int response = viewPanel.openChooserDialog.showOpenDialog(viewPanel);
+				int response = viewPanel.openChooserDialog.showOpenDialog (viewPanel);
 				if (response == JFileChooser.APPROVE_OPTION)
 				{
-					configEx.setPath(viewPanel.openChooserDialog.getSelectedFile().getPath());
+					configEx.setPath (viewPanel.openChooserDialog.getSelectedFile ().getPath ());
 				}
 				else
 				{
-					JOptionPane.showMessageDialog(viewPanel, "The maRla Project cannot run without these resources.", "Fatal Error", JOptionPane.ERROR_MESSAGE);
+					JOptionPane.showMessageDialog (viewPanel, "The maRla Project cannot run without these resources.", "Fatal Error", JOptionPane.ERROR_MESSAGE);
 					System.exit (1);
 				}
 			}
-			catch(MarlaException ex)
+			catch (MarlaException ex)
 			{
-				System.out.println(ex.getMessage());
+				System.out.println (ex.getMessage ());
 			}
 		}
 
@@ -96,67 +96,79 @@ public class MainFrame extends JFrame
 		}
 		catch (MarlaException ex)
 		{
-			JOptionPane.showMessageDialog(viewPanel, ex.getMessage(), "Load Error", JOptionPane.WARNING_MESSAGE);
+			JOptionPane.showMessageDialog (viewPanel, ex.getMessage (), "Load Error", JOptionPane.WARNING_MESSAGE);
 		}
 
 		// Add the shutdown hook to ensure saving prior to a close
-        Runtime.getRuntime ().addShutdownHook (new Thread ()
-        {
-            @Override
-            public void run()
-            {
-                viewPanel.quit (false);
-            }
-        });
-    }
+		Runtime.getRuntime ().addShutdownHook (new Thread ()
+		{
+			@Override
+			public void run()
+			{
+				viewPanel.quit (false);
+			}
+		});
+	}
 
-    /**
-     * Initializes the frame for the stand-alone application.
-     */
-    private void initMyComponents()
-    {
+	/**
+	 * Initializes the frame for the stand-alone application.
+	 */
+	private void initMyComponents()
+	{
 		// Set the minimum size a user can adjust the frame to
-        setMinimumSize (MINIMUM_WINDOW_SIZE);
+		setMinimumSize (MINIMUM_WINDOW_SIZE);
 		// Set the location of the frame to the center of the screen
-        setLocationRelativeTo (null);
+		setLocationRelativeTo (null);
 		// Set the title of the frame, displaying the version number only if we're in pre-release
 		setTitle (getDefaultTitle ());
 
 		// Add window listeners to ensure proper saving, sizing, and orientation is done when needed
-        addWindowListener (new WindowListener ()
-        {
-            @Override
-            public void windowOpened(WindowEvent e) {}
+		addWindowListener (new WindowListener ()
+		{
+			@Override
+			public void windowOpened(WindowEvent e)
+			{
+			}
 
-            @Override
-            public void windowClosing(WindowEvent e)
-            {
-                viewPanel.quit (true);
-            }
+			@Override
+			public void windowClosing(WindowEvent e)
+			{
+				viewPanel.quit (true);
+			}
 
-            @Override
-            public void windowClosed(WindowEvent e) {}
+			@Override
+			public void windowClosed(WindowEvent e)
+			{
+			}
 
-            @Override
-            public void windowIconified(WindowEvent e) {}
+			@Override
+			public void windowIconified(WindowEvent e)
+			{
+			}
 
-            @Override
-            public void windowDeiconified(WindowEvent e) {}
+			@Override
+			public void windowDeiconified(WindowEvent e)
+			{
+			}
 
-            @Override
-            public void windowActivated(WindowEvent e) {}
+			@Override
+			public void windowActivated(WindowEvent e)
+			{
+			}
 
-            @Override
-            public void windowDeactivated(WindowEvent e) {}
-        });
-    }
+			@Override
+			public void windowDeactivated(WindowEvent e)
+			{
+			}
+		});
+	}
 
-    /** This method is called from within the constructor to
-     * initialize the form.
-     * WARNING: Do NOT modify this code. The content of this method is
-     * always regenerated by the Form Editor.
-     */
-    @SuppressWarnings("unchecked")
+	/** This method is called from within the constructor to
+	 * initialize the form.
+	 * WARNING: Do NOT modify this code. The content of this method is
+	 * always regenerated by the Form Editor.
+	 */
+	@SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
@@ -472,24 +484,24 @@ public class MainFrame extends JFrame
 	private void fileMenuMenuSelected(javax.swing.event.MenuEvent evt) {//GEN-FIRST:event_fileMenuMenuSelected
 		if (viewPanel.initLoading)
 		{
-			for (int i = 0; i < fileMenu.getMenuComponentCount(); ++i)
+			for (int i = 0; i < fileMenu.getMenuComponentCount (); ++i)
 			{
-				fileMenu.getMenuComponent(i).setEnabled (false);
+				fileMenu.getMenuComponent (i).setEnabled (false);
 			}
 		}
 		else
 		{
-			newProblemMenuItem.setEnabled(true);
-			openProblemMenuItem.setEnabled(true);
-			exitMenuItem.setEnabled(true);
-			
+			newProblemMenuItem.setEnabled (true);
+			openProblemMenuItem.setEnabled (true);
+			exitMenuItem.setEnabled (true);
+
 			if (viewPanel.domain.problem != null)
 			{
 				exportForLatexMenuItem.setEnabled (true);
 				exportToPdfMenuItem.setEnabled (true);
 				closeProblemMenuItem.setEnabled (true);
 				saveAsMenuItem.setEnabled (true);
-				if (viewPanel.domain.problem.isChanged())
+				if (viewPanel.domain.problem.isChanged ())
 				{
 					saveMenuItem.setEnabled (true);
 				}
@@ -512,9 +524,9 @@ public class MainFrame extends JFrame
 	private void editMenuMenuSelected(javax.swing.event.MenuEvent evt) {//GEN-FIRST:event_editMenuMenuSelected
 		if (viewPanel.initLoading)
 		{
-			for (int i = 0; i < fileMenu.getMenuComponentCount(); ++i)
+			for (int i = 0; i < fileMenu.getMenuComponentCount (); ++i)
 			{
-				fileMenu.getMenuComponent(i).setEnabled (false);
+				fileMenu.getMenuComponent (i).setEnabled (false);
 			}
 		}
 		else
@@ -545,9 +557,9 @@ public class MainFrame extends JFrame
 	private void problemMenuMenuSelected(javax.swing.event.MenuEvent evt) {//GEN-FIRST:event_problemMenuMenuSelected
 		if (viewPanel.initLoading)
 		{
-			for (int i = 0; i < fileMenu.getMenuComponentCount(); ++i)
+			for (int i = 0; i < fileMenu.getMenuComponentCount (); ++i)
 			{
-				fileMenu.getMenuComponent(i).setEnabled (false);
+				fileMenu.getMenuComponent (i).setEnabled (false);
 			}
 		}
 		else
@@ -570,9 +582,9 @@ public class MainFrame extends JFrame
 	private void toolsMenuMenuSelected(javax.swing.event.MenuEvent evt) {//GEN-FIRST:event_toolsMenuMenuSelected
 		if (viewPanel.initLoading)
 		{
-			for (int i = 0; i < fileMenu.getMenuComponentCount(); ++i)
+			for (int i = 0; i < fileMenu.getMenuComponentCount (); ++i)
 			{
-				fileMenu.getMenuComponent(i).setEnabled (false);
+				fileMenu.getMenuComponent (i).setEnabled (false);
 			}
 		}
 		else
@@ -589,7 +601,7 @@ public class MainFrame extends JFrame
 	}//GEN-LAST:event_toolsMenuMenuSelected
 
 	private void closeProblemMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_closeProblemMenuItemActionPerformed
-		viewPanel.closeProblem(false);
+		viewPanel.closeProblem (false);
 	}//GEN-LAST:event_closeProblemMenuItemActionPerformed
 
 	private void editProblemMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editProblemMenuItemActionPerformed
@@ -631,16 +643,16 @@ public class MainFrame extends JFrame
 	{//GEN-HEADEREND:event_helpMenuMenuSelected
 		if (viewPanel.initLoading)
 		{
-			for (int i = 0; i < fileMenu.getMenuComponentCount(); ++i)
+			for (int i = 0; i < fileMenu.getMenuComponentCount (); ++i)
 			{
-				fileMenu.getMenuComponent(i).setEnabled (false);
+				fileMenu.getMenuComponent (i).setEnabled (false);
 			}
 		}
 		else
 		{
-			for (int i = 0; i < fileMenu.getMenuComponentCount(); ++i)
+			for (int i = 0; i < fileMenu.getMenuComponentCount (); ++i)
 			{
-				fileMenu.getMenuComponent(i).setEnabled (true);
+				fileMenu.getMenuComponent (i).setEnabled (true);
 			}
 		}
 	}//GEN-LAST:event_helpMenuMenuSelected
@@ -659,7 +671,6 @@ public class MainFrame extends JFrame
 		}
 		return title;
 	}
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenuItem aboutMenuItem;
     private javax.swing.JMenuItem checkForUpdatesMenuItem;
@@ -696,5 +707,4 @@ public class MainFrame extends JFrame
     private javax.swing.JMenu toolsMenu;
     private javax.swing.JMenuItem undoMenuItem;
     // End of variables declaration//GEN-END:variables
-
 }

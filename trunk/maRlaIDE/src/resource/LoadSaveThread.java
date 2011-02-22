@@ -28,90 +28,90 @@ import gui.Domain;
  */
 public class LoadSaveThread extends Thread
 {
-    /** The domain for the main frame.*/
-    private Domain domain;
-    /** If the thread is already in a load operation, a second load operation
-     * may not be called on it until the first finishes.*/
-    public boolean loading = false;
-    /** If the thread is already in a save operation, a second save operation
-     * may not be called on it until the first finishes.*/
-    public boolean saving = false;
-    /** Auto-save, if save is needed, every three minutes.*/
-    private final long delay = 180000;
-    /** Check if the thread should quit.*/
-    private boolean wantToQuit;
+	/** The domain for the main frame.*/
+	private Domain domain;
+	/** If the thread is already in a load operation, a second load operation
+	 * may not be called on it until the first finishes.*/
+	public boolean loading = false;
+	/** If the thread is already in a save operation, a second save operation
+	 * may not be called on it until the first finishes.*/
+	public boolean saving = false;
+	/** Auto-save, if save is needed, every three minutes.*/
+	private final long delay = 180000;
+	/** Check if the thread should quit.*/
+	private boolean wantToQuit;
 
-    /**
-     * Constructs the load/save thread with a reference to the main frame and
-     * a reference to the local utility object.
-     *
-     * @param domain The domain for the main frame.
-     */
-    public LoadSaveThread(Domain domain)
-    {
-        this.domain = domain;
-        wantToQuit = true;
-    }
+	/**
+	 * Constructs the load/save thread with a reference to the main frame and
+	 * a reference to the local utility object.
+	 *
+	 * @param domain The domain for the main frame.
+	 */
+	public LoadSaveThread(Domain domain)
+	{
+		this.domain = domain;
+		wantToQuit = true;
+	}
 
-    /**
-     * Sets the quit state of the thread to true, so it will not execute its
-     * actions after each delay. It can be set back to running by calling run()
-     * at any time.
-     */
-    public void stopRunning()
-    {
-        wantToQuit = true;
-    }
+	/**
+	 * Sets the quit state of the thread to true, so it will not execute its
+	 * actions after each delay. It can be set back to running by calling run()
+	 * at any time.
+	 */
+	public void stopRunning()
+	{
+		wantToQuit = true;
+	}
 
-    /**
-     * Starts the save thread and checks every delay interval to see if changes
-     * have been made and settings should be saved to the file.
-     */
-    @Override
-    public void run()
-    {
-        wantToQuit = false;
+	/**
+	 * Starts the save thread and checks every delay interval to see if changes
+	 * have been made and settings should be saved to the file.
+	 */
+	@Override
+	public void run()
+	{
+		wantToQuit = false;
 
-        while (!wantToQuit)
-        {
-            try
-            {
-                sleep (delay);
-            }
-            catch (InterruptedException ex)
-            {
-                Domain.logger.add (ex);
-            }
-
-            //save ();
-        }
-    }
-
-    /**
-     * Calls the respective save methods if changes have been made.
-     */
-    public synchronized void save()
-    {
-		if(domain.getProblem() != null)
+		while (!wantToQuit)
 		{
-			if (domain.getProblem().isChanged())
+			try
+			{
+				sleep (delay);
+			}
+			catch (InterruptedException ex)
+			{
+				Domain.logger.add (ex);
+			}
+
+			//save ();
+		}
+	}
+
+	/**
+	 * Calls the respective save methods if changes have been made.
+	 */
+	public synchronized void save()
+	{
+		if (domain.getProblem () != null)
+		{
+			if (domain.getProblem ().isChanged ())
 			{
 				domain.save ();
 			}
 		}
-    }
+	}
 
-    /**
-     * Calls the overarching load method in the utility to load all GUI
-     * elements.
-     */
-    public synchronized void load()
-    {
-        if (!loading)
-        {
-            loading = true;
-            domain.load ();
-            loading = false;
-        }
-    }
+	/**
+	 * Calls the overarching load method in the utility to load all GUI
+	 * elements.
+	 */
+	public synchronized void load()
+	{
+		if (!loading)
+		{
+			loading = true;
+			domain.load ();
+			loading = false;
+		}
+	}
 }
