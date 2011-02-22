@@ -422,7 +422,7 @@ public class Domain
 				
 				if (problem != null)
 				{
-					viewPanel.closeProblem();
+					viewPanel.closeProblem(false);
 				}
 
 				if (file.isDirectory())

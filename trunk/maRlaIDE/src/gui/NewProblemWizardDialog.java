@@ -24,6 +24,8 @@ import java.awt.Font;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
@@ -57,6 +59,7 @@ import problem.DataSet;
 import problem.DuplicateNameException;
 import problem.MarlaException;
 import problem.Problem;
+import problem.SubProblem;
 
 /**
  * The New Problem Wizard Dialog.
@@ -88,10 +91,10 @@ public class NewProblemWizardDialog extends EscapeDialog
 	private Object changingValue = null;
 	/** Set true once the New Problem Wizard is told to overwrite existing files.*/
 	private boolean newProblemOverwrite = false;
-	/** True if the current problem is being edited in the wizard, false if creating a new problem in the wizard.*/
-	protected boolean editing = false;
 	/** A reference to the domain.*/
 	private Domain domain;
+	/** Object for the new problem being created in the wizard.*/
+	protected Problem newProblem = null;
 
 	/**
 	 * Construct the New Problem Wizard dialog.
@@ -267,14 +270,14 @@ public class NewProblemWizardDialog extends EscapeDialog
             .addGroup(welcomePanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(welcomeTextLabel)
-                .addContainerGap(249, Short.MAX_VALUE))
+                .addContainerGap(255, Short.MAX_VALUE))
         );
         welcomePanelLayout.setVerticalGroup(
             welcomePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(welcomePanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(welcomeTextLabel)
-                .addContainerGap(293, Short.MAX_VALUE))
+                .addContainerGap(294, Short.MAX_VALUE))
         );
 
         welcomeCardPanel.add(welcomePanel);
@@ -297,14 +300,24 @@ public class NewProblemWizardDialog extends EscapeDialog
         problemNameLabel.setFont(new java.awt.Font("Verdana", 0, 12));
         problemNameLabel.setText("Problem Name:");
 
-        problemNameTextField.setFont(new java.awt.Font("Verdana", 0, 12));
+        problemNameTextField.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
         problemNameTextField.setText("New Problem");
+        problemNameTextField.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                problemNameTextFieldActionPerformed(evt);
+            }
+        });
 
         problemLocationLabel.setFont(new java.awt.Font("Verdana", 0, 12));
         problemLocationLabel.setText("Problem Location:");
 
         problemLocationTextField.setEditable(false);
-        problemLocationTextField.setFont(new java.awt.Font("Verdana", 0, 12));
+        problemLocationTextField.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        problemLocationTextField.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                problemLocationTextFieldActionPerformed(evt);
+            }
+        });
 
         browseButton.setFont(new java.awt.Font("Verdana", 0, 12));
         browseButton.setText("Browse");
@@ -324,7 +337,7 @@ public class NewProblemWizardDialog extends EscapeDialog
                     .addGroup(nameAndLocationPanelLayout.createSequentialGroup()
                         .addComponent(problemNameLabel)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(problemNameTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 340, Short.MAX_VALUE))
+                        .addComponent(problemNameTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 338, Short.MAX_VALUE))
                     .addGroup(nameAndLocationPanelLayout.createSequentialGroup()
                         .addComponent(problemLocationLabel)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -345,7 +358,7 @@ public class NewProblemWizardDialog extends EscapeDialog
                     .addComponent(problemLocationTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(browseButton)
-                .addContainerGap(216, Short.MAX_VALUE))
+                .addContainerGap(202, Short.MAX_VALUE))
         );
 
         nameAndLocationCardPanel.add(nameAndLocationPanel);
@@ -371,6 +384,11 @@ public class NewProblemWizardDialog extends EscapeDialog
         descriptionTextArea.setLineWrap(true);
         descriptionTextArea.setRows(5);
         descriptionTextArea.setWrapStyleWord(true);
+        descriptionTextArea.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                descriptionTextAreaKeyPressed(evt);
+            }
+        });
         descroptionScollPane.setViewportView(descriptionTextArea);
 
         problemDescriptionLabel.setFont(new java.awt.Font("Verdana", 0, 12));
@@ -383,7 +401,7 @@ public class NewProblemWizardDialog extends EscapeDialog
             .addGroup(descriptionPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(descriptionPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(descroptionScollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 440, Short.MAX_VALUE)
+                    .addComponent(descroptionScollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 420, Short.MAX_VALUE)
                     .addComponent(problemDescriptionLabel))
                 .addContainerGap())
         );
@@ -393,7 +411,7 @@ public class NewProblemWizardDialog extends EscapeDialog
                 .addContainerGap()
                 .addComponent(problemDescriptionLabel)
                 .addGap(18, 18, 18)
-                .addComponent(descroptionScollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 264, Short.MAX_VALUE)
+                .addComponent(descroptionScollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 256, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -425,7 +443,7 @@ public class NewProblemWizardDialog extends EscapeDialog
             subProblemsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(subProblemsPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(subProblemsScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 451, Short.MAX_VALUE))
+                .addComponent(subProblemsScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 441, Short.MAX_VALUE))
         );
         subProblemsPanelLayout.setVerticalGroup(
             subProblemsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -444,7 +462,7 @@ public class NewProblemWizardDialog extends EscapeDialog
             }
         });
         subProblemsCardPanel.add(addSubProblemButton);
-        addSubProblemButton.setBounds(285, 330, 70, 25);
+        addSubProblemButton.setBounds(285, 330, 70, 29);
 
         removeSubProblemButton.setFont(new java.awt.Font("Verdana", 0, 12));
         removeSubProblemButton.setText("Remove");
@@ -456,7 +474,7 @@ public class NewProblemWizardDialog extends EscapeDialog
             }
         });
         subProblemsCardPanel.add(removeSubProblemButton);
-        removeSubProblemButton.setBounds(370, 330, 90, 25);
+        removeSubProblemButton.setBounds(370, 330, 90, 29);
 
         wizardCardPanel.add(subProblemsCardPanel, "card6");
 
@@ -486,7 +504,7 @@ public class NewProblemWizardDialog extends EscapeDialog
             }
         });
         valuesCardPanel.add(addDataSetButton);
-        addDataSetButton.setBounds(285, 330, 70, 25);
+        addDataSetButton.setBounds(285, 330, 70, 29);
 
         removeDataSetButton.setFont(new java.awt.Font("Verdana", 0, 12));
         removeDataSetButton.setText("Remove");
@@ -497,7 +515,7 @@ public class NewProblemWizardDialog extends EscapeDialog
             }
         });
         valuesCardPanel.add(removeDataSetButton);
-        removeDataSetButton.setBounds(370, 330, 90, 25);
+        removeDataSetButton.setBounds(370, 330, 90, 29);
 
         wizardCardPanel.add(valuesCardPanel, "card2");
 
@@ -554,7 +572,7 @@ public class NewProblemWizardDialog extends EscapeDialog
         newProblemPanel.setLayout(newProblemPanelLayout);
         newProblemPanelLayout.setHorizontalGroup(
             newProblemPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 774, Short.MAX_VALUE)
+            .addGap(0, 789, Short.MAX_VALUE)
             .addGroup(newProblemPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(newProblemPanelLayout.createSequentialGroup()
                     .addContainerGap()
@@ -562,19 +580,19 @@ public class NewProblemWizardDialog extends EscapeDialog
                         .addGroup(newProblemPanelLayout.createSequentialGroup()
                             .addComponent(stepsPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 193, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(wizardCardPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 555, Short.MAX_VALUE))
+                            .addComponent(wizardCardPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 556, Short.MAX_VALUE))
                         .addComponent(wizardControlPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addContainerGap()))
         );
         newProblemPanelLayout.setVerticalGroup(
             newProblemPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 447, Short.MAX_VALUE)
+            .addGap(0, 455, Short.MAX_VALUE)
             .addGroup(newProblemPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(newProblemPanelLayout.createSequentialGroup()
                     .addContainerGap()
                     .addGroup(newProblemPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addComponent(wizardCardPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 372, Short.MAX_VALUE)
-                        .addComponent(stepsPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 364, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(stepsPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 372, Short.MAX_VALUE))
                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                     .addComponent(wizardControlPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addContainerGap()))
@@ -584,7 +602,7 @@ public class NewProblemWizardDialog extends EscapeDialog
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 774, Short.MAX_VALUE)
+            .addGap(0, 789, Short.MAX_VALUE)
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(layout.createSequentialGroup()
                     .addGap(0, 0, Short.MAX_VALUE)
@@ -593,7 +611,7 @@ public class NewProblemWizardDialog extends EscapeDialog
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 447, Short.MAX_VALUE)
+            .addGap(0, 455, Short.MAX_VALUE)
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(layout.createSequentialGroup()
                     .addGap(0, 0, Short.MAX_VALUE)
@@ -636,7 +654,24 @@ public class NewProblemWizardDialog extends EscapeDialog
 		JPanel subProblemPanel = new JPanel();
 		JLabel label = new JLabel(ALPHABET[subProblemPanels.size()]);
 		label.setFont(new Font("Verdana", Font.BOLD, 11));
-		JTextArea textArea = new JTextArea();
+		final JTextArea textArea = new JTextArea();
+		final SubProblem subProblem;
+		if (newProblem != null)
+		{
+			subProblem = newProblem.addSubProblem (ALPHABET[newProblem.getSubProblemCount()], "");
+		}
+		else
+		{
+			subProblem = domain.problem.addSubProblem (ALPHABET[domain.problem.getSubProblemCount()], "");
+		}
+		textArea.addKeyListener(new KeyAdapter ()
+		{
+			@Override
+			public void keyTyped(KeyEvent evt)
+			{
+				subProblem.setStatement(descriptionTextArea.getText());
+			}
+		});
 		JScrollPane scrollPane = new JScrollPane();
 		textArea.setLineWrap(true);
 		textArea.setWrapStyleWord(true);
@@ -672,6 +707,14 @@ public class NewProblemWizardDialog extends EscapeDialog
 	private void removeSubProblemButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeSubProblemButtonActionPerformed
 		// Remove the JPanel from the list of sub problems and from the New Problem Wizard
 		JPanel panel = subProblemPanels.remove(subProblemPanels.size() - 1);
+		if (newProblem != null)
+		{
+			newProblem.removeSubProblem(newProblem.getSubProblem (newProblem.getSubProblemCount() - 1));
+		}
+		else
+		{
+			domain.problem.removeSubProblem(domain.problem.getSubProblem(domain.problem.getSubProblemCount() - 1));
+		}
 		subProblemsScollablePanel.remove(panel);
 
 		if(subProblemPanels.isEmpty())
@@ -697,12 +740,73 @@ public class NewProblemWizardDialog extends EscapeDialog
 	private void addDataSetButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addDataSetButtonActionPerformed
 		addingDataSet = true;
 
-		JPanel panel =  createValuesTabbedPanel ();
 		int index = dataSetTabbedPane.getTabCount () + 1;
-		while (dataSetNameExists(-1, "Data Set " + (index)))
+		while (dataSetNameExists(-1, "Data Set " + index))
 		{
 				++index;
 		}
+		DataSet dataSet = null;
+		try
+		{
+			if (newProblem != null)
+			{
+				dataSet = newProblem.addData (new DataSet ("Data Set " + index));
+			}
+			else
+			{
+				dataSet = domain.problem.addData (new DataSet ("Data Set " + index));
+			}
+			dataSet.addColumn ("Column 1");
+			dataSet.getColumn (0).add(0.0);
+			dataSet.getColumn (0).add(0.0);
+			dataSet.getColumn (0).add(0.0);
+			dataSet.getColumn (0).add(0.0);
+			dataSet.getColumn (0).add(0.0);
+			dataSet.addColumn ("Column 2");
+			dataSet.getColumn (1).add(0.0);
+			dataSet.getColumn (1).add(0.0);
+			dataSet.getColumn (1).add(0.0);
+			dataSet.getColumn (1).add(0.0);
+			dataSet.getColumn (1).add(0.0);
+			dataSet.addColumn ("Column 3");
+			dataSet.getColumn (2).add(0.0);
+			dataSet.getColumn (2).add(0.0);
+			dataSet.getColumn (2).add(0.0);
+			dataSet.getColumn (2).add(0.0);
+			dataSet.getColumn (2).add(0.0);
+		}
+		// This check has already occured, so this exception will never be thrown
+		catch (DuplicateNameException ex) {}
+
+		int count = -1;
+		if (newProblem != null)
+		{
+			newProblem.addData (dataSet);
+			count = newProblem.getDataCount();
+			int x = 200;
+			int y = 20;
+			int i = newProblem.getDataCount() - 1;
+			if(i > 0)
+			{
+				x = newProblem.getData(i - 1).getX() + 150;
+			}
+			newProblem.getData (i).setBounds(x, y, newProblem.getData (i).getPreferredSize().width, newProblem.getData (i).getPreferredSize().height);
+		}
+		else
+		{
+			domain.problem.addData (dataSet);
+			count = domain.problem.getDataCount();
+			int x = 200;
+			int y = 20;
+			int i = domain.problem.getDataCount() - 1;
+			if(i > 0)
+			{
+				x = domain.problem.getData(i - 1).getX() + 150;
+			}
+			domain.problem.getData (i).setBounds(x, y, domain.problem.getData (i).getPreferredSize().width, domain.problem.getData (i).getPreferredSize().height);
+		}
+
+		JPanel panel =  createValuesTabbedPanel (count);
 		dataSetTabbedPane.add ("Data Set " + index, panel);
 		dataSetTabbedPane.setSelectedIndex (dataSetTabbedPane.getTabCount () - 1);
 		int columns = 3;
@@ -724,19 +828,19 @@ public class NewProblemWizardDialog extends EscapeDialog
 		DefaultTableColumnModel newColumnModel = new DefaultTableColumnModel ();
 		for (int i = 0; i < columns; ++i)
 		{
-				index = i + 1;
-				while (columnNameExists(newModel, i, "Column " + (index)))
-				{
-						++index;
-				}
-				newColumnModel.addColumn (new TableColumn ());
-				newModel.addColumn("Column " + index);
+			index = i + 1;
+			while (columnNameExists(newModel, i, "Column " + (index)))
+			{
+					++index;
+			}
+			newColumnModel.addColumn (new TableColumn ());
+			newModel.addColumn("Column " + index);
 		}
 		table.setColumnModel (newColumnModel);
 		// Add minimum rows to the table model
 		for (int i = 0; i < rows; ++i)
 		{
-				newModel.addRow (new Object[columns]);
+			newModel.addRow (new Object[columns]);
 		}
 		table.setModel (newModel);
 		table.updateUI();
@@ -744,34 +848,25 @@ public class NewProblemWizardDialog extends EscapeDialog
 
 		if (dataSetTabbedPane.getTabCount() == 1)
 		{
-				removeDataSetButton.setEnabled (true);
+			removeDataSetButton.setEnabled (true);
 		}
 
 		addingDataSet = false;
 }//GEN-LAST:event_addDataSetButtonActionPerformed
 
 	private void removeDataSetButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeDataSetButtonActionPerformed
-		boolean allowRemove = true;
-		if (dataSetTabbedPane.getSelectedIndex() != dataSetTabbedPane.getTabCount() - 1)
+		if (newProblem != null)
 		{
-			String name = dataSetTabbedPane.getTitleAt(dataSetTabbedPane.getTabCount () - 1);
-			dataSetTabbedPane.setSelectedIndex (dataSetTabbedPane.getTabCount () - 1);
-			int response = JOptionPane.showConfirmDialog(this, "<html>This will remove the <em>last</em> data set, " + name + ", which was not<br />"
-					+ "the data set you were currently viewing. Are you sure you wish<br />"
-					+ "to remove the <em>last</em> data set from the problem?</html>", "Removing Last Data Set", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
-			if (response == JOptionPane.NO_OPTION)
-			{
-				allowRemove = false;
-			}
+			newProblem.removeData (newProblem.getData (dataSetTabbedPane.getSelectedIndex ()));
 		}
-		
-		if (allowRemove)
+		else
 		{
-			dataSetTabbedPane.remove(dataSetTabbedPane.getTabCount() - 1);
-			if(dataSetTabbedPane.getTabCount() == 0)
-			{
-				removeDataSetButton.setEnabled(false);
-			}
+			domain.problem.removeData (domain.problem.getData (dataSetTabbedPane.getSelectedIndex ()));
+		}
+		dataSetTabbedPane.remove(dataSetTabbedPane.getSelectedIndex());
+		if(dataSetTabbedPane.getTabCount() == 0)
+		{
+			removeDataSetButton.setEnabled(false);
 		}
 }//GEN-LAST:event_removeDataSetButtonActionPerformed
 
@@ -781,7 +876,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 		dispose();
 		VIEW_PANEL.requestFocus();
 
-		editing = false;
+		newProblem = null;
 		openCloseWizard = false;
 }//GEN-LAST:event_closeWizardButtonActionPerformed
 
@@ -838,7 +933,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 				}
 			}
 			// Ensure the problem name given does not match an already existing file
-			if(continueAllowed && file.exists() && !newProblemOverwrite && !editing)
+			if(continueAllowed && file.exists() && !newProblemOverwrite && newProblem != null)
 			{
 				int response = JOptionPane.showConfirmDialog(this, "The given problem name already exists as a file\n"
 						+ "at the specified location. If you would not like to overwrite the\n"
@@ -910,7 +1005,12 @@ public class NewProblemWizardDialog extends EscapeDialog
 		}
 		else
 		{
-			finishNewProblemWizard();
+			boolean editing = false;
+			if (newProblem == null)
+			{
+				editing = true;
+			}
+			finishNewProblemWizard(editing);
 		}
 }//GEN-LAST:event_nextWizardButtonActionPerformed
 
@@ -976,6 +1076,32 @@ public class NewProblemWizardDialog extends EscapeDialog
 			}
 		}
 }//GEN-LAST:event_backWizardButtonActionPerformed
+
+	private void problemNameTextFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_problemNameTextFieldActionPerformed
+		if (newProblem != null)
+		{
+			newProblem.setFileName(problemLocationTextField.getText () + "/" + problemNameTextField.getText ());
+		}
+	}//GEN-LAST:event_problemNameTextFieldActionPerformed
+
+	private void problemLocationTextFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_problemLocationTextFieldActionPerformed
+		if (newProblem != null)
+		{
+			newProblem.setFileName(problemLocationTextField.getText () + "/" + problemNameTextField.getText ());
+		}
+	}//GEN-LAST:event_problemLocationTextFieldActionPerformed
+
+	private void descriptionTextAreaKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_descriptionTextAreaKeyPressed
+		if (newProblem != null)
+		{
+			newProblem.setStatement(descriptionTextArea.getText ());
+		}
+		else
+		{
+			domain.problem.setStatement(descriptionTextArea.getText());
+		}
+	}//GEN-LAST:event_descriptionTextAreaKeyPressed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton addDataSetButton;
     private javax.swing.JButton addSubProblemButton;
@@ -1031,9 +1157,10 @@ public class NewProblemWizardDialog extends EscapeDialog
 	/**
 	 * Create a panel for display in the tabbed display for data set values.
 	 *
+	 * @param i The index of the Data Set in the Problem.
 	 * @return The panel created to be stored in the values tabbed panel.
 	 */
-	private JPanel createValuesTabbedPanel()
+	private JPanel createValuesTabbedPanel(final int i)
 	{
 		final JPanel valuesPanel = new JPanel();
 		final JScrollPane scrollPane = new JScrollPane();
@@ -1056,6 +1183,15 @@ public class NewProblemWizardDialog extends EscapeDialog
 			}
 		});
 		table.getTableHeader().setFont(ViewPanel.fontPlain12);
+		final Problem finalProblem;
+		if (newProblem != null)
+		{
+			finalProblem = newProblem;
+		}
+		else
+		{
+			finalProblem = domain.problem;
+		}
 		table.getTableHeader().addMouseListener(new MouseAdapter()
 		{
 			@Override
@@ -1074,6 +1210,13 @@ public class NewProblemWizardDialog extends EscapeDialog
 							((ExtendedTableModel) table.getModel()).setColumn(name.toString(), index);
 							table.getColumnModel().getColumn(index).setHeaderValue(name);
 							table.getTableHeader().resizeAndRepaint();
+							try
+							{
+								finalProblem.getData (i).getColumn (index).setName(name.toString());
+							}
+							// Check has already occured, so exception will never ben thrown
+							catch (DuplicateNameException ex) {}
+							catch (MarlaException ex) {}
 						}
 						else
 						{
@@ -1357,8 +1500,10 @@ public class NewProblemWizardDialog extends EscapeDialog
 
 	/**
 	 * Launch the New Problem Wizard with the default characteristics.
+	 *
+	 * @param editing True when editing a problem, false when creating a new one.
 	 */
-	protected void launchNewProblemWizard()
+	protected void launchNewProblemWizard(boolean editing)
 	{
 		openCloseWizard = true;
 
@@ -1389,7 +1534,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 		// Set properties for the values tabs
 		dataSetTabbedPane.removeAll();
 
-		setNewProblemWizardDefaultValues();
+		setNewProblemWizardDefaultValues(editing);
 
 		// Pack and show the New Problem Wizard dialog
 		pack();
@@ -1401,18 +1546,51 @@ public class NewProblemWizardDialog extends EscapeDialog
 
 	/**
 	 * Sets the default values for components in the New Problem Wizard.
+	 *
+	 * @param editing True when editing a problem, false when creating a new one.
 	 */
-	private void setNewProblemWizardDefaultValues()
+	private void setNewProblemWizardDefaultValues(boolean editing)
 	{
 		if (!editing)
 		{
+			// Create the new Problem object with default values
+			newProblem = new Problem("");
+			newProblem.setFileName(domain.lastGoodDir + "/" + "New Problem.marla");
+			try
+			{
+				DataSet dataSet = new DataSet ("Data Set 1");
+				newProblem.addData (dataSet);
+				dataSet.addColumn ("Column 1");
+				dataSet.getColumn (0).add(0.0);
+				dataSet.getColumn (0).add(0.0);
+				dataSet.getColumn (0).add(0.0);
+				dataSet.getColumn (0).add(0.0);
+				dataSet.getColumn (0).add(0.0);
+				dataSet.addColumn ("Column 2");
+				dataSet.getColumn (1).add(0.0);
+				dataSet.getColumn (1).add(0.0);
+				dataSet.getColumn (1).add(0.0);
+				dataSet.getColumn (1).add(0.0);
+				dataSet.getColumn (1).add(0.0);
+				dataSet.addColumn ("Column 3");
+				dataSet.getColumn (2).add(0.0);
+				dataSet.getColumn (2).add(0.0);
+				dataSet.getColumn (2).add(0.0);
+				dataSet.getColumn (2).add(0.0);
+				dataSet.getColumn (2).add(0.0);
+			}
+			// Will never be thrown at this point
+			catch (DuplicateNameException ex) {}
+
 			// Set problem defaults for name and location
 			problemNameTextField.setText ("New Problem");
+			problemNameTextField.setEnabled (true);
 			problemLocationTextField.setText (domain.lastGoodDir);
+			browseButton.setEnabled (true);
 			descriptionTextArea.setText ("");
 
 			// By default, new problems have three columns and five rows
-			dataSetTabbedPane.add ("Data Set 1", createValuesTabbedPanel ());
+			dataSetTabbedPane.add ("Data Set 1", createValuesTabbedPanel (newProblem.getDataCount()));
 			int columns = 3;
 			int rows = 5;
 			((JSpinner) ((JPanel) dataSetTabbedPane.getComponent (0)).getComponent (2)).setValue (columns);
@@ -1452,9 +1630,13 @@ public class NewProblemWizardDialog extends EscapeDialog
 		}
 		else
 		{
+			newProblem = null;
+
 			// Set problem defaults for name and location
 			problemNameTextField.setText (domain.problem.getFileName().substring (domain.problem.getFileName ().lastIndexOf (System.getProperty ("file.separator")) + 1, domain.problem.getFileName ().lastIndexOf (".")));
+			problemNameTextField.setEnabled (false);
 			problemLocationTextField.setText (domain.problem.getFileName().substring (0, domain.problem.getFileName ().lastIndexOf (System.getProperty ("file.separator"))));
+			browseButton.setEnabled (false);
 			descriptionTextArea.setText (domain.problem.getStatement ());
 
 			// Add sub problems to the panel
@@ -1465,6 +1647,15 @@ public class NewProblemWizardDialog extends EscapeDialog
 				JLabel label = new JLabel (ALPHABET[i]);
 				label.setFont (new Font ("Verdana", Font.BOLD, 11));
 				JTextArea textArea = new JTextArea (domain.problem.getSubProblem (i).getStatement ());
+				final SubProblem subProblem = domain.problem.getSubProblem(i);
+				textArea.addKeyListener(new KeyAdapter ()
+				{
+					@Override
+					public void keyTyped(KeyEvent evt)
+					{
+						subProblem.setStatement(descriptionTextArea.getText());
+					}
+				});
 				JScrollPane scrollPane = new JScrollPane ();
 				textArea.setLineWrap (true);
 				textArea.setWrapStyleWord (true);
@@ -1506,7 +1697,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 			for (int i = 0; i < domain.problem.getDataCount(); ++i)
 			{
 				DataSet dataSet = domain.problem.getData (i);
-				JPanel panel = createValuesTabbedPanel ();
+				JPanel panel = createValuesTabbedPanel (i);
 				dataSetTabbedPane.add (dataSet.getName (), panel);
 				int columns = dataSet.getColumnCount ();
 				int rows = dataSet.getColumnLength ();
@@ -1561,197 +1752,24 @@ public class NewProblemWizardDialog extends EscapeDialog
 	}
 
 	/**
-	 * The new problem wizard is complete, so create the new problem and close
+	 * The New Problem Wizard is complete, so create the new problem and close
 	 * the New Problem Wizard.
+	 *
+	 * @param editing True when editing a problem, false when creating a new one.
 	 */
-	private void finishNewProblemWizard()
+	private void finishNewProblemWizard(boolean editing)
 	{
 		// Close the current or old problem, if one is open
-		VIEW_PANEL.closeProblem();
+		VIEW_PANEL.closeProblem(editing);
 
 		// Use values from the New Problem Wizard to construct a new problem
-		if(!editing)
+		if(newProblem != null)
 		{
-			domain.problem = new Problem(descriptionTextArea.getText());
+			domain.problem = newProblem;
+			newProblem = null;
 		}
 
 		domain.problem.markUnsaved();
-		// Construct sub problems from the New Problem Wizard
-		for(int i = 0; i < subProblemPanels.size(); ++i)
-		{
-			if(i < domain.problem.getSubProblemCount())
-			{
-				domain.problem.getSubProblem(i).setStatement(((JTextArea) ((JViewport) ((JScrollPane) subProblemPanels.get(i).getComponent(1)).getComponent(0)).getComponent(0)).getText());
-			}
-			else
-			{
-				domain.problem.addSubProblem(ALPHABET[i], ((JTextArea) ((JViewport) ((JScrollPane) subProblemPanels.get(i).getComponent(1)).getComponent(0)).getComponent(0)).getText());
-			}
-		}
-
-		// If a sub problem was remove, remove it from the problem object
-		while (editing && domain.problem.getSubProblemCount() > subProblemPanels.size ())
-		{
-			domain.problem.removeSubProblem(domain.problem.getSubProblem(domain.problem.getSubProblemCount() - 1));
-		}
-
-		String fileName = problemNameTextField.getText();
-		if(!fileName.endsWith(".marla"))
-		{
-			fileName += ".marla";
-		}
-		domain.problem.setFileName(new File(problemLocationTextField.getText(), fileName).toString());
-
-		for(int i = 0; i < dataSetTabbedPane.getTabCount (); ++i)
-		{
-			DataSet dataSet = null;
-			ExtendedTableModel tableModel = (ExtendedTableModel) ((JTable) ((JViewport) ((JScrollPane) ((JPanel) dataSetTabbedPane.getComponent(i)).getComponent(0)).getComponent(0)).getComponent(0)).getModel();
-
-			try
-			{
-				dataSet = new DataSet(dataSetTabbedPane.getTitleAt(i));
-				// The data set should already exist in the workspace
-				if(i < domain.problem.getDataCount())
-				{
-					dataSet = domain.problem.getData(i);
-					if(!dataSetTabbedPane.getTitleAt(i).equals(dataSet.getName()))
-					{
-						dataSet.setDataName(dataSetTabbedPane.getTitleAt(i));
-					}
-
-					// If columns were removed, loop and delete from the end
-					while(tableModel.getColumnCount() < dataSet.getColumnCount())
-					{
-						dataSet.removeColumn(dataSet.getColumnCount() - 1);
-					}
-					// If columns were added, loop and add to the end
-					while(tableModel.getColumnCount() > dataSet.getColumnCount())
-					{
-						dataSet.addColumn(tableModel.getColumnName (dataSet.getColumnCount ()));
-						// Add data in the new column to the data set object
-						for (int j = 0; j < tableModel.getRowCount(); ++j)
-						{
-							dataSet.getColumn (dataSet.getColumnCount() - 1).add (tableModel.getValueAt (j, dataSet.getColumnCount() - 1));
-						}
-					}
-					// If rows were removed, loop and delete from the end
-					for (int j = 0; j < tableModel.getColumnCount(); ++j)
-					{
-						while(tableModel.getRowCount() < dataSet.getColumn (j).size())
-						{
-							dataSet.getColumn(j).remove (dataSet.getColumn (j).size () - 1);
-						}
-					}
-					// If rows were added, loop and add to the end
-					int length = dataSet.getColumnLength();
-					while(tableModel.getRowCount() > dataSet.getColumnLength())
-					{
-						Object[] newRow = tableModel.getRowAt (length);
-						for (int j = 0; j < tableModel.getColumnCount(); ++j)
-						{
-							dataSet.getColumn(j).add (newRow[j]);
-						}
-					}
-				}
-				// This is a new data set, so add it to the workspace and to the problem
-				else
-				{
-					domain.problem.addData(dataSet);
-					int x = 200;
-					int y = 20;
-					if(i > 0)
-					{
-						x = domain.problem.getData(i - 1).getX() + 150;
-					}
-					dataSet.setBounds(x, y, dataSet.getPreferredSize().width, dataSet.getPreferredSize().height);
-				}
-			}
-			catch(DuplicateNameException ex)
-			{
-				JOptionPane.showMessageDialog(this, "Two datasets may not have the same name", "Duplicate Name", JOptionPane.WARNING_MESSAGE);
-
-				// Try next set, can't finish saving this one to the problem
-				continue;
-			}
-
-			try
-			{
-				// Add columns from the New Problem Wizard
-				for(int j = 0; j < tableModel.getColumnCount(); ++j)
-				{
-					if(j < dataSet.getColumnCount())
-					{
-						DataColumn column = dataSet.getColumn(j);
-						if(!dataSet.getColumn(j).getName().equals(tableModel.getColumnName(j)))
-						{
-							try
-							{
-								column.setName(tableModel.getColumnName(j));
-							}
-							catch(MarlaException ex)
-							{
-								Domain.logger.add(ex);
-							}
-						}
-						for(int k = 0; k < tableModel.getRowCount(); ++k)
-						{
-							try
-							{
-								column.set(k, Double.parseDouble(tableModel.getValueAt(k, j).toString()));
-							}
-							catch(IndexOutOfBoundsException ex)
-							{
-							}
-						}
-						for(int k = tableModel.getRowCount(); k < dataSet.getColumnLength(); ++k)
-						{
-							try
-							{
-								column.remove(k);
-							}
-							catch(IndexOutOfBoundsException ex)
-							{
-							}
-						}
-					}
-					else
-					{
-						DataColumn column = dataSet.addColumn(tableModel.getColumnName(j));
-
-						// Add all rows within this column to the data set
-						for(int k = 0; k < tableModel.getRowCount(); ++k)
-						{
-							column.add(Double.parseDouble(tableModel.getValueAt(k, j).toString()));
-						}
-					}
-				}
-			}
-			catch(DuplicateNameException ex)
-			{
-				JOptionPane.showMessageDialog(this, "Two columns may not have the same name", "Duplicate Name", JOptionPane.WARNING_MESSAGE);
-			}
-		}
-
-		// If a data set was removed, remove it from the display along with all its operations
-		if(editing && dataSetTabbedPane.getTabCount() < VIEW_PANEL.getShownDataSetCount())
-		{
-			int numShown = VIEW_PANEL.getShownDataSetCount();
-			for(int i = 0; i < numShown; ++i)
-			{
-				DataSet dataSet = VIEW_PANEL.getDisplayedDataSet(i);
-				if(!tabNameExists(dataSet.getName()))
-				{
-					// Since the data set is no longer in the problem, remove it from the workspace
-					for(int j = 0; j < dataSet.getOperationCount(); ++j)
-					{
-						VIEW_PANEL.workspacePanel.remove(dataSet.getOperation(j));
-					}
-					domain.problem.removeData(dataSet);
-					VIEW_PANEL.workspacePanel.remove(dataSet);
-					VIEW_PANEL.workspacePanel.updateUI();
-				}
-			}
-		}
 
 		// Open data stored in the problem currently
 		VIEW_PANEL.openProblem();
@@ -1760,24 +1778,6 @@ public class NewProblemWizardDialog extends EscapeDialog
 		domain.save();
 
 		closeWizardButtonActionPerformed(null);
-	}
-
-	/**
-	 * Checks if a tab of the given name exists.
-	 *
-	 * @param name Tab name to look for.
-	 * @return True if the tab name was found, false otherwise.
-	 */
-	private boolean tabNameExists(String name)
-	{
-		for (int i = 0; i < dataSetTabbedPane.getTabCount (); ++i)
-		{
-			if (dataSetTabbedPane.getTitleAt (i).equals (name))
-			{
-				return true;
-			}
-		}
-		return false;
 	}
 
 	/**
