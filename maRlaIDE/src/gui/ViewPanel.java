@@ -235,7 +235,7 @@ public class ViewPanel extends JPanel
 		initLoading = false;
 		newButton.setEnabled(true);
 		openButton.setEnabled(true);
-		settingsButton.setEnabled(true);
+		//settingsButton.setEnabled(true);
 	}
 
 	/**
@@ -1783,8 +1783,8 @@ public class ViewPanel extends JPanel
 			}
 		}
 
+		closeProblem (false);
 		domain.loadSaveThread.stopRunning();
-		domain.loadSaveThread.save();
 
 		if(forceQuit)
 		{
