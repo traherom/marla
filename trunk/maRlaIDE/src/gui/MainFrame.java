@@ -593,9 +593,7 @@ public class MainFrame extends JFrame
 	}//GEN-LAST:event_closeProblemMenuItemActionPerformed
 
 	private void editProblemMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editProblemMenuItemActionPerformed
-		viewPanel.NEW_PROBLEM_WIZARD_DIALOG.setTitle ("Edit Problem");
-		viewPanel.NEW_PROBLEM_WIZARD_DIALOG.welcomeTextLabel.setText (ViewPanel.welcomeEditText);
-		viewPanel.NEW_PROBLEM_WIZARD_DIALOG.launchNewProblemWizard (true);
+		viewPanel.editProblem ();
 	}//GEN-LAST:event_editProblemMenuItemActionPerformed
 
 	private void newDataSetMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newDataSetMenuItemActionPerformed
