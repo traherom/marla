@@ -15,7 +15,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package gui;
 
 import java.awt.AWTEvent;
@@ -84,7 +83,7 @@ import resource.LoadSaveThread;
 public class ViewPanel extends JPanel
 {
 	/** The full time format for debug output.*/
-    public static final SimpleDateFormat FULL_TIME_FORMAT = new SimpleDateFormat ("MM/dd/yyyy h:mm:ss a");
+	public static final SimpleDateFormat FULL_TIME_FORMAT = new SimpleDateFormat("MM/dd/yyyy h:mm:ss a");
 	/** The default text for the New Problem Wizard.*/
 	public static final String welcomeNewText = "<html>The New Problem Wizard will walk you through the setup of a new "
 			+ "problem as it appears in your textbook.<br /><br />You will first be asked where you would like to save "
@@ -109,14 +108,13 @@ public class ViewPanel extends JPanel
 	/** A black border display.*/
 	private final Border BLACK_BORDER = BorderFactory.createLineBorder(Color.BLACK);
 	/** The source object for draggable assignments and events.*/
-    public final DragSource DRAG_SOURCE = new DragSource ();
+	public final DragSource DRAG_SOURCE = new DragSource();
 	/** The drag-and-drop listener for assignments and events.*/
-    public final DragDrop DND_LISTENER = new DragDrop (this);
-
+	public final DragDrop DND_LISTENER = new DragDrop(this);
 	/** The main frame of a stand-alone application.*/
-    public MainFrame mainFrame;
+	public MainFrame mainFrame;
 	/** The domain object reference performs generic actions specific to the GUI.*/
-    protected Domain domain = new Domain (this);
+	protected Domain domain = new Domain(this);
 	/** True while the program is in startup, false otherwise.*/
 	protected boolean initLoading = true;
 	/** The width between two operations/data sets.*/
@@ -126,11 +124,11 @@ public class ViewPanel extends JPanel
 	/** The size of fonts.*/
 	public static int fontSize = 12;
 	/** Default, plain, 12-point font.*/
-	public static Font fontPlain12 = new Font ("Verdana", Font.PLAIN, 12);
+	public static Font fontPlain12 = new Font("Verdana", Font.PLAIN, 12);
 	/** Default, bold, 12-point font.*/
-	public static Font fontBold12 = new Font ("Verdana", Font.BOLD, 12);
+	public static Font fontBold12 = new Font("Verdana", Font.BOLD, 12);
 	/** The New Problem Wizard dialog.*/
-	public final NewProblemWizardDialog NEW_PROBLEM_WIZARD_DIALOG = new NewProblemWizardDialog (this, domain);
+	public final NewProblemWizardDialog NEW_PROBLEM_WIZARD_DIALOG = new NewProblemWizardDialog(this, domain);
 	/** The set of operations contained in the XML file.*/
 	private List<String> operations;
 	/** The data set being dragged.*/
@@ -146,87 +144,99 @@ public class ViewPanel extends JPanel
 	/** The default file filter for a JFileChooser open dialog.*/
 	protected FileFilter defaultFilter;
 	/** The extensions file filter for CSV files.*/
-	protected ExtensionFileFilter csvFilter = new ExtensionFileFilter ("Comma Separated Values (.csv, .txt)", new String[] {"CSV", "TXT"});
+	protected ExtensionFileFilter csvFilter = new ExtensionFileFilter("Comma Separated Values (.csv, .txt)", new String[]
+			{
+				"CSV", "TXT"
+			});
 	/** The extensions file filter for CSV files.*/
-	protected ExtensionFileFilter marlaFilter = new ExtensionFileFilter ("The maRla Project Files (.marla)", new String[] {"MARLA"});
+	protected ExtensionFileFilter marlaFilter = new ExtensionFileFilter("The maRla Project Files (.marla)", new String[]
+			{
+				"MARLA"
+			});
 	/** The extensions file filter for PDF files.*/
-	protected ExtensionFileFilter pdfFilter = new ExtensionFileFilter ("PDF Files (.pdf)", new String[] {"PDF"});
+	protected ExtensionFileFilter pdfFilter = new ExtensionFileFilter("PDF Files (.pdf)", new String[]
+			{
+				"PDF"
+			});
 	/** The extensions file filter for LaTeX files.*/
-	protected ExtensionFileFilter latexFilter = new ExtensionFileFilter ("LaTeX Sweave Files (.rnw)", new String[] {"RNW"});
+	protected ExtensionFileFilter latexFilter = new ExtensionFileFilter("LaTeX Sweave Files (.rnw)", new String[]
+			{
+				"RNW"
+			});
 	/** The point in the view where the answer dialog shall appear.*/
 	private Point answerDialogLocation = null;
 	/** True if operation and column names are abbreviated, false otherwise.*/
 	private boolean abbreviated = false;
 
-    /**
-     * Creates new form MainFrame for a stand-alone application.
-     */
-    public ViewPanel(MainFrame mainFrame)
-    {
-        this.mainFrame = mainFrame;
-        init ();
-    }
+	/**
+	 * Creates new form MainFrame for a stand-alone application.
+	 */
+	public ViewPanel(MainFrame mainFrame)
+	{
+		this.mainFrame = mainFrame;
+		init();
+	}
 
-    /**
-     * Calls initialization functions for the frame-based application.
-     */
-    private void init()
-    {
-        initComponents ();
-        initMyComponents ();
-    }
+	/**
+	 * Calls initialization functions for the frame-based application.
+	 */
+	private void init()
+	{
+		initComponents();
+		initMyComponents();
+	}
 
-    /**
-     * Custom initialization of specific components is done here.
-     */
-    private void initMyComponents()
-    {
+	/**
+	 * Custom initialization of specific components is done here.
+	 */
+	private void initMyComponents()
+	{
 		// Remap shortcut keys to system defaults
-		Toolkit.getDefaultToolkit ().addAWTEventListener (new AWTEventListener ()
+		Toolkit.getDefaultToolkit().addAWTEventListener(new AWTEventListener()
 		{
 			@Override
 			public void eventDispatched(AWTEvent event)
 			{
 				KeyEvent kev = (KeyEvent) event;
-				if (kev.getID () == KeyEvent.KEY_PRESSED || kev.getID () == KeyEvent.KEY_RELEASED || kev.getID () == KeyEvent.KEY_PRESSED)
+				if(kev.getID() == KeyEvent.KEY_PRESSED || kev.getID() == KeyEvent.KEY_RELEASED || kev.getID() == KeyEvent.KEY_PRESSED)
 				{
-					if ((kev.getModifiersEx () & KeyEvent.META_DOWN_MASK) != 0 && !((kev.getModifiersEx () & KeyEvent.CTRL_DOWN_MASK) != 0))
+					if((kev.getModifiersEx() & KeyEvent.META_DOWN_MASK) != 0 && !((kev.getModifiersEx() & KeyEvent.CTRL_DOWN_MASK) != 0))
 					{
-						kev.consume ();
-						KeyEvent fake = new KeyEvent (kev.getComponent (), kev.getID (), kev.getWhen (), (kev.getModifiersEx () & ~KeyEvent.META_DOWN_MASK) | KeyEvent.CTRL_DOWN_MASK, kev.getKeyCode (), kev.getKeyChar ());
-						Toolkit.getDefaultToolkit ().getSystemEventQueue ().postEvent (fake);
+						kev.consume();
+						KeyEvent fake = new KeyEvent(kev.getComponent(), kev.getID(), kev.getWhen(), (kev.getModifiersEx() & ~KeyEvent.META_DOWN_MASK) | KeyEvent.CTRL_DOWN_MASK, kev.getKeyCode(), kev.getKeyChar());
+						Toolkit.getDefaultToolkit().getSystemEventQueue().postEvent(fake);
 					}
 				}
 			}
 		}, KeyEvent.KEY_EVENT_MASK);
 
-		workspacePanel.setDropTarget (new DropTarget (workspacePanel, DnDConstants.ACTION_MOVE, DND_LISTENER));
+		workspacePanel.setDropTarget(new DropTarget(workspacePanel, DnDConstants.ACTION_MOVE, DND_LISTENER));
 
-		domain.loadSaveThread = new LoadSaveThread (domain);
+		domain.loadSaveThread = new LoadSaveThread(domain);
 		// Launch the save thread
-		domain.loadSaveThread.start ();
-		domain.setLoadSaveThread (domain.loadSaveThread);
+		domain.loadSaveThread.start();
+		domain.setLoadSaveThread(domain.loadSaveThread);
 
 		// Initially, simply display the welcome card until a problem is created new or loaded
-		emptyPalettePanel.setVisible (true);
-		componentsPanel.setVisible (false);
-		preWorkspacePanel.setVisible (true);
-		workspacePanel.setVisible (false);
+		emptyPalettePanel.setVisible(true);
+		componentsPanel.setVisible(false);
+		preWorkspacePanel.setVisible(true);
+		workspacePanel.setVisible(false);
 
 		// Retrieve the default file filter from the JFileChooser before it is ever changed
 		defaultFilter = openChooserDialog.getFileFilter();
 
 		// Set custom behavior of JFileChooser
 		JPanel access = (JPanel) ((JPanel) openChooserDialog.getComponent(3)).getComponent(3);
-		((JButton) access.getComponent (1)).setToolTipText ("Cancel open");
+		((JButton) access.getComponent(1)).setToolTipText("Cancel open");
 		access = (JPanel) ((JPanel) saveChooserDialog.getComponent(3)).getComponent(3);
-		((JButton) access.getComponent (1)).setToolTipText ("Cancel save");
+		((JButton) access.getComponent(1)).setToolTipText("Cancel save");
 
 		initLoading = false;
 		newButton.setEnabled(true);
 		openButton.setEnabled(true);
 		settingsButton.setEnabled(true);
-    }
+	}
 
 	/**
 	 * Reloads the palette from the XML file.
@@ -236,9 +246,9 @@ public class ViewPanel extends JPanel
 		try
 		{
 			OperationXML.loadXML();
-			loadOperations ();
+			loadOperations();
 		}
-		catch (MarlaException ex)
+		catch(MarlaException ex)
 		{
 			JOptionPane.showMessageDialog(this, ex.getMessage(), "Reload Error", JOptionPane.WARNING_MESSAGE);
 		}
@@ -254,33 +264,33 @@ public class ViewPanel extends JPanel
 		operations = Operation.getAvailableOperationsList();
 
 		// Add all operation types to the palette, adding listeners to the labels as we go
-		for (int i = 0; i < operations.size (); ++i)
+		for(int i = 0; i < operations.size(); ++i)
 		{
 			try
 			{
-				final Operation operation = Operation.createOperation(operations.get (i));
+				final Operation operation = Operation.createOperation(operations.get(i));
 				operation.setText("<html>" + operation.getDisplayString(abbreviated) + "</html>");
-				DRAG_SOURCE.createDefaultDragGestureRecognizer (operation, DnDConstants.ACTION_MOVE, DND_LISTENER);
+				DRAG_SOURCE.createDefaultDragGestureRecognizer(operation, DnDConstants.ACTION_MOVE, DND_LISTENER);
 
-				if (i % 2 == 0)
+				if(i % 2 == 0)
 				{
-					leftPanel.add (operation);
+					leftPanel.add(operation);
 				}
 				else
 				{
-					rightPanel.add (operation);
+					rightPanel.add(operation);
 				}
-				operation.addMouseListener(new MouseAdapter ()
+				operation.addMouseListener(new MouseAdapter()
 				{
 					@Override
 					public void mousePressed(MouseEvent evt)
 					{
-						xDragOffset = (int) evt.getLocationOnScreen ().getX () - (int) operation.getLocationOnScreen ().getX ();
-						yDragOffset = (int) evt.getLocationOnScreen ().getY () - (int) operation.getLocationOnScreen ().getY ();
+						xDragOffset = (int) evt.getLocationOnScreen().getX() - (int) operation.getLocationOnScreen().getX();
+						yDragOffset = (int) evt.getLocationOnScreen().getY() - (int) operation.getLocationOnScreen().getY();
 					}
 				});
 			}
-			catch (OperationException ex)
+			catch(OperationException ex)
 			{
 				// Unable to load, not a real operation
 				System.err.println("Error loading operation '" + operations.get(i) + "'");
@@ -288,12 +298,12 @@ public class ViewPanel extends JPanel
 		}
 	}
 
-    /** This method is called from within the constructor to
-     * initialize the form.
-     * WARNING: Do NOT modify this code. The content of this method is
-     * always regenerated by the Form Editor.
-     */
-    @SuppressWarnings("unchecked")
+	/** This method is called from within the constructor to
+	 * initialize the form.
+	 * WARNING: Do NOT modify this code. The content of this method is
+	 * always regenerated by the Form Editor.
+	 */
+	@SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
@@ -365,26 +375,26 @@ public class ViewPanel extends JPanel
 
         tieSubProblemSubMenu.setText("Tie to Sub Problem");
         tieSubProblemSubMenu.addMenuListener(new javax.swing.event.MenuListener() {
-            public void menuSelected(javax.swing.event.MenuEvent evt) {
-                tieSubProblemSubMenuMenuSelected(evt);
+            public void menuCanceled(javax.swing.event.MenuEvent evt) {
             }
             public void menuDeselected(javax.swing.event.MenuEvent evt) {
                 tieSubProblemSubMenuMenuDeselected(evt);
             }
-            public void menuCanceled(javax.swing.event.MenuEvent evt) {
+            public void menuSelected(javax.swing.event.MenuEvent evt) {
+                tieSubProblemSubMenuMenuSelected(evt);
             }
         });
         rightClickMenu.add(tieSubProblemSubMenu);
 
         untieSubProblemSubMenu.setText("Untie from Sub Problem");
         untieSubProblemSubMenu.addMenuListener(new javax.swing.event.MenuListener() {
-            public void menuSelected(javax.swing.event.MenuEvent evt) {
-                tieSubProblemSubMenuMenuSelected(evt);
+            public void menuCanceled(javax.swing.event.MenuEvent evt) {
             }
             public void menuDeselected(javax.swing.event.MenuEvent evt) {
                 tieSubProblemSubMenuMenuDeselected(evt);
             }
-            public void menuCanceled(javax.swing.event.MenuEvent evt) {
+            public void menuSelected(javax.swing.event.MenuEvent evt) {
+                tieSubProblemSubMenuMenuSelected(evt);
             }
         });
         rightClickMenu.add(untieSubProblemSubMenu);
@@ -399,7 +409,7 @@ public class ViewPanel extends JPanel
         rightClickMenu.add(rCodeMenuItem);
         rightClickMenu.add(jSeparator4);
 
-        editDataSetMenuItem.setText("jMenuItem1");
+        editDataSetMenuItem.setText("Edit Data Set...");
         editDataSetMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 editDataSetMenuItemActionPerformed(evt);
@@ -576,7 +586,7 @@ public class ViewPanel extends JPanel
         );
         emptyPalettePanelLayout.setVerticalGroup(
             emptyPalettePanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(0, 477, Short.MAX_VALUE)
+            .add(0, 478, Short.MAX_VALUE)
         );
 
         componentsCardPanel.add(emptyPalettePanel, "card3");
@@ -612,14 +622,14 @@ public class ViewPanel extends JPanel
             preWorkspacePanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(preWorkspacePanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .add(preWorkspaceLabel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 732, Short.MAX_VALUE)
+                .add(preWorkspaceLabel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 752, Short.MAX_VALUE)
                 .addContainerGap())
         );
         preWorkspacePanelLayout.setVerticalGroup(
             preWorkspacePanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(preWorkspacePanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .add(preWorkspaceLabel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 426, Short.MAX_VALUE)
+                .add(preWorkspaceLabel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 449, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -676,9 +686,9 @@ public class ViewPanel extends JPanel
         trayPanel.setLayout(trayPanelLayout);
         trayPanelLayout.setHorizontalGroup(
             trayPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(0, 776, Short.MAX_VALUE)
+            .add(0, 780, Short.MAX_VALUE)
             .add(trayPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                .add(outputScrollPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 776, Short.MAX_VALUE))
+                .add(outputScrollPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 780, Short.MAX_VALUE))
         );
         trayPanelLayout.setVerticalGroup(
             trayPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
@@ -693,59 +703,59 @@ public class ViewPanel extends JPanel
     }// </editor-fold>//GEN-END:initComponents
 
 	private void workspacePanelMouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_workspacePanelMouseDragged
-		if (draggingComponent == null)
+		if(draggingComponent == null)
 		{
-			if (evt.getButton () == 0 || evt.getButton () == MouseEvent.BUTTON1)
+			if(evt.getButton() == 0 || evt.getButton() == MouseEvent.BUTTON1)
 			{
-				JComponent component = (JComponent) workspacePanel.getComponentAt (evt.getPoint ());
-				if (component != null &&
-						component != workspacePanel &&
-						component != trashCan)
+				JComponent component = (JComponent) workspacePanel.getComponentAt(evt.getPoint());
+				if(component != null
+						&& component != workspacePanel
+						&& component != trashCan)
 				{
 					draggingComponent = component;
-					draggingComponent.setBorder (RED_BORDER);
-					draggingComponent.setSize (component.getPreferredSize ());
-					if (draggingComponent instanceof Operation)
+					draggingComponent.setBorder(RED_BORDER);
+					draggingComponent.setSize(component.getPreferredSize());
+					if(draggingComponent instanceof Operation)
 					{
 						DataSet parentData = null;
-						if (((Operation) draggingComponent).getParentData() != null)
+						if(((Operation) draggingComponent).getParentData() != null)
 						{
 							parentData = (DataSet) (((Operation) draggingComponent).getRootDataSource());
 						}
 						try
 						{
 							Operation childOperation = null;
-							if (((Operation) draggingComponent).getOperationCount() > 0)
+							if(((Operation) draggingComponent).getOperationCount() > 0)
 							{
 								childOperation = ((Operation) draggingComponent).getOperation(0);
 							}
 							DataSource parent = ((Operation) draggingComponent).getParentData();
-							if (parent != null)
+							if(parent != null)
 							{
 								parent.removeOperation((Operation) draggingComponent);
 								workspacePanel.setComponentZOrder(draggingComponent, workspacePanel.getComponentCount() - 1);
 								workspacePanel.setComponentZOrder(trashCan, workspacePanel.getComponentCount() - 1);
 							}
-							if (childOperation != null)
+							if(childOperation != null)
 							{
 								parent.addOperation(childOperation);
 							}
 						}
 						catch(MarlaException ex)
 						{
-							Domain.logger.add (ex);
+							Domain.logger.add(ex);
 						}
 						catch(NullPointerException ex)
 						{
-							Domain.logger.add (ex);
+							Domain.logger.add(ex);
 						}
 						xDragOffset = evt.getX() - draggingComponent.getX();
 						yDragOffset = evt.getY() - draggingComponent.getY();
-						if (parentData != null)
+						if(parentData != null)
 						{
-							rebuildTree (parentData);
+							rebuildTree(parentData);
 						}
-						workspacePanel.repaint ();
+						workspacePanel.repaint();
 					}
 					else
 					{
@@ -761,32 +771,32 @@ public class ViewPanel extends JPanel
 	}//GEN-LAST:event_workspacePanelMouseDragged
 
 	private void workspacePanelMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_workspacePanelMouseReleased
-		if (evt.getButton () == 0 || evt.getButton () == MouseEvent.BUTTON1)
+		if(evt.getButton() == 0 || evt.getButton() == MouseEvent.BUTTON1)
 		{
-			if (draggingComponent != null)
+			if(draggingComponent != null)
 			{
-				if (trashCan.getBounds().contains(evt.getPoint()))
+				if(trashCan.getBounds().contains(evt.getPoint()))
 				{
-					if (draggingComponent instanceof DataSet)
+					if(draggingComponent instanceof DataSet)
 					{
 						DataSet dataSet = (DataSet) draggingComponent;
-						for (int i = 0; i < dataSet.getOperationCount(); ++i)
+						for(int i = 0; i < dataSet.getOperationCount(); ++i)
 						{
 							Operation operation = dataSet.getOperation(i);
 							List<Operation> children = operation.getAllChildOperations();
-							for (int j = 0; j < children.size(); ++j)
+							for(int j = 0; j < children.size(); ++j)
 							{
-								workspacePanel.remove (children.get (j));
+								workspacePanel.remove(children.get(j));
 							}
-							workspacePanel.remove (operation);
+							workspacePanel.remove(operation);
 						}
-						domain.problem.removeData (dataSet);
+						domain.problem.removeData(dataSet);
 					}
-					workspacePanel.remove (draggingComponent);
+					workspacePanel.remove(draggingComponent);
 				}
 				else
 				{
-					if (draggingComponent instanceof Operation)
+					if(draggingComponent instanceof Operation)
 					{
 						try
 						{
@@ -794,61 +804,61 @@ public class ViewPanel extends JPanel
 						}
 						catch(OperationException ex)
 						{
-							Domain.logger.add (ex);
+							Domain.logger.add(ex);
 						}
 						catch(RProcessorException ex)
 						{
-							Domain.logger.add (ex);
+							Domain.logger.add(ex);
 						}
 						catch(MarlaException ex)
 						{
-							Domain.logger.add (ex);
+							Domain.logger.add(ex);
 						}
-						draggingComponent.setBorder (NO_BORDER);
-						draggingComponent.setSize (draggingComponent.getPreferredSize ());
+						draggingComponent.setBorder(NO_BORDER);
+						draggingComponent.setSize(draggingComponent.getPreferredSize());
 					}
 					else
 					{
-						draggingComponent.setBorder (NO_BORDER);
-						draggingComponent.setSize (draggingComponent.getPreferredSize ());
-						rebuildTree ((DataSet) draggingComponent);
+						draggingComponent.setBorder(NO_BORDER);
+						draggingComponent.setSize(draggingComponent.getPreferredSize());
+						rebuildTree((DataSet) draggingComponent);
 					}
 				}
 				draggingComponent = null;
 			}
-			workspacePanel.repaint ();
+			workspacePanel.repaint();
 		}
-		else if (evt.getButton () == MouseEvent.BUTTON3)
+		else if(evt.getButton() == MouseEvent.BUTTON3)
 		{
-			JComponent component = (JComponent) workspacePanel.getComponentAt (evt.getPoint ());
-			if (component != null &&
-					component != workspacePanel &&
-					component != trashCan)
+			JComponent component = (JComponent) workspacePanel.getComponentAt(evt.getPoint());
+			if(component != null
+					&& component != workspacePanel
+					&& component != trashCan)
 			{
 				rightClickedComponent = component;
 				answerDialogLocation = evt.getLocationOnScreen();
 
-				solutionMenuItem.setEnabled (true);
-				tieSubProblemSubMenu.removeAll ();
+				solutionMenuItem.setEnabled(true);
+				tieSubProblemSubMenu.removeAll();
 				untieSubProblemSubMenu.removeAll();
-				for (int i = 0; i < domain.problem.getSubProblemCount(); ++i)
+				for(int i = 0; i < domain.problem.getSubProblemCount(); ++i)
 				{
 					final SubProblem subProblem = domain.problem.getSubProblem(i);
 					String name = subProblem.getSubproblemID();
-					if (subProblem.isDataSourceInSolution ((DataSource) rightClickedComponent))
+					if(subProblem.isDataSourceInSolution((DataSource) rightClickedComponent))
 					{
-						JMenuItem item = new JMenuItem (name);
-						item.addActionListener (new ActionListener ()
+						JMenuItem item = new JMenuItem(name);
+						item.addActionListener(new ActionListener()
 						{
 							@Override
 							public void actionPerformed(ActionEvent evt)
 							{
 								DataSource source = (DataSource) rightClickedComponent;
-								if (rightClickedComponent instanceof Operation)
+								if(rightClickedComponent instanceof Operation)
 								{
-									source = ((Operation) rightClickedComponent).getRootDataSource().getOperation (((Operation) rightClickedComponent).getIndexFromDataSet ());
+									source = ((Operation) rightClickedComponent).getRootDataSource().getOperation(((Operation) rightClickedComponent).getIndexFromDataSet());
 									List<Operation> children = source.getAllChildOperations();
-									if (children.size () > 0)
+									if(children.size() > 0)
 									{
 										subProblem.setSolutionEnd(null);
 									}
@@ -864,24 +874,24 @@ public class ViewPanel extends JPanel
 								subProblem.setSolutionStart(null);
 							}
 						});
-						untieSubProblemSubMenu.add (item);
+						untieSubProblemSubMenu.add(item);
 					}
 					else
 					{
-						JMenuItem item = new JMenuItem (name);
-						item.addActionListener (new ActionListener ()
+						JMenuItem item = new JMenuItem(name);
+						item.addActionListener(new ActionListener()
 						{
 							@Override
 							public void actionPerformed(ActionEvent evt)
 							{
 								DataSource source = (DataSource) rightClickedComponent;
-								if (rightClickedComponent instanceof Operation)
+								if(rightClickedComponent instanceof Operation)
 								{
-									source = ((Operation) rightClickedComponent).getRootDataSource().getOperation (((Operation) rightClickedComponent).getIndexFromDataSet ());
+									source = ((Operation) rightClickedComponent).getRootDataSource().getOperation(((Operation) rightClickedComponent).getIndexFromDataSet());
 									List<Operation> children = source.getAllChildOperations();
-									if (children.size () > 0)
+									if(children.size() > 0)
 									{
-										subProblem.setSolutionEnd(source.getAllChildOperations().get (source.getAllChildOperations().size () - 1));
+										subProblem.setSolutionEnd(source.getAllChildOperations().get(source.getAllChildOperations().size() - 1));
 									}
 									else
 									{
@@ -895,124 +905,126 @@ public class ViewPanel extends JPanel
 								subProblem.setSolutionStart(source);
 							}
 						});
-						tieSubProblemSubMenu.add (item);
+						tieSubProblemSubMenu.add(item);
 					}
 				}
 
 				// Only enable the menu if there are components to tie/untie
-				if (tieSubProblemSubMenu.getMenuComponentCount() == 0)
+				if(tieSubProblemSubMenu.getMenuComponentCount() == 0)
 				{
-					tieSubProblemSubMenu.setEnabled (false);
+					tieSubProblemSubMenu.setEnabled(false);
 				}
 				else
 				{
-					tieSubProblemSubMenu.setEnabled (true);
+					tieSubProblemSubMenu.setEnabled(true);
 				}
-				if (untieSubProblemSubMenu.getMenuComponentCount() == 0)
+				if(untieSubProblemSubMenu.getMenuComponentCount() == 0)
 				{
-					untieSubProblemSubMenu.setEnabled (false);
+					untieSubProblemSubMenu.setEnabled(false);
 				}
 				else
 				{
-					untieSubProblemSubMenu.setEnabled (true);
+					untieSubProblemSubMenu.setEnabled(true);
 				}
 
-				if (rightClickedComponent instanceof DataSet)
+				if(rightClickedComponent instanceof DataSet)
 				{
-					editDataSetMenuItem.setEnabled (true);
+					solutionMenuItem.setText ("Summary");
+					editDataSetMenuItem.setEnabled(true);
 				}
 				else
 				{
-					editDataSetMenuItem.setEnabled (false);
+					solutionMenuItem.setText ("Solution");
+					editDataSetMenuItem.setEnabled(false);
 				}
 
-				rightClickMenu.show (workspacePanel, evt.getX (), evt.getY());
+				rightClickMenu.show(workspacePanel, evt.getX(), evt.getY());
 			}
 			else
 			{
 				rightClickedComponent = null;
-				solutionMenuItem.setEnabled (false);
-				tieSubProblemSubMenu.setEnabled (false);
-				tieSubProblemSubMenu.removeAll ();
+				solutionMenuItem.setEnabled(false);
+				tieSubProblemSubMenu.setEnabled(false);
+				tieSubProblemSubMenu.removeAll();
 			}
 		}
 	}//GEN-LAST:event_workspacePanelMouseReleased
 
 	private void solutionMenuItemActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_solutionMenuItemActionPerformed
 	{//GEN-HEADEREND:event_solutionMenuItemActionPerformed
-		if (rightClickedComponent != null)
+		if(rightClickedComponent != null)
 		{
 			try
 			{
-				if (rightClickedComponent instanceof Operation)
+				if(rightClickedComponent instanceof Operation)
 				{
 					domain.ensureRequirementsMet((Operation) rightClickedComponent);
 				}
 
-				answerPanel.removeAll ();
-				if (rightClickedComponent instanceof Operation && ((Operation) rightClickedComponent).hasPlot())
+				answerPanel.removeAll();
+				if(rightClickedComponent instanceof Operation && ((Operation) rightClickedComponent).hasPlot())
 				{
-					JLabel label = new JLabel ("");
-					label.setIcon(new ImageIcon (((Operation) rightClickedComponent).getPlot()));
-					answerPanel.add (label);
+					JLabel label = new JLabel("");
+					label.setIcon(new ImageIcon(((Operation) rightClickedComponent).getPlot()));
+					answerPanel.add(label);
 				}
 				else
 				{
 					answerPanel.add(new JLabel("<html>" + ((DataSource) rightClickedComponent).toHTML() + "</html>"));
 				}
 
-				if (rightClickedComponent instanceof Operation)
+				if(rightClickedComponent instanceof Operation)
 				{
-					answerDialog.setTitle ("Solution to Point");
+					answerDialog.setTitle("Solution to Point");
 				}
-				else if (rightClickedComponent instanceof DataSet)
+				else if(rightClickedComponent instanceof DataSet)
 				{
-					answerDialog.setTitle ("Data Set Summary");
+					answerDialog.setTitle("Data Set Summary");
 				}
-				answerDialog.pack ();
-				answerDialog.setLocation (answerDialogLocation);
-				answerDialog.setVisible (true);
+				answerDialog.pack();
+				answerDialog.setLocation(answerDialogLocation);
+				answerDialog.setVisible(true);
 			}
-			catch (MarlaException ex)
+			catch(MarlaException ex)
 			{
-				Domain.logger.add (ex);
+				Domain.logger.add(ex);
 			}
 		}
 	}//GEN-LAST:event_solutionMenuItemActionPerformed
 
 	private void tieSubProblemSubMenuMenuSelected(javax.swing.event.MenuEvent evt)//GEN-FIRST:event_tieSubProblemSubMenuMenuSelected
 	{//GEN-HEADEREND:event_tieSubProblemSubMenuMenuSelected
-		if (rightClickedComponent != null && tieSubProblemSubMenu.isEnabled())
+		if(rightClickedComponent != null && tieSubProblemSubMenu.isEnabled())
 		{
-			rightClickedComponent.setBorder (BLACK_BORDER);
-			rightClickedComponent.setSize (rightClickedComponent.getPreferredSize ());
-			if (rightClickedComponent instanceof Operation)
+			rightClickedComponent.setBorder(BLACK_BORDER);
+			rightClickedComponent.setSize(rightClickedComponent.getPreferredSize());
+			if(rightClickedComponent instanceof Operation)
 			{
-				DataSource source = ((Operation) rightClickedComponent).getRootDataSource().getOperation (((Operation) rightClickedComponent).getIndexFromDataSet ());
-				((JComponent) source).setBorder (BLACK_BORDER);
-				((JComponent) source).setSize (((JComponent) source).getPreferredSize ());
-				List<Operation> tempOperations = source.getRootDataSource().getOperation (((Operation) source).getIndexFromDataSet ()).getAllChildOperations();
-				for (int i = 0; i < tempOperations.size (); ++i)
+				DataSource source = ((Operation) rightClickedComponent).getRootDataSource().getOperation(((Operation) rightClickedComponent).getIndexFromDataSet());
+				((JComponent) source).setBorder(BLACK_BORDER);
+				((JComponent) source).setSize(((JComponent) source).getPreferredSize());
+				List<Operation> tempOperations = source.getRootDataSource().getOperation(((Operation) source).getIndexFromDataSet()).getAllChildOperations();
+				for(int i = 0; i < tempOperations.size(); ++i)
 				{
-					tempOperations.get (i).setBorder (BLACK_BORDER);
-					tempOperations.get (i).setSize (tempOperations.get (i).getPreferredSize ());
+					tempOperations.get(i).setBorder(BLACK_BORDER);
+					tempOperations.get(i).setSize(tempOperations.get(i).getPreferredSize());
 				}
 			}
 			else
 			{
 				DataSet root = (DataSet) rightClickedComponent;
-				root.setBorder (BLACK_BORDER);
-				root.setSize (root.getPreferredSize());
-				for (int i = 0; i < root.getOperationCount(); ++i)
+				root.setBorder(BLACK_BORDER);
+				root.setSize(root.getPreferredSize());
+				for(int i = 0; i < root.getOperationCount(); ++i)
 				{
-					Operation operation = root.getOperation (i);
-					operation.setBorder (BLACK_BORDER);
-					operation.setSize (operation.getPreferredSize());
+					Operation operation = root.getOperation(i);
+					operation.setBorder(BLACK_BORDER);
+					operation.setSize(operation.getPreferredSize());
 					List<Operation> tempOperations = operation.getAllChildOperations();
-					for (int j = 0; j < tempOperations.size (); ++j)
+					for(int j = 0; j < tempOperations.size(); ++j)
 					{
-						tempOperations.get (j).setBorder (BLACK_BORDER);
-						tempOperations.get (j).setSize (tempOperations.get (j).getPreferredSize ());
+						tempOperations.get(j).setBorder(BLACK_BORDER);
+						tempOperations.get(j).setSize(tempOperations.get(j).getPreferredSize());
 					}
 				}
 			}
@@ -1021,37 +1033,37 @@ public class ViewPanel extends JPanel
 
 	private void tieSubProblemSubMenuMenuDeselected(javax.swing.event.MenuEvent evt)//GEN-FIRST:event_tieSubProblemSubMenuMenuDeselected
 	{//GEN-HEADEREND:event_tieSubProblemSubMenuMenuDeselected
-		if (rightClickedComponent != null && tieSubProblemSubMenu.isEnabled())
+		if(rightClickedComponent != null && tieSubProblemSubMenu.isEnabled())
 		{
-			rightClickedComponent.setBorder (NO_BORDER);
-			rightClickedComponent.setSize (rightClickedComponent.getPreferredSize ());
-			if (rightClickedComponent instanceof Operation)
+			rightClickedComponent.setBorder(NO_BORDER);
+			rightClickedComponent.setSize(rightClickedComponent.getPreferredSize());
+			if(rightClickedComponent instanceof Operation)
 			{
-				DataSource source = ((Operation) rightClickedComponent).getRootDataSource().getOperation (((Operation) rightClickedComponent).getIndexFromDataSet ());
-				((JComponent) source).setBorder (NO_BORDER);
-				((JComponent) source).setSize (((JComponent) source).getPreferredSize ());
-				List<Operation> tempOperations = source.getRootDataSource().getOperation (((Operation) source).getIndexFromDataSet ()).getAllChildOperations();
-				for (int i = 0; i < tempOperations.size (); ++i)
+				DataSource source = ((Operation) rightClickedComponent).getRootDataSource().getOperation(((Operation) rightClickedComponent).getIndexFromDataSet());
+				((JComponent) source).setBorder(NO_BORDER);
+				((JComponent) source).setSize(((JComponent) source).getPreferredSize());
+				List<Operation> tempOperations = source.getRootDataSource().getOperation(((Operation) source).getIndexFromDataSet()).getAllChildOperations();
+				for(int i = 0; i < tempOperations.size(); ++i)
 				{
-					tempOperations.get (i).setBorder (NO_BORDER);
-					tempOperations.get (i).setSize (tempOperations.get (i).getPreferredSize ());
+					tempOperations.get(i).setBorder(NO_BORDER);
+					tempOperations.get(i).setSize(tempOperations.get(i).getPreferredSize());
 				}
 			}
 			else
 			{
 				DataSet root = (DataSet) rightClickedComponent;
-				root.setBorder (NO_BORDER);
-				root.setSize (root.getPreferredSize());
-				for (int i = 0; i < root.getOperationCount(); ++i)
+				root.setBorder(NO_BORDER);
+				root.setSize(root.getPreferredSize());
+				for(int i = 0; i < root.getOperationCount(); ++i)
 				{
-					Operation operation = root.getOperation (i);
-					operation.setBorder (NO_BORDER);
-					operation.setSize (operation.getPreferredSize());
+					Operation operation = root.getOperation(i);
+					operation.setBorder(NO_BORDER);
+					operation.setSize(operation.getPreferredSize());
 					List<Operation> tempOperations = operation.getAllChildOperations();
-					for (int j = 0; j < tempOperations.size (); ++j)
+					for(int j = 0; j < tempOperations.size(); ++j)
 					{
-						tempOperations.get (j).setBorder (NO_BORDER);
-						tempOperations.get (j).setSize (tempOperations.get (j).getPreferredSize ());
+						tempOperations.get(j).setBorder(NO_BORDER);
+						tempOperations.get(j).setSize(tempOperations.get(j).getPreferredSize());
 					}
 				}
 			}
@@ -1060,7 +1072,7 @@ public class ViewPanel extends JPanel
 
 	private void workspacePanelComponentResized(java.awt.event.ComponentEvent evt)//GEN-FIRST:event_workspacePanelComponentResized
 	{//GEN-HEADEREND:event_workspacePanelComponentResized
-		trashCan.setLocation (workspacePanel.getWidth () - 40, workspacePanel.getHeight () - 40);
+		trashCan.setLocation(workspacePanel.getWidth() - 40, workspacePanel.getHeight() - 40);
 	}//GEN-LAST:event_workspacePanelComponentResized
 
 	private void workspacePanelComponentAdded(java.awt.event.ContainerEvent evt)//GEN-FIRST:event_workspacePanelComponentAdded
@@ -1069,76 +1081,76 @@ public class ViewPanel extends JPanel
 	}//GEN-LAST:event_workspacePanelComponentAdded
 
 	private void rCodeMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rCodeMenuItemActionPerformed
-		if (rightClickedComponent != null)
+		if(rightClickedComponent != null)
 		{
 			try
 			{
-				if (rightClickedComponent instanceof Operation)
+				if(rightClickedComponent instanceof Operation)
 				{
 					domain.ensureRequirementsMet((Operation) rightClickedComponent);
 				}
 
-				answerPanel.removeAll ();
-				answerPanel.add(new JLabel("<html>" + ((DataSource) rightClickedComponent).getRCommands().replaceAll ("\n", "<br />") + "</html>"));
+				answerPanel.removeAll();
+				answerPanel.add(new JLabel("<html>" + ((DataSource) rightClickedComponent).getRCommands().replaceAll("\n", "<br />") + "</html>"));
 
-				answerDialog.setTitle ("R Code");
-				answerDialog.pack ();
-				answerDialog.setLocation (answerDialogLocation);
-				answerDialog.setVisible (true);
+				answerDialog.setTitle("R Code");
+				answerDialog.pack();
+				answerDialog.setLocation(answerDialogLocation);
+				answerDialog.setVisible(true);
 			}
-			catch (MarlaException ex)
+			catch(MarlaException ex)
 			{
-				Domain.logger.add (ex);
+				Domain.logger.add(ex);
 			}
 		}
 	}//GEN-LAST:event_rCodeMenuItemActionPerformed
 
 	private void buttonMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_buttonMousePressed
-		if (((ToolbarButton) evt.getSource()).isEnabled () && !initLoading)
+		if(((ToolbarButton) evt.getSource()).isEnabled() && !initLoading)
 		{
-			((ToolbarButton) evt.getSource()).setDepressed (true);
+			((ToolbarButton) evt.getSource()).setDepressed(true);
 		}
 	}//GEN-LAST:event_buttonMousePressed
 
 	private void buttonMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_buttonMouseReleased
-		ToolbarButton button = (ToolbarButton) evt.getSource ();
-		button.setDepressed (false);
-		if (button == newButton)
+		ToolbarButton button = (ToolbarButton) evt.getSource();
+		button.setDepressed(false);
+		if(button == newButton)
 		{
-			newProblem ();
+			newProblem();
 		}
 		else if(button == openButton)
 		{
-			domain.load ();
+			domain.load();
 		}
 		else if(button == saveButton)
 		{
-			domain.save ();
+			domain.save();
 		}
 		else if(button == plusFontButton)
 		{
 			++fontSize;
 			spaceWidth += 5;
-			spaceHeight +=5;
-			for (int i = 0; i < domain.problem.getDataCount(); ++i)
+			spaceHeight += 5;
+			for(int i = 0; i < domain.problem.getDataCount(); ++i)
 			{
-				rebuildTree(domain.problem.getData (i));
+				rebuildTree(domain.problem.getData(i));
 			}
 		}
 		else if(button == minusFontButton)
 		{
 			--fontSize;
 			spaceWidth -= 5;
-			spaceHeight -=5;
-			for (int i = 0; i < domain.problem.getDataCount(); ++i)
+			spaceHeight -= 5;
+			for(int i = 0; i < domain.problem.getDataCount(); ++i)
 			{
-				rebuildTree(domain.problem.getData (i));
+				rebuildTree(domain.problem.getData(i));
 			}
 
 		}
 		else if(button == abbreviateButton)
 		{
-			if (abbreviated)
+			if(abbreviated)
 			{
 				ImageIcon newIcon = new ImageIcon(getClass().getResource("/images/unchecked_button.png"));
 				abbreviateButton.setIcon(newIcon);
@@ -1153,48 +1165,58 @@ public class ViewPanel extends JPanel
 				abbreviated = true;
 			}
 
-			if (domain.problem != null)
+			if(domain.problem != null)
 			{
-				for (int i = 0; i < domain.problem.getDataCount(); ++i)
+				for(int i = 0; i < domain.problem.getDataCount(); ++i)
 				{
-					rebuildTree(domain.problem.getData (i));
+					rebuildTree(domain.problem.getData(i));
 				}
 			}
 		}
 		else if(button == settingsButton)
 		{
-
 		}
 	}//GEN-LAST:event_buttonMouseReleased
 
 	private void buttonMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_buttonMouseEntered
-		if (((ToolbarButton) evt.getSource()).isEnabled () && !((ToolbarButton) evt.getSource()).isSelected () && !initLoading)
+		if(((ToolbarButton) evt.getSource()).isEnabled() && !((ToolbarButton) evt.getSource()).isSelected() && !initLoading)
 		{
-			((ToolbarButton) evt.getSource()).setHover (true);
+			((ToolbarButton) evt.getSource()).setHover(true);
 		}
 	}//GEN-LAST:event_buttonMouseEntered
 
 	private void buttonMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_buttonMouseExited
-		if (((ToolbarButton) evt.getSource()).isEnabled () && !((ToolbarButton) evt.getSource()).isSelected () && !initLoading)
+		if(((ToolbarButton) evt.getSource()).isEnabled() && !((ToolbarButton) evt.getSource()).isSelected() && !initLoading)
 		{
-			((ToolbarButton) evt.getSource()).setHover (false);
+			((ToolbarButton) evt.getSource()).setHover(false);
 		}
 	}//GEN-LAST:event_buttonMouseExited
 
 	private void trashCanMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_trashCanMouseEntered
-		trashCan.setIcon (new ImageIcon (getClass ().getResource ("/images/trash_button_hover.png")));
+		trashCan.setIcon(new ImageIcon(getClass().getResource("/images/trash_button_hover.png")));
 	}//GEN-LAST:event_trashCanMouseEntered
 
 	private void trashCanMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_trashCanMouseExited
-		trashCan.setIcon (new ImageIcon (getClass ().getResource ("/images/trash_button.png")));
+		trashCan.setIcon(new ImageIcon(getClass().getResource("/images/trash_button.png")));
 	}//GEN-LAST:event_trashCanMouseExited
 
 	private void editDataSetMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editDataSetMenuItemActionPerformed
-		if (rightClickedComponent != null)
+		if(rightClickedComponent != null)
 		{
+			editProblem();
 			NEW_PROBLEM_WIZARD_DIALOG.editDataSet((DataSet) rightClickedComponent);
 		}
 	}//GEN-LAST:event_editDataSetMenuItemActionPerformed
+
+	/**
+	 * Edit the current problem.
+	 */
+	protected void editProblem()
+	{
+		NEW_PROBLEM_WIZARD_DIALOG.setTitle("Edit Problem");
+		NEW_PROBLEM_WIZARD_DIALOG.welcomeTextLabel.setText(ViewPanel.welcomeEditText);
+		NEW_PROBLEM_WIZARD_DIALOG.launchNewProblemWizard(true);
+	}
 
 	/**
 	 * Manage drag events within the workspace panel
@@ -1203,46 +1225,46 @@ public class ViewPanel extends JPanel
 	 */
 	protected void dragInWorkspace(MouseEvent evt)
 	{
-		if (evt.getButton() == 0 || evt.getButton () == MouseEvent.BUTTON1)
+		if(evt.getButton() == 0 || evt.getButton() == MouseEvent.BUTTON1)
 		{
-			if (hoveredComponent != null)
+			if(hoveredComponent != null)
 			{
-				hoveredComponent.setBorder (NO_BORDER);
-				hoveredComponent.setSize (hoveredComponent.getPreferredSize ());
+				hoveredComponent.setBorder(NO_BORDER);
+				hoveredComponent.setSize(hoveredComponent.getPreferredSize());
 				hoveredComponent = null;
 			}
 
-			Component component = workspacePanel.getComponentAt (evt.getPoint ());
-			if (component != null &&
-					component != workspacePanel &&
-					component != trashCan &&
-					component != draggingComponent)
+			Component component = workspacePanel.getComponentAt(evt.getPoint());
+			if(component != null
+					&& component != workspacePanel
+					&& component != trashCan
+					&& component != draggingComponent)
 			{
-				if ((component instanceof Operation && ((Operation) component).getParent () != null) ||
-						component instanceof DataSet)
+				if((component instanceof Operation && ((Operation) component).getParent() != null)
+						|| component instanceof DataSet)
 				{
-					hoveredComponent = (JComponent) workspacePanel.getComponentAt (evt.getPoint ());
-					hoveredComponent.setBorder (BLACK_BORDER);
-					hoveredComponent.setSize (hoveredComponent.getPreferredSize ());
+					hoveredComponent = (JComponent) workspacePanel.getComponentAt(evt.getPoint());
+					hoveredComponent.setBorder(BLACK_BORDER);
+					hoveredComponent.setSize(hoveredComponent.getPreferredSize());
 				}
-				else if (hoveredComponent != null)
+				else if(hoveredComponent != null)
 				{
-					hoveredComponent.setBorder (NO_BORDER);
-					hoveredComponent.setSize (hoveredComponent.getPreferredSize ());
+					hoveredComponent.setBorder(NO_BORDER);
+					hoveredComponent.setSize(hoveredComponent.getPreferredSize());
 					hoveredComponent = null;
 				}
 			}
 
-			if (draggingComponent != null)
+			if(draggingComponent != null)
 			{
-				if (draggingComponent instanceof Operation)
+				if(draggingComponent instanceof Operation)
 				{
 					draggingComponent.setLocation(evt.getX() - xDragOffset, evt.getY() - yDragOffset);
 				}
 				else if(draggingComponent instanceof DataSet)
 				{
 					draggingComponent.setLocation(evt.getX() - xDragOffset, evt.getY() - yDragOffset);
-					rebuildTree ((DataSet) draggingComponent);
+					rebuildTree((DataSet) draggingComponent);
 				}
 			}
 		}
@@ -1255,9 +1277,9 @@ public class ViewPanel extends JPanel
 	 */
 	protected void rebuildTree(DataSet dataSet)
 	{
-		fontPlain12 = new Font ("Verdana", Font.PLAIN, fontSize);
-		fontBold12 = new Font ("Verdana", Font.BOLD, fontSize);
-		
+		fontPlain12 = new Font("Verdana", Font.PLAIN, fontSize);
+		fontBold12 = new Font("Verdana", Font.BOLD, fontSize);
+
 		// Don't bother listening yet if the problem is still loading
 		if(dataSet.getParentProblem().isLoading())
 		{
@@ -1267,14 +1289,14 @@ public class ViewPanel extends JPanel
 		// Set the label for the dataset itself
 		dataSet.setFont(fontBold12);
 		dataSet.setText("<html>" + dataSet.getDisplayString(abbreviated) + "</html>");
-		dataSet.setSize (dataSet.getPreferredSize ());
+		dataSet.setSize(dataSet.getPreferredSize());
 
 		int opCount = dataSet.getOperationCount();
 		if(opCount > 0)
 		{
 			// Find widths of all our columns
 			int[] widths = new int[opCount];
-			for (int i = 0; i < opCount; ++i)
+			for(int i = 0; i < opCount; ++i)
 			{
 				// Run down this operation chain in order to find the widest one
 				widths[i] = rebuildOperationColumn(dataSet.getOperation(i), 0);
@@ -1283,7 +1305,9 @@ public class ViewPanel extends JPanel
 			// Total width, including spacer between columns
 			int totalWidth = (widths.length - 1) * spaceWidth;
 			for(int i = 0; i < opCount; i++)
+			{
 				totalWidth += widths[i];
+			}
 
 			// Figure out where the columns should start based on our center
 			int dsWidth = dataSet.getWidth();
@@ -1332,8 +1356,8 @@ public class ViewPanel extends JPanel
 
 			// Update label
 			currOp.setFont(fontBold12);
-			currOp.setText ("<html>" + currOp.getDisplayString (abbreviated) + "</html>");
-			currOp.setSize (currOp.getPreferredSize());
+			currOp.setText("<html>" + currOp.getDisplayString(abbreviated) + "</html>");
+			currOp.setSize(currOp.getPreferredSize());
 
 			// Get width
 			int width = currOp.getWidth();
@@ -1342,7 +1366,7 @@ public class ViewPanel extends JPanel
 
 			// Center off the given center x
 			int x = centerX - width / 2;
-			int y = ((JComponent)currOp.getParentData()).getY() + spaceHeight;
+			int y = ((JComponent) currOp.getParentData()).getY() + spaceHeight;
 			currOp.setLocation(x, y);
 
 			// Next op
@@ -1366,14 +1390,14 @@ public class ViewPanel extends JPanel
 	protected void drop(Operation operation, boolean duplicate, Point location) throws OperationException, RProcessorException, MarlaException
 	{
 		JComponent component = (JComponent) workspacePanel.getComponentAt(location);
-		if (component != null &&
-				component != workspacePanel &&
-				component != operation &&
-				component != trashCan &&
-				(component instanceof DataSet || component instanceof Operation))
+		if(component != null
+				&& component != workspacePanel
+				&& component != operation
+				&& component != trashCan
+				&& (component instanceof DataSet || component instanceof Operation))
 		{
 			final Operation newOperation;
-			if (duplicate)
+			if(duplicate)
 			{
 				newOperation = Operation.createOperation(operation.getName());
 			}
@@ -1381,58 +1405,58 @@ public class ViewPanel extends JPanel
 			{
 				newOperation = operation;
 			}
-			int x = component.getX ();
-			int y = component.getY ();
+			int x = component.getX();
+			int y = component.getY();
 
 			DataSet dataSet = null;
-			if (component instanceof Operation)
+			if(component instanceof Operation)
 			{
-				if (((Operation) component).getParentData () != null)
+				if(((Operation) component).getParentData() != null)
 				{
-					y = component.getY () + spaceHeight;
+					y = component.getY() + spaceHeight;
 					Operation dropOperation = (Operation) component;
-					if (dropOperation.getRootDataSource () instanceof DataSet)
+					if(dropOperation.getRootDataSource() instanceof DataSet)
 					{
 						dataSet = (DataSet) dropOperation.getRootDataSource();
 					}
-					if (dropOperation.getOperationCount() > 0)
+					if(dropOperation.getOperationCount() > 0)
 					{
-						dropOperation.addOperation (newOperation);
-						Operation childOperation = dropOperation.getOperation (0);
-						childOperation.setParentData (newOperation);
-						childOperation.setLocation (childOperation.getX (), childOperation.getY () + spaceHeight);
+						dropOperation.addOperation(newOperation);
+						Operation childOperation = dropOperation.getOperation(0);
+						childOperation.setParentData(newOperation);
+						childOperation.setLocation(childOperation.getX(), childOperation.getY() + spaceHeight);
 					}
 					else
 					{
-						dropOperation.addOperation (newOperation);
+						dropOperation.addOperation(newOperation);
 					}
 				}
 			}
 			else if(component instanceof DataSet)
 			{
-				y = component.getY () + spaceHeight;
+				y = component.getY() + spaceHeight;
 				dataSet = (DataSet) component;
 				dataSet.addOperation(newOperation);
-				if (dataSet.getOperationCount() > 1)
+				if(dataSet.getOperationCount() > 1)
 				{
-					x += (dataSet.getOperationCount () * spaceWidth);
+					x += (dataSet.getOperationCount() * spaceWidth);
 				}
 			}
 
-			if ((component instanceof Operation && ((Operation) component).getParentData () != null) || component instanceof DataSet)
+			if((component instanceof Operation && ((Operation) component).getParentData() != null) || component instanceof DataSet)
 			{
-				newOperation.setBounds (x, y, newOperation.getPreferredSize().width, newOperation.getPreferredSize().height);
+				newOperation.setBounds(x, y, newOperation.getPreferredSize().width, newOperation.getPreferredSize().height);
 			}
-			
-			if (dataSet != null)
+
+			if(dataSet != null)
 			{
 				rebuildTree(dataSet);
 			}
 		}
-		else if (component != trashCan)
+		else if(component != trashCan)
 		{
 			final Operation newOperation;
-			if (duplicate)
+			if(duplicate)
 			{
 				newOperation = Operation.createOperation(operation.getName());
 			}
@@ -1440,13 +1464,13 @@ public class ViewPanel extends JPanel
 			{
 				newOperation = operation;
 			}
-			
-			newOperation.setBounds ((int) location.getX () - xDragOffset, (int) location.getY () - yDragOffset, newOperation.getPreferredSize().width, newOperation.getPreferredSize().height);
-			workspacePanel.repaint ();
+
+			newOperation.setBounds((int) location.getX() - xDragOffset, (int) location.getY() - yDragOffset, newOperation.getPreferredSize().width, newOperation.getPreferredSize().height);
+			workspacePanel.repaint();
 		}
-		if (hoveredComponent != null)
+		if(hoveredComponent != null)
 		{
-			hoveredComponent.setBorder (NO_BORDER);
+			hoveredComponent.setBorder(NO_BORDER);
 		}
 	}
 
@@ -1460,66 +1484,66 @@ public class ViewPanel extends JPanel
 	{
 		// Create the dialog which will be launched to ask about requirements
 		final List<OperationInformation> prompts = newOperation.getRequiredInfoPrompt();
-		final JDialog dialog = new JDialog ();
-		JPanel panel = new JPanel ();
-		panel.setLayout (new GridLayout (prompts.size () + 1, 2));
+		final JDialog dialog = new JDialog();
+		JPanel panel = new JPanel();
+		panel.setLayout(new GridLayout(prompts.size() + 1, 2));
 
-		dialog.setTitle (newOperation.getName() + ": Information Required");
-		dialog.setModal (true);
-		dialog.add (panel);
+		dialog.setTitle(newOperation.getName() + ": Information Required");
+		dialog.setModal(true);
+		dialog.add(panel);
 
 		// This array will contain references to objects that will hold the values
-		final List<Object> valueComponents = new ArrayList<Object> ();
+		final List<Object> valueComponents = new ArrayList<Object>();
 
 		// Fill dialog with components
-		for (OperationInformation question : prompts)
+		for(OperationInformation question : prompts)
 		{
-			if (question.getType() == PromptType.STRING || question.getType() == PromptType.NUMERIC)
+			if(question.getType() == PromptType.STRING || question.getType() == PromptType.NUMERIC)
 			{
-				JPanel tempPanel = new JPanel (new FlowLayout (FlowLayout.LEFT));
-				JLabel label = new JLabel (question.getPrompt());
-				JTextField textField = new JTextField ();
-				textField.setPreferredSize(new Dimension (150, textField.getPreferredSize().height));
-				tempPanel.add (label);
-				tempPanel.add (textField);
-				valueComponents.add (textField);
-				panel.add (tempPanel);
+				JPanel tempPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+				JLabel label = new JLabel(question.getPrompt());
+				JTextField textField = new JTextField();
+				textField.setPreferredSize(new Dimension(150, textField.getPreferredSize().height));
+				tempPanel.add(label);
+				tempPanel.add(textField);
+				valueComponents.add(textField);
+				panel.add(tempPanel);
 			}
 			else if(question.getType() == PromptType.CHECKBOX)
 			{
-				JPanel tempPanel = new JPanel (new FlowLayout (FlowLayout.LEFT));
-				JCheckBox checkBox = new JCheckBox (question.getPrompt());
-				JLabel label = new JLabel ("");
-				tempPanel.add (checkBox);
-				tempPanel.add (label);
-				valueComponents.add (checkBox);
-				panel.add (tempPanel);
+				JPanel tempPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+				JCheckBox checkBox = new JCheckBox(question.getPrompt());
+				JLabel label = new JLabel("");
+				tempPanel.add(checkBox);
+				tempPanel.add(label);
+				valueComponents.add(checkBox);
+				panel.add(tempPanel);
 			}
 			else if(question.getType() == PromptType.COMBO || question.getType() == PromptType.COLUMN)
 			{
-				JPanel tempPanel = new JPanel (new FlowLayout (FlowLayout.LEFT));
-				JLabel label = new JLabel (question.getPrompt());
-				DefaultComboBoxModel model = new DefaultComboBoxModel (((OperationInfoCombo)question).getOptions().toArray());
-				JComboBox comboBox = new JComboBox (model);
-				tempPanel.add (label);
-				tempPanel.add (comboBox);
-				valueComponents.add (comboBox);
-				panel.add (tempPanel);
+				JPanel tempPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+				JLabel label = new JLabel(question.getPrompt());
+				DefaultComboBoxModel model = new DefaultComboBoxModel(((OperationInfoCombo) question).getOptions().toArray());
+				JComboBox comboBox = new JComboBox(model);
+				tempPanel.add(label);
+				tempPanel.add(comboBox);
+				valueComponents.add(comboBox);
+				panel.add(tempPanel);
 			}
 			else
 				Domain.logger.add(new InternalMarlaException("Unhandled PromptType in question dialog"));
 		}
 
-		JButton doneButton = new JButton ("Done");
+		JButton doneButton = new JButton("Done");
 		final ViewPanel viewPanel = this;
 		// When the user is done with the assumptions, forms will be validated and their values stored into the operation before continuing
-		doneButton.addActionListener (new ActionListener()
+		doneButton.addActionListener(new ActionListener()
 		{
 			@Override
 			public void actionPerformed(ActionEvent evt)
 			{
 				boolean pass = true;
-				for (int i = 0; i < prompts.size(); i++)
+				for(int i = 0; i < prompts.size(); i++)
 				{
 					OperationInformation question = prompts.get(i);
 
@@ -1527,39 +1551,39 @@ public class ViewPanel extends JPanel
 					{
 						if(question.getType() == PromptType.CHECKBOX)
 						{
-							question.setAnswer(((JCheckBox) valueComponents.get (i)).isSelected());
+							question.setAnswer(((JCheckBox) valueComponents.get(i)).isSelected());
 						}
 						else if(question.getType() == PromptType.COMBO || question.getType() == PromptType.COLUMN)
 						{
-							question.setAnswer(((JComboBox) valueComponents.get (i)).getSelectedItem());
+							question.setAnswer(((JComboBox) valueComponents.get(i)).getSelectedItem());
 						}
 						else
 						{
-							question.setAnswer(((JTextField) valueComponents.get (i)).getText ());
+							question.setAnswer(((JTextField) valueComponents.get(i)).getText());
 						}
 					}
-					catch (OperationInfoRequiredException ex)
+					catch(OperationInfoRequiredException ex)
 					{
 						// If the users input was not valid, the form is not accepted and the dialog will not close
-						((JTextField) valueComponents.get (i)).requestFocus();
-						((JTextField) valueComponents.get (i)).selectAll();
+						((JTextField) valueComponents.get(i)).requestFocus();
+						((JTextField) valueComponents.get(i)).selectAll();
 						JOptionPane.showMessageDialog(viewPanel, ex.getMessage(), "Invalid Input", JOptionPane.ERROR_MESSAGE);
 						pass = false;
 					}
 				}
 
-				if (pass)
+				if(pass)
 				{
-					dialog.setVisible (false);
+					dialog.setVisible(false);
 				}
 			}
 		});
-		panel.add (doneButton);
+		panel.add(doneButton);
 
 		// Display dialog
 		dialog.pack();
 		dialog.setLocationRelativeTo(this);
-		dialog.setVisible (true);
+		dialog.setVisible(true);
 	}
 
 	/**
@@ -1567,21 +1591,21 @@ public class ViewPanel extends JPanel
 	 */
 	protected void openProblem()
 	{
-		if (domain.problem != null)
+		if(domain.problem != null)
 		{
-			componentsPanel.setVisible (true);
-			emptyPalettePanel.setVisible (false);
-			workspacePanel.setVisible (true);
-			preWorkspacePanel.setVisible (false);
+			componentsPanel.setVisible(true);
+			emptyPalettePanel.setVisible(false);
+			workspacePanel.setVisible(true);
+			preWorkspacePanel.setVisible(false);
 
 			workspacePanel.repaint();
 
-			mainFrame.setTitle (mainFrame.getDefaultTitle () + " - " + domain.problem.getFileName().substring (domain.problem.getFileName ().lastIndexOf (System.getProperty ("file.separator")) + 1, domain.problem.getFileName ().lastIndexOf (".")));
+			mainFrame.setTitle(mainFrame.getDefaultTitle() + " - " + domain.problem.getFileName().substring(domain.problem.getFileName().lastIndexOf(System.getProperty("file.separator")) + 1, domain.problem.getFileName().lastIndexOf(".")));
 
-			saveButton.setEnabled (false);
-			plusFontButton.setEnabled (true);
-			minusFontButton.setEnabled (true);
-			abbreviateButton.setEnabled (true);
+			saveButton.setEnabled(false);
+			plusFontButton.setEnabled(true);
+			minusFontButton.setEnabled(true);
+			abbreviateButton.setEnabled(true);
 		}
 	}
 
@@ -1593,32 +1617,32 @@ public class ViewPanel extends JPanel
 	 */
 	protected boolean closeProblem(boolean editing)
 	{
-		if (domain.problem != null)
+		if(domain.problem != null)
 		{
 			// Check to save changes before closing the program
-			if (domain.problem.isChanged())
+			if(domain.problem.isChanged())
 			{
 				int response = JOptionPane.YES_OPTION;
-				if (!editing)
+				if(!editing)
 				{
 					Container parent = this;
-					if (NEW_PROBLEM_WIZARD_DIALOG.isVisible())
+					if(NEW_PROBLEM_WIZARD_DIALOG.isVisible())
 					{
 						parent = (Container) NEW_PROBLEM_WIZARD_DIALOG;
 					}
 					response = JOptionPane.showConfirmDialog(parent,
-							"Would you like to save changes to the currently open problem?",
-							"Save Problem Changes",
-							JOptionPane.YES_NO_CANCEL_OPTION,
-							JOptionPane.QUESTION_MESSAGE);
+															 "Would you like to save changes to the currently open problem?",
+															 "Save Problem Changes",
+															 JOptionPane.YES_NO_CANCEL_OPTION,
+															 JOptionPane.QUESTION_MESSAGE);
 				}
-				if (response == JOptionPane.YES_OPTION)
+				if(response == JOptionPane.YES_OPTION)
 				{
 					try
 					{
 						domain.problem.save();
 					}
-					catch (MarlaException ex)
+					catch(MarlaException ex)
 					{
 						return false;
 					}
@@ -1629,27 +1653,27 @@ public class ViewPanel extends JPanel
 				}
 			}
 
-			if (!editing)
+			if(!editing)
 			{
 				workspacePanel.removeAll();
-				workspacePanel.add (trashCan);
+				workspacePanel.add(trashCan);
 
-				emptyPalettePanel.setVisible (true);
-				componentsPanel.setVisible (false);
-				preWorkspacePanel.setVisible (true);
-				workspacePanel.setVisible (false);
+				emptyPalettePanel.setVisible(true);
+				componentsPanel.setVisible(false);
+				preWorkspacePanel.setVisible(true);
+				workspacePanel.setVisible(false);
 
 				domain.problem = null;
 
-				mainFrame.setTitle (mainFrame.getDefaultTitle ());
+				mainFrame.setTitle(mainFrame.getDefaultTitle());
 			}
 		}
-		workspacePanel.repaint ();
+		workspacePanel.repaint();
 
-		saveButton.setEnabled (false);
-		plusFontButton.setEnabled (false);
-		minusFontButton.setEnabled (false);
-		abbreviateButton.setEnabled (false);
+		saveButton.setEnabled(false);
+		plusFontButton.setEnabled(false);
+		minusFontButton.setEnabled(false);
+		abbreviateButton.setEnabled(false);
 
 		return true;
 	}
@@ -1663,14 +1687,14 @@ public class ViewPanel extends JPanel
 	protected DataSet getDisplayedDataSet(int i)
 	{
 		int count = 0;
-		for (int j = 0; j < workspacePanel.getComponentCount (); ++j)
+		for(int j = 0; j < workspacePanel.getComponentCount(); ++j)
 		{
-			if (workspacePanel.getComponent (j) instanceof DataSet &&
-					!(workspacePanel.getComponent (j) instanceof Operation))
+			if(workspacePanel.getComponent(j) instanceof DataSet
+					&& !(workspacePanel.getComponent(j) instanceof Operation))
 			{
-				if (count == i)
+				if(count == i)
 				{
-					return (DataSet) workspacePanel.getComponent (j);
+					return (DataSet) workspacePanel.getComponent(j);
 				}
 				++count;
 			}
@@ -1687,10 +1711,10 @@ public class ViewPanel extends JPanel
 	{
 		int count = 0;
 
-		for (int i = 0; i < workspacePanel.getComponentCount (); ++i)
+		for(int i = 0; i < workspacePanel.getComponentCount(); ++i)
 		{
-			if (workspacePanel.getComponent (i) instanceof DataSet &&
-					!(workspacePanel.getComponent (i) instanceof Operation))
+			if(workspacePanel.getComponent(i) instanceof DataSet
+					&& !(workspacePanel.getComponent(i) instanceof Operation))
 			{
 				++count;
 			}
@@ -1704,20 +1728,20 @@ public class ViewPanel extends JPanel
 	 */
 	protected void newProblem()
 	{
-		NEW_PROBLEM_WIZARD_DIALOG.setTitle ("New Problem Wizard");
-		NEW_PROBLEM_WIZARD_DIALOG.welcomeTextLabel.setText (ViewPanel.welcomeNewText);
-		NEW_PROBLEM_WIZARD_DIALOG.launchNewProblemWizard (false);
+		NEW_PROBLEM_WIZARD_DIALOG.setTitle("New Problem Wizard");
+		NEW_PROBLEM_WIZARD_DIALOG.welcomeTextLabel.setText(ViewPanel.welcomeNewText);
+		NEW_PROBLEM_WIZARD_DIALOG.launchNewProblemWizard(false);
 	}
 
-    /**
-     * Ensures all processes are terminated and that all ways of exiting the
-     * application result in the same closing process.
-     *
-     * @param forceQuit True if System.exit should be called, false if the caller
+	/**
+	 * Ensures all processes are terminated and that all ways of exiting the
+	 * application result in the same closing process.
+	 *
+	 * @param forceQuit True if System.exit should be called, false if the caller
 	 * plans to terminate the application.
-     */
-    protected void quit(boolean forceQuit)
-    {
+	 */
+	protected void quit(boolean forceQuit)
+	{
 		// Save the maRla configuration
 		try
 		{
@@ -1728,46 +1752,45 @@ public class ViewPanel extends JPanel
 			Domain.logger.add(ex);
 		}
 
-		if (Domain.logger.size () > 0)
+		if(Domain.logger.size() > 0)
 		{
 			try
 			{
-				BufferedWriter out = new BufferedWriter (new FileWriter (domain.logFile, true));
-				Date date = new Date ();
-				out.write ("------------------------------------\n");
-				out.write ("Date: " + FULL_TIME_FORMAT.format (date) + "\n");
+				BufferedWriter out = new BufferedWriter(new FileWriter(domain.logFile, true));
+				Date date = new Date();
+				out.write("------------------------------------\n");
+				out.write("Date: " + FULL_TIME_FORMAT.format(date) + "\n");
 
-				for (int i = 0; i < Domain.logger.size (); ++i)
+				for(int i = 0; i < Domain.logger.size(); ++i)
 				{
-					Exception ex = (Exception) Domain.logger.get (i);
-					out.write ("Error: " + ex.getClass () + "\n");
-					out.write ("Message: " + ex.getMessage () + "\n--\nTrace:\n");
-					Object[] trace = ex.getStackTrace ();
-					for (int j = 0; j < trace.length; ++j)
+					Exception ex = (Exception) Domain.logger.get(i);
+					out.write("Error: " + ex.getClass() + "\n");
+					out.write("Message: " + ex.getMessage() + "\n--\nTrace:\n");
+					Object[] trace = ex.getStackTrace();
+					for(int j = 0; j < trace.length; ++j)
 					{
-						out.write ("  " + trace[j].toString () + "\n");
+						out.write("  " + trace[j].toString() + "\n");
 					}
-					out.write ("--\n\n");
-					out.write ("----\n");
+					out.write("--\n\n");
+					out.write("----\n");
 				}
 
-				out.write ("------------------------------------\n\n\n");
-				out.flush ();
+				out.write("------------------------------------\n\n\n");
+				out.flush();
 			}
-			catch (IOException ex)
+			catch(IOException ex)
 			{
 			}
 		}
 
-		domain.loadSaveThread.stopRunning ();
-		domain.loadSaveThread.save ();
+		domain.loadSaveThread.stopRunning();
+		domain.loadSaveThread.save();
 
-        if (forceQuit)
-        {
-            System.exit (0);
-        }
-    }
-
+		if(forceQuit)
+		{
+			System.exit(0);
+		}
+	}
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel abbreviateButton;
     protected javax.swing.JDialog answerDialog;
@@ -1809,5 +1832,4 @@ public class ViewPanel extends JPanel
     protected javax.swing.JPanel workspacePanel;
     private javax.swing.JSplitPane workspaceSplitPane;
     // End of variables declaration//GEN-END:variables
-
 }
