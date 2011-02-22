@@ -165,6 +165,7 @@ public class Problem implements ProblemPart
 	public void setStatement(String newStatement)
 	{
 		this.statement = newStatement;
+		markUnsaved();
 	}
 
 	/**
@@ -185,6 +186,7 @@ public class Problem implements ProblemPart
 	{
 		String oldName = personName;
 		personName = newName;
+		markUnsaved();
 		return oldName;
 	}
 
@@ -207,6 +209,7 @@ public class Problem implements ProblemPart
 	{
 		String oldCourse = shortCourseName;
 		shortCourseName = newCourse;
+		markUnsaved();
 		return oldCourse;
 	}
 
@@ -229,6 +232,7 @@ public class Problem implements ProblemPart
 	{
 		String oldCourse = longCourseName;
 		longCourseName = newCourse;
+		markUnsaved();
 		return oldCourse;
 	}
 
@@ -250,6 +254,7 @@ public class Problem implements ProblemPart
 	{
 		String oldChapter = probChapter;
 		probChapter = newChapter;
+		markUnsaved();
 		return oldChapter;
 	}
 
@@ -272,6 +277,7 @@ public class Problem implements ProblemPart
 	{
 		String oldSection = probSection;
 		probSection = newSection;
+		markUnsaved();
 		return oldSection;
 	}
 
@@ -293,6 +299,7 @@ public class Problem implements ProblemPart
 	{
 		String oldNum = probNum;
 		probNum = newNum;
+		markUnsaved();
 		return oldNum;
 	}
 
