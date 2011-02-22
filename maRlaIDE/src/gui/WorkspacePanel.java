@@ -67,6 +67,10 @@ public class WorkspacePanel extends JPanel
 		for (int i = 0; i < viewPanel.domain.problem.getDataCount(); ++i)
 		{
 			DataSet dataSet = viewPanel.domain.problem.getData (i);
+			if (dataSet.getParent () == null || (dataSet.getParent () != null && dataSet.getParent () != this))
+			{
+				add (dataSet);
+			}
 			for (int j = 0; j < dataSet.getOperationCount(); ++j)
 			{
 				int x1 = (dataSet.getX () + dataSet.getX () + dataSet.getWidth ()) / 2;
@@ -75,6 +79,10 @@ public class WorkspacePanel extends JPanel
 				int y2 = dataSet.getOperation (j).getY ();
 				g2.draw (new Line2D.Double (x1, y1, x2, y2));
 
+				if (dataSet.getOperation(j).getParent () == null || (dataSet.getOperation(j).getParent () == null && dataSet.getOperation(j).getParent () != this))
+				{
+					add (dataSet.getOperation(j));
+				}
 				List<Operation> operations = dataSet.getOperation (j).getAllChildOperations();
 				if (operations.size () > 0)
 				{
@@ -98,6 +106,10 @@ public class WorkspacePanel extends JPanel
 	 */
 	private void connectOperations(Graphics2D g2, Operation operation)
 	{
+		if (operation.getParent () == null || (operation.getParent () != null && operation.getParent () != this))
+		{
+			add (operation);
+		}
 		if (operation.getOperationCount() > 0)
 		{
 			connectOperations (g2, operation.getOperation(0));

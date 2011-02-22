@@ -21,6 +21,7 @@ package gui;
 import java.awt.AWTEvent;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
@@ -201,7 +202,7 @@ public class ViewPanel extends JPanel
 
 		workspacePanel.setDropTarget (new DropTarget (workspacePanel, DnDConstants.ACTION_MOVE, DND_LISTENER));
 
-		domain.loadSaveThread = new LoadSaveThread (this, domain);
+		domain.loadSaveThread = new LoadSaveThread (domain);
 		// Launch the save thread
 		domain.loadSaveThread.start ();
 		domain.setLoadSaveThread (domain.loadSaveThread);
@@ -306,6 +307,8 @@ public class ViewPanel extends JPanel
         untieSubProblemSubMenu = new javax.swing.JMenu();
         menuSeparator = new javax.swing.JPopupMenu.Separator();
         rCodeMenuItem = new javax.swing.JMenuItem();
+        jSeparator4 = new javax.swing.JPopupMenu.Separator();
+        editDataSetMenuItem = new javax.swing.JMenuItem();
         toolBar = new javax.swing.JToolBar();
         newButton = new ToolbarButton (new ImageIcon (getClass ().getResource ("/images/new_button.png")));
         openButton = new ToolbarButton (new ImageIcon (getClass ().getResource ("/images/open_button.png")));
@@ -394,6 +397,15 @@ public class ViewPanel extends JPanel
             }
         });
         rightClickMenu.add(rCodeMenuItem);
+        rightClickMenu.add(jSeparator4);
+
+        editDataSetMenuItem.setText("jMenuItem1");
+        editDataSetMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                editDataSetMenuItemActionPerformed(evt);
+            }
+        });
+        rightClickMenu.add(editDataSetMenuItem);
 
         setLayout(new java.awt.BorderLayout());
 
@@ -401,7 +413,7 @@ public class ViewPanel extends JPanel
         toolBar.setRollover(true);
         toolBar.setPreferredSize(new java.awt.Dimension(13, 35));
 
-        newButton.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        newButton.setFont(new java.awt.Font("Verdana", 0, 12));
         newButton.setToolTipText("New Problem");
         newButton.setEnabled(false);
         newButton.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -420,7 +432,7 @@ public class ViewPanel extends JPanel
         });
         toolBar.add(newButton);
 
-        openButton.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        openButton.setFont(new java.awt.Font("Verdana", 0, 12));
         openButton.setToolTipText("Open Problem");
         openButton.setEnabled(false);
         openButton.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -461,7 +473,7 @@ public class ViewPanel extends JPanel
         jSeparator1.setEnabled(false);
         toolBar.add(jSeparator1);
 
-        jLabel1.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        jLabel1.setFont(new java.awt.Font("Verdana", 0, 12));
         jLabel1.setText("Font Size:");
         jLabel1.setEnabled(false);
         toolBar.add(jLabel1);
@@ -508,7 +520,7 @@ public class ViewPanel extends JPanel
         toolBar.add(jSeparator3);
         toolBar.add(jLabel2);
 
-        abbreviateButton.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        abbreviateButton.setFont(new java.awt.Font("Verdana", 0, 12));
         abbreviateButton.setText("Abbreviate");
         abbreviateButton.setToolTipText("Show abbreviated operation and column names");
         abbreviateButton.setEnabled(false);
@@ -589,7 +601,7 @@ public class ViewPanel extends JPanel
 
         preWorkspacePanel.setBackground(new java.awt.Color(204, 204, 204));
 
-        preWorkspaceLabel.setFont(new java.awt.Font("Verdana", 1, 14)); // NOI18N
+        preWorkspaceLabel.setFont(new java.awt.Font("Verdana", 1, 14));
         preWorkspaceLabel.setForeground(new java.awt.Color(102, 102, 102));
         preWorkspaceLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         preWorkspaceLabel.setText("<html><div align=\"center\">To get started, load a previous problem or use the<br /><em>New Problem Wizard</em> to create a new problem</div></html>");
@@ -905,6 +917,15 @@ public class ViewPanel extends JPanel
 					untieSubProblemSubMenu.setEnabled (true);
 				}
 
+				if (rightClickedComponent instanceof DataSet)
+				{
+					editDataSetMenuItem.setEnabled (true);
+				}
+				else
+				{
+					editDataSetMenuItem.setEnabled (false);
+				}
+
 				rightClickMenu.show (workspacePanel, evt.getX (), evt.getY());
 			}
 			else
@@ -1168,6 +1189,13 @@ public class ViewPanel extends JPanel
 		trashCan.setIcon (new ImageIcon (getClass ().getResource ("/images/trash_button.png")));
 	}//GEN-LAST:event_trashCanMouseExited
 
+	private void editDataSetMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editDataSetMenuItemActionPerformed
+		if (rightClickedComponent != null)
+		{
+			NEW_PROBLEM_WIZARD_DIALOG.editDataSet((DataSet) rightClickedComponent);
+		}
+	}//GEN-LAST:event_editDataSetMenuItemActionPerformed
+
 	/**
 	 * Manage drag events within the workspace panel
 	 *
@@ -1395,12 +1423,11 @@ public class ViewPanel extends JPanel
 			{
 				newOperation.setBounds (x, y, newOperation.getPreferredSize().width, newOperation.getPreferredSize().height);
 			}
-			workspacePanel.add (newOperation);
+			
 			if (dataSet != null)
 			{
 				rebuildTree(dataSet);
 			}
-			workspacePanel.repaint();
 		}
 		else if (component != trashCan)
 		{
@@ -1415,7 +1442,6 @@ public class ViewPanel extends JPanel
 			}
 			
 			newOperation.setBounds ((int) location.getX () - xDragOffset, (int) location.getY () - yDragOffset, newOperation.getPreferredSize().width, newOperation.getPreferredSize().height);
-			workspacePanel.add (newOperation);
 			workspacePanel.repaint ();
 		}
 		if (hoveredComponent != null)
@@ -1543,31 +1569,16 @@ public class ViewPanel extends JPanel
 	{
 		if (domain.problem != null)
 		{
-			int numShow = getShownDataSetCount ();
-			for (int i = 0; i < domain.problem.getDataCount(); ++i)
-			{
-				if (i > numShow - 1)
-				{
-					DataSet dataSet = domain.problem.getData (i);
-					// Add the new data set to the workspace
-					workspacePanel.add (dataSet);
-
-					for (Operation op : dataSet.getAllChildOperations())
-					{
-						workspacePanel.add (op);
-					}
-				}
-			}
-
 			componentsPanel.setVisible (true);
 			emptyPalettePanel.setVisible (false);
 			workspacePanel.setVisible (true);
 			preWorkspacePanel.setVisible (false);
 
-			workspacePanel.updateUI();
+			workspacePanel.repaint();
 
 			mainFrame.setTitle (mainFrame.getDefaultTitle () + " - " + domain.problem.getFileName().substring (domain.problem.getFileName ().lastIndexOf (System.getProperty ("file.separator")) + 1, domain.problem.getFileName ().lastIndexOf (".")));
 
+			saveButton.setEnabled (false);
 			plusFontButton.setEnabled (true);
 			minusFontButton.setEnabled (true);
 			abbreviateButton.setEnabled (true);
@@ -1577,9 +1588,10 @@ public class ViewPanel extends JPanel
 	/**
 	 * Close the currently open problem in the workspace.
 	 *
+	 * @param editing True when editing a problem, false when creating a new one.
 	 * @return If the closing of the problem should be canceled, returns false, otherwise returns true.
 	 */
-	protected boolean closeProblem()
+	protected boolean closeProblem(boolean editing)
 	{
 		if (domain.problem != null)
 		{
@@ -1587,9 +1599,14 @@ public class ViewPanel extends JPanel
 			if (domain.problem.isChanged())
 			{
 				int response = JOptionPane.YES_OPTION;
-				if (!NEW_PROBLEM_WIZARD_DIALOG.editing)
+				if (!editing)
 				{
-					response = JOptionPane.showConfirmDialog(this,
+					Container parent = this;
+					if (NEW_PROBLEM_WIZARD_DIALOG.isVisible())
+					{
+						parent = (Container) NEW_PROBLEM_WIZARD_DIALOG;
+					}
+					response = JOptionPane.showConfirmDialog(parent,
 							"Would you like to save changes to the currently open problem?",
 							"Save Problem Changes",
 							JOptionPane.YES_NO_CANCEL_OPTION,
@@ -1612,7 +1629,7 @@ public class ViewPanel extends JPanel
 				}
 			}
 
-			if (!NEW_PROBLEM_WIZARD_DIALOG.editing)
+			if (!editing)
 			{
 				workspacePanel.removeAll();
 				workspacePanel.add (trashCan);
@@ -1629,6 +1646,7 @@ public class ViewPanel extends JPanel
 		}
 		workspacePanel.repaint ();
 
+		saveButton.setEnabled (false);
 		plusFontButton.setEnabled (false);
 		minusFontButton.setEnabled (false);
 		abbreviateButton.setEnabled (false);
@@ -1688,7 +1706,7 @@ public class ViewPanel extends JPanel
 	{
 		NEW_PROBLEM_WIZARD_DIALOG.setTitle ("New Problem Wizard");
 		NEW_PROBLEM_WIZARD_DIALOG.welcomeTextLabel.setText (ViewPanel.welcomeNewText);
-		NEW_PROBLEM_WIZARD_DIALOG.launchNewProblemWizard ();
+		NEW_PROBLEM_WIZARD_DIALOG.launchNewProblemWizard (false);
 	}
 
     /**
@@ -1756,12 +1774,14 @@ public class ViewPanel extends JPanel
     private javax.swing.JPanel answerPanel;
     private javax.swing.JPanel componentsCardPanel;
     protected javax.swing.JPanel componentsPanel;
+    private javax.swing.JMenuItem editDataSetMenuItem;
     protected javax.swing.JPanel emptyPalettePanel;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JToolBar.Separator jSeparator1;
     private javax.swing.JToolBar.Separator jSeparator2;
     private javax.swing.JToolBar.Separator jSeparator3;
+    private javax.swing.JPopupMenu.Separator jSeparator4;
     private javax.swing.JPanel leftPanel;
     private javax.swing.JPopupMenu.Separator menuSeparator;
     private javax.swing.JLabel minusFontButton;

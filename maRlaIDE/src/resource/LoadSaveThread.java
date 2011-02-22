@@ -18,7 +18,6 @@
 
 package resource;
 
-import gui.ViewPanel;
 import gui.Domain;
 
 /**
@@ -29,8 +28,6 @@ import gui.Domain;
  */
 public class LoadSaveThread extends Thread
 {
-    /** The main frame of the application.*/
-    private ViewPanel viewPanel;
     /** The domain for the main frame.*/
     private Domain domain;
     /** If the thread is already in a load operation, a second load operation
@@ -48,12 +45,10 @@ public class LoadSaveThread extends Thread
      * Constructs the load/save thread with a reference to the main frame and
      * a reference to the local utility object.
      *
-     * @param viewPanel A reference to the main frame of the application.
      * @param domain The domain for the main frame.
      */
-    public LoadSaveThread(ViewPanel viewPanel, Domain domain)
+    public LoadSaveThread(Domain domain)
     {
-        this.viewPanel = viewPanel;
         this.domain = domain;
         wantToQuit = true;
     }
@@ -88,7 +83,7 @@ public class LoadSaveThread extends Thread
                 Domain.logger.add (ex);
             }
 
-            save ();
+            //save ();
         }
     }
 
