@@ -130,6 +130,23 @@ public class Domain
 	}
 
 	/**
+	 * Returns true if the problem is being edited, false if it is a new problem.
+	 *
+	 * @return True for editing, false for new problem.
+	 */
+	public boolean isEditing()
+	{
+		if (viewPanel.NEW_PROBLEM_WIZARD_DIALOG.newProblem != null)
+		{
+			return false;
+		}
+		else
+		{
+			return true;
+		}
+	}
+
+	/**
 	 * Tells the view to rebuild and repaint the tree.
 	 *
 	 * @param dataSet The data set to rebuild in the tree.
