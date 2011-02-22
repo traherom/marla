@@ -161,7 +161,8 @@ public class Domain
 	 */
 	public void markUnsaved()
 	{
-		viewPanel.saveButton.setEnabled (true);
+		if(isEditing())
+			viewPanel.saveButton.setEnabled (true);
 	}
 
 	/**
