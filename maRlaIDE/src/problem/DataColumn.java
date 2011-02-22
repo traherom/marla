@@ -535,6 +535,9 @@ public class DataColumn implements List<Object>
 	public void markChanged()
 	{
 		if(parent != null)
+		{
 			parent.markUnsaved();
+			parent.markDirty ();
+		}
 	}
 }

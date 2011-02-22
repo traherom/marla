@@ -618,6 +618,15 @@ public final class DataSet extends JLabel implements DataSource, Changeable
 			((ProblemPart)parent).markUnsaved();
 	}
 
+	/**
+	 * Marks all our child operations as dirty
+	 */
+	public void markDirty()
+	{
+		for(Operation op : solutionOps)
+			op.markDirty();
+	}
+
 	@Override
 	public Operation addOperation(Operation op) throws MarlaException
 	{
