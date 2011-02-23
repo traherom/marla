@@ -17,11 +17,8 @@
  */
 package resource;
 
-import latex.LatexExporter;
-import operation.OperationXML;
-import problem.InternalMarlaException;
 import problem.MarlaException;
-import r.RProcessor;
+import resource.Configuration.ConfigType;
 
 /**
  * Thrown when a configuration error occurs. The user should be able to correct
@@ -30,7 +27,6 @@ import r.RProcessor;
  */
 public class ConfigurationException extends MarlaException
 {
-	public enum ConfigType {PdfTex, R, OpsXML, TexTemplate};
 	private ConfigType type = null;
 
 	public ConfigurationException(String msg, ConfigType type)
@@ -47,71 +43,11 @@ public class ConfigurationException extends MarlaException
 
 	public String getName()
 	{
-		switch(type)
-		{
-			case PdfTex:
-				return "pdfTeX path";
-
-			case OpsXML:
-				return "Operation XML path";
-
-			case R:
-				return "R path";
-
-			case TexTemplate:
-				return "LaTeX export template path";
-
-			default:
-				throw new InternalMarlaException("Unhandled configuration exception type in name");
-		}
+		return Configuration.getName(type);
 	}
 
-	public String getExtension()
+	public void setOption(String newPath) throws ConfigurationException, MarlaException
 	{
-		switch(type)
-		{
-			case PdfTex:
-			case R:
-				return "exe";
-
-			case OpsXML:
-			case TexTemplate:
-				return "xml";
-
-			default:
-				throw new InternalMarlaException("Unhandled configuration exception type in extension");
-		}
-	}
-
-	public void setPath(String newPath) throws ConfigurationException, MarlaException
-	{
-		try
-		{
-			switch(type)
-			{
-				case PdfTex:
-					LatexExporter.setPdfTexPath(newPath);
-					break;
-
-				case OpsXML:
-					OperationXML.loadXML(newPath);
-					break;
-
-				case R:
-					RProcessor.setRLocation(newPath);
-					break;
-
-				case TexTemplate:
-					LatexExporter.setDefaultTemplate(newPath);
-					break;
-
-				default:
-					throw new InternalMarlaException("Unhandled configuration exception type in name");
-			}
-		}
-		catch(ConfigurationException ex)
-		{
-			Configuration.errors.push (ex);
-		}
+		Configuration.getInstance().set(type, newPath);
 	}
 }

@@ -27,8 +27,8 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import resource.Configuration.ConfigType;
 import resource.ConfigurationException;
-import resource.ConfigurationException.ConfigType;
 
 /**
  * @author Ryan Morehart
@@ -92,7 +92,7 @@ public final class RProcessor
 	/**
 	 * Denotes how/if the RProcessor should dump to console interactions with R
 	 */
-	private RecordMode debugOutputMode = RecordMode.DISABLED;
+	private static RecordMode debugOutputMode = RecordMode.DISABLED;
 	/**
 	 * Record of output returned from R
 	 */
@@ -122,8 +122,8 @@ public final class RProcessor
 	{
 		try
 		{
-			// Save new path for future use (IE, we need to restart)
-			rPath = newRPath;
+			if(newRPath == null)
+				throw new ConfigurationException("R processor not configured yet", ConfigType.R);
 
 			// Start up R
 			ProcessBuilder builder = new ProcessBuilder(rPath, "--slave", "--no-readline");
@@ -158,7 +158,7 @@ public final class RProcessor
 		rPath = newRPath;
 
 		// Restart RProcessor if needed
-		if(singleRProcessor != null && !oldPath.equals(newRPath))
+		if(oldPath == null || !oldPath.equals(newRPath))
 			restartInstance();
 
 		// Apply change
@@ -779,7 +779,7 @@ public final class RProcessor
 	 * @param mode RecordMode to place the processor in.
 	 * @return The mode the RProcessor was in before the switch
 	 */
-	public RecordMode setDebugMode(RecordMode mode)
+	public static RecordMode setDebugMode(RecordMode mode)
 	{
 		RecordMode oldMode = debugOutputMode;
 		debugOutputMode = mode;
@@ -790,7 +790,7 @@ public final class RProcessor
 	 * Returns how much the processor is outputting to the console
 	 * @return The mode the RProcessor is currently in
 	 */
-	public RecordMode getDebugMode()
+	public static RecordMode getDebugMode()
 	{
 		return debugOutputMode;
 	}
@@ -828,7 +828,7 @@ public final class RProcessor
 		try
 		{
 			proc = RProcessor.getInstance();
-			proc.setDebugMode(RecordMode.FULL);
+			RProcessor.setDebugMode(RecordMode.FULL);
 			proc.setRecorderMode(RecordMode.DISABLED);
 			Scanner sc = new Scanner(System.in);
 

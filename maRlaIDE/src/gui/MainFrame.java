@@ -21,12 +21,14 @@ package gui;
 import java.awt.Dimension;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.util.Iterator;
+import java.util.List;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import problem.MarlaException;
 import resource.Configuration;
-import resource.ConfigurationException;
+import resource.Configuration.ConfigType;
 
 /**
  * The main frame of the stand-alone application.
@@ -54,42 +56,46 @@ public class MainFrame extends JFrame
 		initComponents ();
 		initMyComponents ();
 
-		try
-		{
-			Configuration.load ();
-			Configuration.processCmdLine (args);
-		}
-		catch (MarlaException ex)
-		{
-			System.out.println (ex.getMessage ());
-		}
+		Configuration conf = Configuration.getInstance ();
+		List<ConfigType> missed = conf.configureAll (args);
 
-		ConfigurationException configEx = null;
-		while ((configEx = Configuration.getNextError ()) != null)
+		if(!missed.isEmpty())
 		{
-			try
+			Iterator<ConfigType> it = missed.iterator ();
+			ConfigType curr = it.next ();
+			while(it.hasNext ())
 			{
-				viewPanel.openChooserDialog.setDialogTitle (configEx.getName ());
-				viewPanel.openChooserDialog.resetChoosableFileFilters ();
-				viewPanel.openChooserDialog.setFileSelectionMode (JFileChooser.FILES_AND_DIRECTORIES);
-				// Display the chooser and retrieve the selected file
-				int response = viewPanel.openChooserDialog.showOpenDialog (viewPanel);
-				if (response == JFileChooser.APPROVE_OPTION)
+				boolean fixed = false;
+				try
 				{
-					configEx.setPath (viewPanel.openChooserDialog.getSelectedFile ().getPath ());
+					viewPanel.openChooserDialog.setDialogTitle (Configuration.getName (curr));
+					viewPanel.openChooserDialog.resetChoosableFileFilters ();
+					viewPanel.openChooserDialog.setFileSelectionMode (JFileChooser.FILES_AND_DIRECTORIES);
+					// Display the chooser and retrieve the selected file
+					int response = viewPanel.openChooserDialog.showOpenDialog (viewPanel);
+					if (response == JFileChooser.APPROVE_OPTION)
+					{
+						conf.set (curr, viewPanel.openChooserDialog.getSelectedFile ().getPath ());
+						fixed = true;
+					}
+					else
+					{
+						JOptionPane.showMessageDialog (viewPanel, "The maRla Project cannot run without these resources.", "Fatal Error", JOptionPane.ERROR_MESSAGE);
+						System.exit (1);
+					}
 				}
-				else
+				catch (MarlaException ex)
 				{
-					JOptionPane.showMessageDialog (viewPanel, "The maRla Project cannot run without these resources.", "Fatal Error", JOptionPane.ERROR_MESSAGE);
-					System.exit (1);
+					System.out.println (ex.getMessage ());
+					fixed = false;
 				}
-			}
-			catch (MarlaException ex)
-			{
-				System.out.println (ex.getMessage ());
+
+				// If we succeed, find the next thing
+				if(fixed)
+					curr = it.next ();
 			}
 		}
-
+		
 		try
 		{
 			viewPanel.loadOperations ();
