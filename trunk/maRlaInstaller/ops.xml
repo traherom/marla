@@ -92,7 +92,7 @@ x
 		</computation>
 	</operation>
 
-	<operation name="Average" category="Basic Stats">
+	<operation name="Average" category="Basic Stats" list="false">
 		<query type="column" name="x" prompt="Column" />
 
 		<longname>ave(<response name="x" default="col" />)</longname>
@@ -390,7 +390,7 @@ x
 	<operation name="Natural Log" category="Basic Math">
 		<query type="column" name="col" prompt="Column?" column_type="numeric" />
 
-		<longname>log(<response name="col" default="x" />)</longname>
+		<longname>ln(<response name="col" default="x" />)</longname>
 
 		<computation>
 			<set name="col" rvar="colName" use="name" />
@@ -472,7 +472,7 @@ x
 		<query type="column" name="col" prompt="Column?" column_type="numeric" />
 		<query type="numeric" name="base" prompt="Base" />
 
-		<longname>log&lt;sub&gt;<response name="base" default="X" />&lt;/sub&gt;<response name="col" default="x" /></longname>
+		<longname>log&lt;sub&gt;<response name="base" default="b" />&lt;/sub&gt;<response name="col" default="x" /></longname>
 
 		<computation>
 			<set name="col" rvar="colName" use="name" />
@@ -726,7 +726,7 @@ x
 		</computation>
 	</operation>
 
-	<operation name="Power T-Test" category="Statistical Test">
+	<operation name="Power T-Test" category="Statistical Test" list="false">
 		<query type="string" name="saveTo" prompt="Save to" />
 		<query type="column" name="x" prompt="Column 1" column_type="numeric" />
 		<query type="column" name="y" prompt="Column 2" column_type="numeric" />
@@ -739,7 +739,7 @@ x
 		</computation>
 	</operation>
 
-	<operation name="Power Prop Test" category="Statistical Test">
+	<operation name="Power Prop Test" category="Statistical Test" list="false">
 		<query type="string" name="saveTo" prompt="Save to" />
 		<query type="column" name="x" prompt="Column 1" column_type="numeric" />
 		<query type="column" name="y" prompt="Column 2" column_type="numeric" />
@@ -921,7 +921,7 @@ x
 		</computation>
 	</operation>
 
-	<operation name="Load library" category="Utility">
+	<operation name="Load library" category="Utility" list="false">
 		<query type="string" name="lib" prompt="Library name" />
 
 		<longname>Load <response name="lib" default="lib" /></longname>
