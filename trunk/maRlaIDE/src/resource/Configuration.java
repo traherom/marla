@@ -53,7 +53,7 @@ public class Configuration
 	/**
 	 * Saves any errors which occur during a load
 	 */
-	private static Deque<ConfigurationException> errors = new ArrayDeque<ConfigurationException>();
+	static Deque<ConfigurationException> errors = new ArrayDeque<ConfigurationException>();
 	/**
 	 * Saves where the last load() tried to load its configuration from.
 	 * Useful for saving back to the same location
