@@ -23,6 +23,8 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -94,6 +96,16 @@ public class MainFrame extends JFrame
 				if(fixed)
 					curr = it.next ();
 			}
+		}
+
+		try
+		{
+			// Preemptively save config file
+			conf.save ();
+		}
+		catch (MarlaException ex)
+		{
+			System.out.println ("Error saving configuration file: " + ex.getMessage ());
 		}
 		
 		try
