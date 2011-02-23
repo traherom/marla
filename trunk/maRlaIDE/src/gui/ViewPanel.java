@@ -1589,8 +1589,10 @@ public class ViewPanel extends JPanel
 
 	/**
 	 * Open the problem currently stored in the problem variable.
+	 *
+	 * @param editing True when editing a problem, false when creating a new one.
 	 */
-	protected void openProblem()
+	protected void openProblem(boolean editing)
 	{
 		if (domain.problem != null)
 		{
@@ -1603,7 +1605,10 @@ public class ViewPanel extends JPanel
 
 			mainFrame.setTitle (mainFrame.getDefaultTitle () + " - " + domain.problem.getFileName ().substring (domain.problem.getFileName ().lastIndexOf (System.getProperty ("file.separator")) + 1, domain.problem.getFileName ().lastIndexOf (".")));
 
-			saveButton.setEnabled (false);
+			if (!editing)
+			{
+				saveButton.setEnabled (false);
+			}
 			plusFontButton.setEnabled (true);
 			minusFontButton.setEnabled (true);
 			abbreviateButton.setEnabled (true);
@@ -1637,7 +1642,7 @@ public class ViewPanel extends JPanel
 															  JOptionPane.YES_NO_CANCEL_OPTION,
 															  JOptionPane.QUESTION_MESSAGE);
 				}
-				if (response == JOptionPane.YES_OPTION)
+				if (!editing && response == JOptionPane.YES_OPTION)
 				{
 					try
 					{
@@ -1671,7 +1676,10 @@ public class ViewPanel extends JPanel
 		}
 		workspacePanel.repaint ();
 
-		saveButton.setEnabled (false);
+		if (!editing)
+		{
+			saveButton.setEnabled (false);
+		}
 		plusFontButton.setEnabled (false);
 		minusFontButton.setEnabled (false);
 		abbreviateButton.setEnabled (false);
