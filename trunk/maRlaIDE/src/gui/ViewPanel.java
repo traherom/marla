@@ -1754,7 +1754,7 @@ public class ViewPanel extends JPanel
 		// Save the maRla configuration
 		try
 		{
-			resource.Configuration.save ();
+			resource.Configuration.getInstance ().save();
 		}
 		catch (MarlaException ex)
 		{

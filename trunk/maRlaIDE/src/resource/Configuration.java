@@ -22,10 +22,9 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
-import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
-import java.util.Deque;
 import java.util.List;
 import java.util.regex.Pattern;
 import latex.LatexExporter;
@@ -40,10 +39,10 @@ import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 import problem.MarlaException;
 import operation.OperationXML;
+import problem.InternalMarlaException;
 import r.RProcessor;
 import r.RProcessor.RecordMode;
 import r.RProcessorException;
-import resource.ConfigurationException.ConfigType;
 
 /**
  * @author Ryan Morehart
@@ -51,41 +50,364 @@ import resource.ConfigurationException.ConfigType;
 public class Configuration
 {
 	/**
-	 * Saves any errors which occur during a load
+	 * Current instance oconfigXML.getChild("r")f Configuration
 	 */
-	static Deque<ConfigurationException> errors = new ArrayDeque<ConfigurationException>();
+	private static Configuration instance = null;
 	/**
 	 * Saves where the last load() tried to load its configuration from.
 	 * Useful for saving back to the same location
 	 */
-	private static String loadedFrom = "config.xml";
+	private final String configPath;
+	/**
+	 * Parsed XML from config file
+	 */
+	private Element configXML = null;
 
 	/**
-	 * Sets configuration parameters based on command line
-	 * @param args Command line parameters, as given to main() by the VM
+	 * Posssible elements that can be configured through this class
 	 */
-	public static void processCmdLine(String[] args) throws MarlaException
+	public enum ConfigType {PdfTex, R, DebugMode, OpsXML, TexTemplate};
+
+	/**
+	 * Creates new instance of the configuration pointed to the given configuration file
+	 */
+	private Configuration(String configPath)
 	{
-		if(args.length >= 1)
+		this.configPath = configPath;
+	}
+
+	/**
+	 * Gets the current instance of the Configuration. Creates a new one if needed
+	 * @return Working instance of Configuration class
+	 */
+	public static Configuration getInstance()
+	{
+		if(instance == null)
 		{
-			if(args[0].equals("debug"))
-				RProcessor.getInstance().setDebugMode(RProcessor.RecordMode.FULL);
-			else if(args[0].equals("output"))
-				RProcessor.getInstance().setDebugMode(RProcessor.RecordMode.OUTPUT_ONLY);
-			else if(args[0].equals("cmds"))
-				RProcessor.getInstance().setDebugMode(RProcessor.RecordMode.CMDS_ONLY);
-			else if(args[0].equals("quiet"))
-				RProcessor.getInstance().setDebugMode(RProcessor.RecordMode.DISABLED);
-			else
-				throw new MarlaException("Unrecognized command line parameter '" + args[0] + "'");
+			instance = new Configuration(locateConfig());
+		}
+
+		return instance;
+	}
+
+	/**
+	 * Loads configuration from XML file. No attempt is made to search
+	 * for missing config elements.
+	 * @return true if the configuration file was loaded successfully
+	 */
+	private boolean reloadXML()
+	{
+		try
+		{
+			System.out.println("Using config file at '" + configPath + "'");
+
+			// Load the XML
+			SAXBuilder parser = new SAXBuilder();
+			Document doc = parser.build(configPath);
+			configXML = doc.getRootElement();
+			return true;
+		}
+		catch(JDOMException ex)
+		{
+			return false;
+		}
+		catch(IOException ex)
+		{
+			return false;
 		}
 	}
 
 	/**
-	 * Loads maRla configuration from the default location, config.xml in the
-	 * current directory
+	 * Loads configuration from all possible sources. Processing order is:
+	 *		Command Line->XML file->Search->Defaults
+	 * Items fulfilled at higher levels are skipped later
+	 * @param Command line options to be parsed
+	 * @return List of the config types that failed to be configured
 	 */
-	public static boolean load() throws MarlaException
+	public List<ConfigType> configureAll(String[] args)
+	{
+		// We will assume all fail for now, then remove things that get configured
+		// We make the array this way because Arrays.asList() returns a list that can't
+		// use removeAll()
+		List<ConfigType> unconfigured = new ArrayList<ConfigType>();
+		unconfigured.addAll(Arrays.asList(ConfigType.values()));
+		
+		// Command line
+		List<ConfigType> fixed = new ArrayList<ConfigType> (unconfigured.size ());
+		for(ConfigType c : unconfigured)
+		{
+			if(configureFromCmdLine(c, args))
+				fixed.add(c);
+		}
+
+		unconfigured.removeAll(fixed);
+
+		// Try XML config
+		fixed.clear();
+		if(reloadXML())
+		{
+			for(ConfigType c : unconfigured)
+			{
+				if(configureFromXML(c))
+					fixed.add(c);
+			}
+		}
+
+		unconfigured.removeAll(fixed);
+
+		// Try searching
+		fixed.clear();
+		for(ConfigType c : unconfigured)
+		{
+			if(configureFromSearch(c))
+				fixed.add(c);
+		}
+
+		unconfigured.removeAll(fixed);
+
+		// Try defaults
+		fixed.clear();
+		for(ConfigType c : unconfigured)
+		{
+			if(configureFromDefault(c))
+				fixed.add(c);
+		}
+
+		unconfigured.removeAll(fixed);
+
+		// Return the failures
+		return unconfigured;
+	}
+
+	/**
+	 * Gets the given configuration item's value
+	 * @param setting Setting to adjust
+	 * @return Currentlyset value for configuration item, null if there was none
+	 */
+	public Object get(ConfigType setting) throws MarlaException
+	{
+		switch(setting)
+		{
+			case PdfTex:
+				return LatexExporter.getPdfTexPath();
+
+			case OpsXML:
+				return OperationXML.getXMLPath();
+
+			case R:
+				return RProcessor.getRLocation();
+
+			case DebugMode:
+				return RProcessor.getDebugMode();
+
+			case TexTemplate:
+				return LatexExporter.getDefaultTemplate();
+
+			default:
+				throw new InternalMarlaException("Unhandled configuration exception type in name");
+		}
+	}
+
+	/**
+	 * Sets the given configuration item to the given value
+	 * @param setting Setting to adjust
+	 * @param val Value to assign to setting
+	 * @return Previously set value for configuration item, null if there was none
+	 */
+	public Object set(ConfigType setting, Object val) throws MarlaException
+	{
+		Object previous = null;
+
+		switch(setting)
+		{
+			case PdfTex:
+				previous = LatexExporter.setPdfTexPath((String) val);
+				break;
+
+			case OpsXML:
+				OperationXML.loadXML((String) val);
+				break;
+
+			case R:
+				previous = RProcessor.setRLocation((String) val);
+				break;
+
+			case DebugMode:
+				try
+				{
+					RecordMode valCast = null;
+					if(val instanceof RecordMode)
+						valCast = (RecordMode) val;
+					else
+						valCast = RecordMode.valueOf (((String) val).toUpperCase ());
+					
+					previous = RProcessor.setDebugMode(valCast);
+				}
+				catch(IllegalArgumentException ex)
+				{
+					throw new ConfigurationException("Invalid setting '" + val + "' for debug mode", ConfigType.DebugMode);
+				}
+				break;
+
+			case TexTemplate:
+				previous = LatexExporter.setDefaultTemplate((String) val);
+				break;
+
+			default:
+				throw new InternalMarlaException("Unhandled configuration exception type in name");
+		}
+
+		return previous;
+	}
+
+	/**
+	 * Sets configuration parameters based loaded configuration file
+	 * @param setting Setting to configure
+	 * @return true if successfully configured, false otherwise
+	 */
+	private boolean configureFromXML(ConfigType setting)
+	{
+		boolean success = false;
+		System.out.print("Attempting to configure " + setting + " from config file: ");
+
+		try
+		{
+			String val = configXML.getChildText(setting.toString());
+			if(val != null)
+			{
+				set(setting, val);
+				success = true;
+			}
+			else
+				success = false;
+		}
+		catch(MarlaException ex)
+		{
+			success = false;
+		}
+
+		if(success)
+			System.out.println("success");
+		else
+			System.out.println("failed");
+		
+		return success;
+	}
+
+	/**
+	 * Sets configuration parameters based on command line
+	 * @param setting Setting to configure based on command line
+	 * @param args Command line parameters, as given to main() by the VM
+	 * @return true if successfully configured, false otherwise
+	 */
+	private boolean configureFromCmdLine(ConfigType setting, String[] args)
+	{
+		System.out.print("Attempting to configure " + setting + " from command line: ");
+
+		// Look for key in args
+		String setName = "--" + setting.toString();
+		for(String arg : args)
+		{
+			if(arg.startsWith(setName))
+			{
+				try
+				{
+					set(setting, arg.substring(arg.indexOf('=')));
+					System.out.println ("success");
+					return true;
+				}
+				catch(MarlaException ex)
+				{
+					System.out.println ("failed");
+					return false;
+				}
+			}
+		}
+
+		// Didn't find a match
+		System.out.println ("failed");
+		return false;
+	}
+
+	/**
+	 * Attempts to search for the given setting's file (if applicable)
+	 * @param setting Configuration setting to look for
+	 * @return true if the item is configured successfully, false otherwise
+	 */
+	private boolean configureFromSearch(ConfigType setting)
+	{
+		boolean success = false;
+		System.out.print("Attempting to configure " + setting + " through search: ");
+
+		switch(setting)
+		{
+			case PdfTex:
+				success = findAndSetPdfTex();
+				break;
+
+			case OpsXML:
+				success = findAndSetOpsXML();
+				break;
+
+			case R:
+				success = findAndSetR();
+				break;
+
+			case TexTemplate:
+				success = findAndSetLatexTemplate();
+				break;
+
+			default:
+				// Can't handle through a search
+				success = false;
+		}
+
+		if(success)
+			System.out.println("success");
+		else
+			System.out.println("failed");
+
+		return success;
+	}
+
+	/**
+	 * Sets configuration elements from those that have logical defaults
+	 * @param setting Configuration setting to find a default for
+	 * @return true if the item is configured successfully, false otherwise
+	 */
+	private boolean configureFromDefault(ConfigType setting)
+	{
+		try
+		{
+			System.out.print("Attempting to configure " + setting + " to default: ");
+
+			switch(setting)
+			{
+				case DebugMode:
+					set(setting, RProcessor.RecordMode.DISABLED);
+					System.out.println("success");
+					return true;
+
+				default:
+					// Can't handle with a default
+					System.out.println("failed");
+					return false;
+			}
+		}
+		catch(MarlaException ex)
+		{
+			System.out.println("failed");
+			return false;
+		}
+	}
+
+	/**
+	 * Locates maRla configuration file and returns the path to use. The path
+	 * "found" may actually not exist, it will return the default if none exists
+	 * currently
+	 * @return Path to configuration file, which may or may not exist
+	 */
+	private static String locateConfig()
 	{
 		// Locate config file.
 		File[] configPaths = new File[] {
@@ -96,247 +418,28 @@ public class Configuration
 		for(int i = 0; i < configPaths.length; i++)
 		{
 			if(configPaths[i].exists())
-				return load(configPaths[i].getPath());
+				return configPaths[i].getPath();
 		}
 
 		// Doesn't exist, but pretend. It will write a new one here
-		return load(configPaths[0].getPath());
+		return configPaths[0].getPath();
 	}
 
 	/**
-	 * Loads maRla configuration from the specified config file. If any errors
-	 * occur false is returned. Errors may be retrieved via getNextError()
-	 * @param configPath XML file to load data from
-	 * @return true if load succeeds, false otherwise
+	 * Saves current maRla configuration to the location we loaded from
 	 */
-	public static boolean load(String configPath) throws MarlaException
-	{
-		Element configXML = null;
-		boolean configLoaded = false;
-
-		// Clear any errors
-		errors.clear();
-
-		try
-		{
-			System.out.println("Using config file at '" + configPath + "'");
-			loadedFrom = configPath;
-
-			// Load the XML
-			SAXBuilder parser = new SAXBuilder();
-			Document doc = parser.build(configPath);
-			configXML = doc.getRootElement();
-			configLoaded = true;
-		}
-		catch(JDOMException ex)
-		{
-			configLoaded = false;
-		}
-		catch(IOException ex)
-		{
-			configLoaded = false;
-		}
-
-		// R
-		try
-		{
-			boolean configSuccess = false;
-			if(configLoaded)
-			{
-				try
-				{
-					// Tell various components about their settings
-					Element rEl = configXML.getChild("r");
-					String path = rEl.getAttributeValue("rpath");
-					if(path != null)
-					{
-						RProcessor.setRLocation(path);
-						RProcessor.getInstance().setDebugMode(RecordMode.valueOf(rEl.getAttributeValue("debug", "disabled").toUpperCase()));
-						configSuccess = true;
-					}
-					else
-						configSuccess = false;
-				}
-				catch(ConfigurationException ex)
-				{
-					configSuccess = false;
-				}
-			}
-
-			if(!configSuccess)
-			{
-				findAndSetR();
-			}
-		}
-		catch(ConfigurationException ex)
-		{
-			errors.push(ex);
-		}
-
-		// Latex template
-		try
-		{
-			boolean configSuccess = false;
-
-			if(configLoaded)
-			{
-				try
-				{
-					// Tell various components about their settings
-					Element latexEl = configXML.getChild("latex");
-					String path = latexEl.getAttributeValue("template");
-					if(path != null)
-					{
-						LatexExporter.setDefaultTemplate(path);
-						configSuccess = true;
-					}
-					else
-						configSuccess = false;
-				}
-				catch(ConfigurationException ex)
-				{
-					configSuccess = false;
-				}
-			}
-
-			if(!configSuccess)
-			{
-				findAndSetLatexTemplate();
-			}
-		}
-		catch(ConfigurationException ex)
-		{
-			errors.push(ex);
-		}
-
-		// pdfTeX
-		try
-		{
-			boolean configSuccess = false;
-
-			if(configLoaded)
-			{
-				try
-				{
-					// Tell various components about their settings
-					Element latexEl = configXML.getChild("latex");
-					String path = latexEl.getAttributeValue("pdftex");
-					if(path != null)
-					{
-						LatexExporter.setPdfTexPath(path);
-						configSuccess = true;
-					}
-					else
-						configSuccess = false;
-				}
-				catch(ConfigurationException ex)
-				{
-					configSuccess = false;
-				}
-			}
-
-			if(!configSuccess)
-			{
-				findAndSetPdfTex();
-			}
-		}
-		catch(ConfigurationException ex)
-		{
-			errors.push(ex);
-		}
-
-		// XML operations
-		try
-		{
-			boolean configSuccess = false;
-			
-			if(configLoaded)
-			{
-				try
-				{
-					// Tell various components about their settings
-					Element opsEl = configXML.getChild("ops");
-					String path = opsEl.getAttributeValue("xml");
-					if(path != null)
-					{
-						OperationXML.loadXML(path);
-						configSuccess = true;
-					}
-					else
-						configSuccess = false;
-				}
-				catch(ConfigurationException ex)
-				{
-					configSuccess = false;
-				}
-			}
-
-			if(!configSuccess)
-			{
-				findAndSetOpsXML();
-			}
-		}
-		catch(ConfigurationException ex)
-		{
-			errors.push(ex);
-		}
-
-		// Tell the caller if anything bad happened that we couldn't automatically correct
-		return errors.isEmpty();
-	}
-
-	/**
-	 * Returns the next error from the load or null if there are no more
-	 * @return ConfigurationException giving details of error
-	 */
-	public static ConfigurationException getNextError()
-	{
-		if(!errors.isEmpty())
-			return errors.pop();
-		else
-			return null;
-	}
-
-	/**
-	 * Saves current maRla configuration to the default location, config.xml
-	 * in the current directory
-	 */
-	public static void save() throws MarlaException
-	{
-		save(loadedFrom);
-	}
-
-	/**
-	 * Saves current maRla configuration to the given location
-	 * @param configPath Location to save data to
-	 */
-	public static void save(String configPath) throws MarlaException
+	public void save() throws MarlaException
 	{
 		// Build document
 		Element rootEl = new Element("marla");
 		Document doc = new Document(rootEl);
 
-		// R
-		Element rEl = new Element("r");
-		rootEl.addContent(rEl);
-		if(RProcessor.getRLocation() != null)
-			rEl.setAttribute("rpath", RProcessor.getRLocation());
-		if(RProcessor.hasInstance())
-			rEl.setAttribute("debug", RProcessor.getInstance().getDebugMode().toString());
-
-		// Latex
-		Element latexEl = new Element("latex");
-		rootEl.addContent(latexEl);
-		if(LatexExporter.getDefaultTemplate() != null)
-			latexEl.setAttribute("template", LatexExporter.getDefaultTemplate());
-		if(LatexExporter.getPdfTexPath() != null)
-			latexEl.setAttribute("pdftex", LatexExporter.getPdfTexPath());
-
-		// XML operations
-		Element opsEl = new Element("ops");
-		rootEl.addContent(opsEl);
-		if(OperationXML.getXMLPath() != null)
-			opsEl.setAttribute("xml", OperationXML.getXMLPath());
+		for(ConfigType c : ConfigType.values())
+		{
+			Element el = new Element(c.toString());
+			el.addContent(get(c).toString());
+			rootEl.addContent(el);
+		}
 
 		try
 		{
@@ -381,7 +484,7 @@ public class Configuration
 		return false;
 	}
 
-	public static String findAndSetR() throws ConfigurationException
+	private static boolean findAndSetR()
 	{
 		List<String> possibilities = findFile("R(\\.exe)?", "R.*|bin|usr|local|lib|Program Files.*|x64|i386|Library|Frameworks", null);
 
@@ -396,7 +499,7 @@ public class Configuration
 				RProcessor.getInstance();
 
 				// Must have launched successfully, use this one
-				return exe;
+				return true;
 			}
 			catch(RProcessorException ex)
 			{
@@ -409,10 +512,10 @@ public class Configuration
 		}
 
 		// Couldn't find one that worked
-		throw new ConfigurationException("Unable to find a suitable R installation", ConfigType.R);
+		return false;
 	}
 
-	public static String findAndSetOpsXML() throws ConfigurationException
+	private static boolean findAndSetOpsXML()
 	{
 		List<String> possibilities = findFile("ops\\.xml", "config|xml|test", null);
 
@@ -426,7 +529,7 @@ public class Configuration
 				OperationXML.loadXML(path);
 
 				// Must have launched successfully, use this one
-				return path;
+				return true;
 			}
 			catch(OperationXMLException ex)
 			{
@@ -439,10 +542,10 @@ public class Configuration
 		}
 
 		// Couldn't find one that worked
-		throw new ConfigurationException("Unable to find a suitable operation XML file installation", ConfigType.OpsXML);
+		return false;
 	}
 
-	public static String findAndSetLatexTemplate() throws ConfigurationException
+	private static boolean findAndSetLatexTemplate()
 	{
 		List<String> possibilities = findFile("export_template\\.xml", "config|xml|test", null);
 
@@ -456,7 +559,7 @@ public class Configuration
 				LatexExporter.setDefaultTemplate(path);
 
 				// Must have launched successfully, use this one
-				return path;
+				return true;
 			}
 			catch(ConfigurationException ex)
 			{
@@ -465,10 +568,10 @@ public class Configuration
 		}
 
 		// Couldn't find one that worked
-		throw new ConfigurationException("Unable to find a suitable LaTeX exporter template", ConfigType.TexTemplate);
+		return false;
 	}
 
-	public static String findAndSetPdfTex() throws ConfigurationException
+	private static boolean findAndSetPdfTex()
 	{
 		List<String> possibilities = findFile("pdf(la)?tex(\\.exe)?", "bin|usr|Program Files.*|.*[Tt][Ee][Xx].*|local|20[0-9]{2}|.*darwin|Contents|Resources|Portable.*", null);
 
@@ -482,7 +585,7 @@ public class Configuration
 				LatexExporter.setPdfTexPath(exe);
 				
 				// Must have launched successfully, use this one
-				return exe;
+				return true;
 			}
 			catch(ConfigurationException ex)
 			{
@@ -491,7 +594,7 @@ public class Configuration
 		}
 
 		// Couldn't find one that worked
-		throw new ConfigurationException("Unable to find a suitable pdfTeX installation", ConfigType.PdfTex);
+		return false;
 	}
 
 	/**
@@ -503,7 +606,7 @@ public class Configuration
 	 * @param additional List of directories to manually add to the search
 	 * @return Path to executable, as usable by createProcess(). Null if not found
 	 */
-	public static List<String> findFile(String fileName, String dirSearch, List<File> additional) throws ConfigurationException
+	private static List<String> findFile(String fileName, String dirSearch, List<File> additional)
 	{
 		// Check if it's on the path, in which case we don't bother searching
 		//if(isOnPath(exeName))
@@ -560,28 +663,57 @@ public class Configuration
 	}
 
 	/**
+	 * Gets a user-friendly name for the given setting
+	 * @param setting Setting to find a name for
+	 * @return User-friendly name
+	 */
+	public static String getName(ConfigType setting)
+	{
+		switch(setting)
+		{
+			case PdfTex:
+				return "pdfTeX path";
+
+			case OpsXML:
+				return "Operation XML path";
+
+			case R:
+				return "R path";
+
+			case DebugMode:
+				return "Debug Mode";
+
+			case TexTemplate:
+				return "LaTeX export template path";
+
+			default:
+				throw new InternalMarlaException("Unhandled configuration exception type in name");
+		}
+	}
+
+	/**
+	 * Convenience method to do the most common configuration stuff. Intended
+	 * only for use when nothing will need manual configuration (pre-setup computer)
+	 * @return true if all itmes are configured, false otherwise
+	 */
+	public static boolean load()
+	{
+		return Configuration.getInstance().configureAll(new String[]{}).isEmpty();
+	}
+
+	/**
 	 * Loads (including searching if needed) and saves configuration to
 	 * the given file. Useful for creating new configuration
 	 */
 	public static void main(String[] args) throws MarlaException
 	{
-		boolean success = false;
-		if(args.length == 0)
-			success = Configuration.load();
-		else
-			success = Configuration.load(args[0]);
+		Configuration conf = Configuration.getInstance();
+		List<ConfigType> screwedUp = conf.configureAll(args);
 
-		if(!success)
-		{
-			System.out.println("Configuruation failed:");
-			ConfigurationException curr = Configuration.getNextError();
-			while(curr != null)
-			{
-				System.out.println(curr);
-				curr = Configuration.getNextError();
-			}
-		}
+		System.out.println("Configuruation failed:");
+		for(ConfigType c : screwedUp)
+			System.out.println("\t" + c);
 
-		Configuration.save();
+		conf.save();
 	}
 }

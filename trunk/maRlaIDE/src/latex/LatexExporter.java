@@ -46,8 +46,8 @@ import problem.SubProblem;
 import r.RProcessor;
 import r.RProcessor.RecordMode;
 import r.RProcessorException;
+import resource.Configuration.ConfigType;
 import resource.ConfigurationException;
-import resource.ConfigurationException.ConfigType;
 
 /**
  * @author Ryan Morehart
