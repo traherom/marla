@@ -950,14 +950,14 @@ public class NewProblemWizardDialog extends EscapeDialog
 		{
 			if (newProblem != null)
 			{
-				if (!newProblem.getStatement ().equals (descriptionTextArea.getText ()));
+				if (!newProblem.getStatement ().equals (descriptionTextArea.getText ()))
 				{
 					newProblem.setStatement (descriptionTextArea.getText ());
 				}
 			}
 			else
 			{
-				if (!domain.problem.getStatement ().equals (descriptionTextArea.getText ()));
+				if (!domain.problem.getStatement ().equals (descriptionTextArea.getText ()))
 				{
 					domain.problem.setStatement (descriptionTextArea.getText ());
 				}
@@ -1058,14 +1058,14 @@ public class NewProblemWizardDialog extends EscapeDialog
 		{
 			if (newProblem != null)
 			{
-				if (!newProblem.getStatement ().equals (descriptionTextArea.getText ()));
+				if (!newProblem.getStatement ().equals (descriptionTextArea.getText ()))
 				{
 					newProblem.setStatement (descriptionTextArea.getText ());
 				}
 			}
 			else
 			{
-				if (!domain.problem.getStatement ().equals (descriptionTextArea.getText ()));
+				if (!domain.problem.getStatement ().equals (descriptionTextArea.getText ()))
 				{
 					domain.problem.setStatement (descriptionTextArea.getText ());
 				}
@@ -1799,7 +1799,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 		}
 
 		// Open data stored in the problem currently
-		VIEW_PANEL.openProblem ();
+		VIEW_PANEL.openProblem (editing);
 
 		// Save the problem immedietly
 		if (!editing)

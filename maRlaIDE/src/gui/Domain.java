@@ -460,7 +460,7 @@ public class Domain
 				}
 				problem = Problem.load (file.toString ());
 
-				viewPanel.openProblem ();
+				viewPanel.openProblem (false);
 				break;
 			}
 		}
