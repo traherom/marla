@@ -85,26 +85,33 @@ public class ConfigurationException extends MarlaException
 
 	public void setPath(String newPath) throws ConfigurationException, MarlaException
 	{
-		switch(type)
+		try
 		{
-			case PdfTex:
-				LatexExporter.setPdfTexPath(newPath);
-				break;
+			switch(type)
+			{
+				case PdfTex:
+					LatexExporter.setPdfTexPath(newPath);
+					break;
 
-			case OpsXML:
-				OperationXML.loadXML(newPath);
-				break;
+				case OpsXML:
+					OperationXML.loadXML(newPath);
+					break;
 
-			case R:
-				RProcessor.setRLocation(newPath);
-				break;
+				case R:
+					RProcessor.setRLocation(newPath);
+					break;
 
-			case TexTemplate:
-				LatexExporter.setDefaultTemplate(newPath);
-				break;
+				case TexTemplate:
+					LatexExporter.setDefaultTemplate(newPath);
+					break;
 
-			default:
-				throw new InternalMarlaException("Unhandled configuration exception type in name");
+				default:
+					throw new InternalMarlaException("Unhandled configuration exception type in name");
+			}
+		}
+		catch(ConfigurationException ex)
+		{
+			Configuration.errors.push (ex);
 		}
 	}
 }
