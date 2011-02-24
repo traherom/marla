@@ -322,7 +322,7 @@ public class Configuration
 			{
 				try
 				{
-					set(setting, arg.substring(arg.indexOf('=')));
+					set(setting, arg.substring(arg.indexOf('=') + 1));
 
 					System.out.println("Configured " + setting + " from command line");
 					return true;
