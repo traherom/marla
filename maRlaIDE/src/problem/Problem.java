@@ -46,6 +46,21 @@ public class Problem implements ProblemPart
 	 */
 	private static Domain domain = null;
 	/**
+	 * New problems will be created with this person's name
+	 * set as the default
+	 */
+	private static String defaultPersonName = null;
+	/**
+	 * New problems will be created with this as the long course name,
+	 * unless otherwise changed
+	 */
+	private static String defaultCourseLong = null;
+	/**
+	 * New problems will be created with this as the short course name,
+	 * unless otherwise changed
+	 */
+	private static String defaultCourseShort = null;
+	/**
 	 * Keeps track of whether this Problem is in the process of loading.
 	 */
 	private boolean isLoading = false;
@@ -105,7 +120,8 @@ public class Problem implements ProblemPart
 	}
 
 	/**
-	 * Creates a new problem with the given problem statement.
+	 * Creates a new problem with the given problem statement and the defaults set for
+	 * the short and long course names and the person name.
 	 *
 	 * @param statement Description for the problem, as it would appear in a
 	 *				book. LaTeX may be included for formatting formulas but may
@@ -114,6 +130,9 @@ public class Problem implements ProblemPart
 	public Problem(String statement)
 	{
 		this.statement = statement;
+		shortCourseName = defaultCourseShort;
+		longCourseName = defaultCourseLong;
+		personName = defaultPersonName;
 	}
 
 	/**
@@ -153,6 +172,68 @@ public class Problem implements ProblemPart
 	public static Domain getDomain()
 	{
 		return domain;
+	}
+
+	/**
+	 * Sets the person's name that new Problems will be created with, unless otherwise specified
+	 * @return Previous person name. Null if there was none
+	 */
+	public static String setDefaultPersonName(String newName)
+	{
+		String oldName = defaultPersonName;
+		defaultPersonName = newName;
+		return oldName;
+	}
+
+	/**
+	 * Gets the person name that new Problems will be created with
+	 * @return Current person name. Null if there was none
+	 */
+	public static String getDefaultPersonName()
+	{
+		return defaultPersonName;
+	}
+
+	/**
+	 * Sets the short course name that new Problems will be created
+	 * with, unless otherwise specified
+	 * @return Current course name. Null if there was none
+	 */
+	public static String setDefaultShortCourseName(String newName)
+	{
+		String oldName = defaultCourseShort;
+		defaultCourseShort = newName;
+		return oldName;
+	}
+
+	/**
+	 * Gets the short course name that new Problems will be created with
+	 * @return Current course name. Null if there was none
+	 */
+	public static String getDefaultShortCourseName()
+	{
+		return defaultCourseShort;
+	}
+
+	/**
+	 * Sets the long course name that new Problems will be created
+	 * with, unless otherwise specified
+	 * @return Current course name. Null if there was none
+	 */
+	public static String setDefaultLongCourseName(String newName)
+	{
+		String oldName = defaultCourseLong;
+		defaultCourseLong = newName;
+		return oldName;
+	}
+
+	/**
+	 * Gets the long course name that new Problems will be created with
+	 * @return Current course name. Null if there was none
+	 */
+	public static String getDefaultLongCourseName()
+	{
+		return defaultCourseLong;
 	}
 
 	@Override

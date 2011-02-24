@@ -40,6 +40,7 @@ import org.jdom.output.XMLOutputter;
 import problem.MarlaException;
 import operation.OperationXML;
 import problem.InternalMarlaException;
+import problem.Problem;
 import r.RProcessor;
 import r.RProcessor.RecordMode;
 import r.RProcessorException;
@@ -66,7 +67,7 @@ public class Configuration
 	/**
 	 * Posssible elements that can be configured through this class
 	 */
-	public enum ConfigType {PdfTex, R, DebugMode, OpsXML, TexTemplate};
+	public enum ConfigType {DebugMode, PdfTex, R, OpsXML, TexTemplate, UserName, ClassShort, ClassLong};
 
 	/**
 	 * Creates new instance of the configuration pointed to the given configuration file
@@ -218,6 +219,15 @@ public class Configuration
 			case TexTemplate:
 				return LatexExporter.getDefaultTemplate();
 
+			case ClassLong:
+				return Problem.getDefaultLongCourseName();
+
+			case ClassShort:
+				return Problem.getDefaultShortCourseName();
+
+			case UserName:
+				return Problem.getDefaultPersonName();
+
 			default:
 				throw new InternalMarlaException("Unhandled configuration exception type in name");
 		}
@@ -266,6 +276,18 @@ public class Configuration
 
 			case TexTemplate:
 				previous = LatexExporter.setDefaultTemplate((String) val);
+				break;
+
+			case ClassLong:
+				previous = Problem.setDefaultLongCourseName((String)val);
+				break;
+
+			case ClassShort:
+				previous = Problem.setDefaultShortCourseName((String)val);
+				break;
+
+			case UserName:
+				previous = Problem.setDefaultPersonName((String)val);
 				break;
 
 			default:
@@ -391,6 +413,13 @@ public class Configuration
 			{
 				case DebugMode:
 					set(setting, RProcessor.RecordMode.DISABLED);
+					success = true;
+					break;
+
+				case ClassLong:
+				case ClassShort:
+				case UserName:
+					set(setting, "");
 					success = true;
 					break;
 
@@ -696,14 +725,11 @@ public class Configuration
 			case R:
 				return "R path";
 
-			case DebugMode:
-				return "Debug Mode";
-
 			case TexTemplate:
 				return "LaTeX export template path";
 
 			default:
-				throw new InternalMarlaException("Unhandled configuration exception type in name");
+				return setting.toString();
 		}
 	}
 
