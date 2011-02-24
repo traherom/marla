@@ -106,71 +106,64 @@ public class OperationInfoColumn extends OperationInfoCombo
 	@Override
 	public String getAnswer()
 	{
-		if(!getOperation().isLoading())
+		// If we're still loading, just return without fault-checking
+		if(getOperation().isLoading())
+			return answer;
+
+		DataSource parent = getOperation().getParentData();
+
+		// No parent? Don't clear here, if they move it to a new
+		// DataSet with the same column name then we can just start
+		// using that right away
+		if(parent == null)
+			return null;
+
+		try
 		{
-			DataSource parent = getOperation().getParentData();
-
-			// No parent? Don't clear here, if they move it to a new
-			// DataSet with the same column name then we can just start
-			// using that right away
-			if(parent == null)
-				return null;
-
-			try
+			// Answered or not?
+			if(answer != null)
 			{
-				if(answer != null)
+				// Recheck that the column selected is still in the parent data
+				DataColumn dc = parent.getColumn(answer.toString());
+
+				// Check the type
+				if(columnType != null && dc.getMode() != columnType)
 				{
-					// Recheck that the column selected is still in the parent data
-					DataColumn dc = parent.getColumn(answer.toString());
-
-					// Check the type
-					if(columnType != null && dc.getMode() != columnType)
-					{
-						clearAnswer();
-					}
-				}
-				else
-				{
-					// If there's no answer and there's only one column of the
-					// correct type in the parent then assume that
-					boolean foundExactlyOne = false;
-					int goodCol = -1;
-
-					for(int i = 0; i < parent.getColumnCount(); i++)
-					{
-						if(columnType != null && parent.getColumn(i).getMode() == columnType)
-						{
-							// Is this the first one we've found that worked?
-							if(foundExactlyOne != true)
-							{
-								foundExactlyOne = true;
-								goodCol = i;
-							}
-							else
-							{
-								// Sorry, has to be exactly one. We've already
-								// seen one that did
-								foundExactlyOne = false;
-								goodCol = -1;
-								break;
-							}
-
-						}
-					}
-
-					// Did we find exactly one possibility?
-					if(foundExactlyOne)
-						setAnswer(parent.getColumn(goodCol).getName());
+					clearAnswer();
 				}
 			}
-			catch(MarlaException ex)
+			else
 			{
-				clearAnswer();
+				// Attempt to automatically answer
+				autoAnswer();
 			}
 		}
-
-		// Either we're not checking (loading) or it's all good
+		catch(MarlaException ex)
+		{
+			clearAnswer();
+		}
+		
 		return answer;
+	}
+
+	@Override
+	public boolean autoAnswer()
+	{
+		List<String> options = getOptions();
+		if(options.size() == 1)
+		{
+			try
+			{
+				setAnswer(options.get(0));
+				return true;
+			}
+			catch(OperationInfoRequiredException ex)
+			{
+				throw new InternalMarlaException("Column combo attempted to invalidly auto-answer question");
+			}
+		}
+		else
+			return false;
 	}
 
 	@Override

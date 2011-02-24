@@ -99,6 +99,15 @@ public abstract class OperationInformation
 	public abstract void clearAnswer();
 
 	/**
+	 * Attempts to automatically answer the question. For example, if there
+	 * is only one option, that option is selected. If an answer is set that
+	 * is invalid and a valid one can be determined, the valid answer will
+	 * be used.
+	 * @return true if automatically answered, false otherwise
+	 */
+	public abstract boolean autoAnswer();
+
+	/**
 	 * Notes if the question has a valid answer or not.
 	 * @return true if it is answered and the answer is still valid, false otherwise
 	 */

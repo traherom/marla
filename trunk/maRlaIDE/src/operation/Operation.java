@@ -416,6 +416,10 @@ public abstract class Operation extends JLabel implements DataSource, Changeable
 		if(parent != null)
 			parent.addOperation(this);
 
+		// Fill our questions from the new parent if possible
+		for(OperationInformation q : getRequiredInfoPrompt())
+			q.autoAnswer();
+
 		markDirty();
 		markUnsaved();
 	}

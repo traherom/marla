@@ -78,6 +78,12 @@ public class OperationInfoCheckbox extends OperationInformation
 	}
 
 	@Override
+	public boolean autoAnswer()
+	{
+		return false;
+	}
+
+	@Override
 	protected void toXmlAnswer(Element saveEl)
 	{
 		if(answer != null)
