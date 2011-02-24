@@ -17,6 +17,8 @@
  */
 package operation;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.jdom.Element;
 import problem.InternalMarlaException;
 
@@ -115,6 +117,25 @@ public class OperationInfoNumeric extends OperationInformation
 		getOperation().checkDisplayName();
 		getOperation().markDirty();
 		getOperation().markUnsaved();
+	}
+
+	@Override
+	public boolean autoAnswer()
+	{
+		if(min == max)
+		{
+			try
+			{
+				setAnswer(min);
+				return true;
+			}
+			catch(OperationInfoRequiredException ex)
+			{
+				throw new InternalMarlaException("Numeric information was attempted to be autofilled but failed to set properly");
+			}
+		}
+		else
+			return false;
 	}
 
 	public double getMin()

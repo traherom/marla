@@ -83,10 +83,30 @@ public class OperationInfoFixedOptionCombo extends OperationInfoCombo
 		getOperation().markUnsaved();
 	}
 
+	@Override
+	public boolean autoAnswer()
+	{
+		if(options.size() == 1)
+		{
+			try
+			{
+				setAnswer(options.get(0));
+				return true;
+			}
+			catch(OperationInfoRequiredException ex)
+			{
+				throw new InternalMarlaException("Fixed option combo attempted to invalidly auto-answer question");
+			}
+		}
+		else
+			return false;
+	}
+
 	/**
 	 * Returns the possible options for this combo
 	 * @return List of options
 	 */
+	@Override
 	public List<String> getOptions()
 	{
 		return Collections.unmodifiableList(options);

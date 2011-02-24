@@ -122,4 +122,10 @@ public class OperationInfoString extends OperationInformation
 			clearAnswer();
 		}
 	}
+
+	@Override
+	public boolean autoAnswer()
+	{
+		return false;
+	}
 }
