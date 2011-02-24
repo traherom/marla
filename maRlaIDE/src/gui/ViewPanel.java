@@ -1575,8 +1575,12 @@ public class ViewPanel extends JPanel
 			{
 				JPanel tempPanel = new JPanel (new FlowLayout (FlowLayout.LEFT));
 				JLabel label = new JLabel (question.getPrompt ());
+
 				JTextField textField = new JTextField ();
 				textField.setPreferredSize (new Dimension (150, textField.getPreferredSize ().height));
+				if(question.getAnswer() != null)
+					textField.setText(question.getAnswer().toString());
+
 				tempPanel.add (label);
 				tempPanel.add (textField);
 				valueComponents.add (textField);
@@ -1585,8 +1589,13 @@ public class ViewPanel extends JPanel
 			else if (question.getType () == PromptType.CHECKBOX)
 			{
 				JPanel tempPanel = new JPanel (new FlowLayout (FlowLayout.LEFT));
+
 				JCheckBox checkBox = new JCheckBox (question.getPrompt ());
+				if(question.getAnswer() != null)
+					checkBox.setSelected((Boolean)question.getAnswer());
+
 				JLabel label = new JLabel ("");
+
 				tempPanel.add (checkBox);
 				tempPanel.add (label);
 				valueComponents.add (checkBox);
@@ -1596,8 +1605,12 @@ public class ViewPanel extends JPanel
 			{
 				JPanel tempPanel = new JPanel (new FlowLayout (FlowLayout.LEFT));
 				JLabel label = new JLabel (question.getPrompt ());
+
 				DefaultComboBoxModel model = new DefaultComboBoxModel (((OperationInfoCombo) question).getOptions ().toArray ());
 				JComboBox comboBox = new JComboBox (model);
+				if(question.getAnswer() != null)
+					comboBox.setSelectedItem(question.getAnswer());
+				
 				tempPanel.add (label);
 				tempPanel.add (comboBox);
 				valueComponents.add (comboBox);

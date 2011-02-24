@@ -70,7 +70,7 @@ public class OperationInfoString extends OperationInformation
 		// Ensure it matches the pattern
 		String a = newAnswer.toString();
 		if(!mustMatchPatt.matcher(a).matches())
-			throw new OperationInfoRequiredException("'" + a + "' may not be used as answer to '" + getName() + "'", getOperation());
+			throw new OperationInfoRequiredException("'" + a + "' invalid answer for '" + getName() + "'", getOperation());
 
 		// Save
 		answer = newAnswer.toString();

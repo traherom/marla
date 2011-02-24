@@ -82,7 +82,16 @@ public class OperationInfoNumeric extends OperationInformation
 		if(newAnswer instanceof Double)
 			a = (Double)newAnswer;
 		else
-			a = Double.valueOf(newAnswer.toString());
+		{
+			try
+			{
+				a = Double.valueOf(newAnswer.toString());
+			}
+			catch(NumberFormatException ex)
+			{
+				throw new OperationInfoRequiredException("'" + newAnswer + "' not a number", getOperation());
+			}
+		}
 
 		if(a < min)
 			throw new OperationInfoRequiredException("Set answer is below the minimum of " + min, getOperation());
