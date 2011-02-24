@@ -436,9 +436,16 @@ public class Configuration
 
 		for(ConfigType c : ConfigType.values())
 		{
-			Element el = new Element(c.toString());
-			el.addContent(get(c).toString());
-			rootEl.addContent(el);
+			try
+			{
+				Element el = new Element(c.toString());
+				el.addContent(get(c).toString());
+				rootEl.addContent(el);
+			}
+			catch(NullPointerException ex)
+			{
+				// Ignore, don't save
+			}
 		}
 
 		try

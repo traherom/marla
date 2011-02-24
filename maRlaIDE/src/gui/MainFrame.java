@@ -59,41 +59,39 @@ public class MainFrame extends JFrame
 		Configuration conf = Configuration.getInstance ();
 		List<ConfigType> missed = conf.configureAll (args);
 
-		if(!missed.isEmpty())
+		int currIndex = 0;
+		while(currIndex < missed.size ())
 		{
-			Iterator<ConfigType> it = missed.iterator ();
-			ConfigType curr = it.next ();
-			while(it.hasNext ())
-			{
-				boolean fixed = false;
-				try
-				{
-					viewPanel.openChooserDialog.setDialogTitle (Configuration.getName (curr));
-					viewPanel.openChooserDialog.resetChoosableFileFilters ();
-					viewPanel.openChooserDialog.setFileSelectionMode (JFileChooser.FILES_AND_DIRECTORIES);
-					// Display the chooser and retrieve the selected file
-					int response = viewPanel.openChooserDialog.showOpenDialog (viewPanel);
-					if (response == JFileChooser.APPROVE_OPTION)
-					{
-						conf.set (curr, viewPanel.openChooserDialog.getSelectedFile ().getPath ());
-						fixed = true;
-					}
-					else
-					{
-						JOptionPane.showMessageDialog (viewPanel, "The maRla Project cannot run without these resources.", "Fatal Error", JOptionPane.ERROR_MESSAGE);
-						System.exit (1);
-					}
-				}
-				catch (MarlaException ex)
-				{
-					System.out.println (ex.getMessage ());
-					fixed = false;
-				}
+			ConfigType curr = missed.get (currIndex);
 
-				// If we succeed, find the next thing
-				if(fixed)
-					curr = it.next ();
+			boolean fixed = false;
+			try
+			{
+				viewPanel.openChooserDialog.setDialogTitle (Configuration.getName (curr));
+				viewPanel.openChooserDialog.resetChoosableFileFilters ();
+				viewPanel.openChooserDialog.setFileSelectionMode (JFileChooser.FILES_AND_DIRECTORIES);
+				// Display the chooser and retrieve the selected file
+				int response = viewPanel.openChooserDialog.showOpenDialog (viewPanel);
+				if (response == JFileChooser.APPROVE_OPTION)
+				{
+					conf.set (curr, viewPanel.openChooserDialog.getSelectedFile ().getPath ());
+					fixed = true;
+				}
+				else
+				{
+					JOptionPane.showMessageDialog (viewPanel, "The maRla Project cannot run without these resources.", "Fatal Error", JOptionPane.ERROR_MESSAGE);
+					System.exit (1);
+				}
 			}
+			catch (MarlaException ex)
+			{
+				System.out.println (ex.getMessage ());
+				fixed = false;
+			}
+
+			// If we succeed, find the next thing
+			if(fixed)
+				currIndex++;
 		}
 
 		try
