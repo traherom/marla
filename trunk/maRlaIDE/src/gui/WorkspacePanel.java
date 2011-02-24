@@ -67,7 +67,7 @@ public class WorkspacePanel extends JPanel
 		for (int i = 0; i < viewPanel.domain.problem.getDataCount(); ++i)
 		{
 			DataSet dataSet = viewPanel.domain.problem.getData (i);
-			if (dataSet.getParent () == null || (dataSet.getParent () != null && dataSet.getParent () != this))
+			if (dataSet.getParent () == null || dataSet.getParent () != this)
 			{
 				add (dataSet);
 			}

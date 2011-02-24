@@ -754,7 +754,6 @@ public class NewProblemWizardDialog extends EscapeDialog
 		{
 		}
 
-		problem.addData (dataSet);
 		int x = 200;
 		int y = 20;
 		int count = problem.getDataCount () - 1;
@@ -762,13 +761,13 @@ public class NewProblemWizardDialog extends EscapeDialog
 		{
 			x = problem.getData (count - 1).getX () + 150;
 		}
-		problem.getData (count).setBounds (x, y, problem.getData (count).getPreferredSize ().width, problem.getData (count).getPreferredSize ().height);
+		dataSet.setBounds (x, y, dataSet.getPreferredSize ().width, dataSet.getPreferredSize ().height);
 
 		JPanel panel = createValuesTabbedPanel (problem);
-		dataSetTabbedPane.add ("Data Set " + index, panel);
+		dataSetTabbedPane.add (dataSet.getName(), panel);
 		dataSetTabbedPane.setSelectedIndex (dataSetTabbedPane.getTabCount () - 1);
-		int columns = 3;
-		int rows = 5;
+		int columns = dataSet.getColumnCount();
+		int rows = dataSet.getColumnLength();
 		((JSpinner) panel.getComponent (2)).setValue (columns);
 		((JSpinner) panel.getComponent (4)).setValue (rows);
 
@@ -813,14 +812,18 @@ public class NewProblemWizardDialog extends EscapeDialog
 }//GEN-LAST:event_addDataSetButtonActionPerformed
 
 	private void removeDataSetButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeDataSetButtonActionPerformed
+		DataSet removedData = null;
 		if (newProblem != null)
 		{
-			newProblem.removeData (newProblem.getData (dataSetTabbedPane.getSelectedIndex ()));
+			removedData = newProblem.removeData (newProblem.getData (dataSetTabbedPane.getSelectedIndex ()));
 		}
 		else
 		{
-			domain.problem.removeData (domain.problem.getData (dataSetTabbedPane.getSelectedIndex ()));
+			removedData = domain.problem.removeData (domain.problem.getData (dataSetTabbedPane.getSelectedIndex ()));
 		}
+
+		VIEW_PANEL.workspacePanel.remove (removedData);
+
 		dataSetTabbedPane.remove (dataSetTabbedPane.getSelectedIndex ());
 		if (dataSetTabbedPane.getTabCount () == 0)
 		{
