@@ -175,6 +175,21 @@ public class Configuration
 
 		unconfigured.removeAll(fixed);
 
+		// Display the results
+		System.out.println("Configuration:");
+		for(ConfigType c : ConfigType.values())
+		{
+			System.out.print("\t" + c + ": ");
+			try
+			{
+				System.out.println(get(c));
+			}
+			catch (MarlaException ex)
+			{
+				System.out.println("unset (" + ex.getMessage() + ")");
+			}
+		}
+
 		// Return the failures
 		return unconfigured;
 	}
@@ -268,7 +283,6 @@ public class Configuration
 	private boolean configureFromXML(ConfigType setting)
 	{
 		boolean success = false;
-		System.out.print("Attempting to configure " + setting + " from config file: ");
 
 		try
 		{
@@ -287,9 +301,7 @@ public class Configuration
 		}
 
 		if(success)
-			System.out.println("success");
-		else
-			System.out.println("failed");
+			System.out.println("Configured " + setting + " from config file");
 		
 		return success;
 	}
@@ -302,8 +314,6 @@ public class Configuration
 	 */
 	private boolean configureFromCmdLine(ConfigType setting, String[] args)
 	{
-		System.out.print("Attempting to configure " + setting + " from command line: ");
-
 		// Look for key in args
 		String setName = "--" + setting.toString();
 		for(String arg : args)
@@ -313,19 +323,18 @@ public class Configuration
 				try
 				{
 					set(setting, arg.substring(arg.indexOf('=')));
-					System.out.println ("success");
+
+					System.out.println("Configured " + setting + " from command line");
 					return true;
 				}
 				catch(MarlaException ex)
 				{
-					System.out.println ("failed");
 					return false;
 				}
 			}
 		}
 
 		// Didn't find a match
-		System.out.println ("failed");
 		return false;
 	}
 
@@ -337,7 +346,6 @@ public class Configuration
 	private boolean configureFromSearch(ConfigType setting)
 	{
 		boolean success = false;
-		System.out.print("Attempting to configure " + setting + " through search: ");
 
 		switch(setting)
 		{
@@ -363,9 +371,7 @@ public class Configuration
 		}
 
 		if(success)
-			System.out.println("success");
-		else
-			System.out.println("failed");
+			System.out.println("Configured " + setting + " from search");
 
 		return success;
 	}
@@ -377,28 +383,31 @@ public class Configuration
 	 */
 	private boolean configureFromDefault(ConfigType setting)
 	{
+		boolean success = false;
+		
 		try
 		{
-			System.out.print("Attempting to configure " + setting + " to default: ");
-
 			switch(setting)
 			{
 				case DebugMode:
 					set(setting, RProcessor.RecordMode.DISABLED);
-					System.out.println("success");
-					return true;
+					success = true;
+					break;
 
 				default:
-					// Can't handle with a default
-					System.out.println("failed");
-					return false;
+					// No logical default for this setting
+					success = false;
 			}
 		}
 		catch(MarlaException ex)
 		{
-			System.out.println("failed");
-			return false;
+			success = false;
 		}
+
+		if(success)
+			System.out.println("Configured " + setting + " with default");
+
+		return success;
 	}
 
 	/**

@@ -161,8 +161,6 @@ public final class RProcessor
 		if(oldPath == null || !oldPath.equals(newRPath))
 			restartInstance();
 
-		// Apply change
-		System.out.println("Using R binary at '" + rPath + "'");
 		return oldPath;
 	}
 
@@ -734,7 +732,6 @@ public final class RProcessor
 	{
 		// Figure out path and request that it be removed once we close
 		lastPngName = getUniqueName() + ".png";
-		new File(lastPngName).deleteOnExit();
 
 		// Tell R to start a new device
 		execute("png(filename='" + lastPngName + "')");
@@ -750,6 +747,10 @@ public final class RProcessor
 		String pngName = lastPngName;
 		lastPngName = null;
 		execute("dev.off()");
+
+		// Remove it once marla dies
+		new File(pngName).deleteOnExit();
+
 		return pngName;
 	}
 
