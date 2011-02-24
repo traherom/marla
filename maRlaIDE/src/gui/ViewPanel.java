@@ -44,7 +44,10 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 import javax.swing.BorderFactory;
+import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -130,8 +133,6 @@ public class ViewPanel extends JPanel
 	public static Font fontBold12 = new Font ("Verdana", Font.BOLD, 12);
 	/** The New Problem Wizard dialog.*/
 	public final NewProblemWizardDialog NEW_PROBLEM_WIZARD_DIALOG = new NewProblemWizardDialog (this, domain);
-	/** The set of operations contained in the XML file.*/
-	private List<String> operations;
 	/** The data set being dragged.*/
 	protected JComponent draggingComponent = null;
 	/** The component currently being hovered over.*/
@@ -224,6 +225,8 @@ public class ViewPanel extends JPanel
 		preWorkspacePanel.setVisible (true);
 		workspacePanel.setVisible (false);
 
+		componentsScrollPane.getViewport ().setOpaque (false);
+
 		// Retrieve the default file filter from the JFileChooser before it is ever changed
 		defaultFilter = openChooserDialog.getFileFilter ();
 
@@ -262,41 +265,64 @@ public class ViewPanel extends JPanel
 	 */
 	protected void loadOperations() throws MarlaException
 	{
-		operations = Operation.getAvailableOperationsList ();
+		Set<String> categories = Operation.getAvailableOperationsCategorized ().keySet();
 
 		// Add all operation types to the palette, adding listeners to the labels as we go
-		for (int i = 0; i < operations.size (); ++i)
+		for (String key : categories)
 		{
-			try
+			List<String> operations = Operation.getAvailableOperationsCategorized ().get (key);
+			
+			JPanel categoryPanel = new JPanel ();
+			categoryPanel.setLayout(new GridLayout(2, 2));
+			categoryPanel.add (new JLabel ("::" + key + "::"));
+			categoryPanel.add (new JLabel (""));
+			JPanel leftPanel = new JPanel ();
+			leftPanel.setBorder (BorderFactory.createMatteBorder (0, 0, 0, 1, Color.DARK_GRAY));
+			leftPanel.setLayout(new BoxLayout(leftPanel, BoxLayout.PAGE_AXIS));
+			categoryPanel.add (leftPanel);
+			JPanel rightPanel = new JPanel ();
+			rightPanel.setLayout(new BoxLayout(rightPanel, BoxLayout.PAGE_AXIS));
+			categoryPanel.add (rightPanel);
+			
+			for (int i = 0; i < operations.size (); ++i)
 			{
-				final Operation operation = Operation.createOperation (operations.get (i));
-				operation.setText ("<html>" + operation.getDisplayString (abbreviated) + "</html>");
-				DRAG_SOURCE.createDefaultDragGestureRecognizer (operation, DnDConstants.ACTION_MOVE, DND_LISTENER);
+				try
+				{
+					final Operation operation = Operation.createOperation (operations.get (i));
+					operation.setText ("<html>" + operation.getDisplayString (abbreviated) + "</html>");
+					DRAG_SOURCE.createDefaultDragGestureRecognizer (operation, DnDConstants.ACTION_MOVE, DND_LISTENER);
 
-				if (i % 2 == 0)
-				{
-					leftPanel.add (operation);
-				}
-				else
-				{
-					rightPanel.add (operation);
-				}
-				operation.addMouseListener (new MouseAdapter ()
-				{
-					@Override
-					public void mousePressed(MouseEvent evt)
+					if (i % 2 == 0)
 					{
-						xDragOffset = (int) evt.getLocationOnScreen ().getX () - (int) operation.getLocationOnScreen ().getX ();
-						yDragOffset = (int) evt.getLocationOnScreen ().getY () - (int) operation.getLocationOnScreen ().getY ();
+						leftPanel.add (operation);
 					}
-				});
+					else
+					{
+						rightPanel.add (operation);
+					}
+					operation.addMouseListener (new MouseAdapter ()
+					{
+						@Override
+						public void mousePressed(MouseEvent evt)
+						{
+							xDragOffset = (int) evt.getLocationOnScreen ().getX () - (int) operation.getLocationOnScreen ().getX ();
+							yDragOffset = (int) evt.getLocationOnScreen ().getY () - (int) operation.getLocationOnScreen ().getY ();
+						}
+					});
+				}
+				catch (OperationException ex)
+				{
+					// Unable to load, not a real operation
+					System.err.println ("Error loading operation '" + operations.get (i) + "'");
+				}
 			}
-			catch (OperationException ex)
-			{
-				// Unable to load, not a real operation
-				System.err.println ("Error loading operation '" + operations.get (i) + "'");
-			}
+
+			componentsScrollablePanel.add (categoryPanel);
 		}
+
+		componentsScrollPane.setPreferredSize (new Dimension (190, componentsScrollPane.getPreferredSize ().height));
+		componentsScrollablePanel.setPreferredSize (new Dimension (190, componentsScrollablePanel.getPreferredSize ().height));
+		componentsPanel.setPreferredSize (new Dimension (190, componentsPanel.getPreferredSize ().height));
 	}
 
 	/** This method is called from within the constructor to
@@ -314,6 +340,8 @@ public class ViewPanel extends JPanel
         answerPanel = new javax.swing.JPanel();
         rightClickMenu = new javax.swing.JPopupMenu();
         solutionMenuItem = new javax.swing.JMenuItem();
+        changeInfoMenuItem = new javax.swing.JMenuItem();
+        jSeparator5 = new javax.swing.JPopupMenu.Separator();
         tieSubProblemSubMenu = new javax.swing.JMenu();
         untieSubProblemSubMenu = new javax.swing.JMenu();
         menuSeparator = new javax.swing.JPopupMenu.Separator();
@@ -336,8 +364,8 @@ public class ViewPanel extends JPanel
         componentsCardPanel = new javax.swing.JPanel();
         emptyPalettePanel = new javax.swing.JPanel();
         componentsPanel = new javax.swing.JPanel();
-        leftPanel = new javax.swing.JPanel();
-        rightPanel = new javax.swing.JPanel();
+        componentsScrollPane = new javax.swing.JScrollPane();
+        componentsScrollablePanel = new javax.swing.JPanel();
         workspaceSplitPane = new javax.swing.JSplitPane();
         workspaceCardPanel = new javax.swing.JPanel();
         preWorkspacePanel = new javax.swing.JPanel();
@@ -373,6 +401,15 @@ public class ViewPanel extends JPanel
             }
         });
         rightClickMenu.add(solutionMenuItem);
+
+        changeInfoMenuItem.setText("Change Parameters");
+        changeInfoMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                changeInfoMenuItemActionPerformed(evt);
+            }
+        });
+        rightClickMenu.add(changeInfoMenuItem);
+        rightClickMenu.add(jSeparator5);
 
         tieSubProblemSubMenu.setText("Tie to Sub Problem");
         tieSubProblemSubMenu.addMenuListener(new javax.swing.event.MenuListener() {
@@ -592,13 +629,15 @@ public class ViewPanel extends JPanel
 
         componentsCardPanel.add(emptyPalettePanel, "card3");
 
-        componentsPanel.setLayout(new java.awt.GridLayout(1, 2));
+        componentsPanel.setLayout(new java.awt.GridLayout(1, 0));
 
-        leftPanel.setLayout(new javax.swing.BoxLayout(leftPanel, javax.swing.BoxLayout.PAGE_AXIS));
-        componentsPanel.add(leftPanel);
+        componentsScrollPane.setOpaque(false);
 
-        rightPanel.setLayout(new javax.swing.BoxLayout(rightPanel, javax.swing.BoxLayout.PAGE_AXIS));
-        componentsPanel.add(rightPanel);
+        componentsScrollablePanel.setOpaque(false);
+        componentsScrollablePanel.setLayout(new javax.swing.BoxLayout(componentsScrollablePanel, javax.swing.BoxLayout.PAGE_AXIS));
+        componentsScrollPane.setViewportView(componentsScrollablePanel);
+
+        componentsPanel.add(componentsScrollPane);
 
         componentsCardPanel.add(componentsPanel, "card2");
 
@@ -612,7 +651,7 @@ public class ViewPanel extends JPanel
 
         preWorkspacePanel.setBackground(new java.awt.Color(204, 204, 204));
 
-        preWorkspaceLabel.setFont(new java.awt.Font("Verdana", 1, 14));
+        preWorkspaceLabel.setFont(new java.awt.Font("Verdana", 1, 14)); // NOI18N
         preWorkspaceLabel.setForeground(new java.awt.Color(102, 102, 102));
         preWorkspaceLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         preWorkspaceLabel.setText("<html><div align=\"center\">To get started, load a previous problem or use the<br /><em>New Problem Wizard</em> to create a new problem</div></html>");
@@ -932,21 +971,31 @@ public class ViewPanel extends JPanel
 				{
 					solutionMenuItem.setText ("Summary");
 					editDataSetMenuItem.setEnabled (true);
+					changeInfoMenuItem.setEnabled (false);
 				}
 				else
 				{
 					solutionMenuItem.setText ("Solution");
 					editDataSetMenuItem.setEnabled (false);
+					try
+					{
+						if (rightClickedComponent != null && rightClickedComponent instanceof Operation && ((Operation) rightClickedComponent).isInfoRequired ())
+						{
+							changeInfoMenuItem.setEnabled (true);
+						}
+						else
+						{
+							changeInfoMenuItem.setEnabled (false);
+						}
+					}
+					catch (MarlaException ex)
+					{
+						changeInfoMenuItem.setEnabled (false);
+						Domain.logger.add (ex);
+					}
 				}
 
 				rightClickMenu.show (workspacePanel, evt.getX (), evt.getY ());
-			}
-			else
-			{
-				rightClickedComponent = null;
-				solutionMenuItem.setEnabled (false);
-				tieSubProblemSubMenu.setEnabled (false);
-				tieSubProblemSubMenu.removeAll ();
 			}
 		}
 	}//GEN-LAST:event_workspacePanelMouseReleased
@@ -1209,6 +1258,24 @@ public class ViewPanel extends JPanel
 		}
 	}//GEN-LAST:event_editDataSetMenuItemActionPerformed
 
+	private void changeInfoMenuItemActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_changeInfoMenuItemActionPerformed
+	{//GEN-HEADEREND:event_changeInfoMenuItemActionPerformed
+		if (rightClickedComponent != null && rightClickedComponent instanceof Operation)
+		{
+			try
+			{
+				if (((Operation) rightClickedComponent).isInfoRequired ())
+				{
+					getRequiredInfoDialog ((Operation) rightClickedComponent);
+				}
+			}
+			catch (MarlaException ex)
+			{
+				Domain.logger.add (ex);
+			}
+		}
+	}//GEN-LAST:event_changeInfoMenuItemActionPerformed
+
 	/**
 	 * Edit the current problem.
 	 */
@@ -1460,6 +1527,7 @@ public class ViewPanel extends JPanel
 			if (duplicate)
 			{
 				newOperation = Operation.createOperation (operation.getName ());
+				newOperation.setText("<html>" + operation.getDisplayString (abbreviated) + "</html>");
 			}
 			else
 			{
@@ -1467,6 +1535,10 @@ public class ViewPanel extends JPanel
 			}
 
 			newOperation.setBounds ((int) location.getX () - xDragOffset, (int) location.getY () - yDragOffset, newOperation.getPreferredSize ().width, newOperation.getPreferredSize ().height);
+			if (duplicate)
+			{
+				workspacePanel.add (newOperation);
+			}
 			workspacePanel.repaint ();
 		}
 		if (hoveredComponent != null)
@@ -1804,8 +1876,11 @@ public class ViewPanel extends JPanel
     private javax.swing.JLabel abbreviateButton;
     protected javax.swing.JDialog answerDialog;
     private javax.swing.JPanel answerPanel;
+    private javax.swing.JMenuItem changeInfoMenuItem;
     private javax.swing.JPanel componentsCardPanel;
     protected javax.swing.JPanel componentsPanel;
+    private javax.swing.JScrollPane componentsScrollPane;
+    private javax.swing.JPanel componentsScrollablePanel;
     private javax.swing.JMenuItem editDataSetMenuItem;
     protected javax.swing.JPanel emptyPalettePanel;
     private javax.swing.JLabel jLabel1;
@@ -1814,7 +1889,7 @@ public class ViewPanel extends JPanel
     private javax.swing.JToolBar.Separator jSeparator2;
     private javax.swing.JToolBar.Separator jSeparator3;
     private javax.swing.JPopupMenu.Separator jSeparator4;
-    private javax.swing.JPanel leftPanel;
+    private javax.swing.JPopupMenu.Separator jSeparator5;
     private javax.swing.JPopupMenu.Separator menuSeparator;
     private javax.swing.JLabel minusFontButton;
     private javax.swing.JLabel newButton;
@@ -1827,7 +1902,6 @@ public class ViewPanel extends JPanel
     protected javax.swing.JPanel preWorkspacePanel;
     private javax.swing.JMenuItem rCodeMenuItem;
     private javax.swing.JPopupMenu rightClickMenu;
-    private javax.swing.JPanel rightPanel;
     protected javax.swing.JLabel saveButton;
     protected javax.swing.JFileChooser saveChooserDialog;
     private javax.swing.JLabel settingsButton;
