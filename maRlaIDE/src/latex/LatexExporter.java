@@ -33,7 +33,6 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.filefilter.PrefixFileFilter;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
@@ -150,7 +149,6 @@ public class LatexExporter
 		if(!(new File(newTemplatePath)).exists())
 			throw new ConfigurationException("LaTeX template '" + newTemplatePath + "' XML file does not exist", ConfigType.TexTemplate);
 
-		System.out.println("Using LaTeX export template at '" + newTemplatePath + "'");
 		defaultTemplate = newTemplatePath;
 		return oldTemplate;
 	}
@@ -182,7 +180,7 @@ public class LatexExporter
 			{
 				// Get current files in dir. Any new files will be removed
 				File currentDir = new File(".");
-				File[] dirBefore = currentDir.listFiles();
+				List<File> originalFiles = Arrays.asList(currentDir.listFiles());
 
 				// Test to see if pdflatex works by running a test file through it
 				ProcessBuilder procBuild = new ProcessBuilder(newPdfTexPath);
@@ -211,13 +209,11 @@ public class LatexExporter
 				texOutStream.close();
 
 				// Clean up by removing any new files
-				File[] dirAfter = currentDir.listFiles();
-				List<File> dirBeforeList = Arrays.asList(dirBefore);
-				for(int i = 0; i < dirAfter.length; i++)
-				{
-					if(!dirBeforeList.contains(dirAfter[i]))
-						FileUtils.deleteQuietly(dirAfter[i]);
-				}
+				List<File> newFiles = new ArrayList<File>();
+				newFiles.addAll(Arrays.asList(currentDir.listFiles()));
+				newFiles.removeAll(originalFiles);
+				for(File f : newFiles)
+					FileUtils.deleteQuietly(f);
 			}
 			catch(IOException ex)
 			{
@@ -232,7 +228,6 @@ public class LatexExporter
 				throw new ConfigurationException("pdfTeX could not be located at '" + defaultTemplate + "'", ConfigType.PdfTex);
 		}
 
-		System.out.println("Using pdfTeX binary at '" + newPdfTexPath + "'");
 		pdfTexPath = newPdfTexPath;
 		return oldPath;
 	}
@@ -731,6 +726,11 @@ public class LatexExporter
 	 */
 	public String generatePDF(String pdfPath) throws LatexException, RProcessorException, MarlaException
 	{
+		// Get current files in dir. Any new files will be removed
+		File currentDir = new File(".");
+		List<File> originalFiles = new ArrayList<File>();
+		originalFiles.addAll(Arrays.asList(currentDir.listFiles()));
+
 		// Create the rnw
 		String rnwPath = cleanTempExport();
 		String baseFileName = new File(rnwPath).getName().replace(".rnw", "");
@@ -781,8 +781,8 @@ public class LatexExporter
 			try
 			{
 				// Read the output and save the important parts
-				boolean output = (proc.getDebugMode() == RecordMode.FULL
-						|| proc.getDebugMode() == RecordMode.OUTPUT_ONLY);
+				boolean output = (RProcessor.getDebugMode() == RecordMode.FULL
+						|| RProcessor.getDebugMode() == RecordMode.OUTPUT_ONLY);
 
 				StringBuilder sb = new StringBuilder();
 				String line = texOutStream.readLine();
@@ -827,17 +827,22 @@ public class LatexExporter
 
 			String tempPdfPath = outfileMatch.group(1);
 
-			// Move the final PDF file
-			return moveFile(tempPdfPath, pdfPath);
+			// Move the final PDF file and ensure we don't autoremove it (if
+			// the user were to request it built in our working dir)
+			String finalPath = moveFile(tempPdfPath, pdfPath);
+			originalFiles.add(new File(finalPath));
+			return finalPath;
 		}
 		finally
 		{
-			// Remove temp files
-			File dir = new File(".");
-			String[] files = dir.list(new PrefixFileFilter(baseFileName));
-			for(int i = 0; i < files.length; i++)
+			// Clean up by removing any new files
+			List<File> newFiles = new ArrayList<File>();
+			newFiles.addAll(Arrays.asList(currentDir.listFiles()));
+			newFiles.removeAll(originalFiles);
+			for(File f : newFiles)
 			{
-				FileUtils.deleteQuietly(new File(files[i]));
+				if(!FileUtils.deleteQuietly(f))
+					f.deleteOnExit();
 			}
 		}
 	}

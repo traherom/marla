@@ -124,8 +124,6 @@ public class OperationXML extends Operation
 			if(xmlPath == null)
 				throw new ConfigurationException("XML file for operations has not been specified", ConfigType.OpsXML);
 
-			System.out.println("Loading XML operations from '" + xmlPath + "'");
-
 			SAXBuilder parser = new SAXBuilder();
 			Document doc = parser.build(xmlPath);
 			operationXML = doc.getRootElement();

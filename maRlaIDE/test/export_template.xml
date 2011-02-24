@@ -17,7 +17,7 @@ Chapter <chapter />-Section <section />-Problem \#<probnum />
 
 <if has_subproblems="true">
 	<then>
-	\vfil\noindent\textbf{\Large Required}\par
+	\noindent\textbf{\Large Required}\par
 	\begin{enumerate}[(a)]
 	<loop type="subproblem">
 		\item <statement />
@@ -26,7 +26,7 @@ Chapter <chapter />-Section <section />-Problem \#<probnum />
 	</then>
 </if>
 
-\vfil\noindent\textbf{\Large Analysis and Solution}\par
+\noindent\textbf{\Large Analysis and Solution}\par
 <if has_subproblems="false">
 	<then>
 		<solution />\par
