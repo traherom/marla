@@ -18,6 +18,7 @@
 
 package gui;
 
+import java.awt.Component;
 import java.awt.Desktop;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -99,6 +100,27 @@ public class Domain
 	public void setLoadSaveThread(LoadSaveThread loadSaveThread)
 	{
 		this.loadSaveThread = loadSaveThread;
+	}
+
+	/**
+	 * Retrieves a list of Operations in the View panel that does are not attached to a data set.
+	 *
+	 * @return The list of operations not attached to a data set.
+	 */
+	public ArrayList<Operation> getUnattachedOperations()
+	{
+		ArrayList<Operation> ops = new ArrayList<Operation> ();
+		
+		for (int i = 0; i < viewPanel.workspacePanel.getComponentCount(); ++i)
+		{
+			Component comp = viewPanel.workspacePanel.getComponent(i);
+			if (comp instanceof Operation && ((Operation) comp).getParentData() == null)
+			{
+				ops.add ((Operation) comp);
+			}
+		}
+
+		return ops;
 	}
 
 	/**

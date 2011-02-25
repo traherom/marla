@@ -25,6 +25,7 @@ import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Point;
 import java.awt.Toolkit;
@@ -106,8 +107,6 @@ public class ViewPanel extends JPanel
 	private final Border NO_BORDER = BorderFactory.createEmptyBorder();
 	/** A red border display.*/
 	private final Border RED_BORDER = BorderFactory.createLineBorder(Color.RED);
-	/** A blue border display.*/
-	private final Border BLUE_BORDER = BorderFactory.createLineBorder(Color.BLUE);
 	/** A black border display.*/
 	private final Border BLACK_BORDER = BorderFactory.createLineBorder(Color.BLACK);
 	/** The source object for draggable assignments and events.*/
@@ -280,7 +279,7 @@ public class ViewPanel extends JPanel
 			List<String> operations = Operation.getAvailableOperationsCategorized().get(key);
 
 			JPanel categoryPanel = new JPanel();
-			categoryPanel.setLayout(new GridLayout(2, 2));
+			categoryPanel.setLayout(new GridBagLayout());
 			categoryPanel.add(new JLabel("::" + key + "::"));
 			categoryPanel.add(new JLabel(""));
 			JPanel leftPanel = new JPanel();
