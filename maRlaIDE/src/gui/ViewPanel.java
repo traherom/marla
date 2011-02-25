@@ -1143,7 +1143,40 @@ public class ViewPanel extends JPanel
 	private void workspacePanelComponentResized(java.awt.event.ComponentEvent evt)//GEN-FIRST:event_workspacePanelComponentResized
 	{//GEN-HEADEREND:event_workspacePanelComponentResized
 		trashCan.setLocation (workspacePanel.getWidth () - 40, workspacePanel.getHeight () - 40);
+		ensureDataSetsVisible();
 	}//GEN-LAST:event_workspacePanelComponentResized
+
+	private void ensureDataSetsVisible()
+	{
+		// Ensure all datasets are within our new bounds
+		if(domain.problem != null)
+		{
+			for(int i = 0; i < domain.problem.getDataCount(); i++)
+			{
+				DataSet ds = domain.problem.getData(i);
+
+				int x = ds.getX();
+				int y = ds.getY();
+				int minX = 0;
+				int maxX = workspacePanel.getWidth() - ds.getWidth();
+				int minY = 0;
+				int maxY = workspacePanel.getHeight() - ds.getHeight();
+
+				// Only do the move if we're within the workspace still
+				if(x < minX)
+					x = minX;
+				if(x > maxX)
+					x = maxX;
+				if(y < minY)
+					y = minY;
+				if(y > maxY)
+					y = maxY;
+
+				ds.setLocation (x, y);
+				rebuildTree (ds);
+			}
+		}
+	}
 
 	private void workspacePanelComponentAdded(java.awt.event.ContainerEvent evt)//GEN-FIRST:event_workspacePanelComponentAdded
 	{//GEN-HEADEREND:event_workspacePanelComponentAdded
@@ -1735,6 +1768,9 @@ public class ViewPanel extends JPanel
 			plusFontButton.setEnabled (true);
 			minusFontButton.setEnabled (true);
 			abbreviateButton.setEnabled (true);
+
+			// Move trees around if our workspace is smaller than the saving one
+			ensureDataSetsVisible();
 		}
 	}
 
