@@ -286,6 +286,7 @@ public class Domain
 
 				if (continueAllowed)
 				{
+					String filePath = null;
 					try
 					{
 						// Ensure all operations have been fulfilled, info wise
@@ -300,6 +301,7 @@ public class Domain
 
 						LatexExporter exporter = new LatexExporter (problem);
 						File genFile = new File (exporter.generatePDF (file.getPath ()));
+						filePath = genFile.getCanonicalPath();
 						if (desktop != null)
 						{
 							desktop.open (genFile);
@@ -307,7 +309,14 @@ public class Domain
 					}
 					catch (IOException ex)
 					{
-						Domain.logger.add (ex);
+						if (filePath != null)
+						{
+							JOptionPane.showMessageDialog(viewPanel, "The file was exported successfully.\nLocation: " + filePath, "Export Successful", JOptionPane.INFORMATION_MESSAGE);
+						}
+						else
+						{
+							Domain.logger.add (ex);
+						}
 					}
 					catch (MarlaException ex)
 					{
@@ -372,6 +381,7 @@ public class Domain
 
 				if (continueAllowed)
 				{
+					String filePath = null;
 					try
 					{
 						// Ensure all operations have been fulfilled, info wise
@@ -386,14 +396,26 @@ public class Domain
 
 						LatexExporter exporter = new LatexExporter (problem);
 						File genFile = new File (exporter.cleanExport (file.getPath ()));
+						filePath = genFile.getCanonicalPath();
 						if (desktop != null)
 						{
 							desktop.open (genFile);
 						}
+						else
+						{
+							throw new IOException ();
+						}
 					}
 					catch (IOException ex)
 					{
-						Domain.logger.add (ex);
+						if (filePath != null)
+						{
+							JOptionPane.showMessageDialog(viewPanel, "The file was exported successfully.\nLocation: " + filePath, "Export Successful", JOptionPane.INFORMATION_MESSAGE);
+						}
+						else
+						{
+							Domain.logger.add (ex);
+						}
 					}
 					catch (MarlaException ex)
 					{

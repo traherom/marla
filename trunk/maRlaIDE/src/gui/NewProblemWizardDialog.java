@@ -157,6 +157,7 @@ public class NewProblemWizardDialog extends EscapeDialog
         valuesLabel = new javax.swing.JLabel();
         stepsLineLabel = new javax.swing.JLabel();
         subProblemsLabel = new javax.swing.JLabel();
+        informationLabel = new javax.swing.JLabel();
         wizardCardPanel = new javax.swing.JPanel();
         welcomeCardPanel = new javax.swing.JPanel();
         welcomeWizardLabel = new javax.swing.JLabel();
@@ -193,6 +194,21 @@ public class NewProblemWizardDialog extends EscapeDialog
         dataSetTabbedPane = new javax.swing.JTabbedPane();
         addDataSetButton = new javax.swing.JButton();
         removeDataSetButton = new javax.swing.JButton();
+        informationCardPanel = new javax.swing.JPanel();
+        studentNameLabel = new javax.swing.JLabel();
+        courseShortNameLabel = new javax.swing.JLabel();
+        courseLongNameLabel = new javax.swing.JLabel();
+        chapterLabel = new javax.swing.JLabel();
+        sectionLabel = new javax.swing.JLabel();
+        problemNumberLabel = new javax.swing.JLabel();
+        studentNameTextField = new javax.swing.JTextField();
+        courseShortNameTextField = new javax.swing.JTextField();
+        courseLongNameTextField = new javax.swing.JTextField();
+        chapterTextField = new javax.swing.JTextField();
+        sectionTextField = new javax.swing.JTextField();
+        problemNumberTextField = new javax.swing.JTextField();
+        wizardLineCard6 = new javax.swing.JLabel();
+        informationWizardLabel = new javax.swing.JLabel();
         wizardControlPanel = new javax.swing.JPanel();
         closeWizardButton = new javax.swing.JButton();
         nextWizardButton = new javax.swing.JButton();
@@ -208,27 +224,27 @@ public class NewProblemWizardDialog extends EscapeDialog
         stepsLabel.setFont(new java.awt.Font("Verdana", 1, 12));
         stepsLabel.setText("Steps");
         stepsPanel.add(stepsLabel);
-        stepsLabel.setBounds(10, 10, 170, 15);
+        stepsLabel.setBounds(10, 10, 170, 16);
 
         welcomeLabel.setFont(new java.awt.Font("Verdana", 1, 12));
         welcomeLabel.setText("1. Welcome");
         stepsPanel.add(welcomeLabel);
-        welcomeLabel.setBounds(20, 40, 140, 15);
+        welcomeLabel.setBounds(20, 40, 140, 16);
 
         nameAndLocationLabel.setFont(new java.awt.Font("Verdana", 0, 12));
         nameAndLocationLabel.setText("2. Name and Location");
         stepsPanel.add(nameAndLocationLabel);
-        nameAndLocationLabel.setBounds(20, 60, 160, 15);
+        nameAndLocationLabel.setBounds(20, 60, 160, 16);
 
         descriptionLabel.setFont(new java.awt.Font("Verdana", 0, 12));
         descriptionLabel.setText("3. Description");
         stepsPanel.add(descriptionLabel);
-        descriptionLabel.setBounds(20, 80, 140, 15);
+        descriptionLabel.setBounds(20, 80, 140, 16);
 
-        valuesLabel.setFont(new java.awt.Font("Verdana", 0, 12));
+        valuesLabel.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
         valuesLabel.setText("5. Values");
         stepsPanel.add(valuesLabel);
-        valuesLabel.setBounds(20, 120, 140, 15);
+        valuesLabel.setBounds(20, 120, 140, 16);
 
         stepsLineLabel.setFont(new java.awt.Font("Verdana", 0, 12));
         stepsLineLabel.setText("_____________________");
@@ -238,19 +254,24 @@ public class NewProblemWizardDialog extends EscapeDialog
         subProblemsLabel.setFont(new java.awt.Font("Verdana", 0, 12));
         subProblemsLabel.setText("4. Sub Problems");
         stepsPanel.add(subProblemsLabel);
-        subProblemsLabel.setBounds(20, 100, 140, 15);
+        subProblemsLabel.setBounds(20, 100, 140, 16);
+
+        informationLabel.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        informationLabel.setText("6. Information");
+        stepsPanel.add(informationLabel);
+        informationLabel.setBounds(20, 140, 140, 16);
 
         wizardCardPanel.setBorder(javax.swing.BorderFactory.createEtchedBorder());
         wizardCardPanel.setLayout(new java.awt.CardLayout());
 
         welcomeCardPanel.setLayout(null);
 
-        welcomeWizardLabel.setFont(new java.awt.Font("Verdana", 1, 12));
+        welcomeWizardLabel.setFont(new java.awt.Font("Verdana", 1, 12)); // NOI18N
         welcomeWizardLabel.setText("Welcome");
         welcomeCardPanel.add(welcomeWizardLabel);
-        welcomeWizardLabel.setBounds(10, 10, 430, 15);
+        welcomeWizardLabel.setBounds(10, 10, 430, 16);
 
-        wizardLineCard1.setFont(new java.awt.Font("Verdana", 0, 12));
+        wizardLineCard1.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
         wizardLineCard1.setText("______________________________________________________");
         welcomeCardPanel.add(wizardLineCard1);
         wizardLineCard1.setBounds(10, 10, 440, 20);
@@ -265,7 +286,7 @@ public class NewProblemWizardDialog extends EscapeDialog
             .addGroup(welcomePanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(welcomeTextLabel)
-                .addContainerGap(256, Short.MAX_VALUE))
+                .addContainerGap(249, Short.MAX_VALUE))
         );
         welcomePanelLayout.setVerticalGroup(
             welcomePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -282,20 +303,20 @@ public class NewProblemWizardDialog extends EscapeDialog
 
         nameAndLocationCardPanel.setLayout(null);
 
-        wizardLineCard2.setFont(new java.awt.Font("Verdana", 0, 12));
+        wizardLineCard2.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
         wizardLineCard2.setText("______________________________________________________");
         nameAndLocationCardPanel.add(wizardLineCard2);
         wizardLineCard2.setBounds(10, 10, 440, 20);
 
-        nameAndLocationWizardLabel.setFont(new java.awt.Font("Verdana", 1, 12));
+        nameAndLocationWizardLabel.setFont(new java.awt.Font("Verdana", 1, 12)); // NOI18N
         nameAndLocationWizardLabel.setText("Name and Location");
         nameAndLocationCardPanel.add(nameAndLocationWizardLabel);
-        nameAndLocationWizardLabel.setBounds(10, 10, 130, 15);
+        nameAndLocationWizardLabel.setBounds(10, 10, 130, 16);
 
         problemNameLabel.setFont(new java.awt.Font("Verdana", 0, 12));
         problemNameLabel.setText("Problem Name:");
 
-        problemNameTextField.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        problemNameTextField.setFont(new java.awt.Font("Verdana", 0, 12));
         problemNameTextField.setText("New Problem");
 
         problemLocationLabel.setFont(new java.awt.Font("Verdana", 0, 12));
@@ -322,11 +343,11 @@ public class NewProblemWizardDialog extends EscapeDialog
                     .addGroup(nameAndLocationPanelLayout.createSequentialGroup()
                         .addComponent(problemNameLabel)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(problemNameTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 334, Short.MAX_VALUE))
+                        .addComponent(problemNameTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 340, Short.MAX_VALUE))
                     .addGroup(nameAndLocationPanelLayout.createSequentialGroup()
                         .addComponent(problemLocationLabel)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(problemLocationTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 321, Short.MAX_VALUE))
+                        .addComponent(problemLocationTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 323, Short.MAX_VALUE))
                     .addComponent(browseButton, javax.swing.GroupLayout.Alignment.TRAILING))
                 .addContainerGap())
         );
@@ -343,7 +364,7 @@ public class NewProblemWizardDialog extends EscapeDialog
                     .addComponent(problemLocationTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(browseButton)
-                .addContainerGap(207, Short.MAX_VALUE))
+                .addContainerGap(216, Short.MAX_VALUE))
         );
 
         nameAndLocationCardPanel.add(nameAndLocationPanel);
@@ -353,16 +374,15 @@ public class NewProblemWizardDialog extends EscapeDialog
 
         descriptionCardPanel.setLayout(null);
 
-        wizardLineCard3.setFont(new java.awt.Font("Verdana", 0, 12));
+        wizardLineCard3.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
         wizardLineCard3.setText("______________________________________________________");
         descriptionCardPanel.add(wizardLineCard3);
         wizardLineCard3.setBounds(10, 10, 440, 20);
 
-        descriptionWizardLabel.setFont(new java.awt.Font("Verdana", 1, 12));
+        descriptionWizardLabel.setFont(new java.awt.Font("Verdana", 1, 12)); // NOI18N
         descriptionWizardLabel.setText("Description");
-        descriptionWizardLabel.setToolTipText("description");
         descriptionCardPanel.add(descriptionWizardLabel);
-        descriptionWizardLabel.setBounds(10, 10, 80, 15);
+        descriptionWizardLabel.setBounds(10, 10, 80, 16);
 
         descriptionTextArea.setColumns(20);
         descriptionTextArea.setFont(new java.awt.Font("Verdana", 0, 12));
@@ -371,7 +391,7 @@ public class NewProblemWizardDialog extends EscapeDialog
         descriptionTextArea.setWrapStyleWord(true);
         descroptionScollPane.setViewportView(descriptionTextArea);
 
-        problemDescriptionLabel.setFont(new java.awt.Font("Verdana", 0, 12));
+        problemDescriptionLabel.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
         problemDescriptionLabel.setText("Problem Description:");
 
         javax.swing.GroupLayout descriptionPanelLayout = new javax.swing.GroupLayout(descriptionPanel);
@@ -381,7 +401,7 @@ public class NewProblemWizardDialog extends EscapeDialog
             .addGroup(descriptionPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(descriptionPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(descroptionScollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 436, Short.MAX_VALUE)
+                    .addComponent(descroptionScollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 440, Short.MAX_VALUE)
                     .addComponent(problemDescriptionLabel))
                 .addContainerGap())
         );
@@ -391,7 +411,7 @@ public class NewProblemWizardDialog extends EscapeDialog
                 .addContainerGap()
                 .addComponent(problemDescriptionLabel)
                 .addGap(18, 18, 18)
-                .addComponent(descroptionScollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 263, Short.MAX_VALUE)
+                .addComponent(descroptionScollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 264, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -402,15 +422,15 @@ public class NewProblemWizardDialog extends EscapeDialog
 
         subProblemsCardPanel.setLayout(null);
 
-        wizardLineCard5.setFont(new java.awt.Font("Verdana", 0, 12));
+        wizardLineCard5.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
         wizardLineCard5.setText("______________________________________________________");
         subProblemsCardPanel.add(wizardLineCard5);
         wizardLineCard5.setBounds(10, 10, 440, 20);
 
-        subProblemsWizardLabel.setFont(new java.awt.Font("Verdana", 1, 12));
+        subProblemsWizardLabel.setFont(new java.awt.Font("Verdana", 1, 12)); // NOI18N
         subProblemsWizardLabel.setText("Sub Problems");
         subProblemsCardPanel.add(subProblemsWizardLabel);
-        subProblemsWizardLabel.setBounds(10, 10, 130, 15);
+        subProblemsWizardLabel.setBounds(10, 10, 130, 16);
 
         subProblemsScrollPane.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 
@@ -423,7 +443,7 @@ public class NewProblemWizardDialog extends EscapeDialog
             subProblemsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(subProblemsPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(subProblemsScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 449, Short.MAX_VALUE))
+                .addComponent(subProblemsScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 451, Short.MAX_VALUE))
         );
         subProblemsPanelLayout.setVerticalGroup(
             subProblemsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -442,7 +462,7 @@ public class NewProblemWizardDialog extends EscapeDialog
             }
         });
         subProblemsCardPanel.add(addSubProblemButton);
-        addSubProblemButton.setBounds(285, 330, 70, 27);
+        addSubProblemButton.setBounds(285, 330, 70, 25);
 
         removeSubProblemButton.setFont(new java.awt.Font("Verdana", 0, 12));
         removeSubProblemButton.setText("Remove");
@@ -454,22 +474,21 @@ public class NewProblemWizardDialog extends EscapeDialog
             }
         });
         subProblemsCardPanel.add(removeSubProblemButton);
-        removeSubProblemButton.setBounds(370, 330, 90, 27);
+        removeSubProblemButton.setBounds(370, 330, 90, 25);
 
         wizardCardPanel.add(subProblemsCardPanel, "card6");
 
         valuesCardPanel.setLayout(null);
 
-        wizardLineCard4.setFont(new java.awt.Font("Verdana", 0, 12));
+        wizardLineCard4.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
         wizardLineCard4.setText("______________________________________________________");
         valuesCardPanel.add(wizardLineCard4);
         wizardLineCard4.setBounds(10, 10, 440, 20);
 
-        valuesWizardLabel.setFont(new java.awt.Font("Verdana", 1, 12));
+        valuesWizardLabel.setFont(new java.awt.Font("Verdana", 1, 12)); // NOI18N
         valuesWizardLabel.setText("Values");
-        valuesWizardLabel.setToolTipText("values");
         valuesCardPanel.add(valuesWizardLabel);
-        valuesWizardLabel.setBounds(10, 10, 50, 15);
+        valuesWizardLabel.setBounds(10, 10, 50, 16);
 
         dataSetTabbedPane.setFont(new java.awt.Font("Verdana", 0, 12));
         valuesCardPanel.add(dataSetTabbedPane);
@@ -484,7 +503,7 @@ public class NewProblemWizardDialog extends EscapeDialog
             }
         });
         valuesCardPanel.add(addDataSetButton);
-        addDataSetButton.setBounds(285, 330, 70, 27);
+        addDataSetButton.setBounds(285, 330, 70, 25);
 
         removeDataSetButton.setFont(new java.awt.Font("Verdana", 0, 12));
         removeDataSetButton.setText("Remove");
@@ -495,9 +514,77 @@ public class NewProblemWizardDialog extends EscapeDialog
             }
         });
         valuesCardPanel.add(removeDataSetButton);
-        removeDataSetButton.setBounds(370, 330, 90, 27);
+        removeDataSetButton.setBounds(370, 330, 90, 25);
 
         wizardCardPanel.add(valuesCardPanel, "card2");
+
+        informationCardPanel.setLayout(null);
+
+        studentNameLabel.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        studentNameLabel.setText("Student name:");
+        informationCardPanel.add(studentNameLabel);
+        studentNameLabel.setBounds(10, 50, 94, 20);
+
+        courseShortNameLabel.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        courseShortNameLabel.setText("Course short name:");
+        informationCardPanel.add(courseShortNameLabel);
+        courseShortNameLabel.setBounds(10, 90, 126, 20);
+
+        courseLongNameLabel.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        courseLongNameLabel.setText("Course long name:");
+        informationCardPanel.add(courseLongNameLabel);
+        courseLongNameLabel.setBounds(10, 130, 120, 20);
+
+        chapterLabel.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        chapterLabel.setText("Chapter:");
+        informationCardPanel.add(chapterLabel);
+        chapterLabel.setBounds(10, 170, 60, 20);
+
+        sectionLabel.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        sectionLabel.setText("Section:");
+        informationCardPanel.add(sectionLabel);
+        sectionLabel.setBounds(10, 210, 51, 20);
+
+        problemNumberLabel.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        problemNumberLabel.setText("Problem Number:");
+        informationCardPanel.add(problemNumberLabel);
+        problemNumberLabel.setBounds(10, 250, 109, 20);
+
+        studentNameTextField.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        informationCardPanel.add(studentNameTextField);
+        studentNameTextField.setBounds(110, 50, 289, 22);
+
+        courseShortNameTextField.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        informationCardPanel.add(courseShortNameTextField);
+        courseShortNameTextField.setBounds(147, 90, 150, 22);
+
+        courseLongNameTextField.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        informationCardPanel.add(courseLongNameTextField);
+        courseLongNameTextField.setBounds(140, 130, 240, 22);
+
+        chapterTextField.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        informationCardPanel.add(chapterTextField);
+        chapterTextField.setBounds(73, 170, 190, 22);
+
+        sectionTextField.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        informationCardPanel.add(sectionTextField);
+        sectionTextField.setBounds(70, 210, 170, 22);
+
+        problemNumberTextField.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        informationCardPanel.add(problemNumberTextField);
+        problemNumberTextField.setBounds(130, 250, 90, 22);
+
+        wizardLineCard6.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        wizardLineCard6.setText("______________________________________________________");
+        informationCardPanel.add(wizardLineCard6);
+        wizardLineCard6.setBounds(10, 10, 440, 20);
+
+        informationWizardLabel.setFont(new java.awt.Font("Verdana", 1, 12)); // NOI18N
+        informationWizardLabel.setText("Information");
+        informationCardPanel.add(informationWizardLabel);
+        informationWizardLabel.setBounds(10, 10, 180, 16);
+
+        wizardCardPanel.add(informationCardPanel, "card7");
 
         closeWizardButton.setFont(new java.awt.Font("Verdana", 0, 12));
         closeWizardButton.setText("Close");
@@ -507,7 +594,7 @@ public class NewProblemWizardDialog extends EscapeDialog
             }
         });
 
-        nextWizardButton.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        nextWizardButton.setFont(new java.awt.Font("Verdana", 0, 12));
         nextWizardButton.setText("Next >");
         nextWizardButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -552,7 +639,7 @@ public class NewProblemWizardDialog extends EscapeDialog
         newProblemPanel.setLayout(newProblemPanelLayout);
         newProblemPanelLayout.setHorizontalGroup(
             newProblemPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 789, Short.MAX_VALUE)
+            .addGap(0, 805, Short.MAX_VALUE)
             .addGroup(newProblemPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(newProblemPanelLayout.createSequentialGroup()
                     .addContainerGap()
@@ -560,7 +647,7 @@ public class NewProblemWizardDialog extends EscapeDialog
                         .addGroup(newProblemPanelLayout.createSequentialGroup()
                             .addComponent(stepsPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 193, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(wizardCardPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 566, Short.MAX_VALUE))
+                            .addComponent(wizardCardPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 586, Short.MAX_VALUE))
                         .addComponent(wizardControlPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addContainerGap()))
         );
@@ -571,8 +658,8 @@ public class NewProblemWizardDialog extends EscapeDialog
                 .addGroup(newProblemPanelLayout.createSequentialGroup()
                     .addContainerGap()
                     .addGroup(newProblemPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(wizardCardPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 374, Short.MAX_VALUE)
-                        .addComponent(stepsPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 374, Short.MAX_VALUE))
+                        .addComponent(wizardCardPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 380, Short.MAX_VALUE)
+                        .addComponent(stepsPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 380, Short.MAX_VALUE))
                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                     .addComponent(wizardControlPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addContainerGap()))
@@ -582,7 +669,7 @@ public class NewProblemWizardDialog extends EscapeDialog
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 789, Short.MAX_VALUE)
+            .addGap(0, 805, Short.MAX_VALUE)
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(layout.createSequentialGroup()
                     .addGap(0, 0, Short.MAX_VALUE)
@@ -946,19 +1033,14 @@ public class NewProblemWizardDialog extends EscapeDialog
 		}
 		else if (descriptionCardPanel.isVisible ())
 		{
+			Problem problem = domain.problem;
 			if (newProblem != null)
 			{
-				if (!newProblem.getStatement ().equals (descriptionTextArea.getText ()))
-				{
-					newProblem.setStatement (descriptionTextArea.getText ());
-				}
+				problem = newProblem;
 			}
-			else
+			if (!problem.getStatement ().equals (descriptionTextArea.getText ()))
 			{
-				if (!domain.problem.getStatement ().equals (descriptionTextArea.getText ()))
-				{
-					domain.problem.setStatement (descriptionTextArea.getText ());
-				}
+				problem.setStatement (descriptionTextArea.getText ());
 			}
 
 			// Move to the next panel in the cards
@@ -969,6 +1051,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 			descriptionLabel.setFont (ViewPanel.fontPlain12);
 			subProblemsLabel.setFont (ViewPanel.fontBold12);
 
+			// Set the focus properly for the new card
 			try
 			{
 				((JTextArea) ((JViewport) ((JScrollPane) ((JPanel) subProblemPanels.get (subProblemPanels.size () - 1)).getComponent (1)).getComponent (0)).getComponent (0)).requestFocus ();
@@ -981,24 +1064,16 @@ public class NewProblemWizardDialog extends EscapeDialog
 		}
 		else if (subProblemsCardPanel.isVisible ())
 		{
+			Problem problem = domain.problem;
 			if (newProblem != null)
 			{
-				for (int i = 0; i < newProblem.getSubProblemCount (); ++i)
-				{
-					if (!newProblem.getSubProblem (i).getStatement ().equals (((JTextArea) ((JViewport) ((JScrollPane) ((JPanel) subProblemPanels.get (i)).getComponent (1)).getComponent (0)).getComponent (0)).getText ()))
-					{
-						newProblem.getSubProblem (i).setStatement (((JTextArea) ((JViewport) ((JScrollPane) ((JPanel) subProblemPanels.get (i)).getComponent (1)).getComponent (0)).getComponent (0)).getText ());
-					}
-				}
+				problem = newProblem;
 			}
-			else
+			for (int i = 0; i < problem.getSubProblemCount (); ++i)
 			{
-				for (int i = 0; i < domain.problem.getSubProblemCount (); ++i)
+				if (!problem.getSubProblem (i).getStatement ().equals (((JTextArea) ((JViewport) ((JScrollPane) ((JPanel) subProblemPanels.get (i)).getComponent (1)).getComponent (0)).getComponent (0)).getText ()))
 				{
-					if (!domain.problem.getSubProblem (i).getStatement ().equals (((JTextArea) ((JViewport) ((JScrollPane) ((JPanel) subProblemPanels.get (i)).getComponent (1)).getComponent (0)).getComponent (0)).getText ()))
-					{
-						domain.problem.getSubProblem (i).setStatement (((JTextArea) ((JViewport) ((JScrollPane) ((JPanel) subProblemPanels.get (i)).getComponent (1)).getComponent (0)).getComponent (0)).getText ());
-					}
+					problem.getSubProblem (i).setStatement (((JTextArea) ((JViewport) ((JScrollPane) ((JPanel) subProblemPanels.get (i)).getComponent (1)).getComponent (0)).getComponent (0)).getText ());
 				}
 			}
 
@@ -1009,6 +1084,50 @@ public class NewProblemWizardDialog extends EscapeDialog
 			// Shift the boldness in the Steps panel to the next card
 			subProblemsLabel.setFont (ViewPanel.fontPlain12);
 			valuesLabel.setFont (ViewPanel.fontBold12);
+		}
+		else if (valuesCardPanel.isVisible ())
+		{
+			Problem problem = domain.problem;
+			if (newProblem != null)
+			{
+				problem = newProblem;
+			}
+			if (!problem.getPersonName().equals (studentNameTextField.getText()))
+			{
+				problem.setPersonName (studentNameTextField.getText ());
+			}
+			if (!problem.getShortCourse().equals (courseShortNameTextField.getText()))
+			{
+				problem.setShortCourse (courseShortNameTextField.getText ());
+			}
+			if (!problem.getLongCourse().equals (courseLongNameTextField.getText()))
+			{
+				problem.setLongCourse (courseLongNameTextField.getText ());
+			}
+			if (!problem.getChapter().equals (chapterTextField.getText()))
+			{
+				problem.setChapter (chapterTextField.getText ());
+			}
+			if (!problem.getSection().equals (sectionTextField.getText()))
+			{
+				problem.setSection (sectionTextField.getText ());
+			}
+			if (!problem.getProblemNumber().equals (sectionTextField.getText()))
+			{
+				problem.setProblemNumber (sectionTextField.getText ());
+			}
+
+			// Move to the next panel in the cards
+			informationCardPanel.setVisible (true);
+			valuesCardPanel.setVisible (false);
+
+			// Shift the boldness in the Steps panel to the next card
+			valuesLabel.setFont (ViewPanel.fontPlain12);
+			informationLabel.setFont (ViewPanel.fontBold12);
+
+			// Set the focus properly for the new card
+			studentNameTextField.requestFocus ();
+			studentNameTextField.selectAll ();
 
 			nextWizardButton.setText ("Finish");
 		}
@@ -1054,19 +1173,14 @@ public class NewProblemWizardDialog extends EscapeDialog
 		}
 		else if (descriptionCardPanel.isVisible ())
 		{
+			Problem problem = domain.problem;
 			if (newProblem != null)
 			{
-				if (!newProblem.getStatement ().equals (descriptionTextArea.getText ()))
-				{
-					newProblem.setStatement (descriptionTextArea.getText ());
-				}
+				problem = newProblem;
 			}
-			else
+			if (!problem.getStatement ().equals (descriptionTextArea.getText ()))
 			{
-				if (!domain.problem.getStatement ().equals (descriptionTextArea.getText ()))
-				{
-					domain.problem.setStatement (descriptionTextArea.getText ());
-				}
+				problem.setStatement (descriptionTextArea.getText ());
 			}
 
 			// Move to the previous panel in the cards
@@ -1083,24 +1197,16 @@ public class NewProblemWizardDialog extends EscapeDialog
 		}
 		else if (subProblemsCardPanel.isVisible ())
 		{
+			Problem problem = domain.problem;
 			if (newProblem != null)
 			{
-				for (int i = 0; i < newProblem.getSubProblemCount (); ++i)
-				{
-					if (!newProblem.getSubProblem (i).getStatement ().equals (((JTextArea) ((JViewport) ((JScrollPane) ((JPanel) subProblemPanels.get (i)).getComponent (1)).getComponent (0)).getComponent (0)).getText ()))
-					{
-						newProblem.getSubProblem (i).setStatement (((JTextArea) ((JViewport) ((JScrollPane) ((JPanel) subProblemPanels.get (i)).getComponent (1)).getComponent (0)).getComponent (0)).getText ());
-					}
-				}
+				problem = newProblem;
 			}
-			else
+			for (int i = 0; i < problem.getSubProblemCount (); ++i)
 			{
-				for (int i = 0; i < domain.problem.getSubProblemCount (); ++i)
+				if (!problem.getSubProblem (i).getStatement ().equals (((JTextArea) ((JViewport) ((JScrollPane) ((JPanel) subProblemPanels.get (i)).getComponent (1)).getComponent (0)).getComponent (0)).getText ()))
 				{
-					if (!domain.problem.getSubProblem (i).getStatement ().equals (((JTextArea) ((JViewport) ((JScrollPane) ((JPanel) subProblemPanels.get (i)).getComponent (1)).getComponent (0)).getComponent (0)).getText ()))
-					{
-						domain.problem.getSubProblem (i).setStatement (((JTextArea) ((JViewport) ((JScrollPane) ((JPanel) subProblemPanels.get (i)).getComponent (1)).getComponent (0)).getComponent (0)).getText ());
-					}
+					problem.getSubProblem (i).setStatement (((JTextArea) ((JViewport) ((JScrollPane) ((JPanel) subProblemPanels.get (i)).getComponent (1)).getComponent (0)).getComponent (0)).getText ());
 				}
 			}
 
@@ -1116,18 +1222,17 @@ public class NewProblemWizardDialog extends EscapeDialog
 			descriptionTextArea.requestFocus ();
 			descriptionTextArea.selectAll ();
 		}
-		else
+		else if (valuesCardPanel.isVisible ())
 		{
-			// Move to the previous panel in the cards
+			// Move to the next panel in the cards
 			subProblemsCardPanel.setVisible (true);
 			valuesCardPanel.setVisible (false);
 
-			// Shift the boldness in the Steps panel to the previous card
-			subProblemsLabel.setFont (ViewPanel.fontBold12);
-			valuesLabel.setFont (ViewPanel.fontPlain12);
+			// Shift the boldness in the Steps panel to the next card
+			subProblemsLabel.setFont (ViewPanel.fontPlain12);
+			valuesLabel.setFont (ViewPanel.fontBold12);
 
-			nextWizardButton.setText ("Next >");
-
+			// Set the focus properly for the new card
 			try
 			{
 				((JTextArea) ((JViewport) ((JScrollPane) ((JPanel) subProblemPanels.get (subProblemPanels.size () - 1)).getComponent (1)).getComponent (0)).getComponent (0)).requestFocus ();
@@ -1138,13 +1243,61 @@ public class NewProblemWizardDialog extends EscapeDialog
 			{
 			}
 		}
+		else
+		{
+			Problem problem = domain.problem;
+			if (newProblem != null)
+			{
+				problem = newProblem;
+			}
+			if (!problem.getPersonName().equals (studentNameTextField.getText()))
+			{
+				problem.setPersonName (studentNameTextField.getText ());
+			}
+			if (!problem.getShortCourse().equals (courseShortNameTextField.getText()))
+			{
+				problem.setShortCourse (courseShortNameTextField.getText ());
+			}
+			if (!problem.getLongCourse().equals (courseLongNameTextField.getText()))
+			{
+				problem.setLongCourse (courseLongNameTextField.getText ());
+			}
+			if (!problem.getChapter().equals (chapterTextField.getText()))
+			{
+				problem.setChapter (chapterTextField.getText ());
+			}
+			if (!problem.getSection().equals (sectionTextField.getText()))
+			{
+				problem.setSection (sectionTextField.getText ());
+			}
+			if (!problem.getProblemNumber().equals (sectionTextField.getText()))
+			{
+				problem.setProblemNumber (sectionTextField.getText ());
+			}
+			
+			// Move to the previous panel in the cards
+			valuesCardPanel.setVisible (true);
+			informationCardPanel.setVisible (false);
+
+			// Shift the boldness in the Steps panel to the previous card
+			valuesLabel.setFont (ViewPanel.fontBold12);
+			informationLabel.setFont (ViewPanel.fontPlain12);
+
+			nextWizardButton.setText ("Next >");
+		}
 }//GEN-LAST:event_backWizardButtonActionPerformed
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton addDataSetButton;
     private javax.swing.JButton addSubProblemButton;
     protected javax.swing.JButton backWizardButton;
     private javax.swing.JButton browseButton;
+    private javax.swing.JLabel chapterLabel;
+    private javax.swing.JTextField chapterTextField;
     private javax.swing.JButton closeWizardButton;
+    private javax.swing.JLabel courseLongNameLabel;
+    private javax.swing.JTextField courseLongNameTextField;
+    private javax.swing.JLabel courseShortNameLabel;
+    private javax.swing.JTextField courseShortNameTextField;
     protected javax.swing.JTabbedPane dataSetTabbedPane;
     protected javax.swing.JPanel descriptionCardPanel;
     protected javax.swing.JLabel descriptionLabel;
@@ -1152,6 +1305,9 @@ public class NewProblemWizardDialog extends EscapeDialog
     private javax.swing.JTextArea descriptionTextArea;
     private javax.swing.JLabel descriptionWizardLabel;
     private javax.swing.JScrollPane descroptionScollPane;
+    private javax.swing.JPanel informationCardPanel;
+    protected javax.swing.JLabel informationLabel;
+    private javax.swing.JLabel informationWizardLabel;
     protected javax.swing.JPanel nameAndLocationCardPanel;
     protected javax.swing.JLabel nameAndLocationLabel;
     private javax.swing.JPanel nameAndLocationPanel;
@@ -1163,11 +1319,17 @@ public class NewProblemWizardDialog extends EscapeDialog
     private javax.swing.JTextField problemLocationTextField;
     private javax.swing.JLabel problemNameLabel;
     private javax.swing.JTextField problemNameTextField;
+    private javax.swing.JLabel problemNumberLabel;
+    private javax.swing.JTextField problemNumberTextField;
     private javax.swing.JButton removeDataSetButton;
     private javax.swing.JButton removeSubProblemButton;
+    private javax.swing.JLabel sectionLabel;
+    private javax.swing.JTextField sectionTextField;
     private javax.swing.JLabel stepsLabel;
     private javax.swing.JLabel stepsLineLabel;
     private javax.swing.JPanel stepsPanel;
+    private javax.swing.JLabel studentNameLabel;
+    private javax.swing.JTextField studentNameTextField;
     protected javax.swing.JPanel subProblemsCardPanel;
     protected javax.swing.JLabel subProblemsLabel;
     private javax.swing.JPanel subProblemsPanel;
@@ -1189,6 +1351,7 @@ public class NewProblemWizardDialog extends EscapeDialog
     private javax.swing.JLabel wizardLineCard3;
     private javax.swing.JLabel wizardLineCard4;
     private javax.swing.JLabel wizardLineCard5;
+    private javax.swing.JLabel wizardLineCard6;
     // End of variables declaration//GEN-END:variables
 
 	/**
@@ -1511,6 +1674,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 		descriptionCardPanel.setVisible (false);
 		subProblemsCardPanel.setVisible (false);
 		valuesCardPanel.setVisible (false);
+		informationCardPanel.setVisible (false);
 		// Set the proper label to bold
 		welcomeLabel.setFont (ViewPanel.fontBold12);
 		nameAndLocationLabel.setFont (ViewPanel.fontPlain12);

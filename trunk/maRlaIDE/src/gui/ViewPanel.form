@@ -64,6 +64,9 @@
       <SubComponents>
         <MenuItem class="javax.swing.JMenuItem" name="solutionMenuItem">
           <Properties>
+            <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+              <Font name="Verdana" size="11" style="0"/>
+            </Property>
             <Property name="text" type="java.lang.String" value="Solution"/>
           </Properties>
           <Events>
@@ -72,17 +75,23 @@
         </MenuItem>
         <MenuItem class="javax.swing.JMenuItem" name="changeInfoMenuItem">
           <Properties>
+            <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+              <Font name="Verdana" size="11" style="0"/>
+            </Property>
             <Property name="text" type="java.lang.String" value="Change Parameters"/>
           </Properties>
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="changeInfoMenuItemActionPerformed"/>
           </Events>
         </MenuItem>
-        <Component class="javax.swing.JPopupMenu$Separator" name="jSeparator5">
+        <Component class="javax.swing.JPopupMenu$Separator" name="menuSeparator1">
         </Component>
         <Menu class="javax.swing.JMenu" name="tieSubProblemSubMenu">
           <Properties>
             <Property name="text" type="java.lang.String" value="Tie to Sub Problem"/>
+            <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+              <Font name="Verdana" size="11" style="0"/>
+            </Property>
           </Properties>
           <Events>
             <EventHandler event="menuDeselected" listener="javax.swing.event.MenuListener" parameters="javax.swing.event.MenuEvent" handler="tieSubProblemSubMenuMenuDeselected"/>
@@ -92,26 +101,46 @@
         <Menu class="javax.swing.JMenu" name="untieSubProblemSubMenu">
           <Properties>
             <Property name="text" type="java.lang.String" value="Untie from Sub Problem"/>
+            <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+              <Font name="Verdana" size="11" style="0"/>
+            </Property>
           </Properties>
           <Events>
             <EventHandler event="menuDeselected" listener="javax.swing.event.MenuListener" parameters="javax.swing.event.MenuEvent" handler="tieSubProblemSubMenuMenuDeselected"/>
             <EventHandler event="menuSelected" listener="javax.swing.event.MenuListener" parameters="javax.swing.event.MenuEvent" handler="tieSubProblemSubMenuMenuSelected"/>
           </Events>
         </Menu>
-        <Component class="javax.swing.JPopupMenu$Separator" name="menuSeparator">
+        <MenuItem class="javax.swing.JMenuItem" name="remarkMenuItem">
+          <Properties>
+            <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+              <Font name="Verdana" size="11" style="0"/>
+            </Property>
+            <Property name="text" type="java.lang.String" value="Change Parameters"/>
+          </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="remarkMenuItemActionPerformed"/>
+          </Events>
+        </MenuItem>
+        <Component class="javax.swing.JPopupMenu$Separator" name="menuSeparator2">
         </Component>
         <MenuItem class="javax.swing.JMenuItem" name="rCodeMenuItem">
           <Properties>
+            <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+              <Font name="Verdana" size="11" style="0"/>
+            </Property>
             <Property name="text" type="java.lang.String" value="View R Code"/>
           </Properties>
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="rCodeMenuItemActionPerformed"/>
           </Events>
         </MenuItem>
-        <Component class="javax.swing.JPopupMenu$Separator" name="jSeparator4">
+        <Component class="javax.swing.JPopupMenu$Separator" name="menuSeparator3">
         </Component>
         <MenuItem class="javax.swing.JMenuItem" name="editDataSetMenuItem">
           <Properties>
+            <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+              <Font name="Verdana" size="11" style="0"/>
+            </Property>
             <Property name="text" type="java.lang.String" value="Edit Data Set..."/>
           </Properties>
           <Events>
@@ -342,12 +371,12 @@
           <Layout>
             <DimensionLayout dim="0">
               <Group type="103" groupAlignment="0" attributes="0">
-                  <EmptySpace min="0" pref="208" max="32767" attributes="0"/>
+                  <EmptySpace min="0" pref="204" max="32767" attributes="0"/>
               </Group>
             </DimensionLayout>
             <DimensionLayout dim="1">
               <Group type="103" groupAlignment="0" attributes="0">
-                  <EmptySpace min="0" pref="476" max="32767" attributes="0"/>
+                  <EmptySpace min="0" pref="473" max="32767" attributes="0"/>
               </Group>
             </DimensionLayout>
           </Layout>

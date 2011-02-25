@@ -21,7 +21,6 @@ package gui;
 import java.awt.Dimension;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
-import java.util.Iterator;
 import java.util.List;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -222,13 +221,6 @@ public class MainFrame extends JFrame
         aboutMenuItem = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        addWindowFocusListener(new java.awt.event.WindowFocusListener() {
-            public void windowGainedFocus(java.awt.event.WindowEvent evt) {
-                formWindowGainedFocus(evt);
-            }
-            public void windowLostFocus(java.awt.event.WindowEvent evt) {
-            }
-        });
         getContentPane().setLayout(new java.awt.GridLayout(1, 1));
 
         fileMenu.setText("File");
@@ -327,7 +319,7 @@ public class MainFrame extends JFrame
 
         editMenu.setText("Edit");
         editMenu.setEnabled(false);
-        editMenu.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        editMenu.setFont(new java.awt.Font("Verdana", 0, 12));
         editMenu.addMenuListener(new javax.swing.event.MenuListener() {
             public void menuCanceled(javax.swing.event.MenuEvent evt) {
             }
@@ -420,7 +412,7 @@ public class MainFrame extends JFrame
         menuBar.add(problemMenu);
 
         toolsMenu.setText("Tools");
-        toolsMenu.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        toolsMenu.setFont(new java.awt.Font("Verdana", 0, 12));
         toolsMenu.addMenuListener(new javax.swing.event.MenuListener() {
             public void menuCanceled(javax.swing.event.MenuEvent evt) {
             }
@@ -640,11 +632,6 @@ public class MainFrame extends JFrame
 	private void exportForLatexMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exportForLatexMenuItemActionPerformed
 		viewPanel.domain.exportForLatex ();
 	}//GEN-LAST:event_exportForLatexMenuItemActionPerformed
-
-	private void formWindowGainedFocus(java.awt.event.WindowEvent evt)//GEN-FIRST:event_formWindowGainedFocus
-	{//GEN-HEADEREND:event_formWindowGainedFocus
-		// TODO remove this method
-	}//GEN-LAST:event_formWindowGainedFocus
 
 	private void editSubProblemsMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editSubProblemsMenuItemActionPerformed
 		viewPanel.NEW_PROBLEM_WIZARD_DIALOG.setTitle ("Edit Problem");
