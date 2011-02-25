@@ -117,6 +117,12 @@ public class ViewPanel extends JPanel
 	public final DragDrop DND_LISTENER = new DragDrop (this);
 	/** The main frame of a stand-alone application.*/
 	public MainFrame mainFrame;
+	/**
+	 * Denotes when either the R code or solution displays are building the 
+	 * answer dialog. Used to prevent the main frame from trying dispose
+	 * of the window too soon
+	 */
+	protected boolean startingAnswerPanelDisplay = false;
 	/** The domain object reference performs generic actions specific to the GUI.*/
 	protected Domain domain = new Domain (this);
 	/** True while the program is in startup, false otherwise.*/
@@ -388,6 +394,13 @@ public class ViewPanel extends JPanel
         answerDialog.setTitle("Solution to Point");
         answerDialog.setAlwaysOnTop(true);
         answerDialog.setUndecorated(true);
+        answerDialog.addWindowFocusListener(new java.awt.event.WindowFocusListener() {
+            public void windowGainedFocus(java.awt.event.WindowEvent evt) {
+            }
+            public void windowLostFocus(java.awt.event.WindowEvent evt) {
+                answerDialogWindowLostFocus(evt);
+            }
+        });
         answerDialog.getContentPane().setLayout(new java.awt.GridLayout(1, 1));
 
         answerPanel.setBorder(javax.swing.BorderFactory.createEtchedBorder());
@@ -624,7 +637,7 @@ public class ViewPanel extends JPanel
         );
         emptyPalettePanelLayout.setVerticalGroup(
             emptyPalettePanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(0, 478, Short.MAX_VALUE)
+            .add(0, 476, Short.MAX_VALUE)
         );
 
         componentsCardPanel.add(emptyPalettePanel, "card3");
@@ -651,7 +664,7 @@ public class ViewPanel extends JPanel
 
         preWorkspacePanel.setBackground(new java.awt.Color(204, 204, 204));
 
-        preWorkspaceLabel.setFont(new java.awt.Font("Verdana", 1, 14)); // NOI18N
+        preWorkspaceLabel.setFont(new java.awt.Font("Verdana", 1, 14));
         preWorkspaceLabel.setForeground(new java.awt.Color(102, 102, 102));
         preWorkspaceLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         preWorkspaceLabel.setText("<html><div align=\"center\">To get started, load a previous problem or use the<br /><em>New Problem Wizard</em> to create a new problem</div></html>");
@@ -662,14 +675,14 @@ public class ViewPanel extends JPanel
             preWorkspacePanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(preWorkspacePanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .add(preWorkspaceLabel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 752, Short.MAX_VALUE)
+                .add(preWorkspaceLabel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 754, Short.MAX_VALUE)
                 .addContainerGap())
         );
         preWorkspacePanelLayout.setVerticalGroup(
             preWorkspacePanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(preWorkspacePanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .add(preWorkspaceLabel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 449, Short.MAX_VALUE)
+                .add(preWorkspaceLabel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 450, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -726,9 +739,9 @@ public class ViewPanel extends JPanel
         trayPanel.setLayout(trayPanelLayout);
         trayPanelLayout.setHorizontalGroup(
             trayPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(0, 780, Short.MAX_VALUE)
+            .add(0, 778, Short.MAX_VALUE)
             .add(trayPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                .add(outputScrollPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 780, Short.MAX_VALUE))
+                .add(outputScrollPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 778, Short.MAX_VALUE))
         );
         trayPanelLayout.setVerticalGroup(
             trayPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
@@ -1006,6 +1019,8 @@ public class ViewPanel extends JPanel
 		{
 			try
 			{
+				startingAnswerPanelDisplay = true;
+
 				if (rightClickedComponent instanceof Operation)
 				{
 					domain.ensureRequirementsMet ((Operation) rightClickedComponent);
@@ -1031,6 +1046,7 @@ public class ViewPanel extends JPanel
 				{
 					answerDialog.setTitle ("Data Set Summary");
 				}
+
 				answerDialog.pack ();
 				answerDialog.setLocation (answerDialogLocation);
 				answerDialog.setVisible (true);
@@ -1038,6 +1054,10 @@ public class ViewPanel extends JPanel
 			catch (MarlaException ex)
 			{
 				Domain.logger.add (ex);
+			}
+			finally
+			{
+				startingAnswerPanelDisplay = false;
 			}
 		}
 	}//GEN-LAST:event_solutionMenuItemActionPerformed
@@ -1275,6 +1295,11 @@ public class ViewPanel extends JPanel
 			}
 		}
 	}//GEN-LAST:event_changeInfoMenuItemActionPerformed
+
+	private void answerDialogWindowLostFocus(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_answerDialogWindowLostFocus
+		if(!startingAnswerPanelDisplay)
+			answerDialog.dispose ();
+	}//GEN-LAST:event_answerDialogWindowLostFocus
 
 	/**
 	 * Edit the current problem.
