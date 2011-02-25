@@ -768,8 +768,6 @@ public class NewProblemWizardDialog extends EscapeDialog
 		dataSetTabbedPane.setSelectedIndex (dataSetTabbedPane.getTabCount () - 1);
 		int columns = dataSet.getColumnCount();
 		int rows = dataSet.getColumnLength();
-		((JSpinner) panel.getComponent (2)).setValue (columns);
-		((JSpinner) panel.getComponent (4)).setValue (rows);
 
 		// Add minimum columns to the table model
 		JTable table = ((JTable) ((JViewport) ((JScrollPane) panel.getComponent (0)).getComponent (0)).getComponent (0));
@@ -802,6 +800,11 @@ public class NewProblemWizardDialog extends EscapeDialog
 		table.setModel (newModel);
 		table.updateUI ();
 		table.getTableHeader ().resizeAndRepaint ();
+
+		// Wait to change the spinners until after the model is set or they will
+		// try to do stuff to the columns (they see an increase from 0 to 5)
+		((JSpinner) panel.getComponent (2)).setValue (columns);
+		((JSpinner) panel.getComponent (4)).setValue (rows);
 
 		if (dataSetTabbedPane.getTabCount () == 1)
 		{
@@ -1296,10 +1299,10 @@ public class NewProblemWizardDialog extends EscapeDialog
 						model.addColumn ("Column " + index);
 						try
 						{
-							problem.getData (dataSetTabbedPane.getSelectedIndex ()).addColumn ("Column " + index);
+							DataColumn newCol = problem.getData (dataSetTabbedPane.getSelectedIndex ()).addColumn ("Column " + index);
 							for (int i = 0; i < model.getRowCount (); ++i)
 							{
-								problem.getData (dataSetTabbedPane.getSelectedIndex ()).getColumn (model.getColumnCount () - 1).add (0.0);
+								newCol.add (0.0);
 							}
 						}
 						// This exception should never be thrown
@@ -1593,9 +1596,10 @@ public class NewProblemWizardDialog extends EscapeDialog
 			// Create the new Problem object with default values
 			newProblem = new Problem ("");
 			newProblem.setFileName (domain.lastGoodDir + "/" + "New Problem.marla");
+			DataSet dataSet = null;
 			try
 			{
-				DataSet dataSet = new DataSet ("Data Set 1");
+				dataSet = new DataSet ("Data Set 1");
 				newProblem.addData (dataSet);
 				dataSet.addColumn ("Column 1");
 				dataSet.getColumn (0).add (0.0);
@@ -1631,11 +1635,9 @@ public class NewProblemWizardDialog extends EscapeDialog
 			descriptionTextArea.setText ("");
 
 			// By default, new problems have three columns and five rows
-			dataSetTabbedPane.add ("Data Set 1", createValuesTabbedPanel (newProblem));
-			int columns = 3;
-			int rows = 5;
-			((JSpinner) ((JPanel) dataSetTabbedPane.getComponent (0)).getComponent (2)).setValue (columns);
-			((JSpinner) ((JPanel) dataSetTabbedPane.getComponent (0)).getComponent (4)).setValue (rows);
+			dataSetTabbedPane.add (dataSet.getName(), createValuesTabbedPanel (newProblem));
+			int columns = dataSet.getColumnCount();
+			int rows = dataSet.getColumnLength();
 
 			// Add minimum columns to the table model
 			JTable table = ((JTable) ((JViewport) ((JScrollPane) ((JPanel) dataSetTabbedPane.getComponent (0)).getComponent (0)).getComponent (0)).getComponent (0));
@@ -1668,6 +1670,10 @@ public class NewProblemWizardDialog extends EscapeDialog
 			table.setModel (newModel);
 			table.updateUI ();
 			table.getTableHeader ().resizeAndRepaint ();
+
+			// Wait to change spinners _after_ the model is set or we'll double the rows
+			((JSpinner) ((JPanel) dataSetTabbedPane.getComponent (0)).getComponent (2)).setValue (columns);
+			((JSpinner) ((JPanel) dataSetTabbedPane.getComponent (0)).getComponent (4)).setValue (rows);
 		}
 		else
 		{
