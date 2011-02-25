@@ -409,7 +409,7 @@ public class ViewPanel extends JPanel
         answerPanel.setLayout(new javax.swing.BoxLayout(answerPanel, javax.swing.BoxLayout.PAGE_AXIS));
         answerDialog.getContentPane().add(answerPanel);
 
-        solutionMenuItem.setFont(new java.awt.Font("Verdana", 0, 11)); // NOI18N
+        solutionMenuItem.setFont(new java.awt.Font("Verdana", 0, 11));
         solutionMenuItem.setText("Solution");
         solutionMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -418,7 +418,7 @@ public class ViewPanel extends JPanel
         });
         rightClickMenu.add(solutionMenuItem);
 
-        changeInfoMenuItem.setFont(new java.awt.Font("Verdana", 0, 11)); // NOI18N
+        changeInfoMenuItem.setFont(new java.awt.Font("Verdana", 0, 11));
         changeInfoMenuItem.setText("Change Parameters");
         changeInfoMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -429,7 +429,7 @@ public class ViewPanel extends JPanel
         rightClickMenu.add(menuSeparator1);
 
         tieSubProblemSubMenu.setText("Tie to Sub Problem");
-        tieSubProblemSubMenu.setFont(new java.awt.Font("Verdana", 0, 11)); // NOI18N
+        tieSubProblemSubMenu.setFont(new java.awt.Font("Verdana", 0, 11));
         tieSubProblemSubMenu.addMenuListener(new javax.swing.event.MenuListener() {
             public void menuCanceled(javax.swing.event.MenuEvent evt) {
             }
@@ -443,7 +443,7 @@ public class ViewPanel extends JPanel
         rightClickMenu.add(tieSubProblemSubMenu);
 
         untieSubProblemSubMenu.setText("Untie from Sub Problem");
-        untieSubProblemSubMenu.setFont(new java.awt.Font("Verdana", 0, 11)); // NOI18N
+        untieSubProblemSubMenu.setFont(new java.awt.Font("Verdana", 0, 11));
         untieSubProblemSubMenu.addMenuListener(new javax.swing.event.MenuListener() {
             public void menuCanceled(javax.swing.event.MenuEvent evt) {
             }
@@ -457,7 +457,7 @@ public class ViewPanel extends JPanel
         rightClickMenu.add(untieSubProblemSubMenu);
 
         remarkMenuItem.setFont(new java.awt.Font("Verdana", 0, 11)); // NOI18N
-        remarkMenuItem.setText("Change Parameters");
+        remarkMenuItem.setText("Remarks");
         remarkMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 remarkMenuItemActionPerformed(evt);
@@ -466,7 +466,7 @@ public class ViewPanel extends JPanel
         rightClickMenu.add(remarkMenuItem);
         rightClickMenu.add(menuSeparator2);
 
-        rCodeMenuItem.setFont(new java.awt.Font("Verdana", 0, 11)); // NOI18N
+        rCodeMenuItem.setFont(new java.awt.Font("Verdana", 0, 11));
         rCodeMenuItem.setText("View R Code");
         rCodeMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -476,7 +476,7 @@ public class ViewPanel extends JPanel
         rightClickMenu.add(rCodeMenuItem);
         rightClickMenu.add(menuSeparator3);
 
-        editDataSetMenuItem.setFont(new java.awt.Font("Verdana", 0, 11)); // NOI18N
+        editDataSetMenuItem.setFont(new java.awt.Font("Verdana", 0, 11));
         editDataSetMenuItem.setText("Edit Data Set...");
         editDataSetMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -650,11 +650,11 @@ public class ViewPanel extends JPanel
         emptyPalettePanel.setLayout(emptyPalettePanelLayout);
         emptyPalettePanelLayout.setHorizontalGroup(
             emptyPalettePanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(0, 204, Short.MAX_VALUE)
+            .add(0, 208, Short.MAX_VALUE)
         );
         emptyPalettePanelLayout.setVerticalGroup(
             emptyPalettePanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(0, 473, Short.MAX_VALUE)
+            .add(0, 478, Short.MAX_VALUE)
         );
 
         componentsCardPanel.add(emptyPalettePanel, "card3");
@@ -681,7 +681,7 @@ public class ViewPanel extends JPanel
 
         preWorkspacePanel.setBackground(new java.awt.Color(204, 204, 204));
 
-        preWorkspaceLabel.setFont(new java.awt.Font("Verdana", 1, 14));
+        preWorkspaceLabel.setFont(new java.awt.Font("Verdana", 1, 14)); // NOI18N
         preWorkspaceLabel.setForeground(new java.awt.Color(102, 102, 102));
         preWorkspaceLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         preWorkspaceLabel.setText("<html><div align=\"center\">To get started, load a previous problem or use the<br /><em>New Problem Wizard</em> to create a new problem</div></html>");
@@ -692,14 +692,14 @@ public class ViewPanel extends JPanel
             preWorkspacePanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(preWorkspacePanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .add(preWorkspaceLabel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 754, Short.MAX_VALUE)
+                .add(preWorkspaceLabel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 752, Short.MAX_VALUE)
                 .addContainerGap())
         );
         preWorkspacePanelLayout.setVerticalGroup(
             preWorkspacePanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(preWorkspacePanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .add(preWorkspaceLabel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 450, Short.MAX_VALUE)
+                .add(preWorkspaceLabel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 449, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -756,9 +756,9 @@ public class ViewPanel extends JPanel
         trayPanel.setLayout(trayPanelLayout);
         trayPanelLayout.setHorizontalGroup(
             trayPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(0, 778, Short.MAX_VALUE)
+            .add(0, 780, Short.MAX_VALUE)
             .add(trayPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                .add(outputScrollPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 778, Short.MAX_VALUE))
+                .add(outputScrollPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 780, Short.MAX_VALUE))
         );
         trayPanelLayout.setVerticalGroup(
             trayPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
