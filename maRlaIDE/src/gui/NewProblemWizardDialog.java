@@ -1087,6 +1087,22 @@ public class NewProblemWizardDialog extends EscapeDialog
 		}
 		else if (valuesCardPanel.isVisible ())
 		{
+			// Move to the next panel in the cards
+			informationCardPanel.setVisible (true);
+			valuesCardPanel.setVisible (false);
+
+			// Shift the boldness in the Steps panel to the next card
+			valuesLabel.setFont (ViewPanel.fontPlain12);
+			informationLabel.setFont (ViewPanel.fontBold12);
+
+			// Set the focus properly for the new card
+			studentNameTextField.requestFocus ();
+			studentNameTextField.selectAll ();
+
+			nextWizardButton.setText ("Finish");
+		}
+		else
+		{
 			Problem problem = domain.problem;
 			if (newProblem != null)
 			{
@@ -1114,25 +1130,9 @@ public class NewProblemWizardDialog extends EscapeDialog
 			}
 			if (!problem.getProblemNumber().equals (sectionTextField.getText()))
 			{
-				problem.setProblemNumber (sectionTextField.getText ());
+				problem.setProblemNumber (problemNumberTextField.getText ());
 			}
 
-			// Move to the next panel in the cards
-			informationCardPanel.setVisible (true);
-			valuesCardPanel.setVisible (false);
-
-			// Shift the boldness in the Steps panel to the next card
-			valuesLabel.setFont (ViewPanel.fontPlain12);
-			informationLabel.setFont (ViewPanel.fontBold12);
-
-			// Set the focus properly for the new card
-			studentNameTextField.requestFocus ();
-			studentNameTextField.selectAll ();
-
-			nextWizardButton.setText ("Finish");
-		}
-		else
-		{
 			boolean editing = false;
 			if (newProblem == null)
 			{
@@ -1229,8 +1229,8 @@ public class NewProblemWizardDialog extends EscapeDialog
 			valuesCardPanel.setVisible (false);
 
 			// Shift the boldness in the Steps panel to the next card
-			subProblemsLabel.setFont (ViewPanel.fontPlain12);
-			valuesLabel.setFont (ViewPanel.fontBold12);
+			subProblemsLabel.setFont (ViewPanel.fontBold12);
+			valuesLabel.setFont (ViewPanel.fontPlain12);
 
 			// Set the focus properly for the new card
 			try
@@ -1272,7 +1272,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 			}
 			if (!problem.getProblemNumber().equals (sectionTextField.getText()))
 			{
-				problem.setProblemNumber (sectionTextField.getText ());
+				problem.setProblemNumber (problemNumberTextField.getText ());
 			}
 			
 			// Move to the previous panel in the cards
@@ -1681,6 +1681,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 		descriptionLabel.setFont (ViewPanel.fontPlain12);
 		subProblemsLabel.setFont (ViewPanel.fontPlain12);
 		valuesLabel.setFont (ViewPanel.fontPlain12);
+		informationLabel.setFont (ViewPanel.fontPlain12);
 		// Set forward/backward button states
 		backWizardButton.setEnabled (false);
 		nextWizardButton.setEnabled (true);
@@ -1753,6 +1754,12 @@ public class NewProblemWizardDialog extends EscapeDialog
 			problemLocationTextField.setText (domain.lastGoodDir);
 			browseButton.setEnabled (true);
 			descriptionTextArea.setText ("");
+			studentNameTextField.setText (newProblem.getPersonName());
+			courseShortNameTextField.setText (newProblem.getShortCourse());
+			courseLongNameTextField.setText (newProblem.getLongCourse());
+			chapterTextField.setText (newProblem.getChapter());
+			sectionTextField.setText (newProblem.getSection());
+			problemNumberTextField.setText (newProblem.getProblemNumber());
 
 			// By default, new problems have three columns and five rows
 			dataSetTabbedPane.add (dataSet.getName(), createValuesTabbedPanel (newProblem, dataSet));
@@ -1795,6 +1802,12 @@ public class NewProblemWizardDialog extends EscapeDialog
 			problemLocationTextField.setText (domain.problem.getFileName ().substring (0, domain.problem.getFileName ().lastIndexOf (System.getProperty ("file.separator"))));
 			browseButton.setEnabled (false);
 			descriptionTextArea.setText (domain.problem.getStatement ());
+			studentNameTextField.setText (domain.problem.getPersonName());
+			courseShortNameTextField.setText (domain.problem.getShortCourse());
+			courseLongNameTextField.setText (domain.problem.getLongCourse());
+			chapterTextField.setText (domain.problem.getChapter());
+			sectionTextField.setText (domain.problem.getSection());
+			problemNumberTextField.setText (domain.problem.getProblemNumber());
 
 			// Add sub problems to the panel
 			for (int i = 0; i < domain.problem.getSubProblemCount (); ++i)
