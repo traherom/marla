@@ -29,6 +29,9 @@
         <Property name="alwaysOnTop" type="boolean" value="true"/>
         <Property name="undecorated" type="boolean" value="true"/>
       </Properties>
+      <Events>
+        <EventHandler event="windowLostFocus" listener="java.awt.event.WindowFocusListener" parameters="java.awt.event.WindowEvent" handler="answerDialogWindowLostFocus"/>
+      </Events>
       <AuxValues>
         <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="4"/>
       </AuxValues>

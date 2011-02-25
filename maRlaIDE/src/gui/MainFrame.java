@@ -643,7 +643,7 @@ public class MainFrame extends JFrame
 
 	private void formWindowGainedFocus(java.awt.event.WindowEvent evt)//GEN-FIRST:event_formWindowGainedFocus
 	{//GEN-HEADEREND:event_formWindowGainedFocus
-		viewPanel.answerDialog.dispose ();
+		// TODO remove this method
 	}//GEN-LAST:event_formWindowGainedFocus
 
 	private void editSubProblemsMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editSubProblemsMenuItemActionPerformed
