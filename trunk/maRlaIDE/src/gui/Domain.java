@@ -110,7 +110,7 @@ public class Domain
 	public ArrayList<Operation> getUnattachedOperations()
 	{
 		ArrayList<Operation> ops = new ArrayList<Operation> ();
-		
+
 		for (int i = 0; i < viewPanel.workspacePanel.getComponentCount(); ++i)
 		{
 			Component comp = viewPanel.workspacePanel.getComponent(i);
@@ -121,6 +121,17 @@ public class Domain
 		}
 
 		return ops;
+	}
+
+	/**
+	 * Adds the given operation to the workspace
+	 * @param op Operation to add to workspace
+	 */
+	public void addUnattachedOperation(Operation op)
+	{
+		viewPanel.workspacePanel.add(op);
+		op.setText("<html>" + op.getDisplayString(false) + "</html>");
+		op.setPreferredSize(op.getPreferredSize());
 	}
 
 	/**
