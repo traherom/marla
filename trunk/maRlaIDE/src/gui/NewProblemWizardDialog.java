@@ -1202,15 +1202,8 @@ public class NewProblemWizardDialog extends EscapeDialog
 		final JPanel valuesPanel = new JPanel ();
 		final JScrollPane scrollPane = new JScrollPane ();
 		final ExtendedTableModel model = new ExtendedTableModel (dataSet);
-		model.addTableModelListener (new TableModelListener ()
-		{
-			@Override
-			public void tableChanged(TableModelEvent evt)
-			{
-				fireTableChanged (model, evt);
-			}
-		});
 		final ExtendedJTable table = new ExtendedJTable (model);
+
 		table.getTableHeader ().setFont (ViewPanel.fontPlain12);
 		table.getTableHeader ().addMouseListener (new MouseAdapter ()
 		{
@@ -1273,10 +1266,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 						{
 							++index;
 						}
-						TableColumn newColumn = new TableColumn ();
-						newColumn.setHeaderValue ("Column " + index);
-						table.getColumnModel ().addColumn (newColumn);
-						model.addColumn ("Column " + index);
+
 						try
 						{
 							DataColumn newCol = dataSet.addColumn ("Column " + index);
@@ -1284,6 +1274,10 @@ public class NewProblemWizardDialog extends EscapeDialog
 							{
 								newCol.add (0.0);
 							}
+
+							TableColumn newColumn = new TableColumn (dataSet.getColumnCount() - 1);
+							newColumn.setHeaderValue (newCol.getName());
+							table.addColumn(newColumn);
 						}
 						// This exception should never be thrown
 						catch (DuplicateNameException ex)
