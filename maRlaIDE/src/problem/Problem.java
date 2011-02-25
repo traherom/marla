@@ -24,6 +24,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
+import operation.Operation;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
@@ -700,6 +701,17 @@ public class Problem implements ProblemPart
 			rootEl.addContent(sub.toXml());
 		}
 
+		// Add the stupid unattached problems, if applicable
+		if(domain != null)
+		{
+			Element unattachedEl = new Element("unattached");
+			rootEl.addContent(unattachedEl);
+			for(Operation op : domain.getUnattachedOperations())
+			{
+				unattachedEl.addContent(op.toXml());
+			}
+		}
+
 		return rootEl;
 	}
 
@@ -725,14 +737,24 @@ public class Problem implements ProblemPart
 			newProb.addSubProblem(SubProblem.fromXml((Element) partEl, newProb));
 		}
 
+		// Add the stupid unattached problems, if applicable
+		Element unattachedEl = rootEl.getChild("unattached");
+		if(domain != null && unattachedEl != null)
+		{
+			for(Object partEl : unattachedEl.getChildren("operation"))
+			{
+				domain.addUnattachedOperation(Operation.fromXml((Element) partEl));
+			}
+		}
+
 		newProb.isLoading = false;
 
 		// After we're all done loading, rebuild the trees
-		if(getDomain() != null)
+		if(domain != null)
 		{
 			for(DataSet ds : newProb.datasets)
 			{
-				getDomain().rebuildTree(ds);
+				domain.rebuildTree(ds);
 			}
 		}
 
