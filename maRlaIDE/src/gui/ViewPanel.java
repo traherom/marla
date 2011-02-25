@@ -1350,13 +1350,26 @@ public class ViewPanel extends JPanel
 
 			if (draggingComponent != null)
 			{
+				int x = evt.getX () - xDragOffset;
+				int y = evt.getY () - yDragOffset;
+				int minX = 0;
+				int maxX = workspacePanel.getWidth() - draggingComponent.getWidth();
+				int minY = 0;
+				int maxY = workspacePanel.getHeight() - draggingComponent.getHeight();
+
+				// Only do the move if we're within the workspace still
+				if(x < minX || x > maxX)
+					x = draggingComponent.getX();
+				if(y < minY || y > maxY)
+					y = draggingComponent.getY();
+
 				if (draggingComponent instanceof Operation)
 				{
-					draggingComponent.setLocation (evt.getX () - xDragOffset, evt.getY () - yDragOffset);
+					draggingComponent.setLocation (x, y);
 				}
 				else if (draggingComponent instanceof DataSet)
 				{
-					draggingComponent.setLocation (evt.getX () - xDragOffset, evt.getY () - yDragOffset);
+					draggingComponent.setLocation (x, y);
 					rebuildTree ((DataSet) draggingComponent);
 				}
 			}
