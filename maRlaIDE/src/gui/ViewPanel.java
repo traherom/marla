@@ -25,7 +25,6 @@ import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
-import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Point;
 import java.awt.Toolkit;
@@ -279,16 +278,16 @@ public class ViewPanel extends JPanel
 			List<String> operations = Operation.getAvailableOperationsCategorized().get(key);
 
 			JPanel categoryPanel = new JPanel();
-			categoryPanel.setLayout(new GridBagLayout());
-			categoryPanel.add(new JLabel("::" + key + "::"));
-			categoryPanel.add(new JLabel(""));
+			categoryPanel.setBorder (BorderFactory.createMatteBorder(1, 0, 1, 0, Color.DARK_GRAY));
+			categoryPanel.setLayout(new BoxLayout(categoryPanel, BoxLayout.PAGE_AXIS));
+			JPanel leftAndRightPanel = new JPanel ();
+			leftAndRightPanel.setLayout (new GridLayout(1, 2));
 			JPanel leftPanel = new JPanel();
-			leftPanel.setBorder(BorderFactory.createMatteBorder(0, 0, 0, 1, Color.DARK_GRAY));
+			leftPanel.setBorder(BorderFactory.createMatteBorder(0, 1, 0, 1, Color.DARK_GRAY));
 			leftPanel.setLayout(new BoxLayout(leftPanel, BoxLayout.PAGE_AXIS));
-			categoryPanel.add(leftPanel);
 			JPanel rightPanel = new JPanel();
+			rightPanel.setBorder(BorderFactory.createMatteBorder(0, 1, 0, 1, Color.DARK_GRAY));
 			rightPanel.setLayout(new BoxLayout(rightPanel, BoxLayout.PAGE_AXIS));
-			categoryPanel.add(rightPanel);
 
 			for(int i = 0; i < operations.size(); ++i)
 			{
@@ -296,6 +295,7 @@ public class ViewPanel extends JPanel
 				{
 					final Operation operation = Operation.createOperation(operations.get(i));
 					operation.setText("<html>" + operation.getDisplayString(abbreviated) + "</html>");
+					operation.setToolTipText(operation.getDisplayString(abbreviated));
 					DRAG_SOURCE.createDefaultDragGestureRecognizer(operation, DnDConstants.ACTION_MOVE, DND_LISTENER);
 
 					if(i % 2 == 0)
@@ -323,12 +323,14 @@ public class ViewPanel extends JPanel
 				}
 			}
 
+			categoryPanel.add(new JLabel("::" + key + "::"));
+			leftAndRightPanel.add(leftPanel);
+			leftAndRightPanel.add(rightPanel);
+			categoryPanel.add(leftAndRightPanel);
 			componentsScrollablePanel.add(categoryPanel);
 		}
 
-		componentsScrollPane.setPreferredSize(new Dimension(190, componentsScrollPane.getPreferredSize().height));
-		componentsScrollablePanel.setPreferredSize(new Dimension(190, componentsScrollablePanel.getPreferredSize().height));
-		componentsPanel.setPreferredSize(new Dimension(190, componentsPanel.getPreferredSize().height));
+		componentsScrollablePanel.setPreferredSize(new Dimension (193, componentsScrollablePanel.getSize().height));
 	}
 
 	/** This method is called from within the constructor to
@@ -455,7 +457,7 @@ public class ViewPanel extends JPanel
         });
         rightClickMenu.add(untieSubProblemSubMenu);
 
-        remarkMenuItem.setFont(new java.awt.Font("Verdana", 0, 11)); // NOI18N
+        remarkMenuItem.setFont(new java.awt.Font("Verdana", 0, 11));
         remarkMenuItem.setText("Remarks");
         remarkMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -653,13 +655,14 @@ public class ViewPanel extends JPanel
         );
         emptyPalettePanelLayout.setVerticalGroup(
             emptyPalettePanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(0, 478, Short.MAX_VALUE)
+            .add(0, 477, Short.MAX_VALUE)
         );
 
         componentsCardPanel.add(emptyPalettePanel, "card3");
 
         componentsPanel.setLayout(new java.awt.GridLayout(1, 0));
 
+        componentsScrollPane.setBorder(null);
         componentsScrollPane.setOpaque(false);
 
         componentsScrollablePanel.setOpaque(false);
@@ -680,7 +683,7 @@ public class ViewPanel extends JPanel
 
         preWorkspacePanel.setBackground(new java.awt.Color(204, 204, 204));
 
-        preWorkspaceLabel.setFont(new java.awt.Font("Verdana", 1, 14)); // NOI18N
+        preWorkspaceLabel.setFont(new java.awt.Font("Verdana", 1, 14));
         preWorkspaceLabel.setForeground(new java.awt.Color(102, 102, 102));
         preWorkspaceLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         preWorkspaceLabel.setText("<html><div align=\"center\">To get started, load a previous problem or use the<br /><em>New Problem Wizard</em> to create a new problem</div></html>");
