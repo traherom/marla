@@ -80,27 +80,27 @@ public class Problem implements ProblemPart
 	 * Name of the person who is working on this problem. Arbitrary, used for
 	 * export and that's about it
 	 */
-	private String personName = null;
+	private String personName = "";
 	/**
 	 * Short name for the course this problem is for. For example, "MA2510"
 	 */
-	private String shortCourseName = null;
+	private String shortCourseName = "";
 	/**
 	 * Long name for the course this problem is for. For example, "Probability and Statistics"
 	 */
-	private String longCourseName = null;
+	private String longCourseName = "";
 	/**
 	 * Chapter. Arbitrary
 	 */
-	private String probChapter = null;
+	private String probChapter = "";
 	/**
 	 * Section. Arbitrary
 	 */
-	private String probSection = null;
+	private String probSection = "";
 	/**
 	 * Problem number. Arbitrary
 	 */
-	private String probNum = null;
+	private String probNum = "";
 	/**
 	 * File this problem will be saved to.
 	 */
