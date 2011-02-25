@@ -49,17 +49,17 @@ public class Problem implements ProblemPart
 	 * New problems will be created with this person's name
 	 * set as the default
 	 */
-	private static String defaultPersonName = null;
+	private static String defaultPersonName = "";
 	/**
 	 * New problems will be created with this as the long course name,
 	 * unless otherwise changed
 	 */
-	private static String defaultCourseLong = null;
+	private static String defaultCourseLong = "";
 	/**
 	 * New problems will be created with this as the short course name,
 	 * unless otherwise changed
 	 */
-	private static String defaultCourseShort = null;
+	private static String defaultCourseShort = "";
 	/**
 	 * Keeps track of whether this Problem is in the process of loading.
 	 */
@@ -176,7 +176,7 @@ public class Problem implements ProblemPart
 
 	/**
 	 * Sets the person's name that new Problems will be created with, unless otherwise specified
-	 * @return Previous person name. Null if there was none
+	 * @return Previous person name. Blank if none
 	 */
 	public static String setDefaultPersonName(String newName)
 	{
@@ -187,7 +187,7 @@ public class Problem implements ProblemPart
 
 	/**
 	 * Gets the person name that new Problems will be created with
-	 * @return Current person name. Null if there was none
+	 * @return Current person name. Blank if none
 	 */
 	public static String getDefaultPersonName()
 	{
@@ -197,7 +197,7 @@ public class Problem implements ProblemPart
 	/**
 	 * Sets the short course name that new Problems will be created
 	 * with, unless otherwise specified
-	 * @return Current course name. Null if there was none
+	 * @return Current course name. Blank if none
 	 */
 	public static String setDefaultShortCourseName(String newName)
 	{
@@ -208,7 +208,7 @@ public class Problem implements ProblemPart
 
 	/**
 	 * Gets the short course name that new Problems will be created with
-	 * @return Current course name. Null if there was none
+	 * @return Current course name. Blank if none
 	 */
 	public static String getDefaultShortCourseName()
 	{
@@ -218,7 +218,7 @@ public class Problem implements ProblemPart
 	/**
 	 * Sets the long course name that new Problems will be created
 	 * with, unless otherwise specified
-	 * @return Current course name. Null if there was none
+	 * @return Current course name. Blank if none
 	 */
 	public static String setDefaultLongCourseName(String newName)
 	{
@@ -229,7 +229,7 @@ public class Problem implements ProblemPart
 
 	/**
 	 * Gets the long course name that new Problems will be created with
-	 * @return Current course name. Null if there was none
+	 * @return Current course name. Blank if none
 	 */
 	public static String getDefaultLongCourseName()
 	{
