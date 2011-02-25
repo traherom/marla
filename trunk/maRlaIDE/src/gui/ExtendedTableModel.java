@@ -18,7 +18,14 @@
 
 package gui;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.table.AbstractTableModel;
+import problem.DataColumn;
+import problem.DataSet;
+import problem.DuplicateNameException;
+import problem.InternalMarlaException;
+import problem.MarlaException;
 
 /**
  * The table model used for the assignments table, which allows JComponents to
@@ -30,13 +37,12 @@ import javax.swing.table.AbstractTableModel;
 public class ExtendedTableModel extends AbstractTableModel
 {
 	/** The column names for this table.*/
-	private String[] columnNames =
+	private final DataSet data;
+
+	public ExtendedTableModel(DataSet data)
 	{
-	};
-	/** The data array keeps track of rows in this table.*/
-	private Object[][] data =
-	{
-	};
+		this.data = data;
+	}
 
 	/**
 	 * Add a new column to the end of the columns list with the given name.
@@ -46,39 +52,20 @@ public class ExtendedTableModel extends AbstractTableModel
 	public void addColumn(String name)
 	{
 		// Create a new column including the new column name
-		String[] newColumnNames = new String[columnNames.length + 1];
-		for (int i = 0; i < newColumnNames.length; ++i)
+		DataColumn newCol;
+		try
 		{
-			if (i < newColumnNames.length - 1)
-			{
-				newColumnNames[i] = columnNames[i];
-			}
-			else
-			{
-				newColumnNames[i] = name;
-			}
+			newCol = data.addColumn(name);
+		}
+		catch(DuplicateNameException ex)
+		{
+			throw new InternalMarlaException("Duplicate name for column", ex);
 		}
 
-		columnNames = newColumnNames;
-
-		// Create a new data array including the new column
-		Object[][] newData = new Object[data.length][columnNames.length];
-		for (int i = 0; i < data.length; ++i)
-		{
-			for (int j = 0; j < columnNames.length; ++j)
-			{
-				if (j < data[i].length)
-				{
-					newData[i][j] = data[i][j];
-				}
-				else
-				{
-					newData[i][j] = 0.0;
-				}
-			}
-		}
-
-		data = newData;
+		// Make the length the same as all the others
+		int len = data.getColumnLength();
+		for(int i = 0; i < len; i++)
+			newCol.add(0);
 	}
 
 	/**
@@ -88,77 +75,21 @@ public class ExtendedTableModel extends AbstractTableModel
 	 */
 	public void removeColumn(int index)
 	{
-		// Create a new array of columns without the column at index, and move
-		// old values into this new array
-		String[] newColumnNames = new String[columnNames.length - 1];
-		for (int i = 0; i < columnNames.length; ++i)
-		{
-			int refIndex = i;
-			if (i >= index)
-			{
-				refIndex += 1;
-			}
-
-			if (refIndex < columnNames.length)
-			{
-				newColumnNames[i] = columnNames[refIndex];
-			}
-		}
-
-		columnNames = newColumnNames;
-
-		// Create the new data array without the column at index
-		Object[][] newData = new Object[data.length][columnNames.length];
-		for (int i = 0; i < newData.length; ++i)
-		{
-			for (int j = 0; j < columnNames.length; ++j)
-			{
-				newData[i][j] = data[i][j];
-			}
-		}
-
-		data = newData;
+		data.removeColumn(index);
 		fireTableDataChanged ();
 	}
 
 	/**
 	 * Adds a row to the table filled with data from the passed in array.
-	 *
-	 * @param row The row to be placed in the table.
 	 */
-	public void addRow(Object[] row)
+	public void addRow()
 	{
-		// Create a new data array with one more row and fill it with the old data
-		Object[][] newData = new Object[data.length + 1][columnNames.length];
-		for (int i = 0; i < data.length; ++i)
-		{
-			for (int j = 0; j < columnNames.length; ++j)
-			{
-				if (data[i][j] != null)
-				{
-					newData[i][j] = data[i][j];
-				}
-				else
-				{
-					newData[i][j] = 0.0;
-				}
-			}
-		}
+		// Add 0 to the end of all columns
+		for(int i = 0; i < data.getColumnCount(); i++)
+			data.getColumn(i).add(0);
 
-		// Fill the new row
-		for (int i = 0; i < columnNames.length; ++i)
-		{
-			if (row[i] != null)
-			{
-				newData[newData.length - 1][i] = row[i];
-			}
-			else
-			{
-				newData[newData.length - 1][i] = 0.0;
-			}
-		}
-		data = newData;
-		fireTableRowsUpdated (data.length, data.length);
+		int newLen = data.getColumnLength();
+		fireTableRowsUpdated (newLen, newLen);
 	}
 
 	/**
@@ -168,23 +99,12 @@ public class ExtendedTableModel extends AbstractTableModel
 	 */
 	public void removeRow(int index)
 	{
-		// Create a new data array with one more row and fill it with the old data
-		Object[][] newData = new Object[data.length - 1][columnNames.length];
-		for (int i = 0; i < newData.length; ++i)
-		{
-			for (int j = 0; j < columnNames.length; ++j)
-			{
-				int refIndex = i;
-				if (i >= index)
-				{
-					refIndex += 1;
-				}
-				newData[i][j] = data[refIndex][j];
-			}
-		}
+		// Remove bottom element of each column
+		for(int i = 0; i < data.getColumnCount(); i++)
+			data.getColumn(i).remove(index);
 
-		data = newData;
-		fireTableRowsUpdated (data.length, data.length);
+		int newLen = data.getColumnLength();
+		fireTableRowsUpdated (newLen, newLen);
 	}
 
 	/**
@@ -192,9 +112,8 @@ public class ExtendedTableModel extends AbstractTableModel
 	 */
 	public void removeAllRows()
 	{
-		data = new Object[][]
-				{
-				};
+		for(int i = 0; i < data.getColumnCount(); i++)
+			data.getColumn(i).clear();
 	}
 
 	/**
@@ -205,7 +124,7 @@ public class ExtendedTableModel extends AbstractTableModel
 	@Override
 	public int getColumnCount()
 	{
-		return columnNames.length;
+		return data.getColumnCount();
 	}
 
 	/**
@@ -216,7 +135,7 @@ public class ExtendedTableModel extends AbstractTableModel
 	@Override
 	public int getRowCount()
 	{
-		return data.length;
+		return data.getColumnLength();
 	}
 
 	/**
@@ -228,7 +147,7 @@ public class ExtendedTableModel extends AbstractTableModel
 	@Override
 	public String getColumnName(int col)
 	{
-		return columnNames[col];
+		return data.getColumn(col).getName();
 	}
 
 	/**
@@ -243,7 +162,7 @@ public class ExtendedTableModel extends AbstractTableModel
 	{
 		try
 		{
-			return data[row][col];
+			return data.getColumn(col).get(row);
 		}
 		catch (ArrayIndexOutOfBoundsException ex)
 		{
@@ -257,9 +176,14 @@ public class ExtendedTableModel extends AbstractTableModel
 	 * @param row The row to retrieve the data for.
 	 * @return The row data.
 	 */
-	public Object[] getRowAt(int row)
+	public Object[] getRowAt(int rowIndex)
 	{
-		return data[row];
+		// Build row
+		Object[] row = new Object[data.getColumnCount()];
+		for(int i = 0; i < row.length; i++)
+			row[i] = data.getColumn(i).get(rowIndex);
+		
+		return row;
 	}
 
 	/**
@@ -286,7 +210,7 @@ public class ExtendedTableModel extends AbstractTableModel
 	@Override
 	public void setValueAt(Object value, int row, int col)
 	{
-		data[row][col] = value;
+		data.getColumn(col).set(row, value);
 		fireTableCellUpdated (row, col);
 	}
 
@@ -298,7 +222,18 @@ public class ExtendedTableModel extends AbstractTableModel
 	 */
 	public void setColumn(String name, int col)
 	{
-		columnNames[col] = name;
+		try
+		{
+			data.getColumn(col).setName(name);
+		}
+		catch(DuplicateNameException ex)
+		{
+			throw new InternalMarlaException("Column name not checked by setColumn", ex);
+		}
+		catch(MarlaException ex)
+		{
+			throw new InternalMarlaException("Should never occur", ex);
+		}
 	}
 
 	/**
@@ -309,6 +244,7 @@ public class ExtendedTableModel extends AbstractTableModel
 	 */
 	public void setRow(Object[] rowObject, int row)
 	{
-		data[row] = rowObject;
+		for(int i = 0; i < rowObject.length; i++)
+			data.getColumn(i).set(row, rowObject[i]);
 	}
 }

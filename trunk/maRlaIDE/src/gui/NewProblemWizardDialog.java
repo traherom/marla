@@ -763,7 +763,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 		}
 		dataSet.setBounds (x, y, dataSet.getPreferredSize ().width, dataSet.getPreferredSize ().height);
 
-		JPanel panel = createValuesTabbedPanel (problem);
+		JPanel panel = createValuesTabbedPanel (problem, dataSet);
 		dataSetTabbedPane.add (dataSet.getName(), panel);
 		dataSetTabbedPane.setSelectedIndex (dataSetTabbedPane.getTabCount () - 1);
 		int columns = dataSet.getColumnCount();
@@ -771,32 +771,24 @@ public class NewProblemWizardDialog extends EscapeDialog
 
 		// Add minimum columns to the table model
 		JTable table = ((JTable) ((JViewport) ((JScrollPane) panel.getComponent (0)).getComponent (0)).getComponent (0));
-		final ExtendedTableModel newModel = new ExtendedTableModel ();
+		final ExtendedTableModel newModel = new ExtendedTableModel (dataSet);
 		newModel.addTableModelListener (new TableModelListener ()
 		{
 			@Override
 			public void tableChanged(TableModelEvent evt)
 			{
-				fireTableChanged (problem, newModel, evt);
+				fireTableChanged (newModel, evt);
 			}
 		});
+
 		DefaultTableColumnModel newColumnModel = new DefaultTableColumnModel ();
 		for (int i = 0; i < columns; ++i)
 		{
-			index = i + 1;
-			while (columnNameExists (newModel, i, "Column " + (index)))
-			{
-				++index;
-			}
 			newColumnModel.addColumn (new TableColumn ());
-			newModel.addColumn ("Column " + index);
+			newColumnModel.getColumn (i).setHeaderValue (dataSet.getColumn (i).getName ());
 		}
 		table.setColumnModel (newColumnModel);
-		// Add minimum rows to the table model
-		for (int i = 0; i < rows; ++i)
-		{
-			newModel.addRow (new Object[columns]);
-		}
+
 		table.setModel (newModel);
 		table.updateUI ();
 		table.getTableHeader ().resizeAndRepaint ();
@@ -1205,17 +1197,17 @@ public class NewProblemWizardDialog extends EscapeDialog
 	 * @param problem The problem object to create this values tabbed panel for.
 	 * @return The panel created to be stored in the values tabbed panel.
 	 */
-	private JPanel createValuesTabbedPanel(final Problem problem)
+	private JPanel createValuesTabbedPanel(final Problem problem, final DataSet dataSet)
 	{
 		final JPanel valuesPanel = new JPanel ();
 		final JScrollPane scrollPane = new JScrollPane ();
-		final ExtendedTableModel model = new ExtendedTableModel ();
+		final ExtendedTableModel model = new ExtendedTableModel (dataSet);
 		model.addTableModelListener (new TableModelListener ()
 		{
 			@Override
 			public void tableChanged(TableModelEvent evt)
 			{
-				fireTableChanged (problem, model, evt);
+				fireTableChanged (model, evt);
 			}
 		});
 		final ExtendedJTable table = new ExtendedJTable (model);
@@ -1238,17 +1230,6 @@ public class NewProblemWizardDialog extends EscapeDialog
 							((ExtendedTableModel) table.getModel ()).setColumn (name.toString (), index);
 							table.getColumnModel ().getColumn (index).setHeaderValue (name);
 							table.getTableHeader ().resizeAndRepaint ();
-							try
-							{
-								problem.getData (problem.getDataCount ()).getColumn (index).setName (name.toString ());
-							}
-							// Check has already occured, so exception will never ben thrown
-							catch (DuplicateNameException ex)
-							{
-							}
-							catch (MarlaException ex)
-							{
-							}
 						}
 						else
 						{
@@ -1281,7 +1262,6 @@ public class NewProblemWizardDialog extends EscapeDialog
 					// If columns were removed, loop and delete from the end
 					while (value < model.getColumnCount ())
 					{
-						problem.getData (dataSetTabbedPane.getSelectedIndex ()).removeColumn (table.getColumnCount () - 1);
 						model.removeColumn (table.getColumnCount () - 1);
 						table.getColumnModel ().removeColumn (table.getColumnModel ().getColumn (table.getColumnCount () - 1));
 					}
@@ -1299,7 +1279,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 						model.addColumn ("Column " + index);
 						try
 						{
-							DataColumn newCol = problem.getData (dataSetTabbedPane.getSelectedIndex ()).addColumn ("Column " + index);
+							DataColumn newCol = dataSet.addColumn ("Column " + index);
 							for (int i = 0; i < model.getRowCount (); ++i)
 							{
 								newCol.add (0.0);
@@ -1337,20 +1317,12 @@ public class NewProblemWizardDialog extends EscapeDialog
 					// If rows were removed, loop and delete from the end
 					while (value < model.getRowCount ())
 					{
-						for (int i = 0; i < model.getColumnCount (); ++i)
-						{
-							problem.getData (dataSetTabbedPane.getSelectedIndex ()).getColumn (i).remove (model.getRowAt (i));
-						}
 						model.removeRow (table.getRowCount () - 1);
 					}
 					// If rows were added, loop and add to the end
 					while (value > model.getRowCount ())
 					{
-						for (int i = 0; i < model.getColumnCount (); ++i)
-						{
-							problem.getData (dataSetTabbedPane.getSelectedIndex ()).getColumn (i).add (0.0);
-						}
-						model.addRow (new Object[table.getColumnCount ()]);
+						model.addRow ();
 					}
 
 					table.updateUI ();
@@ -1390,46 +1362,39 @@ public class NewProblemWizardDialog extends EscapeDialog
 							{
 								DataSet importedDataSet = DataSet.importFile (domain.lastGoodCsvFile);
 
-								// Setup the values table to be ready for the import
-								columnsSpinner.setValue (importedDataSet.getColumnCount ());
-								rowsSpinner.setValue (importedDataSet.getColumnLength ());
+								// Clear existing data
+								for(int i = dataSet.getColumnCount() - 1; 0 <= i; i--)
+									dataSet.removeColumn(i);
 
-								final ExtendedTableModel newModel = new ExtendedTableModel ();
+								// Copy new columns
+								for(int i = 0; i < importedDataSet.getColumnCount(); i++)
+								{
+									DataColumn importCol = importedDataSet.getColumn(i);
+									DataColumn newCol = dataSet.addColumn(importCol.getName());
+									newCol.addAll(importCol);
+								}
+
+								// Change spinners to new size
+								columnsSpinner.setValue (dataSet.getColumnCount ());
+								rowsSpinner.setValue (dataSet.getColumnLength ());
+
+								// Change the model so that the old columns are no longer displayed
+								final ExtendedTableModel newModel = new ExtendedTableModel (dataSet);
 								newModel.addTableModelListener (new TableModelListener ()
 								{
 									@Override
 									public void tableChanged(TableModelEvent evt)
 									{
-										fireTableChanged (problem, newModel, evt);
+										fireTableChanged (newModel, evt);
 									}
 								});
 
 								// Set the column headers
-								String[] columnNames = importedDataSet.getColumnNames ();
-								for (int i = 0; i < columnNames.length; ++i)
+								for(int i = 0; i < dataSet.getColumnCount(); i++)
 								{
-									newModel.addColumn (columnNames[i]);
-									table.getColumnModel ().getColumn (i).setHeaderValue (columnNames[i]);
+									table.getColumnModel().getColumn(i).setHeaderValue(dataSet.getColumn(i).getName());
 								}
-								// Initialize number of rows
-								for (int i = 0; i < importedDataSet.getColumnLength (); ++i)
-								{
-									ArrayList<Integer> row = new ArrayList<Integer> ();
-									for (int j = 0; j < importedDataSet.getColumnCount (); ++j)
-									{
-										row.add (0);
-									}
-									newModel.addRow (row.toArray ());
-								}
-								// Load imported data into the values table
-								for (int i = 0; i < importedDataSet.getColumnCount (); ++i)
-								{
-									DataColumn column = importedDataSet.getColumn (i);
-									for (int j = 0; j < column.size (); ++j)
-									{
-										newModel.setValueAt (column.get (j), j, i);
-									}
-								}
+
 								table.setModel (newModel);
 								table.updateUI ();
 								table.getTableHeader ().resizeAndRepaint ();
@@ -1497,7 +1462,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 	 * @param model The model for the data set.
 	 * @param evt The table change event.
 	 */
-	private void fireTableChanged(Problem problem, ExtendedTableModel model, TableModelEvent evt)
+	private void fireTableChanged(ExtendedTableModel model, TableModelEvent evt)
 	{
 		if (!openCloseWizard && !addingDataSet && !changingDataSet)
 		{
@@ -1510,7 +1475,6 @@ public class NewProblemWizardDialog extends EscapeDialog
 					int intValue = Integer.parseInt (value.toString ());
 					changingDataSet = true;
 					model.setValueAt (intValue, evt.getFirstRow (), evt.getColumn ());
-					problem.getData (dataSetTabbedPane.getSelectedIndex ()).getColumn (evt.getColumn ()).set (evt.getFirstRow (), intValue);
 					changingDataSet = false;
 				}
 				catch (NumberFormatException ex)
@@ -1520,14 +1484,12 @@ public class NewProblemWizardDialog extends EscapeDialog
 						double doubleValue = Double.parseDouble (value.toString ());
 						changingDataSet = true;
 						model.setValueAt (doubleValue, evt.getFirstRow (), evt.getColumn ());
-						problem.getData (dataSetTabbedPane.getSelectedIndex ()).getColumn (evt.getColumn ()).set (evt.getFirstRow (), doubleValue);
 						changingDataSet = false;
 					}
 					catch (NumberFormatException innerEx)
 					{
 						changingDataSet = true;
 						model.setValueAt (changingValue, evt.getFirstRow (), evt.getColumn ());
-						problem.getData (dataSetTabbedPane.getSelectedIndex ()).getColumn (evt.getColumn ()).set (evt.getFirstRow (), changingValue);
 						changingDataSet = false;
 					}
 				}
@@ -1635,38 +1597,28 @@ public class NewProblemWizardDialog extends EscapeDialog
 			descriptionTextArea.setText ("");
 
 			// By default, new problems have three columns and five rows
-			dataSetTabbedPane.add (dataSet.getName(), createValuesTabbedPanel (newProblem));
+			dataSetTabbedPane.add (dataSet.getName(), createValuesTabbedPanel (newProblem, dataSet));
 			int columns = dataSet.getColumnCount();
 			int rows = dataSet.getColumnLength();
 
 			// Add minimum columns to the table model
 			JTable table = ((JTable) ((JViewport) ((JScrollPane) ((JPanel) dataSetTabbedPane.getComponent (0)).getComponent (0)).getComponent (0)).getComponent (0));
-			final ExtendedTableModel newModel = new ExtendedTableModel ();
+			final ExtendedTableModel newModel = new ExtendedTableModel (dataSet);
 			newModel.addTableModelListener (new TableModelListener ()
 			{
 				@Override
 				public void tableChanged(TableModelEvent evt)
 				{
-					fireTableChanged (newProblem, newModel, evt);
+					fireTableChanged (newModel, evt);
 				}
 			});
 			DefaultTableColumnModel newColumnModel = new DefaultTableColumnModel ();
 			for (int i = 0; i < columns; ++i)
 			{
-				int index = i + 1;
-				while (columnNameExists (newModel, i, "Column " + (index)))
-				{
-					++index;
-				}
 				newColumnModel.addColumn (new TableColumn ());
-				newModel.addColumn ("Column " + index);
 			}
 			table.setColumnModel (newColumnModel);
-			// Add minimum rows to the table model
-			for (int i = 0; i < rows; ++i)
-			{
-				newModel.addRow (new Object[columns]);
-			}
+			
 			table.setModel (newModel);
 			table.updateUI ();
 			table.getTableHeader ().resizeAndRepaint ();
@@ -1735,7 +1687,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 			for (int i = 0; i < domain.problem.getDataCount (); ++i)
 			{
 				DataSet dataSet = domain.problem.getData (i);
-				JPanel panel = createValuesTabbedPanel (domain.problem);
+				JPanel panel = createValuesTabbedPanel (domain.problem, dataSet);
 				dataSetTabbedPane.add (dataSet.getName (), panel);
 				int columns = dataSet.getColumnCount ();
 				int rows = dataSet.getColumnLength ();
@@ -1744,36 +1696,24 @@ public class NewProblemWizardDialog extends EscapeDialog
 
 				// Add minimum columns to the table model
 				JTable table = (JTable) ((JViewport) ((JScrollPane) panel.getComponent (0)).getComponent (0)).getComponent (0);
-				final ExtendedTableModel newModel = new ExtendedTableModel ();
+				final ExtendedTableModel newModel = new ExtendedTableModel (dataSet);
 				newModel.addTableModelListener (new TableModelListener ()
 				{
 					@Override
 					public void tableChanged(TableModelEvent evt)
 					{
-						fireTableChanged (domain.problem, newModel, evt);
+						fireTableChanged (newModel, evt);
 					}
 				});
+
 				DefaultTableColumnModel newColumnModel = new DefaultTableColumnModel ();
 				for (int j = 0; j < columns; ++j)
 				{
 					newColumnModel.addColumn (new TableColumn ());
-					newModel.addColumn (dataSet.getColumn (j).getName ());
-					newColumnModel.getColumn (newModel.getColumnCount () - 1).setHeaderValue (dataSet.getColumn (j).getName ());
+					//newColumnModel.getColumn (newModel.getColumnCount () - 1).setHeaderValue (dataSet.getColumn (j).getName ());
 				}
 				table.setColumnModel (newColumnModel);
-				// Add minimum rows to the table model
-				for (int j = 0; j < rows; ++j)
-				{
-					newModel.addRow (new Object[columns]);
-				}
-				// Fill in the values for all table elements
-				for (int j = 0; j < columns; ++j)
-				{
-					for (int k = 0; k < dataSet.getColumn (j).size (); ++k)
-					{
-						newModel.setValueAt (dataSet.getColumn (j).get (k), k, j);
-					}
-				}
+
 				table.setModel (newModel);
 				table.updateUI ();
 				table.getTableHeader ().resizeAndRepaint ();
