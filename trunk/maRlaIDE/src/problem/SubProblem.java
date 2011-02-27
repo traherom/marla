@@ -41,6 +41,11 @@ public class SubProblem implements ProblemPart
 	 */
 	private String partDesc;
 	/**
+	 * "Conclusion" of the subproblem. IE, the final conclusion for the analysis
+	 * marked in the solution.
+	 */
+	private String conclusion;
+	/**
 	 * Identifier for this part of the problem. For example, "part A,"
 	 * B, C, etc
 	 */
@@ -104,6 +109,20 @@ public class SubProblem implements ProblemPart
 	public void setStatement(String newStatement)
 	{
 		partDesc = newStatement;
+	}
+
+	@Override
+	public String getConclusion()
+	{
+		return conclusion;
+	}
+
+	@Override
+	public String setConclusion(String newConclusion)
+	{
+		String oldConc = conclusion;
+		conclusion = newConclusion;
+		return oldConc;
 	}
 
 	@Override
@@ -361,6 +380,7 @@ public class SubProblem implements ProblemPart
 			subEl.setAttribute("end", "");
 		
 		subEl.addContent(new Element("statement").addContent(partDesc));
+		subEl.addContent(new Element("conclusion").addContent(conclusion));
 
 		return subEl;
 	}
@@ -377,11 +397,12 @@ public class SubProblem implements ProblemPart
 										   subEl.getAttributeValue("id"),
 										   subEl.getChildText("statement"));
 		newSub.isLoading = true;
+		newSub.setConclusion(subEl.getChildText("conclusion"));
 
 		// Now find our start and end Operation objects so we can point
 		// to them again
-		String startIDStr = subEl.getAttribute("start").getValue();
-		String endIDStr = subEl.getAttribute("end").getValue();
+		String startIDStr = subEl.getAttributeValue("start");
+		String endIDStr = subEl.getAttributeValue("end");
 
 		Integer startID = null;
 		if(!startIDStr.isEmpty())

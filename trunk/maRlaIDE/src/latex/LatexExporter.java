@@ -638,9 +638,9 @@ public class LatexExporter
 			sb.append("   & ");
 			for(int i = 0; i < cols; i++)
 			{
-				sb.append("{\\it ");
+				sb.append("$");
 				sb.append(ds.getColumn(i).getName());
-				sb.append("} ");
+				sb.append("$ ");
 				
 				// Don't end the row with the cell separator
 				if(i + 1 < cols)
