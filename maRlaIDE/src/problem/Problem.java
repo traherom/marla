@@ -70,6 +70,10 @@ public class Problem implements ProblemPart
 	 */
 	private String statement = null;
 	/**
+	 * "Conclusion" of the problem. IE, the final conclusion for the analysis
+	 */
+	private String conclusion;
+	/**
 	 * All datasets associated with this problem.
 	 */
 	private final ArrayList<DataSet> datasets = new ArrayList<DataSet>();
@@ -173,6 +177,20 @@ public class Problem implements ProblemPart
 	public static Domain getDomain()
 	{
 		return domain;
+	}
+
+	@Override
+	public String getConclusion()
+	{
+		return conclusion;
+	}
+
+	@Override
+	public String setConclusion(String newConclusion)
+	{
+		String oldConc = conclusion;
+		conclusion = newConclusion;
+		return oldConc;
 	}
 
 	/**
@@ -688,6 +706,7 @@ public class Problem implements ProblemPart
 	{
 		Element rootEl = new Element("problem");
 		rootEl.addContent(new Element("statement").addContent(statement));
+		rootEl.addContent(new Element("conclusion").addContent(conclusion));
 
 		// Add each DataSet
 		for(DataSet data : datasets)
@@ -725,7 +744,8 @@ public class Problem implements ProblemPart
 		Problem newProb = new Problem();
 		newProb.isLoading = true;
 
-		newProb.setStatement(rootEl.getChild("statement").getText());
+		newProb.setStatement(rootEl.getChildText("statement"));
+		newProb.setConclusion(rootEl.getChildText("conclusion"));
 
 		for(Object dataEl : rootEl.getChildren("data"))
 		{

@@ -634,19 +634,6 @@ public final class RProcessor
 
 	/**
 	 * Sets the given variable with the value given
-	 * @param name R-conforming variable name
-	 * @param val Value to store in the variable
-	 * @return Name of the variable used
-	 */
-	public String setVariable(String name, Double val) throws RProcessorException
-	{
-		execute(name + "=" + val);
-
-		return name;
-	}
-
-	/**
-	 * Sets the given variable with the value given
 	 * @param val Value to store in the variable
 	 * @return Name of the variable used
 	 */
@@ -664,7 +651,15 @@ public final class RProcessor
 	public String setVariable(String name, Object val) throws RProcessorException
 	{
 		if(val instanceof Double)
-			execute(name + " = " + val);
+		{
+			Double dVal = (Double)val;
+			if(dVal == Double.POSITIVE_INFINITY)
+				execute(name + " = Inf");
+			else if(dVal == Double.NEGATIVE_INFINITY)
+				execute(name + " = -Inf");
+			else
+				execute(name + " = " + val);
+		}
 		else
 			execute(name + " = \"" + val + '"');
 

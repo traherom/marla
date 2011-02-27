@@ -41,6 +41,20 @@ public interface ProblemPart extends Changeable, Loadable
 	public void setStatement(String newStatement);
 
 	/**
+	 * Gets the current conclusion of this problem part. (See setConclusion)
+	 * @return Current conclusion. Null if there was none
+	 */
+	public String getConclusion();
+
+	/**
+	 * Sets a new conclusion for this problem part. This is intended as
+	 * to contain the ending thought of the associated analysis and operations.
+	 * @param newConclusion New conclusion for ProblemPart
+	 * @return Current conclusion. Null if there was none
+	 */
+	public String setConclusion(String newConclusion);
+
+	/**
 	 * Trues true if the problem has unsaved changes
 	 * @return true if the problem has changes that are not yet saved
 	 */
