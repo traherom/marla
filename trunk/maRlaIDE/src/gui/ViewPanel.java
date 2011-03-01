@@ -25,6 +25,8 @@ import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Point;
 import java.awt.Toolkit;
@@ -112,6 +114,12 @@ public class ViewPanel extends JPanel
 	public final DragSource DRAG_SOURCE = new DragSource();
 	/** The drag-and-drop listener for assignments and events.*/
 	public final DragDrop DND_LISTENER = new DragDrop(this);
+	/** Default, plain, 12-point font.*/
+	public static Font FONT_PLAIN_12 = new Font("Verdana", Font.PLAIN, 12);
+	/** Default, bold, 12-point font.*/
+	public static Font FONT_BOLD_12 = new Font("Verdana", Font.BOLD, 12);
+	/** Layout constraints for the palette.*/
+	public GridBagConstraints COMP_CONSTRAINTS = new GridBagConstraints();
 	/** The main frame of a stand-alone application.*/
 	public MainFrame mainFrame;
 	/**
@@ -132,10 +140,10 @@ public class ViewPanel extends JPanel
 	public static int fontSize = 12;
 	/** Default, plain, 11-point font.*/
 	public static Font fontPlain11 = new Font("Verdana", Font.PLAIN, 11);
-	/** Default, plain, 12-point font.*/
-	public static Font fontPlain12 = new Font("Verdana", Font.PLAIN, 12);
-	/** Default, bold, 12-point font.*/
-	public static Font fontBold12 = new Font("Verdana", Font.BOLD, 12);
+	/** Font size and style for workspace plain.*/
+	public static Font workspaceFontPlain = new Font("Verdana", Font.PLAIN, 12);
+	/** Font size and style for workspace bold.*/
+	public static Font workspaceFontBold = new Font("Verdana", Font.BOLD, 12);
 	/** The New Problem Wizard dialog.*/
 	public final NewProblemWizardDialog NEW_PROBLEM_WIZARD_DIALOG = new NewProblemWizardDialog(this, domain);
 	/** The data set being dragged.*/
@@ -217,6 +225,9 @@ public class ViewPanel extends JPanel
 			}
 		}, KeyEvent.KEY_EVENT_MASK);
 
+		COMP_CONSTRAINTS.gridx = 0;
+		COMP_CONSTRAINTS.anchor = GridBagConstraints.FIRST_LINE_START;
+
 		workspacePanel.setDropTarget(new DropTarget(workspacePanel, DnDConstants.ACTION_MOVE, DND_LISTENER));
 
 		domain.loadSaveThread = new LoadSaveThread(domain);
@@ -264,6 +275,25 @@ public class ViewPanel extends JPanel
 	}
 
 	/**
+	 * 
+	 * @param handlePanel
+	 * @param catContentPanel
+	 */
+	private void toggleSelection(CategoryHandle handlePanel, JPanel catContentPanel)
+	{
+		handlePanel.toggleSelection();
+
+		if(catContentPanel.isShowing())
+		{
+			catContentPanel.setVisible(false);
+		}
+		else
+		{
+			catContentPanel.setVisible(true);
+		}
+	}
+
+	/**
 	 * Load the operations into the palette.
 	 *
 	 * @throws MarlaException Throws any Marla exceptions to the calling function.
@@ -273,21 +303,34 @@ public class ViewPanel extends JPanel
 		Set<String> categories = Operation.getAvailableOperationsCategorized().keySet();
 
 		// Add all operation types to the palette, adding listeners to the labels as we go
+		int catCount = 0;
 		for(String key : categories)
 		{
 			List<String> operations = Operation.getAvailableOperationsCategorized().get(key);
 
-			JPanel categoryPanel = new JPanel();
-			categoryPanel.setBorder (BorderFactory.createMatteBorder(1, 0, 1, 0, Color.DARK_GRAY));
-			categoryPanel.setLayout(new BoxLayout(categoryPanel, BoxLayout.PAGE_AXIS));
-			JPanel leftAndRightPanel = new JPanel ();
-			leftAndRightPanel.setLayout (new GridLayout(1, 2));
-			JPanel leftPanel = new JPanel();
-			leftPanel.setBorder(BorderFactory.createMatteBorder(0, 1, 0, 1, Color.DARK_GRAY));
-			leftPanel.setLayout(new BoxLayout(leftPanel, BoxLayout.PAGE_AXIS));
-			JPanel rightPanel = new JPanel();
-			rightPanel.setBorder(BorderFactory.createMatteBorder(0, 1, 0, 1, Color.DARK_GRAY));
-			rightPanel.setLayout(new BoxLayout(rightPanel, BoxLayout.PAGE_AXIS));
+			final JPanel catContentPanel = new JPanel();
+			CategoryHandle catHandlePanel = null;
+			try
+			{
+				catHandlePanel = new CategoryHandle(key, new MouseAdapter()
+				{
+					@Override
+					public void mousePressed(MouseEvent evt)
+					{
+						CategoryHandle catHandlePanel = (CategoryHandle) evt.getSource();
+						if(catHandlePanel.target.contains(evt.getPoint()))
+						{
+							toggleSelection(catHandlePanel, catContentPanel);
+						}
+					}
+				});
+			}
+			// Images are missing; should never happen
+			catch (IOException ex) {}
+			catContentPanel.setLayout (new GridBagLayout());
+			GridBagConstraints catConstraints = new GridBagConstraints();
+			catConstraints.weighty = 0;
+			catConstraints.anchor = GridBagConstraints.FIRST_LINE_START;
 
 			for(int i = 0; i < operations.size(); ++i)
 			{
@@ -298,14 +341,9 @@ public class ViewPanel extends JPanel
 					operation.setToolTipText(operation.getDisplayString(abbreviated));
 					DRAG_SOURCE.createDefaultDragGestureRecognizer(operation, DnDConstants.ACTION_MOVE, DND_LISTENER);
 
-					if(i % 2 == 0)
-					{
-						leftPanel.add(operation);
-					}
-					else
-					{
-						rightPanel.add(operation);
-					}
+					catConstraints.gridx = 0;
+					catConstraints.gridy = i;
+					catContentPanel.add(operation, catConstraints);
 					operation.addMouseListener(new MouseAdapter()
 					{
 						@Override
@@ -322,15 +360,23 @@ public class ViewPanel extends JPanel
 					System.err.println("Error loading operation '" + operations.get(i) + "'");
 				}
 			}
+			// Add final JLabel for pad filling
+			catContentPanel.add (new JLabel (""), catConstraints);
 
-			categoryPanel.add(new JLabel("::" + key + "::"));
-			leftAndRightPanel.add(leftPanel);
-			leftAndRightPanel.add(rightPanel);
-			categoryPanel.add(leftAndRightPanel);
-			componentsScrollablePanel.add(categoryPanel);
+			JPanel wrapperPanel = new JPanel();
+			wrapperPanel.setLayout (new BoxLayout(wrapperPanel, BoxLayout.PAGE_AXIS));
+			wrapperPanel.add (catHandlePanel);
+			wrapperPanel.add (catContentPanel);
+			catContentPanel.setVisible(false);
+			COMP_CONSTRAINTS.gridy = catCount;
+			COMP_CONSTRAINTS.weighty = 0;
+			componentsScrollablePanel.add(wrapperPanel, COMP_CONSTRAINTS);
+			++catCount;
 		}
-
-		componentsScrollablePanel.setPreferredSize(new Dimension (193, componentsScrollablePanel.getSize().height));
+		// Add final component to offset weight
+		COMP_CONSTRAINTS.gridy = catCount;
+		COMP_CONSTRAINTS.weighty = 1;
+		componentsScrollablePanel.add(new JLabel (""), COMP_CONSTRAINTS);
 	}
 
 	/** This method is called from within the constructor to
@@ -663,10 +709,11 @@ public class ViewPanel extends JPanel
         componentsPanel.setLayout(new java.awt.GridLayout(1, 0));
 
         componentsScrollPane.setBorder(null);
+        componentsScrollPane.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         componentsScrollPane.setOpaque(false);
 
         componentsScrollablePanel.setOpaque(false);
-        componentsScrollablePanel.setLayout(new javax.swing.BoxLayout(componentsScrollablePanel, javax.swing.BoxLayout.PAGE_AXIS));
+        componentsScrollablePanel.setLayout(new java.awt.GridBagLayout());
         componentsScrollPane.setViewportView(componentsScrollablePanel);
 
         componentsPanel.add(componentsScrollPane);
@@ -1257,6 +1304,12 @@ public class ViewPanel extends JPanel
 			++fontSize;
 			spaceWidth += 5;
 			spaceHeight += 5;
+			for(Operation op : domain.getUnattachedOperations())
+			{
+				op.setFont(workspaceFontBold);
+				op.setText("<html>" + op.getDisplayString(abbreviated) + "</html>");
+				op.setSize(op.getPreferredSize());
+			}
 			for(int i = 0; i < domain.problem.getDataCount(); ++i)
 			{
 				rebuildTree(domain.problem.getData(i));
@@ -1267,11 +1320,16 @@ public class ViewPanel extends JPanel
 			--fontSize;
 			spaceWidth -= 5;
 			spaceHeight -= 5;
+			for(Operation op : domain.getUnattachedOperations())
+			{
+				op.setFont(workspaceFontBold);
+				op.setText("<html>" + op.getDisplayString(abbreviated) + "</html>");
+				op.setSize(op.getPreferredSize());
+			}
 			for(int i = 0; i < domain.problem.getDataCount(); ++i)
 			{
 				rebuildTree(domain.problem.getData(i));
 			}
-
 		}
 		else if(button == abbreviateButton)
 		{
@@ -1447,8 +1505,8 @@ public class ViewPanel extends JPanel
 	 */
 	protected void rebuildTree(DataSet dataSet)
 	{
-		fontPlain12 = new Font("Verdana", Font.PLAIN, fontSize);
-		fontBold12 = new Font("Verdana", Font.BOLD, fontSize);
+		workspaceFontPlain = new Font("Verdana", Font.PLAIN, fontSize);
+		workspaceFontBold = new Font("Verdana", Font.BOLD, fontSize);
 
 		// Don't bother listening yet if the problem is still loading
 		if(dataSet.getParentProblem().isLoading())
@@ -1457,7 +1515,7 @@ public class ViewPanel extends JPanel
 		}
 
 		// Set the label for the dataset itself
-		dataSet.setFont(fontBold12);
+		dataSet.setFont(workspaceFontBold);
 		dataSet.setText("<html>" + dataSet.getDisplayString(abbreviated) + "</html>");
 		dataSet.setSize(dataSet.getPreferredSize());
 
@@ -1525,7 +1583,7 @@ public class ViewPanel extends JPanel
 				moreOps = false;
 
 			// Update label
-			currOp.setFont(fontBold12);
+			currOp.setFont(workspaceFontBold);
 			currOp.setText("<html>" + currOp.getDisplayString(abbreviated) + "</html>");
 			currOp.setSize(currOp.getPreferredSize());
 
