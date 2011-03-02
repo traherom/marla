@@ -1540,6 +1540,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 
 								// Change the model so that the old columns are no longer displayed
 								final ExtendedTableModel newModel = new ExtendedTableModel (dataSet);
+								table.setModel(newModel);
 								newModel.addTableModelListener (new TableModelListener ()
 								{
 									@Override
