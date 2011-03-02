@@ -226,6 +226,9 @@ public class ViewPanel extends JPanel
 		}, KeyEvent.KEY_EVENT_MASK);
 
 		COMP_CONSTRAINTS.gridx = 0;
+		COMP_CONSTRAINTS.gridwidth = 1;
+		COMP_CONSTRAINTS.weighty = 1;
+		COMP_CONSTRAINTS.fill = GridBagConstraints.VERTICAL;
 		COMP_CONSTRAINTS.anchor = GridBagConstraints.FIRST_LINE_START;
 
 		workspacePanel.setDropTarget(new DropTarget(workspacePanel, DnDConstants.ACTION_MOVE, DND_LISTENER));
@@ -275,25 +278,6 @@ public class ViewPanel extends JPanel
 	}
 
 	/**
-	 * 
-	 * @param handlePanel
-	 * @param catContentPanel
-	 */
-	private void toggleSelection(CategoryHandle handlePanel, JPanel catContentPanel)
-	{
-		handlePanel.toggleSelection();
-
-		if(catContentPanel.isShowing())
-		{
-			catContentPanel.setVisible(false);
-		}
-		else
-		{
-			catContentPanel.setVisible(true);
-		}
-	}
-
-	/**
 	 * Load the operations into the palette.
 	 *
 	 * @throws MarlaException Throws any Marla exceptions to the calling function.
@@ -320,7 +304,15 @@ public class ViewPanel extends JPanel
 						CategoryHandle catHandlePanel = (CategoryHandle) evt.getSource();
 						if(catHandlePanel.target.contains(evt.getPoint()))
 						{
-							toggleSelection(catHandlePanel, catContentPanel);
+							catHandlePanel.toggleSelection();
+							if(catContentPanel.isShowing())
+							{
+								catContentPanel.setVisible(false);
+							}
+							else
+							{
+								catContentPanel.setVisible(true);
+							}
 						}
 					}
 				});
@@ -329,7 +321,10 @@ public class ViewPanel extends JPanel
 			catch (IOException ex) {}
 			catContentPanel.setLayout (new GridBagLayout());
 			GridBagConstraints catConstraints = new GridBagConstraints();
+			catConstraints.fill = GridBagConstraints.VERTICAL;
 			catConstraints.weighty = 0;
+			catConstraints.weightx = 1;
+			catConstraints.gridwidth = 1;
 			catConstraints.anchor = GridBagConstraints.FIRST_LINE_START;
 
 			for(int i = 0; i < operations.size(); ++i)
@@ -368,6 +363,9 @@ public class ViewPanel extends JPanel
 			wrapperPanel.add (catHandlePanel);
 			wrapperPanel.add (catContentPanel);
 			catContentPanel.setVisible(false);
+			catHandlePanel.setPreferredSize (new Dimension (200, 20));
+			catContentPanel.setPreferredSize (new Dimension (200, catContentPanel.getPreferredSize().height));
+
 			COMP_CONSTRAINTS.gridy = catCount;
 			COMP_CONSTRAINTS.weighty = 0;
 			componentsScrollablePanel.add(wrapperPanel, COMP_CONSTRAINTS);
@@ -1580,7 +1578,9 @@ public class ViewPanel extends JPanel
 		{
 			// Stop after this loop?
 			if(currOp.getOperationCount() == 0)
+			{
 				moreOps = false;
+			}
 
 			// Update label
 			currOp.setFont(workspaceFontBold);
@@ -1590,7 +1590,9 @@ public class ViewPanel extends JPanel
 			// Get width
 			int width = currOp.getWidth();
 			if(width > widest)
+			{
 				widest = width;
+			}
 
 			// Center off the given center x
 			int x = centerX - width / 2;
@@ -1599,7 +1601,9 @@ public class ViewPanel extends JPanel
 
 			// Next op
 			if(moreOps)
+			{
 				currOp = currOp.getOperation(0);
+			}
 		}
 
 		return widest;
