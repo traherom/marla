@@ -850,7 +850,6 @@ public class ViewPanel extends JPanel
 							if(parent != null)
 							{
 								parent.removeOperation((Operation) draggingComponent);
-								workspacePanel.setComponentZOrder(draggingComponent, workspacePanel.getComponentCount() - 1);
 								workspacePanel.setComponentZOrder(trashCan, workspacePanel.getComponentCount() - 1);
 							}
 							if(childOperation != null)
@@ -879,6 +878,8 @@ public class ViewPanel extends JPanel
 						xDragOffset = evt.getX() - draggingComponent.getX();
 						yDragOffset = evt.getY() - draggingComponent.getY();
 					}
+					workspacePanel.setComponentZOrder(draggingComponent, workspacePanel.getComponentCount() - 1);
+					
 					domain.problem.markUnsaved();
 				}
 			}
@@ -1302,32 +1303,34 @@ public class ViewPanel extends JPanel
 			++fontSize;
 			spaceWidth += 5;
 			spaceHeight += 5;
+			for(int i = 0; i < domain.problem.getDataCount(); ++i)
+			{
+				rebuildTree(domain.problem.getData(i));
+			}
 			for(Operation op : domain.getUnattachedOperations())
 			{
 				op.setFont(workspaceFontBold);
 				op.setText("<html>" + op.getDisplayString(abbreviated) + "</html>");
 				op.setSize(op.getPreferredSize());
 			}
-			for(int i = 0; i < domain.problem.getDataCount(); ++i)
-			{
-				rebuildTree(domain.problem.getData(i));
-			}
+			workspacePanel.repaint ();
 		}
 		else if(button == minusFontButton)
 		{
 			--fontSize;
 			spaceWidth -= 5;
 			spaceHeight -= 5;
+			for(int i = 0; i < domain.problem.getDataCount(); ++i)
+			{
+				rebuildTree(domain.problem.getData(i));
+			}
 			for(Operation op : domain.getUnattachedOperations())
 			{
 				op.setFont(workspaceFontBold);
 				op.setText("<html>" + op.getDisplayString(abbreviated) + "</html>");
 				op.setSize(op.getPreferredSize());
 			}
-			for(int i = 0; i < domain.problem.getDataCount(); ++i)
-			{
-				rebuildTree(domain.problem.getData(i));
-			}
+			workspacePanel.repaint ();
 		}
 		else if(button == abbreviateButton)
 		{
@@ -2044,12 +2047,13 @@ public class ViewPanel extends JPanel
 			}
 		}
 
-		closeProblem(false);
-		domain.loadSaveThread.stopRunning();
-
-		if(forceQuit)
+		if (closeProblem(false))
 		{
-			System.exit(0);
+			domain.loadSaveThread.stopRunning();
+			if(forceQuit)
+			{
+				System.exit(0);
+			}
 		}
 	}
     // Variables declaration - do not modify//GEN-BEGIN:variables

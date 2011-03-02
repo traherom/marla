@@ -19,8 +19,8 @@
 package gui;
 
 import java.awt.Dimension;
+import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
 import java.util.List;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -111,16 +111,6 @@ public class MainFrame extends JFrame
 		{
 			JOptionPane.showMessageDialog (viewPanel, ex.getMessage (), "Load Error", JOptionPane.WARNING_MESSAGE);
 		}
-
-		// Add the shutdown hook to ensure saving prior to a close
-		Runtime.getRuntime ().addShutdownHook (new Thread ()
-		{
-			@Override
-			public void run()
-			{
-				viewPanel.quit (false);
-			}
-		});
 	}
 
 	/**
@@ -134,44 +124,14 @@ public class MainFrame extends JFrame
 		setLocationRelativeTo (null);
 		// Set the title of the frame, displaying the version number only if we're in pre-release
 		setTitle (getDefaultTitle ());
-
+		
 		// Add window listeners to ensure proper saving, sizing, and orientation is done when needed
-		addWindowListener (new WindowListener ()
+		addWindowListener (new WindowAdapter ()
 		{
-			@Override
-			public void windowOpened(WindowEvent e)
-			{
-			}
-
 			@Override
 			public void windowClosing(WindowEvent e)
 			{
 				viewPanel.quit (true);
-			}
-
-			@Override
-			public void windowClosed(WindowEvent e)
-			{
-			}
-
-			@Override
-			public void windowIconified(WindowEvent e)
-			{
-			}
-
-			@Override
-			public void windowDeiconified(WindowEvent e)
-			{
-			}
-
-			@Override
-			public void windowActivated(WindowEvent e)
-			{
-			}
-
-			@Override
-			public void windowDeactivated(WindowEvent e)
-			{
 			}
 		});
 	}
@@ -220,7 +180,7 @@ public class MainFrame extends JFrame
         checkForUpdatesMenuItem = new javax.swing.JMenuItem();
         aboutMenuItem = new javax.swing.JMenuItem();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         getContentPane().setLayout(new java.awt.GridLayout(1, 1));
 
         fileMenu.setText("File");

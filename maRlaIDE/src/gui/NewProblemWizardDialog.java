@@ -77,7 +77,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 	/** The list in the New Problem Wizard of sub problems within the current problem.*/
 	private ArrayList<JPanel> subProblemPanels = new ArrayList<JPanel> ();
 	/** True if the New Problem Wizard is being opened and actions should be ignored.*/
-	private boolean openCloseWizard = false;
+	private boolean ignoreDataChanging = false;
 	/** True when a data set tab is being added, false otherwise.*/
 	private boolean addingDataSet = false;
 	/** True when a data set value is being changed, false otherwise.*/
@@ -914,13 +914,13 @@ public class NewProblemWizardDialog extends EscapeDialog
 }//GEN-LAST:event_removeDataSetButtonActionPerformed
 
 	private void closeWizardButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_closeWizardButtonActionPerformed
-		openCloseWizard = true;
+		ignoreDataChanging = true;
 
 		dispose ();
 		VIEW_PANEL.requestFocus ();
 
 		newProblem = null;
-		openCloseWizard = false;
+		ignoreDataChanging = false;
 }//GEN-LAST:event_closeWizardButtonActionPerformed
 
 	private void nextWizardButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nextWizardButtonActionPerformed
@@ -1405,7 +1405,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 			@Override
 			public void stateChanged(ChangeEvent evt)
 			{
-				if (!openCloseWizard)
+				if (!ignoreDataChanging)
 				{
 					int value = Integer.parseInt (columnsSpinner.getValue ().toString ());
 					// Don't let column count be below 1
@@ -1461,7 +1461,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 			@Override
 			public void stateChanged(ChangeEvent evt)
 			{
-				if (!openCloseWizard)
+				if (!ignoreDataChanging)
 				{
 					int value = Integer.parseInt (rowsSpinner.getValue ().toString ());
 					// Don't let row count be below 1
@@ -1517,11 +1517,14 @@ public class NewProblemWizardDialog extends EscapeDialog
 							domain.lastGoodCsvFile = VIEW_PANEL.openChooserDialog.getSelectedFile ().toString ();
 							try
 							{
+								ignoreDataChanging = true;
 								DataSet importedDataSet = DataSet.importFile (domain.lastGoodCsvFile);
 
 								// Clear existing data
 								for(int i = dataSet.getColumnCount() - 1; 0 <= i; i--)
+								{
 									dataSet.removeColumn(i);
+								}
 
 								// Copy new columns
 								for(int i = 0; i < importedDataSet.getColumnCount(); i++)
@@ -1555,6 +1558,8 @@ public class NewProblemWizardDialog extends EscapeDialog
 								table.setModel (newModel);
 								table.updateUI ();
 								table.getTableHeader ().resizeAndRepaint ();
+
+								ignoreDataChanging = false;
 							}
 							catch (MarlaException ex)
 							{
@@ -1621,7 +1626,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 	 */
 	private void fireTableChanged(ExtendedTableModel model, TableModelEvent evt)
 	{
-		if (!openCloseWizard && !addingDataSet && !changingDataSet)
+		if (!ignoreDataChanging && !addingDataSet && !changingDataSet)
 		{
 			// Ensure the new value is a valid double, otherwise revert
 			try
@@ -1664,7 +1669,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 	 */
 	protected void launchNewProblemWizard(boolean editing)
 	{
-		openCloseWizard = true;
+		ignoreDataChanging = true;
 
 		newProblemOverwrite = false;
 
@@ -1702,7 +1707,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 		setLocationRelativeTo (VIEW_PANEL);
 		setVisible (true);
 
-		openCloseWizard = false;
+		ignoreDataChanging = false;
 	}
 
 	/**
