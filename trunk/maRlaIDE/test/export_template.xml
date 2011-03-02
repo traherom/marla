@@ -1,47 +1,51 @@
 <?xml version="1.0" ?>
-<template>\documentclass[10pt,letterpaper]{article}
-\usepackage{graphicx}
-\usepackage{enumerate}
-\usepackage{array}
+<template>
+	<main>
+		\documentclass[10pt,letterpaper]{article}
+		\usepackage{graphicx}
+		\usepackage{enumerate}
+		\usepackage{array}
+		\usepackage{multirow}
 
-\begin{document}
-\begin{flushright}
-<name />\par
-<class type="short" /> --- <class type="long" />\par
-Chapter <chapter />-Section <section />-Problem \#<probnum />
-\end{flushright}
+		\begin{document}
+		\begin{flushright}
+		<name />\par
+		<class type="short" /> --- <class type="long" />\par
+		Chapter <chapter />-Section <section />-Problem \#<probnum />
+		\end{flushright}
 
-\noindent\textbf{\Large Given}\par
-<statement />\par
-<data type="start" />
+		\noindent\textbf{\Large Given}\par
+		<statement />\par
+		<data type="start" />
 
-<if has_subproblems="true">
-	<then>
-	\noindent\textbf{\Large Required}\par
-	\begin{enumerate}[(a)]
-	<loop type="subproblem">
-		\item <statement />
-	</loop>
-	\end{enumerate}
-	</then>
-</if>
+		<if has_subproblems="true">
+			<then>
+			\noindent\textbf{\Large Required}\par
+			\begin{enumerate}[(a)]
+			<loop type="subproblem">
+				\item <statement />
+			</loop>
+			\end{enumerate}
+			</then>
+		</if>
 
-\noindent\textbf{\Large Analysis and Solution}\par
-<if has_subproblems="false">
-	<then>
-		<solution />\par
-		<data type="end" />
-	</then>
-	<else>
-	\begin{enumerate}[(a)]
-	<loop type="subproblem">
-		\item
-		<solution />\par
-		<data type="end" />	
-	</loop>
-	\end{enumerate}
-	</else>
-</if>
+		\noindent\textbf{\Large Analysis and Solution}\par
+		<if has_subproblems="false">
+			<then>
+				<solution rcode="true" />\par
+				<data type="end" />
+			</then>
+			<else>
+			\begin{enumerate}[(a)]
+			<loop type="subproblem">
+				\item
+				<solution />\par
+				<data type="end" />
+			</loop>
+			\end{enumerate}
+			</else>
+		</if>
 
-\end{document}
+		\end{document}
+	</main>
 </template>

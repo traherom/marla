@@ -731,14 +731,25 @@ public final class DataSet extends JLabel implements DataSource, Changeable
 	}
 
 	@Override
-	public String toRFrame() throws RProcessorException, RProcessorParseException, ConfigurationException
+	public String toRFrame() throws MarlaException
+	{
+		return toRFrame(this);
+	}
+
+	/**
+	 * Takes the given DataSource and exports it to R as a complete data frame
+	 * @param ds DataSource to work over
+	 * @return Name of the R variable the frame is saved to
+	 */
+	public static String toRFrame(DataSource ds) throws MarlaException
 	{
 		RProcessor proc = RProcessor.getInstance();
 
 		// Save all of the columns to variables
 		ArrayList<String> colVars = new ArrayList<String>();
-		for(DataColumn dc : columns)
+		for(int i = 0; i < ds.getColumnCount(); i++)
 		{
+			DataColumn dc = ds.getColumn(i);
 			String colName = proc.executeString("make.names('" + dc.getName() + "')");
 			colVars.add(colName);
 			proc.setVariable(colName, dc);

@@ -35,7 +35,7 @@ public abstract class OperationInformation
 	 */
 	public enum PromptType
 	{
-		COLUMN, COMBO, STRING, NUMERIC, CHECKBOX
+		COLUMN, COMBO, STRING, NUMERIC, CHECKBOX, FIXED
 	};
 
 	/**
