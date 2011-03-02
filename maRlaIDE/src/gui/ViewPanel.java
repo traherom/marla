@@ -1783,6 +1783,22 @@ public class ViewPanel extends JPanel
 				valueComponents.add(comboBox);
 				panel.add(tempPanel);
 			}
+			else if(question.getType() == PromptType.FIXED)
+			{
+				JPanel tempPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+				JLabel label = new JLabel(question.getPrompt());
+
+				JTextField textField = new JTextField();
+				textField.setPreferredSize(new Dimension(150, textField.getPreferredSize().height));
+				textField.setEnabled(false);
+				if(question.getAnswer() != null)
+					textField.setText(question.getAnswer().toString());
+
+				tempPanel.add(label);
+				tempPanel.add(textField);
+				valueComponents.add(textField);
+				panel.add(tempPanel);
+			}
 			else
 				Domain.logger.add(new InternalMarlaException("Unhandled PromptType in question dialog"));
 		}
@@ -1809,6 +1825,10 @@ public class ViewPanel extends JPanel
 						else if(question.getType() == PromptType.COMBO || question.getType() == PromptType.COLUMN)
 						{
 							question.setAnswer(((JComboBox) valueComponents.get(i)).getSelectedItem());
+						}
+						else if(question.getType() == PromptType.FIXED)
+						{
+							// Don't set the answer, we're not allowed to change this
 						}
 						else
 						{

@@ -63,6 +63,13 @@ public abstract class Operation extends JLabel implements DataSource, Changeable
 	 */
 	private String name;
 	/**
+	 * Index that this Operation's data starts at. Generally speaking, this would
+	 * be 0 if we have no parent (or it has no data) or the number of columns
+	 * that our parent contains. It could be found each time, but this helps
+	 * speed.
+	 */
+	private int startIndex = 0;
+	/**
 	 * Actual values from computation
 	 */
 	private final DataSet data;
@@ -470,42 +477,118 @@ public abstract class Operation extends JLabel implements DataSource, Changeable
 	public final boolean isUniqueColumnName(String name) throws MarlaException
 	{
 		checkCache();
-		return data.isUniqueColumnName(name);
+
+		// Unique to us?
+		if(!data.isUniqueColumnName(name))
+			return false;
+		else if(parent != null)
+			return parent.isUniqueColumnName(name);
+		else
+			return true;
 	}
 
 	@Override
 	public final int getColumnIndex(String colName) throws MarlaException
 	{
 		checkCache();
-		return data.getColumnIndex(colName);
+
+		// Is it within our parent?
+		int parentIndex = -1;
+		if(parent != null)
+			parentIndex = data.getColumnIndex(colName);
+
+		if(parentIndex != -1)
+			return parentIndex;
+		else
+			return data.getColumnIndex(colName);
+	}
+
+	/**
+	 * Returns the columns that this operation added to the dataset. If
+	 * the operation modified a column that is NOT included here.
+	 * @return List of added columns
+	 */
+	public final List<DataColumn> getNewColumns() throws MarlaException
+	{
+		checkCache();
+
+		List<DataColumn> ourCols = new ArrayList<DataColumn>();
+		for(int i = 0; i < data.getColumnCount(); i++)
+			ourCols.add(data.getColumn(i));
+		
+		return ourCols;
 	}
 
 	@Override
 	public final DataColumn getColumn(String colName) throws MarlaException
 	{
 		checkCache();
-		return data.getColumn(colName);
+
+		DataColumn dc = null;
+
+		if(parent != null)
+		{
+			try
+			{
+				dc = parent.getColumn(colName);
+			}
+			catch(DataNotFoundException ex)
+			{
+				// We'll look in ourselves
+			}
+		}
+		
+		if(dc == null)
+			return data.getColumn(colName);
+		else
+			return dc;
 	}
 
 	@Override
 	public final DataColumn getColumn(int index) throws MarlaException
 	{
 		checkCache();
-		return data.getColumn(index);
+
+		// Is it within us or our parent?
+		if(index < startIndex)
+			return parent.getColumn(index);
+		else
+			return data.getColumn(index - startIndex);
 	}
 
 	@Override
 	public final int getColumnLength() throws MarlaException
 	{
 		checkCache();
-		return data.getColumnLength();
+		
+		int pLen = 0;
+		if(parent != null)
+			pLen = parent.getColumnLength();
+
+		int ourLen = data.getColumnLength();
+
+		if(pLen > ourLen)
+			return pLen;
+		else
+			return ourLen;
 	}
 
 	@Override
 	public final String[] getColumnNames() throws MarlaException
 	{
 		checkCache();
-		return data.getColumnNames();
+
+		String[] parentNames = new String[0];
+		if(parent != null)
+			parentNames = parent.getColumnNames();
+
+		String[] ourNames = data.getColumnNames();
+
+		String[] allNames = new String[parentNames.length + ourNames.length];
+		System.arraycopy(parentNames, 0, allNames, 0, parentNames.length);
+		System.arraycopy(ourNames, 0, allNames, parentNames.length, ourNames.length);
+
+		return allNames;
 	}
 
 	@Override
@@ -615,10 +698,13 @@ public abstract class Operation extends JLabel implements DataSource, Changeable
 
 		try
 		{
+			// Get data from parent to allow us to pull stuff down quickly
+			data.clearColumns();
+			startIndex = parent.getColumnCount();
+
 			// Compute new columns and save the way we do so (R commands) for use by toString()
 			RProcessor proc = RProcessor.getInstance();
 			proc.setRecorderMode(RProcessor.RecordMode.CMDS_ONLY);
-			data.clearColumns();
 			inRecompute = true;
 			computeColumns(proc);
 			operationRecord = proc.fetchInteraction();
@@ -728,7 +814,7 @@ public abstract class Operation extends JLabel implements DataSource, Changeable
 			info.add(questions.get(key));
 		}
 
-		return info;
+		return Collections.unmodifiableList(info);
 	}
 
 	/**
@@ -991,7 +1077,7 @@ public abstract class Operation extends JLabel implements DataSource, Changeable
 	public final String toRFrame() throws MarlaException
 	{
 		checkCache();
-		return data.toRFrame();
+		return DataSet.toRFrame(this);
 	}
 
 	@Override
@@ -1004,7 +1090,12 @@ public abstract class Operation extends JLabel implements DataSource, Changeable
 	public final int getColumnCount() throws MarlaException
 	{
 		checkCache();
-		return data.getColumnCount();
+		
+		int total = 0;
+		if(parent != null)
+			total = parent.getColumnCount();
+
+		return total + data.getColumnCount();
 	}
 
 	@Override

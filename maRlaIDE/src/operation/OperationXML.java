@@ -33,7 +33,6 @@ import problem.DataColumn.DataMode;
 import problem.DataNotFoundException;
 import problem.DataSet;
 import problem.DataSource;
-import problem.DuplicateNameException;
 import problem.InternalMarlaException;
 import problem.MarlaException;
 import problem.Problem;
@@ -68,7 +67,7 @@ public class OperationXML extends Operation
 	/**
 	 * Stores configuration data for a dynamic name/label for the operation
 	 */
-	private Element longNameEl = null;
+	private Element displayNameEl = null;
 	/**
 	 * Cache for the dynamic name that we build for the user. Because we read
 	 * it from the XML we don't want to recalculate every time
@@ -392,6 +391,11 @@ public class OperationXML extends Operation
 				// No processing needed
 				addQuestion(new OperationInfoCheckbox(this, name, prompt));
 			}
+			else if(type == PromptType.FIXED)
+			{
+				// Pull out the default value
+				addQuestion(new OperationInfoFixed(this, name, prompt, queryEl.getAttributeValue("value")));
+			}
 			else
 			{
 				throw new OperationXMLException("Unhandled operation prompt type '" + type + "'");
@@ -399,7 +403,7 @@ public class OperationXML extends Operation
 		}
 
 		// Dynamic name set if specified, purely cosmetic
-		longNameEl = opConfig.getChild("longname");
+		displayNameEl = opConfig.getChild("displayname");
 		checkDisplayName();
 	}
 
@@ -475,8 +479,6 @@ public class OperationXML extends Operation
 				processSet(proc, el);
 			else if(cmdName.equals("save"))
 				processSave(proc, el);
-			else if(cmdName.equals("copy"))
-				processCopy(proc, el);
 			else if(cmdName.equals("loop"))
 				processLoop(proc, el);
 			else if(cmdName.equals("if"))
@@ -521,12 +523,10 @@ public class OperationXML extends Operation
 		{
 			case COMBO: // No processing needed for these
 			case STRING:
+			case FIXED:
 			case NUMERIC:
-				proc.setVariable(rVar, answer.getAnswer());
-				break;
-
 			case CHECKBOX:
-				proc.execute(rVar + " = " + answer.getAnswer().toString().toUpperCase());
+				proc.setVariable(rVar, answer.getAnswer());
 				break;
 
 			case COLUMN:
@@ -746,48 +746,6 @@ public class OperationXML extends Operation
 		proc.stopGraphicOutput();
 	}
 
-	private void processCopy(RProcessor proc, Element copyEl) throws OperationXMLException, RProcessorParseException, RProcessorException, MarlaException
-	{
-		// What column(s) are we supposed to copy?
-		if(Boolean.parseBoolean(copyEl.getAttributeValue("all", "false")))
-		{
-			// Copy all columns
-			DataSource parent = getParentData();
-			for(int i = 0; i < parent.getColumnCount(); i++)
-			{
-				copyColumn(parent.getColumn(i));
-			}
-		}
-		else
-		{
-			// Single column copy
-			String colName = copyEl.getAttributeValue("column");
-			if(colName == null)
-			{
-				// Rats, dynamic one?
-				String dynamicColumnName = copyEl.getAttributeValue("r_column");
-				if(dynamicColumnName == null)
-					throw new OperationXMLException("No column name supplied for copy");
-
-				colName = proc.executeString(dynamicColumnName);
-			}
-
-			try
-			{
-				// Copy it over, with the same name and data
-				copyColumn(colName);
-			}
-			catch(DataNotFoundException ex)
-			{
-				throw new OperationXMLException("Unable to locate column '" + colName + "' for copy");
-			}
-			catch(DuplicateNameException ex)
-			{
-				throw new OperationXMLException("A column copy must occur before any saves to a column of the same name");
-			}
-		}
-	}
-
 	private void processError(RProcessor proc, Element errorEl) throws OperationXMLException
 	{
 		// The operation wants us to throw an error to the user
@@ -865,12 +823,12 @@ public class OperationXML extends Operation
 		if(opConfig == null)
 			return false;
 
-		if(longNameEl != null)
+		if(displayNameEl != null)
 		{
 			StringBuilder shortName = new StringBuilder();
 			StringBuilder longName = new StringBuilder();
 
-			for(Object partObj : longNameEl.getContent())
+			for(Object partObj : displayNameEl.getContent())
 			{
 				// We only deal with elements (stuff we need to replace/handle)
 				// and text, which we stick in verbatim. Ignore everything else, such as comments

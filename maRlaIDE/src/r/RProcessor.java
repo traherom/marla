@@ -660,6 +660,8 @@ public final class RProcessor
 			else
 				execute(name + " = " + val);
 		}
+		else if(val instanceof Boolean)
+			execute(name + " = " + val.toString().toUpperCase());
 		else
 			execute(name + " = \"" + val + '"');
 
@@ -690,25 +692,47 @@ public final class RProcessor
 		cmd.append(name);
 		cmd.append(" = c(");
 
-		// Save as numerical or string vector as appropriate
-		if(vals.get(0) instanceof Double)
+		if(!vals.isEmpty())
 		{
-			for(Object val : vals)
+			// Save as right type of vector
+			if(vals.get(0) instanceof Double)
 			{
-				cmd.append(val);
-				cmd.append(", ");
+				for(Object val : vals)
+				{
+					Double dVal = (Double)val;
+					if(dVal == Double.POSITIVE_INFINITY)
+						cmd.append("Inf");
+					else if(dVal == Double.NEGATIVE_INFINITY)
+						cmd.append("-Inf");
+					else
+						cmd.append(val);
+					cmd.append(", ");
+				}
 			}
-		}
-		else
-		{
-			for(Object val : vals)
+			else if(vals.get(0) instanceof Boolean)
 			{
-				cmd.append('"');
-				cmd.append(val);
-				cmd.append("\", ");
+
+				for(Object val : vals)
+				{
+					cmd.append(val.toString().toUpperCase());
+					cmd.append(", ");
+				}
 			}
+			else
+			{
+				for(Object val : vals)
+				{
+					cmd.append('"');
+					cmd.append(val);
+					cmd.append("\", ");
+				}
+			}
+
+			// Chop off extra comma
+			cmd.replace(cmd.length() - 2, cmd.length() - 1, "");
 		}
-		cmd.replace(cmd.length() - 2, cmd.length() - 1, "");
+
+		// End vector
 		cmd.append(")\n");
 
 		// Run R command

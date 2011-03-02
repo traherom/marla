@@ -39,6 +39,7 @@ import org.jdom.JDOMException;
 import org.jdom.Text;
 import org.jdom.input.SAXBuilder;
 import operation.Operation;
+import operation.OperationInformation;
 import problem.DataColumn;
 import problem.DataSource;
 import problem.SubProblem;
@@ -303,7 +304,7 @@ public class LatexExporter
 
 			// Process, making sure it's reset properly
 			currentSub = null;
-			processSequenceClean(templateXML, writer);
+			processSequenceClean(templateXML.getChild("main"), writer);
 
 			// Close it all out
 			writer.close();
@@ -478,10 +479,14 @@ public class LatexExporter
 
 	private void processSolutionClean(Element el, Writer out) throws LatexException, MarlaException
 	{
-		StringBuilder solutionBlock = new StringBuilder();
+		// Are we supposed to show the raw R code or the more succinct summary
+		// table of the calls?
+		boolean withR = Boolean.parseBoolean(el.getAttributeValue("rcode", "false"));
+		boolean withSummary = Boolean.parseBoolean(el.getAttributeValue("summarize", "true"));
 
 		// Stick in a newline. Sweave blocks must begin at the beginning of the line,
 		// but we don't want to have to require that in the template
+		StringBuilder solutionBlock = new StringBuilder();
 		solutionBlock.append('\n');
 
 		// Find all the operations that are the "solution" right now.
@@ -505,59 +510,30 @@ public class LatexExporter
 
 		if(solOps != null && !solOps.isEmpty())
 		{
-			// Walk through each operation in this solution and dump out
-			// their R code. If an operation has no remarks and doesn't produce
-			// a plot, then combine it with the previous Sweave block.
-			StringBuilder rCmdBlock = new StringBuilder();
-
+			// Walk through each operation in this solution
 			for(Operation op : solOps)
 			{
-				// Are there comments for this operation?
 				if(op.hasRemark())
 				{
-					// End current sweave block if needed
-					if(rCmdBlock.length() != 0)
-					{
-						solutionBlock.append("\n<<>>=\n");
-						solutionBlock.append(rCmdBlock);
-						solutionBlock.append("@\n");
-						rCmdBlock = new StringBuilder();
-					}
-
-					// Add our remark
-					solutionBlock.append('\n');
+					solutionBlock.append("\n\n\\par ");
 					solutionBlock.append(op.getRemark());
 				}
 
-				// Drop in the R for this operation
-				rCmdBlock.append(op.getRCommands(false));
+				solutionBlock.append("\n\\par ");
+				solutionBlock.append(summarizeOperation(op));
 
-				// Are we a plot operation? If so, we need to terminate
-				// the sweave block and save to the larger solution string
 				if(op.hasPlot())
 				{
-					// Special plot sweave start
-					solutionBlock.append("\n<<fig=T>>=\n");
-					solutionBlock.append(rCmdBlock);
-					solutionBlock.append("@\n");
-
-					// Clear out the sweave block
-					rCmdBlock = new StringBuilder();
+					// Add in code to generate plot
+					solutionBlock.append("\n\\begin{center}\n<<fig=T,echo=F>>=\n");
+					solutionBlock.append(op.getRCommands());
+					solutionBlock.append("\n@\n\\end{center}\n");
 				}
-			}
-
-			// Finish up any remaining R code as a normal block. A plot
-			// would have been terminated inside the loop
-			if(rCmdBlock.length() != 0)
-			{
-				solutionBlock.append("\n<<>>=\n");
-				solutionBlock.append(rCmdBlock);
-				solutionBlock.append("@\n");
 			}
 		}
 		else
 			solutionBlock.append("No solution yet\n");
-		
+
 		try
 		{
 			// Write it out
@@ -568,6 +544,52 @@ public class LatexExporter
 		{
 			throw new LatexException("Unable to write solution to export file");
 		}
+	}
+
+	/**
+	 * Takes the given operation and summarizes it, including it's name,
+	 * input parameters, the "main R" given by the operation, and the columns
+	 * it added to the data.
+	 * @param op Operation to summarize
+	 * @return Latex string that gives information about the operation
+	 */
+	private String summarizeOperation(Operation op) throws LatexException, MarlaException
+	{
+		StringBuilder sb = new StringBuilder();
+		sb.append("\\begin{tabular}{c c c}\n");
+		sb.append(" & Parameters & New Data\\\\ \n");
+
+		// Operation name
+		sb.append(op.getName());
+		sb.append(" &\n");
+		
+		// Operation parameters
+		sb.append("\t\\begin{tabular}{r l}\n");
+		for(OperationInformation info : op.getRequiredInfoPrompt())
+		{
+			sb.append("\t\t");
+			sb.append(info.getPrompt());
+			sb.append(" & ");
+			sb.append(info.getAnswer());
+			sb.append("\\\\ \n");
+		}
+		sb.append("\t\\end{tabular} &\n");
+
+		// Columns this operation produced
+		int maxLen = 0;
+		List<DataColumn> newCols = op.getNewColumns();
+		for(DataColumn dc : newCols)
+		{
+			if(maxLen < dc.size())
+				maxLen = dc.size();
+		}
+		
+		sb.append(dataToLatex(null, maxLen, newCols));
+
+		// End the whole summary
+		sb.append("\\end{tabular}\n");
+
+		return sb.toString();
 	}
 
 	private void processDataClean(Element el, Writer out) throws LatexException, MarlaException
@@ -617,60 +639,7 @@ public class LatexExporter
 		StringBuilder sb = new StringBuilder();
 		for(DataSource ds : dsToShow)
 		{
-			int cols = ds.getColumnCount();
-
-			// Start tabular
-			sb.append("\\begin{tabular}{r || ");
-			for(int i = 0; i < cols; i++)
-				sb.append("r |");
-			sb.append("}\n");
-
-			// DataSource name
-			sb.append("\\multicolumn{");
-			sb.append(ds.getColumnCount() + 1);
-			sb.append("}{c}{\\bf ");
-			sb.append(ds.getName());
-			sb.append("} \\\\\n \\cline{2-");
-			sb.append(cols + 1);
-			sb.append("}\n");
-
-			// Column names
-			sb.append("   & ");
-			for(int i = 0; i < cols; i++)
-			{
-				sb.append("$");
-				sb.append(ds.getColumn(i).getName());
-				sb.append("$ ");
-				
-				// Don't end the row with the cell separator
-				if(i + 1 < cols)
-					sb.append("& ");
-			}
-			sb.append("\\\\ \\hline\n");
-
-			// Data
-			for(int i = 0; i < ds.getColumnLength(); i++)
-			{
-				// Index in DataColumn
-				sb.append(i + 1);
-				sb.append(" & ");
-
-				for(int j = 0; j < cols; j++)
-				{
-					// Ensure this column extends this far
-					DataColumn dc = ds.getColumn(j);
-					if(dc.size() > i)
-						sb.append(dc.get(i));
-
-					// Don't end the row with the cell separator
-					if(j + 1 < cols)
-						sb.append(" & ");
-				}
-
-				sb.append("\\\\\n");
-			}
-
-			sb.append("\\end{tabular}\n");
+			sb.append(dataToLatex(ds));
 		}
 
 		try
@@ -683,6 +652,81 @@ public class LatexExporter
 		{
 			throw new LatexException("Unable to write data to export file");
 		}
+	}
+
+	private String dataToLatex(DataSource ds) throws MarlaException
+	{
+		List<DataColumn> allCols = new ArrayList<DataColumn>(ds.getColumnCount());
+		for(int i = 0; i < ds.getColumnCount(); i++)
+			allCols.add(ds.getColumn(i));
+		
+		return dataToLatex(ds.getName(), ds.getColumnLength(), allCols);
+	}
+
+	private String dataToLatex(String dsName, int maxLen, List<DataColumn> columns)
+	{
+		if(columns.isEmpty())
+			return "";
+
+		StringBuilder sb = new StringBuilder();
+
+		// Start tabular
+		sb.append("\\begin{tabular}{r || ");
+		for(int i = 0; i < columns.size(); i++)
+			sb.append("r | ");
+		sb.append("}\n");
+
+		// DataSource name
+		if(dsName != null)
+		{
+			sb.append("\\multicolumn{");
+			sb.append(columns.size() + 1);
+			sb.append("}{c}{\\bf ");
+			sb.append(dsName);
+			sb.append("} \\\\\n \\cline{2-");
+			sb.append(columns.size() + 1);
+			sb.append("}\n");
+		}
+		
+		// Column names
+		sb.append("   & ");
+		for(int i = 0; i < columns.size(); i++)
+		{
+			sb.append("$");
+			sb.append(columns.get(i).getName());
+			sb.append("$ ");
+
+			// Don't end the row with the cell separator
+			if(i + 1 < columns.size())
+				sb.append("& ");
+		}
+		sb.append("\\\\ \\hline\n");
+
+		// Data
+		for(int i = 0; i < maxLen; i++)
+		{
+			// Index in DataColumn
+			sb.append(i + 1);
+			sb.append(" & ");
+
+			for(int j = 0; j < columns.size(); j++)
+			{
+				// Ensure this column extends this far
+				DataColumn dc = columns.get(j);
+				if(dc.size() > i)
+					sb.append(dc.get(i));
+
+				// Don't end the row with the cell separator
+				if(j + 1 < columns.size())
+					sb.append(" & ");
+			}
+
+			sb.append("\\\\\n");
+		}
+
+		sb.append("\\end{tabular}\n");
+
+		return sb.toString();
 	}
 
 	private void processIfClean(Element ifEl, Writer out) throws LatexException, MarlaException
