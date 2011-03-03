@@ -54,13 +54,18 @@ public interface DataSource extends Loadable
 	public String getDisplayString(boolean abbrv);
 
 	/**
-	 * Returns the column in the dataset with the given name.
-	 *
+	 * Returns the column with the given name in the DataSource
 	 * @param colName List of values in that column. Column manipulations will
 	 *					be reflected in the dataset itself unless a copy is made.
 	 * @return The DataColumn requested
 	 */
 	public DataColumn getColumn(String colName) throws DataNotFoundException, MarlaException;
+
+	/**
+	 * Returns a list of all the columns in the DataSource
+	 * @return The DataColumns in the current DataSource
+	 */
+	public List<DataColumn> getColumns() throws MarlaException;
 
 	/**
 	 * Returns the column index (as would be passed to getColumn(int))

@@ -300,6 +300,7 @@ public class LatexExporter
 		{
 			// Write to a temporary file
 			File tempFile = File.createTempFile("marla", ".rnw");
+			tempFile.deleteOnExit();
 			BufferedWriter writer = new BufferedWriter(new FileWriter(tempFile));
 
 			// Process, making sure it's reset properly
@@ -482,7 +483,6 @@ public class LatexExporter
 		// Are we supposed to show the raw R code or the more succinct summary
 		// table of the calls?
 		boolean withR = Boolean.parseBoolean(el.getAttributeValue("rcode", "false"));
-		boolean withSummary = Boolean.parseBoolean(el.getAttributeValue("summarize", "true"));
 
 		// Stick in a newline. Sweave blocks must begin at the beginning of the line,
 		// but we don't want to have to require that in the template
@@ -520,7 +520,7 @@ public class LatexExporter
 				}
 
 				solutionBlock.append("\n\\par ");
-				solutionBlock.append(summarizeOperation(op));
+				solutionBlock.append(summarizeOperation(op, withR));
 			}
 		}
 		else
@@ -543,9 +543,10 @@ public class LatexExporter
 	 * input parameters, the "main R" given by the operation, and the columns
 	 * it added to the data.
 	 * @param op Operation to summarize
+	 * @param includeR Should the R code be included in the summary?
 	 * @return Latex string that gives information about the operation
 	 */
-	private String summarizeOperation(Operation op) throws LatexException, MarlaException
+	private String summarizeOperation(Operation op, boolean includeR) throws LatexException, MarlaException
 	{
 		StringBuilder sb = new StringBuilder();
 
@@ -554,7 +555,7 @@ public class LatexExporter
 		int newColLen = op.getNewColumnLength();
 		for(int i = 1; i < newColLen; i++)
 		{
-			sb.append(" | l");
+			sb.append(" l");
 		}
 		sb.append("}\n");
 
@@ -622,12 +623,29 @@ public class LatexExporter
 				sb.append(newColLen + 1);
 			else
 				sb.append('2');
-			sb.append("}{|c|}{\n<<echo=F,fig=T>>=\n");
+			sb.append("}{|c|}{\n");
 
+			sb.append("<<echo=F,fig=T>>=\n");
 			sb.append(op.getRCommands());
+			sb.append("@\n");
 
-			sb.append("@\n}\\\\\n");
-			sb.append("\\hline");
+			sb.append("}\\\\\n\\hline\n");
+		}
+
+		if(includeR)
+		{
+			sb.append("\\multicolumn{");
+			if(newColLen > 0)
+				sb.append(newColLen + 1);
+			else
+				sb.append('2');
+			sb.append("}{|p{5cm}|}{\n");
+
+			sb.append("<<>>=\n");
+			sb.append(op.getRCommands(false));
+			sb.append("@\n");
+		
+			sb.append("}\\\\\n\\hline\n");
 		}
 
 		// End table
@@ -683,7 +701,7 @@ public class LatexExporter
 		StringBuilder sb = new StringBuilder();
 		for(DataSource ds : dsToShow)
 		{
-			sb.append(dataToLatex(ds));
+			sb.append(dataToLatex("Final Data", ds.getColumnLength(), ds.getColumns()));
 		}
 
 		try
@@ -700,11 +718,7 @@ public class LatexExporter
 
 	private String dataToLatex(DataSource ds) throws MarlaException
 	{
-		List<DataColumn> allCols = new ArrayList<DataColumn>(ds.getColumnCount());
-		for(int i = 0; i < ds.getColumnCount(); i++)
-			allCols.add(ds.getColumn(i));
-		
-		return dataToLatex(ds.getName(), ds.getColumnLength(), allCols);
+		return dataToLatex(ds.getName(), ds.getColumnLength(), ds.getColumns());
 	}
 
 	private String dataToLatex(String dsName, int maxLen, List<DataColumn> columns)
