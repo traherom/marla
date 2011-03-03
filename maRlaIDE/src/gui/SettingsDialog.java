@@ -18,6 +18,9 @@
 
 package gui;
 
+import problem.MarlaException;
+import resource.Configuration;
+
 /**
  * The New Problem Wizard Dialog.
  *
@@ -46,32 +49,233 @@ public class SettingsDialog extends EscapeDialog
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        settingsPanel = new javax.swing.JPanel();
+        settingsTabbedPane = new javax.swing.JTabbedPane();
+        preferencesPanel = new javax.swing.JPanel();
+        lineLabel1 = new javax.swing.JLabel();
+        preferencesLabel = new javax.swing.JLabel();
+        studentInformationPanel = new javax.swing.JPanel();
+        studentNameLabel = new javax.swing.JLabel();
+        courseShortNameLabel = new javax.swing.JLabel();
+        courseLongNameLabel = new javax.swing.JLabel();
+        studentNameTextField = new javax.swing.JTextField();
+        courseShortNameTextField = new javax.swing.JTextField();
+        courseLongNameTextField = new javax.swing.JTextField();
+        lineLabel2 = new javax.swing.JLabel();
+        studentInformationLabel = new javax.swing.JLabel();
+        jPanel1 = new javax.swing.JPanel();
+        jButton1 = new javax.swing.JButton();
+        jLabel1 = new javax.swing.JLabel();
+
+        setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
+        setTitle("Settings");
         setAlwaysOnTop(true);
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosing(java.awt.event.WindowEvent evt) {
+                formWindowClosing(evt);
+            }
+        });
+
+        settingsTabbedPane.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+
+        preferencesPanel.setLayout(null);
+
+        lineLabel1.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        lineLabel1.setText("______________________________________________________");
+        preferencesPanel.add(lineLabel1);
+        lineLabel1.setBounds(10, 10, 500, 20);
+
+        preferencesLabel.setFont(new java.awt.Font("Verdana", 1, 12)); // NOI18N
+        preferencesLabel.setText("Preferences");
+        preferencesPanel.add(preferencesLabel);
+        preferencesLabel.setBounds(10, 10, 250, 16);
+
+        settingsTabbedPane.addTab("Preferences", preferencesPanel);
+
+        studentInformationPanel.setLayout(null);
+
+        studentNameLabel.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        studentNameLabel.setText("Student name:");
+        studentInformationPanel.add(studentNameLabel);
+        studentNameLabel.setBounds(10, 50, 94, 20);
+
+        courseShortNameLabel.setFont(new java.awt.Font("Verdana", 0, 12));
+        courseShortNameLabel.setText("Course short name:");
+        studentInformationPanel.add(courseShortNameLabel);
+        courseShortNameLabel.setBounds(10, 90, 126, 20);
+
+        courseLongNameLabel.setFont(new java.awt.Font("Verdana", 0, 12));
+        courseLongNameLabel.setText("Course long name:");
+        studentInformationPanel.add(courseLongNameLabel);
+        courseLongNameLabel.setBounds(10, 130, 120, 20);
+
+        studentNameTextField.setFont(new java.awt.Font("Verdana", 0, 12));
+        studentInformationPanel.add(studentNameTextField);
+        studentNameTextField.setBounds(110, 50, 289, 22);
+
+        courseShortNameTextField.setFont(new java.awt.Font("Verdana", 0, 12));
+        studentInformationPanel.add(courseShortNameTextField);
+        courseShortNameTextField.setBounds(147, 90, 150, 22);
+
+        courseLongNameTextField.setFont(new java.awt.Font("Verdana", 0, 12));
+        studentInformationPanel.add(courseLongNameTextField);
+        courseLongNameTextField.setBounds(140, 130, 240, 22);
+
+        lineLabel2.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        lineLabel2.setText("______________________________________________________");
+        studentInformationPanel.add(lineLabel2);
+        lineLabel2.setBounds(10, 10, 500, 20);
+
+        studentInformationLabel.setFont(new java.awt.Font("Verdana", 1, 12)); // NOI18N
+        studentInformationLabel.setText("Student Information");
+        studentInformationPanel.add(studentInformationLabel);
+        studentInformationLabel.setBounds(10, 10, 250, 16);
+
+        settingsTabbedPane.addTab("Student Information", studentInformationPanel);
+
+        jPanel1.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+
+        jButton1.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        jButton1.setText("Close");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+
+        jLabel1.setFont(new java.awt.Font("Verdana", 1, 14)); // NOI18N
+        jLabel1.setText("Settings");
+
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel1)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 394, Short.MAX_VALUE)
+                .addComponent(jButton1)
+                .addContainerGap())
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jButton1)
+                    .addComponent(jLabel1))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        javax.swing.GroupLayout settingsPanelLayout = new javax.swing.GroupLayout(settingsPanel);
+        settingsPanel.setLayout(settingsPanelLayout);
+        settingsPanelLayout.setHorizontalGroup(
+            settingsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(settingsPanelLayout.createSequentialGroup()
+                .addGap(10, 10, 10)
+                .addComponent(settingsTabbedPane, javax.swing.GroupLayout.DEFAULT_SIZE, 528, Short.MAX_VALUE)
+                .addGap(10, 10, 10))
+        );
+        settingsPanelLayout.setVerticalGroup(
+            settingsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(settingsPanelLayout.createSequentialGroup()
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(settingsTabbedPane, javax.swing.GroupLayout.DEFAULT_SIZE, 328, Short.MAX_VALUE)
+                .addContainerGap())
+        );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 834, Short.MAX_VALUE)
+            .addComponent(settingsPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 465, Short.MAX_VALUE)
+            .addComponent(settingsPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+	private void formWindowClosing(java.awt.event.WindowEvent evt)//GEN-FIRST:event_formWindowClosing
+	{//GEN-HEADEREND:event_formWindowClosing
+		closeSettings();
+	}//GEN-LAST:event_formWindowClosing
+
+	private void jButton1ActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jButton1ActionPerformed
+	{//GEN-HEADEREND:event_jButton1ActionPerformed
+		closeSettings();
+	}//GEN-LAST:event_jButton1ActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    
+    private javax.swing.JLabel courseLongNameLabel;
+    private javax.swing.JTextField courseLongNameTextField;
+    private javax.swing.JLabel courseShortNameLabel;
+    private javax.swing.JTextField courseShortNameTextField;
+    private javax.swing.JButton jButton1;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JLabel lineLabel1;
+    private javax.swing.JLabel lineLabel2;
+    private javax.swing.JLabel preferencesLabel;
+    private javax.swing.JPanel preferencesPanel;
+    private javax.swing.JPanel settingsPanel;
+    private javax.swing.JTabbedPane settingsTabbedPane;
+    private javax.swing.JLabel studentInformationLabel;
+    private javax.swing.JPanel studentInformationPanel;
+    private javax.swing.JLabel studentNameLabel;
+    private javax.swing.JTextField studentNameTextField;
     // End of variables declaration//GEN-END:variables
+
+	/**
+	 * Close the settings dialog.
+	 */
+	protected void closeSettings()
+	{
+		try
+		{
+			Configuration config = Configuration.getInstance();
+			if (!config.get(Configuration.ConfigType.UserName).toString().equals (studentNameTextField.getText()))
+			{
+				config.set(Configuration.ConfigType.UserName, studentNameTextField.getText());
+			}
+			if (!config.get(Configuration.ConfigType.ClassShort).toString().equals (courseShortNameTextField.getText()))
+			{
+				config.set(Configuration.ConfigType.ClassShort, courseShortNameTextField.getText());
+			}
+			if (!config.get(Configuration.ConfigType.ClassLong).toString().equals (courseLongNameTextField.getText()))
+			{
+				config.set(Configuration.ConfigType.ClassLong, courseLongNameTextField.getText());
+			}
+		}
+		catch (MarlaException ex)
+		{
+			Domain.logger.add(ex);
+		}
+
+		dispose();
+	}
 
 	/**
 	 * Launch the Settings dialog.
 	 */
 	protected void launchSettingsDialog()
 	{
+		try
+		{
+			Configuration config = Configuration.getInstance();
+			studentNameTextField.setText (config.get(Configuration.ConfigType.UserName).toString());
+			courseShortNameTextField.setText (config.get(Configuration.ConfigType.ClassShort).toString());
+			courseLongNameTextField.setText (config.get(Configuration.ConfigType.ClassLong).toString());
+		}
+		catch (MarlaException ex)
+		{
+			Domain.logger.add(ex);
+		}
+
 		// Pack and show the Settings dialog
 		pack ();
 		setLocationRelativeTo (VIEW_PANEL);

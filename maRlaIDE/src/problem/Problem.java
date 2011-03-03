@@ -775,10 +775,7 @@ public class Problem implements ProblemPart
 		// After we're all done loading, rebuild the trees
 		if(domain != null)
 		{
-			for(DataSet ds : newProb.datasets)
-			{
-				domain.rebuildTree(ds);
-			}
+			domain.rebuildWorkspace();
 		}
 
 		return newProb;

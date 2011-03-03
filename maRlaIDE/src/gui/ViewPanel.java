@@ -74,6 +74,7 @@ import operation.OperationInformation;
 import operation.OperationInformation.PromptType;
 import operation.OperationXML;
 import problem.InternalMarlaException;
+import problem.Problem;
 import problem.SubProblem;
 import r.RProcessorException;
 import resource.LoadSaveThread;
@@ -875,7 +876,7 @@ public class ViewPanel extends JPanel
 						yDragOffset = evt.getY() - draggingComponent.getY();
 						if(parentData != null)
 						{
-							rebuildTree(parentData);
+							rebuildWorkspace();
 						}
 						workspacePanel.repaint();
 					}
@@ -945,12 +946,13 @@ public class ViewPanel extends JPanel
 					{
 						draggingComponent.setBorder(NO_BORDER);
 						draggingComponent.setSize(draggingComponent.getPreferredSize());
-						rebuildTree((DataSet) draggingComponent);
+
+						rebuildWorkspace();
 					}
 				}
 				draggingComponent = null;
 			}
-			workspacePanel.repaint();
+			rebuildWorkspace();
 		}
 		else if(evt.getButton() == MouseEvent.BUTTON3)
 		{
@@ -1004,6 +1006,7 @@ public class ViewPanel extends JPanel
 					else
 					{
 						JMenuItem item = new JMenuItem(name);
+						item.setFont (fontPlain11);
 						item.addActionListener(new ActionListener()
 						{
 							@Override
@@ -1217,40 +1220,8 @@ public class ViewPanel extends JPanel
 	private void workspacePanelComponentResized(java.awt.event.ComponentEvent evt)//GEN-FIRST:event_workspacePanelComponentResized
 	{//GEN-HEADEREND:event_workspacePanelComponentResized
 		trashCan.setLocation(workspacePanel.getWidth() - 40, workspacePanel.getHeight() - 40);
-		ensureDataSetsVisible();
+		ensureComponentsVisible();
 	}//GEN-LAST:event_workspacePanelComponentResized
-
-	private void ensureDataSetsVisible()
-	{
-		// Ensure all datasets are within our new bounds
-		if(domain.problem != null)
-		{
-			for(int i = 0; i < domain.problem.getDataCount(); i++)
-			{
-				DataSet ds = domain.problem.getData(i);
-
-				int x = ds.getX();
-				int y = ds.getY();
-				int minX = 0;
-				int maxX = workspacePanel.getWidth() - ds.getWidth();
-				int minY = 0;
-				int maxY = workspacePanel.getHeight() - ds.getHeight();
-
-				// Only do the move if we're within the workspace still
-				if(x < minX)
-					x = minX;
-				if(x > maxX)
-					x = maxX;
-				if(y < minY)
-					y = minY;
-				if(y > maxY)
-					y = maxY;
-
-				ds.setLocation (x, y);
-				rebuildTree (ds);
-			}
-		}
-	}
 
 	private void workspacePanelComponentAdded(java.awt.event.ContainerEvent evt)//GEN-FIRST:event_workspacePanelComponentAdded
 	{//GEN-HEADEREND:event_workspacePanelComponentAdded
@@ -1309,34 +1280,16 @@ public class ViewPanel extends JPanel
 			++fontSize;
 			spaceWidth += 5;
 			spaceHeight += 5;
-			for(int i = 0; i < domain.problem.getDataCount(); ++i)
-			{
-				rebuildTree(domain.problem.getData(i));
-			}
-			for(Operation op : domain.getUnattachedOperations())
-			{
-				op.setFont(workspaceFontBold);
-				op.setText("<html>" + op.getDisplayString(abbreviated) + "</html>");
-				op.setSize(op.getPreferredSize());
-			}
-			workspacePanel.repaint ();
+			
+			rebuildWorkspace();
 		}
 		else if(button == minusFontButton)
 		{
 			--fontSize;
 			spaceWidth -= 5;
 			spaceHeight -= 5;
-			for(int i = 0; i < domain.problem.getDataCount(); ++i)
-			{
-				rebuildTree(domain.problem.getData(i));
-			}
-			for(Operation op : domain.getUnattachedOperations())
-			{
-				op.setFont(workspaceFontBold);
-				op.setText("<html>" + op.getDisplayString(abbreviated) + "</html>");
-				op.setSize(op.getPreferredSize());
-			}
-			workspacePanel.repaint ();
+
+			rebuildWorkspace();
 		}
 		else if(button == abbreviateButton)
 		{
@@ -1357,10 +1310,7 @@ public class ViewPanel extends JPanel
 
 			if(domain.problem != null)
 			{
-				for(int i = 0; i < domain.problem.getDataCount(); ++i)
-				{
-					rebuildTree(domain.problem.getData(i));
-				}
+				rebuildWorkspace();
 			}
 		}
 		else if(button == settingsButton)
@@ -1517,6 +1467,80 @@ public class ViewPanel extends JPanel
 	}//GEN-LAST:event_untieSubProblemSubMenuMenuSelected
 
 	/**
+	 * Ensure all data sets are within the bounds of the workspace.
+	 */
+	private void ensureComponentsVisible()
+	{
+		// Ensure all datasets are within our new bounds
+		if(domain.problem != null)
+		{
+			for(int i = 0; i < domain.problem.getDataCount(); i++)
+			{
+				DataSet ds = domain.problem.getData(i);
+
+				int x = ds.getX();
+				int y = ds.getY();
+
+				// Only do the move if we're within the workspace still
+				if(x < 0)
+				{
+					x = 0;
+				}
+				if(x > workspacePanel.getWidth() - ds.getWidth())
+				{
+					x = workspacePanel.getWidth() - ds.getWidth();
+				}
+				if(y < 0)
+				{
+					y = 0;
+				}
+				if(y > workspacePanel.getHeight() - ds.getHeight())
+				{
+					y = workspacePanel.getHeight() - ds.getHeight();
+				}
+
+				ds.setLocation (x, y);
+			}
+
+			for(Operation op : domain.getUnattachedOperations())
+			{
+				int x = op.getX();
+				int y = op.getY();
+
+				// Only do the move if we're within the workspace still
+				if(x < 0)
+				{
+					x = 0;
+				}
+				if(x > workspacePanel.getWidth() - op.getWidth())
+				{
+					x = workspacePanel.getWidth() - op.getWidth();
+				}
+				if(y < 0)
+				{
+					y = 0;
+				}
+				if(y > workspacePanel.getWidth() - op.getWidth())
+				{
+					y = workspacePanel.getWidth() - op.getWidth();
+				}
+
+				op.setLocation(x, y);
+			}
+
+			rebuildWorkspace();
+		}
+	}
+
+	/**
+	 * Ensure all unattached operations are within the bounds of the workspace.
+	 */
+	private void ensureUnattachedOperationsVisible()
+	{
+
+	}
+
+	/**
 	 * Manage drag events within the workspace panel
 	 *
 	 * @param evt The mouse event for the drag.
@@ -1564,9 +1588,13 @@ public class ViewPanel extends JPanel
 
 				// Only do the move if we're within the workspace still
 				if(x < minX || x > maxX)
+				{
 					x = draggingComponent.getX();
+				}
 				if(y < minY || y > maxY)
+				{
 					y = draggingComponent.getY();
+				}
 
 				if(draggingComponent instanceof Operation)
 				{
@@ -1575,9 +1603,41 @@ public class ViewPanel extends JPanel
 				else if(draggingComponent instanceof DataSet)
 				{
 					draggingComponent.setLocation(x, y);
-					rebuildTree((DataSet) draggingComponent);
 				}
+
+				rebuildWorkspace();
 			}
+		}
+	}
+
+	/**
+	 * Rebuild the entire workspace, including data sets and attached and unattached
+	 * operations therein.
+	 */
+	protected void rebuildWorkspace()
+	{
+		Problem problem;
+		if (NEW_PROBLEM_WIZARD_DIALOG.newProblem != null)
+		{
+			problem = NEW_PROBLEM_WIZARD_DIALOG.newProblem;
+		}
+		else
+		{
+			problem = domain.problem;
+		}
+		if (problem != null)
+		{
+			for(int i = 0; i < problem.getDataCount(); ++i)
+			{
+				rebuildTree(problem.getData(i));
+			}
+			for(Operation op : domain.getUnattachedOperations())
+			{
+				op.setFont(workspaceFontBold);
+				op.setText("<html>" + op.getDisplayString(abbreviated) + "</html>");
+				op.setSize(op.getPreferredSize());
+			}
+			workspacePanel.repaint();
 		}
 	}
 
@@ -1768,7 +1828,7 @@ public class ViewPanel extends JPanel
 
 			if(dataSet != null)
 			{
-				rebuildTree(dataSet);
+				rebuildWorkspace();
 			}
 		}
 		else if(component != trashCan)
@@ -1957,8 +2017,6 @@ public class ViewPanel extends JPanel
 			workspacePanel.setVisible(true);
 			preWorkspacePanel.setVisible(false);
 
-			workspacePanel.repaint();
-
 			mainFrame.setTitle(mainFrame.getDefaultTitle() + " - " + domain.problem.getFileName().substring(domain.problem.getFileName().lastIndexOf(System.getProperty("file.separator")) + 1, domain.problem.getFileName().lastIndexOf(".")));
 
 			if(!editing)
@@ -1970,7 +2028,7 @@ public class ViewPanel extends JPanel
 			abbreviateButton.setEnabled(true);
 
 			// Move trees around if our workspace is smaller than the saving one
-			ensureDataSetsVisible();
+			ensureComponentsVisible();
 		}
 	}
 
