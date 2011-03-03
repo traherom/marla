@@ -146,6 +146,10 @@ public class ViewPanel extends JPanel
 	public static Font workspaceFontBold = new Font("Verdana", Font.BOLD, 12);
 	/** The New Problem Wizard dialog.*/
 	public final NewProblemWizardDialog NEW_PROBLEM_WIZARD_DIALOG = new NewProblemWizardDialog(this, domain);
+	/** The Settings dialog.*/
+	public final SettingsDialog SETTINGS_DIALOG = new SettingsDialog(this);
+	/** The Input dialog.*/
+	public final InputDialog INPUT_DIALOG = new InputDialog(this);
 	/** The data set being dragged.*/
 	protected JComponent draggingComponent = null;
 	/** The component currently being hovered over.*/
@@ -258,7 +262,7 @@ public class ViewPanel extends JPanel
 		initLoading = false;
 		newButton.setEnabled(true);
 		openButton.setEnabled(true);
-		//settingsButton.setEnabled(true);
+		settingsButton.setEnabled(true);
 	}
 
 	/**
@@ -493,10 +497,10 @@ public class ViewPanel extends JPanel
             public void menuCanceled(javax.swing.event.MenuEvent evt) {
             }
             public void menuDeselected(javax.swing.event.MenuEvent evt) {
-                tieSubProblemSubMenuMenuDeselected(evt);
+                untieSubProblemSubMenuMenuDeselected(evt);
             }
             public void menuSelected(javax.swing.event.MenuEvent evt) {
-                tieSubProblemSubMenuMenuSelected(evt);
+                untieSubProblemSubMenuMenuSelected(evt);
             }
         });
         rightClickMenu.add(untieSubProblemSubMenu);
@@ -1359,6 +1363,7 @@ public class ViewPanel extends JPanel
 		}
 		else if(button == settingsButton)
 		{
+			SETTINGS_DIALOG.launchSettingsDialog();
 		}
 	}//GEN-LAST:event_buttonMouseReleased
 
@@ -1387,7 +1392,7 @@ public class ViewPanel extends JPanel
 	private void editDataSetMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editDataSetMenuItemActionPerformed
 		if(rightClickedComponent != null)
 		{
-			editProblem();
+			NEW_PROBLEM_WIZARD_DIALOG.editProblem();
 			NEW_PROBLEM_WIZARD_DIALOG.editDataSet((DataSet) rightClickedComponent);
 		}
 	}//GEN-LAST:event_editDataSetMenuItemActionPerformed
@@ -1420,19 +1425,94 @@ public class ViewPanel extends JPanel
 	private void remarkMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_remarkMenuItemActionPerformed
 		if(rightClickedComponent != null && rightClickedComponent instanceof Operation)
 		{
-			((Operation) rightClickedComponent).setRemark(JOptionPane.showInputDialog(this, "Give a remark for this operation:", ((Operation) rightClickedComponent).getRemark()));
+			String newRemark = INPUT_DIALOG.launchInputDialog(this, "Operation Remark", "Give a remark for this operation:", ((Operation) rightClickedComponent).getRemark());
+			if (!newRemark.equals (((Operation) rightClickedComponent).getRemark()))
+			{
+				((Operation) rightClickedComponent).setRemark(newRemark);
+			}
 		}
 	}//GEN-LAST:event_remarkMenuItemActionPerformed
 
-	/**
-	 * Edit the current problem.
-	 */
-	protected void editProblem()
-	{
-		NEW_PROBLEM_WIZARD_DIALOG.setTitle("Edit Problem");
-		NEW_PROBLEM_WIZARD_DIALOG.welcomeTextLabel.setText(ViewPanel.welcomeEditText);
-		NEW_PROBLEM_WIZARD_DIALOG.launchNewProblemWizard(true);
-	}
+	private void untieSubProblemSubMenuMenuDeselected(javax.swing.event.MenuEvent evt)//GEN-FIRST:event_untieSubProblemSubMenuMenuDeselected
+	{//GEN-HEADEREND:event_untieSubProblemSubMenuMenuDeselected
+		if(rightClickedComponent != null && untieSubProblemSubMenu.isEnabled())
+		{
+			rightClickedComponent.setBorder(NO_BORDER);
+			rightClickedComponent.setSize(rightClickedComponent.getPreferredSize());
+			List<SubProblem> subProblems;
+			try
+			{
+				if(rightClickedComponent instanceof Operation)
+				{
+					subProblems = ((Operation) rightClickedComponent).getSubProblems ();
+				}
+				else
+				{
+					subProblems = ((DataSet) rightClickedComponent).getSubProblems ();
+				}
+				for (SubProblem subProblem : subProblems)
+				{
+					for (int i = 0; i < subProblem.getDataCount(); ++i)
+					{
+						subProblem.getData(i).setBorder(NO_BORDER);
+						subProblem.getData(i).setSize(subProblem.getData(i).getPreferredSize());
+					}
+
+					for (Operation op : subProblem.getSolutionChain())
+					{
+						op.setBorder(NO_BORDER);
+						op.setSize(op.getPreferredSize());
+					}
+				}
+			}
+			catch (MarlaException ex)
+			{
+				Domain.logger.add (ex);
+			}
+		}
+	}//GEN-LAST:event_untieSubProblemSubMenuMenuDeselected
+
+	private void untieSubProblemSubMenuMenuSelected(javax.swing.event.MenuEvent evt)//GEN-FIRST:event_untieSubProblemSubMenuMenuSelected
+	{//GEN-HEADEREND:event_untieSubProblemSubMenuMenuSelected
+		if(rightClickedComponent != null && untieSubProblemSubMenu.isEnabled())
+		{
+			rightClickedComponent.setBorder(BLACK_BORDER);
+			rightClickedComponent.setSize(rightClickedComponent.getPreferredSize());
+			List<SubProblem> subProblems;
+			try
+			{
+				if(rightClickedComponent instanceof Operation)
+				{
+					subProblems = ((Operation) rightClickedComponent).getSubProblems ();
+				}
+				else
+				{
+					subProblems = ((DataSet) rightClickedComponent).getSubProblems ();
+				}
+				for (SubProblem subProblem : subProblems)
+				{
+					if (subProblem.getSolutionStart() instanceof DataSet)
+					{
+						for (int i = 0; i < subProblem.getDataCount(); ++i)
+						{
+							subProblem.getData(i).setBorder(BLACK_BORDER);
+							subProblem.getData(i).setSize(subProblem.getData(i).getPreferredSize());
+						}
+					}
+
+					for (Operation op : subProblem.getSolutionChain())
+					{
+						op.setBorder(BLACK_BORDER);
+						op.setSize(op.getPreferredSize());
+					}
+				}
+			}
+			catch (MarlaException ex)
+			{
+				Domain.logger.add (ex);
+			}
+		}
+	}//GEN-LAST:event_untieSubProblemSubMenuMenuSelected
 
 	/**
 	 * Manage drag events within the workspace panel

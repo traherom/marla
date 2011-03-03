@@ -72,7 +72,7 @@ public class Problem implements ProblemPart
 	/**
 	 * "Conclusion" of the problem. IE, the final conclusion for the analysis
 	 */
-	private String conclusion;
+	private String conclusion = "";
 	/**
 	 * All datasets associated with this problem.
 	 */

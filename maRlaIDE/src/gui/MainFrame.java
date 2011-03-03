@@ -19,6 +19,9 @@
 package gui;
 
 import java.awt.Dimension;
+import java.awt.Toolkit;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.List;
@@ -37,7 +40,7 @@ import resource.Configuration.ConfigType;
 public class MainFrame extends JFrame
 {
 	/** The minimum size the window frame is allowed to be.*/
-	private final Dimension MINIMUM_WINDOW_SIZE = new Dimension (1000, 540);
+	private final Dimension MINIMUM_WINDOW_SIZE = new Dimension(1000, 540);
 	/** The panel that is added to the frame.*/
 	private static ViewPanel viewPanel;
 
@@ -47,44 +50,87 @@ public class MainFrame extends JFrame
 	public MainFrame(String[] args)
 	{
 		// Construct the view panel
-		viewPanel = new ViewPanel (this);
+		viewPanel = new ViewPanel(this);
 		// Add the view to the frame
-		add (viewPanel);
+		add(viewPanel);
+
+		addComponentListener(new ComponentListener()
+		{
+			@Override
+			public void componentResized(ComponentEvent e)
+			{
+				Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+				int width = e.getComponent().getWidth();
+				int height = e.getComponent().getHeight();
+				if(width < MINIMUM_WINDOW_SIZE.width)
+				{
+					width = MINIMUM_WINDOW_SIZE.width;
+				}
+				if(height < MINIMUM_WINDOW_SIZE.height)
+				{
+					height = MINIMUM_WINDOW_SIZE.height;
+				}
+				if(width > screenSize.width)
+				{
+					width = screenSize.width;
+				}
+				if(height > screenSize.height)
+				{
+					height = screenSize.height;
+				}
+				setSize(new Dimension(width, height));
+			}
+
+			@Override
+			public void componentMoved(ComponentEvent ce)
+			{
+			}
+
+			@Override
+			public void componentShown(ComponentEvent ce)
+			{
+			}
+
+			@Override
+			public void componentHidden(ComponentEvent ce)
+			{
+			}
+		});
 
 		// Initialize frame components
-		initComponents ();
-		initMyComponents ();
+		initComponents();
+		initMyComponents();
 
-		Configuration conf = Configuration.getInstance ();
-		List<ConfigType> missed = conf.configureAll (args);
+		Configuration conf = Configuration.getInstance();
+		List<ConfigType> missed = conf.configureAll(args);
 
 		int currIndex = 0;
-		while(currIndex < missed.size ())
+		while(currIndex < missed.size())
 		{
-			ConfigType curr = missed.get (currIndex);
+			ConfigType curr = missed.get(currIndex);
 
 			boolean fixed = false;
 			try
 			{
-				viewPanel.openChooserDialog.setDialogTitle (Configuration.getName (curr));
-				viewPanel.openChooserDialog.resetChoosableFileFilters ();
-				viewPanel.openChooserDialog.setFileSelectionMode (JFileChooser.FILES_AND_DIRECTORIES);
+				viewPanel.openChooserDialog.setDialogTitle(Configuration.getName(curr));
+				viewPanel.openChooserDialog.resetChoosableFileFilters();
+				viewPanel.openChooserDialog.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
 				// Display the chooser and retrieve the selected file
-				int response = viewPanel.openChooserDialog.showOpenDialog (viewPanel);
-				if (response == JFileChooser.APPROVE_OPTION)
+				int response = viewPanel.openChooserDialog.showOpenDialog(viewPanel);
+				if(response == JFileChooser.APPROVE_OPTION)
 				{
-					conf.set (curr, viewPanel.openChooserDialog.getSelectedFile ().getPath ());
+					conf.set(curr, viewPanel.openChooserDialog.getSelectedFile().getPath());
 					fixed = true;
 				}
 				else
 				{
-					JOptionPane.showMessageDialog (viewPanel, "The maRla Project cannot run without these resources.", "Fatal Error", JOptionPane.ERROR_MESSAGE);
-					System.exit (1);
+					JOptionPane.showMessageDialog(viewPanel, "The maRla Project cannot run without these resources.", "Fatal Error", JOptionPane.ERROR_MESSAGE);
+					System.exit(1);
 				}
 			}
-			catch (MarlaException ex)
+			catch(MarlaException ex)
 			{
-				System.out.println (ex.getMessage ());
+				System.out.println(ex.getMessage());
 				fixed = false;
 			}
 
@@ -96,20 +142,20 @@ public class MainFrame extends JFrame
 		try
 		{
 			// Preemptively save config file
-			conf.save ();
+			conf.save();
 		}
-		catch (MarlaException ex)
+		catch(MarlaException ex)
 		{
-			System.out.println ("Error saving configuration file: " + ex.getMessage ());
+			System.out.println("Error saving configuration file: " + ex.getMessage());
 		}
-		
+
 		try
 		{
-			viewPanel.loadOperations ();
+			viewPanel.loadOperations();
 		}
-		catch (MarlaException ex)
+		catch(MarlaException ex)
 		{
-			JOptionPane.showMessageDialog (viewPanel, ex.getMessage (), "Load Error", JOptionPane.WARNING_MESSAGE);
+			JOptionPane.showMessageDialog(viewPanel, ex.getMessage(), "Load Error", JOptionPane.WARNING_MESSAGE);
 		}
 	}
 
@@ -119,19 +165,19 @@ public class MainFrame extends JFrame
 	private void initMyComponents()
 	{
 		// Set the minimum size a user can adjust the frame to
-		setMinimumSize (MINIMUM_WINDOW_SIZE);
+		setMinimumSize(MINIMUM_WINDOW_SIZE);
 		// Set the location of the frame to the center of the screen
-		setLocationRelativeTo (null);
+		setLocationRelativeTo(null);
 		// Set the title of the frame, displaying the version number only if we're in pre-release
-		setTitle (getDefaultTitle ());
-		
+		setTitle(getDefaultTitle());
+
 		// Add window listeners to ensure proper saving, sizing, and orientation is done when needed
-		addWindowListener (new WindowAdapter ()
+		addWindowListener(new WindowAdapter()
 		{
 			@Override
 			public void windowClosing(WindowEvent e)
 			{
-				viewPanel.quit (true);
+				viewPanel.quit(true);
 			}
 		});
 	}
@@ -170,10 +216,14 @@ public class MainFrame extends JFrame
         problemMenu = new javax.swing.JMenu();
         editProblemMenuItem = new javax.swing.JMenuItem();
         editSubProblemsMenuItem = new javax.swing.JMenuItem();
+        editConclusionMenuItem = new javax.swing.JMenuItem();
         problemSeparator1 = new javax.swing.JPopupMenu.Separator();
         newDataSetMenuItem = new javax.swing.JMenuItem();
+        editDataSetsMenuItem = new javax.swing.JMenuItem();
         toolsMenu = new javax.swing.JMenu();
         reloadOperationgsMenuItem = new javax.swing.JMenuItem();
+        jSeparator1 = new javax.swing.JPopupMenu.Separator();
+        settingsMenuItem = new javax.swing.JMenuItem();
         helpMenu = new javax.swing.JMenu();
         helpContentsMenuItem = new javax.swing.JMenuItem();
         helpSeparator1 = new javax.swing.JPopupMenu.Separator();
@@ -341,7 +391,7 @@ public class MainFrame extends JFrame
             }
         });
 
-        editProblemMenuItem.setFont(new java.awt.Font("Verdana", 0, 12));
+        editProblemMenuItem.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
         editProblemMenuItem.setText("Edit Problem...");
         editProblemMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -358,6 +408,15 @@ public class MainFrame extends JFrame
             }
         });
         problemMenu.add(editSubProblemsMenuItem);
+
+        editConclusionMenuItem.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        editConclusionMenuItem.setText("Edit Conclusion...");
+        editConclusionMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                editConclusionMenuItemActionPerformed(evt);
+            }
+        });
+        problemMenu.add(editConclusionMenuItem);
         problemMenu.add(problemSeparator1);
 
         newDataSetMenuItem.setFont(new java.awt.Font("Verdana", 0, 12));
@@ -368,6 +427,15 @@ public class MainFrame extends JFrame
             }
         });
         problemMenu.add(newDataSetMenuItem);
+
+        editDataSetsMenuItem.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        editDataSetsMenuItem.setText("Edit Data Sets...");
+        editDataSetsMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                editDataSetsMenuItemActionPerformed(evt);
+            }
+        });
+        problemMenu.add(editDataSetsMenuItem);
 
         menuBar.add(problemMenu);
 
@@ -391,6 +459,16 @@ public class MainFrame extends JFrame
             }
         });
         toolsMenu.add(reloadOperationgsMenuItem);
+        toolsMenu.add(jSeparator1);
+
+        settingsMenuItem.setFont(new java.awt.Font("Verdana", 0, 12));
+        settingsMenuItem.setText("Settings");
+        settingsMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                settingsMenuItemActionPerformed(evt);
+            }
+        });
+        toolsMenu.add(settingsMenuItem);
 
         menuBar.add(toolsMenu);
 
@@ -408,15 +486,18 @@ public class MainFrame extends JFrame
 
         helpContentsMenuItem.setFont(new java.awt.Font("Verdana", 0, 12));
         helpContentsMenuItem.setText("Help Contents");
+        helpContentsMenuItem.setEnabled(false);
         helpMenu.add(helpContentsMenuItem);
         helpMenu.add(helpSeparator1);
 
         checkForUpdatesMenuItem.setFont(new java.awt.Font("Verdana", 0, 12));
         checkForUpdatesMenuItem.setText("Check for Updates");
+        checkForUpdatesMenuItem.setEnabled(false);
         helpMenu.add(checkForUpdatesMenuItem);
 
         aboutMenuItem.setFont(new java.awt.Font("Verdana", 0, 12));
         aboutMenuItem.setText("About");
+        aboutMenuItem.setEnabled(false);
         helpMenu.add(aboutMenuItem);
 
         menuBar.add(helpMenu);
@@ -428,195 +509,220 @@ public class MainFrame extends JFrame
 
 	private void exitMenuItemActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_exitMenuItemActionPerformed
 	{//GEN-HEADEREND:event_exitMenuItemActionPerformed
-		viewPanel.quit (true);
+		viewPanel.quit(true);
 	}//GEN-LAST:event_exitMenuItemActionPerformed
 
 	private void newProblemMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newProblemMenuItemActionPerformed
-		viewPanel.newProblem ();
+		viewPanel.newProblem();
 	}//GEN-LAST:event_newProblemMenuItemActionPerformed
 
 	private void openProblemMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_openProblemMenuItemActionPerformed
-		viewPanel.domain.load ();
+		viewPanel.domain.load();
 	}//GEN-LAST:event_openProblemMenuItemActionPerformed
 
 	private void saveMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveMenuItemActionPerformed
-		viewPanel.domain.save ();
+		viewPanel.domain.save();
 	}//GEN-LAST:event_saveMenuItemActionPerformed
 
 	private void saveAsMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveAsMenuItemActionPerformed
-		viewPanel.domain.saveAs ();
+		viewPanel.domain.saveAs();
 	}//GEN-LAST:event_saveAsMenuItemActionPerformed
 
 	private void fileMenuMenuSelected(javax.swing.event.MenuEvent evt) {//GEN-FIRST:event_fileMenuMenuSelected
-		if (viewPanel.initLoading)
+		if(viewPanel.initLoading)
 		{
-			for (int i = 0; i < fileMenu.getMenuComponentCount (); ++i)
+			for(int i = 0; i < fileMenu.getMenuComponentCount(); ++i)
 			{
-				fileMenu.getMenuComponent (i).setEnabled (false);
+				fileMenu.getMenuComponent(i).setEnabled(false);
 			}
 		}
 		else
 		{
-			newProblemMenuItem.setEnabled (true);
-			openProblemMenuItem.setEnabled (true);
-			exitMenuItem.setEnabled (true);
+			newProblemMenuItem.setEnabled(true);
+			openProblemMenuItem.setEnabled(true);
+			exitMenuItem.setEnabled(true);
 
-			if (viewPanel.domain.problem != null)
+			if(viewPanel.domain.problem != null)
 			{
-				exportForLatexMenuItem.setEnabled (true);
-				exportToPdfMenuItem.setEnabled (true);
-				closeProblemMenuItem.setEnabled (true);
-				saveAsMenuItem.setEnabled (true);
-				if (viewPanel.domain.problem.isChanged ())
+				exportForLatexMenuItem.setEnabled(true);
+				exportToPdfMenuItem.setEnabled(true);
+				closeProblemMenuItem.setEnabled(true);
+				saveAsMenuItem.setEnabled(true);
+				if(viewPanel.domain.problem.isChanged())
 				{
-					saveMenuItem.setEnabled (true);
+					saveMenuItem.setEnabled(true);
 				}
 				else
 				{
-					saveMenuItem.setEnabled (false);
+					saveMenuItem.setEnabled(false);
 				}
 			}
 			else
 			{
-				closeProblemMenuItem.setEnabled (false);
-				saveMenuItem.setEnabled (false);
-				saveAsMenuItem.setEnabled (false);
-				exportForLatexMenuItem.setEnabled (false);
-				exportToPdfMenuItem.setEnabled (false);
+				closeProblemMenuItem.setEnabled(false);
+				saveMenuItem.setEnabled(false);
+				saveAsMenuItem.setEnabled(false);
+				exportForLatexMenuItem.setEnabled(false);
+				exportToPdfMenuItem.setEnabled(false);
 			}
 		}
 	}//GEN-LAST:event_fileMenuMenuSelected
 
 	private void editMenuMenuSelected(javax.swing.event.MenuEvent evt) {//GEN-FIRST:event_editMenuMenuSelected
-		if (viewPanel.initLoading)
+		if(viewPanel.initLoading)
 		{
-			for (int i = 0; i < fileMenu.getMenuComponentCount (); ++i)
+			for(int i = 0; i < fileMenu.getMenuComponentCount(); ++i)
 			{
-				fileMenu.getMenuComponent (i).setEnabled (false);
+				fileMenu.getMenuComponent(i).setEnabled(false);
 			}
 		}
 		else
 		{
-			if (viewPanel.domain.problem != null)
+			if(viewPanel.domain.problem != null)
 			{
-				undoMenuItem.setEnabled (true);
-				redoMenuItem.setEnabled (true);
-				cutMenuItem.setEnabled (true);
-				copyMenuItem.setEnabled (true);
-				pasteMenuItem.setEnabled (true);
-				deleteMenuItem.setEnabled (true);
-				selectAllMenuItem.setEnabled (true);
+				undoMenuItem.setEnabled(true);
+				redoMenuItem.setEnabled(true);
+				cutMenuItem.setEnabled(true);
+				copyMenuItem.setEnabled(true);
+				pasteMenuItem.setEnabled(true);
+				deleteMenuItem.setEnabled(true);
+				selectAllMenuItem.setEnabled(true);
 			}
 			else
 			{
-				undoMenuItem.setEnabled (false);
-				redoMenuItem.setEnabled (false);
-				cutMenuItem.setEnabled (false);
-				copyMenuItem.setEnabled (false);
-				pasteMenuItem.setEnabled (false);
-				deleteMenuItem.setEnabled (false);
-				selectAllMenuItem.setEnabled (false);
+				undoMenuItem.setEnabled(false);
+				redoMenuItem.setEnabled(false);
+				cutMenuItem.setEnabled(false);
+				copyMenuItem.setEnabled(false);
+				pasteMenuItem.setEnabled(false);
+				deleteMenuItem.setEnabled(false);
+				selectAllMenuItem.setEnabled(false);
 			}
 		}
 	}//GEN-LAST:event_editMenuMenuSelected
 
 	private void problemMenuMenuSelected(javax.swing.event.MenuEvent evt) {//GEN-FIRST:event_problemMenuMenuSelected
-		if (viewPanel.initLoading)
+		if(viewPanel.initLoading)
 		{
-			for (int i = 0; i < fileMenu.getMenuComponentCount (); ++i)
+			for(int i = 0; i < fileMenu.getMenuComponentCount(); ++i)
 			{
-				fileMenu.getMenuComponent (i).setEnabled (false);
+				fileMenu.getMenuComponent(i).setEnabled(false);
 			}
 		}
 		else
 		{
-			if (viewPanel.domain.problem != null)
+			if(viewPanel.domain.problem != null)
 			{
-				editProblemMenuItem.setEnabled (true);
-				editSubProblemsMenuItem.setEnabled (true);
-				newDataSetMenuItem.setEnabled (true);
+				editProblemMenuItem.setEnabled(true);
+				editConclusionMenuItem.setEnabled(true);
+				editSubProblemsMenuItem.setEnabled(true);
+				newDataSetMenuItem.setEnabled(true);
+				editDataSetsMenuItem.setEnabled(true);
 			}
 			else
 			{
-				editProblemMenuItem.setEnabled (false);
-				editSubProblemsMenuItem.setEnabled (false);
-				newDataSetMenuItem.setEnabled (false);
+				editProblemMenuItem.setEnabled(false);
+				editConclusionMenuItem.setEnabled(false);
+				editSubProblemsMenuItem.setEnabled(false);
+				newDataSetMenuItem.setEnabled(false);
+				editDataSetsMenuItem.setEnabled(false);
 			}
 		}
 	}//GEN-LAST:event_problemMenuMenuSelected
 
 	private void toolsMenuMenuSelected(javax.swing.event.MenuEvent evt) {//GEN-FIRST:event_toolsMenuMenuSelected
-		if (viewPanel.initLoading)
+		if(viewPanel.initLoading)
 		{
-			for (int i = 0; i < fileMenu.getMenuComponentCount (); ++i)
+			for(int i = 0; i < fileMenu.getMenuComponentCount(); ++i)
 			{
-				fileMenu.getMenuComponent (i).setEnabled (false);
+				fileMenu.getMenuComponent(i).setEnabled(false);
 			}
 		}
 		else
 		{
-			if (viewPanel.domain.problem != null)
+			if(viewPanel.domain.problem != null)
 			{
-				reloadOperationgsMenuItem.setEnabled (true);
+				reloadOperationgsMenuItem.setEnabled(true);
 			}
 			else
 			{
-				reloadOperationgsMenuItem.setEnabled (false);
+				reloadOperationgsMenuItem.setEnabled(false);
 			}
 		}
 	}//GEN-LAST:event_toolsMenuMenuSelected
 
 	private void closeProblemMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_closeProblemMenuItemActionPerformed
-		viewPanel.closeProblem (false);
+		viewPanel.closeProblem(false);
 	}//GEN-LAST:event_closeProblemMenuItemActionPerformed
 
 	private void editProblemMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editProblemMenuItemActionPerformed
-		viewPanel.editProblem ();
+		viewPanel.NEW_PROBLEM_WIZARD_DIALOG.editProblem();
 	}//GEN-LAST:event_editProblemMenuItemActionPerformed
 
 	private void newDataSetMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newDataSetMenuItemActionPerformed
-		viewPanel.NEW_PROBLEM_WIZARD_DIALOG.setTitle ("Edit Problem");
-		viewPanel.NEW_PROBLEM_WIZARD_DIALOG.welcomeTextLabel.setText (ViewPanel.welcomeEditText);
-		editProblemMenuItemActionPerformed (null);
-		viewPanel.NEW_PROBLEM_WIZARD_DIALOG.addNewDataSet ();
+		viewPanel.NEW_PROBLEM_WIZARD_DIALOG.setTitle("Edit Problem");
+		viewPanel.NEW_PROBLEM_WIZARD_DIALOG.welcomeTextLabel.setText(ViewPanel.welcomeEditText);
+		editProblemMenuItemActionPerformed(null);
+		viewPanel.NEW_PROBLEM_WIZARD_DIALOG.addNewDataSet();
 	}//GEN-LAST:event_newDataSetMenuItemActionPerformed
 
 	private void reloadOperationgsMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_reloadOperationgsMenuItemActionPerformed
-		viewPanel.reloadOperations ();
+		viewPanel.reloadOperations();
 	}//GEN-LAST:event_reloadOperationgsMenuItemActionPerformed
 
 	private void exportToPdfMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exportToPdfMenuItemActionPerformed
-		viewPanel.domain.exportToPdf ();
+		viewPanel.domain.exportToPdf();
 	}//GEN-LAST:event_exportToPdfMenuItemActionPerformed
 
 	private void exportForLatexMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exportForLatexMenuItemActionPerformed
-		viewPanel.domain.exportForLatex ();
+		viewPanel.domain.exportForLatex();
 	}//GEN-LAST:event_exportForLatexMenuItemActionPerformed
 
 	private void editSubProblemsMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editSubProblemsMenuItemActionPerformed
-		viewPanel.NEW_PROBLEM_WIZARD_DIALOG.setTitle ("Edit Problem");
-		viewPanel.NEW_PROBLEM_WIZARD_DIALOG.welcomeTextLabel.setText (ViewPanel.welcomeEditText);
-		editProblemMenuItemActionPerformed (null);
-		viewPanel.NEW_PROBLEM_WIZARD_DIALOG.editSubProblems ();
+		viewPanel.NEW_PROBLEM_WIZARD_DIALOG.setTitle("Edit Problem");
+		viewPanel.NEW_PROBLEM_WIZARD_DIALOG.welcomeTextLabel.setText(ViewPanel.welcomeEditText);
+		editProblemMenuItemActionPerformed(null);
+		viewPanel.NEW_PROBLEM_WIZARD_DIALOG.editSubProblems();
 	}//GEN-LAST:event_editSubProblemsMenuItemActionPerformed
 
 	private void helpMenuMenuSelected(javax.swing.event.MenuEvent evt)//GEN-FIRST:event_helpMenuMenuSelected
 	{//GEN-HEADEREND:event_helpMenuMenuSelected
-		if (viewPanel.initLoading)
+		if(viewPanel.initLoading)
 		{
-			for (int i = 0; i < fileMenu.getMenuComponentCount (); ++i)
+			for(int i = 0; i < fileMenu.getMenuComponentCount(); ++i)
 			{
-				fileMenu.getMenuComponent (i).setEnabled (false);
+				fileMenu.getMenuComponent(i).setEnabled(false);
 			}
 		}
 		else
 		{
-			for (int i = 0; i < fileMenu.getMenuComponentCount (); ++i)
+			for(int i = 0; i < fileMenu.getMenuComponentCount(); ++i)
 			{
-				fileMenu.getMenuComponent (i).setEnabled (true);
+				fileMenu.getMenuComponent(i).setEnabled(true);
 			}
 		}
 	}//GEN-LAST:event_helpMenuMenuSelected
+
+	private void settingsMenuItemActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_settingsMenuItemActionPerformed
+	{//GEN-HEADEREND:event_settingsMenuItemActionPerformed
+		viewPanel.SETTINGS_DIALOG.launchSettingsDialog();
+	}//GEN-LAST:event_settingsMenuItemActionPerformed
+
+	private void editConclusionMenuItemActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_editConclusionMenuItemActionPerformed
+	{//GEN-HEADEREND:event_editConclusionMenuItemActionPerformed
+		viewPanel.NEW_PROBLEM_WIZARD_DIALOG.setTitle("Edit Problem");
+		viewPanel.NEW_PROBLEM_WIZARD_DIALOG.welcomeTextLabel.setText(ViewPanel.welcomeEditText);
+		editProblemMenuItemActionPerformed(null);
+		viewPanel.NEW_PROBLEM_WIZARD_DIALOG.editConclusion();
+	}//GEN-LAST:event_editConclusionMenuItemActionPerformed
+
+	private void editDataSetsMenuItemActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_editDataSetsMenuItemActionPerformed
+	{//GEN-HEADEREND:event_editDataSetsMenuItemActionPerformed
+		viewPanel.NEW_PROBLEM_WIZARD_DIALOG.setTitle("Edit Problem");
+		viewPanel.NEW_PROBLEM_WIZARD_DIALOG.welcomeTextLabel.setText(ViewPanel.welcomeEditText);
+		editProblemMenuItemActionPerformed(null);
+		viewPanel.NEW_PROBLEM_WIZARD_DIALOG.editDataSet(null);
+	}//GEN-LAST:event_editDataSetsMenuItemActionPerformed
 
 	/**
 	 * Retrieves the default title, which is the program name with it's version number.
@@ -626,7 +732,7 @@ public class MainFrame extends JFrame
 	protected String getDefaultTitle()
 	{
 		String title = Domain.NAME;
-		if (!Domain.PRE_RELEASE.equals (""))
+		if(!Domain.PRE_RELEASE.equals(""))
 		{
 			title += " " + Domain.VERSION + " " + Domain.PRE_RELEASE;
 		}
@@ -639,6 +745,8 @@ public class MainFrame extends JFrame
     private javax.swing.JMenuItem copyMenuItem;
     private javax.swing.JMenuItem cutMenuItem;
     private javax.swing.JMenuItem deleteMenuItem;
+    private javax.swing.JMenuItem editConclusionMenuItem;
+    private javax.swing.JMenuItem editDataSetsMenuItem;
     private javax.swing.JMenu editMenu;
     private javax.swing.JMenuItem editProblemMenuItem;
     private javax.swing.JPopupMenu.Separator editSeparator1;
@@ -653,6 +761,7 @@ public class MainFrame extends JFrame
     private javax.swing.JMenuItem helpContentsMenuItem;
     private javax.swing.JMenu helpMenu;
     private javax.swing.JPopupMenu.Separator helpSeparator1;
+    private javax.swing.JPopupMenu.Separator jSeparator1;
     private javax.swing.JMenuBar menuBar;
     private javax.swing.JMenuItem newDataSetMenuItem;
     private javax.swing.JMenuItem newProblemMenuItem;
@@ -665,6 +774,7 @@ public class MainFrame extends JFrame
     private javax.swing.JMenuItem saveAsMenuItem;
     private javax.swing.JMenuItem saveMenuItem;
     private javax.swing.JMenuItem selectAllMenuItem;
+    private javax.swing.JMenuItem settingsMenuItem;
     private javax.swing.JMenu toolsMenu;
     private javax.swing.JMenuItem undoMenuItem;
     // End of variables declaration//GEN-END:variables
