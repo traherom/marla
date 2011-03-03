@@ -116,6 +116,8 @@ public class ViewPanel extends JPanel
 	public final DragDrop DND_LISTENER = new DragDrop(this);
 	/** Default, plain, 12-point font.*/
 	public static Font FONT_PLAIN_12 = new Font("Verdana", Font.PLAIN, 12);
+	/** Default, bold, 11-point font.*/
+	public static Font FONT_BOLD_11 = new Font("Verdana", Font.BOLD, 11);
 	/** Default, bold, 12-point font.*/
 	public static Font FONT_BOLD_12 = new Font("Verdana", Font.BOLD, 12);
 	/** Layout constraints for the palette.*/
@@ -1715,6 +1717,7 @@ public class ViewPanel extends JPanel
 			if(duplicate)
 			{
 				newOperation = Operation.createOperation(operation.getName());
+				newOperation.setFont(ViewPanel.workspaceFontBold);
 			}
 			else
 			{
@@ -1775,6 +1778,7 @@ public class ViewPanel extends JPanel
 			{
 				newOperation = Operation.createOperation(operation.getName());
 				newOperation.setText("<html>" + operation.getDisplayString(abbreviated) + "</html>");
+				newOperation.setFont(ViewPanel.workspaceFontBold);
 			}
 			else
 			{

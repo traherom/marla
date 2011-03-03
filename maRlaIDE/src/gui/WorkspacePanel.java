@@ -73,25 +73,43 @@ public class WorkspacePanel extends JPanel
 			}
 			for (int j = 0; j < dataSet.getOperationCount(); ++j)
 			{
+				Operation topOp = dataSet.getOperation(j);
 				int x1 = (dataSet.getX () + dataSet.getX () + dataSet.getWidth ()) / 2;
 				int y1 = dataSet.getY () + dataSet.getHeight ();
-				int x2 = (dataSet.getOperation (j).getX () + dataSet.getOperation (j).getX () + dataSet.getOperation (j).getWidth ()) / 2;
-				int y2 = dataSet.getOperation (j).getY ();
+				int x2 = (topOp.getX () + dataSet.getOperation (j).getX () + topOp.getWidth ()) / 2;
+				int y2 = topOp.getY ();
+				if (!topOp.getSubProblems().isEmpty())
+				{
+					g2.setPaint(topOp.getSubProblems().get(0).getColor());
+				}
+				else
+				{
+					g2.setPaint(Color.DARK_GRAY);
+				}
 				g2.draw (new Line2D.Double (x1, y1, x2, y2));
 
-				if (dataSet.getOperation(j).getParent () == null || (dataSet.getOperation(j).getParent () == null && dataSet.getOperation(j).getParent () != this))
+				if (topOp.getParent () == null || (topOp.getParent () == null && topOp.getParent () != this))
 				{
-					add (dataSet.getOperation(j));
+					add (topOp);
 				}
-				List<Operation> operations = dataSet.getOperation (j).getAllChildOperations();
+				List<Operation> operations = topOp.getAllChildOperations();
 				if (operations.size () > 0)
 				{
-					connectOperations (g2, operations.get (0));
+					Operation op = operations.get (0);
+					connectOperations (g2, op);
 
-					x1 = (dataSet.getOperation (j).getX () + dataSet.getOperation (j).getX () + dataSet.getOperation (j).getWidth ()) / 2;
-					y1 = dataSet.getOperation (j).getY () + dataSet.getOperation (j).getHeight ();
-					x2 = (operations.get (0).getX () + operations.get (0).getX () + operations.get (0).getWidth ()) / 2;
-					y2 = operations.get (0).getY ();
+					x1 = (topOp.getX () + topOp.getX () + topOp.getWidth ()) / 2;
+					y1 = topOp.getY () + topOp.getHeight ();
+					x2 = (op.getX () + op.getX () + op.getWidth ()) / 2;
+					y2 = op.getY ();
+					if (!topOp.getSubProblems().isEmpty())
+					{
+						g2.setPaint(op.getSubProblems().get(0).getColor());
+					}
+					else
+					{
+						g2.setPaint(Color.DARK_GRAY);
+					}
 					g2.draw (new Line2D.Double (x1, y1, x2, y2));
 				}
 			}

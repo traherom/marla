@@ -45,7 +45,7 @@ public class SubProblem implements ProblemPart
 	 * "Conclusion" of the subproblem. IE, the final conclusion for the analysis
 	 * marked in the solution.
 	 */
-	private String conclusion;
+	private String conclusion = "";
 	/**
 	 * Identifier for this part of the problem. For example, "part A,"
 	 * B, C, etc
