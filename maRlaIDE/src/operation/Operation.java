@@ -35,6 +35,8 @@ import problem.DataSource;
 import problem.DuplicateNameException;
 import problem.InternalMarlaException;
 import problem.MarlaException;
+import problem.Problem;
+import problem.SubProblem;
 import r.RProcessor;
 import r.RProcessorException;
 import resource.ConfigurationException;
@@ -272,6 +274,25 @@ public abstract class Operation extends JLabel implements DataSource, Changeable
 		}
 	}
 
+	@Override
+	public final List<SubProblem> getSubProblems()
+	{
+		List<SubProblem> subs = new ArrayList<SubProblem>();
+
+		Problem prob = getParentProblem();
+		if(prob == null)
+			return subs;
+
+		for(int i = 0; i < prob.getSubProblemCount(); i++)
+		{
+			SubProblem sub = prob.getSubProblem(i);
+			if(sub.isDataSourceInSolution(this))
+				subs.add(sub);
+		}
+
+		return subs;
+	}
+
 	/**
 	 * Sets the name of the operation, only used internally
 	 * @param newName New name for the operation
@@ -441,6 +462,15 @@ public abstract class Operation extends JLabel implements DataSource, Changeable
 	public final DataSource getParentData()
 	{
 		return parent;
+	}
+
+	@Override
+	public final Problem getParentProblem()
+	{
+		if(parent != null)
+			return parent.getParentProblem();
+		else
+			return null;
 	}
 
 	@Override

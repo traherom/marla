@@ -324,11 +324,7 @@ public final class DataSet extends JLabel implements DataSource, Changeable
 		return oldParent;
 	}
 
-	/**
-	 * Returns the ProblemPart that this dataset belongs to. Return
-	 * is null if there is no parent for this problem.
-	 * @return Parent problem, null if none
-	 */
+	@Override
 	public final Problem getParentProblem()
 	{
 		return (Problem) parent;
@@ -338,6 +334,25 @@ public final class DataSet extends JLabel implements DataSource, Changeable
 	public final DataSource getRootDataSource()
 	{
 		return this;
+	}
+
+	@Override
+	public final List<SubProblem> getSubProblems()
+	{
+		List<SubProblem> subs = new ArrayList<SubProblem>();
+
+		Problem prob = getParentProblem();
+		if(prob == null)
+			return subs;
+
+		for(int i = 0; i < prob.getSubProblemCount(); i++)
+		{
+			SubProblem sub = prob.getSubProblem(i);
+			if(sub.isDataSourceInSolution(this))
+				subs.add(sub);
+		}
+
+		return subs;
 	}
 
 	/**

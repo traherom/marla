@@ -223,4 +223,17 @@ public interface DataSource extends Loadable
 	 * correct version and rebuilds the tree if needed
 	 */
 	public void checkDisplayName();
+
+	/**
+	 * Returns the ProblemPart that this DataSource belongs to. Return
+	 * is null if there is no parent for this source
+	 * @return Parent problem, null if none
+	 */
+	public Problem getParentProblem();
+
+	/**
+	 * Gets the subproblems this DataSource is a part of
+	 * @return SubProblem we are a solution to or an empty list if there is none
+	 */
+	public List<SubProblem> getSubProblems();
 }
