@@ -17,6 +17,7 @@
  */
 package problem;
 
+import java.awt.Color;
 import operation.Operation;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -66,6 +67,11 @@ public class SubProblem implements ProblemPart
 	 * Problem we belong to
 	 */
 	private final ProblemPart parent;
+	/**
+	 * Saves a color that represents the subproblem. Used by the GUI for
+	 * rendering
+	 */
+	private Color highlightColor = Color.BLACK;
 
 	/**
 	 * Initializes the subproblem with a description of the question it asks
@@ -99,6 +105,31 @@ public class SubProblem implements ProblemPart
 		this.parent = parent;
 	}
 
+	/**
+	 * Sets the "highlight" color for the SubProblems and returns the previously
+	 * set color
+	 * @param newColor New color to set for problem
+	 * @return Previously set color (black by default)
+	 */
+	public Color setColor(Color newColor)
+	{
+		Color oldColor = highlightColor;
+		highlightColor = newColor;
+
+		markUnsaved();
+
+		return oldColor;
+	}
+
+	/**
+	 * Returns the currently set highlight color 
+	 * @return Current highlight color, black if not changed otherwise
+	 */
+	public Color getColor()
+	{
+		return highlightColor;
+	}
+
 	@Override
 	public String getStatement()
 	{
@@ -109,6 +140,8 @@ public class SubProblem implements ProblemPart
 	public void setStatement(String newStatement)
 	{
 		partDesc = newStatement;
+		
+		markUnsaved();
 	}
 
 	@Override
@@ -122,6 +155,9 @@ public class SubProblem implements ProblemPart
 	{
 		String oldConc = conclusion;
 		conclusion = newConclusion;
+
+		markUnsaved();
+
 		return oldConc;
 	}
 
@@ -369,6 +405,8 @@ public class SubProblem implements ProblemPart
 		Element subEl = new Element("part");
 		subEl.setAttribute("id", id);
 
+		subEl.setAttribute("color", String.valueOf(highlightColor.getRGB()));
+
 		if(startSolutionStep != null)
 			subEl.setAttribute("start", Integer.toString(startSolutionStep.getID()));
 		else
@@ -398,6 +436,9 @@ public class SubProblem implements ProblemPart
 										   subEl.getChildText("statement"));
 		newSub.isLoading = true;
 		newSub.setConclusion(subEl.getChildText("conclusion"));
+
+		Color c = new Color(Integer.parseInt(subEl.getAttributeValue("color")));
+		newSub.setColor(c);
 
 		// Now find our start and end Operation objects so we can point
 		// to them again
