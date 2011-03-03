@@ -28,10 +28,10 @@ import java.util.List;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import latex.LatexExporter;
-import problem.DataSet;
 import problem.MarlaException;
 import operation.Operation;
 import operation.OperationInfoRequiredException;
+import problem.DataSet;
 import problem.Problem;
 import resource.LoadSaveThread;
 
@@ -131,7 +131,7 @@ public class Domain
 	{
 		viewPanel.workspacePanel.add(op);
 		op.setText("<html>" + op.getDisplayString(false) + "</html>");
-		op.setPreferredSize(op.getPreferredSize());
+		op.setSize(op.getPreferredSize());
 	}
 
 	/**
@@ -181,13 +181,20 @@ public class Domain
 	}
 
 	/**
-	 * Tells the view to rebuild and repaint the tree.
-	 *
-	 * @param dataSet The data set to rebuild in the tree.
+	 * Tells the view to rebuild and repaint the given tree.
+	 * @param dataSet
 	 */
 	public void rebuildTree(DataSet dataSet)
 	{
-		viewPanel.rebuildTree (dataSet);
+		viewPanel.rebuildTree(dataSet);
+	}
+
+	/**
+	 * Tells the view to rebuild and repaint the entire workspace.
+	 */
+	public void rebuildWorkspace()
+	{
+		viewPanel.rebuildWorkspace();
 	}
 
 	/**
