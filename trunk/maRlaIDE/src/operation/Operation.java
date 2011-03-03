@@ -292,6 +292,9 @@ public abstract class Operation extends JLabel implements DataSource, Changeable
 	{
 		String oldRemark = remark;
 		remark = newRemark;
+
+		markUnsaved();
+
 		return oldRemark;
 	}
 
@@ -560,7 +563,7 @@ public abstract class Operation extends JLabel implements DataSource, Changeable
 	public final int getColumnLength() throws MarlaException
 	{
 		checkCache();
-		
+
 		int pLen = 0;
 		if(parent != null)
 			pLen = parent.getColumnLength();
@@ -571,6 +574,27 @@ public abstract class Operation extends JLabel implements DataSource, Changeable
 			return pLen;
 		else
 			return ourLen;
+	}
+
+	/**
+	 * Performs the same function as getColumnLength() but only for "new"
+	 * columns that this operation added
+	 * @return Maximum length of the newly added columns. -1 if there are no
+	 * new columns
+	 */
+	public final int getNewColumnLength() throws MarlaException
+	{
+		checkCache();
+
+		int max = -1;
+		List<DataColumn> newCols = getNewColumns();
+		for(DataColumn dc : newCols)
+		{
+			if(max < dc.size())
+				max = dc.size();
+		}
+
+		return max;
 	}
 
 	@Override

@@ -521,14 +521,6 @@ public class LatexExporter
 
 				solutionBlock.append("\n\\par ");
 				solutionBlock.append(summarizeOperation(op));
-
-				if(op.hasPlot())
-				{
-					// Add in code to generate plot
-					solutionBlock.append("\n\\begin{center}\n<<fig=T,echo=F>>=\n");
-					solutionBlock.append(op.getRCommands());
-					solutionBlock.append("\n@\n\\end{center}\n");
-				}
 			}
 		}
 		else
@@ -556,37 +548,89 @@ public class LatexExporter
 	private String summarizeOperation(Operation op) throws LatexException, MarlaException
 	{
 		StringBuilder sb = new StringBuilder();
-		sb.append("\\begin{tabular}{c c c}\n");
-		sb.append(" & Parameters & New Data\\\\ \n");
+
+		// Start table
+		sb.append("\\begin{tabular}{ l || l ");
+		int newColLen = op.getNewColumnLength();
+		for(int i = 1; i < newColLen; i++)
+		{
+			sb.append(" | l");
+		}
+		sb.append("}\n");
 
 		// Operation name
+		sb.append("\\multicolumn{1}{l||}{{\\bf ");
 		sb.append(op.getName());
-		sb.append(" &\n");
-		
-		// Operation parameters
-		sb.append("\t\\begin{tabular}{r l}\n");
-		for(OperationInformation info : op.getRequiredInfoPrompt())
-		{
-			sb.append("\t\t");
-			sb.append(info.getPrompt());
-			sb.append(" & ");
-			sb.append(info.getAnswer());
-			sb.append("\\\\ \n");
-		}
-		sb.append("\t\\end{tabular} &\n");
+		sb.append("}} & ");
 
-		// Columns this operation produced
-		int maxLen = 0;
+		// Parameters
+		List<OperationInformation> params = op.getRequiredInfoPrompt();
+		if(!params.isEmpty())
+		{
+			sb.append("\\multicolumn{");
+			if(newColLen > 0)
+				sb.append(newColLen);
+			else
+				sb.append('1');
+			sb.append("}{l}{ \\begin{tabular}{");
+
+			for(int i = 0; i < params.size(); i++)
+				sb.append("l ");
+			sb.append("} ");
+
+			for(int i = 0; i < params.size(); i++)
+			{
+				OperationInformation param = params.get(i);
+
+				sb.append("{\\it ");
+				sb.append(param.getPrompt());
+				sb.append(":} ");
+				sb.append(param.getAnswer());
+
+				if(i != params.size() - 1)
+					sb.append(" & ");
+			}
+
+			sb.append("\\end{tabular} }\\\\\n");
+		}
+		else
+			sb.append("{\\it No Parameters}\\\\\n");
+
+		// New data
+		sb.append("\\hline\n");
 		List<DataColumn> newCols = op.getNewColumns();
 		for(DataColumn dc : newCols)
 		{
-			if(maxLen < dc.size())
-				maxLen = dc.size();
-		}
-		
-		sb.append(dataToLatex(null, maxLen, newCols));
+			sb.append(dc.getName());
+			sb.append(" & ");
+			for(int i = 0; i < dc.size(); i++)
+			{
+				sb.append(dc.get(i));
 
-		// End the whole summary
+				if(i != dc.size() - 1)
+					sb.append(" & ");
+			}
+
+			sb.append("\\\\\n");
+		}
+
+		// Plot?
+		if(op.hasPlot())
+		{
+			sb.append("\\multicolumn{");
+			if(newColLen > 0)
+				sb.append(newColLen + 1);
+			else
+				sb.append('2');
+			sb.append("}{|c|}{\n<<echo=F,fig=T>>=\n");
+
+			sb.append(op.getRCommands());
+
+			sb.append("@\n}\\\\\n");
+			sb.append("\\hline");
+		}
+
+		// End table
 		sb.append("\\end{tabular}\n");
 
 		return sb.toString();

@@ -85,7 +85,7 @@ public interface DataSource extends Loadable
 
 	/**
 	 * Returns the length of the <em>longest</em> column in this dataset
-	 * @return Length of the longest column in this dataset. 0 if there are none
+	 * @return Length of the longest column in this dataset. -1 if there are none
 	 */
 	public int getColumnLength() throws MarlaException;
 

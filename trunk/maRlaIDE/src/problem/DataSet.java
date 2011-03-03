@@ -575,7 +575,7 @@ public final class DataSet extends JLabel implements DataSource, Changeable
 	@Override
 	public int getColumnLength()
 	{
-		int max = 0;
+		int max = -1;
 		for(DataColumn c : columns)
 		{
 			int len = c.size();
