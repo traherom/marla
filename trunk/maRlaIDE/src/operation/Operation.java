@@ -578,6 +578,19 @@ public abstract class Operation extends JLabel implements DataSource, Changeable
 	}
 
 	@Override
+	public List<DataColumn> getColumns() throws MarlaException
+	{
+		List<DataColumn> cols = new ArrayList<DataColumn>();
+		cols.addAll(data.getColumns());
+		
+		// Get parent columns
+		if(parent != null)
+			cols.addAll(parent.getColumns());
+			
+		return Collections.unmodifiableList(cols);
+	}
+
+	@Override
 	public final DataColumn getColumn(int index) throws MarlaException
 	{
 		checkCache();

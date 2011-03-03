@@ -684,6 +684,8 @@ public class Problem implements ProblemPart
 		Problem otherP = (Problem) other;
 		if(!statement.equals(otherP.statement))
 			return false;
+		if(!conclusion.equals(otherP.conclusion))
+			return false;
 		if(!datasets.equals(otherP.datasets))
 			return false;
 		if(!subProblems.equals(otherP.subProblems))
@@ -696,6 +698,7 @@ public class Problem implements ProblemPart
 	{
 		int hash = 3;
 		hash = 29 * hash + (this.statement != null ? this.statement.hashCode() : 0);
+		hash = 29 * hash + (this.conclusion != null ? this.conclusion.hashCode() : 0);
 		hash = 29 * hash + (this.datasets != null ? this.datasets.hashCode() : 0);
 		hash = 29 * hash + (this.fileName != null ? this.fileName.hashCode() : 0);
 		return hash;
