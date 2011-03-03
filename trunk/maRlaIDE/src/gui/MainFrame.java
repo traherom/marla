@@ -57,42 +57,24 @@ public class MainFrame extends JFrame
 		addComponentListener(new ComponentListener()
 		{
 			@Override
-			public void componentResized(ComponentEvent e)
+			public void componentResized(ComponentEvent evt)
 			{
-				Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-				int width = e.getComponent().getWidth();
-				int height = e.getComponent().getHeight();
-				if(width < MINIMUM_WINDOW_SIZE.width)
-				{
-					width = MINIMUM_WINDOW_SIZE.width;
-				}
-				if(height < MINIMUM_WINDOW_SIZE.height)
-				{
-					height = MINIMUM_WINDOW_SIZE.height;
-				}
-				if(width > screenSize.width)
-				{
-					width = screenSize.width;
-				}
-				if(height > screenSize.height)
-				{
-					height = screenSize.height;
-				}
-				setSize(new Dimension(width, height));
+				verifyBounds(evt);
 			}
 
 			@Override
-			public void componentMoved(ComponentEvent ce)
+			public void componentMoved(ComponentEvent evt)
+			{
+				verifyBounds(evt);
+			}
+
+			@Override
+			public void componentShown(ComponentEvent evt)
 			{
 			}
 
 			@Override
-			public void componentShown(ComponentEvent ce)
-			{
-			}
-
-			@Override
-			public void componentHidden(ComponentEvent ce)
+			public void componentHidden(ComponentEvent evt)
 			{
 			}
 		});
@@ -180,6 +162,57 @@ public class MainFrame extends JFrame
 				viewPanel.quit(true);
 			}
 		});
+	}
+
+	/**
+	 * Verify that the application is within the screen resolution both in size
+	 * and in location.
+	 *
+	 * @param evt The triggering event for this function.
+	 */
+	private void verifyBounds(ComponentEvent evt)
+	{
+		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+		
+		int x = evt.getComponent().getX();
+		int y = evt.getComponent().getY();
+		if (x > screenSize.getWidth())
+		{
+			x = (int) screenSize.getWidth() - evt.getComponent().getWidth();
+		}
+		if (x < 0)
+		{
+			x = 0;
+		}
+		if (y > screenSize.getHeight())
+		{
+			y = (int) screenSize.getHeight() - evt.getComponent().getHeight();
+		}
+		if (y < 0)
+		{
+			y = 0;
+		}
+
+		int width = evt.getComponent().getWidth();
+		int height = evt.getComponent().getHeight();
+		if(width < MINIMUM_WINDOW_SIZE.width)
+		{
+			width = MINIMUM_WINDOW_SIZE.width;
+		}
+		if(height < MINIMUM_WINDOW_SIZE.height)
+		{
+			height = MINIMUM_WINDOW_SIZE.height;
+		}
+		if(width > screenSize.width)
+		{
+			width = screenSize.width;
+		}
+		if(height > screenSize.height)
+		{
+			height = screenSize.height;
+		}
+		
+		setBounds(x, y, width, height);
 	}
 
 	/** This method is called from within the constructor to

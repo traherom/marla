@@ -20,6 +20,8 @@
 
 package gui;
 
+import java.awt.Dialog;
+import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -56,6 +58,28 @@ public class EscapeDialog extends JDialog
 	 * @param parent The dialog to be the parent.
 	 */
 	public EscapeDialog(JDialog parent, ViewPanel viewPanel)
+	{
+		super (parent);
+		this.VIEW_PANEL = viewPanel;
+	}
+
+	/**
+	 * Constructs an Escape Dialog with a dialog as its parent.
+	 *
+	 * @param parent The dialog to be the parent.
+	 */
+	public EscapeDialog(Dialog parent, ViewPanel viewPanel)
+	{
+		super (parent);
+		this.VIEW_PANEL = viewPanel;
+	}
+
+	/**
+	 * Constructs an Escape Dialog with a JFrame as its parent.
+	 *
+	 * @param parent The dialog to be the parent.
+	 */
+	public EscapeDialog(Frame parent, ViewPanel viewPanel)
 	{
 		super (parent);
 		this.VIEW_PANEL = viewPanel;

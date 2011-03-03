@@ -18,9 +18,11 @@
 
 package gui;
 
+import gui.colorpicker.ColorPicker;
 import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -31,6 +33,7 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
@@ -41,6 +44,7 @@ import javax.swing.JSpinner;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JViewport;
+import javax.swing.border.BevelBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.TableModelEvent;
@@ -55,6 +59,7 @@ import problem.DataSet;
 import problem.DuplicateNameException;
 import problem.MarlaException;
 import problem.Problem;
+import problem.SubProblem;
 
 /**
  * The New Problem Wizard Dialog.
@@ -75,7 +80,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 	/** The final reference to this dialog object.*/
 	private final NewProblemWizardDialog NEW_PROBLEM_WIZARD = this;
 	/** The list in the New Problem Wizard of sub problems within the current problem.*/
-	private ArrayList<JPanel> subProblemPanels = new ArrayList<JPanel> ();
+	private ArrayList<JPanel> subProblemPanels = new ArrayList<JPanel>();
 	/** True if the New Problem Wizard is being opened and actions should be ignored.*/
 	private boolean ignoreDataChanging = false;
 	/** True when a data set tab is being added, false otherwise.*/
@@ -90,6 +95,8 @@ public class NewProblemWizardDialog extends EscapeDialog
 	private Domain domain;
 	/** Object for the new problem being created in the wizard.*/
 	protected Problem newProblem = null;
+	/** True if the problem is being edited, false otherwise.*/
+	private boolean editing = false;
 
 	/**
 	 * Construct the New Problem Wizard dialog.
@@ -99,38 +106,38 @@ public class NewProblemWizardDialog extends EscapeDialog
 	 */
 	public NewProblemWizardDialog(ViewPanel viewPanel, Domain domain)
 	{
-		super (viewPanel.mainFrame, viewPanel);
+		super(viewPanel.mainFrame, viewPanel);
 		this.domain = domain;
 
-		initComponents ();
+		initComponents();
 
-		dataSetTabbedPane.addMouseListener (new MouseAdapter ()
+		dataSetTabbedPane.addMouseListener(new MouseAdapter()
 		{
 			@Override
 			public void mouseClicked(MouseEvent evt)
 			{
-				for (int i = 0; i < dataSetTabbedPane.getTabCount (); ++i)
+				for(int i = 0; i < dataSetTabbedPane.getTabCount(); ++i)
 				{
-					if (dataSetTabbedPane.getUI ().getTabBounds (dataSetTabbedPane, i).contains (evt.getPoint ()) && evt.getClickCount () == 2)
+					if(dataSetTabbedPane.getUI().getTabBounds(dataSetTabbedPane, i).contains(evt.getPoint()) && evt.getClickCount() == 2)
 					{
-						Object name = JOptionPane.showInputDialog (NEW_PROBLEM_WIZARD,
-																   "Give the data set a new name:",
-																   "Data Set Name",
-																   JOptionPane.QUESTION_MESSAGE,
-																   null,
-																   null,
-																   dataSetTabbedPane.getTitleAt (i));
-						if (name != null)
+						Object name = JOptionPane.showInputDialog(NEW_PROBLEM_WIZARD,
+																  "Give the data set a new name:",
+																  "Data Set Name",
+																  JOptionPane.QUESTION_MESSAGE,
+																  null,
+																  null,
+																  dataSetTabbedPane.getTitleAt(i));
+						if(name != null)
 						{
-							if (!name.toString ().equals (dataSetTabbedPane.getTitleAt (i)))
+							if(!name.toString().equals(dataSetTabbedPane.getTitleAt(i)))
 							{
-								if (!dataSetNameExists (i, name.toString ()))
+								if(!dataSetNameExists(i, name.toString()))
 								{
-									dataSetTabbedPane.setTitleAt (i, name.toString ());
+									dataSetTabbedPane.setTitleAt(i, name.toString());
 								}
 								else
 								{
-									JOptionPane.showMessageDialog (NEW_PROBLEM_WIZARD, "A column with that name already exists.", "Duplicate Column", JOptionPane.WARNING_MESSAGE);
+									JOptionPane.showMessageDialog(NEW_PROBLEM_WIZARD, "A column with that name already exists.", "Duplicate Column", JOptionPane.WARNING_MESSAGE);
 								}
 							}
 						}
@@ -218,8 +225,14 @@ public class NewProblemWizardDialog extends EscapeDialog
         nextWizardButton = new javax.swing.JButton();
         backWizardButton = new javax.swing.JButton();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         setAlwaysOnTop(true);
+        setResizable(false);
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosing(java.awt.event.WindowEvent evt) {
+                formWindowClosing(evt);
+            }
+        });
 
         stepsPanel.setBackground(new java.awt.Color(240, 239, 239));
         stepsPanel.setBorder(javax.swing.BorderFactory.createEtchedBorder());
@@ -290,14 +303,14 @@ public class NewProblemWizardDialog extends EscapeDialog
             .addGroup(welcomePanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(welcomeTextLabel)
-                .addContainerGap(247, Short.MAX_VALUE))
+                .addContainerGap(249, Short.MAX_VALUE))
         );
         welcomePanelLayout.setVerticalGroup(
             welcomePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(welcomePanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(welcomeTextLabel)
-                .addContainerGap(292, Short.MAX_VALUE))
+                .addContainerGap(293, Short.MAX_VALUE))
         );
 
         welcomeCardPanel.add(welcomePanel);
@@ -347,11 +360,11 @@ public class NewProblemWizardDialog extends EscapeDialog
                     .addGroup(nameAndLocationPanelLayout.createSequentialGroup()
                         .addComponent(problemNameLabel)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(problemNameTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 328, Short.MAX_VALUE))
+                        .addComponent(problemNameTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 340, Short.MAX_VALUE))
                     .addGroup(nameAndLocationPanelLayout.createSequentialGroup()
                         .addComponent(problemLocationLabel)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(problemLocationTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 311, Short.MAX_VALUE))
+                        .addComponent(problemLocationTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 323, Short.MAX_VALUE))
                     .addComponent(browseButton, javax.swing.GroupLayout.Alignment.TRAILING))
                 .addContainerGap())
         );
@@ -368,7 +381,7 @@ public class NewProblemWizardDialog extends EscapeDialog
                     .addComponent(problemLocationTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(browseButton)
-                .addContainerGap(204, Short.MAX_VALUE))
+                .addContainerGap(216, Short.MAX_VALUE))
         );
 
         nameAndLocationCardPanel.add(nameAndLocationPanel);
@@ -405,7 +418,7 @@ public class NewProblemWizardDialog extends EscapeDialog
             .addGroup(descriptionPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(descriptionPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(descroptionScollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 436, Short.MAX_VALUE)
+                    .addComponent(descroptionScollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 440, Short.MAX_VALUE)
                     .addComponent(problemDescriptionLabel))
                 .addContainerGap())
         );
@@ -415,7 +428,7 @@ public class NewProblemWizardDialog extends EscapeDialog
                 .addContainerGap()
                 .addComponent(problemDescriptionLabel)
                 .addGap(18, 18, 18)
-                .addComponent(descroptionScollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 262, Short.MAX_VALUE)
+                .addComponent(descroptionScollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 264, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -447,7 +460,7 @@ public class NewProblemWizardDialog extends EscapeDialog
             subProblemsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(subProblemsPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(subProblemsScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 449, Short.MAX_VALUE))
+                .addComponent(subProblemsScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 451, Short.MAX_VALUE))
         );
         subProblemsPanelLayout.setVerticalGroup(
             subProblemsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -466,7 +479,7 @@ public class NewProblemWizardDialog extends EscapeDialog
             }
         });
         subProblemsCardPanel.add(addSubProblemButton);
-        addSubProblemButton.setBounds(285, 330, 70, 28);
+        addSubProblemButton.setBounds(285, 330, 70, 25);
 
         removeSubProblemButton.setFont(new java.awt.Font("Verdana", 0, 12));
         removeSubProblemButton.setText("Remove");
@@ -478,7 +491,7 @@ public class NewProblemWizardDialog extends EscapeDialog
             }
         });
         subProblemsCardPanel.add(removeSubProblemButton);
-        removeSubProblemButton.setBounds(370, 330, 90, 28);
+        removeSubProblemButton.setBounds(370, 330, 90, 25);
 
         wizardCardPanel.add(subProblemsCardPanel, "card6");
 
@@ -507,7 +520,7 @@ public class NewProblemWizardDialog extends EscapeDialog
             }
         });
         valuesCardPanel.add(addDataSetButton);
-        addDataSetButton.setBounds(285, 330, 70, 28);
+        addDataSetButton.setBounds(285, 330, 70, 25);
 
         removeDataSetButton.setFont(new java.awt.Font("Verdana", 0, 12));
         removeDataSetButton.setText("Remove");
@@ -518,7 +531,7 @@ public class NewProblemWizardDialog extends EscapeDialog
             }
         });
         valuesCardPanel.add(removeDataSetButton);
-        removeDataSetButton.setBounds(370, 330, 90, 28);
+        removeDataSetButton.setBounds(370, 330, 90, 25);
 
         wizardCardPanel.add(valuesCardPanel, "card2");
 
@@ -556,27 +569,27 @@ public class NewProblemWizardDialog extends EscapeDialog
 
         studentNameTextField.setFont(new java.awt.Font("Verdana", 0, 12));
         informationCardPanel.add(studentNameTextField);
-        studentNameTextField.setBounds(110, 50, 289, 26);
+        studentNameTextField.setBounds(110, 50, 289, 22);
 
         courseShortNameTextField.setFont(new java.awt.Font("Verdana", 0, 12));
         informationCardPanel.add(courseShortNameTextField);
-        courseShortNameTextField.setBounds(147, 90, 150, 26);
+        courseShortNameTextField.setBounds(147, 90, 150, 22);
 
         courseLongNameTextField.setFont(new java.awt.Font("Verdana", 0, 12));
         informationCardPanel.add(courseLongNameTextField);
-        courseLongNameTextField.setBounds(140, 130, 240, 26);
+        courseLongNameTextField.setBounds(140, 130, 240, 22);
 
         chapterTextField.setFont(new java.awt.Font("Verdana", 0, 12));
         informationCardPanel.add(chapterTextField);
-        chapterTextField.setBounds(73, 170, 190, 26);
+        chapterTextField.setBounds(73, 170, 190, 22);
 
         sectionTextField.setFont(new java.awt.Font("Verdana", 0, 12));
         informationCardPanel.add(sectionTextField);
-        sectionTextField.setBounds(70, 210, 170, 26);
+        sectionTextField.setBounds(70, 210, 170, 22);
 
         problemNumberTextField.setFont(new java.awt.Font("Verdana", 0, 12));
         informationCardPanel.add(problemNumberTextField);
-        problemNumberTextField.setBounds(130, 250, 90, 26);
+        problemNumberTextField.setBounds(130, 250, 90, 22);
 
         wizardLineCard6.setFont(new java.awt.Font("Verdana", 0, 12));
         wizardLineCard6.setText("______________________________________________________");
@@ -594,7 +607,7 @@ public class NewProblemWizardDialog extends EscapeDialog
         problemConclusionLabel.setBounds(10, 290, 130, 20);
 
         problemConclusionTextArea.setColumns(20);
-        problemConclusionTextArea.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        problemConclusionTextArea.setFont(new java.awt.Font("Verdana", 0, 12));
         problemConclusionTextArea.setLineWrap(true);
         problemConclusionTextArea.setRows(4);
         problemConclusionTextArea.setWrapStyleWord(true);
@@ -658,7 +671,7 @@ public class NewProblemWizardDialog extends EscapeDialog
         newProblemPanel.setLayout(newProblemPanelLayout);
         newProblemPanelLayout.setHorizontalGroup(
             newProblemPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 739, Short.MAX_VALUE)
+            .addGap(0, 751, Short.MAX_VALUE)
             .addGroup(newProblemPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(newProblemPanelLayout.createSequentialGroup()
                     .addContainerGap()
@@ -666,7 +679,7 @@ public class NewProblemWizardDialog extends EscapeDialog
                         .addGroup(newProblemPanelLayout.createSequentialGroup()
                             .addComponent(stepsPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 193, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(wizardCardPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 516, Short.MAX_VALUE))
+                            .addComponent(wizardCardPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 532, Short.MAX_VALUE))
                         .addComponent(wizardControlPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addContainerGap()))
         );
@@ -677,8 +690,8 @@ public class NewProblemWizardDialog extends EscapeDialog
                 .addGroup(newProblemPanelLayout.createSequentialGroup()
                     .addContainerGap()
                     .addGroup(newProblemPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(wizardCardPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 383, Short.MAX_VALUE)
-                        .addComponent(stepsPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 383, Short.MAX_VALUE))
+                        .addComponent(wizardCardPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 390, Short.MAX_VALUE)
+                        .addComponent(stepsPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 390, Short.MAX_VALUE))
                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                     .addComponent(wizardControlPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addContainerGap()))
@@ -688,7 +701,7 @@ public class NewProblemWizardDialog extends EscapeDialog
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 739, Short.MAX_VALUE)
+            .addGap(0, 751, Short.MAX_VALUE)
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(layout.createSequentialGroup()
                     .addGap(0, 0, 0)
@@ -710,106 +723,92 @@ public class NewProblemWizardDialog extends EscapeDialog
 
 	private void browseButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_browseButtonActionPerformed
 		// Construct the folder-based open chooser dialog
-		VIEW_PANEL.openChooserDialog.setFileFilter (VIEW_PANEL.defaultFilter);
-		VIEW_PANEL.openChooserDialog.setFileSelectionMode (JFileChooser.DIRECTORIES_ONLY);
-		VIEW_PANEL.openChooserDialog.setSelectedFile (new File (""));
-		VIEW_PANEL.openChooserDialog.setCurrentDirectory (new File (domain.lastGoodDir));
+		VIEW_PANEL.openChooserDialog.setFileFilter(VIEW_PANEL.defaultFilter);
+		VIEW_PANEL.openChooserDialog.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+		VIEW_PANEL.openChooserDialog.setSelectedFile(new File(""));
+		VIEW_PANEL.openChooserDialog.setCurrentDirectory(new File(domain.lastGoodDir));
 		// Display the chooser and retrieve the selected folder
-		int response = VIEW_PANEL.openChooserDialog.showOpenDialog (this);
-		if (response == JFileChooser.APPROVE_OPTION)
+		int response = VIEW_PANEL.openChooserDialog.showOpenDialog(this);
+		if(response == JFileChooser.APPROVE_OPTION)
 		{
 			// If the user selected a folder that exists, point the problem's location to the newly selected location
-			if (VIEW_PANEL.openChooserDialog.getSelectedFile ().exists ())
+			if(VIEW_PANEL.openChooserDialog.getSelectedFile().exists())
 			{
-				File file = VIEW_PANEL.openChooserDialog.getSelectedFile ();
-				if (file.isDirectory ())
+				File file = VIEW_PANEL.openChooserDialog.getSelectedFile();
+				if(file.isDirectory())
 				{
-					domain.lastGoodDir = file.toString ();
+					domain.lastGoodDir = file.toString();
 				}
 				else
 				{
-					domain.lastGoodDir = file.toString ().substring (0, file.toString ().lastIndexOf (File.separatorChar));
+					domain.lastGoodDir = file.toString().substring(0, file.toString().lastIndexOf(File.separatorChar));
 				}
-				problemLocationTextField.setText (domain.lastGoodDir);
+				problemLocationTextField.setText(domain.lastGoodDir);
 			}
 		}
 }//GEN-LAST:event_browseButtonActionPerformed
 
 	private void addSubProblemButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addSubProblemButtonActionPerformed
-		// Create objects toward the new JPanel for the sub problem
-		JPanel subProblemPanel = new JPanel ();
-		JLabel label = new JLabel (ALPHABET[subProblemPanels.size ()]);
-		label.setFont (new Font ("Verdana", Font.BOLD, 11));
-		JTextArea textArea = new JTextArea ();
-		if (newProblem != null)
+		SubProblem subProblem;
+		if(newProblem != null)
 		{
-			newProblem.addSubProblem (ALPHABET[newProblem.getSubProblemCount ()], "");
+			subProblem = newProblem.addSubProblem(ALPHABET[newProblem.getSubProblemCount()], "");
 		}
 		else
 		{
-			domain.problem.addSubProblem (ALPHABET[domain.problem.getSubProblemCount ()], "");
+			subProblem = domain.problem.addSubProblem(ALPHABET[domain.problem.getSubProblemCount()], "");
 		}
-		JScrollPane scrollPane = new JScrollPane ();
-		textArea.setLineWrap (true);
-		textArea.setWrapStyleWord (true);
-		scrollPane.setViewportView (textArea);
-
-		// Add items to the new JPanel
-		subProblemPanel.setLayout (new BorderLayout ());
-		subProblemPanel.add (label, BorderLayout.NORTH);
-		subProblemPanel.add (scrollPane, BorderLayout.CENTER);
-		subProblemPanel.setPreferredSize (new Dimension (410, 100));
-		subProblemPanel.setMinimumSize (new Dimension (410, 100));
-		subProblemPanel.setMaximumSize (new Dimension (410, 100));
+		
+		JPanel panel = createSubProblemPanel(subProblem);
 
 		// Add the JPanel to the list of sub problem JPanels
-		subProblemPanels.add (subProblemPanel);
-		if (subProblemPanels.size () == 1)
+		subProblemPanels.add(panel);
+		if(subProblemPanels.size() == 1)
 		{
-			removeSubProblemButton.setEnabled (true);
+			removeSubProblemButton.setEnabled(true);
 		}
-		else if (subProblemPanels.size () == 26)
+		else if(subProblemPanels.size() == 26)
 		{
-			addSubProblemButton.setEnabled (false);
+			addSubProblemButton.setEnabled(false);
 		}
 
 		// Add the JPanel to the New Problem Wizard
-		subProblemsScollablePanel.add (subProblemPanel);
-		subProblemsScollablePanel.updateUI ();
-		subProblemsScollablePanel.scrollRectToVisible (new Rectangle (0, subProblemsScollablePanel.getHeight () + 100, 1, 1));
+		subProblemsScollablePanel.add(panel);
+		subProblemsScollablePanel.updateUI();
+		subProblemsScollablePanel.scrollRectToVisible(new Rectangle(0, subProblemsScollablePanel.getHeight() + 150, 1, 1));
 
-		textArea.requestFocus ();
+		((JTextArea) ((JViewport) ((JScrollPane) ((JPanel) subProblemPanels.get(subProblemPanels.size() - 1)).getComponent(1)).getComponent(0)).getComponent(0)).requestFocus();
 }//GEN-LAST:event_addSubProblemButtonActionPerformed
 
 	private void removeSubProblemButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeSubProblemButtonActionPerformed
 		// Remove the JPanel from the list of sub problems and from the New Problem Wizard
-		JPanel panel = subProblemPanels.remove (subProblemPanels.size () - 1);
-		if (newProblem != null)
+		JPanel panel = subProblemPanels.remove(subProblemPanels.size() - 1);
+		if(newProblem != null)
 		{
-			newProblem.removeSubProblem (newProblem.getSubProblem (newProblem.getSubProblemCount () - 1));
+			newProblem.removeSubProblem(newProblem.getSubProblem(newProblem.getSubProblemCount() - 1));
 		}
 		else
 		{
-			domain.problem.removeSubProblem (domain.problem.getSubProblem (domain.problem.getSubProblemCount () - 1));
+			domain.problem.removeSubProblem(domain.problem.getSubProblem(domain.problem.getSubProblemCount() - 1));
 		}
-		subProblemsScollablePanel.remove (panel);
+		subProblemsScollablePanel.remove(panel);
 
-		if (subProblemPanels.isEmpty ())
+		if(subProblemPanels.isEmpty())
 		{
-			removeSubProblemButton.setEnabled (false);
+			removeSubProblemButton.setEnabled(false);
 		}
-		else if (subProblemPanels.size () == 25)
+		else if(subProblemPanels.size() == 25)
 		{
-			addSubProblemButton.setEnabled (true);
+			addSubProblemButton.setEnabled(true);
 		}
 
-		subProblemsScollablePanel.updateUI ();
+		subProblemsScollablePanel.updateUI();
 
 		try
 		{
-			((JTextArea) ((JViewport) ((JScrollPane) ((JPanel) subProblemPanels.get (subProblemPanels.size () - 1)).getComponent (1)).getComponent (0)).getComponent (0)).requestFocus ();
+			((JTextArea) ((JViewport) ((JScrollPane) ((JPanel) subProblemPanels.get(subProblemPanels.size() - 1)).getComponent(1)).getComponent(0)).getComponent(0)).requestFocus();
 		}
-		catch (ArrayIndexOutOfBoundsException ex)
+		catch(ArrayIndexOutOfBoundsException ex)
 		{
 		}
 }//GEN-LAST:event_removeSubProblemButtonActionPerformed
@@ -818,7 +817,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 		addingDataSet = true;
 
 		final Problem problem;
-		if (newProblem != null)
+		if(newProblem != null)
 		{
 			problem = newProblem;
 		}
@@ -827,86 +826,86 @@ public class NewProblemWizardDialog extends EscapeDialog
 			problem = domain.problem;
 		}
 
-		int index = dataSetTabbedPane.getTabCount () + 1;
-		while (dataSetNameExists (-1, "Data Set " + index))
+		int index = dataSetTabbedPane.getTabCount() + 1;
+		while(dataSetNameExists(-1, "Data Set " + index))
 		{
 			++index;
 		}
 		DataSet dataSet = null;
 		try
 		{
-			dataSet = problem.addData (new DataSet ("Data Set " + index));
-			dataSet.addColumn ("Column 1");
-			dataSet.getColumn (0).add (0.0);
-			dataSet.getColumn (0).add (0.0);
-			dataSet.getColumn (0).add (0.0);
-			dataSet.getColumn (0).add (0.0);
-			dataSet.getColumn (0).add (0.0);
-			dataSet.addColumn ("Column 2");
-			dataSet.getColumn (1).add (0.0);
-			dataSet.getColumn (1).add (0.0);
-			dataSet.getColumn (1).add (0.0);
-			dataSet.getColumn (1).add (0.0);
-			dataSet.getColumn (1).add (0.0);
-			dataSet.addColumn ("Column 3");
-			dataSet.getColumn (2).add (0.0);
-			dataSet.getColumn (2).add (0.0);
-			dataSet.getColumn (2).add (0.0);
-			dataSet.getColumn (2).add (0.0);
-			dataSet.getColumn (2).add (0.0);
+			dataSet = problem.addData(new DataSet("Data Set " + index));
+			dataSet.addColumn("Column 1");
+			dataSet.getColumn(0).add(0.0);
+			dataSet.getColumn(0).add(0.0);
+			dataSet.getColumn(0).add(0.0);
+			dataSet.getColumn(0).add(0.0);
+			dataSet.getColumn(0).add(0.0);
+			dataSet.addColumn("Column 2");
+			dataSet.getColumn(1).add(0.0);
+			dataSet.getColumn(1).add(0.0);
+			dataSet.getColumn(1).add(0.0);
+			dataSet.getColumn(1).add(0.0);
+			dataSet.getColumn(1).add(0.0);
+			dataSet.addColumn("Column 3");
+			dataSet.getColumn(2).add(0.0);
+			dataSet.getColumn(2).add(0.0);
+			dataSet.getColumn(2).add(0.0);
+			dataSet.getColumn(2).add(0.0);
+			dataSet.getColumn(2).add(0.0);
 		}
 		// This check has already occured, so this exception will never be thrown
-		catch (DuplicateNameException ex)
+		catch(DuplicateNameException ex)
 		{
 		}
 
 		int x = 200;
 		int y = 20;
-		int count = problem.getDataCount () - 1;
-		if (count > 0)
+		int count = problem.getDataCount() - 1;
+		if(count > 0)
 		{
-			x = problem.getData (count - 1).getX () + 150;
+			x = problem.getData(count - 1).getX() + 150;
 		}
-		dataSet.setBounds (x, y, dataSet.getPreferredSize ().width, dataSet.getPreferredSize ().height);
+		dataSet.setBounds(x, y, dataSet.getPreferredSize().width, dataSet.getPreferredSize().height);
 
-		JPanel panel = createValuesTabbedPanel (dataSet);
-		dataSetTabbedPane.add (dataSet.getName(), panel);
-		dataSetTabbedPane.setSelectedIndex (dataSetTabbedPane.getTabCount () - 1);
+		JPanel panel = createValuesTabbedPanel(dataSet);
+		dataSetTabbedPane.add(dataSet.getName(), panel);
+		dataSetTabbedPane.setSelectedIndex(dataSetTabbedPane.getTabCount() - 1);
 		int columns = dataSet.getColumnCount();
 		int rows = dataSet.getColumnLength();
 
 		// Add minimum columns to the table model
-		JTable table = ((JTable) ((JViewport) ((JScrollPane) panel.getComponent (0)).getComponent (0)).getComponent (0));
-		final ExtendedTableModel newModel = new ExtendedTableModel (dataSet);
-		newModel.addTableModelListener (new TableModelListener ()
+		JTable table = ((JTable) ((JViewport) ((JScrollPane) panel.getComponent(0)).getComponent(0)).getComponent(0));
+		final ExtendedTableModel newModel = new ExtendedTableModel(dataSet);
+		newModel.addTableModelListener(new TableModelListener()
 		{
 			@Override
 			public void tableChanged(TableModelEvent evt)
 			{
-				fireTableChanged (newModel, evt);
+				fireTableChanged(newModel, evt);
 			}
 		});
 
-		DefaultTableColumnModel newColumnModel = new DefaultTableColumnModel ();
-		for (int i = 0; i < columns; ++i)
+		DefaultTableColumnModel newColumnModel = new DefaultTableColumnModel();
+		for(int i = 0; i < columns; ++i)
 		{
-			newColumnModel.addColumn (new TableColumn ());
-			newColumnModel.getColumn (i).setHeaderValue (dataSet.getColumn (i).getName ());
+			newColumnModel.addColumn(new TableColumn());
+			newColumnModel.getColumn(i).setHeaderValue(dataSet.getColumn(i).getName());
 		}
-		table.setColumnModel (newColumnModel);
+		table.setColumnModel(newColumnModel);
 
-		table.setModel (newModel);
-		table.updateUI ();
-		table.getTableHeader ().resizeAndRepaint ();
+		table.setModel(newModel);
+		table.updateUI();
+		table.getTableHeader().resizeAndRepaint();
 
 		// Wait to change the spinners until after the model is set or they will
 		// try to do stuff to the columns (they see an increase from 0 to 5)
-		((JSpinner) panel.getComponent (2)).setValue (columns);
-		((JSpinner) panel.getComponent (4)).setValue (rows);
+		((JSpinner) panel.getComponent(2)).setValue(columns);
+		((JSpinner) panel.getComponent(4)).setValue(rows);
 
-		if (dataSetTabbedPane.getTabCount () == 1)
+		if(dataSetTabbedPane.getTabCount() == 1)
 		{
-			removeDataSetButton.setEnabled (true);
+			removeDataSetButton.setEnabled(true);
 		}
 
 		addingDataSet = false;
@@ -914,97 +913,97 @@ public class NewProblemWizardDialog extends EscapeDialog
 
 	private void removeDataSetButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeDataSetButtonActionPerformed
 		DataSet removedData = null;
-		if (newProblem != null)
+		if(newProblem != null)
 		{
-			removedData = newProblem.removeData (newProblem.getData (dataSetTabbedPane.getSelectedIndex ()));
+			removedData = newProblem.removeData(newProblem.getData(dataSetTabbedPane.getSelectedIndex()));
 		}
 		else
 		{
-			removedData = domain.problem.removeData (domain.problem.getData (dataSetTabbedPane.getSelectedIndex ()));
+			removedData = domain.problem.removeData(domain.problem.getData(dataSetTabbedPane.getSelectedIndex()));
 		}
 
-		VIEW_PANEL.workspacePanel.remove (removedData);
+		VIEW_PANEL.workspacePanel.remove(removedData);
 
-		dataSetTabbedPane.remove (dataSetTabbedPane.getSelectedIndex ());
-		if (dataSetTabbedPane.getTabCount () == 0)
+		dataSetTabbedPane.remove(dataSetTabbedPane.getSelectedIndex());
+		if(dataSetTabbedPane.getTabCount() == 0)
 		{
-			removeDataSetButton.setEnabled (false);
+			removeDataSetButton.setEnabled(false);
 		}
 }//GEN-LAST:event_removeDataSetButtonActionPerformed
 
 	private void closeWizardButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_closeWizardButtonActionPerformed
 		ignoreDataChanging = true;
 
-		dispose ();
-		VIEW_PANEL.requestFocus ();
+		dispose();
+		VIEW_PANEL.requestFocus();
 
 		newProblem = null;
 		ignoreDataChanging = false;
 }//GEN-LAST:event_closeWizardButtonActionPerformed
 
 	private void nextWizardButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nextWizardButtonActionPerformed
-		if (welcomeCardPanel.isVisible ())
+		if(welcomeCardPanel.isVisible())
 		{
 			// Move to the next panel in the cards
-			nameAndLocationCardPanel.setVisible (true);
-			welcomeCardPanel.setVisible (false);
+			nameAndLocationCardPanel.setVisible(true);
+			welcomeCardPanel.setVisible(false);
 
 			// Shift the boldness in the Steps panel to the next card
-			welcomeLabel.setFont (ViewPanel.FONT_PLAIN_12);
-			nameAndLocationLabel.setFont (ViewPanel.FONT_BOLD_12);
+			welcomeLabel.setFont(ViewPanel.FONT_PLAIN_12);
+			nameAndLocationLabel.setFont(ViewPanel.FONT_BOLD_12);
 
 			// Set the focus properly for the new card
-			problemNameTextField.requestFocus ();
-			problemNameTextField.selectAll ();
+			problemNameTextField.requestFocus();
+			problemNameTextField.selectAll();
 
-			backWizardButton.setEnabled (true);
+			backWizardButton.setEnabled(true);
 		}
-		else if (nameAndLocationCardPanel.isVisible ())
+		else if(nameAndLocationCardPanel.isVisible())
 		{
 			boolean continueAllowed = true;
-			String fileName = problemNameTextField.getText ();
+			String fileName = problemNameTextField.getText();
 			// Assuming the user didn't specify our file type, append the type
-			if (!fileName.endsWith (".marla"))
+			if(!fileName.endsWith(".marla"))
 			{
 				fileName += ".marla";
 			}
 			// Before advancing to the next card, ensure a name is given for the new problem
-			if (problemNameTextField.getText ().replaceAll (" ", "").equals (""))
+			if(problemNameTextField.getText().replaceAll(" ", "").equals(""))
 			{
-				problemNameTextField.setText ("New Problem");
+				problemNameTextField.setText("New Problem");
 			}
-			File file = new File (problemLocationTextField.getText (), fileName);
-			if (!file.exists ())
+			File file = new File(problemLocationTextField.getText(), fileName);
+			if(!file.exists())
 			{
 				// Ensure the problem name given is a valid filename
 				try
 				{
-					FileWriter write = new FileWriter (file);
-					write.close ();
-					file.delete ();
+					FileWriter write = new FileWriter(file);
+					write.close();
+					file.delete();
 				}
-				catch (IOException ex)
+				catch(IOException ex)
 				{
-					JOptionPane.showMessageDialog (this, "The problem name you have given contains characters that are\n"
-														 + "not legal in a filename. Please rename your file and avoid\n"
-														 + "using special characters.",
-												   "Invalid Filename",
-												   JOptionPane.WARNING_MESSAGE);
+					JOptionPane.showMessageDialog(this, "The problem name you have given contains characters that are\n"
+														+ "not legal in a filename. Please rename your file and avoid\n"
+														+ "using special characters.",
+												  "Invalid Filename",
+												  JOptionPane.WARNING_MESSAGE);
 
 					continueAllowed = false;
 				}
 			}
 			// Ensure the problem name given does not match an already existing file
-			if (continueAllowed && file.exists () && !newProblemOverwrite && newProblem != null)
+			if(continueAllowed && file.exists() && !newProblemOverwrite && newProblem != null)
 			{
-				int response = JOptionPane.showConfirmDialog (this, "The given problem name already exists as a file\n"
-																	+ "at the specified location. If you would not like to overwrite the\n"
-																	+ "existing file, change the problem name or the problem location.\n"
-																	+ "Would you like to overwrite the existing file?",
-															  "Overwrite Existing File",
-															  JOptionPane.YES_NO_OPTION,
-															  JOptionPane.QUESTION_MESSAGE);
-				if (response == JOptionPane.YES_OPTION)
+				int response = JOptionPane.showConfirmDialog(this, "The given problem name already exists as a file\n"
+																   + "at the specified location. If you would not like to overwrite the\n"
+																   + "existing file, change the problem name or the problem location.\n"
+																   + "Would you like to overwrite the existing file?",
+															 "Overwrite Existing File",
+															 JOptionPane.YES_NO_OPTION,
+															 JOptionPane.QUESTION_MESSAGE);
+				if(response == JOptionPane.YES_OPTION)
 				{
 					newProblemOverwrite = true;
 				}
@@ -1014,305 +1013,255 @@ public class NewProblemWizardDialog extends EscapeDialog
 				}
 			}
 
-			if (continueAllowed)
+			if(continueAllowed)
 			{
-				if (newProblem != null)
+				if(newProblem != null)
 				{
 					try
 					{
-						if (!file.getCanonicalPath ().equals (newProblem.getFileName ()))
+						if(!file.getCanonicalPath().equals(newProblem.getFileName()))
 						{
-							newProblem.setFileName (file.getCanonicalPath ());
+							newProblem.setFileName(file.getCanonicalPath());
 						}
 					}
-					catch (IOException ex)
+					catch(IOException ex)
 					{
-						Domain.logger.add (ex);
+						Domain.logger.add(ex);
 					}
 				}
 
 				// Move to the next panel in the cards
-				descriptionCardPanel.setVisible (true);
-				nameAndLocationCardPanel.setVisible (false);
+				descriptionCardPanel.setVisible(true);
+				nameAndLocationCardPanel.setVisible(false);
 
 				// Shift the boldness in the Steps panel to the next card
-				nameAndLocationLabel.setFont (ViewPanel.FONT_PLAIN_12);
-				descriptionLabel.setFont (ViewPanel.FONT_BOLD_12);
+				nameAndLocationLabel.setFont(ViewPanel.FONT_PLAIN_12);
+				descriptionLabel.setFont(ViewPanel.FONT_BOLD_12);
 
 				// Set the focus properly for the new card
-				descriptionTextArea.requestFocus ();
-				descriptionTextArea.selectAll ();
+				descriptionTextArea.requestFocus();
+				descriptionTextArea.selectAll();
 			}
 			else
 			{
 				// Since continuation wasn't allowed, the user needs to correct the problem name
-				problemNameTextField.requestFocus ();
-				problemNameTextField.selectAll ();
+				problemNameTextField.requestFocus();
+				problemNameTextField.selectAll();
 			}
 		}
-		else if (descriptionCardPanel.isVisible ())
+		else if(descriptionCardPanel.isVisible())
 		{
 			Problem problem = domain.problem;
-			if (newProblem != null)
+			if(newProblem != null)
 			{
 				problem = newProblem;
 			}
-			if (!problem.getStatement ().equals (descriptionTextArea.getText ()))
-			{
-				problem.setStatement (descriptionTextArea.getText ());
-			}
+			verifyDescriptionPanel(problem);
 
 			// Move to the next panel in the cards
-			subProblemsCardPanel.setVisible (true);
-			descriptionCardPanel.setVisible (false);
+			subProblemsCardPanel.setVisible(true);
+			descriptionCardPanel.setVisible(false);
 
 			// Shift the boldness in the Steps panel to the next card
-			descriptionLabel.setFont (ViewPanel.FONT_PLAIN_12);
-			subProblemsLabel.setFont (ViewPanel.FONT_BOLD_12);
+			descriptionLabel.setFont(ViewPanel.FONT_PLAIN_12);
+			subProblemsLabel.setFont(ViewPanel.FONT_BOLD_12);
 
 			// Set the focus properly for the new card
 			try
 			{
-				((JTextArea) ((JViewport) ((JScrollPane) ((JPanel) subProblemPanels.get (subProblemPanels.size () - 1)).getComponent (1)).getComponent (0)).getComponent (0)).requestFocus ();
-				((JTextArea) ((JViewport) ((JScrollPane) ((JPanel) subProblemPanels.get (subProblemPanels.size () - 1)).getComponent (1)).getComponent (0)).getComponent (0)).selectAll ();
-				subProblemsScollablePanel.scrollRectToVisible (new Rectangle (0, subProblemsScollablePanel.getHeight (), 1, 1));
+				((JTextArea) ((JViewport) ((JScrollPane) ((JPanel) subProblemPanels.get(subProblemPanels.size() - 1)).getComponent(1)).getComponent(0)).getComponent(0)).requestFocus();
+				((JTextArea) ((JViewport) ((JScrollPane) ((JPanel) subProblemPanels.get(subProblemPanels.size() - 1)).getComponent(1)).getComponent(0)).getComponent(0)).selectAll();
+				subProblemsScollablePanel.scrollRectToVisible(new Rectangle(0, subProblemsScollablePanel.getHeight() + 150, 1, 1));
 			}
-			catch (ArrayIndexOutOfBoundsException ex)
+			catch(ArrayIndexOutOfBoundsException ex)
 			{
 			}
 		}
-		else if (subProblemsCardPanel.isVisible ())
+		else if(subProblemsCardPanel.isVisible())
 		{
 			Problem problem = domain.problem;
-			if (newProblem != null)
+			if(newProblem != null)
 			{
 				problem = newProblem;
 			}
-			for (int i = 0; i < problem.getSubProblemCount (); ++i)
-			{
-				if (!problem.getSubProblem (i).getStatement ().equals (((JTextArea) ((JViewport) ((JScrollPane) ((JPanel) subProblemPanels.get (i)).getComponent (1)).getComponent (0)).getComponent (0)).getText ()))
-				{
-					problem.getSubProblem (i).setStatement (((JTextArea) ((JViewport) ((JScrollPane) ((JPanel) subProblemPanels.get (i)).getComponent (1)).getComponent (0)).getComponent (0)).getText ());
-				}
-			}
+			verifySubProblemsPanel(problem);
 
 			// Move to the next panel in the cards
-			valuesCardPanel.setVisible (true);
-			subProblemsCardPanel.setVisible (false);
+			valuesCardPanel.setVisible(true);
+			subProblemsCardPanel.setVisible(false);
 
 			// Shift the boldness in the Steps panel to the next card
-			subProblemsLabel.setFont (ViewPanel.FONT_PLAIN_12);
-			valuesLabel.setFont (ViewPanel.FONT_BOLD_12);
+			subProblemsLabel.setFont(ViewPanel.FONT_PLAIN_12);
+			valuesLabel.setFont(ViewPanel.FONT_BOLD_12);
 		}
-		else if (valuesCardPanel.isVisible ())
+		else if(valuesCardPanel.isVisible())
 		{
 			// Move to the next panel in the cards
-			informationCardPanel.setVisible (true);
-			valuesCardPanel.setVisible (false);
+			informationCardPanel.setVisible(true);
+			valuesCardPanel.setVisible(false);
 
 			// Shift the boldness in the Steps panel to the next card
-			valuesLabel.setFont (ViewPanel.FONT_PLAIN_12);
-			informationLabel.setFont (ViewPanel.FONT_BOLD_12);
+			valuesLabel.setFont(ViewPanel.FONT_PLAIN_12);
+			informationLabel.setFont(ViewPanel.FONT_BOLD_12);
 
 			// Set the focus properly for the new card
-			studentNameTextField.requestFocus ();
-			studentNameTextField.selectAll ();
+			studentNameTextField.requestFocus();
+			studentNameTextField.selectAll();
 
-			nextWizardButton.setText ("Finish");
+			nextWizardButton.setText("Finish");
 		}
 		else
 		{
 			Problem problem = domain.problem;
-			if (newProblem != null)
+			if(newProblem != null)
 			{
 				problem = newProblem;
 			}
-			if (!problem.getPersonName().equals (studentNameTextField.getText()))
-			{
-				problem.setPersonName (studentNameTextField.getText ());
-			}
-			if (!problem.getShortCourse().equals (courseShortNameTextField.getText()))
-			{
-				problem.setShortCourse (courseShortNameTextField.getText ());
-			}
-			if (!problem.getLongCourse().equals (courseLongNameTextField.getText()))
-			{
-				problem.setLongCourse (courseLongNameTextField.getText ());
-			}
-			if (!problem.getChapter().equals (chapterTextField.getText()))
-			{
-				problem.setChapter (chapterTextField.getText ());
-			}
-			if (!problem.getSection().equals (sectionTextField.getText()))
-			{
-				problem.setSection (sectionTextField.getText ());
-			}
-			if (!problem.getProblemNumber().equals (problemNumberTextField.getText()))
-			{
-				problem.setProblemNumber (problemNumberTextField.getText ());
-			}
-			if (!problem.getConclusion().equals(problemConclusionTextArea.getText()))
-			{
-				problem.setConclusion (problemConclusionTextArea.getText ());
-			}
+			verifyInfoPanel(problem);
 
-			boolean editing = false;
-			if (newProblem == null)
+			boolean localEditing = false;
+			if(newProblem == null)
 			{
-				editing = true;
+				localEditing = true;
 			}
-			finishNewProblemWizard (editing);
+			finishNewProblemWizard(localEditing);
 		}
 }//GEN-LAST:event_nextWizardButtonActionPerformed
 
 	private void backWizardButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_backWizardButtonActionPerformed
-		if (nameAndLocationCardPanel.isVisible ())
+		if(nameAndLocationCardPanel.isVisible())
 		{
-			if (newProblem != null)
+			if(newProblem != null)
 			{
 				try
 				{
-					File file = new File (problemLocationTextField.getText (), problemNameTextField.getText ());
-					if (!file.getCanonicalPath ().equals (newProblem.getFileName ()))
+					File file = new File(problemLocationTextField.getText(), problemNameTextField.getText());
+					if(!file.getCanonicalPath().equals(newProblem.getFileName()))
 					{
-						newProblem.setFileName (file.getCanonicalPath ());
+						newProblem.setFileName(file.getCanonicalPath());
 					}
 				}
-				catch (IOException ex)
+				catch(IOException ex)
 				{
-					Domain.logger.add (ex);
+					Domain.logger.add(ex);
 				}
 			}
 
 			// Move to the previous panel in the cards
-			welcomeCardPanel.setVisible (true);
-			nameAndLocationCardPanel.setVisible (false);
+			welcomeCardPanel.setVisible(true);
+			nameAndLocationCardPanel.setVisible(false);
 
 			// Shift the boldness in the Steps panel to the previous card
-			welcomeLabel.setFont (ViewPanel.FONT_BOLD_12);
-			nameAndLocationLabel.setFont (ViewPanel.FONT_PLAIN_12);
+			welcomeLabel.setFont(ViewPanel.FONT_BOLD_12);
+			nameAndLocationLabel.setFont(ViewPanel.FONT_PLAIN_12);
 
-			backWizardButton.setEnabled (false);
+			backWizardButton.setEnabled(false);
 		}
-		else if (descriptionCardPanel.isVisible ())
+		else if(descriptionCardPanel.isVisible())
 		{
 			Problem problem = domain.problem;
-			if (newProblem != null)
+			if(newProblem != null)
 			{
 				problem = newProblem;
 			}
-			if (!problem.getStatement ().equals (descriptionTextArea.getText ()))
-			{
-				problem.setStatement (descriptionTextArea.getText ());
-			}
+			verifyDescriptionPanel(problem);
 
 			// Move to the previous panel in the cards
-			nameAndLocationCardPanel.setVisible (true);
-			descriptionCardPanel.setVisible (false);
+			nameAndLocationCardPanel.setVisible(true);
+			descriptionCardPanel.setVisible(false);
 
 			// Shift the boldness in the Steps panel to the previous card
-			nameAndLocationLabel.setFont (ViewPanel.FONT_BOLD_12);
-			descriptionLabel.setFont (ViewPanel.FONT_PLAIN_12);
+			nameAndLocationLabel.setFont(ViewPanel.FONT_BOLD_12);
+			descriptionLabel.setFont(ViewPanel.FONT_PLAIN_12);
 
 			// Set the focus properly for the new card
-			problemNameTextField.requestFocus ();
-			problemNameTextField.selectAll ();
+			problemNameTextField.requestFocus();
+			problemNameTextField.selectAll();
 		}
-		else if (subProblemsCardPanel.isVisible ())
+		else if(subProblemsCardPanel.isVisible())
 		{
 			Problem problem = domain.problem;
-			if (newProblem != null)
+			if(newProblem != null)
 			{
 				problem = newProblem;
 			}
-			for (int i = 0; i < problem.getSubProblemCount (); ++i)
-			{
-				if (!problem.getSubProblem (i).getStatement ().equals (((JTextArea) ((JViewport) ((JScrollPane) ((JPanel) subProblemPanels.get (i)).getComponent (1)).getComponent (0)).getComponent (0)).getText ()))
-				{
-					problem.getSubProblem (i).setStatement (((JTextArea) ((JViewport) ((JScrollPane) ((JPanel) subProblemPanels.get (i)).getComponent (1)).getComponent (0)).getComponent (0)).getText ());
-				}
-			}
+			verifySubProblemsPanel(problem);
 
 			// Move to the previous panel in the cards
-			descriptionCardPanel.setVisible (true);
-			subProblemsCardPanel.setVisible (false);
+			descriptionCardPanel.setVisible(true);
+			subProblemsCardPanel.setVisible(false);
 
 			// Shift the boldness in the Steps panel to the previous card
-			descriptionLabel.setFont (ViewPanel.FONT_BOLD_12);
-			subProblemsLabel.setFont (ViewPanel.FONT_PLAIN_12);
+			descriptionLabel.setFont(ViewPanel.FONT_BOLD_12);
+			subProblemsLabel.setFont(ViewPanel.FONT_PLAIN_12);
 
 			// Set the focus properly for the new card
-			descriptionTextArea.requestFocus ();
-			descriptionTextArea.selectAll ();
+			descriptionTextArea.requestFocus();
+			descriptionTextArea.selectAll();
 		}
-		else if (valuesCardPanel.isVisible ())
+		else if(valuesCardPanel.isVisible())
 		{
 			// Move to the next panel in the cards
-			subProblemsCardPanel.setVisible (true);
-			valuesCardPanel.setVisible (false);
+			subProblemsCardPanel.setVisible(true);
+			valuesCardPanel.setVisible(false);
 
 			// Shift the boldness in the Steps panel to the next card
-			subProblemsLabel.setFont (ViewPanel.FONT_BOLD_12);
-			valuesLabel.setFont (ViewPanel.FONT_PLAIN_12);
+			subProblemsLabel.setFont(ViewPanel.FONT_BOLD_12);
+			valuesLabel.setFont(ViewPanel.FONT_PLAIN_12);
 
 			// Set the focus properly for the new card
 			try
 			{
-				((JTextArea) ((JViewport) ((JScrollPane) ((JPanel) subProblemPanels.get (subProblemPanels.size () - 1)).getComponent (1)).getComponent (0)).getComponent (0)).requestFocus ();
-				((JTextArea) ((JViewport) ((JScrollPane) ((JPanel) subProblemPanels.get (subProblemPanels.size () - 1)).getComponent (1)).getComponent (0)).getComponent (0)).selectAll ();
-				subProblemsScollablePanel.scrollRectToVisible (new Rectangle (0, subProblemsScollablePanel.getHeight (), 1, 1));
+				((JTextArea) ((JViewport) ((JScrollPane) ((JPanel) subProblemPanels.get(subProblemPanels.size() - 1)).getComponent(1)).getComponent(0)).getComponent(0)).requestFocus();
+				((JTextArea) ((JViewport) ((JScrollPane) ((JPanel) subProblemPanels.get(subProblemPanels.size() - 1)).getComponent(1)).getComponent(0)).getComponent(0)).selectAll();
+				subProblemsScollablePanel.scrollRectToVisible(new Rectangle(0, subProblemsScollablePanel.getHeight(), 1, 1));
 			}
-			catch (ArrayIndexOutOfBoundsException ex)
+			catch(ArrayIndexOutOfBoundsException ex)
 			{
 			}
 		}
 		else
 		{
 			Problem problem = domain.problem;
-			if (newProblem != null)
+			if(newProblem != null)
 			{
 				problem = newProblem;
 			}
-			if (!problem.getPersonName().equals (studentNameTextField.getText()))
-			{
-				problem.setPersonName (studentNameTextField.getText ());
-			}
-			if (!problem.getShortCourse().equals (courseShortNameTextField.getText()))
-			{
-				problem.setShortCourse (courseShortNameTextField.getText ());
-			}
-			if (!problem.getLongCourse().equals (courseLongNameTextField.getText()))
-			{
-				problem.setLongCourse (courseLongNameTextField.getText ());
-			}
-			if (!problem.getChapter().equals (chapterTextField.getText()))
-			{
-				problem.setChapter (chapterTextField.getText ());
-			}
-			if (!problem.getSection().equals (sectionTextField.getText()))
-			{
-				problem.setSection (sectionTextField.getText ());
-			}
-			if (!problem.getProblemNumber().equals (problemNumberTextField.getText()))
-			{
-				problem.setProblemNumber (problemNumberTextField.getText ());
-			}
-			if (!problem.getConclusion().equals(problemConclusionTextArea.getText()))
-			{
-				problem.setConclusion (problemConclusionTextArea.getText ());
-			}
-			
+			verifyInfoPanel(problem);
+
 			// Move to the previous panel in the cards
-			valuesCardPanel.setVisible (true);
-			informationCardPanel.setVisible (false);
+			valuesCardPanel.setVisible(true);
+			informationCardPanel.setVisible(false);
 
 			// Shift the boldness in the Steps panel to the previous card
-			valuesLabel.setFont (ViewPanel.FONT_BOLD_12);
-			informationLabel.setFont (ViewPanel.FONT_PLAIN_12);
+			valuesLabel.setFont(ViewPanel.FONT_BOLD_12);
+			informationLabel.setFont(ViewPanel.FONT_PLAIN_12);
 
-			nextWizardButton.setText ("Next >");
+			nextWizardButton.setText("Next >");
 		}
 }//GEN-LAST:event_backWizardButtonActionPerformed
+
+	private void formWindowClosing(java.awt.event.WindowEvent evt)//GEN-FIRST:event_formWindowClosing
+	{//GEN-HEADEREND:event_formWindowClosing
+		if (editing)
+		{
+			if(descriptionCardPanel.isVisible())
+			{
+				verifyDescriptionPanel(domain.problem);
+			}
+			else if(subProblemsCardPanel.isVisible())
+			{
+				verifySubProblemsPanel(domain.problem);
+			}
+			else if (informationCardPanel.isVisible())
+			{
+				verifyInfoPanel(domain.problem);
+			}
+		}
+
+		dispose();
+	}//GEN-LAST:event_formWindowClosing
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton addDataSetButton;
     private javax.swing.JButton addSubProblemButton;
@@ -1385,169 +1334,329 @@ public class NewProblemWizardDialog extends EscapeDialog
     // End of variables declaration//GEN-END:variables
 
 	/**
+	 * Create a panel for a sub problem in the New Problem Wizard.
+	 *
+	 * @param subProblem A reference to the sub problem being created.
+	 * @return The created sub problem panel that can be placed in the array and panel.
+	 */
+	private JPanel createSubProblemPanel(SubProblem subProblem)
+	{
+		// Create objects toward the new JPanel for the sub problem
+		JPanel subProblemPanel = new JPanel();
+		JLabel label = new JLabel(ALPHABET[subProblemPanels.size()]);
+		label.setFont(ViewPanel.FONT_BOLD_11);
+		JTextArea textArea = new JTextArea();
+		textArea.setFont(ViewPanel.FONT_PLAIN_12);
+
+		JScrollPane scrollPane = new JScrollPane();
+		textArea.setLineWrap(true);
+		textArea.setWrapStyleWord(true);
+		scrollPane.setViewportView(textArea);
+
+		JPanel conclusionPanel = new JPanel();
+		JLabel colorLabel = new JLabel("Color: ");
+		colorLabel.setFont(ViewPanel.FONT_BOLD_11);
+		JLabel blankLabel = new JLabel("     ");
+		JPanel colorPanel = new JPanel();
+		colorPanel.setBackground(subProblem.getColor());
+		colorPanel.setPreferredSize(new Dimension(25, 25));
+		colorPanel.setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED));
+		final NewProblemWizardDialog WIZARD = this;
+		colorPanel.addMouseListener(new MouseAdapter()
+		{
+			@Override
+			public void mouseEntered(MouseEvent evt)
+			{
+				setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+			}
+
+			@Override
+			public void mouseExited(MouseEvent evt)
+			{
+				setCursor(Cursor.getDefaultCursor());
+			}
+
+			@Override
+			public void mouseReleased(MouseEvent evt)
+			{
+				Color color = evt.getComponent().getBackground();
+				Color newColor = ColorPicker.showDialog (WIZARD, "Select Color", color, false, VIEW_PANEL);
+				if (newColor != null)
+				{
+					evt.getComponent().setBackground(newColor);
+				}
+			}
+		});
+
+		JLabel conclusionLabel = new JLabel("Conclusion: ");
+		conclusionLabel.setFont(ViewPanel.FONT_BOLD_11);
+		JTextArea subConcTextArea = new JTextArea();
+		subConcTextArea.setFont(ViewPanel.FONT_PLAIN_12);
+		JScrollPane subConcScrollPane = new JScrollPane();
+		subConcTextArea.setLineWrap(true);
+		subConcTextArea.setWrapStyleWord(true);
+		subConcScrollPane.setViewportView(subConcTextArea);
+		subConcScrollPane.setPreferredSize(new Dimension(220, 60));
+		conclusionPanel.add(colorLabel);
+		conclusionPanel.add(colorPanel);
+		conclusionPanel.add(blankLabel);
+		conclusionPanel.add(conclusionLabel);
+		conclusionPanel.add(subConcScrollPane);
+
+		// Add items to the new JPanel
+		subProblemPanel.setLayout(new BorderLayout());
+		subProblemPanel.add(label, BorderLayout.NORTH);
+		subProblemPanel.add(scrollPane, BorderLayout.CENTER);
+		subProblemPanel.add(conclusionPanel, BorderLayout.SOUTH);
+		subProblemPanel.setPreferredSize(new Dimension(410, 150));
+		subProblemPanel.setMinimumSize(new Dimension(410, 150));
+		subProblemPanel.setMaximumSize(new Dimension(410, 150));
+		subProblemPanel.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Color.LIGHT_GRAY));
+
+		return subProblemPanel;
+	}
+
+	/**
+	 * Verify components attached to the description panel.
+	 *
+	 * @param problem A reference to the problem currently being edited.
+	 */
+	private void verifyDescriptionPanel(Problem problem)
+	{
+		if(!problem.getStatement().equals(descriptionTextArea.getText()))
+		{
+			problem.setStatement(descriptionTextArea.getText());
+		}
+	}
+
+	/**
+	 * Verify components attached to the sub problems panel.
+	 *
+	 * @param problem A reference to the problem currently being edited.
+	 */
+	private void verifySubProblemsPanel(Problem problem)
+	{
+		for(int i = 0; i < problem.getSubProblemCount(); ++i)
+		{
+			JTextArea textArea = (JTextArea) ((JViewport) ((JScrollPane) ((JPanel) subProblemPanels.get(i)).getComponent(1)).getComponent(0)).getComponent(0);
+			Color color = ((JPanel) ((JPanel) subProblemPanels.get (i).getComponent (2)).getComponent (1)).getBackground();
+			JTextArea conclusionTextArea = (JTextArea) ((JViewport) ((JScrollPane) ((JPanel) subProblemPanels.get (i).getComponent (2)).getComponent (4)).getViewport ()).getComponent (0);
+			if(!problem.getSubProblem(i).getStatement().equals(textArea.getText()))
+			{
+				problem.getSubProblem(i).setStatement(textArea.getText());
+			}
+			if(!problem.getSubProblem(i).getConclusion().equals(conclusionTextArea.getText()))
+			{
+				problem.getSubProblem(i).setConclusion(conclusionTextArea.getText());
+			}
+			if(problem.getSubProblem(i).getColor().getRGB() != color.getRGB())
+			{
+				problem.getSubProblem(i).setColor(color);
+			}
+		}
+	}
+
+	/**
+	 * Verify components attached to the information panel.
+	 *
+	 * @param problem A reference to the problem currently being edited.
+	 */
+	private void verifyInfoPanel(Problem problem)
+	{
+		if(!problem.getPersonName().equals(studentNameTextField.getText()))
+		{
+			problem.setPersonName(studentNameTextField.getText());
+		}
+		if(!problem.getShortCourse().equals(courseShortNameTextField.getText()))
+		{
+			problem.setShortCourse(courseShortNameTextField.getText());
+		}
+		if(!problem.getLongCourse().equals(courseLongNameTextField.getText()))
+		{
+			problem.setLongCourse(courseLongNameTextField.getText());
+		}
+		if(!problem.getChapter().equals(chapterTextField.getText()))
+		{
+			problem.setChapter(chapterTextField.getText());
+		}
+		if(!problem.getSection().equals(sectionTextField.getText()))
+		{
+			problem.setSection(sectionTextField.getText());
+		}
+		if(!problem.getProblemNumber().equals(problemNumberTextField.getText()))
+		{
+			problem.setProblemNumber(problemNumberTextField.getText());
+		}
+		if(!problem.getConclusion().equals(problemConclusionTextArea.getText()))
+		{
+			problem.setConclusion(problemConclusionTextArea.getText());
+		}
+	}
+
+	/**
 	 * Create a panel for display in the tabbed display for data set values.
 	 *
 	 * @return The panel created to be stored in the values tabbed panel.
 	 */
 	private JPanel createValuesTabbedPanel(final DataSet dataSet)
 	{
-		final JPanel valuesPanel = new JPanel ();
-		final JScrollPane scrollPane = new JScrollPane ();
-		final ExtendedTableModel model = new ExtendedTableModel (dataSet);
-		final ExtendedJTable table = new ExtendedJTable (model);
+		final JPanel valuesPanel = new JPanel();
+		final JScrollPane scrollPane = new JScrollPane();
+		final ExtendedTableModel model = new ExtendedTableModel(dataSet);
+		final ExtendedJTable table = new ExtendedJTable(model);
 
-		table.getTableHeader ().setFont (ViewPanel.FONT_PLAIN_12);
-		table.getTableHeader ().addMouseListener (new MouseAdapter ()
+		table.getTableHeader().setFont(ViewPanel.FONT_PLAIN_12);
+		table.getTableHeader().addMouseListener(new MouseAdapter()
 		{
 			@Override
 			public void mouseReleased(MouseEvent evt)
 			{
-				int index = table.getTableHeader ().columnAtPoint (evt.getPoint ());
-				Object name = JOptionPane.showInputDialog (NEW_PROBLEM_WIZARD, "Give the column a new name:", "Column Name",
-														   JOptionPane.QUESTION_MESSAGE, null, null,
-														   table.getColumnModel ().getColumn (index).getHeaderValue ());
-				if (name != null)
+				int index = table.getTableHeader().columnAtPoint(evt.getPoint());
+				Object name = JOptionPane.showInputDialog(NEW_PROBLEM_WIZARD, "Give the column a new name:", "Column Name",
+														  JOptionPane.QUESTION_MESSAGE, null, null,
+														  table.getColumnModel().getColumn(index).getHeaderValue());
+				if(name != null)
 				{
-					if (!name.toString ().equals (((ExtendedTableModel) table.getModel ()).getColumnName (index)))
+					if(!name.toString().equals(((ExtendedTableModel) table.getModel()).getColumnName(index)))
 					{
-						if (!columnNameExists ((ExtendedTableModel) table.getModel (), index, name.toString ()))
+						if(!columnNameExists((ExtendedTableModel) table.getModel(), index, name.toString()))
 						{
-							((ExtendedTableModel) table.getModel ()).setColumn (name.toString (), index);
-							table.getColumnModel ().getColumn (index).setHeaderValue (name);
-							table.getTableHeader ().resizeAndRepaint ();
+							((ExtendedTableModel) table.getModel()).setColumn(name.toString(), index);
+							table.getColumnModel().getColumn(index).setHeaderValue(name);
+							table.getTableHeader().resizeAndRepaint();
 						}
 						else
 						{
-							JOptionPane.showMessageDialog (NEW_PROBLEM_WIZARD, "A column with that name already exists.", "Duplicate Column", JOptionPane.WARNING_MESSAGE);
+							JOptionPane.showMessageDialog(NEW_PROBLEM_WIZARD, "A column with that name already exists.", "Duplicate Column", JOptionPane.WARNING_MESSAGE);
 						}
 					}
 				}
 			}
 		});
 
-		scrollPane.setViewportView (table);
-		final JLabel columnsLabel = new JLabel ("Columns:");
-		columnsLabel.setFont (new java.awt.Font ("Verdana", 0, 12));
-		final JSpinner columnsSpinner = new JSpinner ();
-		columnsSpinner.addChangeListener (new ChangeListener ()
+		scrollPane.setViewportView(table);
+		final JLabel columnsLabel = new JLabel("Columns:");
+		columnsLabel.setFont(new java.awt.Font("Verdana", 0, 12));
+		final JSpinner columnsSpinner = new JSpinner();
+		columnsSpinner.addChangeListener(new ChangeListener()
 		{
 			@Override
 			public void stateChanged(ChangeEvent evt)
 			{
-				if (!ignoreDataChanging)
+				if(!ignoreDataChanging)
 				{
-					int value = Integer.parseInt (columnsSpinner.getValue ().toString ());
+					int value = Integer.parseInt(columnsSpinner.getValue().toString());
 					// Don't let column count be below 1
-					if (value < 1)
+					if(value < 1)
 					{
-						columnsSpinner.setValue (1);
+						columnsSpinner.setValue(1);
 						value = 1;
 					}
-					ExtendedTableModel model = (ExtendedTableModel) table.getModel ();
+					ExtendedTableModel model = (ExtendedTableModel) table.getModel();
 					// If columns were removed, loop and delete from the end
-					while (value < model.getColumnCount ())
+					while(value < model.getColumnCount())
 					{
-						model.removeColumn (table.getColumnCount () - 1);
-						table.getColumnModel ().removeColumn (table.getColumnModel ().getColumn (table.getColumnCount () - 1));
+						model.removeColumn(table.getColumnCount() - 1);
+						table.getColumnModel().removeColumn(table.getColumnModel().getColumn(table.getColumnCount() - 1));
 					}
 					// If columns were added, loop and add to the end
-					while (value > model.getColumnCount ())
+					while(value > model.getColumnCount())
 					{
-						int index = model.getColumnCount () + 1;
-						while (columnNameExists (model, -1, "Column " + (index)))
+						int index = model.getColumnCount() + 1;
+						while(columnNameExists(model, -1, "Column " + (index)))
 						{
 							++index;
 						}
 
 						try
 						{
-							DataColumn newCol = dataSet.addColumn ("Column " + index);
-							for (int i = 0; i < model.getRowCount (); ++i)
+							DataColumn newCol = dataSet.addColumn("Column " + index);
+							for(int i = 0; i < model.getRowCount(); ++i)
 							{
-								newCol.add (0.0);
+								newCol.add(0.0);
 							}
 
-							TableColumn newColumn = new TableColumn (dataSet.getColumnCount() - 1);
-							newColumn.setHeaderValue (newCol.getName());
+							TableColumn newColumn = new TableColumn(dataSet.getColumnCount() - 1);
+							newColumn.setHeaderValue(newCol.getName());
 							table.addColumn(newColumn);
 						}
 						// This exception should never be thrown
-						catch (DuplicateNameException ex)
+						catch(DuplicateNameException ex)
 						{
 						}
 					}
 
-					table.updateUI ();
-					table.getTableHeader ().resizeAndRepaint ();
+					table.updateUI();
+					table.getTableHeader().resizeAndRepaint();
 				}
 			}
 		});
-		final JLabel rowsLabel = new JLabel ("Rows:");
-		rowsLabel.setFont (new java.awt.Font ("Verdana", 0, 12));
-		final JSpinner rowsSpinner = new JSpinner ();
-		rowsSpinner.addChangeListener (new ChangeListener ()
+		final JLabel rowsLabel = new JLabel("Rows:");
+		rowsLabel.setFont(new java.awt.Font("Verdana", 0, 12));
+		final JSpinner rowsSpinner = new JSpinner();
+		rowsSpinner.addChangeListener(new ChangeListener()
 		{
 			@Override
 			public void stateChanged(ChangeEvent evt)
 			{
-				if (!ignoreDataChanging)
+				if(!ignoreDataChanging)
 				{
-					int value = Integer.parseInt (rowsSpinner.getValue ().toString ());
+					int value = Integer.parseInt(rowsSpinner.getValue().toString());
 					// Don't let row count be below 1
-					if (value < 1)
+					if(value < 1)
 					{
-						rowsSpinner.setValue (1);
+						rowsSpinner.setValue(1);
 						value = 1;
 					}
-					ExtendedTableModel model = (ExtendedTableModel) table.getModel ();
+					ExtendedTableModel model = (ExtendedTableModel) table.getModel();
 					// If rows were removed, loop and delete from the end
-					while (value < model.getRowCount ())
+					while(value < model.getRowCount())
 					{
-						model.removeRow (table.getRowCount () - 1);
+						model.removeRow(table.getRowCount() - 1);
 					}
 					// If rows were added, loop and add to the end
-					while (value > model.getRowCount ())
+					while(value > model.getRowCount())
 					{
-						model.addRow ();
+						model.addRow();
 					}
 
-					table.updateUI ();
+					table.updateUI();
 				}
 			}
 		});
-		final JButton button = new JButton ("Import from CSV");
-		button.setFont (new java.awt.Font ("Verdana", 0, 12));
-		button.addActionListener (new ActionListener ()
+		final JButton button = new JButton("Import from CSV");
+		button.setFont(new java.awt.Font("Verdana", 0, 12));
+		button.addActionListener(new ActionListener()
 		{
 			@Override
 			public void actionPerformed(ActionEvent evt)
 			{
 				// Construct the folder-based open chooser dialog
-				VIEW_PANEL.openChooserDialog.setFileFilter (VIEW_PANEL.csvFilter);
-				VIEW_PANEL.openChooserDialog.setFileSelectionMode (JFileChooser.FILES_ONLY);
-				VIEW_PANEL.openChooserDialog.setCurrentDirectory (new File (domain.lastGoodCsvFile));
-				if (new File (domain.lastGoodCsvFile).isFile ())
+				VIEW_PANEL.openChooserDialog.setFileFilter(VIEW_PANEL.csvFilter);
+				VIEW_PANEL.openChooserDialog.setFileSelectionMode(JFileChooser.FILES_ONLY);
+				VIEW_PANEL.openChooserDialog.setCurrentDirectory(new File(domain.lastGoodCsvFile));
+				if(new File(domain.lastGoodCsvFile).isFile())
 				{
-					VIEW_PANEL.openChooserDialog.setSelectedFile (new File (domain.lastGoodCsvFile));
+					VIEW_PANEL.openChooserDialog.setSelectedFile(new File(domain.lastGoodCsvFile));
 				}
 				else
 				{
-					VIEW_PANEL.openChooserDialog.setSelectedFile (new File (""));
+					VIEW_PANEL.openChooserDialog.setSelectedFile(new File(""));
 				}
 				// Display the chooser and retrieve the selected folder
-				int response = VIEW_PANEL.openChooserDialog.showOpenDialog (NEW_PROBLEM_WIZARD);
-				if (response == JFileChooser.APPROVE_OPTION)
+				int response = VIEW_PANEL.openChooserDialog.showOpenDialog(NEW_PROBLEM_WIZARD);
+				if(response == JFileChooser.APPROVE_OPTION)
 				{
 					try
 					{
 						// If the user selected a file that exists, point the problem's location to the newly selected location
-						if (VIEW_PANEL.openChooserDialog.getSelectedFile ().exists ())
+						if(VIEW_PANEL.openChooserDialog.getSelectedFile().exists())
 						{
-							domain.lastGoodCsvFile = VIEW_PANEL.openChooserDialog.getSelectedFile ().toString ();
+							domain.lastGoodCsvFile = VIEW_PANEL.openChooserDialog.getSelectedFile().toString();
 							try
 							{
 								ignoreDataChanging = true;
-								DataSet importedDataSet = DataSet.importFile (domain.lastGoodCsvFile);
+								DataSet importedDataSet = DataSet.importFile(domain.lastGoodCsvFile);
 
 								// Clear existing data
 								for(int i = dataSet.getColumnCount() - 1; 0 <= i; i--)
@@ -1564,18 +1673,18 @@ public class NewProblemWizardDialog extends EscapeDialog
 								}
 
 								// Change spinners to new size
-								columnsSpinner.setValue (dataSet.getColumnCount ());
-								rowsSpinner.setValue (dataSet.getColumnLength ());
+								columnsSpinner.setValue(dataSet.getColumnCount());
+								rowsSpinner.setValue(dataSet.getColumnLength());
 
 								// Change the model so that the old columns are no longer displayed
-								final ExtendedTableModel newModel = new ExtendedTableModel (dataSet);
+								final ExtendedTableModel newModel = new ExtendedTableModel(dataSet);
 								table.setModel(newModel);
-								newModel.addTableModelListener (new TableModelListener ()
+								newModel.addTableModelListener(new TableModelListener()
 								{
 									@Override
 									public void tableChanged(TableModelEvent evt)
 									{
-										fireTableChanged (newModel, evt);
+										fireTableChanged(newModel, evt);
 									}
 								});
 
@@ -1585,31 +1694,31 @@ public class NewProblemWizardDialog extends EscapeDialog
 									table.getColumnModel().getColumn(i).setHeaderValue(dataSet.getColumn(i).getName());
 								}
 
-								table.setModel (newModel);
-								table.updateUI ();
-								table.getTableHeader ().resizeAndRepaint ();
+								table.setModel(newModel);
+								table.updateUI();
+								table.getTableHeader().resizeAndRepaint();
 
 								ignoreDataChanging = false;
 							}
-							catch (MarlaException ex)
+							catch(MarlaException ex)
 							{
-								JOptionPane.showMessageDialog (NEW_PROBLEM_WIZARD, ex.getMessage (), "Load failed", JOptionPane.WARNING_MESSAGE);
+								JOptionPane.showMessageDialog(NEW_PROBLEM_WIZARD, ex.getMessage(), "Load failed", JOptionPane.WARNING_MESSAGE);
 							}
 						}
 					}
-					catch (FileNotFoundException e)
+					catch(FileNotFoundException e)
 					{
 					}
 				}
 			}
 		});
 
-		GroupLayout valuesPanelLayout = new GroupLayout (valuesPanel);
-		valuesPanel.setLayout (valuesPanelLayout);
-		valuesPanelLayout.setHorizontalGroup (
-				valuesPanelLayout.createParallelGroup (GroupLayout.LEADING).add (valuesPanelLayout.createSequentialGroup ().addContainerGap ().add (valuesPanelLayout.createParallelGroup (GroupLayout.LEADING).add (scrollPane, GroupLayout.DEFAULT_SIZE, 435, Short.MAX_VALUE).add (valuesPanelLayout.createSequentialGroup ().add (columnsLabel).addPreferredGap (LayoutStyle.RELATED).add (columnsSpinner, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE).add (18, 18, 18).add (rowsLabel).addPreferredGap (LayoutStyle.RELATED).add (rowsSpinner, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE).addPreferredGap (LayoutStyle.RELATED, 108, Short.MAX_VALUE).add (button))).addContainerGap ()));
-		valuesPanelLayout.setVerticalGroup (
-				valuesPanelLayout.createParallelGroup (GroupLayout.LEADING).add (valuesPanelLayout.createSequentialGroup ().add (scrollPane, GroupLayout.PREFERRED_SIZE, 238, GroupLayout.PREFERRED_SIZE).addPreferredGap (LayoutStyle.RELATED).add (valuesPanelLayout.createParallelGroup (GroupLayout.LEADING).add (button).add (valuesPanelLayout.createParallelGroup (GroupLayout.LEADING, false).add (columnsLabel, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE).add (columnsSpinner, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)).add (valuesPanelLayout.createParallelGroup (GroupLayout.LEADING, false).add (rowsLabel, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE).add (rowsSpinner, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))).addContainerGap (GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)));
+		GroupLayout valuesPanelLayout = new GroupLayout(valuesPanel);
+		valuesPanel.setLayout(valuesPanelLayout);
+		valuesPanelLayout.setHorizontalGroup(
+				valuesPanelLayout.createParallelGroup(GroupLayout.LEADING).add(valuesPanelLayout.createSequentialGroup().addContainerGap().add(valuesPanelLayout.createParallelGroup(GroupLayout.LEADING).add(scrollPane, GroupLayout.DEFAULT_SIZE, 435, Short.MAX_VALUE).add(valuesPanelLayout.createSequentialGroup().add(columnsLabel).addPreferredGap(LayoutStyle.RELATED).add(columnsSpinner, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE).add(18, 18, 18).add(rowsLabel).addPreferredGap(LayoutStyle.RELATED).add(rowsSpinner, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE).addPreferredGap(LayoutStyle.RELATED, 108, Short.MAX_VALUE).add(button))).addContainerGap()));
+		valuesPanelLayout.setVerticalGroup(
+				valuesPanelLayout.createParallelGroup(GroupLayout.LEADING).add(valuesPanelLayout.createSequentialGroup().add(scrollPane, GroupLayout.PREFERRED_SIZE, 238, GroupLayout.PREFERRED_SIZE).addPreferredGap(LayoutStyle.RELATED).add(valuesPanelLayout.createParallelGroup(GroupLayout.LEADING).add(button).add(valuesPanelLayout.createParallelGroup(GroupLayout.LEADING, false).add(columnsLabel, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE).add(columnsSpinner, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)).add(valuesPanelLayout.createParallelGroup(GroupLayout.LEADING, false).add(rowsLabel, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE).add(rowsSpinner, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))).addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)));
 
 		return valuesPanel;
 	}
@@ -1619,9 +1728,9 @@ public class NewProblemWizardDialog extends EscapeDialog
 	 */
 	protected void emptyTextFields()
 	{
-		problemNameTextField.setText ("");
-		problemLocationTextField.setText ("");
-		descriptionTextArea.setText ("");
+		problemNameTextField.setText("");
+		problemLocationTextField.setText("");
+		descriptionTextArea.setText("");
 	}
 
 	/**
@@ -1633,13 +1742,13 @@ public class NewProblemWizardDialog extends EscapeDialog
 	 */
 	private boolean columnNameExists(ExtendedTableModel model, int curIndex, String name)
 	{
-		for (int i = 0; i < model.getColumnCount (); ++i)
+		for(int i = 0; i < model.getColumnCount(); ++i)
 		{
-			if (i == curIndex)
+			if(i == curIndex)
 			{
 				continue;
 			}
-			if (model.getColumnName (i).equals (name))
+			if(model.getColumnName(i).equals(name))
 			{
 				return true;
 			}
@@ -1656,37 +1765,37 @@ public class NewProblemWizardDialog extends EscapeDialog
 	 */
 	private void fireTableChanged(ExtendedTableModel model, TableModelEvent evt)
 	{
-		if (!ignoreDataChanging && !addingDataSet && !changingDataSet)
+		if(!ignoreDataChanging && !addingDataSet && !changingDataSet)
 		{
 			// Ensure the new value is a valid double, otherwise revert
 			try
 			{
-				String value = model.getValueAt (evt.getFirstRow (), evt.getColumn ()).toString ();
+				String value = model.getValueAt(evt.getFirstRow(), evt.getColumn()).toString();
 				try
 				{
-					int intValue = Integer.parseInt (value.toString ());
+					int intValue = Integer.parseInt(value.toString());
 					changingDataSet = true;
-					model.setValueAt (intValue, evt.getFirstRow (), evt.getColumn ());
+					model.setValueAt(intValue, evt.getFirstRow(), evt.getColumn());
 					changingDataSet = false;
 				}
-				catch (NumberFormatException ex)
+				catch(NumberFormatException ex)
 				{
 					try
 					{
-						double doubleValue = Double.parseDouble (value.toString ());
+						double doubleValue = Double.parseDouble(value.toString());
 						changingDataSet = true;
-						model.setValueAt (doubleValue, evt.getFirstRow (), evt.getColumn ());
+						model.setValueAt(doubleValue, evt.getFirstRow(), evt.getColumn());
 						changingDataSet = false;
 					}
-					catch (NumberFormatException innerEx)
+					catch(NumberFormatException innerEx)
 					{
 						changingDataSet = true;
-						model.setValueAt (changingValue, evt.getFirstRow (), evt.getColumn ());
+						model.setValueAt(changingValue, evt.getFirstRow(), evt.getColumn());
 						changingDataSet = false;
 					}
 				}
 			}
-			catch (NullPointerException ex)
+			catch(NullPointerException ex)
 			{
 			}
 		}
@@ -1701,41 +1810,42 @@ public class NewProblemWizardDialog extends EscapeDialog
 	{
 		ignoreDataChanging = true;
 
+		this.editing = editing;
 		newProblemOverwrite = false;
 
 		// Set the first card panel as the only visible
-		welcomeCardPanel.setVisible (true);
-		nameAndLocationCardPanel.setVisible (false);
-		descriptionCardPanel.setVisible (false);
-		subProblemsCardPanel.setVisible (false);
-		valuesCardPanel.setVisible (false);
-		informationCardPanel.setVisible (false);
+		welcomeCardPanel.setVisible(true);
+		nameAndLocationCardPanel.setVisible(false);
+		descriptionCardPanel.setVisible(false);
+		subProblemsCardPanel.setVisible(false);
+		valuesCardPanel.setVisible(false);
+		informationCardPanel.setVisible(false);
 		// Set the proper label to bold
-		welcomeLabel.setFont (ViewPanel.FONT_BOLD_12);
-		nameAndLocationLabel.setFont (ViewPanel.FONT_PLAIN_12);
-		descriptionLabel.setFont (ViewPanel.FONT_PLAIN_12);
-		subProblemsLabel.setFont (ViewPanel.FONT_PLAIN_12);
-		valuesLabel.setFont (ViewPanel.FONT_PLAIN_12);
-		informationLabel.setFont (ViewPanel.FONT_PLAIN_12);
+		welcomeLabel.setFont(ViewPanel.FONT_BOLD_12);
+		nameAndLocationLabel.setFont(ViewPanel.FONT_PLAIN_12);
+		descriptionLabel.setFont(ViewPanel.FONT_PLAIN_12);
+		subProblemsLabel.setFont(ViewPanel.FONT_PLAIN_12);
+		valuesLabel.setFont(ViewPanel.FONT_PLAIN_12);
+		informationLabel.setFont(ViewPanel.FONT_PLAIN_12);
 		// Set forward/backward button states
-		backWizardButton.setEnabled (false);
-		nextWizardButton.setEnabled (true);
-		nextWizardButton.setText ("Next >");
+		backWizardButton.setEnabled(false);
+		nextWizardButton.setEnabled(true);
+		nextWizardButton.setText("Next >");
 		// Set properties in the sub problems panel
-		subProblemPanels.clear ();
-		subProblemsScollablePanel.removeAll ();
-		subProblemsScollablePanel.updateUI ();
-		addSubProblemButton.setEnabled (true);
-		removeSubProblemButton.setEnabled (true);
+		subProblemPanels.clear();
+		subProblemsScollablePanel.removeAll();
+		subProblemsScollablePanel.updateUI();
+		addSubProblemButton.setEnabled(true);
+		removeSubProblemButton.setEnabled(true);
 		// Set properties for the values tabs
-		dataSetTabbedPane.removeAll ();
+		dataSetTabbedPane.removeAll();
 
-		setNewProblemWizardDefaultValues (editing);
+		setNewProblemWizardDefaultValues(editing);
 
 		// Pack and show the New Problem Wizard dialog
-		pack ();
-		setLocationRelativeTo (VIEW_PANEL);
-		setVisible (true);
+		pack();
+		setLocationRelativeTo(VIEW_PANEL);
+		setVisible(true);
 
 		ignoreDataChanging = false;
 	}
@@ -1747,192 +1857,183 @@ public class NewProblemWizardDialog extends EscapeDialog
 	 */
 	private void setNewProblemWizardDefaultValues(boolean editing)
 	{
-		if (!editing)
+		if(!editing)
 		{
 			// Create the new Problem object with default values
-			newProblem = new Problem ("");
-			newProblem.setFileName (domain.lastGoodDir + "/" + "New Problem.marla");
+			newProblem = new Problem("");
+			newProblem.setFileName(domain.lastGoodDir + "/" + "New Problem.marla");
 			DataSet dataSet = null;
 			try
 			{
-				dataSet = new DataSet ("Data Set 1");
-				newProblem.addData (dataSet);
-				dataSet.addColumn ("Column 1");
-				dataSet.getColumn (0).add (0.0);
-				dataSet.getColumn (0).add (0.0);
-				dataSet.getColumn (0).add (0.0);
-				dataSet.getColumn (0).add (0.0);
-				dataSet.getColumn (0).add (0.0);
-				dataSet.addColumn ("Column 2");
-				dataSet.getColumn (1).add (0.0);
-				dataSet.getColumn (1).add (0.0);
-				dataSet.getColumn (1).add (0.0);
-				dataSet.getColumn (1).add (0.0);
-				dataSet.getColumn (1).add (0.0);
-				dataSet.addColumn ("Column 3");
-				dataSet.getColumn (2).add (0.0);
-				dataSet.getColumn (2).add (0.0);
-				dataSet.getColumn (2).add (0.0);
-				dataSet.getColumn (2).add (0.0);
-				dataSet.getColumn (2).add (0.0);
+				dataSet = new DataSet("Data Set 1");
+				newProblem.addData(dataSet);
+				dataSet.addColumn("Column 1");
+				dataSet.getColumn(0).add(0.0);
+				dataSet.getColumn(0).add(0.0);
+				dataSet.getColumn(0).add(0.0);
+				dataSet.getColumn(0).add(0.0);
+				dataSet.getColumn(0).add(0.0);
+				dataSet.addColumn("Column 2");
+				dataSet.getColumn(1).add(0.0);
+				dataSet.getColumn(1).add(0.0);
+				dataSet.getColumn(1).add(0.0);
+				dataSet.getColumn(1).add(0.0);
+				dataSet.getColumn(1).add(0.0);
+				dataSet.addColumn("Column 3");
+				dataSet.getColumn(2).add(0.0);
+				dataSet.getColumn(2).add(0.0);
+				dataSet.getColumn(2).add(0.0);
+				dataSet.getColumn(2).add(0.0);
+				dataSet.getColumn(2).add(0.0);
 
-				dataSet.setBounds (200, 20, dataSet.getPreferredSize ().width, dataSet.getPreferredSize ().height);
+				dataSet.setBounds(200, 20, dataSet.getPreferredSize().width, dataSet.getPreferredSize().height);
 			}
 			// Will never be thrown at this point
-			catch (DuplicateNameException ex)
+			catch(DuplicateNameException ex)
 			{
 			}
 
 			// Set problem defaults for name and location
-			problemNameTextField.setText ("New Problem");
-			problemNameTextField.setEnabled (true);
-			problemLocationTextField.setText (domain.lastGoodDir);
-			browseButton.setEnabled (true);
-			descriptionTextArea.setText ("");
-			studentNameTextField.setText (newProblem.getPersonName());
-			courseShortNameTextField.setText (newProblem.getShortCourse());
-			courseLongNameTextField.setText (newProblem.getLongCourse());
-			chapterTextField.setText (newProblem.getChapter());
-			sectionTextField.setText (newProblem.getSection());
-			problemConclusionTextArea.setText (newProblem.getConclusion());
-			problemNumberTextField.setText (newProblem.getProblemNumber());
+			problemNameTextField.setText("New Problem");
+			problemNameTextField.setEnabled(true);
+			problemLocationTextField.setText(domain.lastGoodDir);
+			browseButton.setEnabled(true);
+			descriptionTextArea.setText("");
+			studentNameTextField.setText(newProblem.getPersonName());
+			courseShortNameTextField.setText(newProblem.getShortCourse());
+			courseLongNameTextField.setText(newProblem.getLongCourse());
+			chapterTextField.setText(newProblem.getChapter());
+			sectionTextField.setText(newProblem.getSection());
+			problemConclusionTextArea.setText(newProblem.getConclusion());
+			problemNumberTextField.setText(newProblem.getProblemNumber());
 
 			// By default, new problems have three columns and five rows
-			dataSetTabbedPane.add (dataSet.getName(), createValuesTabbedPanel (dataSet));
+			dataSetTabbedPane.add(dataSet.getName(), createValuesTabbedPanel(dataSet));
 			int columns = dataSet.getColumnCount();
 			int rows = dataSet.getColumnLength();
 
 			// Add minimum columns to the table model
-			JTable table = ((JTable) ((JViewport) ((JScrollPane) ((JPanel) dataSetTabbedPane.getComponent (0)).getComponent (0)).getComponent (0)).getComponent (0));
-			final ExtendedTableModel newModel = new ExtendedTableModel (dataSet);
-			newModel.addTableModelListener (new TableModelListener ()
+			JTable table = ((JTable) ((JViewport) ((JScrollPane) ((JPanel) dataSetTabbedPane.getComponent(0)).getComponent(0)).getComponent(0)).getComponent(0));
+			final ExtendedTableModel newModel = new ExtendedTableModel(dataSet);
+			newModel.addTableModelListener(new TableModelListener()
 			{
 				@Override
 				public void tableChanged(TableModelEvent evt)
 				{
-					fireTableChanged (newModel, evt);
+					fireTableChanged(newModel, evt);
 				}
 			});
-			DefaultTableColumnModel newColumnModel = new DefaultTableColumnModel ();
-			for (int i = 0; i < columns; ++i)
+			DefaultTableColumnModel newColumnModel = new DefaultTableColumnModel();
+			for(int i = 0; i < columns; ++i)
 			{
-				newColumnModel.addColumn (new TableColumn ());
+				newColumnModel.addColumn(new TableColumn());
 			}
-			table.setColumnModel (newColumnModel);
-			
-			table.setModel (newModel);
-			table.updateUI ();
-			table.getTableHeader ().resizeAndRepaint ();
+			table.setColumnModel(newColumnModel);
+
+			table.setModel(newModel);
+			table.updateUI();
+			table.getTableHeader().resizeAndRepaint();
 
 			// Wait to change spinners _after_ the model is set or we'll double the rows
-			((JSpinner) ((JPanel) dataSetTabbedPane.getComponent (0)).getComponent (2)).setValue (columns);
-			((JSpinner) ((JPanel) dataSetTabbedPane.getComponent (0)).getComponent (4)).setValue (rows);
+			((JSpinner) ((JPanel) dataSetTabbedPane.getComponent(0)).getComponent(2)).setValue(columns);
+			((JSpinner) ((JPanel) dataSetTabbedPane.getComponent(0)).getComponent(4)).setValue(rows);
 		}
 		else
 		{
 			newProblem = null;
 
 			// Set problem defaults for name and location
-			problemNameTextField.setText (domain.problem.getFileName ().substring (domain.problem.getFileName ().lastIndexOf (System.getProperty ("file.separator")) + 1, domain.problem.getFileName ().lastIndexOf (".")));
-			problemNameTextField.setEnabled (false);
-			problemLocationTextField.setText (domain.problem.getFileName ().substring (0, domain.problem.getFileName ().lastIndexOf (System.getProperty ("file.separator"))));
-			browseButton.setEnabled (false);
-			descriptionTextArea.setText (domain.problem.getStatement ());
-			studentNameTextField.setText (domain.problem.getPersonName());
-			courseShortNameTextField.setText (domain.problem.getShortCourse());
-			courseLongNameTextField.setText (domain.problem.getLongCourse());
-			chapterTextField.setText (domain.problem.getChapter());
-			sectionTextField.setText (domain.problem.getSection());
-			problemConclusionTextArea.setText (domain.problem.getConclusion());
-			problemNumberTextField.setText (domain.problem.getProblemNumber());
+			problemNameTextField.setText(domain.problem.getFileName().substring(domain.problem.getFileName().lastIndexOf(System.getProperty("file.separator")) + 1, domain.problem.getFileName().lastIndexOf(".")));
+			problemNameTextField.setEnabled(false);
+			problemLocationTextField.setText(domain.problem.getFileName().substring(0, domain.problem.getFileName().lastIndexOf(System.getProperty("file.separator"))));
+			browseButton.setEnabled(false);
+			descriptionTextArea.setText(domain.problem.getStatement());
+			studentNameTextField.setText(domain.problem.getPersonName());
+			courseShortNameTextField.setText(domain.problem.getShortCourse());
+			courseLongNameTextField.setText(domain.problem.getLongCourse());
+			chapterTextField.setText(domain.problem.getChapter());
+			sectionTextField.setText(domain.problem.getSection());
+			problemConclusionTextArea.setText(domain.problem.getConclusion());
+			problemNumberTextField.setText(domain.problem.getProblemNumber());
 
 			// Add sub problems to the panel
-			for (int i = 0; i < domain.problem.getSubProblemCount (); ++i)
+			for(int i = 0; i < domain.problem.getSubProblemCount(); ++i)
 			{
-				// Create objects toward the new JPanel for the sub problem
-				JPanel subProblemPanel = new JPanel ();
-				JLabel label = new JLabel (ALPHABET[i]);
-				label.setFont (new Font ("Verdana", Font.BOLD, 11));
-				JTextArea textArea = new JTextArea (domain.problem.getSubProblem (i).getStatement ());
-				JScrollPane scrollPane = new JScrollPane ();
-				textArea.setLineWrap (true);
-				textArea.setWrapStyleWord (true);
-				scrollPane.setViewportView (textArea);
+				JPanel panel = createSubProblemPanel(domain.problem.getSubProblem(i));
 
-				// Add items to the new JPanel
-				subProblemPanel.setLayout (new BorderLayout ());
-				subProblemPanel.add (label, BorderLayout.NORTH);
-				subProblemPanel.add (scrollPane, BorderLayout.CENTER);
-				subProblemPanel.setPreferredSize (new Dimension (410, 100));
-				subProblemPanel.setMinimumSize (new Dimension (410, 100));
-				subProblemPanel.setMaximumSize (new Dimension (410, 100));
+				JTextArea textArea = (JTextArea) ((JViewport) ((JScrollPane) panel.getComponent(1)).getComponent(0)).getComponent(0);
+				JPanel colorPanel = (JPanel) ((JPanel) panel.getComponent (2)).getComponent (1);
+				JTextArea conclusionTextArea = (JTextArea) ((JViewport) ((JScrollPane) ((JPanel) panel.getComponent (2)).getComponent (4)).getViewport ()).getComponent (0);
+				textArea.setText (domain.problem.getSubProblem(i).getStatement());
+				conclusionTextArea.setText (domain.problem.getSubProblem(i).getConclusion());
+				colorPanel.setBackground(domain.problem.getSubProblem(i).getColor());
 
 				// Add the JPanel to the list of sub problem JPanels
-				subProblemPanels.add (subProblemPanel);
+				subProblemPanels.add(panel);
 
 				// Add the JPanel to the New Problem Wizard
-				subProblemsScollablePanel.add (subProblemPanel);
+				subProblemsScollablePanel.add(panel);
 			}
-			if (subProblemPanels.size () > 0)
+			if(subProblemPanels.size() > 0)
 			{
-				removeSubProblemButton.setEnabled (true);
+				removeSubProblemButton.setEnabled(true);
 			}
 			else
 			{
-				removeSubProblemButton.setEnabled (false);
+				removeSubProblemButton.setEnabled(false);
 			}
-			if (subProblemPanels.size () < 26)
+			if(subProblemPanels.size() < 26)
 			{
-				addSubProblemButton.setEnabled (true);
+				addSubProblemButton.setEnabled(true);
 			}
 			else
 			{
-				addSubProblemButton.setEnabled (false);
+				addSubProblemButton.setEnabled(false);
 			}
-			subProblemsScollablePanel.updateUI ();
-			subProblemsScollablePanel.scrollRectToVisible (new Rectangle (0, subProblemsScollablePanel.getHeight (), 1, 1));
+			subProblemsScollablePanel.updateUI();
+			subProblemsScollablePanel.scrollRectToVisible(new Rectangle(0, subProblemsScollablePanel.getHeight(), 1, 1));
 
-			for (int i = 0; i < domain.problem.getDataCount (); ++i)
+			for(int i = 0; i < domain.problem.getDataCount(); ++i)
 			{
-				DataSet dataSet = domain.problem.getData (i);
-				JPanel panel = createValuesTabbedPanel (dataSet);
-				dataSetTabbedPane.add (dataSet.getName (), panel);
-				int columns = dataSet.getColumnCount ();
-				int rows = dataSet.getColumnLength ();
-				((JSpinner) panel.getComponent (2)).setValue (columns);
-				((JSpinner) panel.getComponent (4)).setValue (rows);
+				DataSet dataSet = domain.problem.getData(i);
+				JPanel panel = createValuesTabbedPanel(dataSet);
+				dataSetTabbedPane.add(dataSet.getName(), panel);
+				int columns = dataSet.getColumnCount();
+				int rows = dataSet.getColumnLength();
+				((JSpinner) panel.getComponent(2)).setValue(columns);
+				((JSpinner) panel.getComponent(4)).setValue(rows);
 
 				// Add minimum columns to the table model
-				JTable table = (JTable) ((JViewport) ((JScrollPane) panel.getComponent (0)).getComponent (0)).getComponent (0);
-				final ExtendedTableModel newModel = new ExtendedTableModel (dataSet);
-				newModel.addTableModelListener (new TableModelListener ()
+				JTable table = (JTable) ((JViewport) ((JScrollPane) panel.getComponent(0)).getComponent(0)).getComponent(0);
+				final ExtendedTableModel newModel = new ExtendedTableModel(dataSet);
+				newModel.addTableModelListener(new TableModelListener()
 				{
 					@Override
 					public void tableChanged(TableModelEvent evt)
 					{
-						fireTableChanged (newModel, evt);
+						fireTableChanged(newModel, evt);
 					}
 				});
 
-				DefaultTableColumnModel newColumnModel = new DefaultTableColumnModel ();
-				for (int j = 0; j < columns; ++j)
+				DefaultTableColumnModel newColumnModel = new DefaultTableColumnModel();
+				for(int j = 0; j < columns; ++j)
 				{
-					newColumnModel.addColumn (new TableColumn ());
+					newColumnModel.addColumn(new TableColumn());
 					//newColumnModel.getColumn (newModel.getColumnCount () - 1).setHeaderValue (dataSet.getColumn (j).getName ());
 				}
-				table.setColumnModel (newColumnModel);
+				table.setColumnModel(newColumnModel);
 
-				table.setModel (newModel);
-				table.updateUI ();
-				table.getTableHeader ().resizeAndRepaint ();
+				table.setModel(newModel);
+				table.updateUI();
+				table.getTableHeader().resizeAndRepaint();
 			}
-			if (dataSetTabbedPane.getTabCount () > 0)
+			if(dataSetTabbedPane.getTabCount() > 0)
 			{
-				removeDataSetButton.setEnabled (true);
+				removeDataSetButton.setEnabled(true);
 			}
 			else
 			{
-				removeDataSetButton.setEnabled (false);
+				removeDataSetButton.setEnabled(false);
 			}
 		}
 	}
@@ -1946,25 +2047,25 @@ public class NewProblemWizardDialog extends EscapeDialog
 	private void finishNewProblemWizard(boolean editing)
 	{
 		// Close the current or old problem, if one is open
-		VIEW_PANEL.closeProblem (editing);
+		VIEW_PANEL.closeProblem(editing);
 
 		// Use values from the New Problem Wizard to construct a new problem
-		if (newProblem != null)
+		if(newProblem != null)
 		{
 			domain.problem = newProblem;
 			newProblem = null;
 		}
 
 		// Open data stored in the problem currently
-		VIEW_PANEL.openProblem (editing);
+		VIEW_PANEL.openProblem(editing);
 
 		// Save the problem immedietly
-		if (!editing)
+		if(!editing)
 		{
-			domain.save ();
+			domain.save();
 		}
 
-		closeWizardButtonActionPerformed (null);
+		closeWizardButtonActionPerformed(null);
 	}
 
 	/**
@@ -1976,13 +2077,13 @@ public class NewProblemWizardDialog extends EscapeDialog
 	 */
 	private boolean dataSetNameExists(int curIndex, String name)
 	{
-		for (int i = 0; i < dataSetTabbedPane.getTabCount (); ++i)
+		for(int i = 0; i < dataSetTabbedPane.getTabCount(); ++i)
 		{
-			if (i == curIndex)
+			if(i == curIndex)
 			{
 				continue;
 			}
-			if (dataSetTabbedPane.getTitleAt (i).equals (name))
+			if(dataSetTabbedPane.getTitleAt(i).equals(name))
 			{
 				return true;
 			}
@@ -1991,27 +2092,29 @@ public class NewProblemWizardDialog extends EscapeDialog
 	}
 
 	/**
-	 * Adds a new data set in the New Problem Wizard.
+	 * Assuming the New Problem Wizard is already launched, this function will
+	 * move to add a new data set in the New Problem Wizard.
 	 */
 	protected void addNewDataSet()
 	{
 		// Transition to the values card panel
-		nextWizardButtonActionPerformed (null);
-		nextWizardButtonActionPerformed (null);
+		nextWizardButtonActionPerformed(null);
+		nextWizardButtonActionPerformed(null);
 
 		// Add the new data set
-		addDataSetButtonActionPerformed (null);
+		addDataSetButtonActionPerformed(null);
 	}
 
 	/**
-	 * Edit the conclusion of the current problem.
+	 * Assuming the New Problem Wizard is already launched, this function will
+	 * move to edit the conclusion of the current problem.
 	 */
 	protected void editConclusion()
 	{
 		// Transition to the values card panel
-		nextWizardButtonActionPerformed (null);
-		nextWizardButtonActionPerformed (null);
-		nextWizardButtonActionPerformed (null);
+		nextWizardButtonActionPerformed(null);
+		nextWizardButtonActionPerformed(null);
+		nextWizardButtonActionPerformed(null);
 
 		// Select the conclusion text area
 		problemConclusionTextArea.requestFocus();
@@ -2019,37 +2122,39 @@ public class NewProblemWizardDialog extends EscapeDialog
 	}
 
 	/**
-	 * Edit the currently selected data set.
+	 * Assuming the New Problem Wizard is already launched, this function will
+	 * move to edit the currently selected data set.
 	 *
 	 * @param dataSet The data set to be edited, null if no data set should be edited.
 	 */
 	protected void editDataSet(DataSet dataSet)
 	{
 		// Transition to the values card panel
-		nextWizardButtonActionPerformed (null);
-		nextWizardButtonActionPerformed (null);
+		nextWizardButtonActionPerformed(null);
+		nextWizardButtonActionPerformed(null);
 
-		if (dataSet != null)
+		if(dataSet != null)
 		{
 			// Add the new data set
 			try
 			{
-				dataSetTabbedPane.setSelectedIndex (domain.problem.getDataIndex (dataSet.getName ()));
+				dataSetTabbedPane.setSelectedIndex(domain.problem.getDataIndex(dataSet.getName()));
 			}
-			catch (DataNotFoundException ex)
+			catch(DataNotFoundException ex)
 			{
-				Domain.logger.add (ex);
+				Domain.logger.add(ex);
 			}
 		}
 	}
 
 	/**
-	 * Edit sub problems for the currently displayed problem.
+	 * Assuming the New Problem Wizard is already launched, this function will
+	 * move to edit sub problems for the currently displayed problem.
 	 */
 	protected void editSubProblems()
 	{
 		// Transition to the values card panel
-		nextWizardButtonActionPerformed (null);
+		nextWizardButtonActionPerformed(null);
 	}
 
 	/**
@@ -2062,7 +2167,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 		launchNewProblemWizard(true);
 
 		// Transition to the values card panel
-		nextWizardButtonActionPerformed (null);
-		nextWizardButtonActionPerformed (null);
+		nextWizardButtonActionPerformed(null);
+		nextWizardButtonActionPerformed(null);
 	}
 }
