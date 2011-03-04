@@ -353,6 +353,7 @@ public class ViewPanel extends JPanel
 						@Override
 						public void mousePressed(MouseEvent evt)
 						{
+							buttonPressed = evt.getButton();
 							xDragOffset = (int) evt.getLocationOnScreen().getX() - (int) operation.getLocationOnScreen().getX();
 							yDragOffset = (int) evt.getLocationOnScreen().getY() - (int) operation.getLocationOnScreen().getY();
 						}
@@ -1860,6 +1861,8 @@ public class ViewPanel extends JPanel
 		{
 			hoveredComponent.setBorder(NO_BORDER);
 		}
+
+		buttonPressed = 0;
 	}
 
 	/**

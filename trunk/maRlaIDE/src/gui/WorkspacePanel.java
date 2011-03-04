@@ -81,23 +81,28 @@ public class WorkspacePanel extends JPanel
 				int y1 = dataSet.getY () + dataSet.getHeight ();
 				int x2 = (topOp.getX () + dataSet.getOperation (j).getX () + topOp.getWidth ()) / 2;
 				int y2 = topOp.getY ();
-				if (!topOp.getSubProblems().isEmpty())
+				List<SubProblem> subProblems = topOp.getSubProblems();
+				if (subProblems.size () > 1)
 				{
-					List<SubProblem> subProblems = topOp.getSubProblems();
-					int inc = SUB_INC * 2;
+					int decNeg = SUB_INC;
+					int decX = x2;
+					int incPos = SUB_INC;
+					int incX = x2;
 					for (int k = 0; k < subProblems.size (); ++k)
 					{
 						g2.setPaint(subProblems.get(k).getColor());
-						if (k == 0 || k % 2 == 0)
+						if (k % 2 == 0)
 						{
-							x2 -= inc;
+							x2 = decX - decNeg;
+							decNeg -= SUB_INC;
+							g2.draw (new Line2D.Double (x1, y1, x2, y2));
 						}
 						else
 						{
-							x2 += inc;
-							inc += (SUB_INC * 2);
+							x2 = incX + incPos;
+							incPos += SUB_INC;
+							g2.draw (new Line2D.Double (x1, y1, x2, y2));
 						}
-						g2.draw (new Line2D.Double (x1, y1, x2, y2));
 					}
 				}
 				else
@@ -120,25 +125,30 @@ public class WorkspacePanel extends JPanel
 					y1 = topOp.getY () + topOp.getHeight ();
 					x2 = (op.getX () + op.getX () + op.getWidth ()) / 2;
 					y2 = op.getY ();
-					if (!topOp.getSubProblems().isEmpty())
+					subProblems = op.getSubProblems();
+					if (subProblems.size() > 1)
 					{
-						List<SubProblem> subProblems = topOp.getSubProblems();
-						int inc = SUB_INC;
+						int decNeg = SUB_INC;
+						int decX = x2;
+						int incPos = SUB_INC;
+						int incX = x2;
 						for (int k = 0; k < subProblems.size (); ++k)
 						{
 							g2.setPaint(subProblems.get(k).getColor());
-							if (k == 0 || k % 2 == 0)
+							if (k % 2 == 0)
 							{
-								x1 -= inc;
-								x2 -= inc;
+								x1 = decX - decNeg;
+								x2 = decX - decNeg;
+								decNeg -= SUB_INC;
+								g2.draw (new Line2D.Double (x1, y1, x2, y2));
 							}
 							else
 							{
-								x1 += inc;
-								x2 += inc;
-								inc += SUB_INC;
+								x1 = incX + incPos;
+								x2 = incX + incPos;
+								incPos += SUB_INC;
+								g2.draw (new Line2D.Double (x1, y1, x2, y2));
 							}
-							g2.draw (new Line2D.Double (x1, y1, x2, y2));
 						}
 					}
 					else
@@ -171,7 +181,37 @@ public class WorkspacePanel extends JPanel
 			int y1 = operation.getY () + operation.getHeight ();
 			int x2 = (operation.getOperation (0).getX () + operation.getOperation (0).getX () + operation.getOperation (0).getWidth ()) / 2;
 			int y2 = operation.getOperation (0).getY ();
-			g2.draw (new Line2D.Double (x1, y1, x2, y2));
+			List<SubProblem> subProblems = operation.getSubProblems();
+			if (subProblems.size() > 1)
+			{
+				int decNeg = SUB_INC;
+				int decX = x2;
+				int incPos = SUB_INC;
+				int incX = x2;
+				for (int k = 0; k < subProblems.size (); ++k)
+				{
+					g2.setPaint(subProblems.get(k).getColor());
+					if (k % 2 == 0)
+					{
+						x1 = decX - decNeg;
+						x2 = decX - decNeg;
+						decNeg -= SUB_INC;
+						g2.draw (new Line2D.Double (x1, y1, x2, y2));
+					}
+					else
+					{
+						x1 = incX + incPos;
+						x2 = incX + incPos;
+						incPos += SUB_INC;
+						g2.draw (new Line2D.Double (x1, y1, x2, y2));
+					}
+				}
+			}
+			else
+			{
+				g2.setPaint(Color.DARK_GRAY);
+				g2.draw (new Line2D.Double (x1, y1, x2, y2));
+			}
 		}
 	}
 }
