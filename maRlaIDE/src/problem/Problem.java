@@ -686,6 +686,18 @@ public class Problem implements ProblemPart
 			return false;
 		if(!conclusion.equals(otherP.conclusion))
 			return false;
+		if(!personName.equals(otherP.personName))
+			return false;
+		if(!shortCourseName.equals(otherP.shortCourseName))
+			return false;
+		if(!longCourseName.equals(otherP.longCourseName))
+			return false;
+		if(!probChapter.equals(otherP.probChapter))
+			return false;
+		if(!probSection.equals(otherP.probSection))
+			return false;
+		if(!probNum.equals(otherP.probNum))
+			return false;
 		if(!datasets.equals(otherP.datasets))
 			return false;
 		if(!subProblems.equals(otherP.subProblems))
@@ -699,6 +711,12 @@ public class Problem implements ProblemPart
 		int hash = 3;
 		hash = 29 * hash + (this.statement != null ? this.statement.hashCode() : 0);
 		hash = 29 * hash + (this.conclusion != null ? this.conclusion.hashCode() : 0);
+		hash = 29 * hash + (this.personName != null ? this.personName.hashCode() : 0);
+		hash = 29 * hash + (this.longCourseName != null ? this.longCourseName.hashCode() : 0);
+		hash = 29 * hash + (this.shortCourseName != null ? this.shortCourseName.hashCode() : 0);
+		hash = 29 * hash + (this.probNum != null ? this.probNum.hashCode() : 0);
+		hash = 29 * hash + (this.probSection != null ? this.probSection.hashCode() : 0);
+		hash = 29 * hash + (this.probChapter != null ? this.probChapter.hashCode() : 0);
 		hash = 29 * hash + (this.datasets != null ? this.datasets.hashCode() : 0);
 		hash = 29 * hash + (this.fileName != null ? this.fileName.hashCode() : 0);
 		return hash;
@@ -708,8 +726,17 @@ public class Problem implements ProblemPart
 	public Element toXml() throws MarlaException
 	{
 		Element rootEl = new Element("problem");
+
 		rootEl.addContent(new Element("statement").addContent(statement));
 		rootEl.addContent(new Element("conclusion").addContent(conclusion));
+
+		rootEl.setAttribute("person", personName);
+		rootEl.setAttribute("course_long", longCourseName);
+		rootEl.setAttribute("course_short", shortCourseName);
+
+		rootEl.setAttribute("chapter", probChapter);
+		rootEl.setAttribute("section", probSection);
+		rootEl.setAttribute("probnum", probNum);
 
 		// Add each DataSet
 		for(DataSet data : datasets)
@@ -749,6 +776,14 @@ public class Problem implements ProblemPart
 
 		newProb.setStatement(rootEl.getChildText("statement"));
 		newProb.setConclusion(rootEl.getChildText("conclusion"));
+
+		newProb.setPersonName(rootEl.getAttributeValue("person"));
+		newProb.setLongCourse(rootEl.getAttributeValue("course_long"));
+		newProb.setShortCourse(rootEl.getAttributeValue("course_short"));
+		
+		newProb.setChapter(rootEl.getAttributeValue("chapter"));
+		newProb.setSection(rootEl.getAttributeValue("section"));
+		newProb.setProblemNumber(rootEl.getAttributeValue("probnum"));
 
 		for(Object dataEl : rootEl.getChildren("data"))
 		{
