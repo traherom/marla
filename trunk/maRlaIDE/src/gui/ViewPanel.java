@@ -189,6 +189,8 @@ public class ViewPanel extends JPanel
 	private Point answerDialogLocation = null;
 	/** True if operation and column names are abbreviated, false otherwise.*/
 	private boolean abbreviated = false;
+	/** 0 when no button is pressed, otherwise the number of the button pressed.*/
+	private int buttonPressed = 0;
 
 	/**
 	 * Creates new form MainFrame for a stand-alone application.
@@ -706,7 +708,7 @@ public class ViewPanel extends JPanel
         );
         emptyPalettePanelLayout.setVerticalGroup(
             emptyPalettePanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(0, 477, Short.MAX_VALUE)
+            .add(0, 476, Short.MAX_VALUE)
         );
 
         componentsCardPanel.add(emptyPalettePanel, "card3");
@@ -746,14 +748,14 @@ public class ViewPanel extends JPanel
             preWorkspacePanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(preWorkspacePanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .add(preWorkspaceLabel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 752, Short.MAX_VALUE)
+                .add(preWorkspaceLabel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 754, Short.MAX_VALUE)
                 .addContainerGap())
         );
         preWorkspacePanelLayout.setVerticalGroup(
             preWorkspacePanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(preWorkspacePanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .add(preWorkspaceLabel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 449, Short.MAX_VALUE)
+                .add(preWorkspaceLabel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 450, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -761,6 +763,9 @@ public class ViewPanel extends JPanel
 
         workspacePanel.setBackground(new java.awt.Color(255, 255, 255));
         workspacePanel.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                workspacePanelMousePressed(evt);
+            }
             public void mouseReleased(java.awt.event.MouseEvent evt) {
                 workspacePanelMouseReleased(evt);
             }
@@ -810,9 +815,9 @@ public class ViewPanel extends JPanel
         trayPanel.setLayout(trayPanelLayout);
         trayPanelLayout.setHorizontalGroup(
             trayPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(0, 780, Short.MAX_VALUE)
+            .add(0, 778, Short.MAX_VALUE)
             .add(trayPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                .add(outputScrollPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 780, Short.MAX_VALUE))
+                .add(outputScrollPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 778, Short.MAX_VALUE))
         );
         trayPanelLayout.setVerticalGroup(
             trayPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
@@ -829,7 +834,7 @@ public class ViewPanel extends JPanel
 	private void workspacePanelMouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_workspacePanelMouseDragged
 		if(draggingComponent == null)
 		{
-			if(evt.getButton() == 0 || evt.getButton() == MouseEvent.BUTTON1)
+			if(buttonPressed == MouseEvent.BUTTON1)
 			{
 				JComponent component = (JComponent) workspacePanel.getComponentAt(evt.getPoint());
 				if(component != null
@@ -857,7 +862,6 @@ public class ViewPanel extends JPanel
 							if(parent != null)
 							{
 								parent.removeOperation((Operation) draggingComponent);
-								workspacePanel.setComponentZOrder(trashCan, workspacePanel.getComponentCount() - 1);
 							}
 							if(childOperation != null)
 							{
@@ -886,6 +890,7 @@ public class ViewPanel extends JPanel
 						yDragOffset = evt.getY() - draggingComponent.getY();
 					}
 					workspacePanel.setComponentZOrder(draggingComponent, workspacePanel.getComponentCount() - 1);
+					workspacePanel.setComponentZOrder(trashCan, workspacePanel.getComponentCount() - 1);
 					
 					domain.problem.markUnsaved();
 				}
@@ -896,7 +901,7 @@ public class ViewPanel extends JPanel
 	}//GEN-LAST:event_workspacePanelMouseDragged
 
 	private void workspacePanelMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_workspacePanelMouseReleased
-		if(evt.getButton() == 0 || evt.getButton() == MouseEvent.BUTTON1)
+		if(buttonPressed == MouseEvent.BUTTON1)
 		{
 			if(draggingComponent != null)
 			{
@@ -954,7 +959,7 @@ public class ViewPanel extends JPanel
 			}
 			rebuildWorkspace();
 		}
-		else if(evt.getButton() == MouseEvent.BUTTON3)
+		else if(buttonPressed == MouseEvent.BUTTON3)
 		{
 			JComponent component = (JComponent) workspacePanel.getComponentAt(evt.getPoint());
 			if(component != null
@@ -999,6 +1004,8 @@ public class ViewPanel extends JPanel
 									subProblem.setSolutionEnd(null);
 								}
 								subProblem.setSolutionStart(null);
+
+								rebuildWorkspace();
 							}
 						});
 						untieSubProblemSubMenu.add(item);
@@ -1031,6 +1038,8 @@ public class ViewPanel extends JPanel
 									subProblem.setSolutionEnd(source);
 								}
 								subProblem.setSolutionStart(source);
+
+								rebuildWorkspace();
 							}
 						});
 						tieSubProblemSubMenu.add(item);
@@ -1088,6 +1097,8 @@ public class ViewPanel extends JPanel
 				rightClickMenu.show(workspacePanel, evt.getX(), evt.getY());
 			}
 		}
+
+		buttonPressed = 0;
 	}//GEN-LAST:event_workspacePanelMouseReleased
 
 	private void solutionMenuItemActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_solutionMenuItemActionPerformed
@@ -1466,6 +1477,11 @@ public class ViewPanel extends JPanel
 		}
 	}//GEN-LAST:event_untieSubProblemSubMenuMenuSelected
 
+	private void workspacePanelMousePressed(java.awt.event.MouseEvent evt)//GEN-FIRST:event_workspacePanelMousePressed
+	{//GEN-HEADEREND:event_workspacePanelMousePressed
+		buttonPressed = evt.getButton();
+	}//GEN-LAST:event_workspacePanelMousePressed
+
 	/**
 	 * Ensure all data sets are within the bounds of the workspace.
 	 */
@@ -1533,21 +1549,13 @@ public class ViewPanel extends JPanel
 	}
 
 	/**
-	 * Ensure all unattached operations are within the bounds of the workspace.
-	 */
-	private void ensureUnattachedOperationsVisible()
-	{
-
-	}
-
-	/**
 	 * Manage drag events within the workspace panel
 	 *
 	 * @param evt The mouse event for the drag.
 	 */
 	protected void dragInWorkspace(MouseEvent evt)
 	{
-		if(evt.getButton() == 0 || evt.getButton() == MouseEvent.BUTTON1)
+		if(buttonPressed == MouseEvent.BUTTON1)
 		{
 			if(hoveredComponent != null)
 			{
@@ -1562,7 +1570,7 @@ public class ViewPanel extends JPanel
 			   && component != trashCan
 			   && component != draggingComponent)
 			{
-				if((component instanceof Operation && ((Operation) component).getParent() != null)
+				if((component instanceof Operation && ((Operation) component).getParentData() != null)
 				   || component instanceof DataSet)
 				{
 					hoveredComponent = (JComponent) workspacePanel.getComponentAt(evt.getPoint());
@@ -1581,17 +1589,13 @@ public class ViewPanel extends JPanel
 			{
 				int x = evt.getX() - xDragOffset;
 				int y = evt.getY() - yDragOffset;
-				int minX = 0;
-				int maxX = workspacePanel.getWidth() - draggingComponent.getWidth();
-				int minY = 0;
-				int maxY = workspacePanel.getHeight() - draggingComponent.getHeight();
 
 				// Only do the move if we're within the workspace still
-				if(x < minX || x > maxX)
+				if(x < 0 || x > workspacePanel.getWidth() - draggingComponent.getWidth())
 				{
 					x = draggingComponent.getX();
 				}
-				if(y < minY || y > maxY)
+				if(y < 0 || y > workspacePanel.getHeight() - draggingComponent.getHeight())
 				{
 					y = draggingComponent.getY();
 				}
