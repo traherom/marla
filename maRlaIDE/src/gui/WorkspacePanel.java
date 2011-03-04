@@ -27,6 +27,7 @@ import java.util.List;
 import javax.swing.JPanel;
 import problem.DataSet;
 import operation.Operation;
+import problem.SubProblem;
 
 /**
  * Paints the panel for the workspace with proper lines for all shown data sets and operations.
@@ -36,7 +37,9 @@ import operation.Operation;
 public class WorkspacePanel extends JPanel
 {
 	/** A reference to the view panel.*/
-	ViewPanel viewPanel;
+	private ViewPanel viewPanel;
+	/** Increment value in sub problem line spacing.*/
+	private final int SUB_INC = 5;
 
 	/**
 	 * Construct the workspace panel with a reference to the view panel.
@@ -80,13 +83,28 @@ public class WorkspacePanel extends JPanel
 				int y2 = topOp.getY ();
 				if (!topOp.getSubProblems().isEmpty())
 				{
-					g2.setPaint(topOp.getSubProblems().get(0).getColor());
+					List<SubProblem> subProblems = topOp.getSubProblems();
+					int inc = SUB_INC * 2;
+					for (int k = 0; k < subProblems.size (); ++k)
+					{
+						g2.setPaint(subProblems.get(k).getColor());
+						if (k == 0 || k % 2 == 0)
+						{
+							x2 -= inc;
+						}
+						else
+						{
+							x2 += inc;
+							inc += (SUB_INC * 2);
+						}
+						g2.draw (new Line2D.Double (x1, y1, x2, y2));
+					}
 				}
 				else
 				{
 					g2.setPaint(Color.DARK_GRAY);
+					g2.draw (new Line2D.Double (x1, y1, x2, y2));
 				}
-				g2.draw (new Line2D.Double (x1, y1, x2, y2));
 
 				if (topOp.getParent () == null || (topOp.getParent () == null && topOp.getParent () != this))
 				{
@@ -104,13 +122,30 @@ public class WorkspacePanel extends JPanel
 					y2 = op.getY ();
 					if (!topOp.getSubProblems().isEmpty())
 					{
-						g2.setPaint(op.getSubProblems().get(0).getColor());
+						List<SubProblem> subProblems = topOp.getSubProblems();
+						int inc = SUB_INC;
+						for (int k = 0; k < subProblems.size (); ++k)
+						{
+							g2.setPaint(subProblems.get(k).getColor());
+							if (k == 0 || k % 2 == 0)
+							{
+								x1 -= inc;
+								x2 -= inc;
+							}
+							else
+							{
+								x1 += inc;
+								x2 += inc;
+								inc += SUB_INC;
+							}
+							g2.draw (new Line2D.Double (x1, y1, x2, y2));
+						}
 					}
 					else
 					{
 						g2.setPaint(Color.DARK_GRAY);
+						g2.draw (new Line2D.Double (x1, y1, x2, y2));
 					}
-					g2.draw (new Line2D.Double (x1, y1, x2, y2));
 				}
 			}
 		}

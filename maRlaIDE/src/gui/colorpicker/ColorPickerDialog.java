@@ -111,10 +111,8 @@ public class ColorPickerDialog extends EscapeDialog
         cp.setOpacity (((float) color.getAlpha ()) / 255f);
         alpha = color.getAlpha ();
 
-        ok.setFont (new Font ("Verdana", Font.PLAIN, 13));
-        ok.setBackground (new Color (246, 245, 245));
-        cancel.setFont (new Font ("Verdana", Font.PLAIN, 13));
-        cancel.setBackground (new Color (246, 245, 245));
+        ok.setFont (new Font ("Verdana", Font.PLAIN, 12));
+        cancel.setFont (new Font ("Verdana", Font.PLAIN, 12));
 
         pack ();
         setLocationRelativeTo (owner);
