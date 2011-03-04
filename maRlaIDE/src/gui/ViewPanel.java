@@ -123,6 +123,8 @@ public class ViewPanel extends JPanel
 	public static Font FONT_BOLD_12 = new Font("Verdana", Font.BOLD, 12);
 	/** Layout constraints for the palette.*/
 	public GridBagConstraints COMP_CONSTRAINTS = new GridBagConstraints();
+	/** The minimum distance the mouse must be dragged before a component will break free.*/
+	private final int MIN_DRAG_DIST = 15;
 	/** The main frame of a stand-alone application.*/
 	public MainFrame mainFrame;
 	/**
@@ -163,6 +165,12 @@ public class ViewPanel extends JPanel
 	protected int xDragOffset = -1;
 	/** The y-offset for dragging an item*/
 	protected int yDragOffset = -1;
+	/** The initial x for dragging the component.*/
+	private int startX = -1;
+	/** The initial y for dragging the component.*/
+	private int startY = -1;
+	/** True when the mouse has dragged far enough to break the component away, false otherwise.*/
+	private boolean broken = false;
 	/** The default file filter for a JFileChooser open dialog.*/
 	protected FileFilter defaultFilter;
 	/** The extensions file filter for CSV files.*/
@@ -833,72 +841,92 @@ public class ViewPanel extends JPanel
     }// </editor-fold>//GEN-END:initComponents
 
 	private void workspacePanelMouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_workspacePanelMouseDragged
-		if(draggingComponent == null)
+		if (Math.abs (startX - evt.getX()) > MIN_DRAG_DIST || Math.abs (startY - evt.getY()) > MIN_DRAG_DIST)
 		{
-			if(buttonPressed == MouseEvent.BUTTON1)
+			broken = true;
+		}
+
+		if (broken)
+		{
+			if(draggingComponent == null)
 			{
-				JComponent component = (JComponent) workspacePanel.getComponentAt(evt.getPoint());
-				if(component != null
-				   && component != workspacePanel
-				   && component != trashCan)
+				if(buttonPressed == MouseEvent.BUTTON1)
 				{
-					draggingComponent = component;
-					draggingComponent.setBorder(RED_BORDER);
-					draggingComponent.setSize(component.getPreferredSize());
-					if(draggingComponent instanceof Operation)
+					Point point;
+					if (startX != -1 && startY != -1)
 					{
-						DataSet parentData = null;
-						if(((Operation) draggingComponent).getParentData() != null)
-						{
-							parentData = (DataSet) (((Operation) draggingComponent).getRootDataSource());
-						}
-						try
-						{
-							Operation childOperation = null;
-							if(((Operation) draggingComponent).getOperationCount() > 0)
-							{
-								childOperation = ((Operation) draggingComponent).getOperation(0);
-							}
-							DataSource parent = ((Operation) draggingComponent).getParentData();
-							if(parent != null)
-							{
-								parent.removeOperation((Operation) draggingComponent);
-							}
-							if(childOperation != null)
-							{
-								parent.addOperation(childOperation);
-							}
-						}
-						catch(MarlaException ex)
-						{
-							Domain.logger.add(ex);
-						}
-						catch(NullPointerException ex)
-						{
-							Domain.logger.add(ex);
-						}
-						xDragOffset = evt.getX() - draggingComponent.getX();
-						yDragOffset = evt.getY() - draggingComponent.getY();
-						if(parentData != null)
-						{
-							rebuildWorkspace();
-						}
-						workspacePanel.repaint();
+						point = new Point (startX, startY);
 					}
 					else
 					{
-						xDragOffset = evt.getX() - draggingComponent.getX();
-						yDragOffset = evt.getY() - draggingComponent.getY();
+						point = evt.getPoint();
 					}
-					workspacePanel.setComponentZOrder(draggingComponent, workspacePanel.getComponentCount() - 1);
-					workspacePanel.setComponentZOrder(trashCan, workspacePanel.getComponentCount() - 1);
-					
-					domain.problem.markUnsaved();
+					JComponent component = (JComponent) workspacePanel.getComponentAt(point);
+					if(component != null
+					   && component != workspacePanel
+					   && component != trashCan)
+					{
+						draggingComponent = component;
+						draggingComponent.setBorder(RED_BORDER);
+						draggingComponent.setSize(component.getPreferredSize());
+						if(draggingComponent instanceof Operation)
+						{
+							DataSet parentData = null;
+							if(((Operation) draggingComponent).getParentData() != null)
+							{
+								parentData = (DataSet) (((Operation) draggingComponent).getRootDataSource());
+							}
+							try
+							{
+								Operation childOperation = null;
+								if(((Operation) draggingComponent).getOperationCount() > 0)
+								{
+									childOperation = ((Operation) draggingComponent).getOperation(0);
+								}
+								DataSource parent = ((Operation) draggingComponent).getParentData();
+								if(parent != null)
+								{
+									parent.removeOperation((Operation) draggingComponent);
+									if(childOperation != null)
+									{
+										parent.addOperation(childOperation);
+									}
+								}
+							}
+							catch(MarlaException ex)
+							{
+								Domain.logger.add(ex);
+							}
+							catch(NullPointerException ex)
+							{
+								Domain.logger.add(ex);
+							}
+							xDragOffset = (int) point.getX() - draggingComponent.getX();
+							yDragOffset = (int) point.getY() - draggingComponent.getY();
+							if(parentData != null)
+							{
+								rebuildWorkspace();
+							}
+							else
+							{
+								workspacePanel.repaint();
+							}
+						}
+						else
+						{
+							xDragOffset = (int) point.getX() - draggingComponent.getX();
+							yDragOffset = (int) point.getY() - draggingComponent.getY();
+						}
+						workspacePanel.setComponentZOrder(draggingComponent, workspacePanel.getComponentCount() - 1);
+						workspacePanel.setComponentZOrder(trashCan, workspacePanel.getComponentCount() - 1);
+
+						domain.problem.markUnsaved();
+					}
 				}
 			}
-		}
 
-		dragInWorkspace(evt);
+			dragInWorkspace(evt);
+		}
 	}//GEN-LAST:event_workspacePanelMouseDragged
 
 	private void workspacePanelMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_workspacePanelMouseReleased
@@ -1100,6 +1128,8 @@ public class ViewPanel extends JPanel
 		}
 
 		buttonPressed = 0;
+		startX = -1;
+		startY = -1;
 	}//GEN-LAST:event_workspacePanelMouseReleased
 
 	private void solutionMenuItemActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_solutionMenuItemActionPerformed
@@ -1481,6 +1511,19 @@ public class ViewPanel extends JPanel
 	private void workspacePanelMousePressed(java.awt.event.MouseEvent evt)//GEN-FIRST:event_workspacePanelMousePressed
 	{//GEN-HEADEREND:event_workspacePanelMousePressed
 		buttonPressed = evt.getButton();
+		Component comp = workspacePanel.getComponentAt(evt.getPoint());
+		if (comp instanceof Operation)
+		{
+			startX = evt.getX();
+			startY = evt.getY();
+			broken = false;
+		}
+		else
+		{
+			startX = -1;
+			startY = -1;
+			broken = true;
+		}
 	}//GEN-LAST:event_workspacePanelMousePressed
 
 	/**
