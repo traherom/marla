@@ -35,7 +35,6 @@ import latex.LatexExporter;
 import problem.MarlaException;
 import operation.Operation;
 import operation.OperationInfoRequiredException;
-import problem.DataSet;
 import problem.DataSource;
 import problem.Problem;
 import resource.LoadSaveThread;

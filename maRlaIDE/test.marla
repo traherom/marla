@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF8"?>
+<problem person="Ryan Morehart" course_long="Software Engineering II" course_short="CS4820" chapter="2" section="3" probnum="4">
+  <statement>Problem description</statement>
+  <conclusion>50% isn't bad.</conclusion>
+  <data name="Data Set 1" id="-1421489198" x="218" y="71" height="16" width="70">
+    <column name="Column 1" mode="NUMERIC">
+      <value>2.0</value>
+      <value>213.0</value>
+      <value>4.0</value>
+      <value>235.0</value>
+      <value>25.0</value>
+      <value>2.0</value>
+      <value>0.0</value>
+      <value>0.0</value>
+      <value>0.0</value>
+    </column>
+    <column name="Blah" mode="NUMERIC">
+      <value>64.0</value>
+      <value>88.0</value>
+      <value>98.0</value>
+      <value>903.0</value>
+      <value>3142.0</value>
+      <value>89.0</value>
+      <value>0.0</value>
+      <value>0.0</value>
+      <value>0.0</value>
+    </column>
+    <column name="Another" mode="NUMERIC">
+      <value>38.0</value>
+      <value>3.0</value>
+      <value>19.0</value>
+      <value>5.0</value>
+      <value>920.0</value>
+      <value>541.0</value>
+      <value>0.0</value>
+      <value>0.0</value>
+      <value>0.0</value>
+    </column>
+    <operation type="operation.OperationXML" id="1648532359" x="142" y="101" height="16" width="95">
+      <remark>And a remark for sin)(</remark>
+      <question name="col" answer="Column 1" />
+      <extra name="sin()" />
+    </operation>
+    <operation type="operation.OperationXML" id="-1749331733" x="262" y="101" height="16" width="98">
+      <remark>Nice long removk for cos()</remark>
+      <operation type="operation.OperationXML" id="1622297566" x="262" y="131" height="18" width="99">
+        <remark />
+        <operation type="operation.OperationXML" x="257" y="161" height="16" width="106">
+          <remark />
+          <question name="col" answer="Column 1" />
+          <extra name="acos()" />
+        </operation>
+        <question name="val" answer="3.0" />
+        <question name="count" answer="50.0" />
+        <question name="colName" answer="Repetition" />
+        <extra name="Repeat" />
+      </operation>
+      <question name="col" answer="Column 1" />
+      <extra name="cos()" />
+    </operation>
+  </data>
+  <part id="a." color="-721152" start="-1421489198" end="-1421489198">
+    <statement>Part A!</statement>
+    <conclusion>A was great</conclusion>
+  </part>
+  <part id="b." color="-13352999" start="" end="">
+    <statement>Part B :(</statement>
+    <conclusion>Sad Day</conclusion>
+  </part>
+  <unattached />
+</problem>
+
