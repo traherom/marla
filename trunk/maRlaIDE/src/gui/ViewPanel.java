@@ -46,6 +46,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -146,9 +147,9 @@ public class ViewPanel extends JPanel
 	/** Default, plain, 11-point font.*/
 	public static Font fontPlain11 = new Font("Verdana", Font.PLAIN, 11);
 	/** Font size and style for workspace plain.*/
-	public static Font workspaceFontPlain = new Font("Verdana", Font.PLAIN, 12);
+	public static Font workspaceFontPlain = new Font("Verdana", Font.PLAIN, fontSize);
 	/** Font size and style for workspace bold.*/
-	public static Font workspaceFontBold = new Font("Verdana", Font.BOLD, 12);
+	public static Font workspaceFontBold = new Font("Verdana", Font.BOLD, fontSize);
 	/** The New Problem Wizard dialog.*/
 	public final NewProblemWizardDialog NEW_PROBLEM_WIZARD_DIALOG = new NewProblemWizardDialog(this, domain);
 	/** The Settings dialog.*/
@@ -285,7 +286,9 @@ public class ViewPanel extends JPanel
 	{
 		try
 		{
+			// Force operations to be reloaded
 			OperationXML.loadXML();
+			
 			loadOperations();
 		}
 		catch(MarlaException ex)
@@ -301,13 +304,14 @@ public class ViewPanel extends JPanel
 	 */
 	protected void loadOperations() throws MarlaException
 	{
-		Set<String> categories = Operation.getAvailableOperationsCategorized().keySet();
+		Map<String, List<String>> ops = Operation.getAvailableOperationsCategorized();
+		Set<String> categories = ops.keySet();
 
 		// Add all operation types to the palette, adding listeners to the labels as we go
 		int catCount = 0;
 		for(String key : categories)
 		{
-			List<String> operations = Operation.getAvailableOperationsCategorized().get(key);
+			List<String> operations = ops.get(key);
 
 			final JPanel catContentPanel = new JPanel();
 			CategoryHandle catHandlePanel = null;
@@ -350,7 +354,7 @@ public class ViewPanel extends JPanel
 				{
 					final Operation operation = Operation.createOperation(operations.get(i));
 					operation.setText("<html>" + operation.getDisplayString(abbreviated) + "</html>");
-					operation.setToolTipText(operation.getDisplayString(abbreviated));
+					operation.setToolTipText("<html>" + operation.getDescription() + "</html>");
 					DRAG_SOURCE.createDefaultDragGestureRecognizer(operation, DnDConstants.ACTION_MOVE, DND_LISTENER);
 
 					catConstraints.gridx = 0;
@@ -905,7 +909,7 @@ public class ViewPanel extends JPanel
 							yDragOffset = (int) point.getY() - draggingComponent.getY();
 							if(parentData != null)
 							{
-								rebuildWorkspace();
+								//rebuildWorkspace();
 							}
 							else
 							{
@@ -980,13 +984,12 @@ public class ViewPanel extends JPanel
 					{
 						draggingComponent.setBorder(NO_BORDER);
 						draggingComponent.setSize(draggingComponent.getPreferredSize());
-
-						rebuildWorkspace();
 					}
 				}
+
+				rebuildTree((DataSource) draggingComponent);
 				draggingComponent = null;
 			}
-			rebuildWorkspace();
 		}
 		else if(buttonPressed == MouseEvent.BUTTON3)
 		{
@@ -1322,7 +1325,10 @@ public class ViewPanel extends JPanel
 			++fontSize;
 			spaceWidth += 5;
 			spaceHeight += 5;
-			
+
+			workspaceFontPlain = new Font("Verdana", Font.PLAIN, fontSize);
+			workspaceFontBold = new Font("Verdana", Font.BOLD, fontSize);
+
 			rebuildWorkspace();
 		}
 		else if(button == minusFontButton)
@@ -1331,6 +1337,9 @@ public class ViewPanel extends JPanel
 			spaceWidth -= 5;
 			spaceHeight -= 5;
 
+			workspaceFontPlain = new Font("Verdana", Font.PLAIN, fontSize);
+			workspaceFontBold = new Font("Verdana", Font.BOLD, fontSize);
+			
 			rebuildWorkspace();
 		}
 		else if(button == abbreviateButton)
@@ -1644,16 +1653,11 @@ public class ViewPanel extends JPanel
 					y = draggingComponent.getY();
 				}
 
-				if(draggingComponent instanceof Operation)
-				{
-					draggingComponent.setLocation(x, y);
-				}
-				else if(draggingComponent instanceof DataSet)
-				{
-					draggingComponent.setLocation(x, y);
-				}
+				draggingComponent.setLocation(x, y);
 
-				rebuildWorkspace();
+				// Just rebuild the dragged component
+				//rebuildWorkspace();
+				rebuildTree((DataSource)draggingComponent);
 			}
 		}
 	}
@@ -1681,9 +1685,7 @@ public class ViewPanel extends JPanel
 			}
 			for(Operation op : domain.getUnattachedOperations())
 			{
-				op.setFont(workspaceFontBold);
-				op.setText("<html>" + op.getDisplayString(abbreviated) + "</html>");
-				op.setSize(op.getPreferredSize());
+				rebuildTree(op);
 			}
 			workspacePanel.repaint();
 		}
@@ -1692,25 +1694,24 @@ public class ViewPanel extends JPanel
 	/**
 	 * Rebuild the tree in the interface for the given data set.
 	 *
-	 * @param dataSet The data set to rebuild in the interface.
+	 * @param ds The data set to rebuild in the interface.
 	 */
-	protected void rebuildTree(DataSet dataSet)
+	protected void rebuildTree(DataSource ds)
 	{
-		workspaceFontPlain = new Font("Verdana", Font.PLAIN, fontSize);
-		workspaceFontBold = new Font("Verdana", Font.BOLD, fontSize);
-
 		// Don't bother listening yet if the problem is still loading
-		if(dataSet.getParentProblem().isLoading())
+		Problem prob = ds.getParentProblem();
+		if(prob != null && prob.isLoading())
 		{
 			return;
 		}
 
 		// Set the label for the dataset itself
-		dataSet.setFont(workspaceFontBold);
-		dataSet.setText("<html>" + dataSet.getDisplayString(abbreviated) + "</html>");
-		dataSet.setSize(dataSet.getPreferredSize());
+		JLabel dsLbl = (JLabel)ds;
+		dsLbl.setFont(workspaceFontBold);
+		dsLbl.setText("<html>" + ds.getDisplayString(abbreviated) + "</html>");
+		dsLbl.setSize(dsLbl.getPreferredSize());
 
-		int opCount = dataSet.getOperationCount();
+		int opCount = ds.getOperationCount();
 		if(opCount > 0)
 		{
 			// Find widths of all our columns
@@ -1718,7 +1719,7 @@ public class ViewPanel extends JPanel
 			for(int i = 0; i < opCount; ++i)
 			{
 				// Run down this operation chain in order to find the widest one
-				widths[i] = rebuildOperationColumn(dataSet.getOperation(i), 0);
+				widths[i] = rebuildOperationColumn(ds.getOperation(i), 0, true);
 			}
 
 			// Total width, including spacer between columns
@@ -1729,8 +1730,8 @@ public class ViewPanel extends JPanel
 			}
 
 			// Figure out where the columns should start based on our center
-			int dsWidth = dataSet.getWidth();
-			int dsCenterX = dataSet.getX() + dsWidth / 2;
+			int dsWidth = dsLbl.getWidth();
+			int dsCenterX = dsLbl.getX() + dsWidth / 2;
 			int farLeftX = dsCenterX - totalWidth / 2;
 
 			int previousLeftX = farLeftX;
@@ -1745,7 +1746,7 @@ public class ViewPanel extends JPanel
 			// based on the dataset
 			for(int i = 0; i < opCount; i++)
 			{
-				rebuildOperationColumn(dataSet.getOperation(i), centerXs[i]);
+				rebuildOperationColumn(ds.getOperation(i), centerXs[i], false);
 			}
 		}
 
@@ -1759,9 +1760,11 @@ public class ViewPanel extends JPanel
 	 * operation extends from each op, not a wide tree as is internally supported
 	 * @param op Start of operation chain we're checking
 	 * @param centerX x coordinate to center on
+	 * @param shouldResize If true, sets the label of the operation and resizes it. However,
+	 *		it will not attempt to center the labels in any way
 	 * @return
 	 */
-	protected int rebuildOperationColumn(Operation op, int centerX)
+	protected int rebuildOperationColumn(Operation op, int centerX, boolean shouldResize)
 	{
 		Operation currOp = op;
 		int widest = 0;
@@ -1775,22 +1778,26 @@ public class ViewPanel extends JPanel
 				moreOps = false;
 			}
 
-			// Update label
-			currOp.setFont(workspaceFontBold);
-			currOp.setText("<html>" + currOp.getDisplayString(abbreviated) + "</html>");
-			currOp.setSize(currOp.getPreferredSize());
+			if(shouldResize)
+			{
+				// Update label
+				currOp.setFont(workspaceFontBold);
+				currOp.setText("<html>" + currOp.getDisplayString(abbreviated) + "</html>");
+				currOp.setSize(currOp.getPreferredSize());
+			}
 
 			// Get width
 			int width = currOp.getWidth();
 			if(width > widest)
-			{
 				widest = width;
-			}
 
-			// Center off the given center x
-			int x = centerX - width / 2;
-			int y = ((JComponent) currOp.getParentData()).getY() + spaceHeight;
-			currOp.setLocation(x, y);
+			if(!shouldResize)
+			{
+				// Center off the given center x
+				int x = centerX - width / 2;
+				int y = ((JComponent) currOp.getParentData()).getY() + spaceHeight;
+				currOp.setLocation(x, y);
+			}
 
 			// Next op
 			if(moreOps)
@@ -1858,7 +1865,7 @@ public class ViewPanel extends JPanel
 					}
 				}
 			}
-			else if(component instanceof DataSet)
+			else
 			{
 				y = component.getY() + spaceHeight;
 				dataSet = (DataSet) component;
@@ -1872,11 +1879,6 @@ public class ViewPanel extends JPanel
 			if((component instanceof Operation && ((Operation) component).getParentData() != null) || component instanceof DataSet)
 			{
 				newOperation.setBounds(x, y, newOperation.getPreferredSize().width, newOperation.getPreferredSize().height);
-			}
-
-			if(dataSet != null)
-			{
-				rebuildWorkspace();
 			}
 		}
 		else if(component != trashCan)
@@ -1898,12 +1900,13 @@ public class ViewPanel extends JPanel
 			{
 				workspacePanel.add(newOperation);
 			}
-			workspacePanel.repaint();
 		}
 		if(hoveredComponent != null)
 		{
 			hoveredComponent.setBorder(NO_BORDER);
 		}
+
+		rebuildWorkspace();
 
 		buttonPressed = 0;
 	}

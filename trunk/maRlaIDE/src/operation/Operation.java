@@ -206,7 +206,7 @@ public abstract class Operation extends JLabel implements DataSource, Changeable
 			}
 		}
 
-		// And sort 'em
+		// And sort the operations inside the categories
 		for(String cat : opCategories.keySet())
 		{
 			Collections.sort(opCategories.get(cat));
@@ -507,6 +507,13 @@ public abstract class Operation extends JLabel implements DataSource, Changeable
 		else
 			return this;
 	}
+
+	/**
+	 * Returns a human-readable description of the operation. Intended for
+	 * helping the user determine what an operation does
+	 * @return String to display to user
+	 */
+	public abstract String getDescription();
 
 	/**
 	 * Runs up the chain and finds what index from the root DataSet this
