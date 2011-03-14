@@ -437,6 +437,29 @@ public abstract class Operation extends JLabel implements DataSource, Changeable
 		// Tell our old parent we're removing ourselves
 		if(parent != null)
 		{
+			// Make sure we're not part of a SubProblem's start or end
+			// solution
+			Problem prob = getParentProblem();
+			for(int i = 0; i < prob.getSubProblemCount(); i++)
+			{
+				SubProblem sub = prob.getSubProblem(i);
+
+				// Move solution/"unsolve" if needed/possible
+				if(sub.getSolutionStart() == this && sub.getSolutionEnd() == this)
+				{
+					sub.setSolutionStart(null);
+					sub.setSolutionEnd(null);
+				}
+				else if(sub.getSolutionStart() == this)
+				{
+					sub.setSolutionStart(parent);
+				}
+				else if(sub.getSolutionEnd() == this)
+				{
+					sub.setSolutionEnd(parent);
+				}
+			}
+
 			DataSource oldParent = parent;
 			parent = null;
 			oldParent.removeOperation(this);

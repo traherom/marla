@@ -82,7 +82,7 @@ public class WorkspacePanel extends JPanel
 				int x2 = (topOp.getX () + dataSet.getOperation (j).getX () + topOp.getWidth ()) / 2;
 				int y2 = topOp.getY ();
 				List<SubProblem> subProblems = topOp.getSubProblems();
-				if (subProblems.size () > 1)
+				if (!subProblems.isEmpty())
 				{
 					int decNeg = SUB_INC;
 					int decX = x2;
