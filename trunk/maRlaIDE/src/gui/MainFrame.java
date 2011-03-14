@@ -24,11 +24,13 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.FileNotFoundException;
 import java.util.List;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import problem.MarlaException;
+import problem.Problem;
 import resource.Configuration;
 import resource.Configuration.ConfigType;
 
@@ -138,6 +140,21 @@ public class MainFrame extends JFrame
 		catch(MarlaException ex)
 		{
 			JOptionPane.showMessageDialog(viewPanel, ex.getMessage(), "Load Error", JOptionPane.WARNING_MESSAGE);
+		}
+
+		// If the final argument is a save file, open it right now
+		if(args.length != 0 && args[args.length - 1].endsWith(".marla"))
+		{
+			try
+			{
+				viewPanel.domain.problem = Problem.load(args[args.length - 1]);
+				viewPanel.openProblem (false);
+			}
+			catch(Exception ex)
+			{
+				System.out.println("Unable to load file from command line: " + ex.getMessage());
+				System.out.println("Load through the GUI for more information.");
+			}
 		}
 	}
 
