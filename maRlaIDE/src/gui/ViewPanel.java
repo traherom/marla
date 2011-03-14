@@ -89,8 +89,6 @@ import resource.LoadSaveThread;
  */
 public class ViewPanel extends JPanel
 {
-	/** The full time format for debug output.*/
-	public static final SimpleDateFormat FULL_TIME_FORMAT = new SimpleDateFormat("MM/dd/yyyy h:mm:ss a");
 	/** The default text for the New Problem Wizard.*/
 	public static final String welcomeNewText = "<html>The New Problem Wizard will walk you through the setup of a new "
 												+ "problem as it appears in your textbook.<br /><br />You will first be asked where you would like to save "
@@ -2231,36 +2229,7 @@ public class ViewPanel extends JPanel
 			Domain.logger.add(ex);
 		}
 
-		if(Domain.logger.size() > 0)
-		{
-			try
-			{
-				BufferedWriter out = new BufferedWriter(new FileWriter(domain.logFile, true));
-				Date date = new Date();
-				out.write("------------------------------------\n");
-				out.write("Date: " + FULL_TIME_FORMAT.format(date) + "\n");
-
-				for(int i = 0; i < Domain.logger.size(); ++i)
-				{
-					Exception ex = (Exception) Domain.logger.get(i);
-					out.write("Error: " + ex.getClass() + "\n");
-					out.write("Message: " + ex.getMessage() + "\n--\nTrace:\n");
-					Object[] trace = ex.getStackTrace();
-					for(int j = 0; j < trace.length; ++j)
-					{
-						out.write("  " + trace[j].toString() + "\n");
-					}
-					out.write("--\n\n");
-					out.write("----\n");
-				}
-
-				out.write("------------------------------------\n\n\n");
-				out.flush();
-			}
-			catch(IOException ex)
-			{
-			}
-		}
+		domain.writeLoggerFile();
 
 		if (closeProblem(false))
 		{

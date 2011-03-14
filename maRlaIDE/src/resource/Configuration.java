@@ -132,7 +132,7 @@ public class Configuration
 		// use removeAll()
 		List<ConfigType> unconfigured = new ArrayList<ConfigType>();
 		unconfigured.addAll(Arrays.asList(ConfigType.values()));
-		
+	
 		// Command line
 		List<ConfigType> fixed = new ArrayList<ConfigType> (unconfigured.size ());
 		for(ConfigType c : unconfigured)
