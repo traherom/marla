@@ -32,6 +32,7 @@ import problem.MarlaException;
 import operation.Operation;
 import operation.OperationInfoRequiredException;
 import problem.DataSet;
+import problem.DataSource;
 import problem.Problem;
 import resource.LoadSaveThread;
 
@@ -184,7 +185,7 @@ public class Domain
 	 * Tells the view to rebuild and repaint the given tree.
 	 * @param dataSet
 	 */
-	public void rebuildTree(DataSet dataSet)
+	public void rebuildTree(DataSource dataSet)
 	{
 		viewPanel.rebuildTree(dataSet);
 	}

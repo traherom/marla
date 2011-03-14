@@ -40,6 +40,10 @@
 		<query type="column" name="col" prompt="Column?" />
 
 		<displayname>qqnorm(<response name="col" default="x" />)</displayname>
+		<description>
+			Creates a QQ normality plot to help determine if the selected
+			data column is normal.
+		</description>
 
 		<computation>
 			<set name="col" rvar="x" use="values" />
@@ -418,7 +422,7 @@
 		</computation>
 	</operation>
 
-	<operation name="t-test" category="Stats Tests">
+	<operation name="t-test" category="Statistical Test">
 		<query type="checkbox" prompt="Is your data normal?" name="normal" />
 		
 		<computation>

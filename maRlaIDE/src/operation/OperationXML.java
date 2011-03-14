@@ -810,6 +810,18 @@ public class OperationXML extends Operation
 			return dynamicNameLong;
 	}
 
+	@Override
+	public String getDescription()
+	{
+		// Return operation description if there is one, otherwise
+		// just return the name of the operation
+		String desc = opConfig.getChildText("description");
+		if(desc != null)
+			return desc;
+		else
+			return getName();
+	}
+
 	/**
 	 * Sets the XML operation's name to the latest version, based on the data
 	 * given in the longname element and the answers to queries
