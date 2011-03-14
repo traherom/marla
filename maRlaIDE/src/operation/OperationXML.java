@@ -933,26 +933,24 @@ public class OperationXML extends Operation
 
 	/**
 	 * Saves the XML operation name
+	 * @param extraEl Element to attach name to
 	 * @return Element with the XML operation name
 	 */
 	@Override
-	protected Element toXmlExtra() throws MarlaException
+	protected Element toXmlExtra(Element extraEl) throws MarlaException
 	{
-		Element el = new Element("xmlop");
-		el.setAttribute("name", opConfig.getAttributeValue("name"));
-		return el;
+		extraEl.setAttribute("name", opConfig.getAttributeValue("name"));
+		return extraEl;
 	}
 
 	/**
 	 * Loads opConfig with the appropriate XML execution configuration.
-	 * @param opEl Element with the needed name of the XML operation to use
+	 * @param extraEl Element with the needed name of the XML operation to use
 	 */
 	@Override
-	protected void fromXmlExtra(Element opEl) throws MarlaException
+	protected void fromXmlExtra(Element extraEl) throws MarlaException
 	{
-		Element xmlEl = opEl.getChild("xmlop");
-
 		// Load the correct XML specification
-		setConfiguration(findConfiguration(xmlEl.getAttributeValue("name")));
+		setConfiguration(findConfiguration(extraEl.getAttributeValue("name")));
 	}
 }

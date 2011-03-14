@@ -369,7 +369,7 @@ public abstract class Operation extends JLabel implements DataSource, Changeable
 			newOp.setRemark(opEl.getChildText("remark"));
 
 			// Allow it to do its custom thing
-			newOp.fromXmlExtra(opEl);
+			newOp.fromXmlExtra(opEl.getChild("extra"));
 
 			// And restore the answers
 			for(Object questionEl : opEl.getChildren("question"))
@@ -407,9 +407,9 @@ public abstract class Operation extends JLabel implements DataSource, Changeable
 	 * May be overridden by derivative classes in order to reload extra. Thrown if the
 	 * save XML contains incorrect data.
 	 * information saved for their type of Operation
-	 * @param opEl JDOM Element with all data for Operation
+	 * @param extraEl JDOM Element with all data for Operation
 	 */
-	protected void fromXmlExtra(Element opEl) throws MarlaException
+	protected void fromXmlExtra(Element extraEl) throws MarlaException
 	{
 	}
 
@@ -1031,9 +1031,9 @@ public abstract class Operation extends JLabel implements DataSource, Changeable
 		}
 
 		// Extra info?
-		Element extraEl = toXmlExtra();
-		if(extraEl != null)
-			opEl.addContent(extraEl);
+		Element extraEl = new Element("extra");
+		opEl.addContent(extraEl);
+		toXmlExtra(extraEl);
 
 		return opEl;
 	}
@@ -1041,9 +1041,10 @@ public abstract class Operation extends JLabel implements DataSource, Changeable
 	/**
 	 * May be overridden by derivative classes to save additional information
 	 * need by their operation type
+	 * @param extraEl Element which toXmlExtra should attach its information to
 	 * @return null if no extra information, JDOM Element otherwise
 	 */
-	protected Element toXmlExtra() throws MarlaException
+	protected Element toXmlExtra(Element extraEl) throws MarlaException
 	{
 		return null;
 	}

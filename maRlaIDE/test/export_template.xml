@@ -32,19 +32,22 @@
 		\noindent\textbf{\Large Analysis and Solution}\par
 		<if has_subproblems="false">
 			<then>
-				<solution rcode="false" />\par
+				<solution rcode="false" maxlen="7" />\par
 				<data type="end" />
 			</then>
 			<else>
 			\begin{enumerate}[(a)]
 			<loop type="subproblem">
 				\item
-				<solution rcode="false" />\par
-				<data type="end" />
+				<solution rcode="false" maxlen="7" />
+				\par \textbf{Conclusion:} <conclusion />
+				\par <data type="end" />
 			</loop>
 			\end{enumerate}
 			</else>
 		</if>
+
+		\par \textbf{Conclusion:} <conclusion />
 
 		\end{document}
 	</main>
