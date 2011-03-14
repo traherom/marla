@@ -337,6 +337,8 @@ public class LatexExporter
 					processStatementClean(partEl, out);
 				else if(name.equals("solution"))
 					processSolutionClean(partEl, out);
+				else if(name.equals("conclusion"))
+					processConclusionClean(partEl, out);
 				else if(name.equals("data"))
 					processDataClean(partEl, out);
 				else if(name.equals("if"))
@@ -520,7 +522,7 @@ public class LatexExporter
 				}
 
 				solutionBlock.append("\n\\par ");
-				solutionBlock.append(summarizeOperation(op, withR));
+				solutionBlock.append(summarizeOperation(op, Integer.parseInt(el.getAttributeValue("maxlen", "7")), withR));
 			}
 		}
 		else
@@ -543,17 +545,28 @@ public class LatexExporter
 	 * input parameters, the "main R" given by the operation, and the columns
 	 * it added to the data.
 	 * @param op Operation to summarize
+	 * @param abbrvLen Maximum number of new elements to display for columns. Must
+	 *		be 3 or greater.
 	 * @param includeR Should the R code be included in the summary?
 	 * @return Latex string that gives information about the operation
 	 */
-	private String summarizeOperation(Operation op, boolean includeR) throws LatexException, MarlaException
+	private String summarizeOperation(Operation op, int abbrvLen, boolean includeR) throws LatexException, MarlaException
 	{
+		if(abbrvLen < 3)
+			throw new LatexException("Abbreviation length for summarizing operations must be 3 or greater (" + abbrvLen + ") given");
+
 		StringBuilder sb = new StringBuilder();
+
+		// Because data might be very long, limit the maximum number
+		// of elements shown by showing the first three and last three
+		int dispColLen = op.getNewColumnLength();
+		int newColLen = dispColLen;
+		if(newColLen > abbrvLen)
+			dispColLen = abbrvLen;
 
 		// Start table
 		sb.append("\\begin{tabular}{ l || l ");
-		int newColLen = op.getNewColumnLength();
-		for(int i = 1; i < newColLen; i++)
+		for(int i = 1; i < dispColLen; i++)
 		{
 			sb.append(" l");
 		}
@@ -569,8 +582,8 @@ public class LatexExporter
 		if(!params.isEmpty())
 		{
 			sb.append("\\multicolumn{");
-			if(newColLen > 0)
-				sb.append(newColLen);
+			if(dispColLen > 0)
+				sb.append(dispColLen);
 			else
 				sb.append('1');
 			sb.append("}{l}{ \\begin{tabular}{");
@@ -604,12 +617,40 @@ public class LatexExporter
 		{
 			sb.append(dc.getName());
 			sb.append(" & ");
-			for(int i = 0; i < dc.size(); i++)
-			{
-				sb.append(dc.get(i));
 
-				if(i != dc.size() - 1)
+			// Show everything or abbreviate?
+			if(dispColLen >= dc.size())
+			{
+				for(int i = 0; i < dc.size(); i++)
+				{
+					sb.append(dc.get(i));
+
+					if(i != dc.size() - 1)
+						sb.append(" & ");
+				}
+			}
+			else
+			{
+				int halfSize = dispColLen / 2;
+
+				// Beginning elements
+				for(int i = 0; i < halfSize; i++)
+				{
+					sb.append(dc.get(i));
 					sb.append(" & ");
+				}
+
+				// Ellipse
+				sb.append(" $\\cdots$ & ");
+
+				// Ending elements
+				for(int i = dc.size() - halfSize; i < dc.size(); i++)
+				{
+					sb.append(dc.get(i));
+
+					if(i != dc.size() - 1)
+						sb.append(" & ");
+				}
 			}
 
 			sb.append("\\\\\n");
@@ -619,8 +660,8 @@ public class LatexExporter
 		if(op.hasPlot())
 		{
 			sb.append("\\multicolumn{");
-			if(newColLen > 0)
-				sb.append(newColLen + 1);
+			if(dispColLen > 0)
+				sb.append(dispColLen + 1);
 			else
 				sb.append('2');
 			sb.append("}{|c|}{\n");
@@ -635,8 +676,8 @@ public class LatexExporter
 		if(includeR)
 		{
 			sb.append("\\multicolumn{");
-			if(newColLen > 0)
-				sb.append(newColLen + 1);
+			if(dispColLen > 0)
+				sb.append(dispColLen + 1);
 			else
 				sb.append('2');
 			sb.append("}{|p{5cm}|}{\n");
@@ -654,35 +695,62 @@ public class LatexExporter
 		return sb.toString();
 	}
 
+	private void processConclusionClean(Element el, Writer out) throws LatexException, MarlaException
+	{
+		StringBuilder sb = new StringBuilder();
+		if(currentSub == null)
+			sb.append(prob.getConclusion());
+		else
+			sb.append(currentSub.getConclusion());
+
+		try
+		{
+			// Write it out
+			String sweave = sb.toString();
+			out.write(sweave, 0, sweave.length());
+		}
+		catch(IOException ex)
+		{
+			throw new LatexException("Unable to write solution to export file");
+		}
+	}
+
 	private void processDataClean(Element el, Writer out) throws LatexException, MarlaException
 	{
+		// Are we showing start or end data?
 		String type = el.getAttributeValue("type", "start");
+		boolean isStartDS = true;
+		if(type.equals("start"))
+			isStartDS = true;
+		else if(type.equals("end"))
+			isStartDS = false;
+		else
+			throw new LatexException("Unrecognized type of data '" + type + "' to display in LaTeX template");
 
+		// Grab all the DataSources we need to show
 		List<DataSource> dsToShow = new ArrayList<DataSource>();
 		if(currentSub == null)
 		{
-			if(type.equals("start"))
+			if(isStartDS)
 			{
 				// All DataSets
 				for(int i = 0; i < prob.getDataCount(); i++)
 					dsToShow.add(prob.getData(i));
 			}
-			else if(type.equals("end"))
+			else
 			{
 				// All leaf operations
 				for(int i = 0; i < prob.getDataCount(); i++)
 					dsToShow.addAll(prob.getData(i).getAllLeafOperations());
 			}
-			else
-				throw new LatexException("Unrecognized type of data '" + type + "' to display in LaTeX template");
 		}
 		else if(currentSub.hasSolution())
 		{
-			if(type.equals("start"))
+			if(isStartDS)
 			{
 				dsToShow.add(currentSub.getSolutionStart());
 			}
-			else if(type.equals("end"))
+			else
 			{
 				if(currentSub.getSolutionStart() == currentSub.getSolutionEnd())
 				{
@@ -693,15 +761,16 @@ public class LatexExporter
 				else
 					dsToShow.add(currentSub.getSolutionEnd());
 			}
-			else
-				throw new LatexException("Unrecognized type of data '" + type + "' to display in LaTeX template");
 		}
 
 		// Create latex array for each DataSource
 		StringBuilder sb = new StringBuilder();
 		for(DataSource ds : dsToShow)
 		{
-			sb.append(dataToLatex("Final Data", ds.getColumnLength(), ds.getColumns()));
+			if(isStartDS)
+				sb.append(dataToLatex("Starting Data", ds.getColumnLength(), ds.getColumns()));
+			else
+				sb.append(dataToLatex("Final Data", ds.getColumnLength(), ds.getColumns()));
 		}
 
 		try

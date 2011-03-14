@@ -646,6 +646,10 @@ public class Problem implements ProblemPart
 		{
 			throw new ProblemException("Save file contains unparsable XML errors", ex);
 		}
+		catch(NullPointerException ex)
+		{
+			throw new ProblemException("An error occurred loading from the save file. It may be an old version.", ex);
+		}
 		catch(IOException ex)
 		{
 			throw new ProblemException("Error reading save file from disk", ex);
