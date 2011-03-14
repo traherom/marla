@@ -20,10 +20,14 @@ package gui;
 
 import java.awt.Component;
 import java.awt.Desktop;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
@@ -56,6 +60,8 @@ public class Domain
 	public static final String OS_NAME = System.getProperty ("os.name");
 	/** The home directory for the current user.*/
 	public static final String HOME_DIR = System.getProperty ("user.home");
+	/** The full time format for debug output.*/
+	public static final SimpleDateFormat FULL_TIME_FORMAT = new SimpleDateFormat("MM/dd/yyyy h:mm:ss a");
 	/** The logger holds all caught exceptions for recording in the log file.*/
 	public static final ArrayList<Exception> logger = new ArrayList<Exception> ();
 	/** The last good problem directory.*/
@@ -91,6 +97,49 @@ public class Domain
 		Problem.setDomain (domain);
 
 		logFile = new File ("log.dat");
+	}
+
+	/**
+	 * Writes any current log file out to disk and clears the logger (so
+	 * that the same exceptions won't be written again)
+	 */
+	public void writeLoggerFile()
+	{
+		if(logger.isEmpty())
+			return;
+
+		try
+		{
+			BufferedWriter out = new BufferedWriter(new FileWriter(logFile, true));
+			Date date = new Date();
+			out.write("------------------------------------\n");
+			out.write("Date: " + FULL_TIME_FORMAT.format(date) + "\n");
+
+			for(int i = 0; i < logger.size(); ++i)
+			{
+				Exception ex = logger.get(i);
+				out.write("Error: " + ex.getClass() + "\n");
+				out.write("Message: " + ex.getMessage() + "\n--\nTrace:\n");
+				Object[] trace = ex.getStackTrace();
+				for(int j = 0; j < trace.length; ++j)
+				{
+					out.write("  " + trace[j].toString() + "\n");
+				}
+				out.write("--\n\n");
+				out.write("----\n");
+			}
+
+			out.write("------------------------------------\n\n\n");
+			out.flush();
+
+			System.err.println(logger.size() + " exceptions written to " + logFile.getAbsolutePath());
+
+			logger.clear();
+		}
+		catch(IOException ex)
+		{
+			System.err.println("Unable to write error log file: " + ex.getMessage());
+		}
 	}
 
 	/**

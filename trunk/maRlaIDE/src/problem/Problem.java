@@ -24,6 +24,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
+import java.util.List;
 import operation.Operation;
 import org.jdom.Document;
 import org.jdom.Element;
@@ -444,6 +445,46 @@ public class Problem implements ProblemPart
 		d.setParentProblem(null);
 		datasets.remove(index);
 		return d;
+	}
+
+	/**
+	 * Gets all leaf data attached to this problem. These may be DataSets
+	 * that have no children or the ending operations on those
+	 * @return All DataSources attached to the Problem that have no children
+	 */
+	public List<DataSource> getAllLeafData()
+	{
+		List<DataSource> myData = new ArrayList<DataSource>();
+
+		// Add either each DataSet (if it has no children)
+		// or the dataset's leaf operations
+		for(DataSet ds : datasets)
+		{
+			List<Operation> leaves = ds.getAllLeafOperations();
+			if(!leaves.isEmpty())
+				myData.addAll(leaves);
+			else
+				myData.add(ds);
+		}
+
+		return myData;
+	}
+
+	/**
+	 * Gets all leaf operations attached to this problem. Unlike getAllLeafData(),
+	 * this does not include DataSets with no children
+	 * @return All operations attached to the Problem that have no children
+	 */
+	public List<Operation> getAllLeafOperations()
+	{
+		List<Operation> myData = new ArrayList<Operation>();
+
+		// Add either each DataSet (if it has no children)
+		// or the dataset's leaf operations
+		for(DataSet ds : datasets)
+			myData.addAll(ds.getAllLeafOperations());
+
+		return myData;
 	}
 
 	@Override

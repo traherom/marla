@@ -37,7 +37,7 @@ public class LoadSaveThread extends Thread
 	 * may not be called on it until the first finishes.*/
 	public boolean saving = false;
 	/** Auto-save, if save is needed, every three minutes.*/
-	private final long delay = 180000;
+	private final long delay = 10000;
 	/** Check if the thread should quit.*/
 	private boolean wantToQuit;
 
@@ -82,6 +82,9 @@ public class LoadSaveThread extends Thread
 			{
 				Domain.logger.add (ex);
 			}
+
+			// Write log file occasionally
+			domain.writeLoggerFile();
 
 			//save ();
 		}

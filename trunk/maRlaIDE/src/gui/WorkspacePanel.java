@@ -24,9 +24,11 @@ import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.geom.Line2D;
 import java.util.List;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import problem.DataSet;
 import operation.Operation;
+import problem.DataSource;
 import problem.SubProblem;
 
 /**
@@ -59,73 +61,31 @@ public class WorkspacePanel extends JPanel
 	@Override
     protected void paintComponent(Graphics g)
 	{
-		super.paintComponent (g);
-
-		Graphics2D g2 = (Graphics2D) g;
-		g2.setRenderingHint (RenderingHints.KEY_ANTIALIASING,
-							 RenderingHints.VALUE_ANTIALIAS_ON);
-		g2.setPaint (Color.DARK_GRAY);
-
-		// Iterate through each data set and draw to the first operation of each column
-		for (int i = 0; i < viewPanel.domain.problem.getDataCount(); ++i)
+		try
 		{
-			DataSet dataSet = viewPanel.domain.problem.getData (i);
-			if (dataSet.getParent () != this)
-			{
-				add (dataSet);
-			}
-			for (int j = 0; j < dataSet.getOperationCount(); ++j)
-			{
-				Operation topOp = dataSet.getOperation(j);
-				int x1 = (dataSet.getX () + dataSet.getX () + dataSet.getWidth ()) / 2;
-				int y1 = dataSet.getY () + dataSet.getHeight ();
-				int x2 = (topOp.getX () + dataSet.getOperation (j).getX () + topOp.getWidth ()) / 2;
-				int y2 = topOp.getY ();
-				List<SubProblem> subProblems = topOp.getSubProblems();
-				if (!subProblems.isEmpty())
-				{
-					int decNeg = SUB_INC;
-					int decX = x2;
-					int incPos = SUB_INC;
-					int incX = x2;
-					for (int k = 0; k < subProblems.size (); ++k)
-					{
-						g2.setPaint(subProblems.get(k).getColor());
-						if (k % 2 == 0)
-						{
-							x2 = decX - decNeg;
-							decNeg -= SUB_INC;
-							g2.draw (new Line2D.Double (x1, y1, x2, y2));
-						}
-						else
-						{
-							x2 = incX + incPos;
-							incPos += SUB_INC;
-							g2.draw (new Line2D.Double (x1, y1, x2, y2));
-						}
-					}
-				}
-				else
-				{
-					g2.setPaint(Color.DARK_GRAY);
-					g2.draw (new Line2D.Double (x1, y1, x2, y2));
-				}
+			super.paintComponent (g);
 
-				if (topOp.getParent () == null || (topOp.getParent () == null && topOp.getParent () != this))
-				{
-					add (topOp);
-				}
-				List<Operation> operations = topOp.getAllChildOperations();
-				if (operations.size () > 0)
-				{
-					Operation op = operations.get (0);
-					connectOperations (g2, op);
+			Graphics2D g2 = (Graphics2D) g;
+			g2.setRenderingHint (RenderingHints.KEY_ANTIALIASING,
+								 RenderingHints.VALUE_ANTIALIAS_ON);
+			g2.setPaint (Color.DARK_GRAY);
 
-					x1 = (topOp.getX () + topOp.getX () + topOp.getWidth ()) / 2;
-					y1 = topOp.getY () + topOp.getHeight ();
-					x2 = (op.getX () + op.getX () + op.getWidth ()) / 2;
-					y2 = op.getY ();
-					subProblems = op.getSubProblems();
+			// Iterate through each data set and draw to the first operation of each column
+			for (int i = 0; i < viewPanel.domain.problem.getDataCount(); ++i)
+			{
+				DataSet dataSet = viewPanel.domain.problem.getData (i);
+				if (dataSet.getParent () != this)
+				{
+					add (dataSet);
+				}
+				for (int j = 0; j < dataSet.getOperationCount(); ++j)
+				{
+					Operation topOp = dataSet.getOperation(j);
+					int x1 = (dataSet.getX () + dataSet.getX () + dataSet.getWidth ()) / 2;
+					int y1 = dataSet.getY () + dataSet.getHeight ();
+					int x2 = (topOp.getX () + dataSet.getOperation (j).getX () + topOp.getWidth ()) / 2;
+					int y2 = topOp.getY ();
+					List<SubProblem> subProblems = topOp.getSubProblems();
 					if (!subProblems.isEmpty())
 					{
 						int decNeg = SUB_INC;
@@ -137,14 +97,12 @@ public class WorkspacePanel extends JPanel
 							g2.setPaint(subProblems.get(k).getColor());
 							if (k % 2 == 0)
 							{
-								x1 = decX - decNeg;
 								x2 = decX - decNeg;
 								decNeg -= SUB_INC;
 								g2.draw (new Line2D.Double (x1, y1, x2, y2));
 							}
 							else
 							{
-								x1 = incX + incPos;
 								x2 = incX + incPos;
 								incPos += SUB_INC;
 								g2.draw (new Line2D.Double (x1, y1, x2, y2));
@@ -156,8 +114,59 @@ public class WorkspacePanel extends JPanel
 						g2.setPaint(Color.DARK_GRAY);
 						g2.draw (new Line2D.Double (x1, y1, x2, y2));
 					}
+
+					if (topOp.getParent () != this)
+					{
+						add (topOp);
+					}
+					List<Operation> operations = topOp.getAllChildOperations();
+					if (!operations.isEmpty())
+					{
+						Operation op = operations.get (0);
+						connectOperations (g2, op);
+
+						x1 = (topOp.getX () + topOp.getX () + topOp.getWidth ()) / 2;
+						y1 = topOp.getY () + topOp.getHeight ();
+						x2 = (op.getX () + op.getX () + op.getWidth ()) / 2;
+						y2 = op.getY ();
+						subProblems = op.getSubProblems();
+						if (!subProblems.isEmpty())
+						{
+							int decNeg = SUB_INC;
+							int decX = x2;
+							int incPos = SUB_INC;
+							int incX = x2;
+							for (int k = 0; k < subProblems.size (); ++k)
+							{
+								g2.setPaint(subProblems.get(k).getColor());
+								if (k % 2 == 0)
+								{
+									x1 = decX - decNeg;
+									x2 = decX - decNeg;
+									decNeg -= SUB_INC;
+									g2.draw (new Line2D.Double (x1, y1, x2, y2));
+								}
+								else
+								{
+									x1 = incX + incPos;
+									x2 = incX + incPos;
+									incPos += SUB_INC;
+									g2.draw (new Line2D.Double (x1, y1, x2, y2));
+								}
+							}
+						}
+						else
+						{
+							g2.setPaint(Color.DARK_GRAY);
+							g2.draw (new Line2D.Double (x1, y1, x2, y2));
+						}
+					}
 				}
 			}
+		}
+		catch(Exception ex)
+		{
+			Domain.logger.add(ex);
 		}
 	}
 
