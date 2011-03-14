@@ -70,7 +70,7 @@ public class WorkspacePanel extends JPanel
 		for (int i = 0; i < viewPanel.domain.problem.getDataCount(); ++i)
 		{
 			DataSet dataSet = viewPanel.domain.problem.getData (i);
-			if (dataSet.getParent () == null || dataSet.getParent () != this)
+			if (dataSet.getParent () != this)
 			{
 				add (dataSet);
 			}
@@ -126,7 +126,7 @@ public class WorkspacePanel extends JPanel
 					x2 = (op.getX () + op.getX () + op.getWidth ()) / 2;
 					y2 = op.getY ();
 					subProblems = op.getSubProblems();
-					if (subProblems.size() > 1)
+					if (!subProblems.isEmpty())
 					{
 						int decNeg = SUB_INC;
 						int decX = x2;
