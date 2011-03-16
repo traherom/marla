@@ -471,6 +471,24 @@ public class Problem implements ProblemPart
 	}
 
 	/**
+	 * Gets all data attached to this problem. These may be DataSets or Operations
+	 * @return All DataSources attached to the Problem directly or indirectly
+	 */
+	public List<DataSource> getAllData()
+	{
+		List<DataSource> myData = new ArrayList<DataSource>();
+
+		// Add either each DataSet
+		for(DataSet ds : datasets)
+		{
+			myData.add(ds);
+			myData.addAll(ds.getAllChildOperations());
+		}
+
+		return myData;
+	}
+
+	/**
 	 * Gets all leaf operations attached to this problem. Unlike getAllLeafData(),
 	 * this does not include DataSets with no children
 	 * @return All operations attached to the Problem that have no children

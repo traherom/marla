@@ -25,6 +25,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -69,6 +70,8 @@ public class Domain
 	public String lastGoodCsvFile = lastGoodDir;
 	/** The error file that keeps track of all errors and their occurrences.*/
 	protected File logFile;
+	/** Denotes if the log is being written. Prevents double writing */
+	protected boolean isWritingLog = false;
 	/** The desktop object for common desktop operations.*/
 	protected Desktop desktop;
 	/** The load/save thread that is continually running unless explicitly paused or stopped.*/
@@ -104,12 +107,15 @@ public class Domain
 	 */
 	public void writeLoggerFile()
 	{
-		if(logger.isEmpty())
+		if(isWritingLog || logger.isEmpty())
 			return;
 
 		try
 		{
-			BufferedWriter out = new BufferedWriter(new FileWriter(logFile, true));
+			isWritingLog = true;
+			
+			PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(logFile, true)));
+			
 			Date date = new Date();
 			out.write("------------------------------------\n");
 			out.write("Date: " + FULL_TIME_FORMAT.format(date) + "\n");
@@ -117,6 +123,9 @@ public class Domain
 			for(int i = 0; i < logger.size(); ++i)
 			{
 				Exception ex = logger.get(i);
+				ex.printStackTrace(out);
+				ex.printStackTrace(System.err);
+				/*
 				out.write("Error: " + ex.getClass() + "\n");
 				out.write("Message: " + ex.getMessage() + "\n--\nTrace:\n");
 				Object[] trace = ex.getStackTrace();
@@ -126,6 +135,7 @@ public class Domain
 				}
 				out.write("--\n\n");
 				out.write("----\n");
+				*/
 			}
 
 			out.write("------------------------------------\n\n\n");
@@ -138,6 +148,10 @@ public class Domain
 		catch(IOException ex)
 		{
 			System.err.println("Unable to write error log file: " + ex.getMessage());
+		}
+		finally
+		{
+			isWritingLog = false;
 		}
 	}
 
@@ -577,6 +591,7 @@ public class Domain
 		}
 		catch (MarlaException ex)
 		{
+			Domain.logger.add(ex);
 			JOptionPane.showMessageDialog (viewPanel, ex.getMessage (), "Error loading save file", JOptionPane.WARNING_MESSAGE);
 		}
 		catch (FileNotFoundException ex)

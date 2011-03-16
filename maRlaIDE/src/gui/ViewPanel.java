@@ -1007,25 +1007,10 @@ public class ViewPanel extends JPanel
 							@Override
 							public void actionPerformed(ActionEvent evt)
 							{
-								DataSource source = (DataSource) rightClickedComponent;
-								if(rightClickedComponent instanceof Operation)
-								{
-									source = ((Operation) rightClickedComponent).getRootDataSource().getOperation(((Operation) rightClickedComponent).getIndexFromDataSet());
-									List<Operation> children = source.getAllChildOperations();
-									if(children.size() > 0)
-									{
-										subProblem.setSolutionEnd(null);
-									}
-									else
-									{
-										subProblem.setSolutionEnd(null);
-									}
-								}
-								else
-								{
-									subProblem.setSolutionEnd(null);
-								}
-								subProblem.setSolutionStart(null);
+								DataSource ds = (DataSource) rightClickedComponent;
+
+								// Untie
+								subProblem.removeAllSubSteps(ds);
 
 								rebuildWorkspace();
 							}
@@ -1041,25 +1026,10 @@ public class ViewPanel extends JPanel
 							@Override
 							public void actionPerformed(ActionEvent evt)
 							{
-								DataSource source = (DataSource) rightClickedComponent;
-								if(rightClickedComponent instanceof Operation)
-								{
-									source = ((Operation) rightClickedComponent).getRootDataSource().getOperation(((Operation) rightClickedComponent).getIndexFromDataSet());
-									List<Operation> children = source.getAllChildOperations();
-									if(children.size() > 0)
-									{
-										subProblem.setSolutionEnd(source.getAllChildOperations().get(source.getAllChildOperations().size() - 1));
-									}
-									else
-									{
-										subProblem.setSolutionEnd(source);
-									}
-								}
-								else
-								{
-									subProblem.setSolutionEnd(source);
-								}
-								subProblem.setSolutionStart(source);
+								DataSource ds = (DataSource) rightClickedComponent;
+
+								// Tie
+								subProblem.addAllSubSteps(ds);
 
 								rebuildWorkspace();
 							}
@@ -1432,36 +1402,6 @@ public class ViewPanel extends JPanel
 		{
 			rightClickedComponent.setBorder(NO_BORDER);
 			rightClickedComponent.setSize(rightClickedComponent.getPreferredSize());
-			List<SubProblem> subProblems;
-			try
-			{
-				if(rightClickedComponent instanceof Operation)
-				{
-					subProblems = ((Operation) rightClickedComponent).getSubProblems ();
-				}
-				else
-				{
-					subProblems = ((DataSet) rightClickedComponent).getSubProblems ();
-				}
-				for (SubProblem subProblem : subProblems)
-				{
-					for (int i = 0; i < subProblem.getDataCount(); ++i)
-					{
-						subProblem.getData(i).setBorder(NO_BORDER);
-						subProblem.getData(i).setSize(subProblem.getData(i).getPreferredSize());
-					}
-
-					for (Operation op : subProblem.getSolutionChain())
-					{
-						op.setBorder(NO_BORDER);
-						op.setSize(op.getPreferredSize());
-					}
-				}
-			}
-			catch (MarlaException ex)
-			{
-				Domain.logger.add (ex);
-			}
 		}
 	}//GEN-LAST:event_untieSubProblemSubMenuMenuDeselected
 
@@ -1471,39 +1411,6 @@ public class ViewPanel extends JPanel
 		{
 			rightClickedComponent.setBorder(BLACK_BORDER);
 			rightClickedComponent.setSize(rightClickedComponent.getPreferredSize());
-			List<SubProblem> subProblems;
-			try
-			{
-				if(rightClickedComponent instanceof Operation)
-				{
-					subProblems = ((Operation) rightClickedComponent).getSubProblems ();
-				}
-				else
-				{
-					subProblems = ((DataSet) rightClickedComponent).getSubProblems ();
-				}
-				for (SubProblem subProblem : subProblems)
-				{
-					if (subProblem.getSolutionStart() instanceof DataSet)
-					{
-						for (int i = 0; i < subProblem.getDataCount(); ++i)
-						{
-							subProblem.getData(i).setBorder(BLACK_BORDER);
-							subProblem.getData(i).setSize(subProblem.getData(i).getPreferredSize());
-						}
-					}
-
-					for (Operation op : subProblem.getSolutionChain())
-					{
-						op.setBorder(BLACK_BORDER);
-						op.setSize(op.getPreferredSize());
-					}
-				}
-			}
-			catch (MarlaException ex)
-			{
-				Domain.logger.add (ex);
-			}
 		}
 	}//GEN-LAST:event_untieSubProblemSubMenuMenuSelected
 
