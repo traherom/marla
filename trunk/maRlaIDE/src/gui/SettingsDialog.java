@@ -18,6 +18,7 @@
 
 package gui;
 
+import javax.swing.JFileChooser;
 import problem.MarlaException;
 import resource.Configuration;
 
@@ -54,6 +55,18 @@ public class SettingsDialog extends EscapeDialog
         preferencesPanel = new javax.swing.JPanel();
         lineLabel1 = new javax.swing.JLabel();
         preferencesLabel = new javax.swing.JLabel();
+        rPathLabel = new javax.swing.JLabel();
+        rPathTextField = new javax.swing.JTextField();
+        rPathButton = new javax.swing.JButton();
+        latexPathButton = new javax.swing.JButton();
+        latexPathTextField = new javax.swing.JTextField();
+        latexPathLabel = new javax.swing.JLabel();
+        latexTemplateButton = new javax.swing.JButton();
+        latexTemplateTextField = new javax.swing.JTextField();
+        latexTemplateLabel = new javax.swing.JLabel();
+        operationsButton = new javax.swing.JButton();
+        operationsTextField = new javax.swing.JTextField();
+        operationsLabel = new javax.swing.JLabel();
         studentInformationPanel = new javax.swing.JPanel();
         studentNameLabel = new javax.swing.JLabel();
         courseShortNameLabel = new javax.swing.JLabel();
@@ -64,31 +77,112 @@ public class SettingsDialog extends EscapeDialog
         lineLabel2 = new javax.swing.JLabel();
         studentInformationLabel = new javax.swing.JLabel();
         jPanel1 = new javax.swing.JPanel();
-        jButton1 = new javax.swing.JButton();
+        closeButton = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         setTitle("Settings");
         setAlwaysOnTop(true);
+        setResizable(false);
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
                 formWindowClosing(evt);
             }
         });
 
-        settingsTabbedPane.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        settingsTabbedPane.setFont(new java.awt.Font("Verdana", 0, 12));
 
         preferencesPanel.setLayout(null);
 
-        lineLabel1.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        lineLabel1.setFont(new java.awt.Font("Verdana", 0, 12));
         lineLabel1.setText("______________________________________________________");
         preferencesPanel.add(lineLabel1);
         lineLabel1.setBounds(10, 10, 500, 20);
 
-        preferencesLabel.setFont(new java.awt.Font("Verdana", 1, 12)); // NOI18N
+        preferencesLabel.setFont(new java.awt.Font("Verdana", 1, 12));
         preferencesLabel.setText("Preferences");
         preferencesPanel.add(preferencesLabel);
         preferencesLabel.setBounds(10, 10, 250, 16);
+
+        rPathLabel.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        rPathLabel.setText("R path:");
+        preferencesPanel.add(rPathLabel);
+        rPathLabel.setBounds(10, 50, 60, 20);
+
+        rPathTextField.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        rPathTextField.setEnabled(false);
+        preferencesPanel.add(rPathTextField);
+        rPathTextField.setBounds(70, 50, 330, 26);
+
+        rPathButton.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        rPathButton.setText("Browse");
+        rPathButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                rPathButtonActionPerformed(evt);
+            }
+        });
+        preferencesPanel.add(rPathButton);
+        rPathButton.setBounds(407, 50, 90, 28);
+
+        latexPathButton.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        latexPathButton.setText("Browse");
+        latexPathButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                latexPathButtonActionPerformed(evt);
+            }
+        });
+        preferencesPanel.add(latexPathButton);
+        latexPathButton.setBounds(410, 90, 90, 28);
+
+        latexPathTextField.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        latexPathTextField.setEnabled(false);
+        preferencesPanel.add(latexPathTextField);
+        latexPathTextField.setBounds(110, 90, 290, 26);
+
+        latexPathLabel.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        latexPathLabel.setText("PDFTex Path:");
+        preferencesPanel.add(latexPathLabel);
+        latexPathLabel.setBounds(10, 90, 100, 20);
+
+        latexTemplateButton.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        latexTemplateButton.setText("Browse");
+        latexTemplateButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                latexTemplateButtonActionPerformed(evt);
+            }
+        });
+        preferencesPanel.add(latexTemplateButton);
+        latexTemplateButton.setBounds(410, 130, 90, 28);
+
+        latexTemplateTextField.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        latexTemplateTextField.setEnabled(false);
+        preferencesPanel.add(latexTemplateTextField);
+        latexTemplateTextField.setBounds(130, 130, 270, 26);
+
+        latexTemplateLabel.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        latexTemplateLabel.setText("LaTeX Template:");
+        preferencesPanel.add(latexTemplateLabel);
+        latexTemplateLabel.setBounds(10, 130, 120, 20);
+
+        operationsButton.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        operationsButton.setText("Browse");
+        operationsButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                operationsButtonActionPerformed(evt);
+            }
+        });
+        preferencesPanel.add(operationsButton);
+        operationsButton.setBounds(410, 170, 90, 28);
+
+        operationsTextField.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        operationsTextField.setEnabled(false);
+        preferencesPanel.add(operationsTextField);
+        operationsTextField.setBounds(130, 170, 270, 26);
+
+        operationsLabel.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        operationsLabel.setText("Operations XML:");
+        preferencesPanel.add(operationsLabel);
+        operationsLabel.setBounds(10, 170, 120, 20);
 
         settingsTabbedPane.addTab("Preferences", preferencesPanel);
 
@@ -111,22 +205,22 @@ public class SettingsDialog extends EscapeDialog
 
         studentNameTextField.setFont(new java.awt.Font("Verdana", 0, 12));
         studentInformationPanel.add(studentNameTextField);
-        studentNameTextField.setBounds(110, 50, 289, 22);
+        studentNameTextField.setBounds(110, 50, 289, 26);
 
         courseShortNameTextField.setFont(new java.awt.Font("Verdana", 0, 12));
         studentInformationPanel.add(courseShortNameTextField);
-        courseShortNameTextField.setBounds(147, 90, 150, 22);
+        courseShortNameTextField.setBounds(147, 90, 150, 26);
 
         courseLongNameTextField.setFont(new java.awt.Font("Verdana", 0, 12));
         studentInformationPanel.add(courseLongNameTextField);
-        courseLongNameTextField.setBounds(140, 130, 240, 22);
+        courseLongNameTextField.setBounds(140, 130, 240, 26);
 
-        lineLabel2.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        lineLabel2.setFont(new java.awt.Font("Verdana", 0, 12));
         lineLabel2.setText("______________________________________________________");
         studentInformationPanel.add(lineLabel2);
         lineLabel2.setBounds(10, 10, 500, 20);
 
-        studentInformationLabel.setFont(new java.awt.Font("Verdana", 1, 12)); // NOI18N
+        studentInformationLabel.setFont(new java.awt.Font("Verdana", 1, 12));
         studentInformationLabel.setText("Student Information");
         studentInformationPanel.add(studentInformationLabel);
         studentInformationLabel.setBounds(10, 10, 250, 16);
@@ -135,15 +229,15 @@ public class SettingsDialog extends EscapeDialog
 
         jPanel1.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
 
-        jButton1.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
-        jButton1.setText("Close");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        closeButton.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        closeButton.setText("Close");
+        closeButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                closeButtonActionPerformed(evt);
             }
         });
 
-        jLabel1.setFont(new java.awt.Font("Verdana", 1, 14)); // NOI18N
+        jLabel1.setFont(new java.awt.Font("Verdana", 1, 14));
         jLabel1.setText("Settings");
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
@@ -153,8 +247,8 @@ public class SettingsDialog extends EscapeDialog
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jLabel1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 394, Short.MAX_VALUE)
-                .addComponent(jButton1)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 410, Short.MAX_VALUE)
+                .addComponent(closeButton)
                 .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
@@ -162,7 +256,7 @@ public class SettingsDialog extends EscapeDialog
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton1)
+                    .addComponent(closeButton)
                     .addComponent(jLabel1))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
@@ -205,23 +299,112 @@ public class SettingsDialog extends EscapeDialog
 		closeSettings();
 	}//GEN-LAST:event_formWindowClosing
 
-	private void jButton1ActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jButton1ActionPerformed
-	{//GEN-HEADEREND:event_jButton1ActionPerformed
+	private void closeButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_closeButtonActionPerformed
+	{//GEN-HEADEREND:event_closeButtonActionPerformed
 		closeSettings();
-	}//GEN-LAST:event_jButton1ActionPerformed
+	}//GEN-LAST:event_closeButtonActionPerformed
+
+	private void rPathButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_rPathButtonActionPerformed
+	{//GEN-HEADEREND:event_rPathButtonActionPerformed
+		VIEW_PANEL.openChooserDialog.setDialogTitle(Configuration.getName(Configuration.ConfigType.R));
+		VIEW_PANEL.openChooserDialog.resetChoosableFileFilters();
+		VIEW_PANEL.openChooserDialog.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+		// Display the chooser and retrieve the selected file
+		int response = VIEW_PANEL.openChooserDialog.showOpenDialog(this);
+		if(response == JFileChooser.APPROVE_OPTION)
+		{
+			try
+			{
+				Configuration.getInstance().set(Configuration.ConfigType.R, VIEW_PANEL.openChooserDialog.getSelectedFile().getPath());
+				rPathTextField.setText(VIEW_PANEL.openChooserDialog.getSelectedFile().getPath());
+			}
+			// If an exception occurs, the path should not be changed, so nothing happens in a caught exception
+			catch (MarlaException ex) {}
+		}
+	}//GEN-LAST:event_rPathButtonActionPerformed
+
+	private void latexPathButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_latexPathButtonActionPerformed
+	{//GEN-HEADEREND:event_latexPathButtonActionPerformed
+		VIEW_PANEL.openChooserDialog.setDialogTitle(Configuration.getName(Configuration.ConfigType.PdfTex));
+		VIEW_PANEL.openChooserDialog.resetChoosableFileFilters();
+		VIEW_PANEL.openChooserDialog.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+		// Display the chooser and retrieve the selected file
+		int response = VIEW_PANEL.openChooserDialog.showOpenDialog(this);
+		if(response == JFileChooser.APPROVE_OPTION)
+		{
+			try
+			{
+				Configuration.getInstance().set(Configuration.ConfigType.PdfTex, VIEW_PANEL.openChooserDialog.getSelectedFile().getPath());
+				rPathTextField.setText(VIEW_PANEL.openChooserDialog.getSelectedFile().getPath());
+			}
+			// If an exception occurs, the path should not be changed, so nothing happens in a caught exception
+			catch (MarlaException ex) {}
+		}
+	}//GEN-LAST:event_latexPathButtonActionPerformed
+
+	private void latexTemplateButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_latexTemplateButtonActionPerformed
+	{//GEN-HEADEREND:event_latexTemplateButtonActionPerformed
+		VIEW_PANEL.openChooserDialog.setDialogTitle(Configuration.getName(Configuration.ConfigType.TexTemplate));
+		VIEW_PANEL.openChooserDialog.resetChoosableFileFilters();
+		VIEW_PANEL.openChooserDialog.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+		// Display the chooser and retrieve the selected file
+		int response = VIEW_PANEL.openChooserDialog.showOpenDialog(this);
+		if(response == JFileChooser.APPROVE_OPTION)
+		{
+			try
+			{
+				Configuration.getInstance().set(Configuration.ConfigType.TexTemplate, VIEW_PANEL.openChooserDialog.getSelectedFile().getPath());
+				rPathTextField.setText(VIEW_PANEL.openChooserDialog.getSelectedFile().getPath());
+			}
+			// If an exception occurs, the path should not be changed, so nothing happens in a caught exception
+			catch (MarlaException ex) {}
+		}
+	}//GEN-LAST:event_latexTemplateButtonActionPerformed
+
+	private void operationsButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_operationsButtonActionPerformed
+	{//GEN-HEADEREND:event_operationsButtonActionPerformed
+		VIEW_PANEL.openChooserDialog.setDialogTitle(Configuration.getName(Configuration.ConfigType.OpsXML));
+		VIEW_PANEL.openChooserDialog.resetChoosableFileFilters();
+		VIEW_PANEL.openChooserDialog.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+		// Display the chooser and retrieve the selected file
+		int response = VIEW_PANEL.openChooserDialog.showOpenDialog(this);
+		if(response == JFileChooser.APPROVE_OPTION)
+		{
+			try
+			{
+				Configuration.getInstance().set(Configuration.ConfigType.OpsXML, VIEW_PANEL.openChooserDialog.getSelectedFile().getPath());
+				rPathTextField.setText(VIEW_PANEL.openChooserDialog.getSelectedFile().getPath());
+				VIEW_PANEL.reloadOperations();
+			}
+			// If an exception occurs, the path should not be changed, so nothing happens in a caught exception
+			catch (MarlaException ex) {}
+		}
+	}//GEN-LAST:event_operationsButtonActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton closeButton;
     private javax.swing.JLabel courseLongNameLabel;
     private javax.swing.JTextField courseLongNameTextField;
     private javax.swing.JLabel courseShortNameLabel;
     private javax.swing.JTextField courseShortNameTextField;
-    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JButton latexPathButton;
+    private javax.swing.JLabel latexPathLabel;
+    private javax.swing.JTextField latexPathTextField;
+    private javax.swing.JButton latexTemplateButton;
+    private javax.swing.JLabel latexTemplateLabel;
+    private javax.swing.JTextField latexTemplateTextField;
     private javax.swing.JLabel lineLabel1;
     private javax.swing.JLabel lineLabel2;
+    private javax.swing.JButton operationsButton;
+    private javax.swing.JLabel operationsLabel;
+    private javax.swing.JTextField operationsTextField;
     private javax.swing.JLabel preferencesLabel;
     private javax.swing.JPanel preferencesPanel;
+    private javax.swing.JButton rPathButton;
+    private javax.swing.JLabel rPathLabel;
+    private javax.swing.JTextField rPathTextField;
     private javax.swing.JPanel settingsPanel;
     private javax.swing.JTabbedPane settingsTabbedPane;
     private javax.swing.JLabel studentInformationLabel;
@@ -267,6 +450,10 @@ public class SettingsDialog extends EscapeDialog
 		try
 		{
 			Configuration config = Configuration.getInstance();
+			rPathTextField.setText (config.get(Configuration.ConfigType.R).toString());
+			latexPathTextField.setText (config.get(Configuration.ConfigType.PdfTex).toString());
+			latexTemplateTextField.setText (config.get(Configuration.ConfigType.TexTemplate).toString());
+			operationsTextField.setText (config.get(Configuration.ConfigType.OpsXML).toString());
 			studentNameTextField.setText (config.get(Configuration.ConfigType.UserName).toString());
 			courseShortNameTextField.setText (config.get(Configuration.ConfigType.ClassShort).toString());
 			courseLongNameTextField.setText (config.get(Configuration.ConfigType.ClassLong).toString());

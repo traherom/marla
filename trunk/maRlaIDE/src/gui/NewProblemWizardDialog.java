@@ -1356,7 +1356,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 		JPanel conclusionPanel = new JPanel();
 		JLabel colorLabel = new JLabel("Color: ");
 		colorLabel.setFont(ViewPanel.FONT_BOLD_11);
-		JLabel blankLabel = new JLabel("     ");
+		JLabel blankLabel = new JLabel(" ");
 		JPanel colorPanel = new JPanel();
 		colorPanel.setBackground(subProblem.getColor());
 		colorPanel.setPreferredSize(new Dimension(25, 25));

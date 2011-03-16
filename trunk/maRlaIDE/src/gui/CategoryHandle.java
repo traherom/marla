@@ -65,7 +65,7 @@ public class CategoryHandle extends JPanel
 
 		setLayout (new GridLayout(1,1));
 		add(label);
-		target = new Rectangle (0, 0, label.getIcon().getIconWidth(), label.getIcon().getIconHeight());
+		target = new Rectangle (0, 0, 500, 20);
 		setMaximumSize (new Dimension(500, 20));
 	}
 
@@ -83,5 +83,15 @@ public class CategoryHandle extends JPanel
 		{
 			label.setIcon(open);
 		}
+	}
+
+	/**
+	 * The selected state of the category.
+	 *
+	 * @return True if the category is selected, false otherwise.
+	 */
+	public boolean isSelected()
+	{
+		return selected;
 	}
 }

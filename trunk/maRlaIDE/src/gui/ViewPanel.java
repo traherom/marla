@@ -112,6 +112,8 @@ public class ViewPanel extends JPanel
 	public final DragDrop DND_LISTENER = new DragDrop(this);
 	/** Default, plain, 12-point font.*/
 	public static Font FONT_PLAIN_12 = new Font("Verdana", Font.PLAIN, 12);
+	/** Default, plain, 11-point font.*/
+	public static Font FONT_PLAIN_11 = new Font("Verdana", Font.PLAIN, 11);
 	/** Default, bold, 11-point font.*/
 	public static Font FONT_BOLD_11 = new Font("Verdana", Font.BOLD, 11);
 	/** Default, bold, 12-point font.*/
@@ -120,6 +122,14 @@ public class ViewPanel extends JPanel
 	public GridBagConstraints COMP_CONSTRAINTS = new GridBagConstraints();
 	/** The minimum distance the mouse must be dragged before a component will break free.*/
 	private final int MIN_DRAG_DIST = 15;
+	/** The domain object reference performs generic actions specific to the GUI.*/
+	protected Domain domain = new Domain(this);
+	/** The New Problem Wizard dialog.*/
+	public final NewProblemWizardDialog NEW_PROBLEM_WIZARD_DIALOG = new NewProblemWizardDialog(this, domain);
+	/** The Settings dialog.*/
+	public final SettingsDialog SETTINGS_DIALOG = new SettingsDialog(this);
+	/** The Input dialog.*/
+	public final InputDialog INPUT_DIALOG = new InputDialog(this);
 	/** The main frame of a stand-alone application.*/
 	public MainFrame mainFrame;
 	/**
@@ -128,8 +138,6 @@ public class ViewPanel extends JPanel
 	 * of the window too soon
 	 */
 	protected boolean startingAnswerPanelDisplay = false;
-	/** The domain object reference performs generic actions specific to the GUI.*/
-	protected Domain domain = new Domain(this);
 	/** True while the program is in startup, false otherwise.*/
 	protected boolean initLoading = true;
 	/** The width between two operations/data sets.*/
@@ -138,18 +146,10 @@ public class ViewPanel extends JPanel
 	private int spaceHeight = 30;
 	/** The size of fonts.*/
 	public static int fontSize = 12;
-	/** Default, plain, 11-point font.*/
-	public static Font fontPlain11 = new Font("Verdana", Font.PLAIN, 11);
 	/** Font size and style for workspace plain.*/
-	public static Font workspaceFontPlain = new Font("Verdana", Font.PLAIN, fontSize);
+	public static Font workspaceFontPlain = new Font("Verdana", Font.PLAIN, ViewPanel.fontSize);
 	/** Font size and style for workspace bold.*/
-	public static Font workspaceFontBold = new Font("Verdana", Font.BOLD, fontSize);
-	/** The New Problem Wizard dialog.*/
-	public final NewProblemWizardDialog NEW_PROBLEM_WIZARD_DIALOG = new NewProblemWizardDialog(this, domain);
-	/** The Settings dialog.*/
-	public final SettingsDialog SETTINGS_DIALOG = new SettingsDialog(this);
-	/** The Input dialog.*/
-	public final InputDialog INPUT_DIALOG = new InputDialog(this);
+	public static Font workspaceFontBold = new Font("Verdana", Font.BOLD, ViewPanel.fontSize);
 	/** The data set being dragged.*/
 	protected JComponent draggingComponent = null;
 	/** The component currently being hovered over.*/
@@ -237,12 +237,6 @@ public class ViewPanel extends JPanel
 			}
 		}, KeyEvent.KEY_EVENT_MASK);
 
-		COMP_CONSTRAINTS.gridx = 0;
-		COMP_CONSTRAINTS.gridwidth = 1;
-		COMP_CONSTRAINTS.weighty = 1;
-		COMP_CONSTRAINTS.fill = GridBagConstraints.VERTICAL;
-		COMP_CONSTRAINTS.anchor = GridBagConstraints.FIRST_LINE_START;
-
 		workspacePanel.setDropTarget(new DropTarget(workspacePanel, DnDConstants.ACTION_MOVE, DND_LISTENER));
 
 		domain.loadSaveThread = new LoadSaveThread(domain);
@@ -280,10 +274,14 @@ public class ViewPanel extends JPanel
 	{
 		try
 		{
+			componentsScrollablePanel.removeAll();
+
 			// Force operations to be reloaded
 			OperationXML.loadXML();
 			
 			loadOperations();
+
+			componentsScrollablePanel.repaint();
 		}
 		catch(MarlaException ex)
 		{
@@ -302,6 +300,11 @@ public class ViewPanel extends JPanel
 		Set<String> categories = ops.keySet();
 
 		// Add all operation types to the palette, adding listeners to the labels as we go
+		COMP_CONSTRAINTS.gridx = 0;
+		COMP_CONSTRAINTS.gridwidth = 1;
+		COMP_CONSTRAINTS.weighty = 1;
+		COMP_CONSTRAINTS.fill = GridBagConstraints.VERTICAL;
+		COMP_CONSTRAINTS.anchor = GridBagConstraints.FIRST_LINE_START;
 		int catCount = 0;
 		for(String key : categories)
 		{
@@ -387,6 +390,7 @@ public class ViewPanel extends JPanel
 			componentsScrollablePanel.add(wrapperPanel, COMP_CONSTRAINTS);
 			++catCount;
 		}
+
 		// Add final component to offset weight
 		COMP_CONSTRAINTS.gridy = catCount;
 		COMP_CONSTRAINTS.weighty = 1;
@@ -901,14 +905,6 @@ public class ViewPanel extends JPanel
 							}
 							xDragOffset = (int) point.getX() - draggingComponent.getX();
 							yDragOffset = (int) point.getY() - draggingComponent.getY();
-							if(parentData != null)
-							{
-								//rebuildWorkspace();
-							}
-							else
-							{
-								workspacePanel.repaint();
-							}
 						}
 						else
 						{
@@ -1005,7 +1001,7 @@ public class ViewPanel extends JPanel
 					if(subProblem.isDataSourceInSolution((DataSource) rightClickedComponent))
 					{
 						JMenuItem item = new JMenuItem(name);
-						item.setFont (fontPlain11);
+						item.setFont (FONT_PLAIN_11);
 						item.addActionListener(new ActionListener()
 						{
 							@Override
@@ -1039,7 +1035,7 @@ public class ViewPanel extends JPanel
 					else
 					{
 						JMenuItem item = new JMenuItem(name);
-						item.setFont (fontPlain11);
+						item.setFont (FONT_PLAIN_11);
 						item.addActionListener(new ActionListener()
 						{
 							@Override
@@ -1650,7 +1646,6 @@ public class ViewPanel extends JPanel
 				draggingComponent.setLocation(x, y);
 
 				// Just rebuild the dragged component
-				//rebuildWorkspace();
 				rebuildTree((DataSource)draggingComponent);
 			}
 		}
