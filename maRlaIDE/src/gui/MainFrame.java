@@ -24,7 +24,6 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.io.FileNotFoundException;
 import java.util.List;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
