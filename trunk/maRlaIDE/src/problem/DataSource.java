@@ -237,8 +237,26 @@ public interface DataSource extends Loadable
 	public Problem getParentProblem();
 
 	/**
+	 * Returns the parent this DataSource derives from
+	 * @return Next higher set of data or null if there is none.
+	 */
+	public DataSource getParentData();
+
+	/**
 	 * Gets the subproblems this DataSource is a part of
 	 * @return SubProblem we are a solution to or an empty list if there is none
 	 */
 	public List<SubProblem> getSubProblems();
+
+	/**
+	 * Adds this DataSource to the given SubProblem
+	 * @param sub SubProblem to add DataSource to
+	 */
+	public void addSubProblem(SubProblem sub);
+
+	/**
+	 * Removes this DataSource from the given SubProblem
+	 * @param sub SubProblem to remove from this DataSource
+	 */
+	public void removeSubProblem(SubProblem sub);
 }

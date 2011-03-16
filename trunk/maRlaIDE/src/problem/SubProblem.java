@@ -19,9 +19,7 @@ package problem;
 
 import java.awt.Color;
 import operation.Operation;
-import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Deque;
 import java.util.List;
 import org.jdom.Element;
 
@@ -52,17 +50,9 @@ public class SubProblem implements ProblemPart
 	 */
 	private String id;
 	/**
-	 * Beginning operation for the chain of ops which solves this
-	 * subproblem.  Actual solution steps are found by tracing
-	 * _up_ from last operation to this one.
+	 * List of DataSources that comprise the "solution" to this SubProblem
 	 */
-	private DataSource startSolutionStep;
-	/**
-	 * End operation for the chain of ops which solves this
-	 * subproblem. Actual solution steps are found by tracing
-	 * _up_ from this operation to the first.
-	 */
-	private DataSource endSolutionStep;
+	private final List<DataSource> solutionSteps = new ArrayList<DataSource>();
 	/**
 	 * Problem we belong to
 	 */
@@ -84,8 +74,6 @@ public class SubProblem implements ProblemPart
 		this.parent = parent;
 		partDesc = desc;
 		this.id = id;
-		startSolutionStep = null;
-		endSolutionStep = null;
 	}
 
 	/**
@@ -100,9 +88,9 @@ public class SubProblem implements ProblemPart
 	{
 		partDesc = sp.partDesc;
 		id = sp.id;
-		startSolutionStep = sp.startSolutionStep;
-		endSolutionStep = sp.endSolutionStep;
+
 		this.parent = parent;
+		throw new InternalMarlaException("TBD");
 	}
 
 	/**
@@ -178,57 +166,125 @@ public class SubProblem implements ProblemPart
 	}
 
 	/**
-	 * Mark the operation/dataset that begins the solution to this
-	 * part of the problem. Operations between here and the operation
-	 * marked as the end are considered part of the solution.
-	 * @param op Beginning of solution chain
+	 * Adds the given DataSource as part of the solution to this SubProblem
+	 * @param ds DataSource to add
 	 */
-	public void setSolutionStart(DataSource op)
+	public void addStep(DataSource ds)
 	{
-		startSolutionStep = op;
+		// Don't add again
+		if(solutionSteps.contains(ds))
+			return;
+		
+		int placement = 0;
+		
+		// Try to place it in line with anyone it is connected to
+		for(int i = 0; i < solutionSteps.size(); i++)
+		{
+			DataSource solDS = solutionSteps.get(i);
+			
+			if(solDS == ds.getParentData())
+			{
+				// Place after solDS
+				placement = i + 1;
+				break;
+			}
+			else if(solDS.getParentData() == ds)
+			{
+				// Place before solDS
+				placement = i;
+				break;
+			}
+		}
 
-		// Make sure it records a unique ID for itself now
-		if(op != null)
-			op.generateID();
-
+		// And add
+		solutionSteps.add(placement, ds);
+		ds.addSubProblem(this);
 		markUnsaved();
 	}
 
+
 	/**
-	 * Returns the DataSet/Operation currently marked as the "start" of
-	 * our solution to this part of the problem.
-	 * @return DataSet pointed to as the start or null if none is set
+	 * Adds the given step and all children of the DataSource from the solution to
+	 * this SubProblem
+	 * @param ds Step to start add at
 	 */
-	public DataSource getSolutionStart()
+	public void addAllSubSteps(DataSource ds)
 	{
-		return startSolutionStep;
+		List<Operation> children = ds.getAllChildOperations();
+
+		addStep(ds);
+		for(Operation op : children)
+			addStep(op);
 	}
 
 	/**
-	 * Mark the operation/dataset that ends the solution to this
-	 * part of the problem. Operations between here and the operation
-	 * marked as the beginning are considered part of the solution.
-	 * @param op End of solution chain
+	 * Removes the DataSource at the given index from the solution
+	 * @param i Index of the step to remove
+	 * @return Removed DataSource
 	 */
-	public void setSolutionEnd(DataSource op)
+	public DataSource removeStep(int i)
 	{
-		endSolutionStep = op;
-
-		// Make sure it records a unique ID for itself now
-		if(op != null)
-			op.generateID();
-
+		DataSource old = solutionSteps.remove(i);
 		markUnsaved();
+		old.removeSubProblem(this);
+		return old;
 	}
 
 	/**
-	 * Returns the DataSet/Operation currently marked as the "end" of
-	 * our solution to this part of the problem.
-	 * @return DataSet pointed to as the end or null if none is set
+	 * Removes the given DataSource from the solution
+	 * @param ds DataSource to remove
+	 * @return Removed DataSource, null if the data was not in solution
 	 */
-	public DataSource getSolutionEnd()
+	public DataSource removeStep(DataSource ds)
 	{
-		return endSolutionStep;
+		int loc = solutionSteps.indexOf(ds);
+		if(loc != -1)
+			return removeStep(loc);
+		else
+			return null;
+	}
+
+	/**
+	 * Removes the given step and all children of the step from the solution to
+	 * this SubProblem
+	 * @param ds Step to start removal at
+	 */
+	public void removeAllSubSteps(DataSource ds)
+	{
+		List<Operation> children = ds.getAllChildOperations();
+
+		removeStep(ds);
+		for(Operation op : children)
+			removeStep(op);
+	}
+
+	/**
+	 * Returns the solution step at the given index
+	 * @param i Index of the solution step to retrieve
+	 * @return DataSource at the given index
+	 */
+	public DataSource getStep(int i)
+	{
+		return solutionSteps.get(i);
+	}
+
+	/**
+	 * Locates the given DataSource in the solution and returns the index
+	 * @param ds DataSource to locate
+	 * @return Returns the index of the DataSet or -1 if it is not in the solution
+	 */
+	public int getStepIndex(DataSource ds)
+	{
+		return solutionSteps.indexOf(ds);
+	}
+
+	/**
+	 * Gets the number of solution steps in this SubProblem
+	 * @return Number of solution steps. 0 if there are noneg
+	 */
+	public int getStepCount()
+	{
+		return solutionSteps.size();
 	}
 
 	/**
@@ -237,10 +293,7 @@ public class SubProblem implements ProblemPart
 	 */
 	public boolean hasSolution()
 	{
-		if(endSolutionStep != null && startSolutionStep != null)
-			return true;
-		else
-			return false;
+		return !solutionSteps.isEmpty();
 	}
 
 	/**
@@ -251,26 +304,59 @@ public class SubProblem implements ProblemPart
 	 */
 	public List<Operation> getSolutionChain() throws MarlaException
 	{
-		if(!hasSolution())
-			throw new IncompleteInitializationException("An solution for this subproblem has not been set");
-
-		// Push all the operations unto here in reverse order
-		// (from the bottom of the chain to the top)
-		Deque<DataSource> stack = new ArrayDeque<DataSource>();
-
-		// If we are pointed at just a dataset as the start and end, then
-		// get the R for _everything_ underneath it
-		if(startSolutionStep == endSolutionStep)
+		List<Operation> solOps = new ArrayList<Operation>(solutionSteps.size());
+		for(DataSource ds : solutionSteps)
 		{
-			// Get all leaves of the tree
-			return getOperationChain(startSolutionStep, startSolutionStep.getAllLeafOperations());
+			if(ds instanceof Operation)
+				solOps.add((Operation)ds);
 		}
-		else	
+
+		return solOps;
+	}
+
+	/**
+	 * Gets a list of all steps in this solution that have no parent that is
+	 * also in the solution. IE, the starts of sequences of operations
+	 * @return All starting data for this SubProblem
+	 */
+	public List<DataSource> getStartSteps()
+	{
+		List<DataSource> starts = new ArrayList<DataSource>(solutionSteps.size());
+
+		for(int i = 0; i < solutionSteps.size(); i++)
 		{
-			List<Operation> endOp = new ArrayList<Operation>();
-			endOp.add((Operation)endSolutionStep);
-			return getOperationChain(startSolutionStep, endOp);
+			DataSource currStep = solutionSteps.get(i);
+
+			// If the step before isn't the current step's parent, then
+			// include the current step as the start of a chain
+			if(i == 0 || currStep.getParentData() != solutionSteps.get(i - 1))
+				starts.add(currStep);
 		}
+
+		return starts;
+	}
+
+	/**
+	 * Gets a list of all steps in this solution that have no parent that is
+	 * also in the solution. IE, the starts of sequences of operations
+	 * @return All starting data for this SubProblem
+	 */
+	public List<DataSource> getEndSteps()
+	{
+		List<DataSource> ends = new ArrayList<DataSource>(solutionSteps.size());
+		int endIndex = solutionSteps.size() - 1;
+
+		for(int i = 0; i < solutionSteps.size(); i++)
+		{
+			DataSource currStep = solutionSteps.get(i);
+
+			// If the step after this isn't a child of the current step, then
+			// include the current step as the end of a chain
+			if(i != endIndex || currStep != solutionSteps.get(i + 1).getParentData())
+				ends.add(currStep);
+		}
+
+		return ends;
 	}
 
 	/**
@@ -283,43 +369,8 @@ public class SubProblem implements ProblemPart
 	 */
 	public static List<Operation> getOperationChain(DataSource chainTop, List<Operation> allOps) throws MarlaException
 	{
-		// Push all the operations unto here in reverse order
-		// (from the bottom of the chain to the top)
-		Deque<DataSource> stack = new ArrayDeque<DataSource>();
-
-		for(Operation op : allOps)
-		{
-			try
-			{
-				// Read from this leaf up to the DataSource at the start of the solution
-				DataSource currOp = op;
-				while(currOp != chainTop)
-				{
-					stack.push(currOp);
-					currOp = ((Operation)currOp).getParentData();
-				}
-
-				// And add the start step
-				stack.push(chainTop);
-			}
-			catch(ClassCastException ex)
-			{
-				throw new ProblemException("The start and end of the subproblem solution appear to not be connected", ex);
-			}
-		}
-
-		// Put them in the list in the opposite order we found them, so
-		// the list runs from the top (start) operation to the bottom (end)
-		// Only push on operations, ignore the datasets
-		List<Operation> ops = new ArrayList<Operation>(stack.size());
-		while(!stack.isEmpty())
-		{
-			DataSource next = stack.pop();
-			if(next instanceof Operation)
-				ops.add((Operation)next);
-		}
-
-		return ops;
+		// TODO fix this or get rid of it
+		throw new InternalMarlaException("TBD");
 	}
 
 	/**
@@ -363,27 +414,8 @@ public class SubProblem implements ProblemPart
 		if(!this.id.equals(otherP.id))
 			return false;
 
-		if(startSolutionStep != null)
-		{
-			if(!startSolutionStep.equals(otherP.startSolutionStep))
-				return false;
-		}
-		else
-		{
-			 if(otherP.startSolutionStep != null)
-				 return false;
-		}
-
-		if(endSolutionStep != null)
-		{
-			if(!endSolutionStep.equals(otherP.endSolutionStep))
-				return false;
-		}
-		else
-		{
-			 if(otherP.endSolutionStep != null)
-				 return false;
-		}
+		if(!this.solutionSteps.equals(otherP.solutionSteps))
+			return false;
 
 		return true;
 	}
@@ -394,8 +426,7 @@ public class SubProblem implements ProblemPart
 		int hash = 7;
 		hash = 29 * hash + (this.partDesc != null ? this.partDesc.hashCode() : 0);
 		hash = 29 * hash + (this.id != null ? this.id.hashCode() : 0);
-		hash = 29 * hash + (this.startSolutionStep != null ? this.startSolutionStep.hashCode() : 0);
-		hash = 29 * hash + (this.endSolutionStep != null ? this.endSolutionStep.hashCode() : 0);
+		hash = 29 * hash + (this.solutionSteps != null ? this.solutionSteps.hashCode() : 0);
 		return hash;
 	}
 
@@ -407,15 +438,13 @@ public class SubProblem implements ProblemPart
 
 		subEl.setAttribute("color", String.valueOf(highlightColor.getRGB()));
 
-		if(startSolutionStep != null)
-			subEl.setAttribute("start", Integer.toString(startSolutionStep.getID()));
-		else
-			subEl.setAttribute("start", "");
-
-		if(endSolutionStep != null)
-			subEl.setAttribute("end", Integer.toString(endSolutionStep.getID()));
-		else
-			subEl.setAttribute("end", "");
+		// Store pointers to all the DataSources that are part of us
+		for(DataSource ds : solutionSteps)
+		{
+			Element stepEl = new Element("step");
+			stepEl.setAttribute("id", ds.generateID().toString());
+			subEl.addContent(stepEl);
+		}
 		
 		subEl.addContent(new Element("statement").addContent(partDesc));
 		subEl.addContent(new Element("conclusion").addContent(conclusion));
@@ -440,75 +469,26 @@ public class SubProblem implements ProblemPart
 		Color c = new Color(Integer.parseInt(subEl.getAttributeValue("color")));
 		newSub.setColor(c);
 
-		// Now find our start and end Operation objects so we can point
-		// to them again
-		String startIDStr = subEl.getAttributeValue("start");
-		String endIDStr = subEl.getAttributeValue("end");
-
-		Integer startID = null;
-		if(!startIDStr.isEmpty())
-			startID = Integer.valueOf(startIDStr);
-
-		Integer endID = null;
-		if(!endIDStr.isEmpty())
-			endID = Integer.valueOf(endIDStr);
-
-		// Look for match in DataSets
-		for(int i = 0; i < prob.getDataCount(); i++)
+		// Hook up to steps
+		List<DataSource> allData = prob.getAllData();
+		for(Object stepObj : subEl.getChildren("step"))
 		{
-			Integer id = prob.getData(i).getID();
-			if(id == null)
-				continue;
-			
-			if(startID != null && newSub.getSolutionStart() == null && startID.equals(id))
-				newSub.setSolutionStart(prob.getData(i));
+			Element stepEl = (Element)stepObj;
+			String idStr = stepEl.getAttributeValue("id");
+			Integer searchID = Integer.valueOf(idStr);
 
-			if(!endIDStr.isEmpty() && newSub.getSolutionEnd() == null && endID.equals(id))
-				newSub.setSolutionEnd(prob.getData(i));
-		}
-
-		// Look for it in operations
-		for(int i = 0; i < prob.getDataCount(); i++)
-		{
-			if(!startIDStr.isEmpty() && newSub.getSolutionStart() == null)
-				newSub.setSolutionStart(findDataSet(startID, prob.getData(i)));
-
-			if(!endIDStr.isEmpty() && newSub.getSolutionEnd() == null)
-				newSub.setSolutionEnd(findDataSet(endID, prob.getData(i)));
+			for(DataSource ds : allData)
+			{
+				if(searchID.equals(ds.getID()))
+				{
+					newSub.addStep(ds);
+					break;
+				}
+			}
 		}
 		
 		newSub.isLoading = false;
 		return newSub;
-	}
-
-	/**
-	 * Find the DataSet/Operation with the given hashcode() value. Works
-	 * recursively to find it throughout the supplied DataSet. Used internally
-	 * for reattaching loaded problems
-	 * @param id hashcode of DataSet/derivative to find
-	 * @param parent DataSet that we should search through to find it
-	 * @return DataSet located
-	 */
-	private static DataSource findDataSet(Integer id, DataSource parent)
-	{
-		for(int i = 0; i < parent.getOperationCount(); i++)
-		{
-			Operation op = parent.getOperation(i);
-			if(id.equals(op.getID()))
-			{
-				// Found it
-				return op;
-			}
-			else
-			{
-				// Can we find it deeper? If not just try the next one I guess
-				DataSource d = findDataSet(id, op);
-				if(d != null)
-					return d;
-			}
-		}
-
-		return null; // Not found
 	}
 
 	@Override
@@ -573,39 +553,6 @@ public class SubProblem implements ProblemPart
 	 */
 	public boolean isDataSourceInSolution(DataSource ds)
 	{
-		if(!hasSolution())
-			return false;
-
-		if(startSolutionStep == endSolutionStep)
-		{
-			// Everything underneath the start is part of the solution
-			if(ds instanceof DataSet && ds != startSolutionStep)
-				return false;
-			else if(ds == startSolutionStep) // We are the start
-				return true;
-			else if(startSolutionStep.getAllChildOperations().contains((Operation)ds)) // We're below the start
-				return true;
-			else
-				return false;
-		}
-		else
-		{
-			DataSource curr = endSolutionStep;
-			while(curr != startSolutionStep)
-			{
-				if(curr == ds)
-					return true;
-
-				// This cast should never fail because if it's actually a DataSet then the while
-				// loop will have hit the beginning
-				curr = ((Operation)curr).getParentData();
-			}
-
-			// And make sure it wasn't the starting step
-			if(curr == ds)
-				return true;
-			else
-				return false;
-		}
+		return solutionSteps.contains(ds);
 	}
 }

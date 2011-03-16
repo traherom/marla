@@ -2,7 +2,7 @@
 <problem person="Ryan Morehart" course_long="Software Engineering II" course_short="CS4820" chapter="2" section="3" probnum="4">
   <statement>Problem description</statement>
   <conclusion>50% isn't bad.</conclusion>
-  <data name="Data Set 1" id="-1421489198" x="218" y="71" height="16" width="70">
+  <data name="Data Set 1" id="-1421489198" x="333" y="80" height="16" width="70">
     <column name="Column 1" mode="NUMERIC">
       <value>2.0</value>
       <value>213.0</value>
@@ -36,16 +36,16 @@
       <value>0.0</value>
       <value>0.0</value>
     </column>
-    <operation type="operation.OperationXML" id="1648532359" x="142" y="101" height="16" width="95">
+    <operation type="operation.OperationXML" id="1648532359" x="258" y="110" height="16" width="95">
       <remark>And a remark for sin)(</remark>
       <question name="col" answer="Column 1" />
       <extra name="sin()" />
     </operation>
-    <operation type="operation.OperationXML" id="-1749331733" x="262" y="101" height="16" width="98">
+    <operation type="operation.OperationXML" id="-1749331733" x="377" y="110" height="16" width="98">
       <remark>Nice long removk for cos()</remark>
-      <operation type="operation.OperationXML" id="1622297566" x="262" y="131" height="18" width="99">
+      <operation type="operation.OperationXML" id="1622297566" x="378" y="140" height="16" width="97">
         <remark />
-        <operation type="operation.OperationXML" x="257" y="161" height="16" width="106">
+        <operation type="operation.OperationXML" id="-204284884" x="373" y="170" height="16" width="106">
           <remark />
           <question name="col" answer="Column 1" />
           <extra name="acos()" />
@@ -59,11 +59,13 @@
       <extra name="cos()" />
     </operation>
   </data>
-  <part id="a." color="-721152" start="-1421489198" end="-1421489198">
+  <part id="a." color="-721152">
+    <step id="-1749331733" />
+    <step id="1622297566" />
     <statement>Part A!</statement>
     <conclusion>A was great</conclusion>
   </part>
-  <part id="b." color="-13352999" start="" end="">
+  <part id="b." color="-13352999">
     <statement>Part B :(</statement>
     <conclusion>Sad Day</conclusion>
   </part>

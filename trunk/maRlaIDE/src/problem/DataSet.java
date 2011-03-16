@@ -75,6 +75,10 @@ public final class DataSet extends JLabel implements DataSource, Changeable
 	 * Commands to perform on this dataset
 	 */
 	private final ArrayList<Operation> solutionOps = new ArrayList<Operation>();
+	/**
+	 * SubProblems this DataSet is a part of
+	 */
+	private final List<SubProblem> subs = new ArrayList<SubProblem>();
 
 	/**
 	 * Creates a blank dataset with the given name.
@@ -332,6 +336,12 @@ public final class DataSet extends JLabel implements DataSource, Changeable
 	}
 
 	@Override
+	public final DataSource getParentData()
+	{
+		return null;
+	}
+
+	@Override
 	public final DataSource getRootDataSource()
 	{
 		return this;
@@ -340,20 +350,31 @@ public final class DataSet extends JLabel implements DataSource, Changeable
 	@Override
 	public final List<SubProblem> getSubProblems()
 	{
-		List<SubProblem> subs = new ArrayList<SubProblem>();
+		return Collections.unmodifiableList(subs);
+	}
 
-		Problem prob = getParentProblem();
-		if(prob == null)
-			return subs;
+	@Override
+	public void addSubProblem(SubProblem sub)
+	{
+		// Don't bother if they're already part of us
+		if(subs.contains(sub))
+			return;
 
-		for(int i = 0; i < prob.getSubProblemCount(); i++)
-		{
-			SubProblem sub = prob.getSubProblem(i);
-			if(sub.isDataSourceInSolution(this))
-				subs.add(sub);
-		}
+		subs.add(sub);
+		sub.addStep(this);
+		markUnsaved();
+	}
 
-		return subs;
+	@Override
+	public void removeSubProblem(SubProblem sub)
+	{
+		// Don't bother if they're already _not_ a part of us
+		if(!subs.contains(sub))
+			return;
+
+		subs.remove(sub);
+		sub.removeStep(this);
+		markUnsaved();
 	}
 
 	/**

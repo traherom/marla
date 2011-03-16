@@ -728,18 +728,20 @@ public class LatexExporter
 			throw new LatexException("Unrecognized type of data '" + type + "' to display in LaTeX template");
 
 		// Grab all the DataSources we need to show
-		List<DataSource> dsToShow = new ArrayList<DataSource>();
+		List<DataSource> dsToShow = null;
 		if(currentSub == null)
 		{
 			if(isStartDS)
 			{
 				// All DataSets
+				dsToShow = new ArrayList<DataSource>();
 				for(int i = 0; i < prob.getDataCount(); i++)
 					dsToShow.add(prob.getData(i));
 			}
 			else
 			{
 				// All leaf operations
+				dsToShow = new ArrayList<DataSource>();
 				for(int i = 0; i < prob.getDataCount(); i++)
 					dsToShow.addAll(prob.getData(i).getAllLeafOperations());
 			}
@@ -747,20 +749,9 @@ public class LatexExporter
 		else if(currentSub.hasSolution())
 		{
 			if(isStartDS)
-			{
-				dsToShow.add(currentSub.getSolutionStart());
-			}
+				dsToShow = currentSub.getStartSteps();
 			else
-			{
-				if(currentSub.getSolutionStart() == currentSub.getSolutionEnd())
-				{
-					// All leaf operations from the marked point
-					DataSource start = currentSub.getSolutionStart();
-					dsToShow.addAll(start.getAllLeafOperations());
-				}
-				else
-					dsToShow.add(currentSub.getSolutionEnd());
-			}
+				dsToShow = currentSub.getEndSteps();
 		}
 
 		// Create latex array for each DataSource

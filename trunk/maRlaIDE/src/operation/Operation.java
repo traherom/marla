@@ -80,6 +80,10 @@ public abstract class Operation extends JLabel implements DataSource, Changeable
 	 */
 	private final List<Operation> solutionOps = new ArrayList<Operation>();
 	/**
+	 * SubProblems this Operation is a part of
+	 */
+	private final List<SubProblem> subProblems = new ArrayList<SubProblem>();
+	/**
 	 * Parent data that this operation works on
 	 */
 	private DataSource parent;
@@ -277,20 +281,31 @@ public abstract class Operation extends JLabel implements DataSource, Changeable
 	@Override
 	public final List<SubProblem> getSubProblems()
 	{
-		List<SubProblem> subs = new ArrayList<SubProblem>();
+		return Collections.unmodifiableList(subProblems);
+	}
 
-		Problem prob = getParentProblem();
-		if(prob == null)
-			return subs;
+	@Override
+	public void addSubProblem(SubProblem sub)
+	{
+		// Don't bother if they're already part of us
+		if(subProblems.contains(sub))
+			return;
 
-		for(int i = 0; i < prob.getSubProblemCount(); i++)
-		{
-			SubProblem sub = prob.getSubProblem(i);
-			if(sub.isDataSourceInSolution(this))
-				subs.add(sub);
-		}
+		subProblems.add(sub);
+		sub.addStep(this);
+		markUnsaved();
+	}
 
-		return subs;
+	@Override
+	public void removeSubProblem(SubProblem sub)
+	{
+		// Don't bother if they're already _not_ a part of us
+		if(!subProblems.contains(sub))
+			return;
+
+		subProblems.remove(sub);
+		sub.removeStep(this);
+		markUnsaved();
 	}
 
 	/**
@@ -437,31 +452,9 @@ public abstract class Operation extends JLabel implements DataSource, Changeable
 		// Tell our old parent we're removing ourselves
 		if(parent != null)
 		{
-			// Make sure we're not part of a SubProblem's start or end
-			// solution
-			Problem prob = getParentProblem();
-			if(prob != null)
-			{
-				for(int i = 0; i < prob.getSubProblemCount(); i++)
-				{
-					SubProblem sub = prob.getSubProblem(i);
-
-					// Move solution/"unsolve" if needed/possible
-					if(sub.getSolutionStart() == this && sub.getSolutionEnd() == this)
-					{
-						sub.setSolutionStart(null);
-						sub.setSolutionEnd(null);
-					}
-					else if(sub.getSolutionStart() == this)
-					{
-						sub.setSolutionStart(parent);
-					}
-					else if(sub.getSolutionEnd() == this)
-					{
-						sub.setSolutionEnd(parent);
-					}
-				}
-			}
+			// Remove ourselves from any SubProblems
+			for(SubProblem sub : subProblems)
+				sub.removeStep(this);
 			
 			DataSource oldParent = parent;
 			parent = null;
@@ -481,10 +474,7 @@ public abstract class Operation extends JLabel implements DataSource, Changeable
 		markUnsaved();
 	}
 
-	/**
-	 * Returns the parent this Operation derives from
-	 * @return Next higher set of data or null if there is none.
-	 */
+	@Override
 	public final DataSource getParentData()
 	{
 		return parent;
