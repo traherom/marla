@@ -2,7 +2,7 @@
 <problem person="Ryan Morehart" course_long="Software Engineering II" course_short="CS4820" chapter="2" section="3" probnum="4">
   <statement>Problem description</statement>
   <conclusion>50% isn't bad.</conclusion>
-  <data name="Data Set 1" id="-1421489198" x="265" y="119" height="16" width="70">
+  <data name="Data Set 1" id="-1421489198" x="242" y="114" height="16" width="70">
     <column name="Column 1" mode="NUMERIC">
       <value>2.0</value>
       <value>213.0</value>
@@ -36,16 +36,16 @@
       <value>0.0</value>
       <value>0.0</value>
     </column>
-    <operation type="operation.OperationXML" name="sin()" id="1648532359" x="190" y="149" height="16" width="95">
+    <operation type="operation.OperationXML" name="sin()" id="1648532359" x="167" y="144" height="16" width="95">
       <remark>And a remark for sin)(</remark>
       <question name="col" answer="Column 1" />
       <extra name="sin()" />
     </operation>
-    <operation type="operation.OperationXML" name="cos()" id="-1749331733" x="309" y="149" height="16" width="98">
+    <operation type="operation.OperationXML" name="cos()" id="-1749331733" x="286" y="144" height="16" width="98">
       <remark>Nice long removk for cos()</remark>
-      <operation type="operation.OperationXML" name="Repeat" id="1622297566" x="310" y="179" height="16" width="97">
+      <operation type="operation.OperationXML" name="Repeat" id="1622297566" x="287" y="174" height="16" width="97">
         <remark />
-        <operation type="operation.OperationXML" name="acos()" id="-204284884" x="305" y="209" height="16" width="106">
+        <operation type="operation.OperationXML" name="acos()" id="-204284884" x="282" y="204" height="16" width="106">
           <remark />
           <question name="col" answer="Column 1" />
           <extra name="acos()" />
@@ -68,21 +68,26 @@
     <conclusion>Sad Day</conclusion>
   </part>
   <part id="c." color="-3206776">
+    <step id="1648532359" />
     <step id="1622297566" />
+    <step id="-204284884" />
+    <statement />
+    <conclusion />
+  </part>
+  <part id="d." color="-13986679">
+    <step id="1622297566" />
+    <step id="-204284884" />
+    <statement />
+    <conclusion />
+  </part>
+  <part id="e." color="-6225507">
     <step id="-204284884" />
     <step id="1648532359" />
     <statement />
     <conclusion />
   </part>
-  <part id="d." color="-13986679">
-    <statement />
-    <conclusion />
-  </part>
-  <part id="e." color="-6225507">
-    <statement />
-    <conclusion />
-  </part>
   <part id="f." color="-12365136">
+    <step id="-204284884" />
     <statement />
     <conclusion />
   </part>

@@ -29,7 +29,10 @@ import java.io.InputStreamReader;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.commons.io.FileUtils;
@@ -79,6 +82,26 @@ public class LatexExporter
 	 * Used during processing to mark the subproblem we are working on
 	 */
 	private SubProblem currentSub = null;
+	/**
+	 * Pattern to find a single slash in latex code. Here just it's precompiled
+	 * An export will use this and the other replacement patterns a lot
+	 */
+	private static List<Object[]> latexReplacements = fillEscapeMap();
+	
+	private static List<Object[]> fillEscapeMap()
+	{
+		List<Object[]> l = new ArrayList<Object[]>();
+		l.add(new Object[]{Pattern.compile("\\\\"), "\\\\backslash"});
+		l.add(new Object[]{Pattern.compile("\\$"), "\\\\$"});
+		l.add(new Object[]{Pattern.compile("%"), "\\\\%"});
+		l.add(new Object[]{Pattern.compile("&"), "\\\\&"});
+		l.add(new Object[]{Pattern.compile("\\{"), "\\\\{"});
+		l.add(new Object[]{Pattern.compile("}"), "\\\\}"});
+		l.add(new Object[]{Pattern.compile("#"), "\\\\#"});
+		l.add(new Object[]{Pattern.compile("_"), "\\\\_"});
+		l.add(new Object[]{Pattern.compile("-"), "\\\\--"});
+		return l;
+	}
 
 	/**
 	 * Creates a new Latex exporter for the given problem
@@ -348,7 +371,7 @@ public class LatexExporter
 					try
 					{
 						if(prob.getPersonName() != null)
-							out.write(prob.getPersonName());
+							out.write(escapeLatex(prob.getPersonName()));
 					}
 					catch(IOException ex)
 					{
@@ -362,7 +385,7 @@ public class LatexExporter
 					try
 					{
 						if(prob.getChapter() != null)
-							out.write(prob.getChapter());
+							out.write(escapeLatex(prob.getChapter()));
 					}
 					catch(IOException ex)
 					{
@@ -374,7 +397,7 @@ public class LatexExporter
 					try
 					{
 						if(prob.getSection() != null)
-							out.write(prob.getSection());
+							out.write(escapeLatex(prob.getSection()));
 					}
 					catch(IOException ex)
 					{
@@ -386,7 +409,7 @@ public class LatexExporter
 					try
 					{
 						if(prob.getProblemNumber() != null)
-							out.write(prob.getProblemNumber());
+							out.write(escapeLatex(prob.getProblemNumber()));
 					}
 					catch(IOException ex)
 					{
@@ -438,12 +461,12 @@ public class LatexExporter
 			if(courseNameType.equals("short"))
 			{
 				if(prob.getShortCourse() != null)
-					out.write(prob.getShortCourse());
+					out.write(escapeLatex(prob.getShortCourse()));
 			}
 			else if(courseNameType.equals("long"))
 			{
 				if(prob.getLongCourse() != null)
-					out.write(prob.getLongCourse());
+					out.write(escapeLatex(prob.getLongCourse()));
 			}
 			else
 				throw new LatexException("Course name type '" + courseNameType + "' is not supported");
@@ -461,12 +484,12 @@ public class LatexExporter
 		if(currentSub == null)
 		{
 			// Get statement from the main problem
-			statement = prob.getStatement();
+			statement = escapeLatex(prob.getStatement());
 		}
 		else
 		{
 			// Get statement from the subproblem we are on
-			statement = currentSub.getStatement();
+			statement = escapeLatex(currentSub.getStatement());
 		}
 
 		try
@@ -482,8 +505,7 @@ public class LatexExporter
 
 	private void processSolutionClean(Element el, Writer out) throws LatexException, MarlaException
 	{
-		// Are we supposed to show the raw R code or the more succinct summary
-		// table of the calls?
+		// Are we supposed to show the raw R code?
 		boolean withR = Boolean.parseBoolean(el.getAttributeValue("rcode", "false"));
 
 		// Stick in a newline. Sweave blocks must begin at the beginning of the line,
@@ -518,7 +540,7 @@ public class LatexExporter
 				if(op.hasRemark())
 				{
 					solutionBlock.append("\n\n\\par ");
-					solutionBlock.append(op.getRemark());
+					solutionBlock.append(escapeLatex(op.getRemark()));
 				}
 
 				solutionBlock.append("\n\\par ");
@@ -567,14 +589,12 @@ public class LatexExporter
 		// Start table
 		sb.append("\\begin{tabular}{ l || l ");
 		for(int i = 1; i < dispColLen; i++)
-		{
 			sb.append(" l");
-		}
 		sb.append("}\n");
 
 		// Operation name
 		sb.append("\\multicolumn{1}{l||}{{\\bf ");
-		sb.append(op.getName());
+		sb.append(escapeLatex(op.getName()));
 		sb.append("}} & ");
 
 		// Parameters
@@ -597,9 +617,9 @@ public class LatexExporter
 				OperationInformation param = params.get(i);
 
 				sb.append("{\\it ");
-				sb.append(param.getPrompt());
+				sb.append(escapeLatex(param.getPrompt()));
 				sb.append(":} ");
-				sb.append(param.getAnswer());
+				sb.append(escapeLatex(param.getAnswer()));
 
 				if(i != params.size() - 1)
 					sb.append(" & ");
@@ -615,7 +635,7 @@ public class LatexExporter
 		List<DataColumn> newCols = op.getNewColumns();
 		for(DataColumn dc : newCols)
 		{
-			sb.append(dc.getName());
+			sb.append(escapeLatex(dc.getName()));
 			sb.append(" & ");
 
 			// Show everything or abbreviate?
@@ -623,7 +643,7 @@ public class LatexExporter
 			{
 				for(int i = 0; i < dc.size(); i++)
 				{
-					sb.append(dc.get(i));
+					sb.append(escapeLatex(dc.get(i)));
 
 					if(i != dc.size() - 1)
 						sb.append(" & ");
@@ -636,7 +656,7 @@ public class LatexExporter
 				// Beginning elements
 				for(int i = 0; i < halfSize; i++)
 				{
-					sb.append(dc.get(i));
+					sb.append(escapeLatex(dc.get(i)));
 					sb.append(" & ");
 				}
 
@@ -646,7 +666,7 @@ public class LatexExporter
 				// Ending elements
 				for(int i = dc.size() - halfSize; i < dc.size(); i++)
 				{
-					sb.append(dc.get(i));
+					sb.append(escapeLatex(dc.get(i)));
 
 					if(i != dc.size() - 1)
 						sb.append(" & ");
@@ -699,9 +719,9 @@ public class LatexExporter
 	{
 		StringBuilder sb = new StringBuilder();
 		if(currentSub == null)
-			sb.append(prob.getConclusion());
+			sb.append(escapeLatex(prob.getConclusion()));
 		else
-			sb.append(currentSub.getConclusion());
+			sb.append(escapeLatex(currentSub.getConclusion()));
 
 		try
 		{
@@ -800,7 +820,7 @@ public class LatexExporter
 			sb.append("\\multicolumn{");
 			sb.append(columns.size() + 1);
 			sb.append("}{c}{\\bf ");
-			sb.append(dsName);
+			sb.append(escapeLatex(dsName));
 			sb.append("} \\\\\n \\cline{2-");
 			sb.append(columns.size() + 1);
 			sb.append("}\n");
@@ -810,9 +830,7 @@ public class LatexExporter
 		sb.append("   & ");
 		for(int i = 0; i < columns.size(); i++)
 		{
-			sb.append("$");
-			sb.append(columns.get(i).getName());
-			sb.append("$ ");
+			sb.append(escapeLatex(columns.get(i).getName()));
 
 			// Don't end the row with the cell separator
 			if(i + 1 < columns.size())
@@ -832,7 +850,7 @@ public class LatexExporter
 				// Ensure this column extends this far
 				DataColumn dc = columns.get(j);
 				if(dc.size() > i)
-					sb.append(dc.get(i));
+					sb.append(escapeLatex(dc.get(i)));
 
 				// Don't end the row with the cell separator
 				if(j + 1 < columns.size())
@@ -891,13 +909,34 @@ public class LatexExporter
 	}
 
 	/**
+	 * Takes the given object, converts it to a string, then escapes all LaTeX
+	 * inside it
+	 * @param dirty String/stringable object which needs latex escaped
+	 * @return String with latex escaped properly
+	 */
+	private String escapeLatex(Object dirty)
+	{
+		return escapeLatex(dirty.toString());
+	}
+
+	/**
 	 * Takes the given string and escapes all LaTeX inside it
 	 * @param dirty String which needs latex escaped
 	 * @return String with latex escaped properly
 	 */
 	private String escapeLatex(String dirty)
 	{
-		return dirty;
+		String clean = dirty;
+
+		// Order is important here. If we replace slashes later, then
+		// the others won't properly escape
+		for(Object[] patt : latexReplacements)
+		{
+			Matcher m = ((Pattern)patt[0]).matcher(clean);
+			clean = m.replaceAll((String)patt[1]);
+		}
+
+		return clean;
 	}
 
 	/**
