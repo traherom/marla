@@ -36,18 +36,28 @@
 				<data type="end" />
 			</then>
 			<else>
-			\begin{enumerate}[(a)]
-			<loop type="subproblem">
+				\begin{enumerate}[(a)]
+				<loop type="subproblem">
 				\item
-				<solution rcode="false" maxlen="7" />
-				\par \textbf{Conclusion:} <conclusion />
-				\par <data type="end" />
-			</loop>
-			\end{enumerate}
+					<solution rcode="false" maxlen="7" />
+					
+					\par <data type="end" />
+					
+					<!-- Include a conclusion if it exists -->
+					<if has_conclusion="true">
+						<then>\par <conclusion /></then>
+					</if>
+				</loop>
+				\end{enumerate}
 			</else>
 		</if>
 
-		\par \textbf{Conclusion:} <conclusion />
+		<if has_conclusion="true">
+			<then>
+			\noindent\textbf{Conclusion}
+			\par <conclusion />
+			</then>
+		</if>
 
 		\end{document}
 	</main>
