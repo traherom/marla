@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
-import javax.swing.JLabel;
 import org.jdom.Element;
 import problem.Changeable;
 import problem.DataColumn;
@@ -48,7 +47,7 @@ import resource.ConfigurationException;
  *
  * @author Ryan Morehart
  */
-public abstract class Operation extends JLabel implements DataSource, Changeable
+public abstract class Operation extends DataSource implements Changeable
 {
 	/**
 	 * Denotes when this operation is in the middle of loading from XML,
@@ -453,7 +452,10 @@ public abstract class Operation extends JLabel implements DataSource, Changeable
 		if(parent != null)
 		{
 			// Remove ourselves from any SubProblems
+			List<SubProblem> currSubs = new ArrayList<SubProblem>(subProblems.size());
 			for(SubProblem sub : subProblems)
+				currSubs.add(sub);
+			for(SubProblem sub : currSubs)
 				sub.removeStep(this);
 			
 			DataSource oldParent = parent;

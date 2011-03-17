@@ -1945,7 +1945,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 			// Set problem defaults for name and location
 			problemNameTextField.setText(domain.problem.getFileName().substring(domain.problem.getFileName().lastIndexOf(System.getProperty("file.separator")) + 1, domain.problem.getFileName().lastIndexOf(".")));
 			problemNameTextField.setEnabled(false);
-			problemLocationTextField.setText(domain.problem.getFileName().substring(0, domain.problem.getFileName().lastIndexOf(System.getProperty("file.separator"))));
+			problemLocationTextField.setText(new File(domain.problem.getFileName()).getAbsoluteFile().getParent());
 			browseButton.setEnabled(false);
 			descriptionTextArea.setText(domain.problem.getStatement());
 			studentNameTextField.setText(domain.problem.getPersonName());

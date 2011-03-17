@@ -24,11 +24,9 @@ import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.geom.Line2D;
 import java.util.List;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
-import problem.DataSet;
-import operation.Operation;
 import problem.DataSource;
+import problem.Problem;
 import problem.SubProblem;
 
 /**
@@ -68,100 +66,17 @@ public class WorkspacePanel extends JPanel
 			Graphics2D g2 = (Graphics2D) g;
 			g2.setRenderingHint (RenderingHints.KEY_ANTIALIASING,
 								 RenderingHints.VALUE_ANTIALIAS_ON);
-			g2.setPaint (Color.DARK_GRAY);
 
-			// Iterate through each data set and draw to the first operation of each column
-			for (int i = 0; i < viewPanel.domain.problem.getDataCount(); ++i)
+			// Work across each DataSource that we know about
+			Problem prob = viewPanel.domain.problem;
+			List<DataSource> data = prob.getAllData();
+			for(DataSource ds : data)
 			{
-				DataSet dataSet = viewPanel.domain.problem.getData (i);
-				if (dataSet.getParent () != this)
-				{
-					add (dataSet);
-				}
-				for (int j = 0; j < dataSet.getOperationCount(); ++j)
-				{
-					Operation topOp = dataSet.getOperation(j);
-					int x1 = (dataSet.getX () + dataSet.getX () + dataSet.getWidth ()) / 2;
-					int y1 = dataSet.getY () + dataSet.getHeight ();
-					int x2 = (topOp.getX () + dataSet.getOperation (j).getX () + topOp.getWidth ()) / 2;
-					int y2 = topOp.getY ();
-					List<SubProblem> subProblems = topOp.getSubProblems();
-					if (!subProblems.isEmpty())
-					{
-						int decNeg = SUB_INC;
-						int decX = x2;
-						int incPos = SUB_INC;
-						int incX = x2;
-						for (int k = 0; k < subProblems.size (); ++k)
-						{
-							g2.setPaint(subProblems.get(k).getColor());
-							if (k % 2 == 0)
-							{
-								x2 = decX - decNeg;
-								decNeg -= SUB_INC;
-								g2.draw (new Line2D.Double (x1, y1, x2, y2));
-							}
-							else
-							{
-								x2 = incX + incPos;
-								incPos += SUB_INC;
-								g2.draw (new Line2D.Double (x1, y1, x2, y2));
-							}
-						}
-					}
-					else
-					{
-						g2.setPaint(Color.DARK_GRAY);
-						g2.draw (new Line2D.Double (x1, y1, x2, y2));
-					}
+				// Ensure we're part of the workspace
+				if(ds.getParent() != this)
+					add(ds);
 
-					if (topOp.getParent () != this)
-					{
-						add (topOp);
-					}
-					List<Operation> operations = topOp.getAllChildOperations();
-					if (!operations.isEmpty())
-					{
-						Operation op = operations.get (0);
-						connectOperations (g2, op);
-
-						x1 = (topOp.getX () + topOp.getX () + topOp.getWidth ()) / 2;
-						y1 = topOp.getY () + topOp.getHeight ();
-						x2 = (op.getX () + op.getX () + op.getWidth ()) / 2;
-						y2 = op.getY ();
-						subProblems = op.getSubProblems();
-						if (!subProblems.isEmpty())
-						{
-							int decNeg = SUB_INC;
-							int decX = x2;
-							int incPos = SUB_INC;
-							int incX = x2;
-							for (int k = 0; k < subProblems.size (); ++k)
-							{
-								g2.setPaint(subProblems.get(k).getColor());
-								if (k % 2 == 0)
-								{
-									x1 = decX - decNeg;
-									x2 = decX - decNeg;
-									decNeg -= SUB_INC;
-									g2.draw (new Line2D.Double (x1, y1, x2, y2));
-								}
-								else
-								{
-									x1 = incX + incPos;
-									x2 = incX + incPos;
-									incPos += SUB_INC;
-									g2.draw (new Line2D.Double (x1, y1, x2, y2));
-								}
-							}
-						}
-						else
-						{
-							g2.setPaint(Color.DARK_GRAY);
-							g2.draw (new Line2D.Double (x1, y1, x2, y2));
-						}
-					}
-				}
+				drawConnection(g2, ds);
 			}
 		}
 		catch(Exception ex)
@@ -170,57 +85,58 @@ public class WorkspacePanel extends JPanel
 		}
 	}
 
-	/**
-	 * Recursively connect child operations as long as they exist.
-	 *
-	 * @param g2 The graphics object to draw lines with.
-	 * @param operation The current operation to connect with its next child operation.
-	 */
-	private void connectOperations(Graphics2D g2, Operation operation)
-	{
-		if (operation.getParent () == null || (operation.getParent () != null && operation.getParent () != this))
-		{
-			add (operation);
-		}
-		if (operation.getOperationCount() > 0)
-		{
-			connectOperations (g2, operation.getOperation(0));
+	private void drawConnection(Graphics2D g2, DataSource ds)
+	{		
+		// Stuff we'll need to reference a lot
+		DataSource parentDS = ds.getParentData();
+		if(parentDS == null)
+			return;
 
-			int x1 = (operation.getX () + operation.getX () + operation.getWidth ()) / 2;
-			int y1 = operation.getY () + operation.getHeight ();
-			int x2 = (operation.getOperation (0).getX () + operation.getOperation (0).getX () + operation.getOperation (0).getWidth ()) / 2;
-			int y2 = operation.getOperation (0).getY ();
-			List<SubProblem> subProblems = operation.getSubProblems();
-			if (subProblems.size() > 1)
+		// If we're the only child of our parent, draw straight downward
+		boolean isStraight = false;
+		if(parentDS.getOperationCount() == 1)
+			isStraight = true;
+
+		List<SubProblem> subs = ds.getSubProblems();
+		
+		// Figure out where lines will end at
+		int endY = ds.getY();
+
+		// Back the start of the X's up a bit if we
+		// have multiple subproblems
+		int midEndX = ds.getX() + (ds.getWidth() / 2);
+		int endX = midEndX - subs.size() * SUB_INC / 2;
+
+		// Figure out where lines will start from
+		int startY = parentDS.getY() + parentDS.getHeight();
+
+		int midStartX = parentDS.getX() + (parentDS.getWidth() / 2);
+		int startX = midStartX;
+		if(isStraight)
+		{
+			// If we're vertically straight, the lines should go straight
+			// down. Otherwise, start from our parent mid no matter what
+			startX = endX;
+		}
+
+		if(!subs.isEmpty())
+		{
+			// Draw each subproblem line
+			for(SubProblem sub : subs)
 			{
-				int decNeg = SUB_INC;
-				int decX = x2;
-				int incPos = SUB_INC;
-				int incX = x2;
-				for (int k = 0; k < subProblems.size (); ++k)
-				{
-					g2.setPaint(subProblems.get(k).getColor());
-					if (k % 2 == 0)
-					{
-						x1 = decX - decNeg;
-						x2 = decX - decNeg;
-						decNeg -= SUB_INC;
-						g2.draw (new Line2D.Double (x1, y1, x2, y2));
-					}
-					else
-					{
-						x1 = incX + incPos;
-						x2 = incX + incPos;
-						incPos += SUB_INC;
-						g2.draw (new Line2D.Double (x1, y1, x2, y2));
-					}
-				}
+				g2.setPaint(sub.getColor());
+				g2.draw(new Line2D.Double(startX, startY, endX, endY));
+
+				// Move lines
+				endX += SUB_INC;
+				if(isStraight)
+					startX = endX;
 			}
-			else
-			{
-				g2.setPaint(Color.DARK_GRAY);
-				g2.draw (new Line2D.Double (x1, y1, x2, y2));
-			}
+		}
+		else
+		{
+			g2.setPaint(Color.DARK_GRAY);
+			g2.draw(new Line2D.Double(startX, startY, endX, endY));
 		}
 	}
 }
