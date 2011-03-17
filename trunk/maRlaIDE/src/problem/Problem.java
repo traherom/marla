@@ -602,7 +602,7 @@ public class Problem implements ProblemPart
 	/**
 	 * Gets the file this problem is/will be saved to.
 	 *
-	 * @return Path this file will save to when @see #save() save() is called.
+	 * @return Path this file will save to when save() is called.
 	 */
 	public String getFileName()
 	{

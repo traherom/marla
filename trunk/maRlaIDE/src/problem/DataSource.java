@@ -19,39 +19,40 @@ package problem;
 
 import operation.Operation;
 import java.util.List;
+import javax.swing.JLabel;
 import org.jdom.Element;
 
 /**
  * Tie for any source of that contains columns
  * @author Ryan Morehart
  */
-public interface DataSource extends Loadable
+public abstract class DataSource extends JLabel implements Loadable
 {
 	/**
 	 * Gets the internal ID of this DataSource
 	 * @return ID assigned to DataSource, null if there is none
 	 */
-	public Integer getID();
+	public abstract Integer getID();
 
 	/**
 	 * Creates an ID for this DataSource and saves it. If the DataSource
 	 * already has an ID then the current one is used.
 	 * @return ID assigned to DataSource
 	 */
-	public Integer generateID();
+	public abstract Integer generateID();
 
 	/**
 	 * Gets the current DataSource name
 	 * @return DataSource name
 	 */
-	public String getName();
+	public abstract String getName();
 
 	/**
 	 * Returns a string that could be displayed to the user
 	 * @param abbrv If true, abreviate the returned string in order 
 	 * @return String suitable for display to user
 	 */
-	public String getDisplayString(boolean abbrv);
+	public abstract String getDisplayString(boolean abbrv);
 
 	/**
 	 * Returns the column with the given name in the DataSource
@@ -59,13 +60,13 @@ public interface DataSource extends Loadable
 	 *					be reflected in the dataset itself unless a copy is made.
 	 * @return The DataColumn requested
 	 */
-	public DataColumn getColumn(String colName) throws DataNotFoundException, MarlaException;
+	public abstract DataColumn getColumn(String colName) throws DataNotFoundException, MarlaException;
 
 	/**
 	 * Returns a list of all the columns in the DataSource
 	 * @return The DataColumns in the current DataSource
 	 */
-	public List<DataColumn> getColumns() throws MarlaException;
+	public abstract List<DataColumn> getColumns() throws MarlaException;
 
 	/**
 	 * Returns the column index (as would be passed to getColumn(int))
@@ -73,32 +74,32 @@ public interface DataSource extends Loadable
 	 * @param colName Column name to search for
 	 * @return index of corresponding column, -1 if not found
 	 */
-	public int getColumnIndex(String colName) throws MarlaException;
+	public abstract int getColumnIndex(String colName) throws MarlaException;
 
 	/**
 	 * Returns the column requested by index
 	 * @param index Index of the column to access
 	 * @return DataColumn at the given index
 	 */
-	public DataColumn getColumn(int index) throws DataNotFoundException, MarlaException;
+	public abstract DataColumn getColumn(int index) throws DataNotFoundException, MarlaException;
 
 	/**
 	 * Returns the number of columns in this DataSet
 	 * @return Number of columns in DataSet
 	 */
-	public int getColumnCount() throws MarlaException;
+	public abstract int getColumnCount() throws MarlaException;
 
 	/**
 	 * Returns the length of the <em>longest</em> column in this dataset
 	 * @return Length of the longest column in this dataset. -1 if there are none
 	 */
-	public int getColumnLength() throws MarlaException;
+	public abstract int getColumnLength() throws MarlaException;
 
 	/**
 	 * Returns a list of column names.
 	 * @return All column names in this dataset
 	 */
-	public String[] getColumnNames() throws MarlaException;
+	public abstract String[] getColumnNames() throws MarlaException;
 
 	/**
 	 * Add an operation to this data object. If you want to chain operations
@@ -112,62 +113,62 @@ public interface DataSource extends Loadable
 	 * @param op Operation to add to perform on DataSet
 	 * @return Newly added operation
 	 */
-	public Operation addOperation(Operation op) throws MarlaException;;
+	public abstract Operation addOperation(Operation op) throws MarlaException;;
 
 	/**
 	 * Removes an operation from the data
 	 * @param op Operation to remove from data
 	 * @return The removed Operation
 	 */
-	public Operation removeOperation(Operation op) throws MarlaException;
+	public abstract Operation removeOperation(Operation op) throws MarlaException;
 
 	/**
 	 * Removes an operation from the data
 	 * @param index Index of the operation to remove
 	 * @return The removed Operation
 	 */
-	public Operation removeOperation(int index) throws MarlaException;
+	public abstract Operation removeOperation(int index) throws MarlaException;
 
 	/**
 	 * Get the Operation at the specified index
 	 * @param index Index of Operation to retrieve
 	 * @return Operation at index
 	 */
-	public Operation getOperation(int index);
+	public abstract Operation getOperation(int index);
 
 	/**
 	 * Finds the index of the specified operation within the DataSource
 	 * @param op Operation to locate within the DataSource
 	 * @return index of the operation or -1 if not found
 	 */
-	public int getOperationIndex(Operation op);
+	public abstract int getOperationIndex(Operation op);
 
 	/**
 	 * Returns the number of top-level operations working on this
 	 * DataSet
 	 * @return Number of Operations in DataSet
 	 */
-	public int getOperationCount();
+	public abstract int getOperationCount();
 
 	/**
 	 * Returns a flat list of every operation that is a child of this one,
 	 * directly or indirectly. Easy way to get access to an entire subtree
 	 * @return List of every operation below this one in the tree
 	 */
-	public List<Operation> getAllChildOperations();
+	public abstract List<Operation> getAllChildOperations();
 
 	/**
 	 * Returns a flat list of every operation that is a child of this
 	 * one--directly or indirectly--and has no child operations of its own.
 	 * @return List of every operation below this one in the tree
 	 */
-	public List<Operation> getAllLeafOperations();
+	public abstract List<Operation> getAllLeafOperations();
 
 	/**
 	 * Returns the DataSource that is at the top of the chain
 	 * @return DataSource without a parent (top of the chain)
 	 */
-	public DataSource getRootDataSource();
+	public abstract DataSource getRootDataSource();
 
 	/**
 	 * Outputs this DataSource as the string of R commands needed to perform
@@ -176,87 +177,87 @@ public interface DataSource extends Loadable
 	 * @throws chain True if R commands from higher up the chain should be included
 	 * @return String of R commands
 	 */
-	public String getRCommands(boolean chain) throws MarlaException;
+	public abstract String getRCommands(boolean chain) throws MarlaException;
 
 	/**
 	 * Outputs this DataSource as the string of R commands needed to perform
 	 * the calculations for itself.
 	 * @return String of R commands
 	 */
-	public String getRCommands() throws MarlaException;
+	public abstract String getRCommands() throws MarlaException;
 
 	/**
 	 * Outputs this DataSet as a constructed R data frame and returns the
 	 * variable the data frame is stored in.
 	 * @return R variable the data frame is in
 	 */
-	public String toRFrame() throws MarlaException;
+	public abstract String toRFrame() throws MarlaException;
 
 	/**
 	 * Outputs this DataSource as an HTML table with the contained data
 	 * @return String of the HTML table representing this DataSource
 	 */
-	public String toHTML() throws MarlaException;
+	public abstract String toHTML() throws MarlaException;
 
 	/**
 	 * Returns a JDOM Element that encapsulates this DataSet's
 	 * name, columns, and child operations
 	 * @return JDOM Element of this DataSet
 	 */
-	public Element toXml() throws MarlaException;
+	public abstract Element toXml() throws MarlaException;
 
 	/**
 	 * Exports this DataSource to a CSV file at the given path. Use R to perform the export.
 	 * @param filePath CSV file to write to. File will be overwritten if needed.
 	 */
-	public void exportFile(String filePath) throws MarlaException;
+	public abstract void exportFile(String filePath) throws MarlaException;
 
 	/**
 	 * Ensures the given name is unique within the DataSet
 	 * @param name Name to check for in existing columns
 	 * @return true if the name is unique, false otherwise
 	 */
-	public boolean isUniqueColumnName(String name) throws MarlaException;
+	public abstract boolean isUniqueColumnName(String name) throws MarlaException;
 
 	/**
 	 * Tell the DataSource that some aspect of it has changed
 	 */
-	public void markUnsaved();
+	public abstract void markUnsaved();
 
 	/**
 	 * Ensures that the displayed name for the DataSource is the
 	 * correct version and rebuilds the tree if needed
 	 */
-	public void checkDisplayName();
+	public abstract void checkDisplayName();
 
 	/**
 	 * Returns the ProblemPart that this DataSource belongs to. Return
 	 * is null if there is no parent for this source
 	 * @return Parent problem, null if none
 	 */
-	public Problem getParentProblem();
+	public abstract Problem getParentProblem();
 
 	/**
 	 * Returns the parent this DataSource derives from
 	 * @return Next higher set of data or null if there is none.
 	 */
-	public DataSource getParentData();
+	public abstract DataSource getParentData();
 
 	/**
 	 * Gets the subproblems this DataSource is a part of
 	 * @return SubProblem we are a solution to or an empty list if there is none
 	 */
-	public List<SubProblem> getSubProblems();
+	public abstract List<SubProblem> getSubProblems();
 
 	/**
 	 * Adds this DataSource to the given SubProblem
 	 * @param sub SubProblem to add DataSource to
 	 */
-	public void addSubProblem(SubProblem sub);
+	public abstract void addSubProblem(SubProblem sub);
 
 	/**
 	 * Removes this DataSource from the given SubProblem
 	 * @param sub SubProblem to remove from this DataSource
 	 */
-	public void removeSubProblem(SubProblem sub);
+	public abstract void removeSubProblem(SubProblem sub);
 }

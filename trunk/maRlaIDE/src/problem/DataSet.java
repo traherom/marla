@@ -32,7 +32,6 @@ import java.util.List;
 import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import javax.swing.JLabel;
 import org.jdom.Element;
 import problem.DataColumn.DataMode;
 import r.RProcessor;
@@ -47,7 +46,7 @@ import resource.ConfigurationException;
  *
  * @author Ryan Morehart
  */
-public final class DataSet extends JLabel implements DataSource, Changeable
+public final class DataSet extends DataSource implements Changeable
 {
 	/**
 	 * Denotes if this class is loading from XML
