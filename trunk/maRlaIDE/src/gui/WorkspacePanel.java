@@ -18,6 +18,7 @@
 
 package gui;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -39,7 +40,7 @@ public class WorkspacePanel extends JPanel
 	/** A reference to the view panel.*/
 	private ViewPanel viewPanel;
 	/** Increment value in sub problem line spacing.*/
-	private final int SUB_INC = 5;
+	private int lineInc = 5;
 
 	/**
 	 * Construct the workspace panel with a reference to the view panel.
@@ -66,6 +67,13 @@ public class WorkspacePanel extends JPanel
 			Graphics2D g2 = (Graphics2D) g;
 			g2.setRenderingHint (RenderingHints.KEY_ANTIALIASING,
 								 RenderingHints.VALUE_ANTIALIAS_ON);
+
+			// Make the lines larger as we zoom in
+			int lineWidth = ViewPanel.fontSize - 11;
+			if(lineWidth < 1)
+				lineWidth = 1;
+			lineInc = lineWidth + 4;
+			g2.setStroke(new BasicStroke(lineWidth));
 
 			// Work across each DataSource that we know about
 			Problem prob = viewPanel.domain.problem;
@@ -105,7 +113,9 @@ public class WorkspacePanel extends JPanel
 		// Back the start of the X's up a bit if we
 		// have multiple subproblems
 		int midEndX = ds.getX() + (ds.getWidth() / 2);
-		int endX = midEndX - subs.size() * SUB_INC / 2;
+		int endX = midEndX - subs.size() * lineInc / 2;
+		if(!subs.isEmpty())
+			endX += lineInc / 2;
 
 		// Figure out where lines will start from
 		int startY = parentDS.getY() + parentDS.getHeight();
@@ -128,7 +138,7 @@ public class WorkspacePanel extends JPanel
 				g2.draw(new Line2D.Double(startX, startY, endX, endY));
 
 				// Move lines
-				endX += SUB_INC;
+				endX += lineInc;
 				if(isStraight)
 					startX = endX;
 			}
