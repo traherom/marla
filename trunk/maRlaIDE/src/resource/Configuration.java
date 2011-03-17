@@ -17,6 +17,7 @@
  */
 package resource;
 
+import gui.WorkspacePanel;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -65,9 +66,14 @@ public class Configuration
 	private Element configXML = null;
 
 	/**
-	 * Posssible elements that can be configured through this class
+	 * Possible elements that can be configured through this class
 	 */
-	public enum ConfigType {DebugMode, PdfTex, R, OpsXML, TexTemplate, UserName, ClassShort, ClassLong};
+	public enum ConfigType {
+			DebugMode,
+			PdfTex, R, OpsXML, TexTemplate,
+			UserName, ClassShort, ClassLong,
+			MinLineWidth, LineSpacing
+		};
 
 	/**
 	 * Creates new instance of the configuration pointed to the given configuration file
@@ -228,8 +234,14 @@ public class Configuration
 			case UserName:
 				return Problem.getDefaultPersonName();
 
+			case LineSpacing:
+				return WorkspacePanel.getLineSpacing();
+
+			case MinLineWidth:
+				return WorkspacePanel.getMinLineWidth();
+
 			default:
-				throw new InternalMarlaException("Unhandled configuration exception type in name");
+				throw new InternalMarlaException("Unhandled configuration exception type in get");
 		}
 	}
 
@@ -288,6 +300,20 @@ public class Configuration
 
 			case UserName:
 				previous = Problem.setDefaultPersonName((String)val);
+				break;
+
+			case LineSpacing:
+				if(val instanceof Integer)
+					previous = WorkspacePanel.setLineSpacing((Integer)val);
+				else
+					previous = WorkspacePanel.setLineSpacing(Integer.parseInt(val.toString()));
+				break;
+
+			case MinLineWidth:
+				if(val instanceof Integer)
+					previous = WorkspacePanel.setMinLineWidth((Integer)val);
+				else
+					previous = WorkspacePanel.setMinLineWidth(Integer.parseInt(val.toString()));
 				break;
 
 			default:
@@ -413,6 +439,16 @@ public class Configuration
 			{
 				case DebugMode:
 					set(setting, RProcessor.RecordMode.DISABLED);
+					success = true;
+					break;
+
+				case MinLineWidth:
+					set(setting, 2);
+					success = true;
+					break;
+
+				case LineSpacing:
+					set(setting, 4);
 					success = true;
 					break;
 
@@ -736,7 +772,7 @@ public class Configuration
 	/**
 	 * Convenience method to do the most common configuration stuff. Intended
 	 * only for use when nothing will need manual configuration (pre-setup computer)
-	 * @return true if all itmes are configured, false otherwise
+	 * @return true if all items are configured, false otherwise
 	 */
 	public static boolean load()
 	{

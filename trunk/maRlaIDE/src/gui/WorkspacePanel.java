@@ -29,6 +29,8 @@ import javax.swing.JPanel;
 import problem.DataSource;
 import problem.Problem;
 import problem.SubProblem;
+import resource.Configuration.ConfigType;
+import resource.ConfigurationException;
 
 /**
  * Paints the panel for the workspace with proper lines for all shown data sets and operations.
@@ -37,10 +39,17 @@ import problem.SubProblem;
  */
 public class WorkspacePanel extends JPanel
 {
+	/** Stroke width of lines on panel */
+	private static int minLineWidth = 2;
+	/** Spacing between lines on panel */
+	private static int lineSpacing = 4;
 	/** A reference to the view panel.*/
 	private ViewPanel viewPanel;
-	/** Increment value in sub problem line spacing.*/
-	private int lineInc = 5;
+	/**
+	 * Increment value in sub problem line spacing. Set based on line width
+	 * and line spacing
+	 */
+	private int lineInc = 0;
 
 	/**
 	 * Construct the workspace panel with a reference to the view panel.
@@ -50,6 +59,56 @@ public class WorkspacePanel extends JPanel
 	public WorkspacePanel(ViewPanel viewPanel)
 	{
 		this.viewPanel = viewPanel;
+	}
+
+	/**
+	 * Sets the minimum draw width for the lines on the workspace
+	 * @param newMin Size in pixels for the lines. Must be 1 or greater
+	 * @return Previously set line width
+	 */
+	public static int setMinLineWidth(int newMin) throws ConfigurationException
+	{
+		int oldMin = minLineWidth;
+
+		if(newMin < 1)
+			throw new ConfigurationException("Minimum line width must be 1 or greater", ConfigType.MinLineWidth);
+
+		minLineWidth = newMin;
+		return oldMin;
+	}
+
+	/**
+	 * Gets the minimum draw width for the lines on the workspace in pixels
+	 * @return Currently set width
+	 */
+	public static int getMinLineWidth()
+	{
+		return minLineWidth;
+	}
+
+	/**
+	 * Sets the spacing between lines on the workspace
+	 * @param newMin Size in pixels between the lines. Must be 0 or greater
+	 * @return Previously set line spacing
+	 */
+	public static int setLineSpacing(int newSpace) throws ConfigurationException
+	{
+		int oldSpace = lineSpacing;
+
+		if(newSpace < 0)
+			throw new ConfigurationException("Line spacing must be 0 or greater", ConfigType.LineSpacing);
+
+		lineSpacing = newSpace;
+		return oldSpace;
+	}
+
+	/**
+	 * Gets the line spacing for the workspace in pixels
+	 * @return Currently set spacing
+	 */
+	public static int getLineSpacing()
+	{
+		return lineSpacing;
 	}
 
 	/**
@@ -70,9 +129,9 @@ public class WorkspacePanel extends JPanel
 
 			// Make the lines larger as we zoom in
 			int lineWidth = ViewPanel.fontSize - 11;
-			if(lineWidth < 1)
-				lineWidth = 1;
-			lineInc = lineWidth + 4;
+			if(lineWidth < minLineWidth)
+				lineWidth = minLineWidth;
+			lineInc = lineWidth + lineSpacing;
 			g2.setStroke(new BasicStroke(lineWidth, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
 
 			// Work across each DataSource that we know about
