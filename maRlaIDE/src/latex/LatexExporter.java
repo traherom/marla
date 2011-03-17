@@ -746,7 +746,7 @@ public class LatexExporter
 					dsToShow.addAll(prob.getData(i).getAllLeafOperations());
 			}
 		}
-		else if(currentSub.hasSolution())
+		else
 		{
 			if(isStartDS)
 				dsToShow = currentSub.getStartSteps();
@@ -849,18 +849,29 @@ public class LatexExporter
 
 	private void processIfClean(Element ifEl, Writer out) throws LatexException, MarlaException
 	{
-		// Figure out what type of if we are and determine the truthiness of the statement
-		boolean ifExprResult = false;
-		String hasSub = ifEl.getAttributeValue("has_subproblems");
+		// Process if questions and determine the truthiness of the statement
+		// Short circuit, so if we ever go false just stop thinking about it
+		boolean ifExprResult = true;
 
+		String hasSub = ifEl.getAttributeValue("has_subproblems");
 		if(hasSub != null)
 		{
 			boolean hasSubRequired = Boolean.parseBoolean(hasSub);
 			boolean subExist = prob.getSubProblemCount() > 0;
 			ifExprResult = (subExist == hasSubRequired);
 		}
-		else
-			throw new LatexException("Type of if not recognized");
+
+		String hasConc = ifEl.getAttributeValue("has_conclusion");
+		if(ifExprResult && hasConc != null)
+		{
+			boolean hasConcRequired = Boolean.parseBoolean(hasConc);
+			boolean concExist = false;
+			if(currentSub == null)
+				concExist = (prob.getConclusion() != null);
+			else
+				concExist = (currentSub.getConclusion() != null);
+			ifExprResult = (concExist == hasConcRequired);
+		}
 
 		// Run then then/else blocks as appropriate
 		if(ifExprResult)
@@ -877,6 +888,16 @@ public class LatexExporter
 			if(elseEl != null)
 				processSequenceClean(elseEl, out);
 		}
+	}
+
+	/**
+	 * Takes the given string and escapes all LaTeX inside it
+	 * @param dirty String which needs latex escaped
+	 * @return String with latex escaped properly
+	 */
+	private String escapeLatex(String dirty)
+	{
+		return dirty;
 	}
 
 	/**
