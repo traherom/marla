@@ -83,6 +83,7 @@ public class ImplementedOperationTest
 	public void testEquals() throws Exception
 	{
 		Operation op2 = Operation.createOperation(opName);
+		op1.equals(op2);
 		assertTrue(op1.equals(op2));
 	}
 

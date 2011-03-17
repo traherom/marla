@@ -78,7 +78,7 @@ public class SubProblem implements ProblemPart
 
 	/**
 	 * Copy constructor, creates a deep copy of the subproblem. CURRENTLY
-	 * NOT PERFECT! TBD: The start and end solution steps would need to be
+	 * NOT PERFECT! TODO: The start and end solution steps would need to be
 	 * updated to match the copied versions of themselves in our parent
 	 * problem
 	 * @param sp SubProblem to copy

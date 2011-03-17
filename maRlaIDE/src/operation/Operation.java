@@ -23,7 +23,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.Set;
 import org.jdom.Element;
 import problem.Changeable;
@@ -56,14 +55,6 @@ public abstract class Operation extends DataSource implements Changeable
 	 */
 	private boolean isLoading = false;
 	/**
-	 * "Unique" internal ID for this operation
-	 */
-	private Integer internalID = null;
-	/**
-	 * Operation name.
-	 */
-	private String name;
-	/**
 	 * Index that this Operation's data starts at. Generally speaking, this would
 	 * be 0 if we have no parent (or it has no data) or the number of columns
 	 * that our parent contains. It could be found each time, but this helps
@@ -74,14 +65,6 @@ public abstract class Operation extends DataSource implements Changeable
 	 * Actual values from computation
 	 */
 	private final DataSet data;
-	/**
-	 * Commands to perform on this dataset
-	 */
-	private final List<Operation> solutionOps = new ArrayList<Operation>();
-	/**
-	 * SubProblems this Operation is a part of
-	 */
-	private final List<SubProblem> subProblems = new ArrayList<SubProblem>();
 	/**
 	 * Parent data that this operation works on
 	 */
@@ -277,39 +260,6 @@ public abstract class Operation extends DataSource implements Changeable
 		}
 	}
 
-	@Override
-	public final List<SubProblem> getSubProblems()
-	{
-		return Collections.unmodifiableList(subProblems);
-	}
-
-	@Override
-	public void addSubProblem(SubProblem sub)
-	{
-		// Don't bother if they're already part of us
-		if(subProblems.contains(sub))
-			return;
-
-		// We'll need a unique ID
-		getUniqueID();
-
-		subProblems.add(sub);
-		sub.addStep(this);
-		markUnsaved();
-	}
-
-	@Override
-	public void removeSubProblem(SubProblem sub)
-	{
-		// Don't bother if they're already _not_ a part of us
-		if(!subProblems.contains(sub))
-			return;
-
-		subProblems.remove(sub);
-		sub.removeStep(this);
-		markUnsaved();
-	}
-
 	/**
 	 * Sets the name of the operation, only used internally
 	 * @param newName New name for the operation
@@ -317,7 +267,7 @@ public abstract class Operation extends DataSource implements Changeable
 	protected final void setOperationName(String newName)
 	{
 		// And save the op name
-		name = newName;
+		setName(newName);
 	}
 
 	/**
@@ -372,15 +322,8 @@ public abstract class Operation extends DataSource implements Changeable
 			Operation newOp = (Operation) opClass.newInstance();
 			newOp.isLoading = true;
 
-			String id = opEl.getAttributeValue("id");
-			if(id != null)
-				newOp.internalID = Integer.valueOf(id);
-
-			int x = Integer.parseInt(opEl.getAttributeValue("x"));
-			int y = Integer.parseInt(opEl.getAttributeValue("y"));
-			int height = Integer.parseInt(opEl.getAttributeValue("height"));
-			int width = Integer.parseInt(opEl.getAttributeValue("width"));
-			newOp.setBounds(x, y, width, height);
+			// Base DataSource stuff
+			newOp.fromXmlBase(opEl);
 
 			// Restore remark
 			newOp.setRemark(opEl.getChildText("remark"));
@@ -390,18 +333,7 @@ public abstract class Operation extends DataSource implements Changeable
 
 			// And restore the answers
 			for(Object questionEl : opEl.getChildren("question"))
-			{
 				OperationInformation.fromXml((Element) questionEl, newOp);
-			}
-
-			// Operations that chain off of here
-			for(Object opChildEl : opEl.getChildren("operation"))
-			{
-				Operation newChildOp = Operation.fromXml((Element) opChildEl);
-				newOp.addOperation(newChildOp);
-				newChildOp.markDirty();
-				newChildOp.checkDisplayName();
-			}
 
 			newOp.isLoading = false;
 			return newOp;
@@ -465,8 +397,9 @@ public abstract class Operation extends DataSource implements Changeable
 		if(parent != null)
 		{
 			// Remove ourselves from any SubProblems
-			List<SubProblem> currSubs = new ArrayList<SubProblem>(subProblems.size());
-			for(SubProblem sub : subProblems)
+			List<SubProblem> oldList = getSubProblems();
+			List<SubProblem> currSubs = new ArrayList<SubProblem>(oldList.size());
+			for(SubProblem sub : getSubProblems())
 				currSubs.add(sub);
 			for(SubProblem sub : currSubs)
 				sub.removeStep(this);
@@ -536,12 +469,6 @@ public abstract class Operation extends DataSource implements Changeable
 		}
 
 		return currOp.getOperationIndex(prevOp);
-	}
-	
-	@Override
-	public final int getOperationIndex(Operation op)
-	{
-		return solutionOps.indexOf(op);
 	}
 
 	@Override
@@ -696,12 +623,6 @@ public abstract class Operation extends DataSource implements Changeable
 		return allNames;
 	}
 
-	@Override
-	public final int getOperationCount()
-	{
-		return solutionOps.size();
-	}
-
 	/**
 	 * Adds a new column to the result of the Operation
 	 * @param colName Name of the new column to add
@@ -743,15 +664,15 @@ public abstract class Operation extends DataSource implements Changeable
 		try
 		{
 			// Create an operation with the same type
-			Operation newOp = Operation.createOperation(name);
+			Operation newOp = Operation.createOperation(getName());
 			newOp.isLoading = true;
 
 			// Copy remark
 			newOp.setRemark(remark);
 
 			// Copy our child operations
-			for(Operation op : solutionOps)
-				newOp.addOperation(op.clone());
+			//for(Operation op : solutionOps)
+			//	newOp.addOperation(op.clone());
 
 			// Copy configuration questions
 			List<OperationInformation> myConf = getRequiredInfoPrompt();
@@ -827,12 +748,11 @@ public abstract class Operation extends DataSource implements Changeable
 			operationRecord = proc.fetchInteraction();
 			proc.setRecorderMode(RProcessor.RecordMode.DISABLED);
 
-			// We're clean!
-			isCacheDirty = false;
+			// Children are dirty. Dirty, dirty children
+			markDirty();
 
-			// Children aren't though. Dirty, dirty children
-			for(Operation op : solutionOps)
-				op.markDirty();
+			// But we're clean!
+			isCacheDirty = false;
 		}
 		finally
 		{
@@ -947,6 +867,18 @@ public abstract class Operation extends DataSource implements Changeable
 		}
 	}
 
+	@Override
+	public final List<Operation> getAllLeafOperations()
+	{
+		List<Operation> leaves = super.getAllLeafOperations();
+
+		// If we have no children, then we're a leaf
+		if(leaves.isEmpty())
+			leaves.add(this);
+		
+		return leaves;
+	}
+
 	/**
 	 * Returns true if this operation has graphical output. The path to the graphic
 	 * file can be obtained via getPlot(). An exception is thrown if an error occurs
@@ -976,10 +908,14 @@ public abstract class Operation extends DataSource implements Changeable
 	 */
 	@Override
 	public boolean equals(Object other)
-	{
-		// Ourselves?
+	{		
+		// Ourselves?islo
 		if(other == this)
 			return true;
+
+		// Do DataSource checks
+		if(!super.equals(other))
+			return false;
 
 		// Actually an operation?
 		if(!(other instanceof Operation))
@@ -1005,33 +941,15 @@ public abstract class Operation extends DataSource implements Changeable
 		if(!questions.equals(otherOp.questions))
 			return false;
 
-		// Well, are our children all the same then?
-		if(!solutionOps.equals(otherOp.solutionOps))
-			return false;
-
 		return true;
 	}
 
 	@Override
 	public int hashCode()
 	{
-		int hash = 5;
-		hash = 31 * hash + (this.name != null ? this.name.hashCode() : 0);
-		hash = 31 * hash + (this.solutionOps != null ? this.solutionOps.hashCode() : 0);
+		int hash = super.hashCode();
 		hash = 31 * hash + (this.questions != null ? this.questions.hashCode() : 0);
 		return hash;
-	}
-
-	@Override
-	public Integer getUniqueID()
-	{
-		// Only generate if it's not already done
-		if(internalID == null)
-		{
-			internalID = hashCode() + new Random().nextInt();
-		}
-
-		return internalID;
 	}
 
 	/**
@@ -1047,31 +965,18 @@ public abstract class Operation extends DataSource implements Changeable
 		Element opEl = new Element("operation");
 		opEl.setAttribute("type", this.getClass().getName());
 
-		opEl.setAttribute("id", getUniqueID().toString());
-
-		Rectangle rect = getBounds();
-		opEl.setAttribute("x", Integer.toString((int) rect.getX()));
-		opEl.setAttribute("y", Integer.toString((int) rect.getY()));
-		opEl.setAttribute("height", Integer.toString((int) rect.getHeight()));
-		opEl.setAttribute("width", Integer.toString((int) rect.getWidth()));
-
 		// Remark
 		Element remarkEl = new Element("remark");
 		remarkEl.addContent(remark);
 		opEl.addContent(remarkEl);
 
-		// Add Ops
-		for(Operation op : solutionOps)
-		{
-			opEl.addContent(op.toXml());
-		}
+		// Add all the DataSource stuff
+		super.toXml(opEl);
 
 		// Add question answers
 		Set<String> keys = questions.keySet();
 		for(String key : keys)
-		{
 			opEl.addContent(questions.get(key).toXml());
-		}
 
 		// Extra info?
 		Element extraEl = new Element("extra");
@@ -1096,14 +1001,12 @@ public abstract class Operation extends DataSource implements Changeable
 	 * Marks the Operation as having had something change about it and it
 	 * needing to recompute its values.
 	 */
-	public void markDirty()
+	@Override
+	public final void markDirty()
 	{
 		// Mark as dirty but don't actually recompute yet
 		isCacheDirty = true;
-
-		// Tell all children they need to recompute
-		for(Operation op : solutionOps)
-			op.markDirty();
+		super.markDirty();
 	}
 
 	/**
@@ -1192,12 +1095,6 @@ public abstract class Operation extends DataSource implements Changeable
 	}
 
 	@Override
-	public final String getName()
-	{
-		return name;
-	}
-
-	@Override
 	public final int getColumnCount() throws MarlaException
 	{
 		checkCache();
@@ -1207,82 +1104,5 @@ public abstract class Operation extends DataSource implements Changeable
 			total = parent.getColumnCount();
 
 		return total + data.getColumnCount();
-	}
-
-	@Override
-	public final Operation addOperation(Operation op) throws MarlaException
-	{
-		// Tell the operation to set us as the parent
-		op.setParentData(this);
-
-		if(!solutionOps.contains(op))
-		{
-			// They weren't already assigned to us, so stick them on our list
-			solutionOps.add(op);
-			markUnsaved();
-		}
-
-		return op;
-	}
-
-	@Override
-	public final Operation removeOperation(Operation op) throws MarlaException
-	{
-		// Tell operation to we're not its parent any more
-		op.setParentData(null);
-
-		// Remove them from our list if still needed
-		if(solutionOps.remove(op))
-		{
-			markUnsaved();
-		}
-
-		return op;
-	}
-
-	@Override
-	public final Operation removeOperation(int index) throws MarlaException
-	{
-		return removeOperation(solutionOps.get(index));
-	}
-
-	@Override
-	public final Operation getOperation(int index)
-	{
-		return solutionOps.get(index);
-	}
-
-	@Override
-	public List<Operation> getAllChildOperations()
-	{
-		List<Operation> myOps = new ArrayList<Operation>();
-
-		// Copy my operations over, plus ask each child to get their own
-		// children. Append whatever they return
-		for(Operation op : solutionOps)
-		{
-			myOps.add(op);
-			myOps.addAll(op.getAllChildOperations());
-		}
-
-		return myOps;
-	}
-
-	@Override
-	public List<Operation> getAllLeafOperations()
-	{
-		List<Operation> myLeaves = new ArrayList<Operation>();
-
-		// If I have children, then copy their leaves
-		// Otherwise _I_ am a leaf, so I should return myself
-		if(!solutionOps.isEmpty())
-		{
-			for(Operation op : solutionOps)
-				myLeaves.addAll(op.getAllLeafOperations());
-		}
-		else
-			myLeaves.add(this);
-
-		return myLeaves;
 	}
 }
