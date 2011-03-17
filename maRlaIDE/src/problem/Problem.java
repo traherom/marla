@@ -637,7 +637,10 @@ public class Problem implements ProblemPart
 	public void markUnsaved()
 	{
 		isSaved = false;
-		getDomain().markUnsaved();
+
+		Domain d = getDomain();
+		if(d != null)
+			d.markUnsaved();
 	}
 
 	/**
@@ -676,7 +679,10 @@ public class Problem implements ProblemPart
 	{
 		save(fileName);
 		isSaved = true;
-		getDomain().markSaved();
+
+		Domain d = getDomain();
+		if(d != null)
+			d.markSaved();
 	}
 
 	/**

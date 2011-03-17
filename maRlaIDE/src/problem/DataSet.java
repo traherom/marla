@@ -359,6 +359,9 @@ public final class DataSet extends DataSource implements Changeable
 		if(subs.contains(sub))
 			return;
 
+		// We'll need a unique ID
+		getUniqueID();
+
 		subs.add(sub);
 		sub.addStep(this);
 		markUnsaved();
@@ -987,8 +990,7 @@ public final class DataSet extends DataSource implements Changeable
 		Element dataEl = new Element("data");
 		dataEl.setAttribute("name", name);
 
-		if(internalID != null)
-			dataEl.setAttribute("id", internalID.toString());
+		dataEl.setAttribute("id", getUniqueID().toString());
 
 		Rectangle rect = getBounds();
 		dataEl.setAttribute("x", Integer.toString((int) rect.getX()));
@@ -1118,13 +1120,7 @@ public final class DataSet extends DataSource implements Changeable
 	}
 
 	@Override
-	public Integer getID()
-	{
-		return internalID;
-	}
-
-	@Override
-	public Integer generateID()
+	public Integer getUniqueID()
 	{
 		// Only generate if it's not already done
 		if(internalID == null)

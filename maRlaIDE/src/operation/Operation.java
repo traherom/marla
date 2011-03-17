@@ -290,6 +290,9 @@ public abstract class Operation extends DataSource implements Changeable
 		if(subProblems.contains(sub))
 			return;
 
+		// We'll need a unique ID
+		getUniqueID();
+
 		subProblems.add(sub);
 		sub.addStep(this);
 		markUnsaved();
@@ -436,6 +439,16 @@ public abstract class Operation extends DataSource implements Changeable
 			return parent.isLoading();
 		else
 			return false;
+	}
+
+	/**
+	 * Allows derivative operation to set whether the operation is in
+	 * the process of loading.
+	 * @param newLoadingVal True if the operation is loading, false if not
+	 */
+	protected final void isLoading(boolean newLoadingVal)
+	{
+		isLoading = newLoadingVal;
 	}
 
 	/**
@@ -731,16 +744,28 @@ public abstract class Operation extends DataSource implements Changeable
 		{
 			// Create an operation with the same type
 			Operation newOp = Operation.createOperation(name);
+			newOp.isLoading = true;
 
 			// Copy remark
 			newOp.setRemark(remark);
 
 			// Copy our child operations
 			for(Operation op : solutionOps)
-			{
 				newOp.addOperation(op.clone());
+
+			// Copy configuration questions
+			List<OperationInformation> myConf = getRequiredInfoPrompt();
+			List<OperationInformation> newConf = newOp.getRequiredInfoPrompt();
+			for(int i = 0; i < myConf.size(); i++)
+			{
+				OperationInformation myConfCurr = myConf.get(i);
+				OperationInformation newConfCurr = newConf.get(i);
+
+				if(myConfCurr.isAnswered())
+					newConfCurr.setAnswer(myConfCurr.getAnswer());
 			}
 
+			newOp.isLoading = false;
 			return newOp;
 		}
 		catch(MarlaException ex)
@@ -998,13 +1023,7 @@ public abstract class Operation extends DataSource implements Changeable
 	}
 
 	@Override
-	public Integer getID()
-	{
-		return internalID;
-	}
-
-	@Override
-	public Integer generateID()
+	public Integer getUniqueID()
 	{
 		// Only generate if it's not already done
 		if(internalID == null)
@@ -1028,8 +1047,7 @@ public abstract class Operation extends DataSource implements Changeable
 		Element opEl = new Element("operation");
 		opEl.setAttribute("type", this.getClass().getName());
 
-		if(internalID != null)
-			opEl.setAttribute("id", internalID.toString());
+		opEl.setAttribute("id", getUniqueID().toString());
 
 		Rectangle rect = getBounds();
 		opEl.setAttribute("x", Integer.toString((int) rect.getX()));

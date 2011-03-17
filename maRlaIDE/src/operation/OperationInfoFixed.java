@@ -87,7 +87,10 @@ public class OperationInfoFixed extends OperationInformation
 	@Override
 	public Boolean setAnswer(Object newAnswer)
 	{
-		throw new InternalMarlaException("Fixed information may not be changed once set");
+		// Ignore if they set to the same thing
+		if(!answer.equals(newAnswer))
+			throw new InternalMarlaException("Fixed information may not be changed once set");
+		return Boolean.TRUE;
 	}
 
 	@Override
