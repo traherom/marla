@@ -47,7 +47,7 @@ public abstract class DataSource extends JLabel implements Loadable
 	/**
 	 * SubProblems this DataSet is a part of
 	 */
-	private final List<SubProblem> subs = new ArrayList<SubProblem>();
+	private final List<SubProblem> subProblems = new ArrayList<SubProblem>();
 	
 	/**
 	 * Empty constructor for normal initialization
@@ -446,7 +446,7 @@ public abstract class DataSource extends JLabel implements Loadable
 	 */
 	public final List<SubProblem> getSubProblems()
 	{
-		return Collections.unmodifiableList(subs);
+		return Collections.unmodifiableList(subProblems);
 	}
 
 	/**
@@ -456,14 +456,33 @@ public abstract class DataSource extends JLabel implements Loadable
 	public final void addSubProblem(SubProblem sub)
 	{
 		// Don't bother if they're already part of us
-		if(subs.contains(sub))
+		if(subProblems.contains(sub))
 			return;
 
 		// We'll need a unique ID
 		getUniqueID();
 
-		subs.add(sub);
+		// Put it in sorted order so that when we are displayed
+		// the lines stay consistent
+		boolean added = false;
+		for(int i = 0; i < subProblems.size(); i++)
+		{
+			if(subProblems.get(i).compareTo(sub) > 0)
+			{
+				// This one is the first one later than us, so place
+				// ourselves just before him
+				subProblems.add(i, sub);
+				added = true;
+				break;
+			}
+		}
+
+		// If we didn't find something greater than us, just go to the end
+		if(!added)
+			subProblems.add(sub);
+
 		sub.addStep(this);
+
 		markUnsaved();
 	}
 
@@ -474,10 +493,10 @@ public abstract class DataSource extends JLabel implements Loadable
 	public final void removeSubProblem(SubProblem sub)
 	{
 		// Don't bother if they're already _not_ a part of us
-		if(!subs.contains(sub))
+		if(!subProblems.contains(sub))
 			return;
 
-		subs.remove(sub);
+		subProblems.remove(sub);
 		sub.removeStep(this);
 		markUnsaved();
 	}

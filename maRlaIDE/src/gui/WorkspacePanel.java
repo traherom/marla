@@ -73,7 +73,7 @@ public class WorkspacePanel extends JPanel
 			if(lineWidth < 1)
 				lineWidth = 1;
 			lineInc = lineWidth + 4;
-			g2.setStroke(new BasicStroke(lineWidth));
+			g2.setStroke(new BasicStroke(lineWidth, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
 
 			// Work across each DataSource that we know about
 			Problem prob = viewPanel.domain.problem;

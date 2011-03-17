@@ -29,7 +29,7 @@ import org.jdom.Element;
  *
  * @author Ryan Morehart
  */
-public class SubProblem implements ProblemPart
+public class SubProblem implements ProblemPart, Comparable
 {
 	/**
 	 * Denotes if we are in the middle of a load from XML
@@ -554,5 +554,16 @@ public class SubProblem implements ProblemPart
 	public boolean isDataSourceInSolution(DataSource ds)
 	{
 		return solutionSteps.contains(ds);
+	}
+
+	/**
+	 * Sorts SubProblems solely on their part ID, according to ASCII ordering
+	 * @param t Other SubProblem to compare against
+	 * @return -1 if less, 0 if equal, 1 if greater
+	 */
+	@Override
+	public int compareTo(Object t)
+	{
+		return id.compareTo(((SubProblem)t).id);
 	}
 }
