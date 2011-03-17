@@ -17,8 +17,12 @@
  */
 package problem;
 
+import java.awt.Rectangle;
+import java.util.ArrayList;
+import java.util.Collections;
 import operation.Operation;
 import java.util.List;
+import java.util.Random;
 import javax.swing.JLabel;
 import org.jdom.Element;
 
@@ -29,18 +33,88 @@ import org.jdom.Element;
 public abstract class DataSource extends JLabel implements Loadable
 {
 	/**
+	 * DataSource name.
+	 */
+	private String name = null;
+	/**
+	 * "Unique" internal ID for this operation
+	 */
+	private Integer internalID = null;
+	/**
+	 * Commands to perform on this DataSource
+	 */
+	private final List<Operation> solutionOps = new ArrayList<Operation>();
+	/**
+	 * SubProblems this DataSet is a part of
+	 */
+	private final List<SubProblem> subs = new ArrayList<SubProblem>();
+	
+	/**
+	 * Empty constructor for normal initialization
+	 */
+	public DataSource()
+	{
+		// Blank
+	}
+
+	/**
+	 * Helper for copy constructors in children
+	 * @param copy DataSource to copy information from
+	 */
+	protected DataSource(DataSource copy)
+	{
+		name = copy.name;
+
+		for(Operation op : copy.solutionOps)
+			solutionOps.add(op.clone());
+	}
+
+	/**
 	 * Creates an ID for this DataSource and saves it. If the DataSource
 	 * already has an ID then the current one is used.
 	 * @return ID assigned to DataSource
 	 */
-	public abstract Integer getUniqueID();
+	public final Integer getUniqueID()
+	{
+		// Only generate if it's not already done
+		if(internalID == null)
+		{
+			internalID = hashCode() + new Random().nextInt();
+		}
+
+		return internalID;
+	}
+
+	/**
+	 * Allows an ID to be restored from a save file
+	 * @param newID New ID to use for DataSource
+	 */
+	protected final void setUniqueID(Integer newID)
+	{
+		internalID = newID;
+	}
 
 	/**
 	 * Gets the current DataSource name
 	 * @return DataSource name
 	 */
 	@Override
-	public abstract String getName();
+	public final String getName()
+	{
+		return name;
+	}
+
+	/**
+	 * Sets the name for the DataSource
+	 * @param newName New name to set for the DataSource
+	 */
+	@Override
+	public final void setName(String newName)
+	{
+		name = newName;
+		checkDisplayName();
+		markUnsaved();
+	}
 
 	/**
 	 * Returns a string that could be displayed to the user
@@ -108,56 +182,120 @@ public abstract class DataSource extends JLabel implements Loadable
 	 * @param op Operation to add to perform on DataSet
 	 * @return Newly added operation
 	 */
-	public abstract Operation addOperation(Operation op) throws MarlaException;;
+	public final Operation addOperation(Operation op) throws MarlaException
+	{
+		// Tell the operation to set us as the parent
+		op.setParentData(this);
+
+		if(!solutionOps.contains(op))
+		{
+			// They weren't already assigned to us, so stick them on our list
+			solutionOps.add(op);
+
+			// Add all our current SubProblems to the new child
+			for(SubProblem sub : getSubProblems())
+				op.addSubProblem(sub);
+
+			markUnsaved();
+		}
+
+		return op;
+	}
 
 	/**
 	 * Removes an operation from the data
 	 * @param op Operation to remove from data
 	 * @return The removed Operation
 	 */
-	public abstract Operation removeOperation(Operation op) throws MarlaException;
+	public final Operation removeOperation(Operation op) throws MarlaException
+	{
+		// Tell operation to we're not its parent any more
+		op.setParentData(null);
+
+		// Remove them from our list if still needed
+		if(solutionOps.remove(op))
+		{
+			markUnsaved();
+		}
+
+		return op;
+	}
 
 	/**
 	 * Removes an operation from the data
 	 * @param index Index of the operation to remove
 	 * @return The removed Operation
 	 */
-	public abstract Operation removeOperation(int index) throws MarlaException;
+	public final Operation removeOperation(int index) throws MarlaException
+	{
+		return removeOperation(solutionOps.get(index));
+	}
 
 	/**
 	 * Get the Operation at the specified index
 	 * @param index Index of Operation to retrieve
 	 * @return Operation at index
 	 */
-	public abstract Operation getOperation(int index);
+	public final Operation getOperation(int index)
+	{
+		return solutionOps.get(index);
+	}
 
 	/**
 	 * Finds the index of the specified operation within the DataSource
 	 * @param op Operation to locate within the DataSource
 	 * @return index of the operation or -1 if not found
 	 */
-	public abstract int getOperationIndex(Operation op);
+	public final int getOperationIndex(Operation op)
+	{
+		return solutionOps.indexOf(op);
+	}
 
 	/**
 	 * Returns the number of top-level operations working on this
 	 * DataSet
 	 * @return Number of Operations in DataSet
 	 */
-	public abstract int getOperationCount();
+	public final int getOperationCount()
+	{
+		return solutionOps.size();
+	}
 
 	/**
 	 * Returns a flat list of every operation that is a child of this one,
 	 * directly or indirectly. Easy way to get access to an entire subtree
 	 * @return List of every operation below this one in the tree
 	 */
-	public abstract List<Operation> getAllChildOperations();
+	public final List<Operation> getAllChildOperations()
+	{
+		List<Operation> myOps = new ArrayList<Operation>();
+
+		// Copy my operations over, plus ask each child to get their own
+		// children. Append whatever they return
+		for(Operation op : solutionOps)
+		{
+			myOps.add(op);
+			myOps.addAll(op.getAllChildOperations());
+		}
+
+		return myOps;
+	}
 
 	/**
 	 * Returns a flat list of every operation that is a child of this
 	 * one--directly or indirectly--and has no child operations of its own.
 	 * @return List of every operation below this one in the tree
 	 */
-	public abstract List<Operation> getAllLeafOperations();
+	public List<Operation> getAllLeafOperations()
+	{
+		List<Operation> myLeaves = new ArrayList<Operation>();
+
+		// If I have children, then copy their leaves
+		for(Operation op : solutionOps)
+			myLeaves.addAll(op.getAllLeafOperations());
+
+		return myLeaves;
+	}
 
 	/**
 	 * Returns the DataSource that is at the top of the chain
@@ -202,6 +340,60 @@ public abstract class DataSource extends JLabel implements Loadable
 	public abstract Element toXml() throws MarlaException;
 
 	/**
+	 * Takes the DataSource-specific information and bundles it into
+	 * an the given XML element
+	 * @return XML element in which the data was placed
+	 */
+	protected Element toXml(Element dataEl) throws MarlaException
+	{
+		dataEl.setAttribute("name", getName());
+		dataEl.setAttribute("id", getUniqueID().toString());
+
+		Rectangle rect = getBounds();
+		dataEl.setAttribute("x", Integer.toString((int) rect.getX()));
+		dataEl.setAttribute("y", Integer.toString((int) rect.getY()));
+		dataEl.setAttribute("height", Integer.toString((int) rect.getHeight()));
+		dataEl.setAttribute("width", Integer.toString((int) rect.getWidth()));
+
+		// Add Ops
+		for(Operation op : solutionOps)
+			dataEl.addContent(op.toXml());
+
+		return dataEl;
+	}
+
+	/**
+	 * Reads in DataSource-specific information from the given XML element
+	 * @param dsEl XML Element containing DataSource information
+	 * @return Reference to DataSource object
+	 */
+	protected final DataSource fromXmlBase(Element dsEl) throws MarlaException
+	{
+		setName(dsEl.getAttributeValue("name"));
+
+		String id = dsEl.getAttributeValue("id");
+		if(id != null)
+			setUniqueID(Integer.valueOf(id));
+
+		int x = Integer.parseInt(dsEl.getAttributeValue("x"));
+		int y = Integer.parseInt(dsEl.getAttributeValue("y"));
+		int height = Integer.parseInt(dsEl.getAttributeValue("height"));
+		int width = Integer.parseInt(dsEl.getAttributeValue("width"));
+		setBounds(x, y, width, height);
+
+
+		for(Object opEl : dsEl.getChildren("operation"))
+		{
+			Operation newOp = Operation.fromXml((Element) opEl);
+			addOperation(newOp);
+			newOp.markDirty();
+			newOp.checkDisplayName();
+		}
+		
+		return this;
+	}
+	
+	/**
 	 * Exports this DataSource to a CSV file at the given path. Use R to perform the export.
 	 * @param filePath CSV file to write to. File will be overwritten if needed.
 	 */
@@ -218,6 +410,16 @@ public abstract class DataSource extends JLabel implements Loadable
 	 * Tell the DataSource that some aspect of it has changed
 	 */
 	public abstract void markUnsaved();
+
+	/**
+	 * Marks all our child operations as dirty
+	 */
+	public void markDirty()
+	{
+		// Tell all children they need to recompute
+		for(Operation op : solutionOps)
+			op.markDirty();
+	}
 
 	/**
 	 * Ensures that the displayed name for the DataSource is the
@@ -242,17 +444,73 @@ public abstract class DataSource extends JLabel implements Loadable
 	 * Gets the subproblems this DataSource is a part of
 	 * @return SubProblem we are a solution to or an empty list if there is none
 	 */
-	public abstract List<SubProblem> getSubProblems();
+	public final List<SubProblem> getSubProblems()
+	{
+		return Collections.unmodifiableList(subs);
+	}
 
 	/**
 	 * Adds this DataSource to the given SubProblem
 	 * @param sub SubProblem to add DataSource to
 	 */
-	public abstract void addSubProblem(SubProblem sub);
+	public final void addSubProblem(SubProblem sub)
+	{
+		// Don't bother if they're already part of us
+		if(subs.contains(sub))
+			return;
+
+		// We'll need a unique ID
+		getUniqueID();
+
+		subs.add(sub);
+		sub.addStep(this);
+		markUnsaved();
+	}
 
 	/**
 	 * Removes this DataSource from the given SubProblem
 	 * @param sub SubProblem to remove from this DataSource
 	 */
-	public abstract void removeSubProblem(SubProblem sub);
+	public final void removeSubProblem(SubProblem sub)
+	{
+		// Don't bother if they're already _not_ a part of us
+		if(!subs.contains(sub))
+			return;
+
+		subs.remove(sub);
+		sub.removeStep(this);
+		markUnsaved();
+	}
+
+	@Override
+	public int hashCode()
+	{
+		int hash = 5;
+		hash = 31 * hash + (this.name != null ? this.name.hashCode() : 0);
+		hash = 31 * hash + (this.solutionOps != null ? this.solutionOps.hashCode() : 0);
+		return hash;
+	}
+
+	@Override
+	public boolean equals(Object other)
+	{
+		// Ourselves?
+		if(other == this)
+			return true;
+
+		// Actually an operation?
+		if(!(other instanceof DataSource))
+			return false;
+
+		DataSource otherDS = (DataSource)other;
+
+		if(!name.equals(otherDS.name))
+			return false;
+
+		// Well, are our children all the same then?
+		if(!solutionOps.equals(otherDS.solutionOps))
+			return false;
+
+		return true;
+	}
 }

@@ -53,14 +53,6 @@ public final class DataSet extends DataSource implements Changeable
 	 */
 	private boolean isLoading = false;
 	/**
-	 * "Unique" internal ID for this operation
-	 */
-	private Integer internalID = null;
-	/**
-	 * Dataset name.
-	 */
-	private String name = null;
-	/**
 	 * Actual values in dataset. All values are assumed to be doubles as
 	 * a majority of statistics problems go at least somewhat into decimals.
 	 */
@@ -70,14 +62,6 @@ public final class DataSet extends DataSource implements Changeable
 	 * we've been updated in some way.
 	 */
 	private Changeable parent = null;
-	/**
-	 * Commands to perform on this dataset
-	 */
-	private final ArrayList<Operation> solutionOps = new ArrayList<Operation>();
-	/**
-	 * SubProblems this DataSet is a part of
-	 */
-	private final List<SubProblem> subs = new ArrayList<SubProblem>();
 
 	/**
 	 * Creates a blank dataset with the given name.
@@ -106,18 +90,12 @@ public final class DataSet extends DataSource implements Changeable
 	 */
 	public DataSet(DataSet copy, Changeable newParent)
 	{
+		super(copy);
+		
 		parent = newParent;
-		name = copy.name;
 
 		for(DataColumn dc : copy.columns)
-		{
 			columns.add(new DataColumn(dc, this));
-		}
-
-		for(Operation op : copy.solutionOps)
-		{
-			solutionOps.add(op.clone());
-		}
 	}
 
 	/**
@@ -347,49 +325,6 @@ public final class DataSet extends DataSource implements Changeable
 	}
 
 	@Override
-	public final List<SubProblem> getSubProblems()
-	{
-		return Collections.unmodifiableList(subs);
-	}
-
-	@Override
-	public void addSubProblem(SubProblem sub)
-	{
-		// Don't bother if they're already part of us
-		if(subs.contains(sub))
-			return;
-
-		// We'll need a unique ID
-		getUniqueID();
-
-		subs.add(sub);
-		sub.addStep(this);
-		markUnsaved();
-	}
-
-	@Override
-	public void removeSubProblem(SubProblem sub)
-	{
-		// Don't bother if they're already _not_ a part of us
-		if(!subs.contains(sub))
-			return;
-
-		subs.remove(sub);
-		sub.removeStep(this);
-		markUnsaved();
-	}
-
-	/**
-	 * Gets the current dataset name
-	 * @return Dataset name
-	 */
-	@Override
-	public final String getName()
-	{
-		return name;
-	}
-
-	@Override
 	public String getDisplayString(boolean abbrv)
 	{
 		String longName = getName();
@@ -449,8 +384,7 @@ public final class DataSet extends DataSource implements Changeable
 		}
 
 		// And update the name
-		name = newName;
-		checkDisplayName();
+		setName(newName);
 
 		markUnsaved();
 	}
@@ -468,12 +402,6 @@ public final class DataSet extends DataSource implements Changeable
 		}
 
 		return true;
-	}
-
-	@Override
-	public final int getOperationIndex(Operation op)
-	{
-		return solutionOps.indexOf(op);
 	}
 
 	/**
@@ -501,7 +429,7 @@ public final class DataSet extends DataSource implements Changeable
 		if(!isUniqueColumnName(colName))
 		{
 			throw new DuplicateNameException("Data column with name '"
-					+ colName + "' already exists in dataset '" + name + "'");
+					+ colName + "' already exists in dataset '" + getName() + "'");
 		}
 
 		// Create
@@ -645,7 +573,7 @@ public final class DataSet extends DataSource implements Changeable
 	public void checkDisplayName()
 	{
 		String currText = getText();
-		if(!currText.equals(name))
+		if(!currText.equals(getName()))
 		{
 			// We actually did change from what was being used
 			if(!isLoading() && Problem.getDomain() != null && parent instanceof ProblemPart)
@@ -661,92 +589,6 @@ public final class DataSet extends DataSource implements Changeable
 	{
 		if(parent instanceof Problem)
 			((ProblemPart)parent).markUnsaved();
-	}
-
-	/**
-	 * Marks all our child operations as dirty
-	 */
-	public void markDirty()
-	{
-		for(Operation op : solutionOps)
-			op.markDirty();
-	}
-
-	@Override
-	public Operation addOperation(Operation op) throws MarlaException
-	{
-		// Tell the operation to set us as the parent
-		op.setParentData(this);
-
-		if(!solutionOps.contains(op))
-		{
-			// They weren't already assigned to us, so stick them on our list
-			solutionOps.add(op);
-			markUnsaved();
-		}
-
-		return op;
-	}
-
-	@Override
-	public Operation removeOperation(Operation op) throws MarlaException
-	{
-		// Tell operation to we're not its parent any more
-		op.setParentData(null);
-
-		// Remove them from our list if still needed
-		if(solutionOps.remove(op))
-		{
-			markUnsaved();
-		}
-
-		return op;
-	}
-
-	@Override
-	public Operation removeOperation(int index) throws MarlaException
-	{
-		return removeOperation(solutionOps.get(index));
-	}
-
-	@Override
-	public Operation getOperation(int index)
-	{
-		return solutionOps.get(index);
-	}
-
-	@Override
-	public List<Operation> getAllChildOperations()
-	{
-		List<Operation> myOps = new ArrayList<Operation>();
-
-		// Copy my operations over, plus ask each child to get their own
-		// children. Append whatever they return
-		for(Operation op : solutionOps)
-		{
-			myOps.add(op);
-			myOps.addAll(op.getAllChildOperations());
-		}
-
-		return myOps;
-	}
-
-	@Override
-	public List<Operation> getAllLeafOperations()
-	{
-		List<Operation> myLeaves = new ArrayList<Operation>();
-
-		// If I have children, then copy their leaves
-		for(Operation op : solutionOps)
-			myLeaves.addAll(op.getAllLeafOperations());
-
-		return myLeaves;
-	}
-
-	@Override
-	public int getOperationCount()
-	{
-		return solutionOps.size();
 	}
 
 	@Override
@@ -988,15 +830,6 @@ public final class DataSet extends DataSource implements Changeable
 	public Element toXml() throws MarlaException
 	{
 		Element dataEl = new Element("data");
-		dataEl.setAttribute("name", name);
-
-		dataEl.setAttribute("id", getUniqueID().toString());
-
-		Rectangle rect = getBounds();
-		dataEl.setAttribute("x", Integer.toString((int) rect.getX()));
-		dataEl.setAttribute("y", Integer.toString((int) rect.getY()));
-		dataEl.setAttribute("height", Integer.toString((int) rect.getHeight()));
-		dataEl.setAttribute("width", Integer.toString((int) rect.getWidth()));
 
 		// Add columns
 		for(DataColumn col : columns)
@@ -1008,19 +841,14 @@ public final class DataSet extends DataSource implements Changeable
 
 			// Each of the values
 			for(Object d : col)
-			{
 				colEl.addContent(new Element("value").addContent(d.toString()));
-			}
 
 			// And put it with the rest of the data
 			dataEl.addContent(colEl);
 		}
 
-		// Add Ops
-		for(Operation op : solutionOps)
-		{
-			dataEl.addContent(op.toXml());
-		}
+		// Add all the DataSource stuff
+		super.toXml(dataEl);
 
 		return dataEl;
 	}
@@ -1032,19 +860,13 @@ public final class DataSet extends DataSource implements Changeable
 	 */
 	public static DataSet fromXml(Element dataEl) throws MarlaException
 	{
-		DataSet newData = new DataSet(dataEl.getAttributeValue("name"));
+		DataSet newData = new DataSet("initializing");
 		newData.isLoading = true;
-		
-		String id = dataEl.getAttributeValue("id");
-		if(id != null)
-			newData.internalID = Integer.valueOf(id);
 
-		int x = Integer.parseInt(dataEl.getAttributeValue("x"));
-		int y = Integer.parseInt(dataEl.getAttributeValue("y"));
-		int height = Integer.parseInt(dataEl.getAttributeValue("height"));
-		int width = Integer.parseInt(dataEl.getAttributeValue("width"));
-		newData.setBounds(x, y, width, height);
+		// Load the DataSource information
+		newData.fromXmlBase(dataEl);
 
+		// Load columns
 		for(Object colElObj : dataEl.getChildren("column"))
 		{
 			Element colEl = (Element) colElObj;
@@ -1055,17 +877,7 @@ public final class DataSet extends DataSource implements Changeable
 
 			// Stick in values
 			for(Object el : colEl.getChildren("value"))
-			{
 				newCol.add(((Element) el).getText());
-			}
-		}
-
-		for(Object opEl : dataEl.getChildren("operation"))
-		{
-			Operation newOp = Operation.fromXml((Element) opEl);
-			newData.addOperation(newOp);
-			newOp.markDirty();
-			newOp.checkDisplayName();
 		}
 
 		newData.isLoading = false;
@@ -1095,39 +907,25 @@ public final class DataSet extends DataSource implements Changeable
 		if(other == this)
 			return true;
 
+		if(!super.equals(other))
+			return false;
+
 		// Actually a dataset?
 		if(!(other instanceof DataSet))
 			return false;
 
 		DataSet otherDS = (DataSet) other;
-		if(!name.equals(otherDS.name))
-			return false;
 		if(!columns.equals(otherDS.columns))
 			return false;
-		if(!solutionOps.equals(otherDS.solutionOps))
-			return false;
+		
 		return true;
 	}
 
 	@Override
 	public int hashCode()
 	{
-		int hash = 7;
-		hash = 97 * hash + (this.name != null ? this.name.hashCode() : 0);
+		int hash = super.hashCode();
 		hash = 97 * hash + (this.columns != null ? this.columns.hashCode() : 0);
-		hash = 97 * hash + (this.solutionOps != null ? this.solutionOps.hashCode() : 0);
 		return hash;
-	}
-
-	@Override
-	public Integer getUniqueID()
-	{
-		// Only generate if it's not already done
-		if(internalID == null)
-		{
-			internalID = hashCode() + new Random().nextInt();
-		}
-
-		return internalID;
 	}
 }
