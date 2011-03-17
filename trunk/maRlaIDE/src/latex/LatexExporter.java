@@ -759,9 +759,9 @@ public class LatexExporter
 		for(DataSource ds : dsToShow)
 		{
 			if(isStartDS)
-				sb.append(dataToLatex("Starting Data", ds.getColumnLength(), ds.getColumns()));
+				sb.append(dataToLatex("Starting Data : " + ds.getName(), ds.getColumnLength(), ds.getColumns()));
 			else
-				sb.append(dataToLatex("Final Data", ds.getColumnLength(), ds.getColumns()));
+				sb.append(dataToLatex("Final Data : " + ds.getName(), ds.getColumnLength(), ds.getColumns()));
 		}
 
 		try
