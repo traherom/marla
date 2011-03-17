@@ -337,9 +337,9 @@ public class SubProblem implements ProblemPart, Comparable
 	}
 
 	/**
-	 * Gets a list of all steps in this solution that have no parent that is
-	 * also in the solution. IE, the starts of sequences of operations
-	 * @return All starting data for this SubProblem
+	 * Gets a list of all steps in this solution that have no child in the
+	 * solution. IE, the ends of sequences of operations
+	 * @return All ending data for this SubProblem
 	 */
 	public List<DataSource> getEndSteps()
 	{
@@ -352,7 +352,7 @@ public class SubProblem implements ProblemPart, Comparable
 
 			// If the step after this isn't a child of the current step, then
 			// include the current step as the end of a chain
-			if(i != endIndex || currStep != solutionSteps.get(i + 1).getParentData())
+			if(i == endIndex || currStep != solutionSteps.get(i + 1).getParentData())
 				ends.add(currStep);
 		}
 
