@@ -17,6 +17,7 @@
  */
 package problem;
 
+import java.io.File;
 import resource.Configuration;
 import org.jdom.Element;
 import org.junit.*;
@@ -58,8 +59,7 @@ public class ProblemTest
 		for(int subNum = 0; subNum < subProblemNum; subNum++)
 		{
 			SubProblem sub = prob.addSubProblem("part " + subNum, "Part " + subNum + "statement");
-			sub.setSolutionStart(prob.getData(subNum));
-			sub.setSolutionEnd(prob.getData(subNum).getOperation(0));
+			sub.addAllSubSteps(prob.getData(subNum));
 		}
 
 		// Make sure it built correctly
@@ -276,6 +276,8 @@ public class ProblemTest
 
 		Problem readInProb = Problem.load(tempFileName);
 		assertEquals(prob, readInProb);
+
+		new File(tempFileName).delete();
 	}
 
 	@Test

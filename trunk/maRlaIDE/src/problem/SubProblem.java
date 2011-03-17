@@ -442,7 +442,7 @@ public class SubProblem implements ProblemPart
 		for(DataSource ds : solutionSteps)
 		{
 			Element stepEl = new Element("step");
-			stepEl.setAttribute("id", ds.generateID().toString());
+			stepEl.setAttribute("id", ds.getUniqueID().toString());
 			subEl.addContent(stepEl);
 		}
 		
@@ -479,7 +479,7 @@ public class SubProblem implements ProblemPart
 
 			for(DataSource ds : allData)
 			{
-				if(searchID.equals(ds.getID()))
+				if(searchID.equals(ds.getUniqueID()))
 				{
 					newSub.addStep(ds);
 					break;

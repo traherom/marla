@@ -929,10 +929,37 @@ public class OperationXML extends Operation
 	@Override
 	public Operation clone()
 	{
-		OperationXML op = (OperationXML) super.clone();
-		System.err.println("CLONE ON XML OP");
-		throw new InternalMarlaException("cloning xml op");
-		//return op;
+		try
+		{
+			OperationXML newOp = (OperationXML)Operation.createOperation(getName());
+			newOp.isLoading(true);
+			
+			// Copy remark
+			newOp.setRemark(getRemark());
+
+			// Copy our child operations
+			for(int i = 0; i < getOperationCount(); i++)
+				newOp.addOperation(getOperation(i).clone());
+
+			// Copy configuration questions
+			List<OperationInformation> myConf = getRequiredInfoPrompt();
+			List<OperationInformation> newConf = newOp.getRequiredInfoPrompt();
+			for(int i = 0; i < myConf.size(); i++)
+			{
+				OperationInformation myConfCurr = myConf.get(i);
+				OperationInformation newConfCurr = newConf.get(i);
+
+				if(myConfCurr.isAnswered())
+					newConfCurr.setAnswer(myConfCurr.getAnswer());
+			}
+
+			newOp.isLoading(false);
+			return newOp;
+		}
+		catch(MarlaException ex)
+		{
+			throw new InternalMarlaException("Unable to clone OperationXML. See internal exception.", ex);
+		}
 	}
 
 	@Override

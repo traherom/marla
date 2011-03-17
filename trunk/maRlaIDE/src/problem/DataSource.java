@@ -29,22 +29,17 @@ import org.jdom.Element;
 public abstract class DataSource extends JLabel implements Loadable
 {
 	/**
-	 * Gets the internal ID of this DataSource
-	 * @return ID assigned to DataSource, null if there is none
-	 */
-	public abstract Integer getID();
-
-	/**
 	 * Creates an ID for this DataSource and saves it. If the DataSource
 	 * already has an ID then the current one is used.
 	 * @return ID assigned to DataSource
 	 */
-	public abstract Integer generateID();
+	public abstract Integer getUniqueID();
 
 	/**
 	 * Gets the current DataSource name
 	 * @return DataSource name
 	 */
+	@Override
 	public abstract String getName();
 
 	/**

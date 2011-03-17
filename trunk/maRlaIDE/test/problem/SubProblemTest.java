@@ -88,14 +88,14 @@ public class SubProblemTest
 	@Test
 	public void testEqualsDifferentStart() throws Exception
 	{
-		testSubIdentical1.setSolutionStart(new DataSet("blah"));
+		testSubIdentical1.addStep(new DataSet("blah"));
 		assertFalse(testSub1.equals(testSubIdentical1));
 	}
 
 	@Test
 	public void testEqualsDifferentEnd() throws Exception
 	{
-		testSubIdentical1.setSolutionEnd(new DataSet("blah"));
+		testSubIdentical1.addStep(new DataSet("blah"));
 		assertFalse(testSub1.equals(testSubIdentical1));
 	}
 
@@ -111,14 +111,12 @@ public class SubProblemTest
 	public void testToAndFromXMLWithSolution() throws Exception
 	{
 		// Hook up the start and ends in some places
-		testSub1.setSolutionStart(testProb1.getData(0));
-		testSub1.setSolutionEnd(testProb1.getData(0).getOperation(0));
-
-		testSub2.setSolutionStart(testProb1.getData(1));
+		testSub1.addAllSubSteps(testProb1.getData(0));
 
 		// And test
 		Element el = testSub1.toXml();
-		SubProblem newSub = SubProblem.fromXml(el, testProb2);
+		SubProblem newSub = SubProblem.fromXml(el, testProb1);
+		newSub.equals(testSub1);
 		assertEquals(testSub1, newSub);
 	}
 
