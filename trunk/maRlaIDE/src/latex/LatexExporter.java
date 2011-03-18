@@ -46,6 +46,7 @@ import problem.SubProblem;
 import r.RProcessor;
 import r.RProcessor.RecordMode;
 import r.RProcessorException;
+import resource.BuildInfo;
 import resource.Configuration.ConfigType;
 import resource.ConfigurationException;
 
@@ -305,11 +306,9 @@ public class LatexExporter
 	 */
 	public String cleanExport(String rnwPath) throws LatexException, MarlaException
 	{
-		throw new MarlaException("Testing", new NullPointerException("bah"));
-		
 		// Export to the temporary file and them move
-		//String tempFile = cleanTempExport();
-		//return moveFile(tempFile, rnwPath);
+		String tempFile = cleanTempExport();
+		return moveFile(tempFile, rnwPath);
 	}
 
 	/**
