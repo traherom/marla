@@ -20,12 +20,20 @@ package gui;
 
 import java.awt.Component;
 import java.awt.Desktop;
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.PrintStream;
 import java.io.PrintWriter;
+import java.net.URL;
+import java.net.URLConnection;
+import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -36,8 +44,12 @@ import latex.LatexExporter;
 import problem.MarlaException;
 import operation.Operation;
 import operation.OperationInfoRequiredException;
+import org.jdom.Document;
+import org.jdom.output.Format;
+import org.jdom.output.XMLOutputter;
 import problem.DataSource;
 import problem.Problem;
+import resource.BuildInfo;
 import resource.LoadSaveThread;
 
 /**
@@ -53,7 +65,7 @@ public class Domain
 	/** The version number of the application.*/
 	public static final String VERSION = "0.04";
 	/** The pre-release version name of the application.*/
-	public static final String PRE_RELEASE = "Alpha";
+	public static final String PRE_RELEASE = "Alpha r" + BuildInfo.revisionNumber;
 	/** The location of the application as it runs.*/
 	public static final String CWD = System.getProperty ("user.dir");
 	/** The name of the operating system being used.*/
@@ -72,6 +84,15 @@ public class Domain
 	protected File logFile;
 	/** Denotes if the log is being written. Prevents double writing */
 	protected boolean isWritingLog = false;
+	/**
+	 * Whether to send stack traces to marla servers
+	 */
+	private boolean sendErrorReport = true;
+	/**
+	 * Whether to include, if applicable, the problem XML in the
+	 * error report
+	 */
+	private boolean includeProbInReport = true;
 	/** The desktop object for common desktop operations.*/
 	protected Desktop desktop;
 	/** The load/save thread that is continually running unless explicitly paused or stopped.*/
@@ -123,25 +144,101 @@ public class Domain
 			for(int i = 0; i < logger.size(); ++i)
 			{
 				Exception ex = logger.get(i);
+
+				// To file
 				ex.printStackTrace(out);
+
+				// To console
 				ex.printStackTrace(System.err);
-				/*
-				out.write("Error: " + ex.getClass() + "\n");
-				out.write("Message: " + ex.getMessage() + "\n--\nTrace:\n");
-				Object[] trace = ex.getStackTrace();
-				for(int j = 0; j < trace.length; ++j)
+
+				// To server
+				if(sendErrorReport)
 				{
-					out.write("  " + trace[j].toString() + "\n");
+					// Construct data
+					StringBuilder dataSB = new StringBuilder();
+					
+					// "security" key
+					dataSB.append(URLEncoder.encode("secret", "UTF-8"));
+					dataSB.append('=');
+					dataSB.append(URLEncoder.encode("badsecurity", "UTF-8"));
+
+					// Send version number
+					dataSB.append('&');
+					dataSB.append(URLEncoder.encode("version", "UTF-8"));
+					dataSB.append('=');
+					dataSB.append(URLEncoder.encode(BuildInfo.revisionNumber, "UTF-8"));
+
+					// Exception message
+					dataSB.append('&');
+					dataSB.append(URLEncoder.encode("msg", "UTF-8"));
+					dataSB.append('=');
+					dataSB.append(URLEncoder.encode(ex.getMessage(), "UTF-8"));
+
+					// Stack trace
+					ByteArrayOutputStream trace = new ByteArrayOutputStream();
+					ex.printStackTrace(new PrintStream(trace));
+					dataSB.append('&');
+					dataSB.append(URLEncoder.encode("trace", "UTF-8"));
+					dataSB.append('=');
+					dataSB.append(URLEncoder.encode(trace.toString(), "UTF-8"));
+
+					// Problem, if applicable
+					if(includeProbInReport && problem != null)
+					{
+						dataSB.append('&');
+						dataSB.append(URLEncoder.encode("problem", "UTF-8"));
+						dataSB.append('=');
+
+						try
+						{
+							Document doc = new Document(problem.toXml());
+							Format formatter = Format.getPrettyFormat();
+							formatter.setEncoding("UTF-8");
+							XMLOutputter xml = new XMLOutputter(formatter);
+							dataSB.append(URLEncoder.encode(xml.outputString(doc), "UTF-8"));
+						}
+						catch(MarlaException ex2)
+						{
+							dataSB.append(URLEncoder.encode("Unable to get XML: " + ex2.toString(), "UTF-8"));
+						}
+					}
+
+					// Send data
+					URL url = new URL("http://www.moreharts.com/marla/report.php");
+					URLConnection conn = url.openConnection();
+					conn.setDoOutput(true);
+					OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());
+					wr.write(dataSB.toString());
+					wr.flush();
+
+					// Check for success
+					BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+					String response = null;
+					String line = null;
+					while((line = rd.readLine()) != null)
+					{
+						// Only the first line actually counts as the return
+						// but we get the rest for debugging
+						if(response == null)
+							response = line;
+
+						System.out.println(line);
+					}
+					wr.close();
+					rd.close();
+
+					if(response.equals("success"))
+						System.out.println("Exception sent to maRla development team");
+					else
+						System.out.println("Unable to send exception to development team: " + response);
 				}
-				out.write("--\n\n");
-				out.write("----\n");
-				*/
 			}
 
 			out.write("------------------------------------\n\n\n");
 			out.flush();
+			out.close();
 
-			System.err.println(logger.size() + " exceptions written to " + logFile.getAbsolutePath());
+			System.out.println(logger.size() + " exceptions written to " + logFile.getAbsolutePath());
 
 			logger.clear();
 		}
