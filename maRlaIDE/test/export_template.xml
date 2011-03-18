@@ -33,7 +33,7 @@
 		<if has_subproblems="false">
 			<then>
 				<solution rcode="false" maxlen="7" />\par
-				<data type="end" />
+				<data type="end" maxcols="7" />
 			</then>
 			<else>
 				\begin{enumerate}[(a)]
@@ -41,7 +41,7 @@
 				\item
 					<solution rcode="false" maxlen="7" />
 					
-					\par <data type="end" />
+					\par <data type="end" maxcols="7" />
 					
 					<!-- Include a conclusion if it exists -->
 					<if has_conclusion="true">

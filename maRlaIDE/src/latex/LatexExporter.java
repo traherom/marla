@@ -29,10 +29,7 @@ import java.io.InputStreamReader;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.commons.io.FileUtils;
@@ -423,10 +420,14 @@ public class LatexExporter
 			{
 				try
 				{
-					// Verbatim dump it to the export
+					// Remove whitespace at the front of lines and then dump out
 					Text partText = (Text) partObj;
-					String text = partText.getText();
-					out.write(text, 0, text.length());
+					String[] lines = partText.getText().split("\n");
+					for(String line : lines)
+					{
+						String trimmed = line.trim() + "\n";
+						out.write(trimmed, 0, trimmed.length());
+					}
 				}
 				catch(IOException ex)
 				{
@@ -774,15 +775,41 @@ public class LatexExporter
 				dsToShow = currentSub.getEndSteps();
 		}
 
+		// Limit the width of the DataSources in order to wrap nicely
+		// around the page
+		int maxColCount = Integer.parseInt(el.getAttributeValue("maxcols", "6"));
+		int colCount = 0;
+		boolean insideCenter = false;
+
 		// Create latex array for each DataSource
 		StringBuilder sb = new StringBuilder();
 		for(DataSource ds : dsToShow)
 		{
+			colCount += ds.getColumnCount();
+			if(colCount > maxColCount)
+			{
+				colCount = ds.getColumnCount();
+				
+				if(insideCenter)
+					sb.append("\\end{center}\n");
+
+				insideCenter = false;
+			}
+			
+			if(!insideCenter)
+			{
+				insideCenter = true;
+				sb.append("\\begin{center}\n");
+			}
+
 			if(isStartDS)
 				sb.append(dataToLatex("Starting Data : " + ds.getName(), ds.getColumnLength(), ds.getColumns()));
 			else
 				sb.append(dataToLatex("Final Data : " + ds.getName(), ds.getColumnLength(), ds.getColumns()));
 		}
+
+		if(insideCenter)
+			sb.append("\\end{center}\n");
 
 		try
 		{
