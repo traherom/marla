@@ -19,15 +19,23 @@ package resource;
 
 import gui.Domain;
 import gui.WorkspacePanel;
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import latex.LatexExporter;
 import operation.OperationXMLException;
@@ -74,7 +82,7 @@ public class Configuration
 			PdfTex, R, OpsXML, TexTemplate,
 			UserName, ClassShort, ClassLong,
 			MinLineWidth, LineSpacing,
-			SendErrorReports, ReportWithProblem
+			SendErrorReports, ReportWithProblem, ErrorServer
 		};
 
 	/**
@@ -248,6 +256,9 @@ public class Configuration
 			case ReportWithProblem:
 				return Domain.getReportIncludesProblem();
 
+			case ErrorServer:
+				return Domain.getErrorServer();
+
 			default:
 				throw new InternalMarlaException("Unhandled configuration exception type in get");
 		}
@@ -322,6 +333,10 @@ public class Configuration
 					previous = WorkspacePanel.setMinLineWidth((Integer)val);
 				else
 					previous = WorkspacePanel.setMinLineWidth(Integer.parseInt(val.toString()));
+				break;
+
+			case ErrorServer:
+				previous = Domain.setErrorServer(val.toString());
 				break;
 
 			case SendErrorReports:
@@ -435,6 +450,10 @@ public class Configuration
 				success = findAndSetLatexTemplate();
 				break;
 
+			case ErrorServer:
+				success = retreiveAndSetErrorServer();
+				break;
+
 			default:
 				// Can't handle through a search
 				success = false;
@@ -477,6 +496,11 @@ public class Configuration
 				case SendErrorReports:
 				case ReportWithProblem:
 					set(setting, true);
+					success = true;
+					break;
+
+				case ErrorServer:
+					set(setting, "http://www.moreharts.com/marla/report.php");
 					success = true;
 					break;
 
@@ -769,6 +793,44 @@ public class Configuration
 		}
 		
 		return files;
+	}
+
+	private static boolean retreiveAndSetErrorServer()
+	{
+		try
+		{
+			// Get the wiki page with the latest URL
+			URL url = new URL("http://code.google.com/p/marla/wiki/ReportServer");
+			URLConnection conn = url.openConnection();
+
+			// Read in page
+			BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+			StringBuilder page = new StringBuilder();
+			String line = null;
+			while((line = rd.readLine()) != null)
+				page.append(line);
+			rd.close();
+
+			// Find the <server> markers
+			Pattern server = Pattern.compile("\\|SERVER\\|(http://.+)\\|SERVER\\|");
+			Matcher m = server.matcher(page.toString());
+			if(!m.find())
+				return false;
+			
+			// Set
+			Domain.setErrorServer(m.group(1));
+
+			return true;
+		}
+		catch(IOException ex)
+		{
+			Domain.logger.add(ex);
+			return false;
+		}
+		catch(ConfigurationException ex)
+		{
+			return false;
+		}
 	}
 
 	/**
