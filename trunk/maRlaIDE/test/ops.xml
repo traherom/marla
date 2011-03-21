@@ -8,6 +8,14 @@
 		</computation>
 	</operation>
 
+	<operation name="Broken">
+		<displayname>blahg</displayname>
+
+		<computation>
+			<cmd>Broken</cmd>
+		</computation>
+	</operation>
+
 	<operation name="Histogram" category="Plots" plot="true">
 		<query type="column" name="col" prompt="Column?" />
 
