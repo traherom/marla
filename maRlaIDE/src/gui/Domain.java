@@ -34,6 +34,7 @@ import java.io.PrintWriter;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
+import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -144,10 +145,10 @@ public class Domain
 	 */
 	public static String setErrorServer(String newServer) throws ConfigurationException
 	{
+		String old = errorServerURL;
+
 		try
 		{
-			String old = errorServerURL;
-
 			// Ensure it's valid
 			URL url = new URL(newServer);
 			URLConnection conn = url.openConnection();
@@ -157,23 +158,26 @@ public class Domain
 			StringBuilder page = new StringBuilder();
 			String line = null;
 			while((line = rd.readLine()) != null)
-			{
 				page.append(line);
-			}
 			rd.close();
 
 			// Check response
 			if(!page.toString().equals("maRla"))
 				throw new ConfigurationException("URL given for error server is invalid", ConfigType.ErrorServer);
-
-			// Must be fine
-			errorServerURL = newServer;
-			return old;
+		}
+		catch(UnknownHostException ex)
+		{
+			// We likely just timed out instantly and there's no network
+			// connection. Accept though, for when the network comes back online
 		}
 		catch(IOException ex)
 		{
 			throw new ConfigurationException("URL given for error server could not be reached", ConfigType.ErrorServer, ex);
 		}
+
+		// Must be fine
+		errorServerURL = newServer;
+		return old;
 	}
 
 	/**
@@ -303,34 +307,42 @@ public class Domain
 						}
 					}
 
-					// Send data
-					URL url = new URL(errorServerURL);
-					URLConnection conn = url.openConnection();
-					conn.setDoOutput(true);
-					OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());
-					wr.write(dataSB.toString());
-					wr.flush();
-
-					// Check for success
-					BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-					String response = null;
-					String line = null;
-					while((line = rd.readLine()) != null)
+					try
 					{
-						// Only the first line actually counts as the return
-						// but we get the rest for debugging
-						if(response == null)
-							response = line;
-						else
-							System.out.println(line);
-					}
-					wr.close();
-					rd.close();
+						// Send data
+						URL url = new URL(errorServerURL);
+						URLConnection conn = url.openConnection();
+						conn.setDoOutput(true);
+						OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());
+						wr.write(dataSB.toString());
+						wr.flush();
 
-					if(response.equals("success"))
-						System.out.println("Exception sent to maRla development team");
-					else
-						System.out.println("Unable to send exception to development team: " + response);
+						// Check for success
+						BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+						String response = null;
+						String line = null;
+						while((line = rd.readLine()) != null)
+						{
+							// Only the first line actually counts as the return
+							// but we get the rest for debugging
+							if(response == null)
+								response = line;
+							else
+								System.out.println(line);
+						}
+						wr.close();
+						rd.close();
+
+						if(response.equals("success"))
+							System.out.println("Exception sent to maRla development team");
+						else
+							System.out.println("Unable to send exception to development team: " + response);
+					}
+					catch(IOException ex2)
+					{
+						// Too bad, but ignore
+						System.out.println("Unable to send exception to development team: " + ex2.getMessage());
+					}
 				}
 			}
 
