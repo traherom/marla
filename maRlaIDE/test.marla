@@ -2,7 +2,7 @@
 <problem person="Ryan Morehart" course_long="Software Engineering II" course_short="CS4820" chapter="2" section="3" probnum="4">
   <statement>Problem description</statement>
   <conclusion>50% isn't bad.</conclusion>
-  <data name="Data Set 1" id="-1421489198" x="157" y="102" height="16" width="70">
+  <data name="Data Set 1" id="-1421489198" x="325" y="182" height="16" width="70">
     <column name="Column 1" mode="NUMERIC">
       <value>2.0</value>
       <value>213.0</value>
@@ -36,20 +36,25 @@
       <value>0.0</value>
       <value>0.0</value>
     </column>
-    <operation type="operation.OperationXML" name="sin()" id="1648532359" x="86" y="132" height="16" width="95">
+    <operation type="operation.OperationXML" name="sin()" id="1648532359" x="253" y="212" height="16" width="95">
       <remark>And a remark for sin</remark>
-      <operation type="operation.OperationXML" name="Barplot" id="1240439882" x="99" y="162" height="16" width="69">
+      <operation type="operation.OperationXML" name="Barplot" id="1240439882" x="239" y="242" height="16" width="123">
         <remark />
-        <question name="col" />
+        <question name="col" answer="Column 1" />
         <extra name="Barplot" />
       </operation>
       <question name="col" answer="Column 1" />
       <extra name="sin()" />
     </operation>
-    <operation type="operation.OperationXML" name="cos()" id="-1749331733" x="201" y="132" height="16" width="98">
+    <operation type="operation.OperationXML" name="cos()" id="-1749331733" x="383" y="212" height="16" width="98">
       <remark>Nice long removk for cos()</remark>
-      <operation type="operation.OperationXML" name="Repeat" id="1622297566" x="202" y="162" height="16" width="97">
+      <operation type="operation.OperationXML" name="Repeat" id="1622297566" x="384" y="242" height="16" width="97">
         <remark />
+        <operation type="operation.OperationXML" name="Histogram" id="-1586253957" x="382" y="272" height="16" width="100">
+          <remark />
+          <question name="col" answer="Column 1" />
+          <extra name="Histogram" />
+        </operation>
         <question name="val" answer="3.0" />
         <question name="count" answer="50.0" />
         <question name="colName" answer="Repetition" />
@@ -60,16 +65,25 @@
     </operation>
   </data>
   <part id="a." color="-721152">
+    <step id="-1749331733" />
+    <step id="1622297566" />
+    <step id="-1586253957" />
+    <step id="1240439882" />
     <statement>Part A!</statement>
     <conclusion>A was great</conclusion>
   </part>
   <part id="b." color="-13352999">
     <step id="1622297566" />
+    <step id="-1586253957" />
     <step id="1240439882" />
     <statement>Part B :(</statement>
     <conclusion>Sad Day</conclusion>
   </part>
   <part id="c." color="-3206776">
+    <step id="-1749331733" />
+    <step id="1622297566" />
+    <step id="-1586253957" />
+    <step id="1240439882" />
     <statement />
     <conclusion />
   </part>
@@ -80,6 +94,9 @@
   <part id="e." color="-6225507">
     <step id="1648532359" />
     <step id="1240439882" />
+    <step id="-1749331733" />
+    <step id="1622297566" />
+    <step id="-1586253957" />
     <statement />
     <conclusion />
   </part>
