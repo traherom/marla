@@ -524,7 +524,7 @@ public class LatexExporter
 			for(int i = 0; i < prob.getDataCount(); i++)
 			{
 				DataSource top = prob.getData(i);
-				solOps.addAll(SubProblem.getOperationChain(top, top.getAllLeafOperations()));
+				solOps.addAll(SubProblem.getOperationChain(top));
 			}
 		}
 		else if(currentSub.hasSolution())
