@@ -5,9 +5,16 @@ if(!isset($_REQUEST['id']))
 	die();
 }
 
-// Get the error
+// Toggle resolved status?
 require_once('../lib/db.inc');
-$stmt = $db->prepare('SELECT id, report_date, version, message, stacktrace, problem FROM errors WHERE id=?');
+if(isset($_REQUEST['resolve']))
+{
+	$stmt = $db->prepare('UPDATE errors SET resolved=1 XOR resolved WHERE id=?');
+	$stmt->execute(array($_REQUEST['id']));
+}
+
+// Get the error
+$stmt = $db->prepare('SELECT id, report_date, resolved, version, message, stacktrace, problem FROM errors WHERE id=?');
 $stmt->execute(array($_REQUEST['id']));
 $error = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -26,10 +33,19 @@ if(isset($_REQUEST['download']))
 	<title>The maRla Project - Error #<?=$error['id']?></title>
 </head>
 <body>
+<p><a href="error_list.php">&lt;&lt;&lt; Back to list</a></p>
+
 <table>
 	<tr>
 		<td>ID</td>
 		<td><?=$error['id']?></td>
+	</tr>
+	<tr>
+		<td>Resolved?</td>
+		<td>
+			<?=($error['resolved'] ? 'Yes' : 'No') ?>
+			<a href="error.php?id=<?=$error['id']?>&amp;resolve">Toggle Status</a>
+		</td>
 	</tr>
 	<tr>
 		<td>Revision</td>
