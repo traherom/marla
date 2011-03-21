@@ -1,9 +1,9 @@
 <?php
 require_once('../lib/db.inc');
 
-// Small protection against spam
+// Small protection against spam. Also used to check the sever is valid
 if(@$_REQUEST['secret'] !== 'badsecurity')
-	die('bah');
+	die('maRla');
 
 // Check that relevant parameters set
 if(isset($_REQUEST['msg']))
