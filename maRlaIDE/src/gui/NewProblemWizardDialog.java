@@ -21,8 +21,10 @@ package gui;
 import gui.colorpicker.ColorPicker;
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Dimension;
+import java.awt.GridLayout;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -760,7 +762,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 		{
 			subProblem = domain.problem.addSubProblem(ALPHABET[domain.problem.getSubProblemCount()], "");
 		}
-		
+
 		JPanel panel = createSubProblemPanel(subProblem);
 
 		// Add the JPanel to the list of sub problem JPanels
@@ -779,19 +781,34 @@ public class NewProblemWizardDialog extends EscapeDialog
 		subProblemsScollablePanel.updateUI();
 		subProblemsScollablePanel.scrollRectToVisible(new Rectangle(0, subProblemsScollablePanel.getHeight() + 150, 1, 1));
 
+		if (editing)
+		{
+			// Add sub problem to legend
+			JLabel label = new JLabel(subProblem.getSubproblemID());
+			label.setForeground(subProblem.getColor());
+			if ((VIEW_PANEL.legendScrollablePanel.getComponentCount() + 1) % 4 == 0)
+			{
+				GridLayout layout = (GridLayout) VIEW_PANEL.legendScrollablePanel.getLayout();
+				layout.setRows(layout.getRows() + 1);
+			}
+			VIEW_PANEL.legendScrollablePanel.add(label);
+			VIEW_PANEL.legendScrollablePanel.updateUI();
+		}
+
 		((JTextArea) ((JViewport) ((JScrollPane) ((JPanel) subProblemPanels.get(subProblemPanels.size() - 1)).getComponent(1)).getComponent(0)).getComponent(0)).requestFocus();
 }//GEN-LAST:event_addSubProblemButtonActionPerformed
 
 	private void removeSubProblemButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeSubProblemButtonActionPerformed
 		// Remove the JPanel from the list of sub problems and from the New Problem Wizard
 		JPanel panel = subProblemPanels.remove(subProblemPanels.size() - 1);
+		SubProblem subProblem;
 		if(newProblem != null)
 		{
-			newProblem.removeSubProblem(newProblem.getSubProblem(newProblem.getSubProblemCount() - 1));
+			subProblem = newProblem.removeSubProblem(newProblem.getSubProblem(newProblem.getSubProblemCount() - 1));
 		}
 		else
 		{
-			domain.problem.removeSubProblem(domain.problem.getSubProblem(domain.problem.getSubProblemCount() - 1));
+			subProblem = domain.problem.removeSubProblem(domain.problem.getSubProblem(domain.problem.getSubProblemCount() - 1));
 		}
 		subProblemsScollablePanel.remove(panel);
 
@@ -805,6 +822,12 @@ public class NewProblemWizardDialog extends EscapeDialog
 		}
 
 		subProblemsScollablePanel.updateUI();
+
+		if (editing)
+		{
+			VIEW_PANEL.legendScrollablePanel.remove(findLabel(subProblem.getSubproblemID()));
+			VIEW_PANEL.legendScrollablePanel.updateUI();
+		}
 
 		try
 		{
@@ -1245,7 +1268,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 
 	private void formWindowClosing(java.awt.event.WindowEvent evt)//GEN-FIRST:event_formWindowClosing
 	{//GEN-HEADEREND:event_formWindowClosing
-		if (editing)
+		if(editing)
 		{
 			if(descriptionCardPanel.isVisible())
 			{
@@ -1255,7 +1278,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 			{
 				verifySubProblemsPanel(domain.problem);
 			}
-			else if (informationCardPanel.isVisible())
+			else if(informationCardPanel.isVisible())
 			{
 				verifyInfoPanel(domain.problem);
 			}
@@ -1263,7 +1286,6 @@ public class NewProblemWizardDialog extends EscapeDialog
 
 		dispose();
 	}//GEN-LAST:event_formWindowClosing
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton addDataSetButton;
     private javax.swing.JButton addSubProblemButton;
@@ -1336,12 +1358,31 @@ public class NewProblemWizardDialog extends EscapeDialog
     // End of variables declaration//GEN-END:variables
 
 	/**
+	 * Retrieve the label object in the legend with the given ID.
+	 * 
+	 * @param id The ID to retrieve the JLabel for from the legend.
+	 * @return The label from the legend. NULL if not found.
+	 */
+	private JLabel findLabel(String id)
+	{
+		for (Component comp : VIEW_PANEL.legendScrollablePanel.getComponents())
+		{
+			if (((JLabel) comp).getText().equals(id))
+			{
+				return (JLabel) comp;
+			}
+		}
+
+		return null;
+	}
+
+	/**
 	 * Create a panel for a sub problem in the New Problem Wizard.
 	 *
 	 * @param subProblem A reference to the sub problem being created.
 	 * @return The created sub problem panel that can be placed in the array and panel.
 	 */
-	private JPanel createSubProblemPanel(SubProblem subProblem)
+	private JPanel createSubProblemPanel(final SubProblem subProblem)
 	{
 		// Create objects toward the new JPanel for the sub problem
 		JPanel subProblemPanel = new JPanel();
@@ -1382,10 +1423,14 @@ public class NewProblemWizardDialog extends EscapeDialog
 			public void mouseReleased(MouseEvent evt)
 			{
 				Color color = evt.getComponent().getBackground();
-				Color newColor = ColorPicker.showDialog (WIZARD, "Select Color", color, false, VIEW_PANEL);
-				if (newColor != null)
+				Color newColor = ColorPicker.showDialog(WIZARD, "Select Color", color, false, VIEW_PANEL);
+				if(newColor != null)
 				{
 					evt.getComponent().setBackground(newColor);
+					if (editing)
+					{
+						findLabel(subProblem.getSubproblemID()).setForeground(newColor);
+					}
 				}
 			}
 		});
@@ -1441,8 +1486,8 @@ public class NewProblemWizardDialog extends EscapeDialog
 		for(int i = 0; i < problem.getSubProblemCount(); ++i)
 		{
 			JTextArea textArea = (JTextArea) ((JViewport) ((JScrollPane) ((JPanel) subProblemPanels.get(i)).getComponent(1)).getComponent(0)).getComponent(0);
-			Color color = ((JPanel) ((JPanel) subProblemPanels.get (i).getComponent (2)).getComponent (1)).getBackground();
-			JTextArea conclusionTextArea = (JTextArea) ((JViewport) ((JScrollPane) ((JPanel) subProblemPanels.get (i).getComponent (2)).getComponent (4)).getViewport ()).getComponent (0);
+			Color color = ((JPanel) ((JPanel) subProblemPanels.get(i).getComponent(2)).getComponent(1)).getBackground();
+			JTextArea conclusionTextArea = (JTextArea) ((JViewport) ((JScrollPane) ((JPanel) subProblemPanels.get(i).getComponent(2)).getComponent(4)).getViewport()).getComponent(0);
 			if(!problem.getSubProblem(i).getStatement().equals(textArea.getText()))
 			{
 				problem.getSubProblem(i).setStatement(textArea.getText());
@@ -1964,10 +2009,10 @@ public class NewProblemWizardDialog extends EscapeDialog
 				JPanel panel = createSubProblemPanel(domain.problem.getSubProblem(i));
 
 				JTextArea textArea = (JTextArea) ((JViewport) ((JScrollPane) panel.getComponent(1)).getComponent(0)).getComponent(0);
-				JPanel colorPanel = (JPanel) ((JPanel) panel.getComponent (2)).getComponent (1);
-				JTextArea conclusionTextArea = (JTextArea) ((JViewport) ((JScrollPane) ((JPanel) panel.getComponent (2)).getComponent (4)).getViewport ()).getComponent (0);
-				textArea.setText (domain.problem.getSubProblem(i).getStatement());
-				conclusionTextArea.setText (domain.problem.getSubProblem(i).getConclusion());
+				JPanel colorPanel = (JPanel) ((JPanel) panel.getComponent(2)).getComponent(1);
+				JTextArea conclusionTextArea = (JTextArea) ((JViewport) ((JScrollPane) ((JPanel) panel.getComponent(2)).getComponent(4)).getViewport()).getComponent(0);
+				textArea.setText(domain.problem.getSubProblem(i).getStatement());
+				conclusionTextArea.setText(domain.problem.getSubProblem(i).getConclusion());
 				colorPanel.setBackground(domain.problem.getSubProblem(i).getColor());
 
 				// Add the JPanel to the list of sub problem JPanels

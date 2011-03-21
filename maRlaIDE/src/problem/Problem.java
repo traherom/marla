@@ -563,11 +563,13 @@ public class Problem implements ProblemPart
 	/**
 	 * Remove a given sub problem from this problem
 	 * @param sub SubProblem object to remove
+	 * @return The sub problem that was just removed
 	 */
-	public void removeSubProblem(SubProblem sub)
+	public SubProblem removeSubProblem(SubProblem sub)
 	{
 		markUnsaved();
 		subProblems.remove(sub);
+		return sub;
 	}
 
 	/**
