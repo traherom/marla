@@ -857,7 +857,8 @@ public class Configuration
 
 	/**
 	 * Convenience method to do the most common configuration stuff. Intended
-	 * only for use when nothing will need manual configuration (pre-setup computer)
+	 * only for use when nothing will need manual configuration (pre-setup computer).
+	 * Assumes no command line parameters
 	 * @return true if all items are configured, false otherwise
 	 */
 	public static boolean load()
@@ -874,7 +875,7 @@ public class Configuration
 		Configuration conf = Configuration.getInstance();
 		List<ConfigType> screwedUp = conf.configureAll(args);
 
-		System.out.println("Configuruation failed:");
+		System.out.println("Configuration failed:");
 		for(ConfigType c : screwedUp)
 			System.out.println("\t" + c);
 
