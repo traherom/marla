@@ -430,7 +430,8 @@ public class Domain
 			}
 			catch (MarlaException ex)
 			{
-				// TODO. Unable to save
+				logger.add(ex);
+				JOptionPane.showMessageDialog(viewPanel, ex.getMessage(), "Unable to save", JOptionPane.ERROR_MESSAGE);
 			}
 		}
 	}
@@ -628,11 +629,13 @@ public class Domain
 						else
 						{
 							Domain.logger.add (ex);
+							JOptionPane.showMessageDialog(viewPanel, ex.getMessage(), "PDF Export Failed", JOptionPane.ERROR_MESSAGE);
 						}
 					}
 					catch (MarlaException ex)
 					{
 						Domain.logger.add (ex);
+						JOptionPane.showMessageDialog(viewPanel, ex.getMessage(), "PDF Export Failed", JOptionPane.ERROR_MESSAGE);
 					}
 					break;
 				}
@@ -727,11 +730,13 @@ public class Domain
 						else
 						{
 							Domain.logger.add (ex);
+							JOptionPane.showMessageDialog(viewPanel, ex.getMessage(), "Export Failed", JOptionPane.ERROR_MESSAGE);
 						}
 					}
 					catch (MarlaException ex)
 					{
 						Domain.logger.add (ex);
+						JOptionPane.showMessageDialog(viewPanel, ex.getMessage(), "Export Failed", JOptionPane.ERROR_MESSAGE);
 					}
 					break;
 				}
