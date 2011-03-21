@@ -441,15 +441,11 @@ public class ViewPanel extends JPanel
         componentsPanel = new javax.swing.JPanel();
         componentsScrollPane = new javax.swing.JScrollPane();
         componentsScrollablePanel = new javax.swing.JPanel();
-        workspaceSplitPane = new javax.swing.JSplitPane();
         workspaceCardPanel = new javax.swing.JPanel();
         preWorkspacePanel = new javax.swing.JPanel();
         preWorkspaceLabel = new javax.swing.JLabel();
         workspacePanel = new WorkspacePanel (this);
         trashCan = new javax.swing.JLabel();
-        trayPanel = new javax.swing.JPanel();
-        outputScrollPane = new javax.swing.JScrollPane();
-        outputTextArea = new javax.swing.JTextArea();
 
         openChooserDialog.setApproveButtonToolTipText("Open selected folder");
         openChooserDialog.setDialogTitle("Browse Problem Location");
@@ -717,11 +713,11 @@ public class ViewPanel extends JPanel
         emptyPalettePanel.setLayout(emptyPalettePanelLayout);
         emptyPalettePanelLayout.setHorizontalGroup(
             emptyPalettePanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(0, 208, Short.MAX_VALUE)
+            .add(0, 204, Short.MAX_VALUE)
         );
         emptyPalettePanelLayout.setVerticalGroup(
             emptyPalettePanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(0, 476, Short.MAX_VALUE)
+            .add(0, 473, Short.MAX_VALUE)
         );
 
         componentsCardPanel.add(emptyPalettePanel, "card3");
@@ -742,9 +738,6 @@ public class ViewPanel extends JPanel
 
         add(componentsCardPanel, java.awt.BorderLayout.EAST);
 
-        workspaceSplitPane.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
-        workspaceSplitPane.setResizeWeight(1.0);
-
         workspaceCardPanel.setBorder(javax.swing.BorderFactory.createEtchedBorder());
         workspaceCardPanel.setLayout(new java.awt.CardLayout());
 
@@ -761,14 +754,14 @@ public class ViewPanel extends JPanel
             preWorkspacePanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(preWorkspacePanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .add(preWorkspaceLabel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 754, Short.MAX_VALUE)
+                .add(preWorkspaceLabel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 756, Short.MAX_VALUE)
                 .addContainerGap())
         );
         preWorkspacePanelLayout.setVerticalGroup(
             preWorkspacePanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(preWorkspacePanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .add(preWorkspaceLabel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 450, Short.MAX_VALUE)
+                .add(preWorkspaceLabel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 479, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -814,34 +807,7 @@ public class ViewPanel extends JPanel
 
         workspaceCardPanel.add(workspacePanel, "card2");
 
-        workspaceSplitPane.setTopComponent(workspaceCardPanel);
-
-        outputScrollPane.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-
-        outputTextArea.setColumns(20);
-        outputTextArea.setEditable(false);
-        outputTextArea.setFont(new java.awt.Font("Monospaced", 0, 12));
-        outputTextArea.setRows(5);
-        outputScrollPane.setViewportView(outputTextArea);
-
-        org.jdesktop.layout.GroupLayout trayPanelLayout = new org.jdesktop.layout.GroupLayout(trayPanel);
-        trayPanel.setLayout(trayPanelLayout);
-        trayPanelLayout.setHorizontalGroup(
-            trayPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(0, 778, Short.MAX_VALUE)
-            .add(trayPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                .add(outputScrollPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 778, Short.MAX_VALUE))
-        );
-        trayPanelLayout.setVerticalGroup(
-            trayPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(0, 22, Short.MAX_VALUE)
-            .add(trayPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                .add(outputScrollPane, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 22, Short.MAX_VALUE))
-        );
-
-        workspaceSplitPane.setBottomComponent(trayPanel);
-
-        add(workspaceSplitPane, java.awt.BorderLayout.CENTER);
+        add(workspaceCardPanel, java.awt.BorderLayout.CENTER);
     }// </editor-fold>//GEN-END:initComponents
 
 	private void workspacePanelMouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_workspacePanelMouseDragged
@@ -2178,8 +2144,6 @@ public class ViewPanel extends JPanel
     private javax.swing.JLabel newButton;
     private javax.swing.JLabel openButton;
     protected javax.swing.JFileChooser openChooserDialog;
-    private javax.swing.JScrollPane outputScrollPane;
-    private javax.swing.JTextArea outputTextArea;
     private javax.swing.JLabel plusFontButton;
     private javax.swing.JLabel preWorkspaceLabel;
     protected javax.swing.JPanel preWorkspacePanel;
@@ -2193,10 +2157,8 @@ public class ViewPanel extends JPanel
     private javax.swing.JMenu tieSubProblemSubMenu;
     private javax.swing.JToolBar toolBar;
     private javax.swing.JLabel trashCan;
-    private javax.swing.JPanel trayPanel;
     private javax.swing.JMenu untieSubProblemSubMenu;
     private javax.swing.JPanel workspaceCardPanel;
     protected javax.swing.JPanel workspacePanel;
-    private javax.swing.JSplitPane workspaceSplitPane;
     // End of variables declaration//GEN-END:variables
 }
