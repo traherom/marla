@@ -76,6 +76,15 @@ public class Domain
 	public static final SimpleDateFormat FULL_TIME_FORMAT = new SimpleDateFormat("MM/dd/yyyy h:mm:ss a");
 	/** The logger holds all caught exceptions for recording in the log file.*/
 	public static final ArrayList<Exception> logger = new ArrayList<Exception> ();
+	/**
+	 * Whether to send stack traces to marla servers
+	 */
+	private static boolean sendErrorReport = true;
+	/**
+	 * Whether to include, if applicable, the problem XML in the
+	 * error report
+	 */
+	private static boolean includeProbInReport = true;
 	/** The last good problem directory.*/
 	public String lastGoodDir = HOME_DIR;
 	/** The last good file that was a CSV file.*/
@@ -84,15 +93,6 @@ public class Domain
 	protected File logFile;
 	/** Denotes if the log is being written. Prevents double writing */
 	protected boolean isWritingLog = false;
-	/**
-	 * Whether to send stack traces to marla servers
-	 */
-	private boolean sendErrorReport = true;
-	/**
-	 * Whether to include, if applicable, the problem XML in the
-	 * error report
-	 */
-	private boolean includeProbInReport = true;
 	/** The desktop object for common desktop operations.*/
 	protected Desktop desktop;
 	/** The load/save thread that is continually running unless explicitly paused or stopped.*/
@@ -120,6 +120,52 @@ public class Domain
 		Problem.setDomain (domain);
 
 		logFile = new File ("log.dat");
+	}
+
+	/**
+	 * Gets whether log writer will send exception reports to maRla servers
+	 * @return true if exceptions are sent, false if they are only logged locally
+	 */
+	public static boolean getSendReport()
+	{
+		return sendErrorReport;
+	}
+
+	/**
+	 * Sets whether the log file writer should also send exceptions
+	 * to maRla servers
+	 * @param send true to send, false otherwise
+	 * @return Previously set value for sending
+	 */
+	public static boolean setSendReport(boolean send)
+	{
+		boolean old = sendErrorReport;
+		sendErrorReport = send;
+		return old;
+	}
+
+	/**
+	 * Gets whether log writer will include the current problem in its reports
+	 * to maRla servers
+	 * @return true if the problem is included, false otherwise
+	 */
+	public static boolean getReportIncludesProblem()
+	{
+		return includeProbInReport;
+	}
+
+	/**
+	 * Sets whether reports sent to the maRla servers include the XML for the
+	 * current problem
+	 * @param include true to include the current problem in the report, false
+	 *		otherwise
+	 * @return Previously set value for including problem
+	 */
+	public static boolean setReportIncludesProblem(boolean include)
+	{
+		boolean old = includeProbInReport;
+		includeProbInReport = include;
+		return old;
 	}
 
 	/**
