@@ -31,6 +31,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintStream;
 import java.io.PrintWriter;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
@@ -169,6 +170,10 @@ public class Domain
 		{
 			// We likely just timed out instantly and there's no network
 			// connection. Accept though, for when the network comes back online
+		}
+		catch(MalformedURLException ex)
+		{
+			throw new ConfigurationException("URL given for error server ('" + newServer + "') appears invalid", ConfigType.ErrorServer, ex);
 		}
 		catch(IOException ex)
 		{

@@ -18,8 +18,10 @@
 package problem;
 
 import java.awt.Color;
+import java.util.ArrayDeque;
 import operation.Operation;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.List;
 import java.util.Random;
 import org.jdom.Element;
@@ -365,17 +367,35 @@ public class SubProblem implements ProblemPart, Comparable
 	}
 
 	/**
-	 * Gets the chain of operations that run from the operations listed in
-	 * allOps to chainTop, in order from first execution to last. IE, if the
+	 * Gets the chain of operations that run from the leaf operations of
+	 * chainTop to the top, in order from first execution to last. IE, if the
 	 * R for this were to be executed, the List returned here could be executed
-	 * in order. DataSets are never part of this--even if they are marked as the start
-	 * of a solution--because export of R code doesn't want to work with those.
+	 * in order. DataSets are never part of this.
+	 * @param chainTop DataSource to start chain from
 	 * @return Chain of operations, from start to finish
 	 */
-	public static List<Operation> getOperationChain(DataSource chainTop, List<Operation> allOps) throws MarlaException
+	public static List<Operation> getOperationChain(DataSource chainTop) throws MarlaException
 	{
-		// TODO fix this or get rid of it
-		throw new InternalMarlaException("TBD");
+		Deque<Operation> chainRev = new ArrayDeque<Operation>();
+
+		List<Operation> leaves = chainTop.getAllLeafOperations();
+		for(Operation leaf : leaves)
+		{
+			// Run up chain until we find top
+			DataSource currDS = leaf;
+			while(currDS != chainTop)
+			{
+				chainRev.push((Operation) currDS);
+				currDS = currDS.getParentData();
+			}
+		}
+
+		// Now reverse the queue
+		List<Operation> chain = new ArrayList<Operation>(chainRev.size());
+		while(!chainRev.isEmpty())
+			chain.add(chainRev.pop());
+		
+		return chain;
 	}
 
 	/**
