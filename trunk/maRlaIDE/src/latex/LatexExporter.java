@@ -294,7 +294,7 @@ public class LatexExporter
 		}
 		catch(IOException ex)
 		{
-			throw new LatexException("Unable to move the temporary file to '" + toFile + "'");
+			throw new LatexException("Unable to move the temporary file '" + fromFile + "' to '" + toFile + "'");
 		}
 	}
 
@@ -1012,12 +1012,14 @@ public class LatexExporter
 			int exitVal = 0;
 			String pdfOutput = null;
 
+			// Create pdflatex instance
+			System.out.println("Running '" + texPath + "' through '" + pdfTexPath + "'");
+			ProcessBuilder procBuild = new ProcessBuilder(pdfTexPath, texPath);
+			procBuild.directory(new File(System.getProperty("java.io.tmpdir")));
+			procBuild.redirectErrorStream(true);
+			
 			try
 			{
-				// Create pdflatex instance
-				System.out.println("Running '" + texPath + "' through '" + pdfTexPath + "'");
-				ProcessBuilder procBuild = new ProcessBuilder(pdfTexPath, texPath);
-				procBuild.redirectErrorStream(true);
 				texProc = procBuild.start();
 				texOutStream = new BufferedReader(new InputStreamReader(texProc.getInputStream()));
 				texProc.getOutputStream().close();
@@ -1074,7 +1076,7 @@ public class LatexExporter
 			if(!outfileMatch.find())
 				throw new LatexException("pdfTeX failed to write PDF file");
 
-			String tempPdfPath = outfileMatch.group(1);
+			String tempPdfPath = procBuild.directory() + "/" + outfileMatch.group(1);
 
 			// Move the final PDF file and ensure we don't autoremove it (if
 			// the user were to request it built in our working dir)

@@ -125,8 +125,9 @@ public final class RProcessor
 			if(newRPath == null)
 				throw new ConfigurationException("R processor not configured yet", ConfigType.R);
 
-			// Start up R
+			// Start up R in the temp directory;
 			ProcessBuilder builder = new ProcessBuilder(rPath, "--slave", "--no-readline");
+			builder.directory(new File(System.getProperty("java.io.tmpdir")));
 			builder.redirectErrorStream(true);
 			rProc = builder.start();
 

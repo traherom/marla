@@ -586,13 +586,16 @@ public class SettingsDialog extends EscapeDialog
 			{
 				config.set(Configuration.ConfigType.ClassLong, courseLongNameTextField.getText());
 			}
+		
+			dispose();
+
+			// Write it out
+			config.save();
 		}
 		catch (MarlaException ex)
 		{
 			Domain.logger.add(ex);
 		}
-
-		dispose();
 	}
 
 	/**
