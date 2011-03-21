@@ -46,7 +46,6 @@ import problem.SubProblem;
 import r.RProcessor;
 import r.RProcessor.RecordMode;
 import r.RProcessorException;
-import resource.BuildInfo;
 import resource.Configuration.ConfigType;
 import resource.ConfigurationException;
 
@@ -308,7 +307,9 @@ public class LatexExporter
 	{
 		// Export to the temporary file and them move
 		String tempFile = cleanTempExport();
-		return moveFile(tempFile, rnwPath);
+
+		throw new MarlaException("Testing, fake exception");
+		//return moveFile(tempFile, rnwPath);
 	}
 
 	/**

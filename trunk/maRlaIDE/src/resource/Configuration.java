@@ -26,15 +26,12 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import latex.LatexExporter;
@@ -824,7 +821,6 @@ public class Configuration
 		}
 		catch(IOException ex)
 		{
-			Domain.logger.add(ex);
 			return false;
 		}
 		catch(ConfigurationException ex)
