@@ -1480,9 +1480,9 @@ public class ViewPanel extends JPanel
 				{
 					y = 0;
 				}
-				if(y > workspacePanel.getWidth() - op.getWidth())
+				if(y > workspacePanel.getHeight() - op.getHeight())
 				{
-					y = workspacePanel.getWidth() - op.getWidth();
+					y = workspacePanel.getHeight() - op.getHeight();
 				}
 
 				op.setLocation(x, y);
@@ -1785,9 +1785,9 @@ public class ViewPanel extends JPanel
 				newOperation = operation;
 			}
 
-			newOperation.setBounds((int) location.getX() - xDragOffset, (int) location.getY() - yDragOffset, newOperation.getPreferredSize().width, newOperation.getPreferredSize().height);
 			if(duplicate)
 			{
+				newOperation.setLocation((int) location.getX() - xDragOffset, (int) location.getY() - yDragOffset);
 				workspacePanel.add(newOperation);
 			}
 		}
