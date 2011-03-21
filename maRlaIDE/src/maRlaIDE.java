@@ -31,6 +31,7 @@ import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
+import resource.BuildInfo;
 
 /**
  * The launcher for maRla IDE.
@@ -69,6 +70,10 @@ public class maRlaIDE
             Domain.logger.add (ex);
         }
 
+		// Build info message
+		System.out.println("Starting " + Domain.NAME + " " + Domain.VERSION + " " + Domain.PRE_RELEASE);
+		System.out.println("Revision " + BuildInfo.revisionNumber + ", built " + BuildInfo.timeStamp);
+		
         EventQueue.invokeLater (new Runnable ()
         {
             @Override
