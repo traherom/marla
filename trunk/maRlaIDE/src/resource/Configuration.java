@@ -17,6 +17,7 @@
  */
 package resource;
 
+import gui.Domain;
 import gui.WorkspacePanel;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -72,7 +73,8 @@ public class Configuration
 			DebugMode,
 			PdfTex, R, OpsXML, TexTemplate,
 			UserName, ClassShort, ClassLong,
-			MinLineWidth, LineSpacing
+			MinLineWidth, LineSpacing,
+			SendErrorReports, ReportWithProblem
 		};
 
 	/**
@@ -240,6 +242,12 @@ public class Configuration
 			case MinLineWidth:
 				return WorkspacePanel.getMinLineWidth();
 
+			case SendErrorReports:
+				return Domain.getSendReport();
+
+			case ReportWithProblem:
+				return Domain.getReportIncludesProblem();
+
 			default:
 				throw new InternalMarlaException("Unhandled configuration exception type in get");
 		}
@@ -258,15 +266,15 @@ public class Configuration
 		switch(setting)
 		{
 			case PdfTex:
-				previous = LatexExporter.setPdfTexPath((String) val);
+				previous = LatexExporter.setPdfTexPath(val.toString());
 				break;
 
 			case OpsXML:
-				OperationXML.loadXML((String) val);
+				OperationXML.loadXML(val.toString());
 				break;
 
 			case R:
-				previous = RProcessor.setRLocation((String) val);
+				previous = RProcessor.setRLocation(val.toString());
 				break;
 
 			case DebugMode:
@@ -276,7 +284,7 @@ public class Configuration
 					if(val instanceof RecordMode)
 						valCast = (RecordMode) val;
 					else
-						valCast = RecordMode.valueOf (((String) val).toUpperCase ());
+						valCast = RecordMode.valueOf (val.toString().toUpperCase());
 					
 					previous = RProcessor.setDebugMode(valCast);
 				}
@@ -287,19 +295,19 @@ public class Configuration
 				break;
 
 			case TexTemplate:
-				previous = LatexExporter.setDefaultTemplate((String) val);
+				previous = LatexExporter.setDefaultTemplate(val.toString());
 				break;
 
 			case ClassLong:
-				previous = Problem.setDefaultLongCourseName((String)val);
+				previous = Problem.setDefaultLongCourseName(val.toString());
 				break;
 
 			case ClassShort:
-				previous = Problem.setDefaultShortCourseName((String)val);
+				previous = Problem.setDefaultShortCourseName(val.toString());
 				break;
 
 			case UserName:
-				previous = Problem.setDefaultPersonName((String)val);
+				previous = Problem.setDefaultPersonName(val.toString());
 				break;
 
 			case LineSpacing:
@@ -314,6 +322,20 @@ public class Configuration
 					previous = WorkspacePanel.setMinLineWidth((Integer)val);
 				else
 					previous = WorkspacePanel.setMinLineWidth(Integer.parseInt(val.toString()));
+				break;
+
+			case SendErrorReports:
+				if(val instanceof Boolean)
+					previous = Domain.setSendReport((Boolean)val);
+				else
+					previous = Domain.setSendReport(Boolean.parseBoolean(val.toString().toLowerCase()));
+				break;
+
+			case ReportWithProblem:
+				if(val instanceof Boolean)
+					previous = Domain.setReportIncludesProblem((Boolean)val);
+				else
+					previous = Domain.setReportIncludesProblem(Boolean.parseBoolean(val.toString().toLowerCase()));
 				break;
 
 			default:
@@ -449,6 +471,12 @@ public class Configuration
 
 				case LineSpacing:
 					set(setting, 4);
+					success = true;
+					break;
+
+				case SendErrorReports:
+				case ReportWithProblem:
+					set(setting, true);
 					success = true;
 					break;
 
