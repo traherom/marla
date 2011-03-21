@@ -50,6 +50,8 @@ import org.jdom.output.XMLOutputter;
 import problem.DataSource;
 import problem.Problem;
 import resource.BuildInfo;
+import resource.Configuration.ConfigType;
+import resource.ConfigurationException;
 import resource.LoadSaveThread;
 
 /**
@@ -76,6 +78,10 @@ public class Domain
 	public static final SimpleDateFormat FULL_TIME_FORMAT = new SimpleDateFormat("MM/dd/yyyy h:mm:ss a");
 	/** The logger holds all caught exceptions for recording in the log file.*/
 	public static final ArrayList<Exception> logger = new ArrayList<Exception> ();
+	/**
+	 * Server to send maRla exceptions to
+	 */
+	private static String errorServerURL = null;
 	/**
 	 * Whether to send stack traces to marla servers
 	 */
@@ -120,6 +126,54 @@ public class Domain
 		Problem.setDomain (domain);
 
 		logFile = new File ("log.dat");
+	}
+
+	/**
+	 * Gets the currently set server to send error reports to
+	 * @return Current error server
+	 */
+	public static String getErrorServer()
+	{
+		return errorServerURL;
+	}
+
+	/**
+	 * Sets the URL to send error reports to. URL is checked and must respond properly
+	 * @param newServer URL to send reports to
+	 * @return Previously set value for server
+	 */
+	public static String setErrorServer(String newServer) throws ConfigurationException
+	{
+		try
+		{
+			String old = errorServerURL;
+
+			// Ensure it's valid
+			URL url = new URL(newServer);
+			URLConnection conn = url.openConnection();
+
+			// Read in page
+			BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+			StringBuilder page = new StringBuilder();
+			String line = null;
+			while((line = rd.readLine()) != null)
+			{
+				page.append(line);
+			}
+			rd.close();
+
+			// Check response
+			if(!page.toString().equals("maRla"))
+				throw new ConfigurationException("URL given for error server is invalid", ConfigType.ErrorServer);
+
+			// Must be fine
+			errorServerURL = newServer;
+			return old;
+		}
+		catch(IOException ex)
+		{
+			throw new ConfigurationException("URL given for error server could not be reached", ConfigType.ErrorServer, ex);
+		}
 	}
 
 	/**
@@ -250,7 +304,7 @@ public class Domain
 					}
 
 					// Send data
-					URL url = new URL("http://www.moreharts.com/marla/report.php");
+					URL url = new URL(errorServerURL);
 					URLConnection conn = url.openConnection();
 					conn.setDoOutput(true);
 					OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());
@@ -267,8 +321,8 @@ public class Domain
 						// but we get the rest for debugging
 						if(response == null)
 							response = line;
-
-						System.out.println(line);
+						else
+							System.out.println(line);
 					}
 					wr.close();
 					rd.close();
