@@ -18,8 +18,10 @@
 
 package gui;
 
+import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import problem.MarlaException;
+import r.RProcessor;
 import resource.Configuration;
 
 /**
@@ -53,9 +55,7 @@ public class SettingsDialog extends EscapeDialog
         settingsPanel = new javax.swing.JPanel();
         settingsTabbedPane = new javax.swing.JTabbedPane();
         preferencesPanel = new javax.swing.JPanel();
-        lineLabel1 = new javax.swing.JLabel();
-        preferencesLabel = new javax.swing.JLabel();
-        rPathLabel = new javax.swing.JLabel();
+        lineWidthLabel = new javax.swing.JLabel();
         rPathTextField = new javax.swing.JTextField();
         rPathButton = new javax.swing.JButton();
         latexPathButton = new javax.swing.JButton();
@@ -67,6 +67,17 @@ public class SettingsDialog extends EscapeDialog
         operationsButton = new javax.swing.JButton();
         operationsTextField = new javax.swing.JTextField();
         operationsLabel = new javax.swing.JLabel();
+        includeProblemCheckBox = new javax.swing.JCheckBox();
+        debugModeCheckBox = new javax.swing.JCheckBox();
+        sendErrorReportsCheckBox = new javax.swing.JCheckBox();
+        jSeparator1 = new javax.swing.JSeparator();
+        lineIcon = new javax.swing.JLabel();
+        rPathLabel1 = new javax.swing.JLabel();
+        lineSpaceLabel = new javax.swing.JLabel();
+        lineSpaceSpinner = new javax.swing.JSpinner();
+        lineWidthSpinner = new javax.swing.JSpinner();
+        lineLabel3 = new javax.swing.JLabel();
+        preferencesLabel1 = new javax.swing.JLabel();
         studentInformationPanel = new javax.swing.JPanel();
         studentNameLabel = new javax.swing.JLabel();
         courseShortNameLabel = new javax.swing.JLabel();
@@ -83,6 +94,7 @@ public class SettingsDialog extends EscapeDialog
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         setTitle("Settings");
         setAlwaysOnTop(true);
+        setIconImage(new ImageIcon (getClass ().getResource ("/images/settings_button.png")).getImage ());
         setResizable(false);
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
@@ -94,27 +106,17 @@ public class SettingsDialog extends EscapeDialog
 
         preferencesPanel.setLayout(null);
 
-        lineLabel1.setFont(new java.awt.Font("Verdana", 0, 12));
-        lineLabel1.setText("______________________________________________________");
-        preferencesPanel.add(lineLabel1);
-        lineLabel1.setBounds(10, 10, 500, 20);
+        lineWidthLabel.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        lineWidthLabel.setText("Workspace line width:");
+        preferencesPanel.add(lineWidthLabel);
+        lineWidthLabel.setBounds(330, 70, 140, 20);
 
-        preferencesLabel.setFont(new java.awt.Font("Verdana", 1, 12));
-        preferencesLabel.setText("Preferences");
-        preferencesPanel.add(preferencesLabel);
-        preferencesLabel.setBounds(10, 10, 250, 16);
-
-        rPathLabel.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
-        rPathLabel.setText("R path:");
-        preferencesPanel.add(rPathLabel);
-        rPathLabel.setBounds(10, 50, 60, 20);
-
-        rPathTextField.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
-        rPathTextField.setEnabled(false);
+        rPathTextField.setEditable(false);
+        rPathTextField.setFont(new java.awt.Font("Verdana", 0, 12));
         preferencesPanel.add(rPathTextField);
-        rPathTextField.setBounds(70, 50, 330, 26);
+        rPathTextField.setBounds(70, 140, 330, 22);
 
-        rPathButton.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        rPathButton.setFont(new java.awt.Font("Verdana", 0, 12));
         rPathButton.setText("Browse");
         rPathButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -122,9 +124,9 @@ public class SettingsDialog extends EscapeDialog
             }
         });
         preferencesPanel.add(rPathButton);
-        rPathButton.setBounds(407, 50, 90, 28);
+        rPathButton.setBounds(410, 140, 90, 25);
 
-        latexPathButton.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        latexPathButton.setFont(new java.awt.Font("Verdana", 0, 12));
         latexPathButton.setText("Browse");
         latexPathButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -132,19 +134,19 @@ public class SettingsDialog extends EscapeDialog
             }
         });
         preferencesPanel.add(latexPathButton);
-        latexPathButton.setBounds(410, 90, 90, 28);
+        latexPathButton.setBounds(410, 180, 90, 25);
 
-        latexPathTextField.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
-        latexPathTextField.setEnabled(false);
+        latexPathTextField.setEditable(false);
+        latexPathTextField.setFont(new java.awt.Font("Verdana", 0, 12));
         preferencesPanel.add(latexPathTextField);
-        latexPathTextField.setBounds(110, 90, 290, 26);
+        latexPathTextField.setBounds(110, 180, 290, 22);
 
-        latexPathLabel.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        latexPathLabel.setFont(new java.awt.Font("Verdana", 0, 12));
         latexPathLabel.setText("PDFTex Path:");
         preferencesPanel.add(latexPathLabel);
-        latexPathLabel.setBounds(10, 90, 100, 20);
+        latexPathLabel.setBounds(10, 180, 100, 20);
 
-        latexTemplateButton.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        latexTemplateButton.setFont(new java.awt.Font("Verdana", 0, 12));
         latexTemplateButton.setText("Browse");
         latexTemplateButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -152,19 +154,19 @@ public class SettingsDialog extends EscapeDialog
             }
         });
         preferencesPanel.add(latexTemplateButton);
-        latexTemplateButton.setBounds(410, 130, 90, 28);
+        latexTemplateButton.setBounds(410, 220, 90, 25);
 
-        latexTemplateTextField.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
-        latexTemplateTextField.setEnabled(false);
+        latexTemplateTextField.setEditable(false);
+        latexTemplateTextField.setFont(new java.awt.Font("Verdana", 0, 12));
         preferencesPanel.add(latexTemplateTextField);
-        latexTemplateTextField.setBounds(130, 130, 270, 26);
+        latexTemplateTextField.setBounds(130, 220, 270, 22);
 
-        latexTemplateLabel.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        latexTemplateLabel.setFont(new java.awt.Font("Verdana", 0, 12));
         latexTemplateLabel.setText("LaTeX Template:");
         preferencesPanel.add(latexTemplateLabel);
-        latexTemplateLabel.setBounds(10, 130, 120, 20);
+        latexTemplateLabel.setBounds(10, 220, 120, 20);
 
-        operationsButton.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        operationsButton.setFont(new java.awt.Font("Verdana", 0, 12));
         operationsButton.setText("Browse");
         operationsButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -172,23 +174,99 @@ public class SettingsDialog extends EscapeDialog
             }
         });
         preferencesPanel.add(operationsButton);
-        operationsButton.setBounds(410, 170, 90, 28);
+        operationsButton.setBounds(410, 260, 90, 25);
 
-        operationsTextField.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
-        operationsTextField.setEnabled(false);
+        operationsTextField.setEditable(false);
+        operationsTextField.setFont(new java.awt.Font("Verdana", 0, 12));
         preferencesPanel.add(operationsTextField);
-        operationsTextField.setBounds(130, 170, 270, 26);
+        operationsTextField.setBounds(130, 260, 270, 22);
 
-        operationsLabel.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        operationsLabel.setFont(new java.awt.Font("Verdana", 0, 12));
         operationsLabel.setText("Operations XML:");
         preferencesPanel.add(operationsLabel);
-        operationsLabel.setBounds(10, 170, 120, 20);
+        operationsLabel.setBounds(10, 260, 120, 20);
+
+        includeProblemCheckBox.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        includeProblemCheckBox.setText("Include current problem in error reports");
+        includeProblemCheckBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                includeProblemCheckBoxActionPerformed(evt);
+            }
+        });
+        preferencesPanel.add(includeProblemCheckBox);
+        includeProblemCheckBox.setBounds(30, 70, 300, 25);
+
+        debugModeCheckBox.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        debugModeCheckBox.setText("Debug mode");
+        debugModeCheckBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                debugModeCheckBoxActionPerformed(evt);
+            }
+        });
+        preferencesPanel.add(debugModeCheckBox);
+        debugModeCheckBox.setBounds(10, 100, 140, 25);
+
+        sendErrorReportsCheckBox.setFont(new java.awt.Font("Verdana", 0, 12));
+        sendErrorReportsCheckBox.setText("Send error reports");
+        sendErrorReportsCheckBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                sendErrorReportsCheckBoxActionPerformed(evt);
+            }
+        });
+        preferencesPanel.add(sendErrorReportsCheckBox);
+        sendErrorReportsCheckBox.setBounds(10, 40, 190, 25);
+        preferencesPanel.add(jSeparator1);
+        jSeparator1.setBounds(10, 130, 520, 10);
+
+        lineIcon.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/line.png"))); // NOI18N
+        preferencesPanel.add(lineIcon);
+        lineIcon.setBounds(20, 60, 10, 30);
+
+        rPathLabel1.setFont(new java.awt.Font("Verdana", 0, 12));
+        rPathLabel1.setText("R path:");
+        preferencesPanel.add(rPathLabel1);
+        rPathLabel1.setBounds(10, 140, 60, 20);
+
+        lineSpaceLabel.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        lineSpaceLabel.setText("Workspace line space:");
+        preferencesPanel.add(lineSpaceLabel);
+        lineSpaceLabel.setBounds(330, 40, 150, 20);
+
+        lineSpaceSpinner.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        lineSpaceSpinner.setModel(new javax.swing.SpinnerNumberModel(Integer.valueOf(0), Integer.valueOf(0), null, Integer.valueOf(1)));
+        lineSpaceSpinner.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                lineSpaceSpinnerStateChanged(evt);
+            }
+        });
+        preferencesPanel.add(lineSpaceSpinner);
+        lineSpaceSpinner.setBounds(480, 40, 40, 22);
+
+        lineWidthSpinner.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        lineWidthSpinner.setModel(new javax.swing.SpinnerNumberModel(Integer.valueOf(1), Integer.valueOf(1), null, Integer.valueOf(1)));
+        lineWidthSpinner.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                lineWidthSpinnerStateChanged(evt);
+            }
+        });
+        preferencesPanel.add(lineWidthSpinner);
+        lineWidthSpinner.setBounds(480, 70, 40, 22);
+
+        lineLabel3.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        lineLabel3.setText("______________________________________________________");
+        preferencesPanel.add(lineLabel3);
+        lineLabel3.setBounds(10, 10, 500, 20);
+
+        preferencesLabel1.setFont(new java.awt.Font("Verdana", 1, 12)); // NOI18N
+        preferencesLabel1.setText("Preferences");
+        preferencesPanel.add(preferencesLabel1);
+        preferencesLabel1.setBounds(10, 10, 250, 16);
 
         settingsTabbedPane.addTab("Preferences", preferencesPanel);
 
         studentInformationPanel.setLayout(null);
 
-        studentNameLabel.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        studentNameLabel.setFont(new java.awt.Font("Verdana", 0, 12));
         studentNameLabel.setText("Student name:");
         studentInformationPanel.add(studentNameLabel);
         studentNameLabel.setBounds(10, 50, 94, 20);
@@ -205,15 +283,15 @@ public class SettingsDialog extends EscapeDialog
 
         studentNameTextField.setFont(new java.awt.Font("Verdana", 0, 12));
         studentInformationPanel.add(studentNameTextField);
-        studentNameTextField.setBounds(110, 50, 289, 26);
+        studentNameTextField.setBounds(110, 50, 289, 22);
 
         courseShortNameTextField.setFont(new java.awt.Font("Verdana", 0, 12));
         studentInformationPanel.add(courseShortNameTextField);
-        courseShortNameTextField.setBounds(147, 90, 150, 26);
+        courseShortNameTextField.setBounds(147, 90, 150, 22);
 
         courseLongNameTextField.setFont(new java.awt.Font("Verdana", 0, 12));
         studentInformationPanel.add(courseLongNameTextField);
-        courseLongNameTextField.setBounds(140, 130, 240, 26);
+        courseLongNameTextField.setBounds(140, 130, 240, 22);
 
         lineLabel2.setFont(new java.awt.Font("Verdana", 0, 12));
         lineLabel2.setText("______________________________________________________");
@@ -229,7 +307,7 @@ public class SettingsDialog extends EscapeDialog
 
         jPanel1.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
 
-        closeButton.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        closeButton.setFont(new java.awt.Font("Verdana", 0, 12));
         closeButton.setText("Close");
         closeButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -237,7 +315,8 @@ public class SettingsDialog extends EscapeDialog
             }
         });
 
-        jLabel1.setFont(new java.awt.Font("Verdana", 1, 14));
+        jLabel1.setFont(new java.awt.Font("Verdana", 1, 14)); // NOI18N
+        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/settings_button.png"))); // NOI18N
         jLabel1.setText("Settings");
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
@@ -247,7 +326,7 @@ public class SettingsDialog extends EscapeDialog
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jLabel1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 410, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 376, Short.MAX_VALUE)
                 .addComponent(closeButton)
                 .addContainerGap())
         );
@@ -268,7 +347,7 @@ public class SettingsDialog extends EscapeDialog
             .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(settingsPanelLayout.createSequentialGroup()
                 .addGap(10, 10, 10)
-                .addComponent(settingsTabbedPane, javax.swing.GroupLayout.DEFAULT_SIZE, 528, Short.MAX_VALUE)
+                .addComponent(settingsTabbedPane, javax.swing.GroupLayout.DEFAULT_SIZE, 544, Short.MAX_VALUE)
                 .addGap(10, 10, 10))
         );
         settingsPanelLayout.setVerticalGroup(
@@ -276,7 +355,7 @@ public class SettingsDialog extends EscapeDialog
             .addGroup(settingsPanelLayout.createSequentialGroup()
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(settingsTabbedPane, javax.swing.GroupLayout.DEFAULT_SIZE, 328, Short.MAX_VALUE)
+                .addComponent(settingsTabbedPane, javax.swing.GroupLayout.DEFAULT_SIZE, 322, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -381,30 +460,104 @@ public class SettingsDialog extends EscapeDialog
 		}
 	}//GEN-LAST:event_operationsButtonActionPerformed
 
+	private void includeProblemCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_includeProblemCheckBoxActionPerformed
+		try
+		{
+			Configuration.getInstance().set(Configuration.ConfigType.ReportWithProblem, includeProblemCheckBox.isSelected());
+		}
+		catch (MarlaException ex)
+		{
+			Domain.logger.add(ex);
+		}
+	}//GEN-LAST:event_includeProblemCheckBoxActionPerformed
+
+	private void debugModeCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_debugModeCheckBoxActionPerformed
+		try
+		{
+			if (debugModeCheckBox.isSelected())
+			{
+				Configuration.getInstance().set(Configuration.ConfigType.DebugMode, RProcessor.RecordMode.FULL);
+			}
+			else
+			{
+				Configuration.getInstance().set(Configuration.ConfigType.DebugMode, RProcessor.RecordMode.DISABLED);
+			}
+		}
+		catch (MarlaException ex)
+		{
+			Domain.logger.add(ex);
+		}
+	}//GEN-LAST:event_debugModeCheckBoxActionPerformed
+
+	private void sendErrorReportsCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sendErrorReportsCheckBoxActionPerformed
+		try
+		{
+			Configuration.getInstance().set(Configuration.ConfigType.SendErrorReports, sendErrorReportsCheckBox.isSelected());
+		}
+		catch (MarlaException ex)
+		{
+			Domain.logger.add(ex);
+		}
+
+		includeProblemCheckBox.setEnabled(sendErrorReportsCheckBox.isSelected());
+		lineIcon.setEnabled(sendErrorReportsCheckBox.isSelected());
+	}//GEN-LAST:event_sendErrorReportsCheckBoxActionPerformed
+
+	private void lineSpaceSpinnerStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_lineSpaceSpinnerStateChanged
+		try
+		{
+			Configuration.getInstance().set(Configuration.ConfigType.LineSpacing, lineSpaceSpinner.getValue());
+		}
+		catch (MarlaException ex)
+		{
+			Domain.logger.add(ex);
+		}
+	}//GEN-LAST:event_lineSpaceSpinnerStateChanged
+
+	private void lineWidthSpinnerStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_lineWidthSpinnerStateChanged
+		try
+		{
+			Configuration.getInstance().set(Configuration.ConfigType.MinLineWidth, lineWidthSpinner.getValue());
+		}
+		catch (MarlaException ex)
+		{
+			Domain.logger.add(ex);
+		}
+	}//GEN-LAST:event_lineWidthSpinnerStateChanged
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton closeButton;
     private javax.swing.JLabel courseLongNameLabel;
     private javax.swing.JTextField courseLongNameTextField;
     private javax.swing.JLabel courseShortNameLabel;
     private javax.swing.JTextField courseShortNameTextField;
+    private javax.swing.JCheckBox debugModeCheckBox;
+    private javax.swing.JCheckBox includeProblemCheckBox;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JSeparator jSeparator1;
     private javax.swing.JButton latexPathButton;
     private javax.swing.JLabel latexPathLabel;
     private javax.swing.JTextField latexPathTextField;
     private javax.swing.JButton latexTemplateButton;
     private javax.swing.JLabel latexTemplateLabel;
     private javax.swing.JTextField latexTemplateTextField;
-    private javax.swing.JLabel lineLabel1;
+    private javax.swing.JLabel lineIcon;
     private javax.swing.JLabel lineLabel2;
+    private javax.swing.JLabel lineLabel3;
+    private javax.swing.JLabel lineSpaceLabel;
+    private javax.swing.JSpinner lineSpaceSpinner;
+    private javax.swing.JLabel lineWidthLabel;
+    private javax.swing.JSpinner lineWidthSpinner;
     private javax.swing.JButton operationsButton;
     private javax.swing.JLabel operationsLabel;
     private javax.swing.JTextField operationsTextField;
-    private javax.swing.JLabel preferencesLabel;
+    private javax.swing.JLabel preferencesLabel1;
     private javax.swing.JPanel preferencesPanel;
     private javax.swing.JButton rPathButton;
-    private javax.swing.JLabel rPathLabel;
+    private javax.swing.JLabel rPathLabel1;
     private javax.swing.JTextField rPathTextField;
+    private javax.swing.JCheckBox sendErrorReportsCheckBox;
     private javax.swing.JPanel settingsPanel;
     private javax.swing.JTabbedPane settingsTabbedPane;
     private javax.swing.JLabel studentInformationLabel;
@@ -457,6 +610,11 @@ public class SettingsDialog extends EscapeDialog
 			studentNameTextField.setText (config.get(Configuration.ConfigType.UserName).toString());
 			courseShortNameTextField.setText (config.get(Configuration.ConfigType.ClassShort).toString());
 			courseLongNameTextField.setText (config.get(Configuration.ConfigType.ClassLong).toString());
+			sendErrorReportsCheckBox.setSelected(Boolean.valueOf(config.get(Configuration.ConfigType.SendErrorReports).toString()));
+			includeProblemCheckBox.setSelected(Boolean.valueOf(config.get(Configuration.ConfigType.ReportWithProblem).toString()));
+			debugModeCheckBox.setSelected(((RProcessor.RecordMode) config.get(Configuration.ConfigType.DebugMode)) == RProcessor.RecordMode.FULL);
+			lineSpaceSpinner.setValue(config.get(Configuration.ConfigType.LineSpacing));
+			lineWidthSpinner.setValue(config.get(Configuration.ConfigType.MinLineWidth));
 		}
 		catch (MarlaException ex)
 		{
