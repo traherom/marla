@@ -96,8 +96,8 @@ SectionEnd
 
   ;Language strings
   LangString DESC_InstallMarla ${LANG_ENGLISH} "Installs maRla"
-  LangString DESC_InstallR ${LANG_ENGLISH} "Installs R from the internet. Make sure you are connected."
-  LangString DESC_InstallMikTex ${LANG_ENGLISH} "Installs MiKTeX from the internet. Make sure you are connected."
+  LangString DESC_InstallR ${LANG_ENGLISH} "(~37 mb) Only select this if you do not already have R installed. R is the statistical engine needed to run operations."
+  LangString DESC_InstallMikTex ${LANG_ENGLISH} "(~138 mb) Only select this if you do not already have MikTex or an equivalent LaTeX editor installed." 
   LangString DESC_StartShortcuts ${LANG_ENGLISH} "Installs start menu shortcuts to the user's account."
 
   ;Assign language strings to sections
