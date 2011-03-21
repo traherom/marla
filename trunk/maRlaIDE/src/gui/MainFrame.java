@@ -25,6 +25,7 @@ import java.awt.event.ComponentListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.List;
+import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -42,7 +43,7 @@ import resource.Configuration.ConfigType;
 public class MainFrame extends JFrame
 {
 	/** The minimum size the window frame is allowed to be.*/
-	private final Dimension MINIMUM_WINDOW_SIZE = new Dimension(1000, 540);
+	private final Dimension MINIMUM_WINDOW_SIZE = new Dimension(650, 400);
 	/** The panel that is added to the frame.*/
 	private static ViewPanel viewPanel;
 
@@ -197,7 +198,7 @@ public class MainFrame extends JFrame
 		{
 			x = (int) screenSize.getWidth() - evt.getComponent().getWidth();
 		}
-		if (x < 0)
+		if (x < 0 - evt.getComponent().getWidth())
 		{
 			x = 0;
 		}
@@ -205,7 +206,7 @@ public class MainFrame extends JFrame
 		{
 			y = (int) screenSize.getHeight() - evt.getComponent().getHeight();
 		}
-		if (y < 0)
+		if (y < 0 - evt.getComponent().getHeight())
 		{
 			y = 0;
 		}
@@ -281,10 +282,11 @@ public class MainFrame extends JFrame
         aboutMenuItem = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
+        setIconImage(new ImageIcon (getClass ().getResource ("/images/logo.png")).getImage ());
         getContentPane().setLayout(new java.awt.GridLayout(1, 1));
 
         fileMenu.setText("File");
-        fileMenu.setFont(new java.awt.Font("Verdana", 0, 12));
+        fileMenu.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
         fileMenu.addMenuListener(new javax.swing.event.MenuListener() {
             public void menuCanceled(javax.swing.event.MenuEvent evt) {
             }
@@ -379,7 +381,7 @@ public class MainFrame extends JFrame
 
         editMenu.setText("Edit");
         editMenu.setEnabled(false);
-        editMenu.setFont(new java.awt.Font("Verdana", 0, 12));
+        editMenu.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
         editMenu.addMenuListener(new javax.swing.event.MenuListener() {
             public void menuCanceled(javax.swing.event.MenuEvent evt) {
             }
@@ -430,7 +432,7 @@ public class MainFrame extends JFrame
         menuBar.add(editMenu);
 
         problemMenu.setText("Problem");
-        problemMenu.setFont(new java.awt.Font("Verdana", 0, 12));
+        problemMenu.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
         problemMenu.addMenuListener(new javax.swing.event.MenuListener() {
             public void menuCanceled(javax.swing.event.MenuEvent evt) {
             }
@@ -441,7 +443,7 @@ public class MainFrame extends JFrame
             }
         });
 
-        editProblemMenuItem.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        editProblemMenuItem.setFont(new java.awt.Font("Verdana", 0, 12));
         editProblemMenuItem.setText("Edit Problem...");
         editProblemMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -478,7 +480,7 @@ public class MainFrame extends JFrame
         });
         problemMenu.add(newDataSetMenuItem);
 
-        editDataSetsMenuItem.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        editDataSetsMenuItem.setFont(new java.awt.Font("Verdana", 0, 12));
         editDataSetsMenuItem.setText("Edit Data Sets...");
         editDataSetsMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {

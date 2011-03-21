@@ -407,6 +407,7 @@ public class ViewPanel extends JPanel
 	@SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
+        java.awt.GridBagConstraints gridBagConstraints;
 
         openChooserDialog = new javax.swing.JFileChooser();
         saveChooserDialog = new javax.swing.JFileChooser();
@@ -436,16 +437,20 @@ public class ViewPanel extends JPanel
         abbreviateButton = new ToolbarButton (new ImageIcon (getClass ().getResource ("/images/unchecked_button.png")));
         jSeparator2 = new javax.swing.JToolBar.Separator();
         settingsButton = new ToolbarButton (new ImageIcon (getClass ().getResource ("/images/settings_button.png")));
-        componentsCardPanel = new javax.swing.JPanel();
-        emptyPalettePanel = new javax.swing.JPanel();
-        componentsPanel = new javax.swing.JPanel();
-        componentsScrollPane = new javax.swing.JScrollPane();
-        componentsScrollablePanel = new javax.swing.JPanel();
         workspaceCardPanel = new javax.swing.JPanel();
         preWorkspacePanel = new javax.swing.JPanel();
         preWorkspaceLabel = new javax.swing.JLabel();
         workspacePanel = new WorkspacePanel (this);
         trashCan = new javax.swing.JLabel();
+        rightSidePanel = new javax.swing.JPanel();
+        paletteCardPanel = new javax.swing.JPanel();
+        emptyPalettePanel = new javax.swing.JPanel();
+        componentsPanel = new javax.swing.JPanel();
+        componentsScrollPane = new javax.swing.JScrollPane();
+        componentsScrollablePanel = new javax.swing.JPanel();
+        legendPanel = new javax.swing.JPanel();
+        legendScrollPane = new javax.swing.JScrollPane();
+        legendScrollablePanel = new javax.swing.JPanel();
 
         openChooserDialog.setApproveButtonToolTipText("Open selected folder");
         openChooserDialog.setDialogTitle("Browse Problem Location");
@@ -705,39 +710,6 @@ public class ViewPanel extends JPanel
 
         add(toolBar, java.awt.BorderLayout.NORTH);
 
-        componentsCardPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Palette", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Verdana", 0, 12))); // NOI18N
-        componentsCardPanel.setPreferredSize(new java.awt.Dimension(220, 592));
-        componentsCardPanel.setLayout(new java.awt.CardLayout());
-
-        org.jdesktop.layout.GroupLayout emptyPalettePanelLayout = new org.jdesktop.layout.GroupLayout(emptyPalettePanel);
-        emptyPalettePanel.setLayout(emptyPalettePanelLayout);
-        emptyPalettePanelLayout.setHorizontalGroup(
-            emptyPalettePanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(0, 204, Short.MAX_VALUE)
-        );
-        emptyPalettePanelLayout.setVerticalGroup(
-            emptyPalettePanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(0, 473, Short.MAX_VALUE)
-        );
-
-        componentsCardPanel.add(emptyPalettePanel, "card3");
-
-        componentsPanel.setLayout(new java.awt.GridLayout(1, 0));
-
-        componentsScrollPane.setBorder(null);
-        componentsScrollPane.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-        componentsScrollPane.setOpaque(false);
-
-        componentsScrollablePanel.setOpaque(false);
-        componentsScrollablePanel.setLayout(new java.awt.GridBagLayout());
-        componentsScrollPane.setViewportView(componentsScrollablePanel);
-
-        componentsPanel.add(componentsScrollPane);
-
-        componentsCardPanel.add(componentsPanel, "card2");
-
-        add(componentsCardPanel, java.awt.BorderLayout.EAST);
-
         workspaceCardPanel.setBorder(javax.swing.BorderFactory.createEtchedBorder());
         workspaceCardPanel.setLayout(new java.awt.CardLayout());
 
@@ -761,7 +733,7 @@ public class ViewPanel extends JPanel
             preWorkspacePanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(preWorkspacePanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .add(preWorkspaceLabel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 479, Short.MAX_VALUE)
+                .add(preWorkspaceLabel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 639, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -808,6 +780,71 @@ public class ViewPanel extends JPanel
         workspaceCardPanel.add(workspacePanel, "card2");
 
         add(workspaceCardPanel, java.awt.BorderLayout.CENTER);
+
+        rightSidePanel.setPreferredSize(new java.awt.Dimension(220, 592));
+        rightSidePanel.setLayout(new java.awt.GridBagLayout());
+
+        paletteCardPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Palette", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Verdana", 0, 12))); // NOI18N
+        paletteCardPanel.setLayout(new java.awt.CardLayout());
+
+        org.jdesktop.layout.GroupLayout emptyPalettePanelLayout = new org.jdesktop.layout.GroupLayout(emptyPalettePanel);
+        emptyPalettePanel.setLayout(emptyPalettePanelLayout);
+        emptyPalettePanelLayout.setHorizontalGroup(
+            emptyPalettePanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(0, 197, Short.MAX_VALUE)
+        );
+        emptyPalettePanelLayout.setVerticalGroup(
+            emptyPalettePanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(0, 481, Short.MAX_VALUE)
+        );
+
+        paletteCardPanel.add(emptyPalettePanel, "card3");
+
+        componentsPanel.setLayout(new java.awt.GridLayout(1, 0));
+
+        componentsScrollPane.setBorder(null);
+        componentsScrollPane.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        componentsScrollPane.setOpaque(false);
+
+        componentsScrollablePanel.setOpaque(false);
+        componentsScrollablePanel.setLayout(new java.awt.GridBagLayout());
+        componentsScrollPane.setViewportView(componentsScrollablePanel);
+
+        componentsPanel.add(componentsScrollPane);
+
+        paletteCardPanel.add(componentsPanel, "card2");
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.ipadx = 180;
+        gridBagConstraints.ipady = 481;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.weighty = 1.0;
+        rightSidePanel.add(paletteCardPanel, gridBagConstraints);
+
+        legendPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Legend", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Verdana", 0, 12))); // NOI18N
+        legendPanel.setLayout(new java.awt.GridLayout(1, 1));
+
+        legendScrollPane.setBorder(null);
+        legendScrollPane.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+
+        legendScrollablePanel.setLayout(new java.awt.GridLayout(1, 3));
+        legendScrollPane.setViewportView(legendScrollablePanel);
+
+        legendPanel.add(legendScrollPane);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.ipadx = 180;
+        gridBagConstraints.ipady = 120;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        rightSidePanel.add(legendPanel, gridBagConstraints);
+
+        add(rightSidePanel, java.awt.BorderLayout.EAST);
     }// </editor-fold>//GEN-END:initComponents
 
 	private void workspacePanelMouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_workspacePanelMouseDragged
@@ -1938,6 +1975,21 @@ public class ViewPanel extends JPanel
 
 			// Move trees around if our workspace is smaller than the saving one
 			ensureComponentsVisible();
+
+			// Add sub problems to legend
+			legendScrollablePanel.removeAll();
+			for (int i = 0; i < domain.problem.getSubProblemCount(); ++i)
+			{
+				JLabel label = new JLabel(domain.problem.getSubProblem(i).getSubproblemID());
+				label.setForeground(domain.problem.getSubProblem(i).getColor());
+				if ((legendScrollablePanel.getComponentCount() + 1) % 4 == 0)
+				{
+					GridLayout layout = (GridLayout) legendScrollablePanel.getLayout();
+					layout.setRows(layout.getRows() + 1);
+				}
+				legendScrollablePanel.add(label);
+			}
+			legendScrollablePanel.updateUI();
 		}
 	}
 
@@ -1996,6 +2048,8 @@ public class ViewPanel extends JPanel
 				componentsPanel.setVisible(false);
 				preWorkspacePanel.setVisible(true);
 				workspacePanel.setVisible(false);
+
+				legendPanel.removeAll();
 
 				domain.problem = null;
 
@@ -2126,7 +2180,6 @@ public class ViewPanel extends JPanel
     protected javax.swing.JDialog answerDialog;
     private javax.swing.JPanel answerPanel;
     private javax.swing.JMenuItem changeInfoMenuItem;
-    private javax.swing.JPanel componentsCardPanel;
     protected javax.swing.JPanel componentsPanel;
     private javax.swing.JScrollPane componentsScrollPane;
     private javax.swing.JPanel componentsScrollablePanel;
@@ -2137,6 +2190,9 @@ public class ViewPanel extends JPanel
     private javax.swing.JToolBar.Separator jSeparator1;
     private javax.swing.JToolBar.Separator jSeparator2;
     private javax.swing.JToolBar.Separator jSeparator3;
+    private javax.swing.JPanel legendPanel;
+    private javax.swing.JScrollPane legendScrollPane;
+    protected javax.swing.JPanel legendScrollablePanel;
     private javax.swing.JPopupMenu.Separator menuSeparator1;
     private javax.swing.JPopupMenu.Separator menuSeparator2;
     private javax.swing.JPopupMenu.Separator menuSeparator3;
@@ -2144,12 +2200,14 @@ public class ViewPanel extends JPanel
     private javax.swing.JLabel newButton;
     private javax.swing.JLabel openButton;
     protected javax.swing.JFileChooser openChooserDialog;
+    private javax.swing.JPanel paletteCardPanel;
     private javax.swing.JLabel plusFontButton;
     private javax.swing.JLabel preWorkspaceLabel;
     protected javax.swing.JPanel preWorkspacePanel;
     private javax.swing.JMenuItem rCodeMenuItem;
     private javax.swing.JMenuItem remarkMenuItem;
     private javax.swing.JPopupMenu rightClickMenu;
+    private javax.swing.JPanel rightSidePanel;
     protected javax.swing.JLabel saveButton;
     protected javax.swing.JFileChooser saveChooserDialog;
     private javax.swing.JLabel settingsButton;
