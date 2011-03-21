@@ -1,0 +1,9 @@
+#summary URL for error reporting
+
+= Introduction =
+This page is used by maRla to configure where it will send error reports (if enabled).
+
+= Current Server =
+{{{
+<server>http://www.moreharts.com/marla/report.php</server>
+}}}
