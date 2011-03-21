@@ -28,6 +28,18 @@ public class OperationXMLException extends OperationException
 {
 	private String opName = null;
 
+	public OperationXMLException(String name, String msg)
+	{
+		super(msg);
+		opName = name;
+	}
+
+	public OperationXMLException(String name, String msg, Throwable cause)
+	{
+		super(msg, cause);
+		opName = name;
+	}
+
 	public OperationXMLException(String msg)
 	{
 		super(msg);

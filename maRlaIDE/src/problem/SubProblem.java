@@ -21,6 +21,7 @@ import java.awt.Color;
 import operation.Operation;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import org.jdom.Element;
 
 /**
@@ -74,6 +75,10 @@ public class SubProblem implements ProblemPart, Comparable
 		this.parent = parent;
 		partDesc = desc;
 		this.id = id;
+
+		// Random color
+		Random r = new Random();
+		highlightColor = new Color(r.nextInt(255), r.nextInt(255), r.nextInt(255));
 	}
 
 	/**

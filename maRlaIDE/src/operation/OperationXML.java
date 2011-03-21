@@ -494,11 +494,21 @@ public class OperationXML extends Operation
 		}
 	}
 
-	private void processCmd(RProcessor proc, Element cmdEl) throws RProcessorException
+	private void processCmd(RProcessor proc, Element cmdEl) throws OperationXMLException
 	{
-		proc.setRecorderMode(intendedRecordMode);
-		proc.execute(cmdEl.getTextTrim());
-		proc.setRecorderMode(RecordMode.DISABLED);
+		try
+		{
+			proc.setRecorderMode(intendedRecordMode);
+			proc.execute(cmdEl.getTextTrim());
+		}
+		catch(RProcessorException ex)
+		{
+			throw new OperationXMLException("Command given in XML appears to be invalid", ex);
+		}
+		finally
+		{
+			proc.setRecorderMode(RecordMode.DISABLED);
+		}
 	}
 
 	private void processSet(RProcessor proc, Element setEl) throws OperationXMLException, OperationInfoRequiredException, RProcessorException, MarlaException
@@ -753,7 +763,7 @@ public class OperationXML extends Operation
 		if(msg != null)
 			throw new OperationXMLException(msg);
 		else
-			throw new OperationXMLException("No message supplied for error in operation '" + getName() + "'");
+			throw new OperationXMLException("No message supplied for error");
 	}
 
 	private void processLoad(RProcessor proc, Element loadEl) throws OperationXMLException, RProcessorParseException, RProcessorException, MarlaException
@@ -852,9 +862,20 @@ public class OperationXML extends Operation
 						// Pull data from one of the query answers unless they haven't been answered
 						Object val = null;
 						if(!isInfoUnanswered())
-							val = getQuestion(partEl.getAttributeValue("name")).getAnswer();
+						{
+							String resName = partEl.getAttributeValue("name");
+							OperationInformation q = getQuestion(resName);
+							if(q != null)
+								val = q.getAnswer();
+							else
+								throw new OperationXMLException(getName(), "Display name asks for question '" + resName + "' but it does not exist");
+						}
 						else
+						{
 							val = partEl.getAttributeValue("default");
+							if(val == null)
+								throw new OperationXMLException(getName(), "No default given for filler in display name");
+						}
 
 						// Append to names
 						longName.append(val);

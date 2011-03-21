@@ -70,6 +70,10 @@ public final class RProcessor
 	 */
 	private static RProcessor singleRProcessor = null;
 	/**
+	 * Directory that R is running from
+	 */
+	private String workingDirectory = null;
+	/**
 	 * The R process itself
 	 */
 	private Process rProc = null;
@@ -128,6 +132,7 @@ public final class RProcessor
 			// Start up R in the temp directory;
 			ProcessBuilder builder = new ProcessBuilder(rPath, "--slave", "--no-readline");
 			builder.directory(new File(System.getProperty("java.io.tmpdir")));
+			workingDirectory = builder.directory().getAbsolutePath();
 			builder.redirectErrorStream(true);
 			rProc = builder.start();
 
@@ -750,12 +755,12 @@ public final class RProcessor
 	 */
 	public String startGraphicOutput() throws RProcessorException
 	{
-		// Figure out path and request that it be removed once we close
+		// Figure out path
 		lastPngName = getUniqueName() + ".png";
 
 		// Tell R to start a new device
 		execute("png(filename='" + lastPngName + "')");
-		return lastPngName;
+		return new File(workingDirectory + "/" + lastPngName).getAbsolutePath();
 	}
 
 	/**
@@ -769,9 +774,10 @@ public final class RProcessor
 		execute("dev.off()");
 
 		// Remove it once marla dies
-		new File(pngName).deleteOnExit();
+		File f = new File(workingDirectory + "/" + pngName);
+		f.deleteOnExit();
 
-		return pngName;
+		return f.getAbsolutePath();
 	}
 
 	/**

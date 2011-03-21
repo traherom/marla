@@ -1130,6 +1130,11 @@ public class ViewPanel extends JPanel
 				answerDialog.setLocation(answerDialogLocation);
 				answerDialog.setVisible(true);
 			}
+			catch(OperationException ex)
+			{
+				Domain.logger.add(ex);
+				JOptionPane.showMessageDialog(this, ex.getMessage(), "Operation Error", JOptionPane.ERROR_MESSAGE);
+			}
 			catch(MarlaException ex)
 			{
 				Domain.logger.add(ex);
