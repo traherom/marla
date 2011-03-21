@@ -307,9 +307,7 @@ public class LatexExporter
 	{
 		// Export to the temporary file and them move
 		String tempFile = cleanTempExport();
-
-		throw new MarlaException("Testing, fake exception");
-		//return moveFile(tempFile, rnwPath);
+		return moveFile(tempFile, rnwPath);
 	}
 
 	/**

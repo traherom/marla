@@ -285,6 +285,7 @@ public class ViewPanel extends JPanel
 		}
 		catch(MarlaException ex)
 		{
+			Domain.logger.add(ex);
 			JOptionPane.showMessageDialog(this, ex.getMessage(), "Reload Error", JOptionPane.WARNING_MESSAGE);
 		}
 	}
@@ -371,6 +372,7 @@ public class ViewPanel extends JPanel
 				catch(OperationException ex)
 				{
 					// Unable to load, not a real operation
+					Domain.logger.add(ex);
 					System.err.println("Error loading operation '" + operations.get(i) + "'");
 				}
 			}
@@ -954,14 +956,6 @@ public class ViewPanel extends JPanel
 						try
 						{
 							drop((Operation) draggingComponent, false, evt.getPoint());
-						}
-						catch(OperationException ex)
-						{
-							Domain.logger.add(ex);
-						}
-						catch(RProcessorException ex)
-						{
-							Domain.logger.add(ex);
 						}
 						catch(MarlaException ex)
 						{
@@ -2016,6 +2010,8 @@ public class ViewPanel extends JPanel
 					}
 					catch(MarlaException ex)
 					{
+						Domain.logger.add(ex);
+						JOptionPane.showMessageDialog(this, ex.getMessage(), "Save Failed", JOptionPane.ERROR_MESSAGE);
 						return false;
 					}
 				}
@@ -2117,25 +2113,46 @@ public class ViewPanel extends JPanel
 	 */
 	protected void quit(boolean forceQuit)
 	{
-		// Save the maRla configuration
-		try
-		{
-			resource.Configuration.getInstance().save();
-		}
-		catch(MarlaException ex)
-		{
-			Domain.logger.add(ex);
-		}
-
-		domain.writeLoggerFile();
-
 		if (closeProblem(false))
 		{
-			domain.loadSaveThread.stopRunning();
-			if(forceQuit)
+			// Hide the main window to give the appearance of better responsiveness
+			mainFrame.setVisible(false);
+
+			// Write out any final errors we encountered and didn't hit yet
+			// We do this now, then write the configuration because, if the loadsavethread
+			// is already writing, then we'll give it a bit of extra time
+			domain.writeLoggerFile();
+
+			// Save the maRla configuration
+			try
 			{
-				System.exit(0);
+				resource.Configuration.getInstance().save();
 			}
+			catch(MarlaException ex)
+			{
+				Domain.logger.add(ex);
+			}
+
+			// Tell thread to stop
+			domain.loadSaveThread.stopRunning();
+
+			try
+			{
+				// Wait for an extra couple seconds beyond the longest it'll take
+				// the load save thread to get around to checking if it's closing again
+				// The extra time lets it write if needed
+				domain.loadSaveThread.join(domain.loadSaveThread.getDelay() + 3000);
+			}
+			catch(InterruptedException ex)
+			{
+				// Took too long to finish saving or whatever. Not much we can
+				// do about that
+				System.err.println("Delay in save thread exiting: " + ex.getMessage());
+			}
+
+			// All done
+			if(forceQuit)
+				System.exit(0);
 		}
 	}
     // Variables declaration - do not modify//GEN-BEGIN:variables

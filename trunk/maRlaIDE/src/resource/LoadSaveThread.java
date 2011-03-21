@@ -36,8 +36,8 @@ public class LoadSaveThread extends Thread
 	/** If the thread is already in a save operation, a second save operation
 	 * may not be called on it until the first finishes.*/
 	public boolean saving = false;
-	/** Auto-save, if save is needed, every three minutes.*/
-	private final long delay = 10000;
+	/** Delay before checking if a save and/or logger write is needed */
+	private final long delay = 5000;
 	/** Check if the thread should quit.*/
 	private boolean wantToQuit;
 
@@ -51,6 +51,15 @@ public class LoadSaveThread extends Thread
 	{
 		this.domain = domain;
 		wantToQuit = true;
+	}
+
+	/**
+	 * Returns the check delay time in milliseconds
+	 * @return Check delay 
+	 */
+	public long getDelay()
+	{
+		return delay;
 	}
 
 	/**
