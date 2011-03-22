@@ -66,8 +66,8 @@ public class ProgressFrame extends JFrame
         progressBar.setFont(new java.awt.Font("Verdana", 0, 12));
         progressBar.setStringPainted(true);
 
-        statusLabel.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
-        statusLabel.setText("Loading ...");
+        statusLabel.setFont(new java.awt.Font("Verdana", 0, 12));
+        statusLabel.setText("Loading framework ...");
 
         javax.swing.GroupLayout progressPanelLayout = new javax.swing.GroupLayout(progressPanel);
         progressPanel.setLayout(progressPanelLayout);
@@ -105,9 +105,9 @@ public class ProgressFrame extends JFrame
     }// </editor-fold>//GEN-END:initComponents
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    protected javax.swing.JProgressBar progressBar;
+    public javax.swing.JProgressBar progressBar;
     private javax.swing.JPanel progressPanel;
-    protected javax.swing.JLabel statusLabel;
+    public javax.swing.JLabel statusLabel;
     // End of variables declaration//GEN-END:variables
 
 	@Override

@@ -41,6 +41,9 @@ import resource.BuildInfo;
  */
 public class maRlaIDE
 {
+	/** The progress frame to be built.*/
+	private static ProgressFrame progressFrame = new ProgressFrame();
+
 	/**
 	 * The method responsible for constructing the visual frame and maintaining
 	 * the thread as long as the frame is open.
@@ -49,6 +52,10 @@ public class maRlaIDE
 	 */
 	public static void main(final String args[])
 	{
+		progressFrame.progressBar.setValue(0);
+		progressFrame.progressBar.setString("0%");
+		progressFrame.statusLabel.setText("Loading framework ...");
+		
 		// Define UI characteristics before the applicaiton is instantiated
 		try
 		{
@@ -75,6 +82,9 @@ public class maRlaIDE
 		System.out.println("Starting " + Domain.NAME + " " + Domain.VERSION + " " + Domain.PRE_RELEASE);
 		System.out.println("Revision " + BuildInfo.revisionNumber + ", built " + BuildInfo.timeStamp);
 
+		progressFrame.progressBar.setValue(3);
+		progressFrame.progressBar.setString("3%");
+
 		EventQueue.invokeLater(new Runnable()
 		{
 			@Override
@@ -82,7 +92,7 @@ public class maRlaIDE
 			{
 				try
 				{
-					new MainFrame(new ProgressFrame()).setVisible(args, true);
+					new MainFrame(progressFrame).setVisible(args, true);
 				}
 				catch(Exception ex)
 				{
@@ -127,5 +137,8 @@ public class maRlaIDE
 				}
 			}
 		});
+
+		progressFrame.progressBar.setValue(5);
+		progressFrame.progressBar.setString("5%");
 	}
 }

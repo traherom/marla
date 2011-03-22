@@ -81,13 +81,17 @@ public class MainFrame extends JFrame
 			@Override
 			public void run()
 			{
-				progressFrame.progressBar.setString("10%");
-				progressFrame.progressBar.setValue(10);
-				progressFrame.statusLabel.setText("Initializing ...");
+				Domain.setProgressString("10%");
+				Domain.setProgressValue(10);
+				Domain.setProgressStatus("Loading configuration ...");
 				
 				// Configure
 				Configuration conf = Configuration.getInstance();
 				List<ConfigType> missed = conf.configureAll(args);
+
+				Domain.setProgressString("90%");
+				Domain.setProgressValue(90);
+				Domain.setProgressStatus("Validating configuration ...");
 
 				int currIndex = 0;
 				while(currIndex < missed.size())
@@ -124,6 +128,10 @@ public class MainFrame extends JFrame
 						currIndex++;
 				}
 
+				Domain.setProgressString("95%");
+				Domain.setProgressValue(95);
+				Domain.setProgressStatus("Initializating workspace ...");
+
 				try
 				{
 					// Preemptively save config file
@@ -157,6 +165,10 @@ public class MainFrame extends JFrame
 						System.out.println("Load through the GUI for more information.");
 					}
 				}
+
+				Domain.setProgressString("100%");
+				Domain.setProgressValue(100);
+				Domain.setProgressStatus("Complete ...");
 
 				progressFrame.setAlwaysOnTop(false);
 				progressFrame.setVisible(false);
