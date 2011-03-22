@@ -154,7 +154,7 @@ public class Configuration
 		// use removeAll()
 		List<ConfigType> unconfigured = new ArrayList<ConfigType>();
 		unconfigured.addAll(Arrays.asList(ConfigType.values()));
-	
+
 		// Command line
 		List<ConfigType> fixed = new ArrayList<ConfigType> (unconfigured.size ());
 		for(ConfigType c : unconfigured)
@@ -164,19 +164,43 @@ public class Configuration
 		}
 
 		unconfigured.removeAll(fixed);
+		Domain.setProgressString("30%");
+		Domain.setProgressValue(30);
 
 		// Try XML config
 		fixed.clear();
 		if(reloadXML())
 		{
+			Domain.setProgressString("40%");
+			Domain.setProgressValue(40);
+			int count = unconfigured.size();
+			int value = 40;
+			int incr;
+			if (count < 20)
+			{
+				incr = (int) Math.ceil((double) count / 20);
+			}
+			else
+			{
+				incr = (int) Math.ceil((double) 20 / count);
+			}
 			for(ConfigType c : unconfigured)
 			{
 				if(configureFromXML(c))
 					fixed.add(c);
+				
+				value += incr;
+				if (value < 60)
+				{
+					Domain.setProgressString(value + "%");
+					Domain.setProgressValue(value);
+				}
 			}
 		}
 
 		unconfigured.removeAll(fixed);
+		Domain.setProgressString("60%");
+		Domain.setProgressValue(60);
 
 		// Try searching
 		fixed.clear();
@@ -187,6 +211,8 @@ public class Configuration
 		}
 
 		unconfigured.removeAll(fixed);
+		Domain.setProgressString("70%");
+		Domain.setProgressValue(70);
 
 		// Try defaults
 		fixed.clear();
@@ -197,11 +223,14 @@ public class Configuration
 		}
 
 		unconfigured.removeAll(fixed);
+		Domain.setProgressString("80%");
+		Domain.setProgressValue(80);
 
 		if(detailedConfigStatus)
 		{
 			// Display the results
 			System.out.println("Configuration:");
+
 			for(ConfigType c : ConfigType.values())
 			{
 				System.out.print("\t" + c + ": ");
