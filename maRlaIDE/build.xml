@@ -110,8 +110,14 @@
         <delete file="${store.dir}/temp_final.jar"/>
     </target>
 
-    <target name="create-installer" depends="package-for-store">
-		<property name="installer.file" value="Setup.exe" />
+	
+	<path id="svnant.classpath">
+		<fileset dir="svnant">
+			<include name="**/*.jar"/>
+		</fileset>
+	</path>
+
+	<target name="create-installer" depends="package-for-store">
 		<property name="store.dir" value="store"/>
 
 		<echo message="Building Windows installer for ${application.title}"/>
@@ -121,24 +127,29 @@
 		<copy file="gpl-3.0.txt" todir="${store.dir}" />
 		<copy file="src/images/maRla.ico" todir="${store.dir}" />
 
-		<!-- Generate exe -->
+		<!-- What should the files start with? -->
+		<svn>
+			<status path="${basedir}\src\resource\BuildInfo.java" revisionProperty="svn.revision" />
+		</svn>
+		<property name="setup.base" value="${store.dir}/maRla-r${svn.revision}" />
+
+		<!-- Generate various packages -->		
+		<zip destfile="${setup.base}.zip" basedir="${store.dir}" />
+
 		<exec executable="makensis" dir="${store.dir}" resultproperty="build.result" searchpath="true">
 			<arg value="install_script.nsi"/>
 		</exec>
+
+		<!-- Move (if needed) to file with revision name -->
+		<move file="Setup.exe" tofile="${store.dir}/${setup.base}.exe" />
 
 		<!-- Remove temp files -->
 		<delete file="${store.dir}/install_script.nsi" />
 		<delete file="${store.dir}/gpl-3.0.txt" />
 		<delete file="${store.dir}/maRla.ico" />
 
-		<echo message="Windows installer created at ${installer.file}" />
-    </target>
-	
-	<path id="svnant.classpath">
-		<fileset dir="svnant">
-			<include name="**/*.jar"/>
-		</fileset>
-	</path>
+		<echo message="Windows installer and zip files place in ${}" />
+	</target>
   
 	<target name="-pre-init">
 		<echo>Generate build info class...</echo>
