@@ -950,6 +950,11 @@ public class ViewPanel extends JPanel
 						}
 						domain.problem.removeData(dataSet);
 					}
+					else
+					{
+						rebuildWorkspace();
+					}
+
 					workspacePanel.remove(draggingComponent);
 				}
 				else
