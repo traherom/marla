@@ -2176,6 +2176,7 @@ public class ViewPanel extends JPanel
 			}
 
 			// All done
+			resource.Updater.notifyExit();
 			if(forceQuit)
 				System.exit(0);
 		}

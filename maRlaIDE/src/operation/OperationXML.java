@@ -150,8 +150,11 @@ public class OperationXML extends Operation
 	{
 		if(operationXML == null)
 		{
-			loadXML(primaryOpsPath);
-			loadXML(additionalOpsPaths);
+			if(primaryOpsPath != null)
+				loadXML(primaryOpsPath);
+
+			if(additionalOpsPaths != null)
+				loadXML(additionalOpsPaths);
 		}
 	}
 
@@ -163,7 +166,10 @@ public class OperationXML extends Operation
 	{
 		// Load each path listed
 		for(String path : xmlPaths)
-			loadXML(path);
+		{
+			if(path != null && !path.isEmpty())
+				loadXML(path);
+		}
 	}
 
 	/**
@@ -172,7 +178,7 @@ public class OperationXML extends Operation
 	 * parse errors an exception will be thrown.
 	 * @param xmlPath Path to the operation XML file to include 
 	 */
-	public static void loadXML(String xmlPath) throws OperationXMLException, ConfigurationException
+	private static void loadXML(String xmlPath) throws OperationXMLException, ConfigurationException
 	{
 		try
 		{
