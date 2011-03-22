@@ -62,6 +62,11 @@ public class Configuration
 	 */
 	private static Configuration instance = null;
 	/**
+	 * Controls whether detailed messages about where things are configured from
+	 * are displayed
+	 */
+	private boolean detailedConfigStatus = true;
+	/**
 	 * Cache of wiki settings page
 	 */
 	private static String pageCache = null;
@@ -193,18 +198,21 @@ public class Configuration
 
 		unconfigured.removeAll(fixed);
 
-		// Display the results
-		System.out.println("Configuration:");
-		for(ConfigType c : ConfigType.values())
+		if(detailedConfigStatus)
 		{
-			System.out.print("\t" + c + ": ");
-			try
+			// Display the results
+			System.out.println("Configuration:");
+			for(ConfigType c : ConfigType.values())
 			{
-				System.out.println(get(c));
-			}
-			catch (MarlaException ex)
-			{
-				System.out.println("unset (" + ex.getMessage() + ")");
+				System.out.print("\t" + c + ": ");
+				try
+				{
+					System.out.println(get(c));
+				}
+				catch (MarlaException ex)
+				{
+					System.out.println("unset (" + ex.getMessage() + ")");
+				}
 			}
 		}
 
@@ -300,11 +308,14 @@ public class Configuration
 				break;
 
 			case PrimaryOpsXML:
+				OperationXML.clearXMLOps();
 				previous = OperationXML.setPrimaryXMLPath(val.toString());
 				break;
 
 			case UserOpsXML:
 				previous = get(setting);
+				
+				OperationXML.clearXMLOps();
 				
 				// Break apart if needed
 				OperationXML.setUserXMLPaths(Arrays.asList(val.toString().split("\\|")));
@@ -411,7 +422,7 @@ public class Configuration
 			success = false;
 		}
 
-		if(success)
+		if(detailedConfigStatus && success)
 			System.out.println("Configured " + setting + " from config file");
 		
 		return success;
@@ -435,7 +446,9 @@ public class Configuration
 				{
 					set(setting, arg.substring(arg.indexOf('=') + 1));
 
-					System.out.println("Configured " + setting + " from command line");
+					if(detailedConfigStatus)
+						System.out.println("Configured " + setting + " from command line");
+					
 					return true;
 				}
 				catch(MarlaException ex)
@@ -485,7 +498,7 @@ public class Configuration
 				success = false;
 		}
 
-		if(success)
+		if(detailedConfigStatus && success)
 			System.out.println("Configured " + setting + " from search");
 
 		return success;
@@ -552,7 +565,7 @@ public class Configuration
 			success = false;
 		}
 
-		if(success)
+		if(detailedConfigStatus && success)
 			System.out.println("Configured " + setting + " with default");
 
 		return success;
@@ -688,9 +701,11 @@ public class Configuration
 		{
 			try
 			{
-				// Try to launch
+				// Try to load
 				System.out.println("Checking '" + path + "'");
-				OperationXML.loadXML(path);
+				OperationXML.clearXMLOps();
+				OperationXML.setPrimaryXMLPath(path);
+				OperationXML.loadXML();
 
 				// Must have launched successfully, use this one
 				return true;
