@@ -1,18 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<operations version="1">
+<operations>
 	<operation name="NOP" list="false">
 		<!-- This operation is used for testing. It does nothing except print
 			that it was encountered -->
 		<computation>
 			<cmd>print("NOP happened")</cmd>
-		</computation>
-	</operation>
-
-	<operation name="Broken">
-		<displayname>blahg</displayname>
-
-		<computation>
-			<cmd>Broken</cmd>
 		</computation>
 	</operation>
 

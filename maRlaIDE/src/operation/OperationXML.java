@@ -49,17 +49,17 @@ import resource.ConfigurationException;
 public class OperationXML extends Operation
 {
 	/**
-	 * Path to the XML file that specifies the operations
+	 * Path to the XML file that specifies the maRla-supplied operations
 	 */
-	private static String operationFilePath = null;
+	private static String primaryOpsPath = null;
+	/**
+	 * Path to additional XML file that specify extra operations
+	 */
+	private static List<String> additionalOpsPaths = null;
 	/**
 	 * Storage location for parsed operation XML file
 	 */
 	private static Element operationXML = null;
-	/**
-	 * Parser version this file was meant to be used under
-	 */
-	private static int parserVersion = Integer.MIN_VALUE;
 	/**
 	 * Configuration information for an instantiated operation
 	 */
@@ -89,51 +89,106 @@ public class OperationXML extends Operation
 	 * by switching back and forth from RecordMode.DISABLED and this
 	 */
 	private RecordMode intendedRecordMode = null;
-	
+
 	/**
-	 * Gets the current XML operation file path
-	 * @return path to the XML file that contains operations
+	 * Sets additional paths, beyond the primary, that OperationXML will load
+	 * operations from
+	 * @param newPath Path to main XML operation file
+	 * @return Previously set path
 	 */
-	public static String getXMLPath()
+	public static String setPrimaryXMLPath(String newPath)
 	{
-		return operationFilePath;
+		String old = primaryOpsPath;
+		primaryOpsPath = newPath;
+		return old;
 	}
 
 	/**
-	 * Loads the XML operations from disk using the default/last used file.
-	 * An exception may be thrown when the version of the XML file is
-	 * inappropriate or other parse errors occur.
+	 * Gets the current main XML operation file path
+	 * @return currently set path to the primary XML file
+	 */
+	public static String getPrimaryXMLPath()
+	{
+		return primaryOpsPath;
+	}
+	
+	/**
+	 * Sets additional paths, beyond the primary, that OperationXML will load
+	 * operations from
+	 * @param newPaths Path(s) to user-created XML operation files
+	 * @return Previously set user paths
+	 */
+	public static List<String> setUserXMLPaths(List<String> newPaths)
+	{
+		List<String> old = additionalOpsPaths;
+		additionalOpsPaths = newPaths;
+		return old;
+	}
+
+	/**
+	 * Gets the current "user" (additional) XML operation file paths
+	 * @return paths to the XML file(s) that contains operations
+	 */
+	public static List<String> getUserXMLPaths()
+	{
+		return additionalOpsPaths;
+	}
+
+	/**
+	 * Removes any currently loaded XML operation files
+	 */
+	public static void clearXMLOps()
+	{
+		operationXML = null;
+	}
+
+	/**
+	 * Loads the XML operations from disk using the set paths (user and primary)
+	 * if they are not already. To force a reload, first call clearXMLOps()
 	 */
 	public static void loadXML() throws OperationXMLException, ConfigurationException
 	{
-		loadXML(operationFilePath);
+		if(operationXML == null)
+		{
+			loadXML(primaryOpsPath);
+			loadXML(additionalOpsPaths);
+		}
+	}
+
+	/**
+	 * Clears any current XML operations and loads the ones given
+	 * @param xmlPaths Path(s) to operation XML files
+	 */
+	private static void loadXML(List<String> xmlPaths) throws OperationXMLException, ConfigurationException
+	{
+		// Load each path listed
+		for(String path : xmlPaths)
+			loadXML(path);
 	}
 
 	/**
 	 * Loads the XML. If the XML path has not been set by loadXML then an
 	 * IncompleteInitializationException is thrown. If the XML is contains
 	 * parse errors an exception will be thrown.
-	 * @param xmlPath Path to the operation XML file
+	 * @param xmlPath Path to the operation XML file to include 
 	 */
 	public static void loadXML(String xmlPath) throws OperationXMLException, ConfigurationException
 	{
 		try
 		{
-			// Make sure we know where we're looking for that there XML
+			// Make sure we know where we're looking
 			if(xmlPath == null)
-				throw new ConfigurationException("XML file for operations has not been specified", ConfigType.OpsXML);
+				throw new ConfigurationException("XML file for operations has not been specified", ConfigType.PrimaryOpsXML);
 
 			SAXBuilder parser = new SAXBuilder();
 			Document doc = parser.build(xmlPath);
-			operationXML = doc.getRootElement();
 
-			// Check version. Maybe have to use old versions of parsers someday?
-			parserVersion = Integer.parseInt(operationXML.getAttributeValue("version", "-1"));
-			if(parserVersion > 1)
-				throw new OperationXMLException("Version " + parserVersion + " of operational XML cannot be parsed.");
-
-			// Save for future use
-			operationFilePath = xmlPath;
+			// Just save it or bring it into the combined doc?
+			Element root = doc.getRootElement();
+			if(operationXML == null)
+				operationXML = root;
+			else
+				operationXML.addContent(root.cloneContent());
 		}
 		catch(JDOMException ex)
 		{
@@ -141,7 +196,7 @@ public class OperationXML extends Operation
 		}
 		catch(IOException ex)
 		{
-			throw new ConfigurationException("Unable to read the operation XML file '" + operationFilePath + "'", ConfigType.OpsXML, ex);
+			throw new ConfigurationException("Unable to read the operation XML file '" + additionalOpsPaths + "'", ConfigType.PrimaryOpsXML, ex);
 		}
 	}
 

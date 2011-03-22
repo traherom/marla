@@ -62,6 +62,10 @@ public class Configuration
 	 */
 	private static Configuration instance = null;
 	/**
+	 * Cache of wiki settings page
+	 */
+	private static String pageCache = null;
+	/**
 	 * Saves where the last load() tried to load its configuration from.
 	 * Useful for saving back to the same location
 	 */
@@ -76,7 +80,7 @@ public class Configuration
 	 */
 	public enum ConfigType {
 			DebugMode,
-			PdfTex, R, OpsXML, TexTemplate,
+			PdfTex, R, PrimaryOpsXML, UserOpsXML, TexTemplate,
 			UserName, ClassShort, ClassLong,
 			MinLineWidth, LineSpacing,
 			SendErrorReports, ReportWithProblem, ErrorServer
@@ -211,7 +215,7 @@ public class Configuration
 	/**
 	 * Gets the given configuration item's value
 	 * @param setting Setting to adjust
-	 * @return Currentlyset value for configuration item, null if there was none
+	 * @return Currently set value for configuration item, null if there was none
 	 */
 	public Object get(ConfigType setting) throws MarlaException
 	{
@@ -220,8 +224,26 @@ public class Configuration
 			case PdfTex:
 				return LatexExporter.getPdfTexPath();
 
-			case OpsXML:
-				return OperationXML.getXMLPath();
+			case PrimaryOpsXML:
+				// The first one is always the primary
+				return OperationXML.getPrimaryXMLPath();
+
+			case UserOpsXML:
+				// Combine the path(s) into a single string
+				List<String> paths = OperationXML.getUserXMLPaths();
+				if(paths != null)
+				{
+					StringBuilder sb = new StringBuilder();
+					for(int i = 1; i < paths.size(); i++)
+					{
+						sb.append(paths.get(i));
+						if(i != paths.size() - 1)
+							sb.append('|');
+					}
+					return sb.toString();
+				}
+				else
+					return null;
 
 			case R:
 				return RProcessor.getRLocation();
@@ -277,8 +299,15 @@ public class Configuration
 				previous = LatexExporter.setPdfTexPath(val.toString());
 				break;
 
-			case OpsXML:
-				OperationXML.loadXML(val.toString());
+			case PrimaryOpsXML:
+				previous = OperationXML.setPrimaryXMLPath(val.toString());
+				break;
+
+			case UserOpsXML:
+				previous = get(setting);
+				
+				// Break apart if needed
+				OperationXML.setUserXMLPaths(Arrays.asList(val.toString().split("\\|")));
 				break;
 
 			case R:
@@ -435,7 +464,7 @@ public class Configuration
 				success = findAndSetPdfTex();
 				break;
 
-			case OpsXML:
+			case PrimaryOpsXML:
 				success = findAndSetOpsXML();
 				break;
 
@@ -504,6 +533,11 @@ public class Configuration
 				case ClassLong:
 				case ClassShort:
 				case UserName:
+					set(setting, "");
+					success = true;
+					break;
+
+				case UserOpsXML:
 					set(setting, "");
 					success = true;
 					break;
@@ -736,7 +770,7 @@ public class Configuration
 	 * @param additional List of directories to manually add to the search
 	 * @return Path to executable, as usable by createProcess(). Null if not found
 	 */
-	private static List<String> findFile(String fileName, String dirSearch, List<File> additional)
+	public static List<String> findFile(String fileName, String dirSearch, List<File> additional)
 	{
 		// Check if it's on the path, in which case we don't bother searching
 		//if(isOnPath(exeName))
@@ -792,36 +826,54 @@ public class Configuration
 		return files;
 	}
 
+	/**
+	 * Fetches the wiki setting page and searches it for the given tag
+	 * @param tag Tag to search for on wiki page
+	 * @return String found between the tag markers
+	 */
+	public static String fetchSettingFromServer(String tag)
+	{
+		try
+		{
+			if(pageCache == null)
+			{
+				// Get the wiki page with the latest URL
+				URL url = new URL("http://code.google.com/p/marla/wiki/CurrentSettings");
+				URLConnection conn = url.openConnection();
+
+				// Read in page
+				BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+				StringBuilder page = new StringBuilder();
+				String line = null;
+				while((line = rd.readLine()) != null)
+					page.append(line);
+				rd.close();
+
+				// Cache
+				pageCache = page.toString();
+			}
+
+			// Find the markers
+			Pattern server = Pattern.compile("\\|" + tag + "\\|(.+)\\|" + tag + "\\|");
+			Matcher m = server.matcher(pageCache.toString());
+			if(!m.find())
+				return null;
+
+			return m.group(1);
+		}
+		catch(IOException ex)
+		{
+			return null;
+		}
+	}
+
 	private static boolean retreiveAndSetErrorServer()
 	{
 		try
 		{
-			// Get the wiki page with the latest URL
-			URL url = new URL("http://code.google.com/p/marla/wiki/ReportServer");
-			URLConnection conn = url.openConnection();
-
-			// Read in page
-			BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-			StringBuilder page = new StringBuilder();
-			String line = null;
-			while((line = rd.readLine()) != null)
-				page.append(line);
-			rd.close();
-
-			// Find the <server> markers
-			Pattern server = Pattern.compile("\\|SERVER\\|(http://.+)\\|SERVER\\|");
-			Matcher m = server.matcher(page.toString());
-			if(!m.find())
-				return false;
-			
 			// Set
-			Domain.setErrorServer(m.group(1));
-
+			Domain.setErrorServer(fetchSettingFromServer("SERVER"));
 			return true;
-		}
-		catch(IOException ex)
-		{
-			return false;
 		}
 		catch(ConfigurationException ex)
 		{
@@ -841,7 +893,7 @@ public class Configuration
 			case PdfTex:
 				return "pdfTeX path";
 
-			case OpsXML:
+			case PrimaryOpsXML:
 				return "Operation XML path";
 
 			case R:

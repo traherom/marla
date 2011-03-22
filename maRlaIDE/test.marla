@@ -65,33 +65,33 @@
     </operation>
     <operation type="operation.OperationXML" name="atan()" id="485666988" x="370" y="154" height="16" width="105">
       <remark />
-      <operation type="operation.OperationXML" name="Broken" id="1914670850" x="404" y="184" height="16" width="36">
+      <operation type="operation.OperationXML" name="Custom" id="-1558810952" x="398" y="214" height="16" width="49">
         <remark />
-        <extra name="Broken" />
+        <extra name="Custom" />
       </operation>
       <question name="col" answer="Column 1" />
       <extra name="atan()" />
     </operation>
   </data>
   <part id="a." color="-721152">
+    <step id="1240439882" />
     <step id="-1749331733" />
     <step id="-1586253957" />
     <step id="1622297566" />
-    <step id="1240439882" />
     <statement>Part A!</statement>
     <conclusion>A was great</conclusion>
   </part>
   <part id="b." color="-13352999">
-    <step id="1240439882" />
     <step id="1622297566" />
+    <step id="1240439882" />
     <statement>Part B :(</statement>
     <conclusion>Sad Day</conclusion>
   </part>
   <part id="c." color="-3206776">
+    <step id="1240439882" />
     <step id="-1749331733" />
     <step id="-1586253957" />
     <step id="1622297566" />
-    <step id="1240439882" />
     <statement />
     <conclusion />
   </part>
@@ -100,11 +100,11 @@
     <conclusion />
   </part>
   <part id="e." color="-6225507">
-    <step id="1648532359" />
-    <step id="1240439882" />
     <step id="-1749331733" />
     <step id="-1586253957" />
     <step id="1622297566" />
+    <step id="1648532359" />
+    <step id="1240439882" />
     <statement />
     <conclusion />
   </part>

@@ -442,7 +442,7 @@ public class SettingsDialog extends EscapeDialog
 
 	private void operationsButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_operationsButtonActionPerformed
 	{//GEN-HEADEREND:event_operationsButtonActionPerformed
-		VIEW_PANEL.openChooserDialog.setDialogTitle(Configuration.getName(Configuration.ConfigType.OpsXML));
+		VIEW_PANEL.openChooserDialog.setDialogTitle(Configuration.getName(Configuration.ConfigType.PrimaryOpsXML));
 		VIEW_PANEL.openChooserDialog.resetChoosableFileFilters();
 		VIEW_PANEL.openChooserDialog.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
 		// Display the chooser and retrieve the selected file
@@ -451,7 +451,7 @@ public class SettingsDialog extends EscapeDialog
 		{
 			try
 			{
-				Configuration.getInstance().set(Configuration.ConfigType.OpsXML, VIEW_PANEL.openChooserDialog.getSelectedFile().getPath());
+				Configuration.getInstance().set(Configuration.ConfigType.PrimaryOpsXML, VIEW_PANEL.openChooserDialog.getSelectedFile().getPath());
 				rPathTextField.setText(VIEW_PANEL.openChooserDialog.getSelectedFile().getPath());
 				VIEW_PANEL.reloadOperations();
 			}
@@ -609,7 +609,7 @@ public class SettingsDialog extends EscapeDialog
 			rPathTextField.setText (config.get(Configuration.ConfigType.R).toString());
 			latexPathTextField.setText (config.get(Configuration.ConfigType.PdfTex).toString());
 			latexTemplateTextField.setText (config.get(Configuration.ConfigType.TexTemplate).toString());
-			operationsTextField.setText (config.get(Configuration.ConfigType.OpsXML).toString());
+			operationsTextField.setText (config.get(Configuration.ConfigType.PrimaryOpsXML).toString());
 			studentNameTextField.setText (config.get(Configuration.ConfigType.UserName).toString());
 			courseShortNameTextField.setText (config.get(Configuration.ConfigType.ClassShort).toString());
 			courseLongNameTextField.setText (config.get(Configuration.ConfigType.ClassLong).toString());
