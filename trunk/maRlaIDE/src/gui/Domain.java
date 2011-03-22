@@ -213,7 +213,7 @@ public class Domain
 	 *
 	 * @param indeterminate True for an indeterminate progress bar, false otherwise.
 	 */
-	public void setProgressIndeterminate(boolean indeterminate)
+	public static void setProgressIndeterminate(boolean indeterminate)
 	{
 		MainFrame.progressFrame.progressBar.setIndeterminate(indeterminate);
 	}
@@ -223,7 +223,7 @@ public class Domain
 	 *
 	 * @param string The string shown within the progress bar.
 	 */
-	public void setProgressString(String string)
+	public static void setProgressString(String string)
 	{
 		MainFrame.progressFrame.progressBar.setString(string);
 	}
@@ -233,7 +233,7 @@ public class Domain
 	 *
 	 * @param status The status to be set.
 	 */
-	public void setProgressStatus(String status)
+	public static void setProgressStatus(String status)
 	{
 		MainFrame.progressFrame.statusLabel.setText(status);
 	}
@@ -244,7 +244,7 @@ public class Domain
 	 *
 	 * @param minValue The minimum value of the progress bar.
 	 */
-	public void setProgressMinValue(int minValue)
+	public static void setProgressMinValue(int minValue)
 	{
 		MainFrame.progressFrame.progressBar.setMinimum(minValue);
 	}
@@ -255,7 +255,7 @@ public class Domain
 	 *
 	 * @param maxValue The maximum value of the progress bar.
 	 */
-	public void setProgressMaxValue(int maxValue)
+	public static void setProgressMaxValue(int maxValue)
 	{
 		MainFrame.progressFrame.progressBar.setMaximum(maxValue);
 	}
@@ -267,7 +267,7 @@ public class Domain
 	 *
 	 * @param value The value of the progress bar.
 	 */
-	public void setProgressValue(int value)
+	public static void setProgressValue(int value)
 	{
 		MainFrame.progressFrame.progressBar.setValue(value);
 	}
