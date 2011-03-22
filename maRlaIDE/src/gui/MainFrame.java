@@ -90,6 +90,7 @@ public class MainFrame extends JFrame
 		Configuration conf = Configuration.getInstance();
 		List<ConfigType> missed = conf.configureAll(args);
 
+		/*
 		try
 		{
 			// Update if possible
@@ -99,6 +100,7 @@ public class MainFrame extends JFrame
 		{
 			Domain.logger.add(ex);
 		}
+		*/
 
 		int currIndex = 0;
 		while(currIndex < missed.size())
