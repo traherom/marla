@@ -81,9 +81,7 @@
         -->
         <property name="store.jar.name" value="maRlaIDE"/>
 
-
         <!-- don't edit below this line -->
-
         <property name="store.dir" value="store"/>
         <property name="store.jar" value="${store.dir}/${store.jar.name}.jar"/>
 
@@ -106,33 +104,34 @@
             excludes="META-INF/*.SF, META-INF/*.DSA, META-INF/*.RSA"/>
         </zip>
 
+		<copy file="test/ops.xml" todir="${store.dir}" />
+		<copy file="test/export_template.xml" todir="${store.dir}" />
+
         <delete file="${store.dir}/temp_final.jar"/>
     </target>
 
     <target name="create-installer" depends="package-for-store">
-        <property name="store.dir" value="store"/>
+		<property name="installer.file" value="Setup.exe" />
+		<property name="store.dir" value="store"/>
 
-	<echo message="Building Windows installer for ${application.title}"/>
-	
-	<!-- Move needed files to local dir -->
-	<copy file="test/ops.xml" todir="." /> 
-	<copy file="src/images/maRla.ico" todir="." /> 
-	<copy file="test/export_template.xml" todir="." /> 
-	<copy file="${store.dir}/maRlaIDE.jar" todir="." />
+		<echo message="Building Windows installer for ${application.title}"/>
 
-	<!-- Generate exe -->
-	<exec executable="makensis">
-		<arg value="install_script.nsi"/>
-	</exec>
+		<!-- Move needed files to store -->
+		<copy file="install_script.nsi" todir="${store.dir}" />
+		<copy file="gpl-3.0.txt" todir="${store.dir}" />
+		<copy file="src/images/maRla.ico" todir="${store.dir}" />
 
-	<!-- Move to store -->
-	<move file="Setup.exe" todir="${store.dir}" />
+		<!-- Generate exe -->
+		<exec executable="makensis" dir="${store.dir}" resultproperty="build.result" searchpath="true">
+			<arg value="install_script.nsi"/>
+		</exec>
 
-	<!-- Remove temp files -->
-	<delete file="maRla.ico" /> 
-	<delete file="ops.xml" />
-	<delete file="export_template.xml" />
-	<delete file="maRlaIDE.jar" />
+		<!-- Remove temp files -->
+		<delete file="${store.dir}/install_script.nsi" />
+		<delete file="${store.dir}/gpl-3.0.txt" />
+		<delete file="${store.dir}/maRla.ico" />
+
+		<echo message="Windows installer created at ${installer.file}" />
     </target>
 	
 	<path id="svnant.classpath">
