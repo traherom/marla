@@ -108,14 +108,40 @@
 
         <delete file="${store.dir}/temp_final.jar"/>
     </target>
+
+    <target name="create-installer" depends="package-for-store">
+        <property name="store.dir" value="store"/>
+
+	<echo message="Building Windows installer for ${application.title}"/>
+	
+	<!-- Move needed files to local dir -->
+	<copy file="test/ops.xml" todir="." /> 
+	<copy file="src/images/maRla.ico" todir="." /> 
+	<copy file="test/export_template.xml" todir="." /> 
+	<copy file="${store.dir}/maRlaIDE.jar" todir="." />
+
+	<!-- Generate exe -->
+	<exec executable="makensis">
+		<arg value="install_script.nsi"/>
+	</exec>
+
+	<!-- Move to store -->
+	<move file="Setup.exe" todir="${store.dir}" />
+
+	<!-- Remove temp files -->
+	<delete file="maRla.ico" /> 
+	<delete file="ops.xml" />
+	<delete file="export_template.xml" />
+	<delete file="maRlaIDE.jar" />
+    </target>
 	
 	<path id="svnant.classpath">
 		<fileset dir="svnant">
 			<include name="**/*.jar"/>
 		</fileset>
-	</path>  
+	</path>
   
-    <target name="-pre-compile">
+	<target name="-pre-init">
 		<echo>Generate build info class...</echo>
 		<typedef resource="org/tigris/subversion/svnant/svnantlib.xml" classpathref="svnant.classpath" />
 		<svn javahl="false" svnkit="true">
