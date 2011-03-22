@@ -65,10 +65,6 @@
     </operation>
     <operation type="operation.OperationXML" name="atan()" id="485666988" x="370" y="154" height="16" width="105">
       <remark />
-      <operation type="operation.OperationXML" name="Custom" id="-1558810952" x="398" y="214" height="16" width="49">
-        <remark />
-        <extra name="Custom" />
-      </operation>
       <question name="col" answer="Column 1" />
       <extra name="atan()" />
     </operation>
