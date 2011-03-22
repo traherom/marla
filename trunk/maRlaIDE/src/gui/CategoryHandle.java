@@ -66,7 +66,6 @@ public class CategoryHandle extends JPanel
 		setLayout (new GridLayout(1,1));
 		add(label);
 		target = new Rectangle (0, 0, 500, 20);
-		setMaximumSize (new Dimension(500, 20));
 	}
 
 	/**
