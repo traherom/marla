@@ -694,6 +694,7 @@ public class LatexExporter
 			sb.append("}\\\\\n\\hline\n");
 		}
 
+		/* TBD figure out a good way to include R if desired
 		if(includeR)
 		{
 			sb.append("\\multicolumn{");
@@ -709,6 +710,7 @@ public class LatexExporter
 		
 			sb.append("}\\\\\n\\hline\n");
 		}
+		 */
 
 		// End table
 		sb.append("\\end{tabular}\n");
