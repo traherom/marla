@@ -94,8 +94,6 @@ public class LoadSaveThread extends Thread
 
 			// Write log file occasionally
 			domain.writeLoggerFile();
-
-			//save ();
 		}
 	}
 
