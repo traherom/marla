@@ -118,8 +118,6 @@ public class ViewPanel extends JPanel
 	public static Font FONT_BOLD_11 = new Font("Verdana", Font.BOLD, 11);
 	/** Default, bold, 12-point font.*/
 	public static Font FONT_BOLD_12 = new Font("Verdana", Font.BOLD, 12);
-	/** Layout constraints for the palette.*/
-	public GridBagConstraints COMP_CONSTRAINTS = new GridBagConstraints();
 	/** The minimum distance the mouse must be dragged before a component will break free.*/
 	private final int MIN_DRAG_DIST = 15;
 	/** The domain object reference performs generic actions specific to the GUI.*/
@@ -138,6 +136,8 @@ public class ViewPanel extends JPanel
 	 * of the window too soon
 	 */
 	protected boolean startingAnswerPanelDisplay = false;
+	/** Layout constraints for the palette.*/
+	public GridBagConstraints compConstraints = new GridBagConstraints();
 	/** True while the program is in startup, false otherwise.*/
 	protected boolean initLoading = true;
 	/** The width between two operations/data sets.*/
@@ -164,6 +164,12 @@ public class ViewPanel extends JPanel
 	private int startX = -1;
 	/** The initial y for dragging the component.*/
 	private int startY = -1;
+	/** The counter illustrating what column we're adding to in the legend.*/
+	protected int firstCounter = 3;
+	/** The first placeholder (second column) in the legend.*/
+	protected JLabel second = null;
+	/** The second placeholder (third column) in the legend.*/
+	protected JLabel third = null;
 	/** True when the mouse has dragged far enough to break the component away, false otherwise.*/
 	private boolean broken = false;
 	/** The default file filter for a JFileChooser open dialog.*/
@@ -276,12 +282,11 @@ public class ViewPanel extends JPanel
 		{
 			componentsScrollablePanel.removeAll();
 
-			// Force operations to be reloaded
+			// Force operations to be reloadedEnhancement summary
 			OperationXML.loadXML();
 			
+			// Reload operations in the interface
 			loadOperations();
-
-			componentsScrollablePanel.repaint();
 		}
 		catch(MarlaException ex)
 		{
@@ -301,11 +306,11 @@ public class ViewPanel extends JPanel
 		Set<String> categories = ops.keySet();
 
 		// Add all operation types to the palette, adding listeners to the labels as we go
-		COMP_CONSTRAINTS.gridx = 0;
-		COMP_CONSTRAINTS.gridwidth = 1;
-		COMP_CONSTRAINTS.weighty = 1;
-		COMP_CONSTRAINTS.fill = GridBagConstraints.VERTICAL;
-		COMP_CONSTRAINTS.anchor = GridBagConstraints.FIRST_LINE_START;
+		compConstraints.gridx = 0;
+		compConstraints.gridwidth = 1;
+		compConstraints.weighty = 1;
+		compConstraints.fill = GridBagConstraints.VERTICAL;
+		compConstraints.anchor = GridBagConstraints.FIRST_LINE_START;
 		int catCount = 0;
 		for(String key : categories)
 		{
@@ -387,16 +392,18 @@ public class ViewPanel extends JPanel
 			catHandlePanel.setPreferredSize (new Dimension (200, 20));
 			catContentPanel.setPreferredSize (new Dimension (200, catContentPanel.getPreferredSize().height));
 
-			COMP_CONSTRAINTS.gridy = catCount;
-			COMP_CONSTRAINTS.weighty = 0;
-			componentsScrollablePanel.add(wrapperPanel, COMP_CONSTRAINTS);
+			compConstraints.gridy = catCount;
+			compConstraints.weighty = 0;
+			componentsScrollablePanel.add(wrapperPanel, compConstraints);
 			++catCount;
 		}
 
 		// Add final component to offset weight
-		COMP_CONSTRAINTS.gridy = catCount;
-		COMP_CONSTRAINTS.weighty = 1;
-		componentsScrollablePanel.add(new JLabel (""), COMP_CONSTRAINTS);
+		compConstraints.gridy = catCount;
+		compConstraints.weighty = 1;
+		componentsScrollablePanel.add(new JLabel (""), compConstraints);
+
+		componentsScrollablePanel.updateUI();
 	}
 
 	/** This method is called from within the constructor to
@@ -449,8 +456,7 @@ public class ViewPanel extends JPanel
         componentsScrollPane = new javax.swing.JScrollPane();
         componentsScrollablePanel = new javax.swing.JPanel();
         legendPanel = new javax.swing.JPanel();
-        legendScrollPane = new javax.swing.JScrollPane();
-        legendScrollablePanel = new javax.swing.JPanel();
+        legendContentPanel = new javax.swing.JPanel();
 
         openChooserDialog.setApproveButtonToolTipText("Open selected folder");
         openChooserDialog.setDialogTitle("Browse Problem Location");
@@ -781,6 +787,7 @@ public class ViewPanel extends JPanel
 
         add(workspaceCardPanel, java.awt.BorderLayout.CENTER);
 
+        rightSidePanel.setMaximumSize(new java.awt.Dimension(220, 2147483647));
         rightSidePanel.setPreferredSize(new java.awt.Dimension(220, 592));
         rightSidePanel.setLayout(new java.awt.GridBagLayout());
 
@@ -791,11 +798,11 @@ public class ViewPanel extends JPanel
         emptyPalettePanel.setLayout(emptyPalettePanelLayout);
         emptyPalettePanelLayout.setHorizontalGroup(
             emptyPalettePanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(0, 197, Short.MAX_VALUE)
+            .add(0, 208, Short.MAX_VALUE)
         );
         emptyPalettePanelLayout.setVerticalGroup(
             emptyPalettePanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(0, 481, Short.MAX_VALUE)
+            .add(0, 607, Short.MAX_VALUE)
         );
 
         paletteCardPanel.add(emptyPalettePanel, "card3");
@@ -818,30 +825,22 @@ public class ViewPanel extends JPanel
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.ipadx = 180;
-        gridBagConstraints.ipady = 481;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 1.0;
         rightSidePanel.add(paletteCardPanel, gridBagConstraints);
 
         legendPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Legend", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Verdana", 0, 12))); // NOI18N
         legendPanel.setLayout(new java.awt.GridLayout(1, 1));
 
-        legendScrollPane.setBorder(null);
-        legendScrollPane.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-
-        legendScrollablePanel.setLayout(new java.awt.GridLayout(1, 3));
-        legendScrollPane.setViewportView(legendScrollablePanel);
-
-        legendPanel.add(legendScrollPane);
+        legendContentPanel.setLayout(new java.awt.GridLayout(0, 3));
+        legendPanel.add(legendContentPanel);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 1;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.ipadx = 180;
-        gridBagConstraints.ipady = 120;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTH;
+        gridBagConstraints.weightx = 1.0;
         rightSidePanel.add(legendPanel, gridBagConstraints);
 
         add(rightSidePanel, java.awt.BorderLayout.EAST);
@@ -1987,19 +1986,54 @@ public class ViewPanel extends JPanel
 			ensureComponentsVisible();
 
 			// Add sub problems to legend
-			legendScrollablePanel.removeAll();
+			legendContentPanel.removeAll();
+			((GridLayout) legendContentPanel.getLayout()).setRows(0);
+			firstCounter = 3;
 			for (int i = 0; i < domain.problem.getSubProblemCount(); ++i)
 			{
-				JLabel label = new JLabel(domain.problem.getSubProblem(i).getSubproblemID());
-				label.setForeground(domain.problem.getSubProblem(i).getColor());
-				if ((legendScrollablePanel.getComponentCount() + 1) % 4 == 0)
+				// Add sub problem to legend
+				JLabel label;
+				if (firstCounter == 1)
 				{
-					GridLayout layout = (GridLayout) legendScrollablePanel.getLayout();
-					layout.setRows(layout.getRows() + 1);
+					label = second;
 				}
-				legendScrollablePanel.add(label);
+				else if (firstCounter == 2)
+				{
+					label = third;
+				}
+				else
+				{
+					label = new JLabel ("");
+					second = new JLabel ("");
+					third = new JLabel ("");
+				}
+				label.setFont(FONT_PLAIN_12);
+				label.setText(domain.problem.getSubProblem(i).getSubproblemID());
+				label.setForeground(domain.problem.getSubProblem(i).getColor());
+
+				if (firstCounter == 3)
+				{
+					firstCounter = 0;
+
+					GridLayout layout = (GridLayout) legendContentPanel.getLayout();
+					layout.setRows(layout.getRows() + 1);
+
+					legendContentPanel.add(label);
+					legendContentPanel.add(second);
+					legendContentPanel.add(third);
+
+					legendContentPanel.updateUI();
+				}
+				++firstCounter;
 			}
-			legendScrollablePanel.updateUI();
+			if (legendContentPanel.getComponentCount() == 0)
+			{
+				((GridLayout) legendContentPanel.getLayout()).setColumns(1);
+				JLabel noneLabel = new JLabel ("-No Sub Problems-");
+				noneLabel.setFont(FONT_BOLD_12);
+				legendContentPanel.add (noneLabel);
+			}
+			legendContentPanel.updateUI();
 		}
 	}
 
@@ -2059,7 +2093,8 @@ public class ViewPanel extends JPanel
 				preWorkspacePanel.setVisible(true);
 				workspacePanel.setVisible(false);
 
-				legendPanel.removeAll();
+				legendContentPanel.removeAll();
+				((GridLayout) legendContentPanel.getLayout()).setRows(0);
 
 				domain.problem = null;
 
@@ -2201,9 +2236,8 @@ public class ViewPanel extends JPanel
     private javax.swing.JToolBar.Separator jSeparator1;
     private javax.swing.JToolBar.Separator jSeparator2;
     private javax.swing.JToolBar.Separator jSeparator3;
+    protected javax.swing.JPanel legendContentPanel;
     private javax.swing.JPanel legendPanel;
-    private javax.swing.JScrollPane legendScrollPane;
-    protected javax.swing.JPanel legendScrollablePanel;
     private javax.swing.JPopupMenu.Separator menuSeparator1;
     private javax.swing.JPopupMenu.Separator menuSeparator2;
     private javax.swing.JPopupMenu.Separator menuSeparator3;

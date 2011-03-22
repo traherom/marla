@@ -783,16 +783,45 @@ public class NewProblemWizardDialog extends EscapeDialog
 
 		if (editing)
 		{
-			// Add sub problem to legend
-			JLabel label = new JLabel(subProblem.getSubproblemID());
-			label.setForeground(subProblem.getColor());
-			if ((VIEW_PANEL.legendScrollablePanel.getComponentCount() + 1) % 4 == 0)
+			if (VIEW_PANEL.legendContentPanel.getComponentCount() == 1)
 			{
-				GridLayout layout = (GridLayout) VIEW_PANEL.legendScrollablePanel.getLayout();
-				layout.setRows(layout.getRows() + 1);
+				VIEW_PANEL.legendContentPanel.removeAll();
+				((GridLayout) VIEW_PANEL.legendContentPanel.getLayout()).setColumns(3);
 			}
-			VIEW_PANEL.legendScrollablePanel.add(label);
-			VIEW_PANEL.legendScrollablePanel.updateUI();
+			
+			// Add sub problem to legend
+			JLabel label;
+			if (VIEW_PANEL.firstCounter == 1)
+			{
+				label = VIEW_PANEL.second;
+			}
+			else if (VIEW_PANEL.firstCounter == 2)
+			{
+				label = VIEW_PANEL.third;
+			}
+			else
+			{
+				label = new JLabel ("");
+				VIEW_PANEL.second = new JLabel ("");
+				VIEW_PANEL.third = new JLabel ("");
+			}
+			label.setText(subProblem.getSubproblemID());
+			label.setForeground(subProblem.getColor());
+
+			if (VIEW_PANEL.firstCounter == 3)
+			{
+				VIEW_PANEL.firstCounter = 0;
+				
+				GridLayout layout = (GridLayout) VIEW_PANEL.legendContentPanel.getLayout();
+				layout.setRows(layout.getRows() + 1);
+
+				VIEW_PANEL.legendContentPanel.add(label);
+				VIEW_PANEL.legendContentPanel.add(VIEW_PANEL.second);
+				VIEW_PANEL.legendContentPanel.add(VIEW_PANEL.third);
+
+				VIEW_PANEL.legendContentPanel.updateUI();
+			}
+			++VIEW_PANEL.firstCounter;
 		}
 
 		((JTextArea) ((JViewport) ((JScrollPane) ((JPanel) subProblemPanels.get(subProblemPanels.size() - 1)).getComponent(1)).getComponent(0)).getComponent(0)).requestFocus();
@@ -801,14 +830,13 @@ public class NewProblemWizardDialog extends EscapeDialog
 	private void removeSubProblemButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeSubProblemButtonActionPerformed
 		// Remove the JPanel from the list of sub problems and from the New Problem Wizard
 		JPanel panel = subProblemPanels.remove(subProblemPanels.size() - 1);
-		SubProblem subProblem;
 		if(newProblem != null)
 		{
-			subProblem = newProblem.removeSubProblem(newProblem.getSubProblem(newProblem.getSubProblemCount() - 1));
+			newProblem.removeSubProblem(newProblem.getSubProblem(newProblem.getSubProblemCount() - 1));
 		}
 		else
 		{
-			subProblem = domain.problem.removeSubProblem(domain.problem.getSubProblem(domain.problem.getSubProblemCount() - 1));
+			domain.problem.removeSubProblem(domain.problem.getSubProblem(domain.problem.getSubProblemCount() - 1));
 		}
 		subProblemsScollablePanel.remove(panel);
 
@@ -825,8 +853,44 @@ public class NewProblemWizardDialog extends EscapeDialog
 
 		if (editing)
 		{
-			VIEW_PANEL.legendScrollablePanel.remove(findLabel(subProblem.getSubproblemID()));
-			VIEW_PANEL.legendScrollablePanel.updateUI();
+			if (VIEW_PANEL.firstCounter == 3)
+			{
+				VIEW_PANEL.third.setText ("");
+			}
+			else if (VIEW_PANEL.firstCounter == 2)
+			{
+				VIEW_PANEL.second.setText ("");
+			}
+			else if(VIEW_PANEL.firstCounter == 1)
+			{
+				VIEW_PANEL.firstCounter = 4;
+
+				VIEW_PANEL.legendContentPanel.remove(VIEW_PANEL.legendContentPanel.getComponentCount() - 1);
+				VIEW_PANEL.legendContentPanel.remove(VIEW_PANEL.legendContentPanel.getComponentCount() - 1);
+				VIEW_PANEL.legendContentPanel.remove(VIEW_PANEL.legendContentPanel.getComponentCount() - 1);
+
+				GridLayout layout = (GridLayout) VIEW_PANEL.legendContentPanel.getLayout();
+				layout.setRows(layout.getRows() - 1);
+
+				if (VIEW_PANEL.legendContentPanel.getComponentCount() >= 3)
+				{
+					VIEW_PANEL.third = (JLabel) VIEW_PANEL.legendContentPanel.getComponent(VIEW_PANEL.legendContentPanel.getComponentCount() - 1);
+					VIEW_PANEL.second = (JLabel) VIEW_PANEL.legendContentPanel.getComponent(VIEW_PANEL.legendContentPanel.getComponentCount() - 2);
+				}
+				else
+				{
+					if (VIEW_PANEL.legendContentPanel.getComponentCount() == 0)
+					{
+						((GridLayout) VIEW_PANEL.legendContentPanel.getLayout()).setColumns(1);
+						JLabel noneLabel = new JLabel ("-No Sub Problems-");
+						noneLabel.setFont(VIEW_PANEL.FONT_BOLD_12);
+						VIEW_PANEL.legendContentPanel.add (noneLabel);
+					}
+				}
+
+				VIEW_PANEL.legendContentPanel.updateUI();
+			}
+			--VIEW_PANEL.firstCounter;
 		}
 
 		try
@@ -1365,7 +1429,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 	 */
 	private JLabel findLabel(String id)
 	{
-		for (Component comp : VIEW_PANEL.legendScrollablePanel.getComponents())
+		for (Component comp : VIEW_PANEL.legendContentPanel.getComponents())
 		{
 			if (((JLabel) comp).getText().equals(id))
 			{

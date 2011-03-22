@@ -18,6 +18,7 @@
 
 // Intentionlly in the default package. This makes the title
 // appear correctly(ish) on OS X
+
 import gui.Domain;
 import gui.MainFrame;
 import gui.ProgressFrame;

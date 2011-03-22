@@ -239,8 +239,8 @@ public class Domain
 	}
 
 	/**
-	 * The minimum value a progress can be--must be set before progress bar will
-	 * scale properly if indeterminate is false.
+	 * The minimum value a progress can be.  Minimum has been set to 0 by default,
+	 * so only use this accessor if you want to change that value.
 	 *
 	 * @param minValue The minimum value of the progress bar.
 	 */
@@ -250,8 +250,8 @@ public class Domain
 	}
 
 	/**
-	 * The maximum value a progress can be--must be set before progress bar will
-	 * scale properly if indeterminate is false.
+	 * The maximum value a progress can be.  Maximum has been set to 100 by default,
+	 * so only use this accessor if you want to change that value.
 	 *
 	 * @param maxValue The maximum value of the progress bar.
 	 */

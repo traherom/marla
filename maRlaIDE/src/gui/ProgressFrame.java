@@ -61,10 +61,12 @@ public class ProgressFrame extends JFrame
         setResizable(false);
         setUndecorated(true);
 
-        progressBar.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        progressPanel.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+
+        progressBar.setFont(new java.awt.Font("Verdana", 0, 12));
         progressBar.setStringPainted(true);
 
-        statusLabel.setFont(new java.awt.Font("Verdana", 0, 12));
+        statusLabel.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
         statusLabel.setText("Loading ...");
 
         javax.swing.GroupLayout progressPanelLayout = new javax.swing.GroupLayout(progressPanel);
@@ -74,8 +76,8 @@ public class ProgressFrame extends JFrame
             .addGroup(progressPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(progressPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(statusLabel, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 376, Short.MAX_VALUE)
-                    .addComponent(progressBar, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 376, Short.MAX_VALUE))
+                    .addComponent(statusLabel, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 372, Short.MAX_VALUE)
+                    .addComponent(progressBar, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 372, Short.MAX_VALUE))
                 .addContainerGap())
         );
         progressPanelLayout.setVerticalGroup(

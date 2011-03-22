@@ -21,8 +21,6 @@ package gui;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Toolkit;
-import java.awt.event.ComponentEvent;
-import java.awt.event.ComponentListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.List;
@@ -64,31 +62,6 @@ public class MainFrame extends JFrame
 		viewPanel = new ViewPanel(this);
 		// Add the view to the frame
 		add(viewPanel);
-
-		addComponentListener(new ComponentListener()
-		{
-			@Override
-			public void componentResized(ComponentEvent evt)
-			{
-				verifyBounds(evt);
-			}
-
-			@Override
-			public void componentMoved(ComponentEvent evt)
-			{
-				verifyBounds(evt);
-			}
-
-			@Override
-			public void componentShown(ComponentEvent evt)
-			{
-			}
-
-			@Override
-			public void componentHidden(ComponentEvent evt)
-			{
-			}
-		});
 
 		// Initialize frame components
 		initComponents();
@@ -193,6 +166,7 @@ public class MainFrame extends JFrame
 
 		progressFrame.setAlwaysOnTop(true);
 		super.setVisible(visible);
+		verifyBounds();
 	}
 
 	/**
@@ -221,34 +195,32 @@ public class MainFrame extends JFrame
 	/**
 	 * Verify that the application is within the screen resolution both in size
 	 * and in location.
-	 *
-	 * @param evt The triggering event for this function.
 	 */
-	private void verifyBounds(ComponentEvent evt)
+	private void verifyBounds()
 	{
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 
-		int x = evt.getComponent().getX();
-		int y = evt.getComponent().getY();
+		int x = getX();
+		int y = getY();
 		if(x > screenSize.getWidth())
 		{
-			x = (int) screenSize.getWidth() - evt.getComponent().getWidth();
+			x = (int) screenSize.getWidth() - getWidth();
 		}
-		if(x < 0 - evt.getComponent().getWidth())
+		if(x < 0 - getWidth())
 		{
 			x = 0;
 		}
 		if(y > screenSize.getHeight())
 		{
-			y = (int) screenSize.getHeight() - evt.getComponent().getHeight();
+			y = (int) screenSize.getHeight() - getHeight();
 		}
-		if(y < 0 - evt.getComponent().getHeight())
+		if(y < 0 - getHeight())
 		{
 			y = 0;
 		}
 
-		int width = evt.getComponent().getWidth();
-		int height = evt.getComponent().getHeight();
+		int width = getWidth();
+		int height = getHeight();
 		if(width < MINIMUM_WINDOW_SIZE.width)
 		{
 			width = MINIMUM_WINDOW_SIZE.width;
