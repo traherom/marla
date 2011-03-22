@@ -67,7 +67,7 @@ public class Domain
 	/** The name of the application.*/
 	public static final String NAME = "The maRla Project";
 	/** The version number of the application.*/
-	public static final String VERSION = "0.04";
+	public static final String VERSION = "0.05";
 	/** The pre-release version name of the application.*/
 	public static final String PRE_RELEASE = "Alpha";
 	/** The location of the application as it runs.*/
@@ -205,6 +205,71 @@ public class Domain
 		boolean old = sendErrorReport;
 		sendErrorReport = send;
 		return old;
+	}
+
+	/**
+	 * Enable or disable the indeterminate state of the progress bar. Must be
+	 * set to false if you wish to set values manually.
+	 *
+	 * @param indeterminate True for an indeterminate progress bar, false otherwise.
+	 */
+	public void setProgressIndeterminate(boolean indeterminate)
+	{
+		MainFrame.progressFrame.progressBar.setIndeterminate(indeterminate);
+	}
+
+	/**
+	 * Set the string shown within the progress bar.
+	 *
+	 * @param string The string shown within the progress bar.
+	 */
+	public void setProgressString(String string)
+	{
+		MainFrame.progressFrame.progressBar.setString(string);
+	}
+
+	/**
+	 * Set the status label below the progress bar.
+	 *
+	 * @param status The status to be set.
+	 */
+	public void setProgressStatus(String status)
+	{
+		MainFrame.progressFrame.statusLabel.setText(status);
+	}
+
+	/**
+	 * The minimum value a progress can be--must be set before progress bar will
+	 * scale properly if indeterminate is false.
+	 *
+	 * @param minValue The minimum value of the progress bar.
+	 */
+	public void setProgressMinValue(int minValue)
+	{
+		MainFrame.progressFrame.progressBar.setMinimum(minValue);
+	}
+
+	/**
+	 * The maximum value a progress can be--must be set before progress bar will
+	 * scale properly if indeterminate is false.
+	 *
+	 * @param maxValue The maximum value of the progress bar.
+	 */
+	public void setProgressMaxValue(int maxValue)
+	{
+		MainFrame.progressFrame.progressBar.setMaximum(maxValue);
+	}
+
+	/**
+	 * The current value of the progress bar.  Make sure min and max values have
+	 * been set first so the progress bar scales properly.  To make use of the
+	 * scalable progress bar, ensure indeterminate is set to false.
+	 *
+	 * @param value The value of the progress bar.
+	 */
+	public void setProgressValue(int value)
+	{
+		MainFrame.progressFrame.progressBar.setValue(value);
 	}
 
 	/**

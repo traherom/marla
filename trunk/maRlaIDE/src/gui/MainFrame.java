@@ -18,6 +18,7 @@
 
 package gui;
 
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.event.ComponentEvent;
@@ -44,14 +45,21 @@ public class MainFrame extends JFrame
 {
 	/** The minimum size the window frame is allowed to be.*/
 	private final Dimension MINIMUM_WINDOW_SIZE = new Dimension(650, 400);
+	/** The progress frame.*/
+	public static ProgressFrame progressFrame;
 	/** The panel that is added to the frame.*/
 	private static ViewPanel viewPanel;
 
 	/**
 	 * Constructs the frame for the stand-alone application.
+	 *
+	 * @param progressFrame A reference to the progress frame.
 	 */
-	public MainFrame(String[] args)
+	public MainFrame(ProgressFrame progressFrame)
 	{
+		setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+		MainFrame.progressFrame = progressFrame;
+		
 		// Construct the view panel
 		viewPanel = new ViewPanel(this);
 		// Add the view to the frame
@@ -85,91 +93,106 @@ public class MainFrame extends JFrame
 		// Initialize frame components
 		initComponents();
 		initMyComponents();
+	}
 
-		// Configure
-		Configuration conf = Configuration.getInstance();
-		List<ConfigType> missed = conf.configureAll(args);
-
-		/*
-		try
+	/**
+	 * Set the configuration arguments and the visible state of the MainFrame.
+	 *
+	 * @param args Arguments for configuration.
+	 * @param visible The visible state to set to.
+	 */
+	public void setVisible(final String[] args, boolean visible)
+	{
+		new Thread (new Runnable()
 		{
-			// Update if possible
-			resource.Updater.checkForUpdates();
-		}
-		catch(MarlaException ex)
-		{
-			Domain.logger.add(ex);
-		}
-		*/
-
-		int currIndex = 0;
-		while(currIndex < missed.size())
-		{
-			ConfigType curr = missed.get(currIndex);
-
-			boolean fixed = false;
-			try
+			@Override
+			public void run()
 			{
-				viewPanel.openChooserDialog.setDialogTitle(Configuration.getName(curr));
-				viewPanel.openChooserDialog.resetChoosableFileFilters();
-				viewPanel.openChooserDialog.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
-				// Display the chooser and retrieve the selected file
-				int response = viewPanel.openChooserDialog.showOpenDialog(viewPanel);
-				if(response == JFileChooser.APPROVE_OPTION)
+				progressFrame.progressBar.setString("10%");
+				progressFrame.progressBar.setValue(10);
+				progressFrame.statusLabel.setText("Initializing ...");
+				
+				// Configure
+				Configuration conf = Configuration.getInstance();
+				List<ConfigType> missed = conf.configureAll(args);
+
+				int currIndex = 0;
+				while(currIndex < missed.size())
 				{
-					conf.set(curr, viewPanel.openChooserDialog.getSelectedFile().getPath());
-					fixed = true;
+					ConfigType curr = missed.get(currIndex);
+
+					boolean fixed = false;
+					try
+					{
+						viewPanel.openChooserDialog.setDialogTitle(Configuration.getName(curr));
+						viewPanel.openChooserDialog.resetChoosableFileFilters();
+						viewPanel.openChooserDialog.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+						// Display the chooser and retrieve the selected file
+						int response = viewPanel.openChooserDialog.showOpenDialog(viewPanel);
+						if(response == JFileChooser.APPROVE_OPTION)
+						{
+							conf.set(curr, viewPanel.openChooserDialog.getSelectedFile().getPath());
+							fixed = true;
+						}
+						else
+						{
+							JOptionPane.showMessageDialog(viewPanel, "The maRla Project cannot run without these resources.", "Fatal Error", JOptionPane.ERROR_MESSAGE);
+							System.exit(1);
+						}
+					}
+					catch(MarlaException ex)
+					{
+						System.out.println(ex.getMessage());
+						fixed = false;
+					}
+
+					// If we succeed, find the next thing
+					if(fixed)
+						currIndex++;
 				}
-				else
+
+				try
 				{
-					JOptionPane.showMessageDialog(viewPanel, "The maRla Project cannot run without these resources.", "Fatal Error", JOptionPane.ERROR_MESSAGE);
-					System.exit(1);
+					// Preemptively save config file
+					conf.save();
 				}
-			}
-			catch(MarlaException ex)
-			{
-				System.out.println(ex.getMessage());
-				fixed = false;
-			}
+				catch(MarlaException ex)
+				{
+					System.out.println("Error saving configuration file: " + ex.getMessage());
+				}
 
-			// If we succeed, find the next thing
-			if(fixed)
-				currIndex++;
-		}
+				try
+				{
+					viewPanel.loadOperations();
+				}
+				catch(MarlaException ex)
+				{
+					JOptionPane.showMessageDialog(viewPanel, ex.getMessage(), "Load Error", JOptionPane.WARNING_MESSAGE);
+				}
 
-		try
-		{
-			// Preemptively save config file
-			conf.save();
-		}
-		catch(MarlaException ex)
-		{
-			System.out.println("Error saving configuration file: " + ex.getMessage());
-		}
+				// If the final argument is a save file, open it right now
+				if(args.length != 0 && args[args.length - 1].endsWith(".marla"))
+				{
+					try
+					{
+						viewPanel.domain.problem = Problem.load(args[args.length - 1]);
+						viewPanel.openProblem(false);
+					}
+					catch(Exception ex)
+					{
+						System.out.println("Unable to load file from command line: " + ex.getMessage());
+						System.out.println("Load through the GUI for more information.");
+					}
+				}
 
-		try
-		{
-			viewPanel.loadOperations();
-		}
-		catch(MarlaException ex)
-		{
-			JOptionPane.showMessageDialog(viewPanel, ex.getMessage(), "Load Error", JOptionPane.WARNING_MESSAGE);
-		}
-
-		// If the final argument is a save file, open it right now
-		if(args.length != 0 && args[args.length - 1].endsWith(".marla"))
-		{
-			try
-			{
-				viewPanel.domain.problem = Problem.load(args[args.length - 1]);
-				viewPanel.openProblem (false);
+				progressFrame.setAlwaysOnTop(false);
+				progressFrame.setVisible(false);
+				setCursor(Cursor.getDefaultCursor());
 			}
-			catch(Exception ex)
-			{
-				System.out.println("Unable to load file from command line: " + ex.getMessage());
-				System.out.println("Load through the GUI for more information.");
-			}
-		}
+		}).start();
+
+		progressFrame.setAlwaysOnTop(true);
+		super.setVisible(visible);
 	}
 
 	/**
@@ -204,22 +227,22 @@ public class MainFrame extends JFrame
 	private void verifyBounds(ComponentEvent evt)
 	{
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-		
+
 		int x = evt.getComponent().getX();
 		int y = evt.getComponent().getY();
-		if (x > screenSize.getWidth())
+		if(x > screenSize.getWidth())
 		{
 			x = (int) screenSize.getWidth() - evt.getComponent().getWidth();
 		}
-		if (x < 0 - evt.getComponent().getWidth())
+		if(x < 0 - evt.getComponent().getWidth())
 		{
 			x = 0;
 		}
-		if (y > screenSize.getHeight())
+		if(y > screenSize.getHeight())
 		{
 			y = (int) screenSize.getHeight() - evt.getComponent().getHeight();
 		}
-		if (y < 0 - evt.getComponent().getHeight())
+		if(y < 0 - evt.getComponent().getHeight())
 		{
 			y = 0;
 		}
@@ -242,7 +265,7 @@ public class MainFrame extends JFrame
 		{
 			height = screenSize.height;
 		}
-		
+
 		setBounds(x, y, width, height);
 	}
 
@@ -296,6 +319,7 @@ public class MainFrame extends JFrame
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         setIconImage(new ImageIcon (getClass ().getResource ("/images/logo.png")).getImage ());
+        setName("mainFrame"); // NOI18N
         getContentPane().setLayout(new java.awt.GridLayout(1, 1));
 
         fileMenu.setText("File");
@@ -394,7 +418,7 @@ public class MainFrame extends JFrame
 
         editMenu.setText("Edit");
         editMenu.setEnabled(false);
-        editMenu.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        editMenu.setFont(new java.awt.Font("Verdana", 0, 12));
         editMenu.addMenuListener(new javax.swing.event.MenuListener() {
             public void menuCanceled(javax.swing.event.MenuEvent evt) {
             }
@@ -445,7 +469,7 @@ public class MainFrame extends JFrame
         menuBar.add(editMenu);
 
         problemMenu.setText("Problem");
-        problemMenu.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        problemMenu.setFont(new java.awt.Font("Verdana", 0, 12));
         problemMenu.addMenuListener(new javax.swing.event.MenuListener() {
             public void menuCanceled(javax.swing.event.MenuEvent evt) {
             }
@@ -474,7 +498,7 @@ public class MainFrame extends JFrame
         });
         problemMenu.add(editSubProblemsMenuItem);
 
-        editConclusionMenuItem.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        editConclusionMenuItem.setFont(new java.awt.Font("Verdana", 0, 12));
         editConclusionMenuItem.setText("Edit Conclusion...");
         editConclusionMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
