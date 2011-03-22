@@ -86,8 +86,19 @@ public class MainFrame extends JFrame
 		initComponents();
 		initMyComponents();
 
+		// Configure
 		Configuration conf = Configuration.getInstance();
 		List<ConfigType> missed = conf.configureAll(args);
+
+		try
+		{
+			// Update if possible
+			resource.Updater.checkForUpdates();
+		}
+		catch(MarlaException ex)
+		{
+			Domain.logger.add(ex);
+		}
 
 		int currIndex = 0;
 		while(currIndex < missed.size())
