@@ -53,7 +53,7 @@ Section "Start Menu Shortcuts" StartShortcuts
   SetOutPath "$INSTDIR"
   CreateDirectory "$SMPROGRAMS\maRla"
   CreateShortCut "$SMPROGRAMS\maRla\Uninstall.lnk" "$INSTDIR\uninstall.exe" "" "$INSTDIR\uninstall.exe" 1
-  CreateShortCut "$SMPROGRAMS\maRla\maRla.lnk" "$INSTDIR\maRlaIDE.jar" "" "$INSTDIR\maRlaIDE.jar" 1
+  CreateShortCut "$SMPROGRAMS\maRla\maRla.lnk" "$INSTDIR\maRlaIDE.jar" "" "$INSTDIR\maRla.ico" 1
   
 SectionEnd
 
@@ -79,6 +79,7 @@ Section "Install maRla" InstallMarla
   File maRlaIDE.jar
   File ops.xml
   File export_template.xml
+  File maRla.ico
 
   
   ;Store installation folder
@@ -118,6 +119,7 @@ Section "Uninstall"
   Delete "$INSTDIR\Uninstall.exe"
   Delete "$INSTDIR\maRlaIDE.jar"
   Delete "$INSTDIR\export_template.xml"
+  Delete "$INSTDIR\maRla.ico"
   Delete "$INSTDIR\ops.xml"
   Delete "$SMPROGRAMS\maRla\Uninstall.lnk"
   Delete "$SMPROGRAMS\maRla\maRla.lnk"

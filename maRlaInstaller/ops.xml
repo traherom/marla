@@ -1,23 +1,20 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<operations version="1">
+<operations>
 	<operation name="NOP" list="false">
 		<!-- This operation is used for testing. It does nothing except print
 			that it was encountered -->
 		<computation>
 			<cmd>print("NOP happened")</cmd>
-			<copy all="true" />
 		</computation>
 	</operation>
 
 	<operation name="Histogram" category="Plots" plot="true">
 		<query type="column" name="col" prompt="Column?" />
 
-		<longname>hist(<response name="col" default="x" />)</longname>
+		<displayname>hist(<response name="col" default="x" />)</displayname>
 
 		<computation>
 			<set name="col" rvar="x" use="values" />
-x
-			<copy all="true" />
 
 			<plot>
 				<cmd>hist(x)</cmd>
@@ -28,12 +25,10 @@ x
 	<operation name="Boxplot" category="Plots" plot="true">
 		<query type="column" name="col" prompt="Column?" />
 
-		<longname>boxplot(<response name="col" default="x" />)</longname>
+		<displayname>boxplot(<response name="col" default="x" />)</displayname>
 
 		<computation>
 			<set name="col" rvar="x" use="values" />
-
-			<copy all="true" />
 
 			<plot>
 				<cmd>boxplot(x)</cmd>
@@ -44,12 +39,14 @@ x
 	<operation name="Q-Q Norm" category="Plots" plot="true">
 		<query type="column" name="col" prompt="Column?" />
 
-		<longname>qqnorm(<response name="col" default="x" />)</longname>
+		<displayname>qqnorm(<response name="col" default="x" />)</displayname>
+		<description>
+			Creates a QQ normality plot to help determine if the selected
+			data column is normal.
+		</description>
 
 		<computation>
 			<set name="col" rvar="x" use="values" />
-
-			<copy all="true" />
 
 			<plot>
 				<cmd>qqnorm(x)</cmd>
@@ -60,12 +57,10 @@ x
 	<operation name="Q-Q Line" category="Plots" plot="true">
 		<query type="column" name="col" prompt="Column?" />
 
-		<longname>qqline(<response name="col" default="x" />)</longname>
+		<displayname>qqline(<response name="col" default="x" />)</displayname>
 
 		<computation>
 			<set name="col" rvar="x" use="values" />
-
-			<copy all="true" />
 
 			<plot>
 				<cmd>qqnorm(x)</cmd>
@@ -78,13 +73,11 @@ x
 		<query type="column" name="x" prompt="Column 1" />
 		<query type="column" name="y" prompt="Column 2" />
 
-		<longname>qqplot(<response name="x" default="x" />, <response name="y" default="y" />)</longname>
+		<displayname>qqplot(<response name="x" default="x" />, <response name="y" default="y" />)</displayname>
 
 		<computation>
 			<set name="x" rvar="x" use="values" />
 			<set name="y" rvar="y" use="values" />
-
-			<copy all="true" />
 
 			<plot>
 				<cmd>qqplot(x, y)</cmd>
@@ -92,15 +85,13 @@ x
 		</computation>
 	</operation>
 
-	<operation name="Average" category="Basic Stats" list="false">
+	<operation name="Average" category="Basic Statistics" list="false">
 		<query type="column" name="x" prompt="Column" />
 
-		<longname>ave(<response name="x" default="col" />)</longname>
+		<displayname>ave(<response name="x" default="col" />)</displayname>
 
 		<computation>
 			<set name="x" rvar="x" use="values" />
-
-			<copy all="true" />
 
 			<error msg="TBD. Need to work with factors for this" />
 		</computation>
@@ -109,12 +100,10 @@ x
 	<operation name="Barplot" category="Plots" plot="true">
 		<query type="column" name="col" prompt="Column?" />
 
-		<longname>barplot(<response name="col" default="x" />)</longname>
+		<displayname>barplot(<response name="col" default="x" />)</displayname>
 
 		<computation>
 			<set name="col" rvar="x" use="values" />
-
-			<copy all="true" />
 
 			<plot>
 				<cmd>barplot(x)</cmd>
@@ -125,12 +114,10 @@ x
 	<operation name="Dot Chart" category="Plots" plot="true">
 		<query type="column" name="col" prompt="Column?" />
 
-		<longname>dotchart(<response name="col" default="x" />)</longname>
+		<displayname>dotchart(<response name="col" default="x" />)</displayname>
 
 		<computation>
 			<set name="col" rvar="x" use="values" />
-
-			<copy all="true" />
 
 			<plot>
 				<cmd>dotchart(x)</cmd>
@@ -141,12 +128,10 @@ x
 	<operation name="Strip Chart" category="Plots" plot="true">
 		<query type="column" name="col" prompt="Column?" />
 
-		<longname>stripchart(<response name="col" default="x" />)</longname>
+		<displayname>stripchart(<response name="col" default="x" />)</displayname>
 
 		<computation>
 			<set name="col" rvar="x" use="values" />
-
-			<copy all="true" />
 
 			<plot>
 				<cmd>stripchart(x)</cmd>
@@ -158,24 +143,14 @@ x
 		<query type="column" name="col" prompt="Column?" column_type="numeric" />
 		<query type="numeric" name="val" prompt="Divide by" />
 
-		<longname><response name="col" default="column" /> / <response name="val" default="X" /></longname>
+		<displayname><response name="col" default="column" /> / <response name="val" default="X" /></displayname>
 
 		<computation>
 			<set name="col" rvar="colName" use="name" />
+			<set name="col" rvar="colVals" use="values" />
 			<set name="val" rvar="val" />
 
-			<loop type="parent" value_var="currCol" key_var="currColName">
-				<if expr="currColName == colName">
-					<then>
-						<!-- This is the column we're supposed to divide -->
-						<save type="numeric" r_column="currColName">currCol / val</save>
-					</then>
-					<else>
-						<!-- Not the column we're working with, just copy it over -->
-						<copy r_column="currColName" />
-					</else>
-				</if>
-			</loop>
+			<save type="numeric" r_column="paste(colName, val, sep=' / ')">colVals / val</save>
 		</computation>
 	</operation>
 
@@ -183,24 +158,14 @@ x
 		<query type="column" name="col" prompt="Column?" column_type="numeric" />
 		<query type="numeric" name="val" prompt="Multiply by" />
 
-		<longname><response name="col" default="column" /> * <response name="val" default="X" /></longname>
+		<displayname><response name="col" default="column" /> * <response name="val" default="X" /></displayname>
 
 		<computation>
 			<set name="col" rvar="colName" use="name" />
+			<set name="col" rvar="colVals" use="values" />
 			<set name="val" rvar="val" />
 
-			<loop type="parent" value_var="currCol" key_var="currColName">
-				<if expr="currColName == colName">
-					<then>
-						<!-- This is the column we're supposed to multiply -->
-						<save type="numeric" r_column="currColName">currCol * val</save>
-					</then>
-					<else>
-						<!-- Not the column we're working with, just copy it over -->
-						<copy r_column="currColName" />
-					</else>
-				</if>
-			</loop>
+			<save type="numeric" r_column="paste(colName, val, sep=' * ')">colVals * val</save>
 		</computation>
 	</operation>
 
@@ -208,24 +173,14 @@ x
 		<query type="column" name="col" prompt="Column?" column_type="numeric" />
 		<query type="numeric" name="val" prompt="Add" />
 
-		<longname><response name="col" default="column" /> + <response name="val" default="X" /></longname>
+		<displayname><response name="col" default="column" /> + <response name="val" default="X" /></displayname>
 
 		<computation>
 			<set name="col" rvar="colName" use="name" />
+			<set name="col" rvar="colVals" use="values" />
 			<set name="val" rvar="val" />
 
-			<loop type="parent" value_var="currCol" key_var="currColName">
-				<if expr="currColName == colName">
-					<then>
-						<!-- This is the column we're supposed to add to -->
-						<save type="numeric" r_column="currColName">currCol + val</save>
-					</then>
-					<else>
-						<!-- Not the column we're working with, just copy it over -->
-						<copy r_column="currColName" />
-					</else>
-				</if>
-			</loop>
+			<save type="numeric" r_column="paste(colName, val, sep=' + ')">colVals + val</save>
 		</computation>
 	</operation>
 
@@ -233,24 +188,14 @@ x
 		<query type="column" name="col" prompt="Column?" column_type="numeric" />
 		<query type="numeric" name="val" prompt="Subtract" />
 
-		<longname><response name="col" default="column" /> - <response name="val" default="X" /></longname>
+		<displayname><response name="col" default="column" /> - <response name="val" default="X" /></displayname>
 
 		<computation>
 			<set name="col" rvar="colName" use="name" />
+			<set name="col" rvar="colVals" use="values" />
 			<set name="val" rvar="val" />
 
-			<loop type="parent" value_var="currCol" key_var="currColName">
-				<if expr="currColName == colName">
-					<then>
-						<!-- This is the column we're supposed to add to -->
-						<save type="numeric" r_column="currColName">currCol - val</save>
-					</then>
-					<else>
-						<!-- Not the column we're working with, just copy it over -->
-						<copy r_column="currColName" />
-					</else>
-				</if>
-			</loop>
+			<save type="numeric" r_column="paste(colName, val, sep=' - ')">colVals - val</save>
 		</computation>
 	</operation>
 
@@ -258,37 +203,25 @@ x
 		<query type="column" name="col" prompt="Column?" column_type="numeric" />
 		<query type="numeric" name="val" prompt="Raise by" />
 
-		<longname><response name="col" default="col" />&lt;sup&gt;<response name="val" default="X" />&lt;/sup&gt;</longname>
+		<displayname><response name="col" default="col" />&lt;sup&gt;<response name="val" default="X" />&lt;/sup&gt;</displayname>
 
 		<computation>
 			<set name="col" rvar="colName" use="name" />
+			<set name="col" rvar="colVals" use="values" />
 			<set name="val" rvar="val" />
 
-			<loop type="parent" value_var="currCol" key_var="currColName">
-				<if expr="currColName == colName">
-					<then>
-						<!-- This is the column we're supposed to compute on -->
-						<save type="numeric" r_column="currColName">currCol ^ val</save>
-					</then>
-					<else>
-						<!-- Not the column we're working with, just copy it over -->
-						<copy r_column="currColName" />
-					</else>
-				</if>
-			</loop>
+			<save type="numeric" r_column="paste(colName, val, sep=' ^ ')">colVals ^ val</save>
 		</computation>
 	</operation>
 
 	<operation name="sin()" category="Trig">
 		<query type="column" name="col" prompt="Column?" column_type="numeric" />
 
-		<longname>sin(<response name="col" default="x" />)</longname>
+		<displayname>sin(<response name="col" default="x" />)</displayname>
 
 		<computation>
 			<set name="col" rvar="colName" use="name" />
 			<set name="col" rvar="colVals" use="values" />
-
-			<copy all="true" />
 
 			<save type="numeric" r_column="paste('sin(', colName, ')', sep='')">sin(colVals)</save>
 		</computation>
@@ -297,13 +230,11 @@ x
 	<operation name="cos()" category="Trig">
 		<query type="column" name="col" prompt="Column?" column_type="numeric" />
 
-		<longname>cos(<response name="col" default="x" />)</longname>
+		<displayname>cos(<response name="col" default="x" />)</displayname>
 
 		<computation>
 			<set name="col" rvar="colName" use="name" />
 			<set name="col" rvar="colVals" use="values" />
-
-			<copy all="true" />
 
 			<save type="numeric" r_column="paste('cos(', colName, ')', sep='')">cos(colVals)</save>
 		</computation>
@@ -312,13 +243,11 @@ x
 	<operation name="tan()" category="Trig">
 		<query type="column" name="col" prompt="Column?" column_type="numeric" />
 
-		<longname>tan(<response name="col" default="x" />)</longname>
+		<displayname>tan(<response name="col" default="x" />)</displayname>
 
 		<computation>
 			<set name="col" rvar="colName" use="name" />
 			<set name="col" rvar="colVals" use="values" />
-
-			<copy all="true" />
 
 			<save type="numeric" r_column="paste('tan(', colName, ')', sep='')">tan(colVals)</save>
 		</computation>
@@ -327,13 +256,11 @@ x
 	<operation name="asin()" category="Trig">
 		<query type="column" name="col" prompt="Column?" column_type="numeric" />
 
-		<longname>asin(<response name="col" default="x" />)</longname>
+		<displayname>asin(<response name="col" default="x" />)</displayname>
 
 		<computation>
 			<set name="col" rvar="colName" use="name" />
 			<set name="col" rvar="colVals" use="values" />
-
-			<copy all="true" />
 
 			<save type="numeric" r_column="paste('asin(', colName, ')', sep='')">asin(colVals)</save>
 		</computation>
@@ -342,13 +269,11 @@ x
 	<operation name="acos()" category="Trig">
 		<query type="column" name="col" prompt="Column?" column_type="numeric" />
 
-		<longname>acos(<response name="col" default="x" />)</longname>
+		<displayname>acos(<response name="col" default="x" />)</displayname>
 
 		<computation>
 			<set name="col" rvar="colName" use="name" />
 			<set name="col" rvar="colVals" use="values" />
-
-			<copy all="true" />
 
 			<save type="numeric" r_column="paste('acos(', colName, ')', sep='')">acos(colVals)</save>
 		</computation>
@@ -357,13 +282,11 @@ x
 	<operation name="atan()" category="Trig">
 		<query type="column" name="col" prompt="Column?" column_type="numeric" />
 
-		<longname>atan(<response name="col" default="x" />)</longname>
+		<displayname>atan(<response name="col" default="x" />)</displayname>
 
 		<computation>
 			<set name="col" rvar="colName" use="name" />
 			<set name="col" rvar="colVals" use="values" />
-
-			<copy all="true" />
 
 			<save type="numeric" r_column="paste('atan(', colName, ')', sep='')">atan(colVals)</save>
 		</computation>
@@ -373,15 +296,13 @@ x
 		<query type="column" name="x" prompt="X Column" column_type="numeric" />
 		<query type="column" name="y" prompt="Y Column" column_type="numeric" />
 
-		<longname>atan2(<response name="y" default="Y" />, <response name="x" default="X" />)</longname>
+		<displayname>atan2(<response name="y" default="Y" />, <response name="x" default="X" />)</displayname>
 
 		<computation>
 			<set name="x" rvar="xColName" use="name" />
 			<set name="y" rvar="yColName" use="name" />
 			<set name="x" rvar="x" use="values" />
 			<set name="y" rvar="y" use="values" />
-
-			<copy all="true" />
 
 			<save type="numeric" r_column="paste('atan2(', yColName, ', ',  xColName, ')')">atan2(y, x)</save>
 		</computation>
@@ -390,13 +311,11 @@ x
 	<operation name="Natural Log" category="Basic Math">
 		<query type="column" name="col" prompt="Column?" column_type="numeric" />
 
-		<longname>ln(<response name="col" default="x" />)</longname>
+		<displayname>ln(<response name="col" default="x" />)</displayname>
 
 		<computation>
 			<set name="col" rvar="colName" use="name" />
 			<set name="col" rvar="colVals" use="values" />
-
-			<copy all="true" />
 
 			<save type="numeric" r_column="paste('log(', colName, ')', sep='')">log(colVals)</save>
 		</computation>
@@ -405,15 +324,13 @@ x
 	<operation name="1-Var variance" category="Basic Analysis">
 		<query type="column" name="col" prompt="Column?" column_type="numeric" />
 
-		<longname>var(<response name="col" default="x" />)</longname>
+		<displayname>var(<response name="col" default="x" />)</displayname>
 
 		<computation>
 			<set name="col" rvar="colName" use="name" />
 			<set name="col" rvar="colVals" use="values" />
 
 			<save type="numeric" r_column="paste('var(', colName, ')', sep='')">var(colVals)</save>
-			
-			<copy all="true" />
 		</computation>
 	</operation>
 
@@ -421,15 +338,13 @@ x
 		<query type="column" name="x" prompt="X" column_type="numeric" />
 		<query type="column" name="y" prompt="Y" column_type="numeric" />
 
-		<longname>var(<response name="x" default="x" />, <response name="y" default="y" />)</longname>
+		<displayname>var(<response name="x" default="x" />, <response name="y" default="y" />)</displayname>
 
 		<computation>
 			<set name="x" rvar="xName" use="name" />
 			<set name="y" rvar="yName" use="name" />
 			<set name="x" rvar="x" use="values" />
 			<set name="y" rvar="y" use="values" />
-
-			<copy all="true" />
 
 			<save type="numeric" r_column="paste('var(', xName, ', ', yName, ')', sep='')">var(x, y)</save>
 		</computation>
@@ -439,15 +354,13 @@ x
 		<query type="column" name="x" prompt="Column 1" column_type="numeric" />
 		<query type="column" name="y" prompt="Column 2" column_type="numeric" />
 
-		<longname>cor(<response name="x" default="x" />, <response name="y" default="y" />)</longname>
+		<displayname>cor(<response name="x" default="x" />, <response name="y" default="y" />)</displayname>
 
 		<computation>
 			<set name="x" rvar="xName" use="name" />
 			<set name="y" rvar="yName" use="name" />
 			<set name="x" rvar="x" use="values" />
 			<set name="y" rvar="y" use="values" />
-
-			<copy all="true" />
 
 			<save type="numeric" r_column="paste('cor(', xName, ', ', yName, ')', sep='')">cor(x, y)</save>
 		</computation>
@@ -456,7 +369,7 @@ x
 	<operation name="Log 10" category="Basic Math">
 		<query type="column" name="col" prompt="Column?" column_type="numeric" />
 
-		<longname>log&lt;sub&gt;10&lt;/sub&gt;<response name="col" default="x" /></longname>
+		<displayname>log&lt;sub&gt;10&lt;/sub&gt;<response name="col" default="x" /></displayname>
 
 		<computation>
 			<set name="col" rvar="colName" use="name" />
@@ -464,7 +377,7 @@ x
 
 			<save type="numeric" r_column="paste('log10(', colName, ')', sep='')">log10(colVals)</save>
 
-			<copy all="true" />
+			
 		</computation>
 	</operation>
 
@@ -472,14 +385,12 @@ x
 		<query type="column" name="col" prompt="Column?" column_type="numeric" />
 		<query type="numeric" name="base" prompt="Base" />
 
-		<longname>log&lt;sub&gt;<response name="base" default="b" />&lt;/sub&gt;<response name="col" default="x" /></longname>
+		<displayname>log&lt;sub&gt;<response name="base" default="b" />&lt;/sub&gt;<response name="col" default="x" /></displayname>
 
 		<computation>
 			<set name="col" rvar="colName" use="name" />
 			<set name="col" rvar="colVals" use="values" />
 			<set name="base" rvar="base" />
-
-			<copy all="true" />
 
 			<save type="numeric" r_column="paste('log', base, '(', colName, ')', sep='')">log(colVals) / log(base)</save>
 		</computation>
@@ -488,34 +399,30 @@ x
 	<operation name="Exponential" category="Basic Math">
 		<query type="column" name="col" prompt="Column?" column_type="numeric" />
 
-		<longname>e&lt;sup&gt;<response name="col" default="x" />&lt;/sup&gt;</longname>
+		<displayname>e&lt;sup&gt;<response name="col" default="x" />&lt;/sup&gt;</displayname>
 
 		<computation>
 			<set name="col" rvar="colName" use="name" />
 			<set name="col" rvar="colVals" use="values" />
 
 			<save type="numeric" r_column="paste('e^', colName, sep='')">exp(colVals)</save>
-
-			<copy all="true" />
 		</computation>
 	</operation>
 
 	<operation name="Absolute Value" category="Basic Math">
 		<query type="column" name="col" prompt="Column?" column_type="numeric" />
 
-		<longname>abs(<response name="col" default="x" />)</longname>
+		<displayname>abs(<response name="col" default="x" />)</displayname>
 
 		<computation>
 			<set name="col" rvar="colName" use="name" />
 			<set name="col" rvar="colVals" use="values" />
 
 			<save type="numeric" r_column="paste('abs(', colName, ')', sep='')">abs(colVals)</save>
-
-			<copy all="true" />
 		</computation>
 	</operation>
 
-	<operation name="t-test" category="Stats Tests">
+	<operation name="t-test" category="Statistical Test">
 		<query type="checkbox" prompt="Is your data normal?" name="normal" />
 		
 		<computation>
@@ -546,45 +453,39 @@ x
 	<operation name="Mean" category="Basic Analysis">
 		<query type="column" name="col" prompt="Column?" column_type="numeric" />
 
-		<longname>mean(<response name="col" default="x" />)</longname>
+		<displayname>mean(<response name="col" default="x" />)</displayname>
 
 		<computation>
 			<set name="col" rvar="colName" use="name" />
 			<set name="col" rvar="colVals" use="values" />
 
 			<save type="numeric" r_column="paste('mean(', colName, ')', sep='')">mean(colVals)</save>
-
-			<copy all="true" />
 		</computation>
 	</operation>
 
 	<operation name="StdDev" category="Basic Analysis">
 		<query type="column" name="col" prompt="Column?" column_type="numeric" />
 
-		<longname>&#963;(<response name="col" default="x" />)</longname>
+		<displayname>&#963;(<response name="col" default="x" />)</displayname>
 
 		<computation>
 			<set name="col" rvar="colName" use="name" />
 			<set name="col" rvar="colVals" use="values" />
 
 			<save type="numeric" r_column="paste('sd(', colName, ')', sep='')">sd(colVals)</save>
-
-			<copy all="true" />
 		</computation>
 	</operation>
 
 	<operation name="Sum" category="Basic Analysis">
 		<query type="column" name="col" prompt="Column?" column_type="numeric" />
 
-		<longname>&#8721;(<response name="col" default="x" />)</longname>
+		<displayname>&#8721;(<response name="col" default="x" />)</displayname>
 
 		<computation>
 			<set name="col" rvar="colName" use="name" />
 			<set name="col" rvar="colVals" use="values" />
 
 			<save type="numeric" r_column="paste('sum(', colName, ')', sep='')">sum(colVals)</save>
-
-			<copy all="true" />
 		</computation>
 	</operation>
 
@@ -603,7 +504,7 @@ x
 	<operation name="Five Nums" category="Basic Analysis">
 		<query type="column" name="col" prompt="Column?" column_type="numeric" />
 
-		<longname>fivenum(<response name="col" default="x" />)</longname>
+		<displayname>fivenum(<response name="col" default="x" />)</displayname>
 
 		<computation>
 			<set name="col" rvar="colName" use="name" />
@@ -616,8 +517,6 @@ x
 			<save type="numeric" r_column="paste('median(', colName, ')', sep='')">a[3]</save>
 			<save type="numeric" r_column="paste('Upper Hinge(', colName, ')', sep='')">a[4]</save>
 			<save type="numeric" r_column="paste('max(', colName, ')', sep='')">a[5]</save>
-
-			<copy all="true" />
 		</computation>
 	</operation>
 
@@ -626,14 +525,12 @@ x
 		<query type="numeric" name="samples" prompt="Sample count" />
 		<query type="numeric" name="mean" prompt="Mean" />
 
-		<longname>rnorm(<response name="samples" default="n" />, mean=<response name="mean" default="x" />)</longname>
+		<displayname>rnorm(<response name="samples" default="n" />, mean=<response name="mean" default="x" />)</displayname>
 
 		<computation>
 			<set name="saveTo" rvar="saveTo" />
 			<set name="samples" rvar="n" />
 			<set name="mean" rvar="m" />
-
-			<copy all="true" />
 
 			<save type="numeric" r_column="saveTo">rnorm(n, m)</save>
 		</computation>
@@ -645,7 +542,7 @@ x
 		<query type="numeric" name="trials" prompt="Trial Count" />
 		<query type="numeric" name="alpha" prompt="Alpha" min="0" max="1" />
 
-		<longname>binom.test(<response name="successes" default="s" />, <response name="trials" default="n" />)</longname>
+		<displayname>binom.test(<response name="successes" default="s" />, <response name="trials" default="n" />)</displayname>
 
 		<computation>
 			<set name="saveTo" rvar="saveTo" />
@@ -659,8 +556,6 @@ x
 					<error msg="Trials must be greater than successes" />
 				</then>
 			</if>
-
-			<copy all="true" />
 			
 			<cmd>res = binom.test(floor(x), floor(n), conf.level=1-a)</cmd>
 			<save type="numeric" r_column="saveTo">res$estimate</save>
@@ -673,15 +568,13 @@ x
 		<query type="column" name="trials" prompt="Trial Counts" column_type="numeric" />
 		<query type="numeric" name="alpha" prompt="Alpha" min="0" max="1" />
 
-		<longname>prop.test(<response name="successes" default="successes" />, <response name="trials" default="trials" />)</longname>
+		<displayname>prop.test(<response name="successes" default="successes" />, <response name="trials" default="trials" />)</displayname>
 
 		<computation>
 			<set name="saveTo" rvar="saveTo" />
 			<set name="successes" rvar="x" use="values" />
 			<set name="trials" rvar="n" use="values" />
 			<set name="alpha" rvar="a" />
-
-			<copy all="true" />
 
 			<cmd>res = prop.test(floor(x), floor(n), conf.level=1-a)</cmd>
 			<save type="numeric" r_column="saveTo">res$estimate</save>
@@ -694,15 +587,13 @@ x
 		<query type="column" name="y" prompt="Column 2" column_type="numeric" />
 		<query type="numeric" name="alpha" prompt="Alpha" min="0" max="1" />
 
-		<longname>cor.test(<response name="x" default="col 1" />, <response name="y" default="col 2" />)</longname>
+		<displayname>cor.test(<response name="x" default="col 1" />, <response name="y" default="col 2" />)</displayname>
 
 		<computation>
 			<set name="saveTo" rvar="saveTo" />
 			<set name="x" rvar="x" use="values" />
 			<set name="y" rvar="y" use="values" />
 			<set name="alpha" rvar="a" />
-
-			<copy all="true" />
 
 			<cmd>res = cor.test(x, y, conf.level=1-a)</cmd>
 			<save type="numeric" r_column="saveTo">res$estimate</save>
@@ -713,13 +604,11 @@ x
 		<query type="string" name="saveTo" prompt="Save to" />
 		<query type="column" name="x" prompt="Column" column_type="numeric" />
 
-		<longname>shapiro.test(<response name="x" default="col" />)</longname>
+		<displayname>shapiro.test(<response name="x" default="col" />)</displayname>
 
 		<computation>
 			<set name="saveTo" rvar="saveTo" />
 			<set name="x" rvar="x" use="values" />
-
-			<copy all="true" />
 
 			<cmd>res = shapiro.test(x)</cmd>
 			<save type="numeric" r_column="saveTo">res$statistic</save>
@@ -732,7 +621,7 @@ x
 		<query type="column" name="y" prompt="Column 2" column_type="numeric" />
 		<query type="numeric" name="alpha" prompt="Alpha" min="0" max="1" />
 
-		<longname>cor.test(<response name="x" default="col 1" />, <response name="y" default="col 2" />)</longname>
+		<displayname>cor.test(<response name="x" default="col 1" />, <response name="y" default="col 2" />)</displayname>
 
 		<computation>
 			<error msg="Power T-Test: To be done" />
@@ -745,7 +634,7 @@ x
 		<query type="column" name="y" prompt="Column 2" column_type="numeric" />
 		<query type="numeric" name="alpha" prompt="Alpha" min="0" max="1" />
 
-		<longname>cor.test(<response name="x" default="col 1" />, <response name="y" default="col 2" />)</longname>
+		<displayname>cor.test(<response name="x" default="col 1" />, <response name="y" default="col 2" />)</displayname>
 
 		<computation>
 			<error msg="Power Prop Test: To be done" />
@@ -756,13 +645,11 @@ x
 		<query type="column" name="x" prompt="X column" column_type="numeric" />
 		<query type="column" name="y" prompt="Y column" column_type="numeric" />
 
-		<longname>Plot of <response name="x" default="X" /> vs <response name="y" default="Y" /></longname>
+		<displayname>Plot of <response name="x" default="X" /> vs <response name="y" default="Y" /></displayname>
 
 		<computation>
 			<set rvar="x" name="x" />
 			<set rvar="y" name="y" />
-
-			<copy all="true" />
 
 			<plot>
 				<cmd>plot(x,y)</cmd>
@@ -773,12 +660,10 @@ x
 	<operation name="Single Var Plot" category="Plots" plot="true">
 		<query type="column" name="x" prompt="Column" column_type="numeric" />
 
-		<longname>Plot of <response name="x" default="x" /></longname>
+		<displayname>Plot of <response name="x" default="x" /></displayname>
 
 		<computation>
 			<set rvar="x" name="x" />
-
-			<copy all="true" />
 
 			<plot>
 				<cmd>plot(x)</cmd>
@@ -791,14 +676,12 @@ x
 		<query type="numeric" name="start" prompt="From" />
 		<query type="numeric" name="end" prompt="To" />
 
-		<longname>seq(<response name="start" default="from" />, <response name="end" default="to" />)</longname>
+		<displayname>seq(<response name="start" default="from" />, <response name="end" default="to" />)</displayname>
 
 		<computation>
 			<set rvar="col" name="colName" />
 			<set rvar="start" name="start" />
 			<set rvar="end" name="end" />
-
-			<copy all="true" />
 
 			<save type="numeric" r_column="col">seq(start, end)</save>
 		</computation>
@@ -809,14 +692,12 @@ x
 		<query type="numeric" name="val" prompt="Value" />
 		<query type="numeric" name="count" prompt="Count" />
 
-		<longname>rep(<response name="val" default="val" />, <response name="count" default="count" />)</longname>
+		<displayname>rep(<response name="val" default="val" />, <response name="count" default="count" />)</displayname>
 
 		<computation>
 			<set rvar="col" name="colName" />
 			<set rvar="val" name="val" />
 			<set rvar="count" name="count" />
-
-			<copy all="true" />
 
 			<save type="numeric" r_column="col">rep(val, count)</save>
 		</computation>
@@ -825,13 +706,11 @@ x
 	<operation name="Median" category="Basic Analysis">
 		<query type="column" name="colName" prompt="Column" column_type="numeric" />
 
-		<longname>median(<response name="colName" default="x" />)</longname>
+		<displayname>median(<response name="colName" default="x" />)</displayname>
 
 		<computation>
 			<set rvar="colName" name="colName" use="name" />
 			<set rvar="colVals" name="colName" use="values" />
-
-			<copy all="true" />
 
 			<save type="numeric" r_column="paste('median(', colName, ')', sep='')">median(colVals)</save>
 		</computation>
@@ -840,13 +719,11 @@ x
 	<operation name="Max" category="Basic Analysis">
 		<query type="column" name="colName" prompt="Column" column_type="numeric" />
 
-		<longname>max(<response name="colName" default="x" />)</longname>
+		<displayname>max(<response name="colName" default="x" />)</displayname>
 
 		<computation>
 			<set rvar="colName" name="colName" use="name" />
 			<set rvar="colVals" name="colName" use="values" />
-
-			<copy all="true" />
 
 			<save type="numeric" r_column="paste('max(', colName, ')', sep='')">max(colVals)</save>
 		</computation>
@@ -855,13 +732,11 @@ x
 	<operation name="Min" category="Basic Analysis">
 		<query type="column" name="colName" prompt="Column" column_type="numeric" />
 
-		<longname>min(<response name="colName" default="x" />)</longname>
+		<displayname>min(<response name="colName" default="x" />)</displayname>
 
 		<computation>
 			<set rvar="colName" name="colName" use="name" />
 			<set rvar="colVals" name="colName" use="values" />
-
-			<copy all="true" />
 
 			<save type="numeric" r_column="paste('min(', colName, ')', sep='')">min(colVals)</save>
 		</computation>
@@ -871,14 +746,12 @@ x
 		<query type="column" name="colName" prompt="Column" />
 		<query type="checkbox" name="desc" prompt="Descending" />
 
-		<longname>sort(<response name="colName" default="x" />)</longname>
+		<displayname>sort(<response name="colName" default="x" />)</displayname>
 
 		<computation>
 			<set rvar="colName" name="colName" use="name" />
 			<set rvar="colVals" name="colName" use="values" />
 			<set rvar="desc" name="desc" />
-
-			<copy all="true" />
 
 			<if expr="!desc">
 				<then>
@@ -894,13 +767,11 @@ x
 	<operation name="Reverse" category="Basic Analysis">
 		<query type="column" name="colName" prompt="Column" />
 
-		<longname>rev(<response name="colName" default="x" />)</longname>
+		<displayname>rev(<response name="colName" default="x" />)</displayname>
 
 		<computation>
 			<set rvar="colName" name="colName" use="name" />
 			<set rvar="colVals" name="colName" use="values" />
-
-			<copy all="true" />
 
 			<save type="numeric" r_column="paste('rev(', colName, ')', sep='')">rev(colVals)</save>
 		</computation>
@@ -909,13 +780,11 @@ x
 	<operation name="Prod" category="Basic Analysis">
 		<query type="column" name="colName" prompt="Column" />
 
-		<longname>prod(<response name="colName" default="x" />)</longname>
+		<displayname>prod(<response name="colName" default="x" />)</displayname>
 
 		<computation>
 			<set rvar="colName" name="colName" use="name" />
 			<set rvar="colVals" name="colName" use="values" />
-
-			<copy all="true" />
 
 			<save type="numeric" r_column="paste('prod(', colName, ')', sep='')">prod(colVals)</save>
 		</computation>
@@ -924,7 +793,7 @@ x
 	<operation name="Load library" category="Utility" list="false">
 		<query type="string" name="lib" prompt="Library name" />
 
-		<longname>Load <response name="lib" default="lib" /></longname>
+		<displayname>Load <response name="lib" default="lib" /></displayname>
 
 		<computation>
 			<set rvar="lib" name="lib" />
