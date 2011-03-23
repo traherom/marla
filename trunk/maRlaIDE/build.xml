@@ -130,8 +130,15 @@
             excludes="META-INF/*.SF, META-INF/*.DSA, META-INF/*.RSA"/>
         </zip>
 
+		<!-- copy in required files -->
 		<copy file="test/ops.xml" todir="${store.dir}" />
 		<copy file="test/export_template.xml" todir="${store.dir}" />
+
+		<!-- Check that xml files are valid -->
+		<echo>Checking validity of XML files</echo>
+		<xmlvalidate lenient="yes" warn="yes">
+			<fileset dir="${store.dir}" includes="*.xml"/>
+		</xmlvalidate>
 
         <delete file="${store.dir}/temp_final.jar"/>
     </target>
