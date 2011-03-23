@@ -1,4 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" ?>
+<!--#####################################################
+## WARNING: Do NOT manually edit this file. It may     ##
+## be overwritten without warning by maRla for updates ##
+## Instead, create a custom file based on this one and ##
+## add it to your maRla settings under "User XML"      ##
+######################################################-->
 <operations>
 	<operation name="NOP" list="false">
 		<!-- This operation is used for testing. It does nothing except print

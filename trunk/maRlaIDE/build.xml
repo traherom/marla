@@ -141,7 +141,7 @@
 		</exec>
 
 		<!-- Move (if needed) to file with revision name -->
-		<move file="Setup.exe" tofile="${store.dir}/${setup.base}.exe" />
+		<move file="${store.dir}/Setup.exe" tofile="${store.dir}/${setup.base}.exe" />
 
 		<!-- Remove temp files -->
 		<delete file="${store.dir}/install_script.nsi" />
