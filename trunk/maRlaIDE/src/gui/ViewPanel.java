@@ -403,7 +403,7 @@ public class ViewPanel extends JPanel
 		compConstraints.weighty = 1;
 		componentsScrollablePanel.add(new JLabel (""), compConstraints);
 
-		componentsScrollablePanel.updateUI();
+		componentsScrollablePanel.invalidate();
 	}
 
 	/** This method is called from within the constructor to
@@ -2022,7 +2022,7 @@ public class ViewPanel extends JPanel
 					legendContentPanel.add(second);
 					legendContentPanel.add(third);
 
-					legendContentPanel.updateUI();
+					legendContentPanel.invalidate();
 				}
 				++firstCounter;
 			}
@@ -2033,7 +2033,7 @@ public class ViewPanel extends JPanel
 				noneLabel.setFont(FONT_BOLD_12);
 				legendContentPanel.add (noneLabel);
 			}
-			legendContentPanel.updateUI();
+			legendContentPanel.invalidate();
 		}
 	}
 
