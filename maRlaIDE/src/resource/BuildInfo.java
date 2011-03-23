@@ -5,7 +5,7 @@
 			 */
 			package resource;
 			public class BuildInfo {
-				public static final String revisionNumber="390";
-				public static final String timeStamp="Wed, 23-March-2011 12:37:12 EDT";
+				public static final String revisionNumber="392";
+				public static final String timeStamp="Wed, 23-March-2011 12:50:55 EDT";
 			}
 		

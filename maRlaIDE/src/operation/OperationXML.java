@@ -210,8 +210,7 @@ public class OperationXML extends Operation
 	 * Returns a list of all the operations in the given XML file and the
 	 * elements in the XML that describe those operations. The Element or
 	 * the name can then be passed off to createOperation() to retrieve an object
-	 * that will perform the calculations. An exception is thrown if multiple operations
-	 * with the same name are detected.
+	 * that will perform the calculations.
 	 * @return ArrayList of the names of all available XML operations
 	 */
 	public static List<String> getAvailableOperations() throws OperationXMLException, ConfigurationException
@@ -240,9 +239,10 @@ public class OperationXML extends Operation
 				throw new OperationXMLException("Operation '" + name + "': Invalid value '" + op.getAttributeValue("list") + "' for list attribute");
 			}
 
-			// Only allow a name to appear once
-			if(opNames.contains(name))
-				throw new OperationXMLException("Multiple XML operations with the name '" + name + "' found");
+			// Only allow a name to appear once (remove old if it does)
+			int dupeIndex = opNames.indexOf(name);
+			if(dupeIndex != -1)
+				opNames.remove(dupeIndex);
 
 			opNames.add(name);
 		}
@@ -264,9 +264,6 @@ public class OperationXML extends Operation
 		if(operationXML == null)
 			loadXML();
 
-		// This is just used to ensure there are no duplicate named operations in the XML
-		List<String> opNames = new ArrayList<String>();
-
 		Map<String, List<String>> opsCategorized = new HashMap<String, List<String>>();
 		for(Object opEl : operationXML.getChildren("operation"))
 		{
@@ -279,11 +276,6 @@ public class OperationXML extends Operation
 
 			String cat = op.getAttributeValue("category", "Uncategorized");
 
-			// Only allow a name to appear once
-			if(opNames.contains(name))
-				throw new OperationXMLException("Multiple XML operations with the name '" + name + "' found");
-			opNames.add(name);
-
 			try
 			{
 				// Ensure that we're supposed to actually list this one
@@ -292,7 +284,7 @@ public class OperationXML extends Operation
 			}
 			catch(NumberFormatException ex)
 			{
-				throw new OperationXMLException("Operation '" + name + "': Invalid value '" + op.getAttributeValue("list") + "' for list attribute");
+				throw new OperationXMLException(name, "Invalid value '" + op.getAttributeValue("list") + "' for list attribute");
 			}
 
 			// Add to the categorized list.  Does this category already exist?
