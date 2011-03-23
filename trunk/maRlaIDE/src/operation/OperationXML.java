@@ -202,7 +202,7 @@ public class OperationXML extends Operation
 		}
 		catch(IOException ex)
 		{
-			throw new ConfigurationException("Unable to read the operation XML file '" + additionalOpsPaths + "'", ConfigType.PrimaryOpsXML, ex);
+			throw new ConfigurationException("Unable to read the operation XML file '" + xmlPath + "'", ConfigType.PrimaryOpsXML, ex);
 		}
 	}
 
