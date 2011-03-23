@@ -155,76 +155,103 @@ public class Configuration
 		List<ConfigType> unconfigured = new ArrayList<ConfigType>();
 		unconfigured.addAll(Arrays.asList(ConfigType.values()));
 
-		// Command line
+		// Set up stuff for incrementing progress bar nicely
+		int currProgress = 10;
+		int max = 80;
+		int valCount = unconfigured.size();
+		int incr = max;
+		if(valCount > 0)
+			incr = (int)Math.floor((max - currProgress) / valCount);
+		else
+			incr = max;
+
+		// Command line (10-20)
 		List<ConfigType> fixed = new ArrayList<ConfigType> (unconfigured.size ());
 		for(ConfigType c : unconfigured)
 		{
 			if(configureFromCmdLine(c, args))
+			{
+				currProgress += incr;
+				Domain.setProgressString(currProgress + "%");
+				Domain.setProgressValue(currProgress);
+
 				fixed.add(c);
+			}
 		}
 
 		unconfigured.removeAll(fixed);
-		Domain.setProgressString("30%");
-		Domain.setProgressValue(30);
 
 		// Try XML config
+		valCount = unconfigured.size();
+		if(valCount > 0)
+			incr = (int)Math.floor((max - currProgress) / valCount);
+		else
+			incr = max;
+
 		fixed.clear();
 		if(reloadXML())
 		{
-			Domain.setProgressString("40%");
-			Domain.setProgressValue(40);
 			int count = unconfigured.size();
-			int value = 40;
-			int incr;
-			if (count < 20)
-			{
-				incr = (int) Math.ceil((double) count / 20);
-			}
-			else
-			{
-				incr = (int) Math.ceil((double) 20 / count);
-			}
 			for(ConfigType c : unconfigured)
 			{
 				if(configureFromXML(c))
-					fixed.add(c);
-				
-				value += incr;
-				if (value < 60)
 				{
-					Domain.setProgressString(value + "%");
-					Domain.setProgressValue(value);
+					currProgress += incr;
+					Domain.setProgressString(currProgress + "%");
+					Domain.setProgressValue(currProgress);
+
+					fixed.add(c);
 				}
 			}
 		}
 
 		unconfigured.removeAll(fixed);
-		Domain.setProgressString("60%");
-		Domain.setProgressValue(60);
 
 		// Try searching
+		valCount = unconfigured.size();
+		if(valCount > 0)
+			incr = (int)Math.floor((max - currProgress) / valCount);
+		else
+			incr = max;
+
 		fixed.clear();
 		for(ConfigType c : unconfigured)
 		{
+			Domain.setProgressStatus("Searching for " + getName(c));
 			if(configureFromSearch(c))
+			{
+				currProgress += incr;
+				Domain.setProgressString(currProgress + "%");
+				Domain.setProgressValue(currProgress);
+
 				fixed.add(c);
+			}
 		}
 
 		unconfigured.removeAll(fixed);
-		Domain.setProgressString("70%");
-		Domain.setProgressValue(70);
 
 		// Try defaults
+		valCount = unconfigured.size();
+		if(valCount > 0)
+			incr = (int)Math.floor((max - currProgress) / valCount);
+		else
+			incr = max;
+		
 		fixed.clear();
+		Domain.setProgressStatus("Setting configuration defaults");
 		for(ConfigType c : unconfigured)
 		{
 			if(configureFromDefault(c))
+			{
+				currProgress += incr;
+				Domain.setProgressString(currProgress + "%");
+				Domain.setProgressValue(currProgress);
+				
 				fixed.add(c);
+			}
 		}
 
 		unconfigured.removeAll(fixed);
-		Domain.setProgressString("80%");
-		Domain.setProgressValue(80);
 
 		if(detailedConfigStatus)
 		{
