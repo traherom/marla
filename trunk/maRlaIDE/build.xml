@@ -73,15 +73,7 @@
 
     -->
 
-	<!-- Settings -->
-	<property name="store.dir" value="store"/>
-	
-	<path id="svnant.classpath">
-		<fileset dir="svnant">
-			<include name="**/*.jar"/>
-		</fileset>
-	</path>
-
+	<!-- Determine OS -->
 	<condition property="is.mac">
 		<os family="mac" />
 	</condition>
@@ -101,6 +93,26 @@
 		</or>
 	</condition>
 
+	<!-- Settings -->
+	<property name="store.dir" value="store" />
+
+	<condition property="launch4j.dir" value="/opt/launch4j">
+		<isset property="is.linux" />
+	</condition>
+	<condition property="launch4j.dir" value="C:\Program Files\launch4j">
+		<isset property="is.windows" />
+	</condition>
+
+	<path id="svnant.classpath">
+		<fileset dir="svnant">
+			<include name="**/*.jar"/>
+		</fileset>
+	</path>
+
+	<taskdef name="launch4j"
+		classname="net.sf.launch4j.ant.Launch4jTask"
+		classpath="${launch4j.dir}/launch4j.jar:${launch4j.dir}/lib/xstream.jar" />
+
     <target name="package-for-store" depends="jar">
         <!-- Change the value of this property to be the name of your JAR,
              minus the .jar extension. It should not have spaces.
@@ -113,7 +125,7 @@
 
         <echo message="Packaging ${application.title} into a single JAR at ${store.jar}"/>
 
-        <delete dir="${store.dir}"/>
+		<delete dir="${store.dir}"/>
         <mkdir dir="${store.dir}"/>
 
         <jar destfile="${store.dir}/temp_final.jar" filesetmanifest="skip">
@@ -130,9 +142,15 @@
             excludes="META-INF/*.SF, META-INF/*.DSA, META-INF/*.RSA"/>
         </zip>
 
+		<!-- Create Windows launcher -->
+		<echo message="Creating Windows launcher using launch4j at ${launch4j.dir}" />
+		<launch4j configFile="launcher.xml" />
+
 		<!-- copy in required files -->
-		<copy file="test/ops.xml" todir="${store.dir}" />
-		<copy file="test/export_template.xml" todir="${store.dir}" />
+		<copy todir="${store.dir}">
+			<fileset file="test/ops.xml" />
+			<fileset file="test/export_template.xml" />
+		</copy>
 
 		<!-- Check that xml files are valid -->
 		<echo>Checking validity of XML files</echo>
@@ -148,6 +166,7 @@
 
 		<!-- Move needed files to store -->
 		<copy todir="${store.dir}">
+			<fileset file="maRla.ico" />
 			<fileset file="install_script.nsi" />
 			<fileset file="gpl-3.0.txt" />
 			<fileset file="src/images/maRla.ico" />
@@ -166,6 +185,7 @@
 
 		<!-- Remove temp files -->
 		<delete>
+			<fileset file="${store.dir}/maRla.ico" />
 			<fileset file="${store.dir}/install_script.nsi" />
 			<fileset file="${store.dir}/gpl-3.0.txt" />
 			<fileset file="${store.dir}/maRla.ico" />
