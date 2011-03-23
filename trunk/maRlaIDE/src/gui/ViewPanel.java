@@ -75,6 +75,7 @@ import problem.Problem;
 import problem.SubProblem;
 import r.RProcessorException;
 import resource.LoadSaveThread;
+import resource.Updater;
 
 /**
  * The view of the application, which contains all user interactive components.
@@ -2216,7 +2217,7 @@ public class ViewPanel extends JPanel
 			}
 
 			// All done
-			//resource.Updater.notifyExit();
+			Updater.notifyExit();
 			if(forceQuit)
 				System.exit(0);
 		}

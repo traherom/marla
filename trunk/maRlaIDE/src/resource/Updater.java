@@ -56,15 +56,17 @@ public class Updater implements Runnable
 
 	/**
 	 * Checks for and updates components of maRla if possible
+	 * @return true if an update is available (download will start in background
+	 *		automatically and launch when maRla exits)
 	 */
-	public static void checkForUpdates() throws MarlaException
+	public static boolean checkForUpdates()
 	{
 		// Are there updates?
 		String latestRev = Configuration.fetchSettingFromServer("REV");
 		if(latestRev == null)
 		{
 			System.out.println("Unable to check for updates");
-			return;
+			return false;
 		}
 
 		// Are we current?
@@ -72,18 +74,18 @@ public class Updater implements Runnable
 		if(rev <= Integer.parseInt(BuildInfo.revisionNumber))
 		{
 			System.out.println("maRla is up-to-date");
-			return;
-		}
-		else
-		{
-			System.out.println("maRla is out of date. Updating to revision " + rev + "");
+			return false;
 		}
 
 		// Start download of update jar in background
-		Updater up = new Updater("http://marla.googlecode.com/files/update.jar");
+		String updateFileURL = "http://marla.googlecode.com/files/update-r" + rev + ".jar";
+		System.out.println("maRla is out of date. Fetching update file '" + updateFileURL + "'");
+		Updater up = new Updater(updateFileURL);
 		Thread upThread = new Thread(up);
 		upThread.setDaemon(true);
 		upThread.start();
+
+		return true;
 	}
 
 	/**

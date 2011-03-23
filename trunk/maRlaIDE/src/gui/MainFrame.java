@@ -24,6 +24,8 @@ import java.awt.Toolkit;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -33,6 +35,7 @@ import problem.Problem;
 import resource.BuildInfo;
 import resource.Configuration;
 import resource.Configuration.ConfigType;
+import resource.Updater;
 
 /**
  * The main frame of the stand-alone application.
@@ -166,6 +169,13 @@ public class MainFrame extends JFrame
 					}
 				}
 
+				// Start updater
+				Domain.setProgressString("98%");
+				Domain.setProgressValue(98);
+				Domain.setProgressStatus("Checking for updates...");
+				Updater.checkForUpdates();
+
+				// Done!
 				Domain.setProgressString("100%");
 				Domain.setProgressValue(100);
 				Domain.setProgressStatus("Complete ...");
