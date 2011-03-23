@@ -1,8 +1,8 @@
 <launch4jConfig>
   <dontWrapJar>false</dontWrapJar>
   <headerType>gui</headerType>
-  <jar>C:\Users\Ali\Developer\maRla\maRlaIDE\store\maRlaIDE.jar</jar>
-  <outfile>C:\Users\Ali\Developer\maRla\maRlaIDE\store\maRlaIDE.exe</outfile>
+  <jar>store/maRlaIDE.jar</jar>
+  <outfile>store/maRlaIDE.exe</outfile>
   <errTitle>Install Java</errTitle>
   <cmdLine></cmdLine>
   <chdir></chdir>
@@ -12,7 +12,7 @@
   <customProcName>true</customProcName>
   <stayAlive>false</stayAlive>
   <manifest></manifest>
-  <icon>C:\Users\Ali\Developer\maRla\maRlaIDE\maRla.ico</icon>
+  <!--<icon>maRla.ico</icon>-->
   <singleInstance>
     <mutexName>themarlaproject</mutexName>
     <windowTitle></windowTitle>
