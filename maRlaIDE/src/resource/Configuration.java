@@ -15,6 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package resource;
 
 import gui.Domain;
@@ -34,6 +35,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javax.swing.SwingUtilities;
 import latex.LatexExporter;
 import operation.OperationXMLException;
 import org.apache.commons.io.FileUtils;
@@ -215,22 +217,21 @@ public class Configuration
 			incr = max;
 
 		fixed.clear();
+		Domain.setProgressIndeterminate(true);
 		for(ConfigType c : unconfigured)
 		{
 			Domain.setProgressStatus("Searching for " + getName(c));
-			Domain.setProgressIndeterminate(true);
 			if(configureFromSearch(c))
 			{
 				currProgress += incr;
-				Domain.setProgressIndeterminate(false);
 				Domain.setProgressString(currProgress + "%");
 				Domain.setProgressValue(currProgress);
 
 				fixed.add(c);
 			}
 		}
-
 		Domain.setProgressIndeterminate(false);
+		
 		unconfigured.removeAll(fixed);
 
 		// Try defaults

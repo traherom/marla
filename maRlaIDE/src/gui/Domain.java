@@ -42,6 +42,7 @@ import java.util.Date;
 import java.util.List;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 import latex.LatexExporter;
 import problem.MarlaException;
 import operation.Operation;
@@ -213,9 +214,16 @@ public class Domain
 	 *
 	 * @param indeterminate True for an indeterminate progress bar, false otherwise.
 	 */
-	public static void setProgressIndeterminate(boolean indeterminate)
+	public static void setProgressIndeterminate(final boolean indeterminate)
 	{
-		MainFrame.progressFrame.progressBar.setIndeterminate(indeterminate);
+		SwingUtilities.invokeLater(new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				MainFrame.progressFrame.progressBar.setIndeterminate(indeterminate);
+			}
+		});
 	}
 
 	/**
@@ -223,9 +231,16 @@ public class Domain
 	 *
 	 * @param string The string shown within the progress bar.
 	 */
-	public static void setProgressString(String string)
+	public static void setProgressString(final String string)
 	{
-		MainFrame.progressFrame.progressBar.setString(string);
+		SwingUtilities.invokeLater(new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				MainFrame.progressFrame.progressBar.setString(string);
+			}
+		});
 	}
 
 	/**
@@ -267,9 +282,16 @@ public class Domain
 	 *
 	 * @param value The value of the progress bar.
 	 */
-	public static void setProgressValue(int value)
+	public static void setProgressValue(final int value)
 	{
-		MainFrame.progressFrame.progressBar.setValue(value);
+		SwingUtilities.invokeLater(new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				MainFrame.progressFrame.progressBar.setValue(value);
+			}
+		});
 	}
 
 	/**

@@ -78,6 +78,9 @@ public class SettingsDialog extends EscapeDialog
         lineWidthSpinner = new javax.swing.JSpinner();
         lineLabel3 = new javax.swing.JLabel();
         preferencesLabel1 = new javax.swing.JLabel();
+        customOpsLabel = new javax.swing.JLabel();
+        customOpsTextField = new javax.swing.JTextField();
+        customOpsBrowse = new javax.swing.JButton();
         studentInformationPanel = new javax.swing.JPanel();
         studentNameLabel = new javax.swing.JLabel();
         courseShortNameLabel = new javax.swing.JLabel();
@@ -106,7 +109,7 @@ public class SettingsDialog extends EscapeDialog
 
         preferencesPanel.setLayout(null);
 
-        lineWidthLabel.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        lineWidthLabel.setFont(new java.awt.Font("Verdana", 0, 12));
         lineWidthLabel.setText("Workspace line width:");
         preferencesPanel.add(lineWidthLabel);
         lineWidthLabel.setBounds(330, 70, 140, 20);
@@ -177,16 +180,16 @@ public class SettingsDialog extends EscapeDialog
         operationsButton.setBounds(410, 260, 90, 25);
 
         operationsTextField.setEditable(false);
-        operationsTextField.setFont(new java.awt.Font("Verdana", 0, 12));
+        operationsTextField.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
         preferencesPanel.add(operationsTextField);
         operationsTextField.setBounds(130, 260, 270, 22);
 
-        operationsLabel.setFont(new java.awt.Font("Verdana", 0, 12));
+        operationsLabel.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
         operationsLabel.setText("Operations XML:");
         preferencesPanel.add(operationsLabel);
         operationsLabel.setBounds(10, 260, 120, 20);
 
-        includeProblemCheckBox.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        includeProblemCheckBox.setFont(new java.awt.Font("Verdana", 0, 12));
         includeProblemCheckBox.setText("Include current problem in error reports");
         includeProblemCheckBox.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -196,7 +199,7 @@ public class SettingsDialog extends EscapeDialog
         preferencesPanel.add(includeProblemCheckBox);
         includeProblemCheckBox.setBounds(30, 70, 300, 25);
 
-        debugModeCheckBox.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        debugModeCheckBox.setFont(new java.awt.Font("Verdana", 0, 12));
         debugModeCheckBox.setText("Debug mode");
         debugModeCheckBox.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -227,12 +230,12 @@ public class SettingsDialog extends EscapeDialog
         preferencesPanel.add(rPathLabel1);
         rPathLabel1.setBounds(10, 140, 60, 20);
 
-        lineSpaceLabel.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        lineSpaceLabel.setFont(new java.awt.Font("Verdana", 0, 12));
         lineSpaceLabel.setText("Workspace line space:");
         preferencesPanel.add(lineSpaceLabel);
         lineSpaceLabel.setBounds(330, 40, 150, 20);
 
-        lineSpaceSpinner.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        lineSpaceSpinner.setFont(new java.awt.Font("Verdana", 0, 12));
         lineSpaceSpinner.setModel(new javax.swing.SpinnerNumberModel(Integer.valueOf(0), Integer.valueOf(0), null, Integer.valueOf(1)));
         lineSpaceSpinner.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
@@ -242,7 +245,7 @@ public class SettingsDialog extends EscapeDialog
         preferencesPanel.add(lineSpaceSpinner);
         lineSpaceSpinner.setBounds(480, 40, 40, 22);
 
-        lineWidthSpinner.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        lineWidthSpinner.setFont(new java.awt.Font("Verdana", 0, 12));
         lineWidthSpinner.setModel(new javax.swing.SpinnerNumberModel(Integer.valueOf(1), Integer.valueOf(1), null, Integer.valueOf(1)));
         lineWidthSpinner.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
@@ -252,15 +255,39 @@ public class SettingsDialog extends EscapeDialog
         preferencesPanel.add(lineWidthSpinner);
         lineWidthSpinner.setBounds(480, 70, 40, 22);
 
-        lineLabel3.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        lineLabel3.setFont(new java.awt.Font("Verdana", 0, 12));
         lineLabel3.setText("______________________________________________________");
         preferencesPanel.add(lineLabel3);
         lineLabel3.setBounds(10, 10, 500, 20);
 
-        preferencesLabel1.setFont(new java.awt.Font("Verdana", 1, 12)); // NOI18N
+        preferencesLabel1.setFont(new java.awt.Font("Verdana", 1, 12));
         preferencesLabel1.setText("Preferences");
         preferencesPanel.add(preferencesLabel1);
         preferencesLabel1.setBounds(10, 10, 250, 16);
+
+        customOpsLabel.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        customOpsLabel.setText("User Operations XML:");
+        preferencesPanel.add(customOpsLabel);
+        customOpsLabel.setBounds(10, 300, 150, 20);
+
+        customOpsTextField.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        customOpsTextField.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                customOpsTextFieldActionPerformed(evt);
+            }
+        });
+        preferencesPanel.add(customOpsTextField);
+        customOpsTextField.setBounds(160, 300, 240, 22);
+
+        customOpsBrowse.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        customOpsBrowse.setText("Browse");
+        customOpsBrowse.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                customOpsBrowseActionPerformed(evt);
+            }
+        });
+        preferencesPanel.add(customOpsBrowse);
+        customOpsBrowse.setBounds(410, 300, 90, 25);
 
         settingsTabbedPane.addTab("Preferences", preferencesPanel);
 
@@ -315,7 +342,7 @@ public class SettingsDialog extends EscapeDialog
             }
         });
 
-        jLabel1.setFont(new java.awt.Font("Verdana", 1, 14)); // NOI18N
+        jLabel1.setFont(new java.awt.Font("Verdana", 1, 14));
         jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/settings_button.png"))); // NOI18N
         jLabel1.setText("Settings");
 
@@ -355,7 +382,7 @@ public class SettingsDialog extends EscapeDialog
             .addGroup(settingsPanelLayout.createSequentialGroup()
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(settingsTabbedPane, javax.swing.GroupLayout.DEFAULT_SIZE, 322, Short.MAX_VALUE)
+                .addComponent(settingsTabbedPane, javax.swing.GroupLayout.DEFAULT_SIZE, 373, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -525,12 +552,23 @@ public class SettingsDialog extends EscapeDialog
 		}
 	}//GEN-LAST:event_lineWidthSpinnerStateChanged
 
+	private void customOpsBrowseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_customOpsBrowseActionPerformed
+		// TODO add your handling code here:
+	}//GEN-LAST:event_customOpsBrowseActionPerformed
+
+	private void customOpsTextFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_customOpsTextFieldActionPerformed
+		// TODO add your handling code here:
+	}//GEN-LAST:event_customOpsTextFieldActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton closeButton;
     private javax.swing.JLabel courseLongNameLabel;
     private javax.swing.JTextField courseLongNameTextField;
     private javax.swing.JLabel courseShortNameLabel;
     private javax.swing.JTextField courseShortNameTextField;
+    private javax.swing.JButton customOpsBrowse;
+    private javax.swing.JLabel customOpsLabel;
+    private javax.swing.JTextField customOpsTextField;
     private javax.swing.JCheckBox debugModeCheckBox;
     private javax.swing.JCheckBox includeProblemCheckBox;
     private javax.swing.JLabel jLabel1;
@@ -571,6 +609,7 @@ public class SettingsDialog extends EscapeDialog
 	 */
 	protected void closeSettings()
 	{
+		//customOpsTextField;
 		try
 		{
 			Configuration config = Configuration.getInstance();
