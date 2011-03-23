@@ -21,7 +21,6 @@ package gui;
 import java.awt.AWTEvent;
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
@@ -292,7 +291,7 @@ public class ViewPanel extends JPanel
 		catch(MarlaException ex)
 		{
 			Domain.logger.add(ex);
-			JOptionPane.showMessageDialog(this, ex.getMessage(), "Reload Error", JOptionPane.WARNING_MESSAGE);
+			JOptionPane.showMessageDialog(domain.getTopWindow(), ex.getMessage(), "Reload Error", JOptionPane.WARNING_MESSAGE);
 		}
 	}
 
@@ -1138,7 +1137,7 @@ public class ViewPanel extends JPanel
 			catch(OperationException ex)
 			{
 				Domain.logger.add(ex);
-				JOptionPane.showMessageDialog(this, ex.getMessage(), "Operation Error", JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(domain.getTopWindow(), ex.getMessage(), "Operation Error", JOptionPane.ERROR_MESSAGE);
 			}
 			catch(MarlaException ex)
 			{
@@ -1940,7 +1939,7 @@ public class ViewPanel extends JPanel
 						// If the users input was not valid, the form is not accepted and the dialog will not close
 						((JTextField) valueComponents.get(i)).requestFocus();
 						((JTextField) valueComponents.get(i)).selectAll();
-						JOptionPane.showMessageDialog(viewPanel, ex.getMessage(), "Invalid Input", JOptionPane.ERROR_MESSAGE);
+						JOptionPane.showMessageDialog(domain.getTopWindow(), ex.getMessage(), "Invalid Input", JOptionPane.ERROR_MESSAGE);
 						pass = false;
 					}
 				}
@@ -2054,12 +2053,7 @@ public class ViewPanel extends JPanel
 				int response = JOptionPane.YES_OPTION;
 				if(!editing)
 				{
-					Container parent = this;
-					if(NEW_PROBLEM_WIZARD_DIALOG.isVisible())
-					{
-						parent = (Container) NEW_PROBLEM_WIZARD_DIALOG;
-					}
-					response = JOptionPane.showConfirmDialog(parent,
+					response = JOptionPane.showConfirmDialog(domain.getTopWindow(),
 															 "Would you like to save changes to the currently open problem?",
 															 "Save Problem Changes",
 															 JOptionPane.YES_NO_CANCEL_OPTION,
@@ -2074,7 +2068,7 @@ public class ViewPanel extends JPanel
 					catch(MarlaException ex)
 					{
 						Domain.logger.add(ex);
-						JOptionPane.showMessageDialog(this, ex.getMessage(), "Save Failed", JOptionPane.ERROR_MESSAGE);
+						JOptionPane.showMessageDialog(domain.getTopWindow(), ex.getMessage(), "Save Failed", JOptionPane.ERROR_MESSAGE);
 						return false;
 					}
 				}

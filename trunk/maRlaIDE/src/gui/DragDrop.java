@@ -190,7 +190,7 @@ public class DragDrop implements DragGestureListener, DragSourceListener, DropTa
 			}
 			catch (MarlaException ex)
 			{
-				JOptionPane.showMessageDialog (viewPanel, "Unable to load the requested operation", "Missing Operation", JOptionPane.WARNING_MESSAGE);
+				JOptionPane.showMessageDialog (viewPanel.domain.getTopWindow(), "Unable to load the requested operation", "Missing Operation", JOptionPane.WARNING_MESSAGE);
 			}
 
 		}

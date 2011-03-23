@@ -18,6 +18,7 @@
 
 package gui;
 
+import java.io.File;
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import problem.MarlaException;
@@ -426,6 +427,11 @@ public class SettingsDialog extends EscapeDialog
 		VIEW_PANEL.openChooserDialog.setDialogTitle(Configuration.getName(Configuration.ConfigType.R));
 		VIEW_PANEL.openChooserDialog.resetChoosableFileFilters();
 		VIEW_PANEL.openChooserDialog.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+		try
+		{
+			VIEW_PANEL.openChooserDialog.setSelectedFile(new File(Configuration.getInstance().get(Configuration.ConfigType.R).toString()));
+		}
+		catch (MarlaException ex) {}
 		// Display the chooser and retrieve the selected file
 		int response = VIEW_PANEL.openChooserDialog.showOpenDialog(this);
 		if(response == JFileChooser.APPROVE_OPTION)
@@ -445,6 +451,11 @@ public class SettingsDialog extends EscapeDialog
 		VIEW_PANEL.openChooserDialog.setDialogTitle(Configuration.getName(Configuration.ConfigType.PdfTex));
 		VIEW_PANEL.openChooserDialog.resetChoosableFileFilters();
 		VIEW_PANEL.openChooserDialog.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+		try
+		{
+			VIEW_PANEL.openChooserDialog.setSelectedFile(new File(Configuration.getInstance().get(Configuration.ConfigType.PdfTex).toString()));
+		}
+		catch (MarlaException ex) {}
 		// Display the chooser and retrieve the selected file
 		int response = VIEW_PANEL.openChooserDialog.showOpenDialog(this);
 		if(response == JFileChooser.APPROVE_OPTION)
@@ -464,6 +475,11 @@ public class SettingsDialog extends EscapeDialog
 		VIEW_PANEL.openChooserDialog.setDialogTitle(Configuration.getName(Configuration.ConfigType.TexTemplate));
 		VIEW_PANEL.openChooserDialog.resetChoosableFileFilters();
 		VIEW_PANEL.openChooserDialog.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+		try
+		{
+			VIEW_PANEL.openChooserDialog.setSelectedFile(new File(Configuration.getInstance().get(Configuration.ConfigType.TexTemplate).toString()));
+		}
+		catch (MarlaException ex) {}
 		// Display the chooser and retrieve the selected file
 		int response = VIEW_PANEL.openChooserDialog.showOpenDialog(this);
 		if(response == JFileChooser.APPROVE_OPTION)
@@ -483,6 +499,11 @@ public class SettingsDialog extends EscapeDialog
 		VIEW_PANEL.openChooserDialog.setDialogTitle(Configuration.getName(Configuration.ConfigType.PrimaryOpsXML));
 		VIEW_PANEL.openChooserDialog.resetChoosableFileFilters();
 		VIEW_PANEL.openChooserDialog.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+		try
+		{
+			VIEW_PANEL.openChooserDialog.setSelectedFile(new File(Configuration.getInstance().get(Configuration.ConfigType.PrimaryOpsXML).toString()));
+		}
+		catch (MarlaException ex) {}
 		// Display the chooser and retrieve the selected file
 		int response = VIEW_PANEL.openChooserDialog.showOpenDialog(this);
 		if(response == JFileChooser.APPROVE_OPTION)
@@ -567,6 +588,25 @@ public class SettingsDialog extends EscapeDialog
 		VIEW_PANEL.openChooserDialog.setDialogTitle(Configuration.getName(Configuration.ConfigType.UserOpsXML));
 		VIEW_PANEL.openChooserDialog.resetChoosableFileFilters();
 		VIEW_PANEL.openChooserDialog.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+		String path = customOpsTextField.getText();
+		if (!path.equals (""))
+		{
+			if (path.endsWith ("|"))
+			{
+				path = path.substring(0, path.length() - 1);
+			}
+			if (path.contains("|"))
+			{
+				int lastIndex = path.lastIndexOf("|");
+				path = path.substring(lastIndex + 1, path.length());
+			}
+			VIEW_PANEL.openChooserDialog.setSelectedFile(new File(path));
+		}
+		else
+		{
+			VIEW_PANEL.openChooserDialog.setSelectedFile(new File(""));
+			VIEW_PANEL.openChooserDialog.setCurrentDirectory(new File(Domain.HOME_DIR));
+		}
 		// Display the chooser and retrieve the selected file
 		int response = VIEW_PANEL.openChooserDialog.showOpenDialog(this);
 		if(response == JFileChooser.APPROVE_OPTION)
@@ -589,6 +629,10 @@ public class SettingsDialog extends EscapeDialog
 				else
 				{
 					int replaceStart = userOpsText.lastIndexOf(("|"));
+					if (replaceStart == -1)
+					{
+						replaceStart = 0;
+					}
 					userOpsText = userOpsText.substring(0, replaceStart) + newPath;
 				}
 
@@ -677,7 +721,7 @@ public class SettingsDialog extends EscapeDialog
 		// Ensure a valid custom operations list
 		if (customOpsTextField.getText().endsWith ("|"))
 		{
-			customOpsTextField.setText(customOpsTextField.getText().substring(0, customOpsTextField.getText().length() - 2));
+			customOpsTextField.setText(customOpsTextField.getText().substring(0, customOpsTextField.getText().length() - 1));
 		}
 		try
 		{
