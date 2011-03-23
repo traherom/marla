@@ -106,7 +106,7 @@ public class MainFrame extends JFrame
 						viewPanel.openChooserDialog.resetChoosableFileFilters();
 						viewPanel.openChooserDialog.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
 						// Display the chooser and retrieve the selected file
-						int response = viewPanel.openChooserDialog.showOpenDialog(viewPanel);
+						int response = viewPanel.openChooserDialog.showOpenDialog(progressFrame);
 						if(response == JFileChooser.APPROVE_OPTION)
 						{
 							conf.set(curr, viewPanel.openChooserDialog.getSelectedFile().getPath());
@@ -114,7 +114,7 @@ public class MainFrame extends JFrame
 						}
 						else
 						{
-							JOptionPane.showMessageDialog(viewPanel, "The maRla Project cannot run without these resources.", "Fatal Error", JOptionPane.ERROR_MESSAGE);
+							JOptionPane.showMessageDialog(progressFrame, "The maRla Project cannot run without these resources.", "Fatal Error", JOptionPane.ERROR_MESSAGE);
 							System.exit(1);
 						}
 					}
