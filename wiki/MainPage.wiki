@@ -1,0 +1,13 @@
+#summary Front page
+#labels Featured
+
+=Introduction=
+The maRla Project is a cross-platform IDE for working through first-semester types of statistics problems. It strives to aid the student in the entire homework cycle, from defining the problem to the final submittable document.
+
+maRla uses [http://www.r-project.org/ R] and [http://www.latex-project.org/ LaTeX] to perform its computation and PDF generation, respectively.
+
+=maRla IDE=
+Screenshots coming soon.
+
+=Operations Editor=
+The operation editor is in development.
