@@ -19,7 +19,10 @@
 package resource;
 
 import gui.Domain;
+import gui.MainFrame;
 import gui.WorkspacePanel;
+import java.awt.Point;
+import java.awt.Rectangle;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -86,6 +89,7 @@ public class Configuration
 	 */
 	public enum ConfigType {
 			DebugMode,
+			WindowX, WindowY, WindowHeight, WindowWidth,
 			PdfTex, R, PrimaryOpsXML, UserOpsXML, TexTemplate,
 			UserName, ClassShort, ClassLong,
 			MinLineWidth, LineSpacing,
@@ -345,6 +349,18 @@ public class Configuration
 			case ErrorServer:
 				return Domain.getErrorServer();
 
+			case WindowX:
+				return Domain.getInstance().getMainFrame().getX();
+
+			case WindowY:
+				return Domain.getInstance().getMainFrame().getY();
+
+			case WindowHeight:
+				return Domain.getInstance().getMainFrame().getHeight();
+
+			case WindowWidth:
+				return Domain.getInstance().getMainFrame().getWidth();
+
 			default:
 				throw new InternalMarlaException("Unhandled configuration exception type in get");
 		}
@@ -359,6 +375,11 @@ public class Configuration
 	public Object set(ConfigType setting, Object val) throws MarlaException
 	{
 		Object previous = null;
+		MainFrame frame = null;
+		int x;
+		int y;
+		int height;
+		int width;
 
 		switch(setting)
 		{
@@ -447,6 +468,50 @@ public class Configuration
 					previous = Domain.setReportIncludesProblem((Boolean)val);
 				else
 					previous = Domain.setReportIncludesProblem(Boolean.parseBoolean(val.toString().toLowerCase()));
+				break;
+
+			case WindowX:
+				frame = Domain.getInstance().getMainFrame();
+				y = frame.getY();
+				if(val instanceof Integer)
+					x = (Integer)val;
+				else
+					x = Integer.parseInt(val.toString());
+				frame.setLocation(x, y);
+				break;
+
+			case WindowY:
+				frame = Domain.getInstance().getMainFrame();
+				x = frame.getX();
+				if(val instanceof Integer)
+					y = (Integer)val;
+				else
+					y = Integer.parseInt(val.toString());
+				frame.setLocation(x, y);
+				break;
+
+			case WindowHeight:
+				frame = Domain.getInstance().getMainFrame();
+				x = frame.getX();
+				y = frame.getY();
+				width = frame.getWidth();
+				if(val instanceof Integer)
+					height = (Integer)val;
+				else
+					height = Integer.parseInt(val.toString());
+				frame.setBounds(x, y, width, height);
+				break;
+
+			case WindowWidth:
+				frame = Domain.getInstance().getMainFrame();
+				x = frame.getX();
+				y = frame.getY();
+				height = frame.getHeight();
+				if(val instanceof Integer)
+					width = (Integer)val;
+				else
+					width = Integer.parseInt(val.toString());
+				frame.setBounds(x, y, width, height);
 				break;
 
 			default:
@@ -611,6 +676,14 @@ public class Configuration
 
 				case UserOpsXML:
 					set(setting, "");
+					success = true;
+					break;
+
+				case WindowHeight:
+				case WindowWidth:
+				case WindowX:
+				case WindowY:
+					// Leave this to whatever it defaults to automatically
 					success = true;
 					break;
 
@@ -945,9 +1018,15 @@ public class Configuration
 	{
 		try
 		{
-			// Set
-			Domain.setErrorServer(fetchSettingFromServer("SERVER"));
-			return true;
+			// Get setting from server
+			String server = fetchSettingFromServer("SERVER");
+			if(server != null)
+			{
+				Domain.setErrorServer(server);
+				return true;
+			}
+			else
+				return false;
 		}
 		catch(ConfigurationException ex)
 		{

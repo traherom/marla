@@ -220,25 +220,6 @@ public class MainFrame extends JFrame
 	{
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 
-		int x = getX();
-		int y = getY();
-		if(x > screenSize.getWidth())
-		{
-			x = (int) screenSize.getWidth() - getWidth();
-		}
-		if(x < 0 - getWidth())
-		{
-			x = 0;
-		}
-		if(y > screenSize.getHeight())
-		{
-			y = (int) screenSize.getHeight() - getHeight();
-		}
-		if(y < 0 - getHeight())
-		{
-			y = 0;
-		}
-
 		int width = getWidth();
 		int height = getHeight();
 		if(width < MINIMUM_WINDOW_SIZE.width)
@@ -253,9 +234,28 @@ public class MainFrame extends JFrame
 		{
 			width = screenSize.width;
 		}
-		if(height > screenSize.height)
+		if(height > screenSize.height - 30)
 		{
-			height = screenSize.height;
+			height = screenSize.height - 30;
+		}
+		
+		int x = getX();
+		int y = getY();
+		if(x > screenSize.getWidth())
+		{
+			x = (int) screenSize.getWidth() - width;
+		}
+		if(x < 0)
+		{
+			x = 0;
+		}
+		if(y > screenSize.getHeight())
+		{
+			y = (int) screenSize.getHeight() - height;
+		}
+		if(y < 0)
+		{
+			y = 0;
 		}
 
 		setBounds(x, y, width, height);

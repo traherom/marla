@@ -32,6 +32,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintStream;
 import java.io.PrintWriter;
+import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
@@ -52,6 +53,7 @@ import org.jdom.Document;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 import problem.DataSource;
+import problem.InternalMarlaException;
 import problem.Problem;
 import resource.BuildInfo;
 import resource.Configuration.ConfigType;
@@ -82,6 +84,8 @@ public class Domain
 	public static final SimpleDateFormat FULL_TIME_FORMAT = new SimpleDateFormat("MM/dd/yyyy h:mm:ss a");
 	/** The logger holds all caught exceptions for recording in the log file.*/
 	public static final ArrayList<Exception> logger = new ArrayList<Exception> ();
+	/** Domain object currently created. Only one allowed, ever */
+	public static Domain currDomain = null;
 	/**
 	 * Server to send maRla exceptions to
 	 */
@@ -119,6 +123,11 @@ public class Domain
 	 */
 	public Domain(ViewPanel viewPanel)
 	{
+		if(currDomain != null)
+			throw new InternalMarlaException("Multiple domain instances created");
+
+		currDomain = this;
+
 		this.viewPanel = viewPanel;
 
 		// If the Desktop object is supported, get the reference
@@ -130,6 +139,15 @@ public class Domain
 		Problem.setDomain (domain);
 
 		logFile = new File ("log.dat");
+	}
+
+	/**
+	 * Gets the current instance of Domain (null if there is none)
+	 * @return Current Domain
+	 */
+	public static Domain getInstance()
+	{
+		return currDomain;
 	}
 
 	/**
@@ -152,9 +170,10 @@ public class Domain
 
 		try
 		{
-			// Ensure it's valid
+			// Ensure it's valid. Don't allow it to follow redirects, helps with the CU proxy login
 			URL url = new URL(newServer);
-			URLConnection conn = url.openConnection();
+			HttpURLConnection conn = (HttpURLConnection)url.openConnection();
+			conn.setInstanceFollowRedirects(false);
 
 			// Read in page
 			BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
@@ -172,6 +191,7 @@ public class Domain
 		{
 			// We likely just timed out instantly and there's no network
 			// connection. Accept though, for when the network comes back online
+			System.out.println("Acceting setting");
 		}
 		catch(MalformedURLException ex)
 		{
@@ -949,5 +969,14 @@ public class Domain
 		{
 			return viewPanel;
 		}
+	}
+
+	/**
+	 * Gets the current window frame for maRla
+	 * @return Current MainFrame
+	 */
+	public MainFrame getMainFrame()
+	{
+		return viewPanel.mainFrame;
 	}
 }
