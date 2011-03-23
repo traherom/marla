@@ -107,7 +107,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 	 * @param viewPanel A reference to the view panel.
 	 * @param domain A reference to the domain.
 	 */
-	public NewProblemWizardDialog(ViewPanel viewPanel, Domain domain)
+	public NewProblemWizardDialog(final ViewPanel viewPanel, Domain domain)
 	{
 		super(viewPanel.mainFrame, viewPanel);
 		this.domain = domain;
@@ -123,7 +123,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 				{
 					if(dataSetTabbedPane.getUI().getTabBounds(dataSetTabbedPane, i).contains(evt.getPoint()) && evt.getClickCount() == 2)
 					{
-						Object name = JOptionPane.showInputDialog(NEW_PROBLEM_WIZARD,
+						Object name = JOptionPane.showInputDialog(viewPanel.domain.getTopWindow(),
 																  "Give the data set a new name:",
 																  "Data Set Name",
 																  JOptionPane.QUESTION_MESSAGE,
@@ -140,7 +140,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 								}
 								else
 								{
-									JOptionPane.showMessageDialog(NEW_PROBLEM_WIZARD, "A column with that name already exists.", "Duplicate Column", JOptionPane.WARNING_MESSAGE);
+									JOptionPane.showMessageDialog(viewPanel.domain.getTopWindow(), "A column with that name already exists.", "Duplicate Column", JOptionPane.WARNING_MESSAGE);
 								}
 							}
 						}
@@ -1073,7 +1073,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 				}
 				catch(IOException ex)
 				{
-					JOptionPane.showMessageDialog(this, "The problem name you have given contains characters that are\n"
+					JOptionPane.showMessageDialog(VIEW_PANEL.domain.getTopWindow(), "The problem name you have given contains characters that are\n"
 														+ "not legal in a filename. Please rename your file and avoid\n"
 														+ "using special characters.",
 												  "Invalid Filename",
@@ -1085,7 +1085,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 			// Ensure the problem name given does not match an already existing file
 			if(continueAllowed && file.exists() && !newProblemOverwrite && newProblem != null)
 			{
-				int response = JOptionPane.showConfirmDialog(this, "The given problem name already exists as a file\n"
+				int response = JOptionPane.showConfirmDialog(VIEW_PANEL.domain.getTopWindow(), "The given problem name already exists as a file\n"
 																   + "at the specified location. If you would not like to overwrite the\n"
 																   + "existing file, change the problem name or the problem location.\n"
 																   + "Would you like to overwrite the existing file?",
@@ -1623,7 +1623,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 			public void mouseReleased(MouseEvent evt)
 			{
 				int index = table.getTableHeader().columnAtPoint(evt.getPoint());
-				Object name = JOptionPane.showInputDialog(NEW_PROBLEM_WIZARD, "Give the column a new name:", "Column Name",
+				Object name = JOptionPane.showInputDialog(VIEW_PANEL.domain.getTopWindow(), "Give the column a new name:", "Column Name",
 														  JOptionPane.QUESTION_MESSAGE, null, null,
 														  table.getColumnModel().getColumn(index).getHeaderValue());
 				if(name != null)
@@ -1638,7 +1638,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 						}
 						else
 						{
-							JOptionPane.showMessageDialog(NEW_PROBLEM_WIZARD, "A column with that name already exists.", "Duplicate Column", JOptionPane.WARNING_MESSAGE);
+							JOptionPane.showMessageDialog(VIEW_PANEL.domain.getTopWindow(), "A column with that name already exists.", "Duplicate Column", JOptionPane.WARNING_MESSAGE);
 						}
 					}
 				}
@@ -1813,7 +1813,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 							}
 							catch(MarlaException ex)
 							{
-								JOptionPane.showMessageDialog(NEW_PROBLEM_WIZARD, ex.getMessage(), "Load failed", JOptionPane.WARNING_MESSAGE);
+								JOptionPane.showMessageDialog(VIEW_PANEL.domain.getTopWindow(), ex.getMessage(), "Load failed", JOptionPane.WARNING_MESSAGE);
 							}
 						}
 					}

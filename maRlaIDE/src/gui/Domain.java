@@ -19,6 +19,7 @@
 package gui;
 
 import java.awt.Component;
+import java.awt.Container;
 import java.awt.Desktop;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -523,7 +524,7 @@ public class Domain
 			catch (MarlaException ex)
 			{
 				logger.add(ex);
-				JOptionPane.showMessageDialog(viewPanel, ex.getMessage(), "Unable to save", JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(getTopWindow(), ex.getMessage(), "Unable to Save", JOptionPane.ERROR_MESSAGE);
 			}
 		}
 	}
@@ -608,7 +609,7 @@ public class Domain
 				// ensure the file is a valid backup file
 				if (!file.toString ().endsWith (".marla"))
 				{
-					JOptionPane.showMessageDialog (viewPanel, "The extension for the file must be .marla.", "Invalid Extension", JOptionPane.WARNING_MESSAGE);
+					JOptionPane.showMessageDialog (getTopWindow(), "The extension for the file must be .marla.", "Invalid Extension", JOptionPane.WARNING_MESSAGE);
 					viewPanel.saveChooserDialog.setSelectedFile (new File (viewPanel.saveChooserDialog.getSelectedFile ().toString ().substring (0, viewPanel.saveChooserDialog.getSelectedFile ().toString ().lastIndexOf (".")) + ".marla"));
 					response = viewPanel.saveChooserDialog.showSaveDialog (viewPanel);
 					continue;
@@ -617,7 +618,7 @@ public class Domain
 				boolean continueAllowed = true;
 				if (file.exists ())
 				{
-					response = JOptionPane.showConfirmDialog (viewPanel, "The selected file already exists.\n"
+					response = JOptionPane.showConfirmDialog (getTopWindow(), "The selected file already exists.\n"
 																		 + "Would you like to overwrite the existing file?",
 															  "Overwrite Existing File",
 															  JOptionPane.YES_NO_OPTION,
@@ -678,7 +679,7 @@ public class Domain
 				boolean continueAllowed = true;
 				if (file.exists ())
 				{
-					response = JOptionPane.showConfirmDialog (viewPanel, "The selected file already exists.\n"
+					response = JOptionPane.showConfirmDialog (getTopWindow(), "The selected file already exists.\n"
 																		 + "Would you like to overwrite the existing file?",
 															  "Overwrite Existing File",
 															  JOptionPane.YES_NO_OPTION,
@@ -716,18 +717,18 @@ public class Domain
 					{
 						if (filePath != null)
 						{
-							JOptionPane.showMessageDialog(viewPanel, "The file was exported successfully.\nLocation: " + filePath, "Export Successful", JOptionPane.INFORMATION_MESSAGE);
+							JOptionPane.showMessageDialog(getTopWindow(), "The file was exported successfully.\nLocation: " + filePath, "Export Successful", JOptionPane.INFORMATION_MESSAGE);
 						}
 						else
 						{
 							Domain.logger.add (ex);
-							JOptionPane.showMessageDialog(viewPanel, ex.getMessage(), "PDF Export Failed", JOptionPane.ERROR_MESSAGE);
+							JOptionPane.showMessageDialog(getTopWindow(), ex.getMessage(), "PDF Export Failed", JOptionPane.ERROR_MESSAGE);
 						}
 					}
 					catch (MarlaException ex)
 					{
 						Domain.logger.add (ex);
-						JOptionPane.showMessageDialog(viewPanel, ex.getMessage(), "PDF Export Failed", JOptionPane.ERROR_MESSAGE);
+						JOptionPane.showMessageDialog(getTopWindow(), ex.getMessage(), "PDF Export Failed", JOptionPane.ERROR_MESSAGE);
 					}
 					break;
 				}
@@ -766,7 +767,7 @@ public class Domain
 				// ensure the file is a valid backup file
 				if (!file.toString ().endsWith (".rnw"))
 				{
-					JOptionPane.showMessageDialog (viewPanel, "The extension for the file must be .rnw.", "Invalid Extension", JOptionPane.WARNING_MESSAGE);
+					JOptionPane.showMessageDialog (getTopWindow(), "The extension for the file must be .rnw.", "Invalid Extension", JOptionPane.WARNING_MESSAGE);
 					viewPanel.saveChooserDialog.setSelectedFile (new File (viewPanel.saveChooserDialog.getSelectedFile ().toString ().substring (0, viewPanel.saveChooserDialog.getSelectedFile ().toString ().lastIndexOf (".")) + ".tex"));
 					response = viewPanel.saveChooserDialog.showSaveDialog (viewPanel);
 					continue;
@@ -775,7 +776,7 @@ public class Domain
 				boolean continueAllowed = true;
 				if (file.exists ())
 				{
-					response = JOptionPane.showConfirmDialog (viewPanel, "The selected file already exists.\n"
+					response = JOptionPane.showConfirmDialog (getTopWindow(), "The selected file already exists.\n"
 																		 + "Would you like to overwrite the existing file?",
 															  "Overwrite Existing File",
 															  JOptionPane.YES_NO_OPTION,
@@ -817,18 +818,18 @@ public class Domain
 					{
 						if (filePath != null)
 						{
-							JOptionPane.showMessageDialog(viewPanel, "The file was exported successfully.\nLocation: " + filePath, "Export Successful", JOptionPane.INFORMATION_MESSAGE);
+							JOptionPane.showMessageDialog(getTopWindow(), "The file was exported successfully.\nLocation: " + filePath, "Export Successful", JOptionPane.INFORMATION_MESSAGE);
 						}
 						else
 						{
 							Domain.logger.add (ex);
-							JOptionPane.showMessageDialog(viewPanel, ex.getMessage(), "Export Failed", JOptionPane.ERROR_MESSAGE);
+							JOptionPane.showMessageDialog(getTopWindow(), ex.getMessage(), "Export Failed", JOptionPane.ERROR_MESSAGE);
 						}
 					}
 					catch (MarlaException ex)
 					{
 						Domain.logger.add (ex);
-						JOptionPane.showMessageDialog(viewPanel, ex.getMessage(), "Export Failed", JOptionPane.ERROR_MESSAGE);
+						JOptionPane.showMessageDialog(getTopWindow(), ex.getMessage(), "Export Failed", JOptionPane.ERROR_MESSAGE);
 					}
 					break;
 				}
@@ -865,7 +866,7 @@ public class Domain
 				File file = viewPanel.openChooserDialog.getSelectedFile ();
 				if (!file.isFile () || !file.toString ().endsWith (".marla"))
 				{
-					JOptionPane.showMessageDialog (viewPanel, "The specified file does not exist.", "Does Not Exist", JOptionPane.WARNING_MESSAGE);
+					JOptionPane.showMessageDialog (getTopWindow(), "The specified file does not exist.", "Does Not Exist", JOptionPane.WARNING_MESSAGE);
 					int lastIndex = viewPanel.openChooserDialog.getSelectedFile ().toString ().lastIndexOf (".");
 					if (lastIndex == -1)
 					{
@@ -898,11 +899,11 @@ public class Domain
 		catch (MarlaException ex)
 		{
 			Domain.logger.add(ex);
-			JOptionPane.showMessageDialog (viewPanel, ex.getMessage (), "Error loading save file", JOptionPane.WARNING_MESSAGE);
+			JOptionPane.showMessageDialog (getTopWindow(), ex.getMessage (), "Error Loading Save File", JOptionPane.WARNING_MESSAGE);
 		}
 		catch (FileNotFoundException ex)
 		{
-			JOptionPane.showMessageDialog (viewPanel, "Unable to locate ", "Error loading save file", JOptionPane.WARNING_MESSAGE);
+			JOptionPane.showMessageDialog (getTopWindow(), "Unable to locate ", "Error Loading Save File", JOptionPane.WARNING_MESSAGE);
 		}
 	}
 
@@ -922,6 +923,31 @@ public class Domain
 			{
 				viewPanel.getRequiredInfoDialog (ex.getOperation ());
 			}
+		}
+	}
+
+	/**
+	 * Checks what window is the top-most being displayed right now and returns that.
+	 *
+	 * @return The top-most window displayed.
+	 */
+	public Container getTopWindow()
+	{
+		if (MainFrame.progressFrame.isVisible())
+		{
+			return MainFrame.progressFrame;
+		}
+		else if (viewPanel.SETTINGS_DIALOG.isVisible())
+		{
+			return viewPanel.SETTINGS_DIALOG;
+		}
+		else if (viewPanel.NEW_PROBLEM_WIZARD_DIALOG.isVisible())
+		{
+			return viewPanel.NEW_PROBLEM_WIZARD_DIALOG;
+		}
+		else
+		{
+			return viewPanel;
 		}
 	}
 }

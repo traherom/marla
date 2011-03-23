@@ -35,7 +35,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import javax.swing.SwingUtilities;
 import latex.LatexExporter;
 import operation.OperationXMLException;
 import org.apache.commons.io.FileUtils;

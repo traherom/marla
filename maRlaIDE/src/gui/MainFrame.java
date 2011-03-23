@@ -114,7 +114,7 @@ public class MainFrame extends JFrame
 						}
 						else
 						{
-							JOptionPane.showMessageDialog(progressFrame, "The maRla Project cannot run without these resources.", "Fatal Error", JOptionPane.ERROR_MESSAGE);
+							JOptionPane.showMessageDialog(viewPanel.domain.getTopWindow(), "The maRla Project cannot run without these resources.", "Fatal Error", JOptionPane.ERROR_MESSAGE);
 							System.exit(1);
 						}
 					}
@@ -149,7 +149,7 @@ public class MainFrame extends JFrame
 				}
 				catch(MarlaException ex)
 				{
-					JOptionPane.showMessageDialog(viewPanel, ex.getMessage(), "Load Error", JOptionPane.WARNING_MESSAGE);
+					JOptionPane.showMessageDialog(viewPanel.domain.getTopWindow(), ex.getMessage(), "Load Error", JOptionPane.WARNING_MESSAGE);
 				}
 
 				// If the final argument is a save file, open it right now
