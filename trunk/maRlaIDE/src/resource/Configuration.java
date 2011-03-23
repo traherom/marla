@@ -218,9 +218,11 @@ public class Configuration
 		for(ConfigType c : unconfigured)
 		{
 			Domain.setProgressStatus("Searching for " + getName(c));
+			Domain.setProgressIndeterminate(true);
 			if(configureFromSearch(c))
 			{
 				currProgress += incr;
+				Domain.setProgressIndeterminate(false);
 				Domain.setProgressString(currProgress + "%");
 				Domain.setProgressValue(currProgress);
 
@@ -228,6 +230,7 @@ public class Configuration
 			}
 		}
 
+		Domain.setProgressIndeterminate(false);
 		unconfigured.removeAll(fixed);
 
 		// Try defaults
