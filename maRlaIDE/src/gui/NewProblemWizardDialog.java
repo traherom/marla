@@ -778,7 +778,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 
 		// Add the JPanel to the New Problem Wizard
 		subProblemsScollablePanel.add(panel);
-		subProblemsScollablePanel.updateUI();
+		subProblemsScollablePanel.invalidate();
 		subProblemsScollablePanel.scrollRectToVisible(new Rectangle(0, subProblemsScollablePanel.getHeight() + 150, 1, 1));
 
 		if (editing)
@@ -819,7 +819,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 				VIEW_PANEL.legendContentPanel.add(VIEW_PANEL.second);
 				VIEW_PANEL.legendContentPanel.add(VIEW_PANEL.third);
 
-				VIEW_PANEL.legendContentPanel.updateUI();
+				VIEW_PANEL.legendContentPanel.invalidate();
 			}
 			++VIEW_PANEL.firstCounter;
 		}
@@ -849,7 +849,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 			addSubProblemButton.setEnabled(true);
 		}
 
-		subProblemsScollablePanel.updateUI();
+		subProblemsScollablePanel.invalidate();
 
 		if (editing)
 		{
@@ -888,7 +888,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 					}
 				}
 
-				VIEW_PANEL.legendContentPanel.updateUI();
+				VIEW_PANEL.legendContentPanel.invalidate();
 			}
 			--VIEW_PANEL.firstCounter;
 		}
@@ -984,7 +984,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 		table.setColumnModel(newColumnModel);
 
 		table.setModel(newModel);
-		table.updateUI();
+		table.invalidate();
 		table.getTableHeader().resizeAndRepaint();
 
 		// Wait to change the spinners until after the model is set or they will
@@ -1697,7 +1697,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 						}
 					}
 
-					table.updateUI();
+					table.invalidate();
 					table.getTableHeader().resizeAndRepaint();
 				}
 			}
@@ -1731,7 +1731,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 						model.addRow();
 					}
 
-					table.updateUI();
+					table.invalidate();
 				}
 			}
 		});
@@ -1806,7 +1806,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 								}
 
 								table.setModel(newModel);
-								table.updateUI();
+								table.invalidate();
 								table.getTableHeader().resizeAndRepaint();
 
 								ignoreDataChanging = false;
@@ -1945,7 +1945,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 		// Set properties in the sub problems panel
 		subProblemPanels.clear();
 		subProblemsScollablePanel.removeAll();
-		subProblemsScollablePanel.updateUI();
+		subProblemsScollablePanel.invalidate();
 		addSubProblemButton.setEnabled(true);
 		removeSubProblemButton.setEnabled(true);
 		// Set properties for the values tabs
@@ -2042,7 +2042,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 			table.setColumnModel(newColumnModel);
 
 			table.setModel(newModel);
-			table.updateUI();
+			table.invalidate();
 			table.getTableHeader().resizeAndRepaint();
 
 			// Wait to change spinners _after_ the model is set or we'll double the rows
@@ -2101,7 +2101,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 			{
 				addSubProblemButton.setEnabled(false);
 			}
-			subProblemsScollablePanel.updateUI();
+			subProblemsScollablePanel.invalidate();
 			subProblemsScollablePanel.scrollRectToVisible(new Rectangle(0, subProblemsScollablePanel.getHeight(), 1, 1));
 
 			for(int i = 0; i < domain.problem.getDataCount(); ++i)
@@ -2135,7 +2135,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 				table.setColumnModel(newColumnModel);
 
 				table.setModel(newModel);
-				table.updateUI();
+				table.invalidate();
 				table.getTableHeader().resizeAndRepaint();
 			}
 			if(dataSetTabbedPane.getTabCount() > 0)
