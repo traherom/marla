@@ -179,7 +179,7 @@
 		</exec>
 
 		<!-- Move (if needed) to file with revision name -->
-		<move file="${store.dir}/Setup.exe" tofile="${store.dir}/${setup.base}.exe" />
+		<move file="${store.dir}/Setup.exe" tofile="${setup.base}.exe" />
 		<echo message="Windows installer placed in ${store.dir}" />
 	</target>
 
