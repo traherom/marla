@@ -81,6 +81,7 @@ public class SettingsDialog extends EscapeDialog
         customOpsLabel = new javax.swing.JLabel();
         customOpsTextField = new javax.swing.JTextField();
         customOpsBrowse = new javax.swing.JButton();
+        customOpsLabel1 = new javax.swing.JLabel();
         studentInformationPanel = new javax.swing.JPanel();
         studentNameLabel = new javax.swing.JLabel();
         courseShortNameLabel = new javax.swing.JLabel();
@@ -180,11 +181,11 @@ public class SettingsDialog extends EscapeDialog
         operationsButton.setBounds(410, 260, 90, 25);
 
         operationsTextField.setEditable(false);
-        operationsTextField.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        operationsTextField.setFont(new java.awt.Font("Verdana", 0, 12));
         preferencesPanel.add(operationsTextField);
         operationsTextField.setBounds(130, 260, 270, 22);
 
-        operationsLabel.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        operationsLabel.setFont(new java.awt.Font("Verdana", 0, 12));
         operationsLabel.setText("Operations XML:");
         preferencesPanel.add(operationsLabel);
         operationsLabel.setBounds(10, 260, 120, 20);
@@ -265,10 +266,10 @@ public class SettingsDialog extends EscapeDialog
         preferencesPanel.add(preferencesLabel1);
         preferencesLabel1.setBounds(10, 10, 250, 16);
 
-        customOpsLabel.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
-        customOpsLabel.setText("User Operations XML:");
+        customOpsLabel.setFont(new java.awt.Font("Verdana", 0, 10)); // NOI18N
+        customOpsLabel.setText("Use a pipe ('|') to separate multiple files");
         preferencesPanel.add(customOpsLabel);
-        customOpsLabel.setBounds(10, 300, 150, 20);
+        customOpsLabel.setBounds(160, 320, 250, 20);
 
         customOpsTextField.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
         customOpsTextField.addActionListener(new java.awt.event.ActionListener() {
@@ -276,10 +277,15 @@ public class SettingsDialog extends EscapeDialog
                 customOpsTextFieldActionPerformed(evt);
             }
         });
+        customOpsTextField.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                customOpsTextFieldFocusLost(evt);
+            }
+        });
         preferencesPanel.add(customOpsTextField);
         customOpsTextField.setBounds(160, 300, 240, 22);
 
-        customOpsBrowse.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        customOpsBrowse.setFont(new java.awt.Font("Verdana", 0, 12));
         customOpsBrowse.setText("Browse");
         customOpsBrowse.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -288,6 +294,11 @@ public class SettingsDialog extends EscapeDialog
         });
         preferencesPanel.add(customOpsBrowse);
         customOpsBrowse.setBounds(410, 300, 90, 25);
+
+        customOpsLabel1.setFont(new java.awt.Font("Verdana", 0, 12));
+        customOpsLabel1.setText("User Operations XML:");
+        preferencesPanel.add(customOpsLabel1);
+        customOpsLabel1.setBounds(10, 300, 150, 20);
 
         settingsTabbedPane.addTab("Preferences", preferencesPanel);
 
@@ -382,7 +393,7 @@ public class SettingsDialog extends EscapeDialog
             .addGroup(settingsPanelLayout.createSequentialGroup()
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(settingsTabbedPane, javax.swing.GroupLayout.DEFAULT_SIZE, 373, Short.MAX_VALUE)
+                .addComponent(settingsTabbedPane, javax.swing.GroupLayout.DEFAULT_SIZE, 392, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -553,12 +564,65 @@ public class SettingsDialog extends EscapeDialog
 	}//GEN-LAST:event_lineWidthSpinnerStateChanged
 
 	private void customOpsBrowseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_customOpsBrowseActionPerformed
-		// TODO add your handling code here:
+		VIEW_PANEL.openChooserDialog.setDialogTitle(Configuration.getName(Configuration.ConfigType.UserOpsXML));
+		VIEW_PANEL.openChooserDialog.resetChoosableFileFilters();
+		VIEW_PANEL.openChooserDialog.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+		// Display the chooser and retrieve the selected file
+		int response = VIEW_PANEL.openChooserDialog.showOpenDialog(this);
+		if(response == JFileChooser.APPROVE_OPTION)
+		{
+			try
+			{
+				String userOpsText = customOpsTextField.getText();
+				String newPath = VIEW_PANEL.openChooserDialog.getSelectedFile().getPath();
+
+				boolean append = false;
+				if (userOpsText.endsWith ("|"))
+				{
+					append = true;
+				}
+
+				if (append)
+				{
+					userOpsText += newPath;
+				}
+				else
+				{
+					int replaceStart = userOpsText.lastIndexOf(("|"));
+					userOpsText = userOpsText.substring(0, replaceStart) + newPath;
+				}
+
+				Configuration.getInstance().set(Configuration.ConfigType.UserOpsXML, userOpsText);
+				customOpsTextField.setText(userOpsText);
+				VIEW_PANEL.reloadOperations();
+			}
+			// If an exception occurs, the path should not be changed, so nothing happens in a caught exception
+			catch (MarlaException ex) {}
+		}
 	}//GEN-LAST:event_customOpsBrowseActionPerformed
 
 	private void customOpsTextFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_customOpsTextFieldActionPerformed
-		// TODO add your handling code here:
+		if (!customOpsTextField.getText().endsWith ("|"))
+		{
+			try
+			{
+				Configuration.getInstance().set(Configuration.ConfigType.UserOpsXML, customOpsTextField.getText());
+			}
+			catch(MarlaException ex)
+			{
+				try
+				{
+					customOpsTextField.setText((String) Configuration.getInstance().get(Configuration.ConfigType.UserOpsXML));
+				}
+				// Exception won't happen
+				catch(MarlaException innerEx) {}
+			}
+		}
 	}//GEN-LAST:event_customOpsTextFieldActionPerformed
+
+	private void customOpsTextFieldFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_customOpsTextFieldFocusLost
+		customOpsTextFieldActionPerformed (null);
+	}//GEN-LAST:event_customOpsTextFieldFocusLost
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton closeButton;
@@ -568,6 +632,7 @@ public class SettingsDialog extends EscapeDialog
     private javax.swing.JTextField courseShortNameTextField;
     private javax.swing.JButton customOpsBrowse;
     private javax.swing.JLabel customOpsLabel;
+    private javax.swing.JLabel customOpsLabel1;
     private javax.swing.JTextField customOpsTextField;
     private javax.swing.JCheckBox debugModeCheckBox;
     private javax.swing.JCheckBox includeProblemCheckBox;
@@ -609,7 +674,25 @@ public class SettingsDialog extends EscapeDialog
 	 */
 	protected void closeSettings()
 	{
-		//customOpsTextField;
+		// Ensure a valid custom operations list
+		if (customOpsTextField.getText().endsWith ("|"))
+		{
+			customOpsTextField.setText(customOpsTextField.getText().substring(0, customOpsTextField.getText().length() - 2));
+		}
+		try
+		{
+			Configuration.getInstance().set(Configuration.ConfigType.UserOpsXML, customOpsTextField.getText());
+		}
+		catch(MarlaException ex)
+		{
+			try
+			{
+				customOpsTextField.setText((String) Configuration.getInstance().get(Configuration.ConfigType.UserOpsXML));
+			}
+			// Exception won't happen
+			catch(MarlaException innerEx) {}
+		}
+
 		try
 		{
 			Configuration config = Configuration.getInstance();
