@@ -205,6 +205,7 @@ public class LatexExporter
 
 				// Test to see if pdflatex works by running a test file through it
 				ProcessBuilder procBuild = new ProcessBuilder(newPdfTexPath);
+				procBuild.directory(File.createTempFile("marla", "test").getParentFile());
 				Process texProc = procBuild.start();
 				BufferedReader texOutStream = new BufferedReader(new InputStreamReader(texProc.getInputStream()));
 
@@ -217,13 +218,18 @@ public class LatexExporter
 				// Look for where it says that pdf output was produced
 				validInstall = false;
 				String line = texOutStream.readLine();
+				StringBuilder outputFull = new StringBuilder();
 				while(line != null)
 				{
+					outputFull.append(line);
+					
 					if(line.startsWith("Output written on"))
 						validInstall = true;
 
 					line = texOutStream.readLine();
 				}
+
+				System.out.println(outputFull);
 
 				// Good game boys, gg
 				texProc.waitFor();
