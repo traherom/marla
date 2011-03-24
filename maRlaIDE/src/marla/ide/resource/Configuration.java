@@ -21,8 +21,6 @@ package marla.ide.resource;
 import marla.ide.gui.Domain;
 import marla.ide.gui.MainFrame;
 import marla.ide.gui.WorkspacePanel;
-import java.awt.Point;
-import java.awt.Rectangle;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -234,7 +232,7 @@ public class Configuration
 			}
 		}
 		Domain.setProgressIndeterminate(false);
-		
+
 		unconfigured.removeAll(fixed);
 
 		// Try defaults
@@ -243,7 +241,7 @@ public class Configuration
 			incr = (int)Math.floor((max - currProgress) / valCount);
 		else
 			incr = max;
-		
+
 		fixed.clear();
 		Domain.setProgressStatus("Setting configuration defaults");
 		for(ConfigType c : unconfigured)
@@ -253,7 +251,7 @@ public class Configuration
 				currProgress += incr;
 				Domain.setProgressString(currProgress + "%");
 				Domain.setProgressValue(currProgress);
-				
+
 				fixed.add(c);
 			}
 		}
@@ -350,16 +348,28 @@ public class Configuration
 				return Domain.getErrorServer();
 
 			case WindowX:
-				return Domain.getInstance().getMainFrame().getX();
+				if(Domain.getInstance() != null)
+					return Domain.getInstance().getMainFrame().getX();
+				else
+					return null;
 
 			case WindowY:
-				return Domain.getInstance().getMainFrame().getY();
+				if(Domain.getInstance() != null)
+					return Domain.getInstance().getMainFrame().getY();
+				else
+					return null;
 
 			case WindowHeight:
-				return Domain.getInstance().getMainFrame().getHeight();
+				if(Domain.getInstance() != null)
+					return Domain.getInstance().getMainFrame().getHeight();
+				else
+					return null;
 
 			case WindowWidth:
-				return Domain.getInstance().getMainFrame().getWidth();
+				if(Domain.getInstance() != null)
+					return Domain.getInstance().getMainFrame().getWidth();
+				else
+					return null;
 
 			default:
 				throw new InternalMarlaException("Unhandled configuration exception type in get");
@@ -394,9 +404,9 @@ public class Configuration
 
 			case UserOpsXML:
 				previous = get(setting);
-				
+
 				OperationXML.clearXMLOps();
-				
+
 				// Break apart if needed
 				OperationXML.setUserXMLPaths(Arrays.asList(val.toString().split("\\|")));
 				break;
@@ -413,7 +423,7 @@ public class Configuration
 						valCast = (RecordMode) val;
 					else
 						valCast = RecordMode.valueOf (val.toString().toUpperCase());
-					
+
 					previous = RProcessor.setDebugMode(valCast);
 				}
 				catch(IllegalArgumentException ex)
@@ -471,47 +481,75 @@ public class Configuration
 				break;
 
 			case WindowX:
-				frame = Domain.getInstance().getMainFrame();
-				y = frame.getY();
-				if(val instanceof Integer)
-					x = (Integer)val;
-				else
-					x = Integer.parseInt(val.toString());
-				frame.setLocation(x, y);
+				try
+				{
+					frame = Domain.getInstance().getMainFrame();
+					y = frame.getY();
+					if(val instanceof Integer)
+						x = (Integer)val;
+					else
+						x = Integer.parseInt(val.toString());
+					frame.setLocation(x, y);
+				}
+				catch(NullPointerException ex)
+				{
+					throw new ConfigurationException("No window currently available to set", setting);
+				}
 				break;
 
 			case WindowY:
-				frame = Domain.getInstance().getMainFrame();
-				x = frame.getX();
-				if(val instanceof Integer)
-					y = (Integer)val;
-				else
-					y = Integer.parseInt(val.toString());
-				frame.setLocation(x, y);
+				try
+				{
+					frame = Domain.getInstance().getMainFrame();
+					x = frame.getX();
+					if(val instanceof Integer)
+						y = (Integer)val;
+					else
+						y = Integer.parseInt(val.toString());
+					frame.setLocation(x, y);
+				}
+				catch(NullPointerException ex)
+				{
+					throw new ConfigurationException("No window currently available to set", setting);
+				}
 				break;
 
 			case WindowHeight:
-				frame = Domain.getInstance().getMainFrame();
-				x = frame.getX();
-				y = frame.getY();
-				width = frame.getWidth();
-				if(val instanceof Integer)
-					height = (Integer)val;
-				else
-					height = Integer.parseInt(val.toString());
-				frame.setBounds(x, y, width, height);
+				try
+				{
+					frame = Domain.getInstance().getMainFrame();
+					x = frame.getX();
+					y = frame.getY();
+					width = frame.getWidth();
+					if(val instanceof Integer)
+						height = (Integer)val;
+					else
+						height = Integer.parseInt(val.toString());
+					frame.setBounds(x, y, width, height);
+				}
+				catch(NullPointerException ex)
+				{
+					throw new ConfigurationException("No window currently available to set", setting);
+				}
 				break;
 
 			case WindowWidth:
-				frame = Domain.getInstance().getMainFrame();
-				x = frame.getX();
-				y = frame.getY();
-				height = frame.getHeight();
-				if(val instanceof Integer)
-					width = (Integer)val;
-				else
-					width = Integer.parseInt(val.toString());
-				frame.setBounds(x, y, width, height);
+				try
+				{
+					frame = Domain.getInstance().getMainFrame();
+					x = frame.getX();
+					y = frame.getY();
+					height = frame.getHeight();
+					if(val instanceof Integer)
+						width = (Integer)val;
+					else
+						width = Integer.parseInt(val.toString());
+					frame.setBounds(x, y, width, height);
+				}
+				catch(NullPointerException ex)
+				{
+					throw new ConfigurationException("No window currently available to set", setting);
+				}
 				break;
 
 			default:
@@ -548,7 +586,7 @@ public class Configuration
 
 		if(detailedConfigStatus && success)
 			System.out.println("Configured " + setting + " from config file");
-		
+
 		return success;
 	}
 
@@ -572,7 +610,7 @@ public class Configuration
 
 					if(detailedConfigStatus)
 						System.out.println("Configured " + setting + " from command line");
-					
+
 					return true;
 				}
 				catch(MarlaException ex)
@@ -636,7 +674,7 @@ public class Configuration
 	private boolean configureFromDefault(ConfigType setting)
 	{
 		boolean success = false;
-		
+
 		try
 		{
 			switch(setting)
@@ -755,7 +793,7 @@ public class Configuration
 			// Create directories to file if needed
 			System.out.println("Writing configuration to '" + configPath + "'");
 			FileUtils.forceMkdir(new File(configPath).getAbsoluteFile().getParentFile());
-			
+
 			// Output to file
 			OutputStreamWriter os = new OutputStreamWriter(new FileOutputStream(configPath));
 			BufferedWriter outputStream = new BufferedWriter(os);
@@ -894,7 +932,7 @@ public class Configuration
 				// Try to launch
 				System.out.println("Checking '" + exe + "'");
 				LatexExporter.setPdfTexPath(exe);
-				
+
 				// Must have launched successfully, use this one
 				return true;
 			}
@@ -969,7 +1007,7 @@ public class Configuration
 			System.out.println("\t" + f.getPath());
 			files.add(f.getAbsolutePath());
 		}
-		
+
 		return files;
 	}
 
@@ -1072,18 +1110,19 @@ public class Configuration
 	}
 
 	/**
-	 * Loads (including searching if needed) and saves configuration to
-	 * the given file. Useful for creating new configuration
+	 * Loads given command line configuration and saves to
+	 * file. Useful for creating new configuration
 	 */
 	public static void main(String[] args) throws MarlaException
 	{
 		Configuration conf = Configuration.getInstance();
-		List<ConfigType> screwedUp = conf.configureAll(args);
 
-		System.out.println("Configuration failed:");
-		for(ConfigType c : screwedUp)
-			System.out.println("\t" + c);
-
+		for(ConfigType c : ConfigType.values())
+		{
+			if(conf.configureFromCmdLine(c, args))
+				System.out.println("Configured " + c);
+		}
+		
 		conf.save();
 	}
 }

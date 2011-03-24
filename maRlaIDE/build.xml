@@ -169,7 +169,6 @@
 			<fileset file="maRla.ico" />
 			<fileset file="install_script.nsi" />
 			<fileset file="gpl-3.0.txt" />
-			<fileset file="src/images/maRla.ico" />
 		</copy>
 
 		<!-- What should the files start with? -->
@@ -188,7 +187,6 @@
 			<fileset file="${store.dir}/maRla.ico" />
 			<fileset file="${store.dir}/install_script.nsi" />
 			<fileset file="${store.dir}/gpl-3.0.txt" />
-			<fileset file="${store.dir}/maRla.ico" />
 		</delete>
 	</target>
 
