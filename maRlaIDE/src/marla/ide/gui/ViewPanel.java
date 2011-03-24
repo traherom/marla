@@ -432,18 +432,18 @@ public class ViewPanel extends JPanel
         menuSeparator3 = new javax.swing.JPopupMenu.Separator();
         editDataSetMenuItem = new javax.swing.JMenuItem();
         toolBar = new javax.swing.JToolBar();
-        newButton = new ToolbarButton (new ImageIcon (getClass ().getResource ("/images/new_button.png")));
-        openButton = new ToolbarButton (new ImageIcon (getClass ().getResource ("/images/open_button.png")));
-        saveButton = new ToolbarButton (new ImageIcon (getClass ().getResource ("/images/save_button.png")));
+        newButton = new ToolbarButton (new ImageIcon (getClass ().getResource ("/marla/ide/images/new_button.png")));
+        openButton = new ToolbarButton (new ImageIcon (getClass ().getResource ("/marla/ide/images/open_button.png")));
+        saveButton = new ToolbarButton (new ImageIcon (getClass ().getResource ("/marla/ide/images/save_button.png")));
         jSeparator1 = new javax.swing.JToolBar.Separator();
-        jLabel1 = new javax.swing.JLabel();
-        plusFontButton = new ToolbarButton (new ImageIcon (getClass ().getResource ("/images/plus_button.png")));
-        minusFontButton = new ToolbarButton (new ImageIcon (getClass ().getResource ("/images/minus_button.png")));
+        fontSizeLabel = new javax.swing.JLabel();
+        plusFontButton = new ToolbarButton (new ImageIcon (getClass ().getResource ("/marla/ide/images/plus_button.png")));
+        minusFontButton = new ToolbarButton (new ImageIcon (getClass ().getResource ("/marla/ide/images/minus_button.png")));
         jSeparator3 = new javax.swing.JToolBar.Separator();
         jLabel2 = new javax.swing.JLabel();
-        abbreviateButton = new ToolbarButton (new ImageIcon (getClass ().getResource ("/images/unchecked_button.png")));
+        abbreviateButton = new ToolbarButton (new ImageIcon (getClass ().getResource ("/marla/ide/images/unchecked_button.png")));
         jSeparator2 = new javax.swing.JToolBar.Separator();
-        settingsButton = new ToolbarButton (new ImageIcon (getClass ().getResource ("/images/settings_button.png")));
+        settingsButton = new ToolbarButton (new ImageIcon (getClass ().getResource ("/marla/ide/images/settings_button.png")));
         workspaceCardPanel = new javax.swing.JPanel();
         preWorkspacePanel = new javax.swing.JPanel();
         preWorkspaceLabel = new javax.swing.JLabel();
@@ -565,59 +565,59 @@ public class ViewPanel extends JPanel
         toolBar.setRollover(true);
         toolBar.setPreferredSize(new java.awt.Dimension(13, 35));
 
-        newButton.setFont(new java.awt.Font("Verdana", 0, 12));
+        newButton.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
         newButton.setToolTipText("New Problem");
         newButton.setEnabled(false);
         newButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                buttonMouseEntered(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                buttonMouseExited(evt);
+            }
             public void mousePressed(java.awt.event.MouseEvent evt) {
                 buttonMousePressed(evt);
             }
             public void mouseReleased(java.awt.event.MouseEvent evt) {
                 buttonMouseReleased(evt);
-            }
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                buttonMouseExited(evt);
-            }
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                buttonMouseEntered(evt);
             }
         });
         toolBar.add(newButton);
 
-        openButton.setFont(new java.awt.Font("Verdana", 0, 12));
+        openButton.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
         openButton.setToolTipText("Open Problem");
         openButton.setEnabled(false);
         openButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                buttonMouseEntered(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                buttonMouseExited(evt);
+            }
             public void mousePressed(java.awt.event.MouseEvent evt) {
                 buttonMousePressed(evt);
             }
             public void mouseReleased(java.awt.event.MouseEvent evt) {
                 buttonMouseReleased(evt);
-            }
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                buttonMouseExited(evt);
-            }
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                buttonMouseEntered(evt);
             }
         });
         toolBar.add(openButton);
 
-        saveButton.setFont(new java.awt.Font("Verdana", 0, 12));
+        saveButton.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
         saveButton.setToolTipText("Save Problem");
         saveButton.setEnabled(false);
         saveButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                buttonMouseEntered(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                buttonMouseExited(evt);
+            }
             public void mousePressed(java.awt.event.MouseEvent evt) {
                 buttonMousePressed(evt);
             }
             public void mouseReleased(java.awt.event.MouseEvent evt) {
                 buttonMouseReleased(evt);
-            }
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                buttonMouseExited(evt);
-            }
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                buttonMouseEntered(evt);
             }
         });
         toolBar.add(saveButton);
@@ -625,45 +625,45 @@ public class ViewPanel extends JPanel
         jSeparator1.setEnabled(false);
         toolBar.add(jSeparator1);
 
-        jLabel1.setFont(new java.awt.Font("Verdana", 0, 12));
-        jLabel1.setText("Font Size:");
-        jLabel1.setEnabled(false);
-        toolBar.add(jLabel1);
+        fontSizeLabel.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        fontSizeLabel.setText("Font Size:");
+        fontSizeLabel.setEnabled(false);
+        toolBar.add(fontSizeLabel);
 
-        plusFontButton.setFont(new java.awt.Font("Verdana", 0, 12));
+        plusFontButton.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
         plusFontButton.setToolTipText("Increase font size");
         plusFontButton.setEnabled(false);
         plusFontButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                buttonMouseEntered(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                buttonMouseExited(evt);
+            }
             public void mousePressed(java.awt.event.MouseEvent evt) {
                 buttonMousePressed(evt);
             }
             public void mouseReleased(java.awt.event.MouseEvent evt) {
                 buttonMouseReleased(evt);
-            }
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                buttonMouseExited(evt);
-            }
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                buttonMouseEntered(evt);
             }
         });
         toolBar.add(plusFontButton);
 
-        minusFontButton.setFont(new java.awt.Font("Verdana", 0, 12));
+        minusFontButton.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
         minusFontButton.setToolTipText("Decrease font size");
         minusFontButton.setEnabled(false);
         minusFontButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                buttonMouseEntered(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                buttonMouseExited(evt);
+            }
             public void mousePressed(java.awt.event.MouseEvent evt) {
                 buttonMousePressed(evt);
             }
             public void mouseReleased(java.awt.event.MouseEvent evt) {
                 buttonMouseReleased(evt);
-            }
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                buttonMouseExited(evt);
-            }
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                buttonMouseEntered(evt);
             }
         });
         toolBar.add(minusFontButton);
@@ -672,7 +672,7 @@ public class ViewPanel extends JPanel
         toolBar.add(jSeparator3);
         toolBar.add(jLabel2);
 
-        abbreviateButton.setFont(new java.awt.Font("Verdana", 0, 12));
+        abbreviateButton.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
         abbreviateButton.setText("Abbreviate");
         abbreviateButton.setToolTipText("Show abbreviated operation and column names");
         abbreviateButton.setEnabled(false);
@@ -695,21 +695,21 @@ public class ViewPanel extends JPanel
         jSeparator2.setEnabled(false);
         toolBar.add(jSeparator2);
 
-        settingsButton.setFont(new java.awt.Font("Verdana", 0, 12));
+        settingsButton.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
         settingsButton.setToolTipText("Settings");
         settingsButton.setEnabled(false);
         settingsButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                buttonMouseEntered(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                buttonMouseExited(evt);
+            }
             public void mousePressed(java.awt.event.MouseEvent evt) {
                 buttonMousePressed(evt);
             }
             public void mouseReleased(java.awt.event.MouseEvent evt) {
                 buttonMouseReleased(evt);
-            }
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                buttonMouseExited(evt);
-            }
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                buttonMouseEntered(evt);
             }
         });
         toolBar.add(settingsButton);
@@ -721,7 +721,7 @@ public class ViewPanel extends JPanel
 
         preWorkspacePanel.setBackground(new java.awt.Color(204, 204, 204));
 
-        preWorkspaceLabel.setFont(new java.awt.Font("Verdana", 1, 14));
+        preWorkspaceLabel.setFont(new java.awt.Font("Verdana", 1, 14)); // NOI18N
         preWorkspaceLabel.setForeground(new java.awt.Color(102, 102, 102));
         preWorkspaceLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         preWorkspaceLabel.setText("<html><div align=\"center\">To get started, load a previous problem or use the<br /><em>New Problem Wizard</em> to create a new problem</div></html>");
@@ -732,14 +732,14 @@ public class ViewPanel extends JPanel
             preWorkspacePanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(preWorkspacePanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .add(preWorkspaceLabel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 756, Short.MAX_VALUE)
+                .add(preWorkspaceLabel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 752, Short.MAX_VALUE)
                 .addContainerGap())
         );
         preWorkspacePanelLayout.setVerticalGroup(
             preWorkspacePanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(preWorkspacePanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .add(preWorkspaceLabel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 639, Short.MAX_VALUE)
+                .add(preWorkspaceLabel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 637, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -802,7 +802,7 @@ public class ViewPanel extends JPanel
         );
         emptyPalettePanelLayout.setVerticalGroup(
             emptyPalettePanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(0, 607, Short.MAX_VALUE)
+            .add(0, 609, Short.MAX_VALUE)
         );
 
         paletteCardPanel.add(emptyPalettePanel, "card3");
@@ -1313,14 +1313,14 @@ public class ViewPanel extends JPanel
 		{
 			if(abbreviated)
 			{
-				ImageIcon newIcon = new ImageIcon(getClass().getResource("/images/unchecked_button.png"));
+				ImageIcon newIcon = new ImageIcon(getClass().getResource("/marla/ide/images/unchecked_button.png"));
 				abbreviateButton.setIcon(newIcon);
 				((ToolbarButton) abbreviateButton).setIconStandards(newIcon);
 				abbreviated = false;
 			}
 			else
 			{
-				ImageIcon newIcon = new ImageIcon(getClass().getResource("/images/checked_button.png"));
+				ImageIcon newIcon = new ImageIcon(getClass().getResource("/marla/ide/images/checked_button.png"));
 				abbreviateButton.setIcon(newIcon);
 				((ToolbarButton) abbreviateButton).setIconStandards(newIcon);
 				abbreviated = true;
@@ -1352,11 +1352,11 @@ public class ViewPanel extends JPanel
 	}//GEN-LAST:event_buttonMouseExited
 
 	private void trashCanMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_trashCanMouseEntered
-		trashCan.setIcon(new ImageIcon(getClass().getResource("/images/trash_button_hover.png")));
+		trashCan.setIcon(new ImageIcon(getClass().getResource("/marla/ide/images/trash_button_hover.png")));
 	}//GEN-LAST:event_trashCanMouseEntered
 
 	private void trashCanMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_trashCanMouseExited
-		trashCan.setIcon(new ImageIcon(getClass().getResource("/images/trash_button.png")));
+		trashCan.setIcon(new ImageIcon(getClass().getResource("/marla/ide/images/trash_button.png")));
 	}//GEN-LAST:event_trashCanMouseExited
 
 	private void editDataSetMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editDataSetMenuItemActionPerformed
@@ -2227,7 +2227,7 @@ public class ViewPanel extends JPanel
     private javax.swing.JPanel componentsScrollablePanel;
     private javax.swing.JMenuItem editDataSetMenuItem;
     protected javax.swing.JPanel emptyPalettePanel;
-    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel fontSizeLabel;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JToolBar.Separator jSeparator1;
     private javax.swing.JToolBar.Separator jSeparator2;

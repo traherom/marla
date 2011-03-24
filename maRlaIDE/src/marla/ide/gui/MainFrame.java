@@ -310,12 +310,12 @@ public class MainFrame extends JFrame
         aboutMenuItem = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
-        setIconImage(new ImageIcon (getClass ().getResource ("/images/logo.png")).getImage ());
+        setIconImage(new ImageIcon (getClass ().getResource ("/marla/ide/images/logo.png")).getImage ());
         setName("mainFrame"); // NOI18N
         getContentPane().setLayout(new java.awt.GridLayout(1, 1));
 
         fileMenu.setText("File");
-        fileMenu.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        fileMenu.setFont(new java.awt.Font("Verdana", 0, 12));
         fileMenu.addMenuListener(new javax.swing.event.MenuListener() {
             public void menuCanceled(javax.swing.event.MenuEvent evt) {
             }

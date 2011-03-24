@@ -58,8 +58,8 @@ public class ToolbarButton extends JLabel
 	public final void setIconStandards(ImageIcon imageIcon)
 	{
 		standard = imageIcon;
-		hover = new ImageIcon (getClass ().getResource ("/images/" + imageIcon.toString ().substring (imageIcon.toString ().lastIndexOf ("/") + 1, imageIcon.toString ().lastIndexOf (".")) + "_hover.png"));
-		depressed = new ImageIcon (getClass ().getResource ("/images/" + imageIcon.toString ().substring (imageIcon.toString ().lastIndexOf ("/") + 1, imageIcon.toString ().lastIndexOf (".")) + "_depressed.png"));
+		hover = new ImageIcon (getClass ().getResource ("/marla/ide/images/" + imageIcon.toString ().substring (imageIcon.toString ().lastIndexOf ("/") + 1, imageIcon.toString ().lastIndexOf (".")) + "_hover.png"));
+		depressed = new ImageIcon (getClass ().getResource ("/marla/ide/images/" + imageIcon.toString ().substring (imageIcon.toString ().lastIndexOf ("/") + 1, imageIcon.toString ().lastIndexOf (".")) + "_depressed.png"));
 	}
 
 	/**
