@@ -197,6 +197,7 @@
           </Events>
           <AuxValues>
             <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new ToolbarButton (new ImageIcon (getClass ().getResource (&quot;/marla/ide/images/new_button.png&quot;)))"/>
+            <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="4"/>
           </AuxValues>
         </Component>
         <Component class="javax.swing.JLabel" name="openButton">
@@ -215,6 +216,7 @@
           </Events>
           <AuxValues>
             <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new ToolbarButton (new ImageIcon (getClass ().getResource (&quot;/marla/ide/images/open_button.png&quot;)))"/>
+            <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="4"/>
           </AuxValues>
         </Component>
         <Component class="javax.swing.JLabel" name="saveButton">
@@ -331,6 +333,7 @@
           </Events>
           <AuxValues>
             <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new ToolbarButton (new ImageIcon (getClass ().getResource (&quot;/marla/ide/images/settings_button.png&quot;)))"/>
+            <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="4"/>
           </AuxValues>
         </Component>
       </SubComponents>
