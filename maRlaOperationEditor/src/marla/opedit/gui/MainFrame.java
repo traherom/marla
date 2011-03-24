@@ -19,6 +19,7 @@
 package marla.opedit.gui;
 
 import java.awt.Dimension;
+import java.awt.Toolkit;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import javax.swing.ImageIcon;
@@ -32,7 +33,7 @@ import javax.swing.JFrame;
 public class MainFrame extends JFrame
 {
 	/** The minimum size the window frame is allowed to be.*/
-	private final Dimension MINIMUM_WINDOW_SIZE = new Dimension(600, 400);
+	private final Dimension MINIMUM_WINDOW_SIZE = new Dimension(790, 400);
 	/** The panel that is added to the frame.*/
 	private static ViewPanel viewPanel;
 
@@ -82,6 +83,57 @@ public class MainFrame extends JFrame
 				viewPanel.quit(true);
 			}
 		});
+
+		verifyBounds();
+	}
+
+	/**
+	 * Verify that the application is within the screen resolution both in size
+	 * and in location.
+	 */
+	private void verifyBounds()
+	{
+		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+
+		int width = getWidth();
+		int height = getHeight();
+		if(width < MINIMUM_WINDOW_SIZE.width)
+		{
+			width = MINIMUM_WINDOW_SIZE.width;
+		}
+		if(height < MINIMUM_WINDOW_SIZE.height)
+		{
+			height = MINIMUM_WINDOW_SIZE.height;
+		}
+		if(width > screenSize.width)
+		{
+			width = screenSize.width;
+		}
+		if(height > screenSize.height - 30)
+		{
+			height = screenSize.height - 30;
+		}
+
+		int x = getX();
+		int y = getY();
+		if(x > screenSize.getWidth())
+		{
+			x = (int) screenSize.getWidth() - width;
+		}
+		if(x < 0)
+		{
+			x = 0;
+		}
+		if(y > screenSize.getHeight())
+		{
+			y = (int) screenSize.getHeight() - height;
+		}
+		if(y < 0)
+		{
+			y = 0;
+		}
+
+		setBounds(x, y, width, height);
 	}
 
 	/** This method is called from within the constructor to

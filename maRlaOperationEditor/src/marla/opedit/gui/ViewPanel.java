@@ -24,7 +24,9 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import javax.swing.DefaultListModel;
 import javax.swing.JPanel;
+import javax.swing.table.DefaultTableModel;
 import marla.opedit.resource.LoadSaveThread;
 
 /**
@@ -45,6 +47,10 @@ public class ViewPanel extends JPanel
 
     /** The main frame of a stand-alone application.*/
     public MainFrame mainFrame;
+	/** The model for the operations list.*/
+	protected DefaultListModel operationsModel = new DefaultListModel();
+	/** The model for the output table.*/
+	protected DefaultTableModel outputModel = new DefaultTableModel();
     /** The domain object reference performs generic actions specific to the GUI.*/
     protected Domain domain = new Domain (this);
 	/** True while the interface is loading, false otherwise.*/
@@ -88,17 +94,328 @@ public class ViewPanel extends JPanel
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        testingPanel = new javax.swing.JPanel();
+        dataCsvLabel = new javax.swing.JLabel();
+        browseDataTextField = new javax.swing.JTextField();
+        browseDataButton = new javax.swing.JButton();
+        reloadButton = new javax.swing.JButton();
+        displayNameLabel = new javax.swing.JLabel();
+        displayNameTextField = new javax.swing.JTextField();
+        questionPanel = new javax.swing.JPanel();
+        jScrollPane3 = new javax.swing.JScrollPane();
+        outputTable = new javax.swing.JTable();
+        editingLabel = new javax.swing.JLabel();
+        editingTextField = new javax.swing.JTextField();
+        browseEditingButton = new javax.swing.JButton();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        operationsList = new javax.swing.JList();
+        opsNameLabel = new javax.swing.JLabel();
+        categoryLabel = new javax.swing.JLabel();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        operationTextArea = new javax.swing.JTextArea();
+        opsNameTextField = new javax.swing.JTextField();
+        categoryTextField = new javax.swing.JTextField();
+        addButton = new javax.swing.JButton();
+        removeButton = new javax.swing.JButton();
+        updateTestButton = new javax.swing.JButton();
+
+        testingPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Testing", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Verdana", 0, 12))); // NOI18N
+
+        dataCsvLabel.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        dataCsvLabel.setText("Data (CSV):");
+
+        browseDataTextField.setEditable(false);
+        browseDataTextField.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+
+        browseDataButton.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        browseDataButton.setText("Browse");
+        browseDataButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                browseDataButtonActionPerformed(evt);
+            }
+        });
+
+        reloadButton.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        reloadButton.setText("Reload");
+        reloadButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                reloadButtonActionPerformed(evt);
+            }
+        });
+
+        displayNameLabel.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        displayNameLabel.setText("Display Name:");
+
+        displayNameTextField.setEditable(false);
+        displayNameTextField.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+
+        questionPanel.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+
+        org.jdesktop.layout.GroupLayout questionPanelLayout = new org.jdesktop.layout.GroupLayout(questionPanel);
+        questionPanel.setLayout(questionPanelLayout);
+        questionPanelLayout.setHorizontalGroup(
+            questionPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(0, 348, Short.MAX_VALUE)
+        );
+        questionPanelLayout.setVerticalGroup(
+            questionPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(0, 100, Short.MAX_VALUE)
+        );
+
+        outputTable.setModel(outputModel);
+        jScrollPane3.setViewportView(outputTable);
+
+        org.jdesktop.layout.GroupLayout testingPanelLayout = new org.jdesktop.layout.GroupLayout(testingPanel);
+        testingPanel.setLayout(testingPanelLayout);
+        testingPanelLayout.setHorizontalGroup(
+            testingPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(org.jdesktop.layout.GroupLayout.TRAILING, testingPanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .add(testingPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
+                    .add(org.jdesktop.layout.GroupLayout.LEADING, jScrollPane3, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 352, Short.MAX_VALUE)
+                    .add(org.jdesktop.layout.GroupLayout.LEADING, testingPanelLayout.createSequentialGroup()
+                        .add(dataCsvLabel)
+                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                        .add(browseDataTextField, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 134, Short.MAX_VALUE)
+                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                        .add(browseDataButton)
+                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                        .add(reloadButton)
+                        .add(6, 6, 6))
+                    .add(org.jdesktop.layout.GroupLayout.LEADING, testingPanelLayout.createSequentialGroup()
+                        .add(displayNameLabel)
+                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                        .add(displayNameTextField, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 250, Short.MAX_VALUE))
+                    .add(org.jdesktop.layout.GroupLayout.LEADING, questionPanel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
+        );
+        testingPanelLayout.setVerticalGroup(
+            testingPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(testingPanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .add(testingPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                    .add(dataCsvLabel)
+                    .add(browseDataTextField, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                    .add(browseDataButton)
+                    .add(reloadButton))
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                .add(questionPanel, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                .add(testingPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                    .add(displayNameLabel)
+                    .add(displayNameTextField, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                .add(jScrollPane3, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 248, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+
+        editingLabel.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        editingLabel.setText("Editing:");
+
+        editingTextField.setEditable(false);
+        editingTextField.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+
+        browseEditingButton.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        browseEditingButton.setText("Browse");
+        browseEditingButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                browseEditingButtonActionPerformed(evt);
+            }
+        });
+
+        operationsList.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        operationsList.setModel(operationsModel);
+        jScrollPane1.setViewportView(operationsList);
+
+        opsNameLabel.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        opsNameLabel.setText("Ops Name:");
+
+        categoryLabel.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        categoryLabel.setText("Category:");
+
+        operationTextArea.setColumns(20);
+        operationTextArea.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        operationTextArea.setRows(5);
+        operationTextArea.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                operationTextAreaFocusLost(evt);
+            }
+        });
+        jScrollPane2.setViewportView(operationTextArea);
+
+        opsNameTextField.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        opsNameTextField.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                opsNameTextFieldActionPerformed(evt);
+            }
+        });
+        opsNameTextField.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                opsNameTextFieldFocusLost(evt);
+            }
+        });
+
+        categoryTextField.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        categoryTextField.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                categoryTextFieldActionPerformed(evt);
+            }
+        });
+        categoryTextField.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                categoryTextFieldFocusLost(evt);
+            }
+        });
+
+        addButton.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        addButton.setText("Add");
+        addButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                addButtonActionPerformed(evt);
+            }
+        });
+
+        removeButton.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        removeButton.setText("Remove");
+        removeButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                removeButtonActionPerformed(evt);
+            }
+        });
+
+        updateTestButton.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        updateTestButton.setText("Update Test");
+        updateTestButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                updateTestButtonActionPerformed(evt);
+            }
+        });
+
         org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(0, 400, Short.MAX_VALUE)
+            .add(org.jdesktop.layout.GroupLayout.TRAILING, layout.createSequentialGroup()
+                .addContainerGap()
+                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
+                    .add(org.jdesktop.layout.GroupLayout.LEADING, layout.createSequentialGroup()
+                        .add(editingLabel)
+                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                        .add(editingTextField, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 387, Short.MAX_VALUE)
+                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                        .add(browseEditingButton))
+                    .add(org.jdesktop.layout.GroupLayout.LEADING, layout.createSequentialGroup()
+                        .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING, false)
+                            .add(layout.createSequentialGroup()
+                                .add(addButton, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 68, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                                .add(removeButton, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 92, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                            .add(jScrollPane1, 0, 0, Short.MAX_VALUE))
+                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                        .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
+                            .add(org.jdesktop.layout.GroupLayout.LEADING, layout.createSequentialGroup()
+                                .add(categoryLabel)
+                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                                .add(categoryTextField, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 259, Short.MAX_VALUE))
+                            .add(org.jdesktop.layout.GroupLayout.LEADING, layout.createSequentialGroup()
+                                .add(opsNameLabel)
+                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                                .add(opsNameTextField, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 252, Short.MAX_VALUE))
+                            .add(updateTestButton)
+                            .add(org.jdesktop.layout.GroupLayout.LEADING, jScrollPane2, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 334, Short.MAX_VALUE))))
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                .add(testingPanel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(0, 300, Short.MAX_VALUE)
+            .add(org.jdesktop.layout.GroupLayout.TRAILING, layout.createSequentialGroup()
+                .addContainerGap()
+                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
+                    .add(org.jdesktop.layout.GroupLayout.LEADING, testingPanel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .add(layout.createSequentialGroup()
+                        .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                            .add(editingLabel)
+                            .add(editingTextField, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                            .add(browseEditingButton))
+                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                        .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                            .add(layout.createSequentialGroup()
+                                .add(jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 408, Short.MAX_VALUE)
+                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                                    .add(addButton)
+                                    .add(removeButton)))
+                            .add(layout.createSequentialGroup()
+                                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                                    .add(opsNameLabel)
+                                    .add(opsNameTextField, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                                    .add(categoryLabel)
+                                    .add(categoryTextField, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                                .add(jScrollPane2, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 344, Short.MAX_VALUE)
+                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                                .add(updateTestButton)))))
+                .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
+
+	private void addButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_addButtonActionPerformed
+	{//GEN-HEADEREND:event_addButtonActionPerformed
+		// TODO add your handling code here:
+	}//GEN-LAST:event_addButtonActionPerformed
+
+	private void removeButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_removeButtonActionPerformed
+	{//GEN-HEADEREND:event_removeButtonActionPerformed
+		// TODO add your handling code here:
+	}//GEN-LAST:event_removeButtonActionPerformed
+
+	private void updateTestButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_updateTestButtonActionPerformed
+	{//GEN-HEADEREND:event_updateTestButtonActionPerformed
+		// TODO add your handling code here:
+	}//GEN-LAST:event_updateTestButtonActionPerformed
+
+	private void browseEditingButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_browseEditingButtonActionPerformed
+	{//GEN-HEADEREND:event_browseEditingButtonActionPerformed
+		// TODO add your handling code here:
+	}//GEN-LAST:event_browseEditingButtonActionPerformed
+
+	private void opsNameTextFieldActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_opsNameTextFieldActionPerformed
+	{//GEN-HEADEREND:event_opsNameTextFieldActionPerformed
+		// TODO add your handling code here:
+	}//GEN-LAST:event_opsNameTextFieldActionPerformed
+
+	private void categoryTextFieldActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_categoryTextFieldActionPerformed
+	{//GEN-HEADEREND:event_categoryTextFieldActionPerformed
+		// TODO add your handling code here:
+	}//GEN-LAST:event_categoryTextFieldActionPerformed
+
+	private void browseDataButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_browseDataButtonActionPerformed
+	{//GEN-HEADEREND:event_browseDataButtonActionPerformed
+		// TODO add your handling code here:
+	}//GEN-LAST:event_browseDataButtonActionPerformed
+
+	private void reloadButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_reloadButtonActionPerformed
+	{//GEN-HEADEREND:event_reloadButtonActionPerformed
+		// TODO add your handling code here:
+	}//GEN-LAST:event_reloadButtonActionPerformed
+
+	private void operationTextAreaFocusLost(java.awt.event.FocusEvent evt)//GEN-FIRST:event_operationTextAreaFocusLost
+	{//GEN-HEADEREND:event_operationTextAreaFocusLost
+		// TODO add your handling code here:
+	}//GEN-LAST:event_operationTextAreaFocusLost
+
+	private void opsNameTextFieldFocusLost(java.awt.event.FocusEvent evt)//GEN-FIRST:event_opsNameTextFieldFocusLost
+	{//GEN-HEADEREND:event_opsNameTextFieldFocusLost
+		opsNameTextFieldActionPerformed(null);
+	}//GEN-LAST:event_opsNameTextFieldFocusLost
+
+	private void categoryTextFieldFocusLost(java.awt.event.FocusEvent evt)//GEN-FIRST:event_categoryTextFieldFocusLost
+	{//GEN-HEADEREND:event_categoryTextFieldFocusLost
+		categoryTextFieldActionPerformed(null);
+	}//GEN-LAST:event_categoryTextFieldFocusLost
 
     /**
      * Ensures all processes are terminated and that all ways of exiting the
@@ -166,6 +483,30 @@ public class ViewPanel extends JPanel
 	}
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton addButton;
+    private javax.swing.JButton browseDataButton;
+    private javax.swing.JTextField browseDataTextField;
+    private javax.swing.JButton browseEditingButton;
+    private javax.swing.JLabel categoryLabel;
+    private javax.swing.JTextField categoryTextField;
+    private javax.swing.JLabel dataCsvLabel;
+    private javax.swing.JLabel displayNameLabel;
+    private javax.swing.JTextField displayNameTextField;
+    private javax.swing.JLabel editingLabel;
+    private javax.swing.JTextField editingTextField;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JScrollPane jScrollPane3;
+    private javax.swing.JTextArea operationTextArea;
+    private javax.swing.JList operationsList;
+    private javax.swing.JLabel opsNameLabel;
+    private javax.swing.JTextField opsNameTextField;
+    private javax.swing.JTable outputTable;
+    private javax.swing.JPanel questionPanel;
+    private javax.swing.JButton reloadButton;
+    private javax.swing.JButton removeButton;
+    private javax.swing.JPanel testingPanel;
+    private javax.swing.JButton updateTestButton;
     // End of variables declaration//GEN-END:variables
 
 }
