@@ -53,16 +53,27 @@ Section "Start Menu Shortcuts" StartShortcuts
   SetOutPath "$INSTDIR"
   CreateDirectory "$SMPROGRAMS\maRla"
   CreateShortCut "$SMPROGRAMS\maRla\Uninstall.lnk" "$INSTDIR\uninstall.exe" "" "$INSTDIR\uninstall.exe" 1
-  CreateShortCut "$SMPROGRAMS\maRla\maRla.lnk" "$INSTDIR\maRlaIDE.exe" "" "$INSTDIR\maRla.ico" 1
+  CreateShortCut "$SMPROGRAMS\maRla\maRla.lnk" "$INSTDIR\maRlaIDE.exe" "" "$INSTDIR\maRlaIDE.ico" 1
   
 SectionEnd
 
 Section "Include R-2.12" InstallR
 
   ;installer is both 32 and 64 bit, chooses automatically, so silent works.
-  NSISdl::download http://cran.r-project.org/bin/windows/base/R-2.12.2-win.exe $TEMP\R-win.exe
-  ExecWait '"$TEMP\R-win.exe" /SILENT'
-  ;ExecWait '"H:\Docs\Downloads\R-win.exe" /SILENT'
+  IfFileExists 'H:\Docs\Downloads\R-win.exe' RDrive DownloadR 
+  DownloadR:
+    DetailPrint "Downloading R"
+    NSISdl::download http://cran.r-project.org/bin/windows/base/R-2.12.2-win.exe $TEMP\R-win.exe
+    DetailPrint "Installing R"
+    ExecWait '"$TEMP\R-win.exe" /SILENT'
+    Goto RInstalled
+
+  RDrive:
+    DetailPrint "Installing R from T drive"
+    ExecWait '"H:\Docs\Downloads\R-win.exe" /SILENT'
+
+  RInstalled:
+  DetailPrint "Installed R"
 
 SectionEnd
 
@@ -77,15 +88,19 @@ Section "Include MiKTeX" InstallMikTex
   ReadRegStr $R_LOC HKLM Software\R-Core\R InstallPath
   DetailPrint "R is installed at: $R_LOC"
 
-  DetailPrint "Downloading MiKTeX"
-  NSISdl::download http://mirrors.ibiblio.org/pub/mirrors/CTAN/systems/win32/miktex/setup/basic-miktex.exe $TEMP\miktex-install.exe
-  DetailPrint "Installing MiKTeX"
-  ExecWait '$TEMP\miktex-install.exe -private "-user-roots=$R_LOC\share\texmf" "-user-install=$ProgramFiles\miktex" -unattended'
-  ;ExecWait 'H:\Docs\Downloads\basic-miktex-2.9.3972.exe -private "-user-roots=$R_LOC\share\texmf" "-user-install=$ProgramFiles\miktex" -unattended'
+  IfFileExists 'T:\TEX\CTAN\basic-miktex-2.9.3972.exe' MikTexFromDrive DownloadMikTex
+  DownloadMikTex:
+    DetailPrint "Downloading MiKTeX"
+    NSISdl::download http://mirrors.ibiblio.org/pub/mirrors/CTAN/systems/win32/miktex/setup/basic-miktex.exe $TEMP\miktex-install.exe
+    DetailPrint "Installing MiKTeX"
+    ExecWait '$TEMP\miktex-install.exe -private "-user-roots=$R_LOC\share\texmf" "-user-install=$ProgramFiles\miktex" -unattended'
+    Goto MikTexInstalled
 
-  DetailPrint "Configuring MiKTeX"
-  ExecWait 'H:\Docs\Downloads\basic-miktex-2.9.3972.exe -private "-user-roots=$R_LOC\share\texmf" "-user-install=$ProgramFiles\miktex" -unattended'
+  MikTexFromDrive:
+    DetailPrint "Installing MiKTeX from T drive"
+    ExecWait 'T:\TEX\CTAN\basic-miktex-2.9.3972.exe -private "-user-roots=$R_LOC\share\texmf" "-user-install=$ProgramFiles\miktex" -unattended'
 
+  MikTexInstalled:
   DetailPrint "MiKTeX installed"
 
 SectionEnd
