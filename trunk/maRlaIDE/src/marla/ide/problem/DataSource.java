@@ -171,18 +171,25 @@ public abstract class DataSource extends JLabel implements Loadable
 	public abstract String[] getColumnNames() throws MarlaException;
 
 	/**
-	 * Add an operation to this data object. If you want to chain operations
-	 * together, then you must append the operation to another operation.
-	 * Multiple operations added to a single dataset are independent and
-	 * the results have no effect on one another!
-	 *
-	 * The return of the newly added operation allows chains to be built
-	 * quickly.
-	 *
+	 * Add given operation to the end of DataSource. See addOperation(index, op)
 	 * @param op Operation to add to perform on DataSet
 	 * @return Newly added operation
 	 */
 	public final Operation addOperation(Operation op) throws MarlaException
+	{
+		return addOperation(solutionOps.size(), op);
+	}
+
+	/**
+	 * Add an operation to this data object. If you want to chain operations
+	 * together, then you must append the operation to another operation.
+	 * Multiple operations added to a single dataset are independent and
+	 * the results have no effect on one another.
+	 * @param index Insert at the given index
+	 * @param op Operation to add to perform on DataSet
+	 * @return Newly added operation
+	 */
+	public final Operation addOperation(int index, Operation op) throws MarlaException
 	{
 		// Tell the operation to set us as the parent
 		op.setParentData(this);
@@ -190,7 +197,7 @@ public abstract class DataSource extends JLabel implements Loadable
 		if(!solutionOps.contains(op))
 		{
 			// They weren't already assigned to us, so stick them on our list
-			solutionOps.add(op);
+			solutionOps.add(index, op);
 
 			// Add all our current SubProblems to the new child
 			for(SubProblem sub : getSubProblems())

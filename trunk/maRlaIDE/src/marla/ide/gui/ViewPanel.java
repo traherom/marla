@@ -892,10 +892,11 @@ public class ViewPanel extends JPanel
 								DataSource parent = ((Operation) draggingComponent).getParentData();
 								if(parent != null)
 								{
+									int oldIndex = parent.getOperationIndex((Operation) draggingComponent);
 									parent.removeOperation((Operation) draggingComponent);
 									if(childOperation != null)
 									{
-										parent.addOperation(childOperation);
+										parent.addOperation(oldIndex, childOperation);
 									}
 								}
 							}
