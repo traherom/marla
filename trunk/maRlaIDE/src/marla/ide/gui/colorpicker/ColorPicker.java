@@ -89,7 +89,7 @@ public final class ColorPicker extends JPanel
 {
     private static final long serialVersionUID = 3L;
     /** The localized strings used in this (and related) panel(s). */
-    protected static ResourceBundle strings = ResourceBundle.getBundle ("gui.colorpicker.ColorPicker");
+    protected static ResourceBundle strings = ResourceBundle.getBundle ("marla.ide.gui.colorpicker.ColorPicker");
 
     public static Color showDialog(Container owner, Color originalColor, ViewPanel viewPanel)
     {
