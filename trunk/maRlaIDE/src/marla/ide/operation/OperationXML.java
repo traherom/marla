@@ -987,7 +987,7 @@ public class OperationXML extends Operation
 		// Operation checks apply here too
 		if(!super.equals(other))
 			return false;
-
+		
 		// Actually an XML operation?
 		if(!(other instanceof OperationXML))
 			return false;
@@ -996,7 +996,7 @@ public class OperationXML extends Operation
 		OperationXML otherOp = (OperationXML) other;
 		if(!opConfig.equals(otherOp.opConfig))
 			return false;
-
+		
 		return true;
 	}
 
