@@ -5,7 +5,7 @@
     <Property name="defaultCloseOperation" type="int" value="0"/>
     <Property name="alwaysOnTop" type="boolean" value="true"/>
     <Property name="iconImage" type="java.awt.Image" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-      <Connection code="new ImageIcon (getClass ().getResource (&quot;/images/new_button.png&quot;)).getImage ()" type="code"/>
+      <Connection code="new ImageIcon (getClass ().getResource (&quot;/marla/ide/images/new_button.png&quot;)).getImage ()" type="code"/>
     </Property>
     <Property name="resizable" type="boolean" value="false"/>
   </Properties>
@@ -30,7 +30,7 @@
   <Layout>
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
-          <EmptySpace min="0" pref="751" max="32767" attributes="0"/>
+          <EmptySpace min="0" pref="755" max="32767" attributes="0"/>
           <Group type="103" rootIndex="1" groupAlignment="0" attributes="0">
               <Group type="102" attributes="0">
                   <EmptySpace min="-2" pref="0" max="-2" attributes="0"/>
@@ -42,7 +42,7 @@
     </DimensionLayout>
     <DimensionLayout dim="1">
       <Group type="103" groupAlignment="0" attributes="0">
-          <EmptySpace min="0" pref="465" max="32767" attributes="0"/>
+          <EmptySpace min="0" pref="472" max="32767" attributes="0"/>
           <Group type="103" rootIndex="1" groupAlignment="0" attributes="0">
               <Group type="102" attributes="0">
                   <EmptySpace min="-2" pref="0" max="-2" attributes="0"/>
@@ -59,7 +59,7 @@
       <Layout>
         <DimensionLayout dim="0">
           <Group type="103" groupAlignment="0" attributes="0">
-              <EmptySpace min="0" pref="751" max="32767" attributes="0"/>
+              <EmptySpace min="0" pref="755" max="32767" attributes="0"/>
               <Group type="103" rootIndex="1" groupAlignment="0" attributes="0">
                   <Group type="102" alignment="0" attributes="0">
                       <EmptySpace min="-2" max="-2" attributes="0"/>
@@ -78,7 +78,7 @@
         </DimensionLayout>
         <DimensionLayout dim="1">
           <Group type="103" groupAlignment="0" attributes="0">
-              <EmptySpace min="0" pref="465" max="32767" attributes="0"/>
+              <EmptySpace min="0" pref="472" max="32767" attributes="0"/>
               <Group type="103" rootIndex="1" groupAlignment="0" attributes="0">
                   <Group type="102" alignment="0" attributes="0">
                       <EmptySpace max="-2" attributes="0"/>
@@ -299,7 +299,7 @@
                           <Group type="102" alignment="0" attributes="0">
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="welcomeTextLabel" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace pref="249" max="32767" attributes="0"/>
+                              <EmptySpace pref="247" max="32767" attributes="0"/>
                           </Group>
                       </Group>
                     </DimensionLayout>
@@ -308,7 +308,7 @@
                           <Group type="102" alignment="0" attributes="0">
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="welcomeTextLabel" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace pref="293" max="32767" attributes="0"/>
+                              <EmptySpace pref="292" max="32767" attributes="0"/>
                           </Group>
                       </Group>
                     </DimensionLayout>
@@ -385,12 +385,12 @@
                                   <Group type="102" alignment="0" attributes="0">
                                       <Component id="problemNameLabel" min="-2" max="-2" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
-                                      <Component id="problemNameTextField" pref="340" max="32767" attributes="0"/>
+                                      <Component id="problemNameTextField" pref="328" max="32767" attributes="0"/>
                                   </Group>
                                   <Group type="102" alignment="0" attributes="0">
                                       <Component id="problemLocationLabel" min="-2" max="-2" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
-                                      <Component id="problemLocationTextField" pref="323" max="32767" attributes="0"/>
+                                      <Component id="problemLocationTextField" pref="311" max="32767" attributes="0"/>
                                   </Group>
                                   <Component id="browseButton" alignment="1" min="-2" max="-2" attributes="0"/>
                               </Group>
@@ -413,7 +413,7 @@
                               </Group>
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="browseButton" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace pref="216" max="32767" attributes="0"/>
+                              <EmptySpace pref="204" max="32767" attributes="0"/>
                           </Group>
                       </Group>
                     </DimensionLayout>
@@ -519,7 +519,7 @@
                           <Group type="102" alignment="0" attributes="0">
                               <EmptySpace max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="0" attributes="0">
-                                  <Component id="descroptionScollPane" alignment="0" pref="440" max="32767" attributes="0"/>
+                                  <Component id="descroptionScollPane" alignment="0" pref="436" max="32767" attributes="0"/>
                                   <Component id="problemDescriptionLabel" alignment="0" min="-2" max="-2" attributes="0"/>
                               </Group>
                               <EmptySpace max="-2" attributes="0"/>
@@ -532,7 +532,7 @@
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="problemDescriptionLabel" min="-2" max="-2" attributes="0"/>
                               <EmptySpace type="separate" max="-2" attributes="0"/>
-                              <Component id="descroptionScollPane" pref="264" max="32767" attributes="0"/>
+                              <Component id="descroptionScollPane" pref="262" max="32767" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                           </Group>
                       </Group>
@@ -623,7 +623,7 @@
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Group type="102" alignment="0" attributes="0">
                               <EmptySpace max="-2" attributes="0"/>
-                              <Component id="subProblemsScrollPane" pref="451" max="32767" attributes="0"/>
+                              <Component id="subProblemsScrollPane" pref="449" max="32767" attributes="0"/>
                           </Group>
                       </Group>
                     </DimensionLayout>
@@ -1019,7 +1019,7 @@
             <DimensionLayout dim="0">
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" alignment="1" attributes="0">
-                      <EmptySpace pref="468" max="32767" attributes="0"/>
+                      <EmptySpace pref="484" max="32767" attributes="0"/>
                       <Component id="backWizardButton" min="-2" pref="85" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="nextWizardButton" min="-2" pref="85" max="-2" attributes="0"/>

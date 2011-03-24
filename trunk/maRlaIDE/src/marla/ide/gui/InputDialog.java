@@ -80,7 +80,7 @@ public class InputDialog extends EscapeDialog
 		inputTextArea.setFont(ViewPanel.FONT_PLAIN_12);
 		okButton.setFont(ViewPanel.FONT_PLAIN_12);
 		cancelButton.setFont(ViewPanel.FONT_PLAIN_12);
-		iconLabel.setIcon (new ImageIcon(getClass().getResource("/images/question.png")));
+		iconLabel.setIcon (new ImageIcon(getClass().getResource("/marla/ide/images/question.png")));
 		okButton.addActionListener (new ActionListener()
 		{
 			@Override

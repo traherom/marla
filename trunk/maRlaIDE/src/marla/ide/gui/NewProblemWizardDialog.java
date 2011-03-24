@@ -230,7 +230,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         setAlwaysOnTop(true);
-        setIconImage(new ImageIcon (getClass ().getResource ("/images/new_button.png")).getImage ());
+        setIconImage(new ImageIcon (getClass ().getResource ("/marla/ide/images/new_button.png")).getImage ());
         setResizable(false);
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
@@ -307,14 +307,14 @@ public class NewProblemWizardDialog extends EscapeDialog
             .addGroup(welcomePanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(welcomeTextLabel)
-                .addContainerGap(249, Short.MAX_VALUE))
+                .addContainerGap(247, Short.MAX_VALUE))
         );
         welcomePanelLayout.setVerticalGroup(
             welcomePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(welcomePanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(welcomeTextLabel)
-                .addContainerGap(293, Short.MAX_VALUE))
+                .addContainerGap(292, Short.MAX_VALUE))
         );
 
         welcomeCardPanel.add(welcomePanel);
@@ -364,11 +364,11 @@ public class NewProblemWizardDialog extends EscapeDialog
                     .addGroup(nameAndLocationPanelLayout.createSequentialGroup()
                         .addComponent(problemNameLabel)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(problemNameTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 340, Short.MAX_VALUE))
+                        .addComponent(problemNameTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 328, Short.MAX_VALUE))
                     .addGroup(nameAndLocationPanelLayout.createSequentialGroup()
                         .addComponent(problemLocationLabel)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(problemLocationTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 323, Short.MAX_VALUE))
+                        .addComponent(problemLocationTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 311, Short.MAX_VALUE))
                     .addComponent(browseButton, javax.swing.GroupLayout.Alignment.TRAILING))
                 .addContainerGap())
         );
@@ -385,7 +385,7 @@ public class NewProblemWizardDialog extends EscapeDialog
                     .addComponent(problemLocationTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(browseButton)
-                .addContainerGap(216, Short.MAX_VALUE))
+                .addContainerGap(204, Short.MAX_VALUE))
         );
 
         nameAndLocationCardPanel.add(nameAndLocationPanel);
@@ -422,7 +422,7 @@ public class NewProblemWizardDialog extends EscapeDialog
             .addGroup(descriptionPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(descriptionPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(descroptionScollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 440, Short.MAX_VALUE)
+                    .addComponent(descroptionScollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 436, Short.MAX_VALUE)
                     .addComponent(problemDescriptionLabel))
                 .addContainerGap())
         );
@@ -432,7 +432,7 @@ public class NewProblemWizardDialog extends EscapeDialog
                 .addContainerGap()
                 .addComponent(problemDescriptionLabel)
                 .addGap(18, 18, 18)
-                .addComponent(descroptionScollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 264, Short.MAX_VALUE)
+                .addComponent(descroptionScollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 262, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -464,7 +464,7 @@ public class NewProblemWizardDialog extends EscapeDialog
             subProblemsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(subProblemsPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(subProblemsScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 451, Short.MAX_VALUE))
+                .addComponent(subProblemsScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 449, Short.MAX_VALUE))
         );
         subProblemsPanelLayout.setVerticalGroup(
             subProblemsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -483,7 +483,7 @@ public class NewProblemWizardDialog extends EscapeDialog
             }
         });
         subProblemsCardPanel.add(addSubProblemButton);
-        addSubProblemButton.setBounds(285, 330, 70, 25);
+        addSubProblemButton.setBounds(285, 330, 70, 28);
 
         removeSubProblemButton.setFont(new java.awt.Font("Verdana", 0, 12));
         removeSubProblemButton.setText("Remove");
@@ -495,7 +495,7 @@ public class NewProblemWizardDialog extends EscapeDialog
             }
         });
         subProblemsCardPanel.add(removeSubProblemButton);
-        removeSubProblemButton.setBounds(370, 330, 90, 25);
+        removeSubProblemButton.setBounds(370, 330, 90, 28);
 
         wizardCardPanel.add(subProblemsCardPanel, "card6");
 
@@ -524,7 +524,7 @@ public class NewProblemWizardDialog extends EscapeDialog
             }
         });
         valuesCardPanel.add(addDataSetButton);
-        addDataSetButton.setBounds(285, 330, 70, 25);
+        addDataSetButton.setBounds(285, 330, 70, 28);
 
         removeDataSetButton.setFont(new java.awt.Font("Verdana", 0, 12));
         removeDataSetButton.setText("Remove");
@@ -535,7 +535,7 @@ public class NewProblemWizardDialog extends EscapeDialog
             }
         });
         valuesCardPanel.add(removeDataSetButton);
-        removeDataSetButton.setBounds(370, 330, 90, 25);
+        removeDataSetButton.setBounds(370, 330, 90, 28);
 
         wizardCardPanel.add(valuesCardPanel, "card2");
 
@@ -573,27 +573,27 @@ public class NewProblemWizardDialog extends EscapeDialog
 
         studentNameTextField.setFont(new java.awt.Font("Verdana", 0, 12));
         informationCardPanel.add(studentNameTextField);
-        studentNameTextField.setBounds(110, 50, 289, 22);
+        studentNameTextField.setBounds(110, 50, 289, 26);
 
         courseShortNameTextField.setFont(new java.awt.Font("Verdana", 0, 12));
         informationCardPanel.add(courseShortNameTextField);
-        courseShortNameTextField.setBounds(147, 90, 150, 22);
+        courseShortNameTextField.setBounds(147, 90, 150, 26);
 
         courseLongNameTextField.setFont(new java.awt.Font("Verdana", 0, 12));
         informationCardPanel.add(courseLongNameTextField);
-        courseLongNameTextField.setBounds(140, 130, 240, 22);
+        courseLongNameTextField.setBounds(140, 130, 240, 26);
 
         chapterTextField.setFont(new java.awt.Font("Verdana", 0, 12));
         informationCardPanel.add(chapterTextField);
-        chapterTextField.setBounds(73, 170, 190, 22);
+        chapterTextField.setBounds(73, 170, 190, 26);
 
         sectionTextField.setFont(new java.awt.Font("Verdana", 0, 12));
         informationCardPanel.add(sectionTextField);
-        sectionTextField.setBounds(70, 210, 170, 22);
+        sectionTextField.setBounds(70, 210, 170, 26);
 
         problemNumberTextField.setFont(new java.awt.Font("Verdana", 0, 12));
         informationCardPanel.add(problemNumberTextField);
-        problemNumberTextField.setBounds(130, 250, 90, 22);
+        problemNumberTextField.setBounds(130, 250, 90, 26);
 
         wizardLineCard6.setFont(new java.awt.Font("Verdana", 0, 12));
         wizardLineCard6.setText("______________________________________________________");
@@ -652,7 +652,7 @@ public class NewProblemWizardDialog extends EscapeDialog
         wizardControlPanelLayout.setHorizontalGroup(
             wizardControlPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, wizardControlPanelLayout.createSequentialGroup()
-                .addContainerGap(468, Short.MAX_VALUE)
+                .addContainerGap(484, Short.MAX_VALUE)
                 .addComponent(backWizardButton, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(nextWizardButton, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -675,7 +675,7 @@ public class NewProblemWizardDialog extends EscapeDialog
         newProblemPanel.setLayout(newProblemPanelLayout);
         newProblemPanelLayout.setHorizontalGroup(
             newProblemPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 751, Short.MAX_VALUE)
+            .addGap(0, 755, Short.MAX_VALUE)
             .addGroup(newProblemPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(newProblemPanelLayout.createSequentialGroup()
                     .addContainerGap()
@@ -689,7 +689,7 @@ public class NewProblemWizardDialog extends EscapeDialog
         );
         newProblemPanelLayout.setVerticalGroup(
             newProblemPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 465, Short.MAX_VALUE)
+            .addGap(0, 472, Short.MAX_VALUE)
             .addGroup(newProblemPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(newProblemPanelLayout.createSequentialGroup()
                     .addContainerGap()
@@ -705,7 +705,7 @@ public class NewProblemWizardDialog extends EscapeDialog
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 751, Short.MAX_VALUE)
+            .addGap(0, 755, Short.MAX_VALUE)
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(layout.createSequentialGroup()
                     .addGap(0, 0, 0)
@@ -714,7 +714,7 @@ public class NewProblemWizardDialog extends EscapeDialog
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 465, Short.MAX_VALUE)
+            .addGap(0, 472, Short.MAX_VALUE)
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(layout.createSequentialGroup()
                     .addGap(0, 0, 0)
