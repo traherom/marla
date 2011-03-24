@@ -278,6 +278,7 @@ public class ViewPanel extends JPanel
 			componentsScrollablePanel.removeAll();
 
 			// Force operations to be reloadedEnhancement summary
+			OperationXML.clearXMLOps();
 			OperationXML.loadXML();
 			
 			// Reload operations in the interface
