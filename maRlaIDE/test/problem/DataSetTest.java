@@ -17,13 +17,19 @@
  */
 package problem;
 
-import operation.Operation;
+import marla.ide.problem.DataColumn;
+import marla.ide.problem.MarlaException;
+import marla.ide.problem.Problem;
+import marla.ide.problem.DataNotFoundException;
+import marla.ide.problem.DataSet;
+import marla.ide.problem.DuplicateNameException;
+import marla.ide.operation.Operation;
 import java.util.List;
 import org.junit.*;
 import static org.junit.Assert.*;
 import org.jdom.Element;
-import r.RProcessor;
-import resource.Configuration;
+import marla.ide.r.RProcessor;
+import marla.ide.resource.Configuration;
 
 /**
  *

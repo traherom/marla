@@ -17,8 +17,12 @@
  */
 package operation;
 
-import resource.Configuration;
-import problem.*;
+import marla.ide.operation.Operation;
+import marla.ide.operation.OperationTester;
+import marla.ide.operation.OperationInfoRequiredException;
+import marla.ide.operation.OperationException;
+import marla.ide.resource.Configuration;
+import marla.ide.problem.*;
 import java.util.List;
 import org.jdom.Element;
 import java.util.ArrayList;
@@ -27,7 +31,7 @@ import java.util.Collection;
 import org.junit.runners.Parameterized;
 import org.junit.runner.RunWith;
 import org.junit.*;
-import r.RProcessor;
+import marla.ide.r.RProcessor;
 import static org.junit.Assert.*;
 
 /**

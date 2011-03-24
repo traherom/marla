@@ -17,6 +17,10 @@
  */
 package problem;
 
+import marla.ide.problem.DataColumn;
+import marla.ide.problem.InternalMarlaException;
+import marla.ide.problem.DataSet;
+import marla.ide.problem.DuplicateNameException;
 import org.junit.*;
 import static org.junit.Assert.*;
 

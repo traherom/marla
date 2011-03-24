@@ -17,8 +17,13 @@
  */
 package problem;
 
+import marla.ide.problem.SubProblem;
+import marla.ide.problem.Problem;
+import marla.ide.problem.DataNotFoundException;
+import marla.ide.problem.DataSet;
+import marla.ide.problem.ProblemException;
 import java.io.File;
-import resource.Configuration;
+import marla.ide.resource.Configuration;
 import org.jdom.Element;
 import org.junit.*;
 import static org.junit.Assert.*;
