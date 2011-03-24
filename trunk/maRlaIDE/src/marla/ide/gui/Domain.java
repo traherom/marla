@@ -237,14 +237,17 @@ public class Domain
 	 */
 	public static void setProgressIndeterminate(final boolean indeterminate)
 	{
-		SwingUtilities.invokeLater(new Runnable()
+		if(MainFrame.progressFrame != null)
 		{
-			@Override
-			public void run()
+			SwingUtilities.invokeLater(new Runnable()
 			{
-				MainFrame.progressFrame.progressBar.setIndeterminate(indeterminate);
-			}
-		});
+				@Override
+				public void run()
+				{
+					MainFrame.progressFrame.progressBar.setIndeterminate(indeterminate);
+				}
+			});
+		}
 	}
 
 	/**
@@ -254,14 +257,17 @@ public class Domain
 	 */
 	public static void setProgressString(final String string)
 	{
-		SwingUtilities.invokeLater(new Runnable()
+		if(MainFrame.progressFrame != null)
 		{
-			@Override
-			public void run()
+			SwingUtilities.invokeLater(new Runnable()
 			{
-				MainFrame.progressFrame.progressBar.setString(string);
-			}
-		});
+				@Override
+				public void run()
+				{
+					MainFrame.progressFrame.progressBar.setString(string);
+				}
+			});
+		}
 	}
 
 	/**
@@ -271,7 +277,8 @@ public class Domain
 	 */
 	public static void setProgressStatus(String status)
 	{
-		MainFrame.progressFrame.statusLabel.setText(status);
+		if(MainFrame.progressFrame != null)
+			MainFrame.progressFrame.statusLabel.setText(status);
 	}
 
 	/**
@@ -282,7 +289,8 @@ public class Domain
 	 */
 	public static void setProgressMinValue(int minValue)
 	{
-		MainFrame.progressFrame.progressBar.setMinimum(minValue);
+		if(MainFrame.progressFrame != null)
+			MainFrame.progressFrame.progressBar.setMinimum(minValue);
 	}
 
 	/**
@@ -293,7 +301,8 @@ public class Domain
 	 */
 	public static void setProgressMaxValue(int maxValue)
 	{
-		MainFrame.progressFrame.progressBar.setMaximum(maxValue);
+		if(MainFrame.progressFrame != null)
+			MainFrame.progressFrame.progressBar.setMaximum(maxValue);
 	}
 
 	/**
@@ -305,14 +314,17 @@ public class Domain
 	 */
 	public static void setProgressValue(final int value)
 	{
-		SwingUtilities.invokeLater(new Runnable()
+		if(MainFrame.progressFrame != null)
 		{
-			@Override
-			public void run()
+			SwingUtilities.invokeLater(new Runnable()
 			{
-				MainFrame.progressFrame.progressBar.setValue(value);
-			}
-		});
+				@Override
+				public void run()
+				{
+					MainFrame.progressFrame.progressBar.setValue(value);
+				}
+			});
+		}
 	}
 
 	/**

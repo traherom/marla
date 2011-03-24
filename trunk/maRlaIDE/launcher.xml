@@ -12,7 +12,7 @@
   <customProcName>true</customProcName>
   <stayAlive>false</stayAlive>
   <manifest></manifest>
-  <!--<icon>maRla.ico</icon>-->
+  <icon>maRla.ico</icon>
   <singleInstance>
     <mutexName>themarlaproject</mutexName>
     <windowTitle></windowTitle>
