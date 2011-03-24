@@ -108,6 +108,7 @@ SectionEnd
 Section "Install maRla" InstallMarla
 
   SetOutPath "$INSTDIR"
+  File maRlaIDE.jar
   File ops.xml
   File export_template.xml
   File maRla.ico
@@ -150,6 +151,7 @@ SectionEnd
 Section "Uninstall"
 
   Delete "$INSTDIR\Uninstall.exe"
+  Delete "$INSTDIR\maRlaIDE.jar"
   Delete "$INSTDIR\export_template.xml"
   Delete "$INSTDIR\maRla.ico"
   Delete "$INSTDIR\maRlaIDE.exe"
