@@ -490,6 +490,7 @@ public class Configuration
 					else
 						x = Integer.parseInt(val.toString());
 					frame.setLocation(x, y);
+					MainFrame.progressFrame.setLocationRelativeTo(frame);
 				}
 				catch(NullPointerException ex)
 				{
@@ -507,6 +508,7 @@ public class Configuration
 					else
 						y = Integer.parseInt(val.toString());
 					frame.setLocation(x, y);
+					MainFrame.progressFrame.setLocationRelativeTo(frame);
 				}
 				catch(NullPointerException ex)
 				{
@@ -526,6 +528,7 @@ public class Configuration
 					else
 						height = Integer.parseInt(val.toString());
 					frame.setBounds(x, y, width, height);
+					MainFrame.progressFrame.setLocationRelativeTo(frame);
 				}
 				catch(NullPointerException ex)
 				{
@@ -545,6 +548,7 @@ public class Configuration
 					else
 						width = Integer.parseInt(val.toString());
 					frame.setBounds(x, y, width, height);
+					MainFrame.progressFrame.setLocationRelativeTo(frame);
 				}
 				catch(NullPointerException ex)
 				{

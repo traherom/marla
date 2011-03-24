@@ -111,7 +111,7 @@ public class SettingsDialog extends EscapeDialog
 
         preferencesPanel.setLayout(null);
 
-        lineWidthLabel.setFont(new java.awt.Font("Verdana", 0, 12));
+        lineWidthLabel.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
         lineWidthLabel.setText("Workspace line width:");
         preferencesPanel.add(lineWidthLabel);
         lineWidthLabel.setBounds(330, 70, 140, 20);
@@ -119,7 +119,7 @@ public class SettingsDialog extends EscapeDialog
         rPathTextField.setEditable(false);
         rPathTextField.setFont(new java.awt.Font("Verdana", 0, 12));
         preferencesPanel.add(rPathTextField);
-        rPathTextField.setBounds(70, 140, 330, 26);
+        rPathTextField.setBounds(70, 140, 330, 22);
 
         rPathButton.setFont(new java.awt.Font("Verdana", 0, 12));
         rPathButton.setText("Browse");
@@ -129,7 +129,7 @@ public class SettingsDialog extends EscapeDialog
             }
         });
         preferencesPanel.add(rPathButton);
-        rPathButton.setBounds(410, 140, 90, 28);
+        rPathButton.setBounds(410, 140, 90, 25);
 
         latexPathButton.setFont(new java.awt.Font("Verdana", 0, 12));
         latexPathButton.setText("Browse");
@@ -139,12 +139,12 @@ public class SettingsDialog extends EscapeDialog
             }
         });
         preferencesPanel.add(latexPathButton);
-        latexPathButton.setBounds(410, 180, 90, 28);
+        latexPathButton.setBounds(410, 180, 90, 25);
 
         latexPathTextField.setEditable(false);
         latexPathTextField.setFont(new java.awt.Font("Verdana", 0, 12));
         preferencesPanel.add(latexPathTextField);
-        latexPathTextField.setBounds(110, 180, 290, 26);
+        latexPathTextField.setBounds(110, 180, 290, 22);
 
         latexPathLabel.setFont(new java.awt.Font("Verdana", 0, 12));
         latexPathLabel.setText("PDFTex Path:");
@@ -159,12 +159,12 @@ public class SettingsDialog extends EscapeDialog
             }
         });
         preferencesPanel.add(latexTemplateButton);
-        latexTemplateButton.setBounds(410, 220, 90, 28);
+        latexTemplateButton.setBounds(410, 220, 90, 25);
 
         latexTemplateTextField.setEditable(false);
         latexTemplateTextField.setFont(new java.awt.Font("Verdana", 0, 12));
         preferencesPanel.add(latexTemplateTextField);
-        latexTemplateTextField.setBounds(130, 220, 270, 26);
+        latexTemplateTextField.setBounds(130, 220, 270, 22);
 
         latexTemplateLabel.setFont(new java.awt.Font("Verdana", 0, 12));
         latexTemplateLabel.setText("LaTeX Template:");
@@ -179,12 +179,12 @@ public class SettingsDialog extends EscapeDialog
             }
         });
         preferencesPanel.add(operationsButton);
-        operationsButton.setBounds(410, 260, 90, 28);
+        operationsButton.setBounds(410, 260, 90, 25);
 
         operationsTextField.setEditable(false);
         operationsTextField.setFont(new java.awt.Font("Verdana", 0, 12));
         preferencesPanel.add(operationsTextField);
-        operationsTextField.setBounds(130, 260, 270, 26);
+        operationsTextField.setBounds(130, 260, 270, 22);
 
         operationsLabel.setFont(new java.awt.Font("Verdana", 0, 12));
         operationsLabel.setText("Operations XML:");
@@ -199,7 +199,7 @@ public class SettingsDialog extends EscapeDialog
             }
         });
         preferencesPanel.add(includeProblemCheckBox);
-        includeProblemCheckBox.setBounds(30, 70, 300, 24);
+        includeProblemCheckBox.setBounds(30, 70, 300, 25);
 
         debugModeCheckBox.setFont(new java.awt.Font("Verdana", 0, 12));
         debugModeCheckBox.setText("Debug mode");
@@ -209,7 +209,7 @@ public class SettingsDialog extends EscapeDialog
             }
         });
         preferencesPanel.add(debugModeCheckBox);
-        debugModeCheckBox.setBounds(10, 100, 140, 24);
+        debugModeCheckBox.setBounds(10, 100, 140, 25);
 
         sendErrorReportsCheckBox.setFont(new java.awt.Font("Verdana", 0, 12));
         sendErrorReportsCheckBox.setText("Send error reports");
@@ -219,7 +219,7 @@ public class SettingsDialog extends EscapeDialog
             }
         });
         preferencesPanel.add(sendErrorReportsCheckBox);
-        sendErrorReportsCheckBox.setBounds(10, 40, 190, 24);
+        sendErrorReportsCheckBox.setBounds(10, 40, 190, 25);
         preferencesPanel.add(jSeparator1);
         jSeparator1.setBounds(10, 130, 520, 10);
 
@@ -237,7 +237,7 @@ public class SettingsDialog extends EscapeDialog
         preferencesPanel.add(lineSpaceLabel);
         lineSpaceLabel.setBounds(330, 40, 150, 20);
 
-        lineSpaceSpinner.setFont(new java.awt.Font("Verdana", 0, 12));
+        lineSpaceSpinner.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
         lineSpaceSpinner.setModel(new javax.swing.SpinnerNumberModel(Integer.valueOf(0), Integer.valueOf(0), null, Integer.valueOf(1)));
         lineSpaceSpinner.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
@@ -245,9 +245,9 @@ public class SettingsDialog extends EscapeDialog
             }
         });
         preferencesPanel.add(lineSpaceSpinner);
-        lineSpaceSpinner.setBounds(480, 40, 40, 26);
+        lineSpaceSpinner.setBounds(480, 40, 40, 20);
 
-        lineWidthSpinner.setFont(new java.awt.Font("Verdana", 0, 12));
+        lineWidthSpinner.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
         lineWidthSpinner.setModel(new javax.swing.SpinnerNumberModel(Integer.valueOf(1), Integer.valueOf(1), null, Integer.valueOf(1)));
         lineWidthSpinner.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
@@ -255,7 +255,7 @@ public class SettingsDialog extends EscapeDialog
             }
         });
         preferencesPanel.add(lineWidthSpinner);
-        lineWidthSpinner.setBounds(480, 70, 40, 26);
+        lineWidthSpinner.setBounds(480, 70, 40, 20);
 
         lineLabel3.setFont(new java.awt.Font("Verdana", 0, 12));
         lineLabel3.setText("______________________________________________________");
@@ -284,7 +284,7 @@ public class SettingsDialog extends EscapeDialog
             }
         });
         preferencesPanel.add(customOpsTextField);
-        customOpsTextField.setBounds(160, 300, 240, 26);
+        customOpsTextField.setBounds(160, 300, 240, 22);
 
         customOpsBrowse.setFont(new java.awt.Font("Verdana", 0, 12));
         customOpsBrowse.setText("Browse");
@@ -294,7 +294,7 @@ public class SettingsDialog extends EscapeDialog
             }
         });
         preferencesPanel.add(customOpsBrowse);
-        customOpsBrowse.setBounds(410, 300, 90, 28);
+        customOpsBrowse.setBounds(410, 300, 90, 25);
 
         customOpsLabel1.setFont(new java.awt.Font("Verdana", 0, 12));
         customOpsLabel1.setText("User Operations XML:");
@@ -322,15 +322,15 @@ public class SettingsDialog extends EscapeDialog
 
         studentNameTextField.setFont(new java.awt.Font("Verdana", 0, 12));
         studentInformationPanel.add(studentNameTextField);
-        studentNameTextField.setBounds(110, 50, 289, 26);
+        studentNameTextField.setBounds(110, 50, 289, 22);
 
         courseShortNameTextField.setFont(new java.awt.Font("Verdana", 0, 12));
         studentInformationPanel.add(courseShortNameTextField);
-        courseShortNameTextField.setBounds(147, 90, 150, 26);
+        courseShortNameTextField.setBounds(147, 90, 150, 22);
 
         courseLongNameTextField.setFont(new java.awt.Font("Verdana", 0, 12));
         studentInformationPanel.add(courseLongNameTextField);
-        courseLongNameTextField.setBounds(140, 130, 240, 26);
+        courseLongNameTextField.setBounds(140, 130, 240, 22);
 
         lineLabel2.setFont(new java.awt.Font("Verdana", 0, 12));
         lineLabel2.setText("______________________________________________________");
@@ -354,7 +354,7 @@ public class SettingsDialog extends EscapeDialog
             }
         });
 
-        jLabel1.setFont(new java.awt.Font("Verdana", 1, 14)); // NOI18N
+        jLabel1.setFont(new java.awt.Font("Verdana", 1, 14));
         jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/marla/ide/images/settings_button.png"))); // NOI18N
         jLabel1.setText("Settings");
 
@@ -386,7 +386,7 @@ public class SettingsDialog extends EscapeDialog
             .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(settingsPanelLayout.createSequentialGroup()
                 .addGap(10, 10, 10)
-                .addComponent(settingsTabbedPane, javax.swing.GroupLayout.DEFAULT_SIZE, 544, Short.MAX_VALUE)
+                .addComponent(settingsTabbedPane, javax.swing.GroupLayout.DEFAULT_SIZE, 560, Short.MAX_VALUE)
                 .addGap(10, 10, 10))
         );
         settingsPanelLayout.setVerticalGroup(

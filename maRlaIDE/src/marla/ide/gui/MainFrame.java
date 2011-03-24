@@ -195,6 +195,7 @@ public class MainFrame extends JFrame
 		progressFrame.setAlwaysOnTop(true);
 		super.setVisible(visible);
 		verifyBounds();
+		progressFrame.setLocationRelativeTo(this);
 	}
 
 	/**
