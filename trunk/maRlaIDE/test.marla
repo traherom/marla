@@ -1,75 +1,8 @@
 <?xml version="1.0" encoding="UTF8"?>
-<problem person="Ryan Morehart" course_long="Software Engineering II" course_short="CS4820" chapter="2" section="3" probnum="4">
-  <statement>Problem description</statement>
-  <conclusion>50% isn't bad.</conclusion>
-  <data name="Data Set 1" id="-1421489198" x="172" y="34" height="16" width="53">
-    <column name="Column 1" mode="NUMERIC">
-      <value>2.0</value>
-      <value>213.0</value>
-      <value>4.0</value>
-      <value>235.0</value>
-      <value>25.0</value>
-      <value>2.0</value>
-      <value>0.0</value>
-      <value>0.0</value>
-      <value>0.0</value>
-    </column>
-    <column name="Blah" mode="NUMERIC">
-      <value>64.0</value>
-      <value>88.0</value>
-      <value>98.0</value>
-      <value>903.0</value>
-      <value>3142.0</value>
-      <value>89.0</value>
-      <value>0.0</value>
-      <value>0.0</value>
-      <value>0.0</value>
-    </column>
-    <column name="Another" mode="NUMERIC">
-      <value>38.0</value>
-      <value>3.0</value>
-      <value>19.0</value>
-      <value>5.0</value>
-      <value>920.0</value>
-      <value>541.0</value>
-      <value>0.0</value>
-      <value>0.0</value>
-      <value>0.0</value>
-    </column>
-    <operation type="operation.OperationXML" name="sin()" id="1648532359" x="50" y="64" height="16" width="75">
-      <remark>And a remark for sin</remark>
-      <operation type="operation.OperationXML" name="Barplot" id="1240439882" x="36" y="94" height="16" width="103">
-        <remark />
-        <question name="col" answer="Column 1" />
-        <extra name="Barplot" />
-      </operation>
-      <question name="col" answer="Column 1" />
-      <extra name="sin()" />
-    </operation>
-    <operation type="operation.OperationXML" name="cos()" id="-1749331733" x="168" y="64" height="16" width="78">
-      <remark>Nice long removk for cos()</remark>
-      <operation type="operation.OperationXML" name="Histogram" id="-1586253957" x="167" y="94" height="16" width="80">
-        <remark />
-        <operation type="operation.OperationXML" name="Repeat" id="1622297566" x="159" y="124" height="16" width="97">
-          <remark />
-          <question name="val" answer="3.0" />
-          <question name="count" answer="50.0" />
-          <question name="colName" answer="Repetition" />
-          <extra name="Repeat" />
-        </operation>
-        <question name="col" answer="Column 1" />
-        <extra name="Histogram" />
-      </operation>
-      <question name="col" answer="Column 1" />
-      <extra name="cos()" />
-    </operation>
-    <operation type="operation.OperationXML" name="atan()" id="485666988" x="276" y="64" height="16" width="85">
-      <remark />
-      <question name="col" answer="Column 1" />
-      <extra name="atan()" />
-    </operation>
-  </data>
-  <data name="Data Set 2" id="1608357360" x="537" y="161" height="16" width="53">
+<problem person="Test student" course_long="Long name" course_short="Short name" chapter="Chapter" section="Section" probnum="Number">
+  <statement>Problem description ...</statement>
+  <conclusion>Conclusion</conclusion>
+  <data name="Data Set 1" id="2064948438" x="214" y="45" height="16" width="70">
     <column name="Column 1" mode="NUMERIC">
       <value>0.0</value>
       <value>1.0</value>
@@ -330,66 +263,69 @@
       <value>48.0</value>
       <value>49.0</value>
     </column>
-    <operation type="operation.OperationXML" name="Subtract" id="1462626958" x="464" y="191" height="16" width="70">
+    <operation type="marla.ide.operation.OperationXML" name="cos()" id="-1613836180" x="140" y="75" height="16" width="44">
       <remark />
-      <question name="val" />
-      <question name="col" />
-      <extra name="Subtract" />
-    </operation>
-    <operation type="operation.OperationXML" name="1-Var variance" id="1875170332" x="554" y="191" height="16" width="44">
-      <remark />
-      <question name="col" />
-      <extra name="1-Var variance" />
-    </operation>
-    <operation type="operation.OperationXML" name="Absolute Value" id="-1007594316" x="618" y="191" height="16" width="45">
-      <remark />
-      <operation type="operation.OperationXML" name="Exponential" id="1969871291" x="633" y="221" height="21" width="15">
+      <operation type="marla.ide.operation.OperationXML" name="Barplot" id="-1259616404" x="128" y="105" height="16" width="69">
         <remark />
         <question name="col" />
-        <extra name="Exponential" />
+        <extra name="Barplot" />
       </operation>
       <question name="col" />
-      <extra name="Absolute Value" />
+      <extra name="cos()" />
+    </operation>
+    <operation type="marla.ide.operation.OperationXML" name="Mean" id="1915277269" x="223" y="75" height="16" width="58">
+      <remark />
+      <operation type="marla.ide.operation.OperationXML" name="Boxplot" id="1217894410" x="217" y="105" height="16" width="71">
+        <remark />
+        <operation type="marla.ide.operation.OperationXML" name="Absolute Value" id="740021789" x="230" y="135" height="16" width="45">
+          <remark />
+          <question name="col" />
+          <extra name="Absolute Value" />
+        </operation>
+        <question name="col" />
+        <extra name="Boxplot" />
+      </operation>
+      <question name="col" />
+      <extra name="Mean" />
+    </operation>
+    <operation type="marla.ide.operation.OperationXML" name="Q-Q Line" id="1725846927" x="308" y="75" height="16" width="62">
+      <remark />
+      <operation type="marla.ide.operation.OperationXML" name="Single Var Plot" id="-1023348318" x="312" y="105" height="16" width="55">
+        <remark />
+        <question name="x" />
+        <extra name="Single Var Plot" />
+      </operation>
+      <question name="col" />
+      <extra name="Q-Q Line" />
     </operation>
   </data>
-  <part id="a." color="-721152">
-    <step id="-1749331733" />
-    <step id="-1586253957" />
-    <step id="1622297566" />
-    <step id="1240439882" />
-    <statement>Part A!</statement>
-    <conclusion>A was great</conclusion>
+  <part id="a." color="-4100327">
+    <step id="1725846927" />
+    <step id="-1023348318" />
+    <step id="1915277269" />
+    <step id="1217894410" />
+    <step id="740021789" />
+    <step id="-1613836180" />
+    <step id="-1259616404" />
+    <statement>This is a sub problem ...</statement>
+    <conclusion>This is a conclusion ...</conclusion>
   </part>
-  <part id="b." color="-13352999">
-    <step id="1240439882" />
-    <step id="1622297566" />
-    <statement>Part B :(</statement>
-    <conclusion>Sad Day</conclusion>
+  <part id="b." color="-16519193">
+    <step id="1915277269" />
+    <step id="1217894410" />
+    <step id="740021789" />
+    <step id="-1613836180" />
+    <step id="-1259616404" />
+    <statement>This is a sub problem ...</statement>
+    <conclusion>This is a conclusion ...</conclusion>
   </part>
-  <part id="c." color="-3206776">
-    <step id="-1749331733" />
-    <step id="-1586253957" />
-    <step id="1622297566" />
-    <step id="1240439882" />
-    <statement />
-    <conclusion />
-  </part>
-  <part id="d." color="-13986679">
-    <statement />
-    <conclusion />
-  </part>
-  <part id="e." color="-6225507">
-    <step id="1648532359" />
-    <step id="1240439882" />
-    <step id="-1749331733" />
-    <step id="-1586253957" />
-    <step id="1622297566" />
-    <statement />
-    <conclusion />
-  </part>
-  <part id="f." color="-12365136">
-    <statement />
-    <conclusion />
+  <part id="c." color="-10017304">
+    <step id="-1023348318" />
+    <step id="1915277269" />
+    <step id="1217894410" />
+    <step id="740021789" />
+    <statement>This is a sub problem ...</statement>
+    <conclusion>This is a conclusion ...</conclusion>
   </part>
   <unattached />
 </problem>
