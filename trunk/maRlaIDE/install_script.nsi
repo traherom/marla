@@ -53,14 +53,14 @@ Section "Start Menu Shortcuts" StartShortcuts
   SetOutPath "$INSTDIR"
   CreateDirectory "$SMPROGRAMS\maRla"
   CreateShortCut "$SMPROGRAMS\maRla\Uninstall.lnk" "$INSTDIR\uninstall.exe" "" "$INSTDIR\uninstall.exe" 1
-  CreateShortCut "$SMPROGRAMS\maRla\maRla.lnk" "$INSTDIR\maRlaIDE.exe" "" "$INSTDIR\maRlaIDE.ico" 1
+  CreateShortCut "$SMPROGRAMS\maRla\maRla.lnk" "$INSTDIR\maRlaIDE.exe" "" "$INSTDIR\maRla.ico" 1
   
 SectionEnd
 
 Section "Include R-2.12" InstallR
 
   ;installer is both 32 and 64 bit, chooses automatically, so silent works.
-  IfFileExists 'H:\Docs\Downloads\R-win.exe' RDrive DownloadR 
+  IfFileExists 'T:\TEX\CRAN\R-win.exe' RDrive DownloadR 
   DownloadR:
     DetailPrint "Downloading R"
     NSISdl::download http://cran.r-project.org/bin/windows/base/R-2.12.2-win.exe $TEMP\R-win.exe
@@ -70,7 +70,7 @@ Section "Include R-2.12" InstallR
 
   RDrive:
     DetailPrint "Installing R from T drive"
-    ExecWait '"H:\Docs\Downloads\R-win.exe" /SILENT'
+    ExecWait '"T:\TEX\CRAN\R-win.exe" /SILENT'
 
   RInstalled:
   DetailPrint "Installed R"
@@ -88,7 +88,7 @@ Section "Include MiKTeX" InstallMikTex
   ReadRegStr $R_LOC HKLM Software\R-Core\R InstallPath
   DetailPrint "R is installed at: $R_LOC"
 
-  IfFileExists 'T:\TEX\CTAN\basic-miktex-2.9.3972.exe' MikTexFromDrive DownloadMikTex
+  IfFileExists 'T:\TEX\CTAN\basic-miktex.exe' MikTexFromDrive DownloadMikTex
   DownloadMikTex:
     DetailPrint "Downloading MiKTeX"
     NSISdl::download http://mirrors.ibiblio.org/pub/mirrors/CTAN/systems/win32/miktex/setup/basic-miktex.exe $TEMP\miktex-install.exe
@@ -98,7 +98,7 @@ Section "Include MiKTeX" InstallMikTex
 
   MikTexFromDrive:
     DetailPrint "Installing MiKTeX from T drive"
-    ExecWait 'T:\TEX\CTAN\basic-miktex-2.9.3972.exe -private "-user-roots=$R_LOC\share\texmf" "-user-install=$ProgramFiles\miktex" -unattended'
+    ExecWait 'T:\TEX\CTAN\basic-miktex.exe -private "-user-roots=$R_LOC\share\texmf" "-user-install=$ProgramFiles\miktex" -unattended'
 
   MikTexInstalled:
   DetailPrint "MiKTeX installed"
@@ -108,7 +108,6 @@ SectionEnd
 Section "Install maRla" InstallMarla
 
   SetOutPath "$INSTDIR"
-  File maRlaIDE.jar
   File ops.xml
   File export_template.xml
   File maRla.ico
@@ -151,7 +150,6 @@ SectionEnd
 Section "Uninstall"
 
   Delete "$INSTDIR\Uninstall.exe"
-  Delete "$INSTDIR\maRlaIDE.jar"
   Delete "$INSTDIR\export_template.xml"
   Delete "$INSTDIR\maRla.ico"
   Delete "$INSTDIR\maRlaIDE.exe"
