@@ -55,6 +55,7 @@ public class ProgressFrame extends JFrame
         statusLabel = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
+        setTitle("Launching The maRla Project");
         setIconImage(new ImageIcon (getClass ().getResource ("/marla/ide/images/logo.png")).getImage ());
         setName("progressFrame"); // NOI18N
         setResizable(false);
@@ -65,7 +66,7 @@ public class ProgressFrame extends JFrame
         progressBar.setFont(new java.awt.Font("Verdana", 0, 12));
         progressBar.setStringPainted(true);
 
-        statusLabel.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        statusLabel.setFont(new java.awt.Font("Verdana", 0, 12));
         statusLabel.setText("Loading framework ...");
 
         javax.swing.GroupLayout progressPanelLayout = new javax.swing.GroupLayout(progressPanel);

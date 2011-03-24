@@ -246,7 +246,7 @@
             <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
               <Font name="Verdana" size="12" style="0"/>
             </Property>
-            <Property name="text" type="java.lang.String" value="Font Size:"/>
+            <Property name="text" type="java.lang.String" value="Font Size: "/>
             <Property name="enabled" type="boolean" value="false"/>
           </Properties>
         </Component>
@@ -290,8 +290,6 @@
           <Properties>
             <Property name="enabled" type="boolean" value="false"/>
           </Properties>
-        </Component>
-        <Component class="javax.swing.JLabel" name="jLabel2">
         </Component>
         <Component class="javax.swing.JLabel" name="abbreviateButton">
           <Properties>

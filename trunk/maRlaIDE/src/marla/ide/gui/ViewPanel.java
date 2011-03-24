@@ -440,7 +440,6 @@ public class ViewPanel extends JPanel
         plusFontButton = new ToolbarButton (new ImageIcon (getClass ().getResource ("/marla/ide/images/plus_button.png")));
         minusFontButton = new ToolbarButton (new ImageIcon (getClass ().getResource ("/marla/ide/images/minus_button.png")));
         jSeparator3 = new javax.swing.JToolBar.Separator();
-        jLabel2 = new javax.swing.JLabel();
         abbreviateButton = new ToolbarButton (new ImageIcon (getClass ().getResource ("/marla/ide/images/unchecked_button.png")));
         jSeparator2 = new javax.swing.JToolBar.Separator();
         settingsButton = new ToolbarButton (new ImageIcon (getClass ().getResource ("/marla/ide/images/settings_button.png")));
@@ -625,8 +624,8 @@ public class ViewPanel extends JPanel
         jSeparator1.setEnabled(false);
         toolBar.add(jSeparator1);
 
-        fontSizeLabel.setFont(new java.awt.Font("Verdana", 0, 12));
-        fontSizeLabel.setText("Font Size:");
+        fontSizeLabel.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        fontSizeLabel.setText("Font Size: ");
         fontSizeLabel.setEnabled(false);
         toolBar.add(fontSizeLabel);
 
@@ -670,7 +669,6 @@ public class ViewPanel extends JPanel
 
         jSeparator3.setEnabled(false);
         toolBar.add(jSeparator3);
-        toolBar.add(jLabel2);
 
         abbreviateButton.setFont(new java.awt.Font("Verdana", 0, 12));
         abbreviateButton.setText("Abbreviate");
@@ -2228,7 +2226,6 @@ public class ViewPanel extends JPanel
     private javax.swing.JMenuItem editDataSetMenuItem;
     protected javax.swing.JPanel emptyPalettePanel;
     private javax.swing.JLabel fontSizeLabel;
-    private javax.swing.JLabel jLabel2;
     private javax.swing.JToolBar.Separator jSeparator1;
     private javax.swing.JToolBar.Separator jSeparator2;
     private javax.swing.JToolBar.Separator jSeparator3;
