@@ -52,8 +52,9 @@ Section "Start Menu Shortcuts" StartShortcuts
 
   SetOutPath "$INSTDIR"
   CreateDirectory "$SMPROGRAMS\maRla"
-  CreateShortCut "$SMPROGRAMS\maRla\Uninstall.lnk" "$INSTDIR\uninstall.exe" "" "$INSTDIR\uninstall.exe" 1
-  CreateShortCut "$SMPROGRAMS\maRla\maRla.lnk" "$INSTDIR\maRlaIDE.exe" "" "$INSTDIR\maRlaIDE.exe" 1
+  CreateShortCut "$SMPROGRAMS\maRla\Uninstall.lnk" "$INSTDIR\uninstall.exe"
+  CreateShortCut "$SMPROGRAMS\maRla\maRla.lnk" "$INSTDIR\maRlaIDE.exe"
+  CreateShortCut "$DESKTOP\maRla.lnk" "$INSTDIR\maRlaIDE.exe"
   
 SectionEnd
 
@@ -118,7 +119,6 @@ Section "Install maRla" InstallMarla
   File maRlaIDE.jar
   File ops.xml
   File export_template.xml
-  File maRla.ico
   File maRlaIDE.exe
   
   ;Store installation folder
@@ -137,7 +137,7 @@ SectionEnd
 ;Descriptions
 
   ;Language strings
-  LangString DESC_InstallMarla ${LANG_ENGLISH} "Installs maRla"
+  LangString DESC_InstallMarla ${LANG_ENGLISH} "Installs the core maRla framework"
   LangString DESC_InstallR ${LANG_ENGLISH} "(~37 mb) Only select this if you do not already have R installed. R is the statistical engine needed to run operations."
   LangString DESC_InstallMikTex ${LANG_ENGLISH} "(~138 mb) Only select this if you do not already have MikTex or an equivalent LaTeX editor installed." 
   LangString DESC_StartShortcuts ${LANG_ENGLISH} "Installs start menu shortcuts to the user's account."
@@ -158,11 +158,11 @@ Section "Uninstall"
   Delete "$INSTDIR\Uninstall.exe"
   Delete "$INSTDIR\maRlaIDE.jar"
   Delete "$INSTDIR\export_template.xml"
-  Delete "$INSTDIR\maRla.ico"
   Delete "$INSTDIR\maRlaIDE.exe"
   Delete "$INSTDIR\ops.xml"
   Delete "$SMPROGRAMS\maRla\Uninstall.lnk"
   Delete "$SMPROGRAMS\maRla\maRla.lnk"
+  Delete "$DESKTOP\maRla.lnk"
   
   RMDir "$SMPROGRAMS\maRla"
   RMDir "$INSTDIR"
