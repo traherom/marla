@@ -388,6 +388,19 @@ public abstract class Operation extends DataSource implements Changeable
 	 */
 	public final void setParentData(DataSource newParent) throws MarlaException
 	{
+		if(newParent != null)
+			setParentData(newParent.getOperationCount(), newParent);
+		else
+			setParentData(-1, newParent);
+	}
+	
+	/**
+	 * Assigns this Operation to a new parent.
+	 * @param index Index at which to insert ourselves into the parent
+	 * @param newParent Parent DataSet/Operation we're a part of
+	 */
+	public final void setParentData(int index, DataSource newParent) throws MarlaException
+	{
 		// If we're already a part of this parent, ignore request
 		if(parent == newParent)
 			return;
@@ -411,7 +424,7 @@ public abstract class Operation extends DataSource implements Changeable
 		// Assign ourselves to the new guy
 		parent = newParent;
 		if(parent != null)
-			parent.addOperation(this);
+			parent.addOperation(index, this);
 
 		// Fill our questions from the new parent if possible
 		for(OperationInformation q : getRequiredInfoPrompt())
