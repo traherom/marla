@@ -23,6 +23,9 @@ import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.List;
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
@@ -167,6 +170,12 @@ public class MainFrame extends JFrame
 					}
 				}
 
+				viewPanel.initLoading = false;
+				viewPanel.newButton.setEnabled(true);
+				viewPanel.openButton.setEnabled(true);
+				viewPanel.settingsButton.setEnabled(true);
+				progressFrame.setAlwaysOnTop(false);
+
 				// Start updater
 				Domain.setProgressString("98%");
 				Domain.setProgressValue(98);
@@ -178,7 +187,6 @@ public class MainFrame extends JFrame
 				Domain.setProgressValue(100);
 				Domain.setProgressStatus("Complete ...");
 
-				progressFrame.setAlwaysOnTop(false);
 				progressFrame.setVisible(false);
 				setCursor(Cursor.getDefaultCursor());
 			}
@@ -285,13 +293,6 @@ public class MainFrame extends JFrame
         editMenu = new javax.swing.JMenu();
         undoMenuItem = new javax.swing.JMenuItem();
         redoMenuItem = new javax.swing.JMenuItem();
-        editSeparator1 = new javax.swing.JPopupMenu.Separator();
-        cutMenuItem = new javax.swing.JMenuItem();
-        copyMenuItem = new javax.swing.JMenuItem();
-        pasteMenuItem = new javax.swing.JMenuItem();
-        deleteMenuItem = new javax.swing.JMenuItem();
-        editSeparator2 = new javax.swing.JPopupMenu.Separator();
-        selectAllMenuItem = new javax.swing.JMenuItem();
         problemMenu = new javax.swing.JMenu();
         editProblemMenuItem = new javax.swing.JMenuItem();
         editSubProblemsMenuItem = new javax.swing.JMenuItem();
@@ -305,9 +306,6 @@ public class MainFrame extends JFrame
         settingsMenuItem = new javax.swing.JMenuItem();
         helpMenu = new javax.swing.JMenu();
         helpContentsMenuItem = new javax.swing.JMenuItem();
-        helpSeparator1 = new javax.swing.JPopupMenu.Separator();
-        checkForUpdatesMenuItem = new javax.swing.JMenuItem();
-        aboutMenuItem = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         setIconImage(new ImageIcon (getClass ().getResource ("/marla/ide/images/logo.png")).getImage ());
@@ -430,33 +428,6 @@ public class MainFrame extends JFrame
         redoMenuItem.setFont(new java.awt.Font("Verdana", 0, 12));
         redoMenuItem.setText("Redo");
         editMenu.add(redoMenuItem);
-        editMenu.add(editSeparator1);
-
-        cutMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_X, java.awt.event.InputEvent.CTRL_MASK));
-        cutMenuItem.setFont(new java.awt.Font("Verdana", 0, 12));
-        cutMenuItem.setText("Cut");
-        editMenu.add(cutMenuItem);
-
-        copyMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_C, java.awt.event.InputEvent.CTRL_MASK));
-        copyMenuItem.setFont(new java.awt.Font("Verdana", 0, 12));
-        copyMenuItem.setText("Copy");
-        editMenu.add(copyMenuItem);
-
-        pasteMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_V, java.awt.event.InputEvent.CTRL_MASK));
-        pasteMenuItem.setFont(new java.awt.Font("Verdana", 0, 12));
-        pasteMenuItem.setText("Paste");
-        editMenu.add(pasteMenuItem);
-
-        deleteMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_DELETE, 0));
-        deleteMenuItem.setFont(new java.awt.Font("Verdana", 0, 12));
-        deleteMenuItem.setText("Delete");
-        editMenu.add(deleteMenuItem);
-        editMenu.add(editSeparator2);
-
-        selectAllMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_A, java.awt.event.InputEvent.CTRL_MASK));
-        selectAllMenuItem.setFont(new java.awt.Font("Verdana", 0, 12));
-        selectAllMenuItem.setText("Select All");
-        editMenu.add(selectAllMenuItem);
 
         menuBar.add(editMenu);
 
@@ -565,21 +536,15 @@ public class MainFrame extends JFrame
             }
         });
 
-        helpContentsMenuItem.setFont(new java.awt.Font("Verdana", 0, 12));
+        helpContentsMenuItem.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
         helpContentsMenuItem.setText("Help Contents");
         helpContentsMenuItem.setEnabled(false);
+        helpContentsMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                helpContentsMenuItemActionPerformed(evt);
+            }
+        });
         helpMenu.add(helpContentsMenuItem);
-        helpMenu.add(helpSeparator1);
-
-        checkForUpdatesMenuItem.setFont(new java.awt.Font("Verdana", 0, 12));
-        checkForUpdatesMenuItem.setText("Check for Updates");
-        checkForUpdatesMenuItem.setEnabled(false);
-        helpMenu.add(checkForUpdatesMenuItem);
-
-        aboutMenuItem.setFont(new java.awt.Font("Verdana", 0, 12));
-        aboutMenuItem.setText("About");
-        aboutMenuItem.setEnabled(false);
-        helpMenu.add(aboutMenuItem);
 
         menuBar.add(helpMenu);
 
@@ -663,21 +628,11 @@ public class MainFrame extends JFrame
 			{
 				undoMenuItem.setEnabled(true);
 				redoMenuItem.setEnabled(true);
-				cutMenuItem.setEnabled(true);
-				copyMenuItem.setEnabled(true);
-				pasteMenuItem.setEnabled(true);
-				deleteMenuItem.setEnabled(true);
-				selectAllMenuItem.setEnabled(true);
 			}
 			else
 			{
 				undoMenuItem.setEnabled(false);
 				redoMenuItem.setEnabled(false);
-				cutMenuItem.setEnabled(false);
-				copyMenuItem.setEnabled(false);
-				pasteMenuItem.setEnabled(false);
-				deleteMenuItem.setEnabled(false);
-				selectAllMenuItem.setEnabled(false);
 			}
 		}
 	}//GEN-LAST:event_editMenuMenuSelected
@@ -805,6 +760,19 @@ public class MainFrame extends JFrame
 		viewPanel.NEW_PROBLEM_WIZARD_DIALOG.editDataSet(null);
 	}//GEN-LAST:event_editDataSetsMenuItemActionPerformed
 
+	private void helpContentsMenuItemActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_helpContentsMenuItemActionPerformed
+	{//GEN-HEADEREND:event_helpContentsMenuItemActionPerformed
+		if (viewPanel.domain.desktop != null)
+		{
+			try
+			{
+				viewPanel.domain.desktop.browse(new URI("http://code.google.com/p/marla/w/list"));
+			}
+			catch(IOException ex) {}
+			catch(URISyntaxException ex) {}
+		}
+	}//GEN-LAST:event_helpContentsMenuItemActionPerformed
+
 	/**
 	 * Retrieves the default title, which is the program name with it's version number.
 	 *
@@ -820,18 +788,11 @@ public class MainFrame extends JFrame
 		return title;
 	}
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JMenuItem aboutMenuItem;
-    private javax.swing.JMenuItem checkForUpdatesMenuItem;
     private javax.swing.JMenuItem closeProblemMenuItem;
-    private javax.swing.JMenuItem copyMenuItem;
-    private javax.swing.JMenuItem cutMenuItem;
-    private javax.swing.JMenuItem deleteMenuItem;
     private javax.swing.JMenuItem editConclusionMenuItem;
     private javax.swing.JMenuItem editDataSetsMenuItem;
     private javax.swing.JMenu editMenu;
     private javax.swing.JMenuItem editProblemMenuItem;
-    private javax.swing.JPopupMenu.Separator editSeparator1;
-    private javax.swing.JPopupMenu.Separator editSeparator2;
     private javax.swing.JMenuItem editSubProblemsMenuItem;
     private javax.swing.JMenuItem exitMenuItem;
     private javax.swing.JMenuItem exportForLatexMenuItem;
@@ -841,20 +802,17 @@ public class MainFrame extends JFrame
     private javax.swing.JPopupMenu.Separator fileSeparator2;
     private javax.swing.JMenuItem helpContentsMenuItem;
     private javax.swing.JMenu helpMenu;
-    private javax.swing.JPopupMenu.Separator helpSeparator1;
     private javax.swing.JPopupMenu.Separator jSeparator1;
     private javax.swing.JMenuBar menuBar;
     private javax.swing.JMenuItem newDataSetMenuItem;
     private javax.swing.JMenuItem newProblemMenuItem;
     private javax.swing.JMenuItem openProblemMenuItem;
-    private javax.swing.JMenuItem pasteMenuItem;
     private javax.swing.JMenu problemMenu;
     private javax.swing.JPopupMenu.Separator problemSeparator1;
     private javax.swing.JMenuItem redoMenuItem;
     private javax.swing.JMenuItem reloadOperationgsMenuItem;
     private javax.swing.JMenuItem saveAsMenuItem;
     private javax.swing.JMenuItem saveMenuItem;
-    private javax.swing.JMenuItem selectAllMenuItem;
     private javax.swing.JMenuItem settingsMenuItem;
     private javax.swing.JMenu toolsMenu;
     private javax.swing.JMenuItem undoMenuItem;

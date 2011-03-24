@@ -266,11 +266,6 @@ public class ViewPanel extends JPanel
 		((JButton) access.getComponent(1)).setToolTipText("Cancel open");
 		access = (JPanel) ((JPanel) saveChooserDialog.getComponent(3)).getComponent(3);
 		((JButton) access.getComponent(1)).setToolTipText("Cancel save");
-
-		initLoading = false;
-		newButton.setEnabled(true);
-		openButton.setEnabled(true);
-		settingsButton.setEnabled(true);
 	}
 
 	/**
@@ -624,7 +619,7 @@ public class ViewPanel extends JPanel
         jSeparator1.setEnabled(false);
         toolBar.add(jSeparator1);
 
-        fontSizeLabel.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        fontSizeLabel.setFont(new java.awt.Font("Verdana", 0, 12));
         fontSizeLabel.setText("Font Size: ");
         fontSizeLabel.setEnabled(false);
         toolBar.add(fontSizeLabel);
@@ -719,7 +714,7 @@ public class ViewPanel extends JPanel
 
         preWorkspacePanel.setBackground(new java.awt.Color(204, 204, 204));
 
-        preWorkspaceLabel.setFont(new java.awt.Font("Verdana", 1, 14)); // NOI18N
+        preWorkspaceLabel.setFont(new java.awt.Font("Verdana", 1, 14));
         preWorkspaceLabel.setForeground(new java.awt.Color(102, 102, 102));
         preWorkspaceLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         preWorkspaceLabel.setText("<html><div align=\"center\">To get started, load a previous problem or use the<br /><em>New Problem Wizard</em> to create a new problem</div></html>");
@@ -2235,8 +2230,8 @@ public class ViewPanel extends JPanel
     private javax.swing.JPopupMenu.Separator menuSeparator2;
     private javax.swing.JPopupMenu.Separator menuSeparator3;
     private javax.swing.JLabel minusFontButton;
-    private javax.swing.JLabel newButton;
-    private javax.swing.JLabel openButton;
+    protected javax.swing.JLabel newButton;
+    protected javax.swing.JLabel openButton;
     protected javax.swing.JFileChooser openChooserDialog;
     private javax.swing.JPanel paletteCardPanel;
     private javax.swing.JLabel plusFontButton;
@@ -2248,7 +2243,7 @@ public class ViewPanel extends JPanel
     private javax.swing.JPanel rightSidePanel;
     protected javax.swing.JLabel saveButton;
     protected javax.swing.JFileChooser saveChooserDialog;
-    private javax.swing.JLabel settingsButton;
+    protected javax.swing.JLabel settingsButton;
     private javax.swing.JMenuItem solutionMenuItem;
     private javax.swing.JMenu tieSubProblemSubMenu;
     private javax.swing.JToolBar toolBar;

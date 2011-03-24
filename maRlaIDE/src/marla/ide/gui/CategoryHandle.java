@@ -18,7 +18,6 @@
 
 package marla.ide.gui;
 
-import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.Rectangle;
 import java.awt.event.MouseListener;
