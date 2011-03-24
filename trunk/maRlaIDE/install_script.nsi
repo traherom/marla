@@ -54,6 +54,12 @@ Section "Start Menu Shortcuts" StartShortcuts
   CreateDirectory "$SMPROGRAMS\maRla"
   CreateShortCut "$SMPROGRAMS\maRla\Uninstall.lnk" "$INSTDIR\uninstall.exe"
   CreateShortCut "$SMPROGRAMS\maRla\maRla.lnk" "$INSTDIR\maRlaIDE.exe"
+  
+SectionEnd
+
+Section "Desktop Shortcut" DesktopShortcut
+
+  SetOutPath "$INSTDIR"
   CreateShortCut "$DESKTOP\maRla.lnk" "$INSTDIR\maRlaIDE.exe"
   
 SectionEnd
@@ -82,7 +88,7 @@ Section "Include R-2.12" InstallR
 
 SectionEnd
 
-Section "Include MiKTeX" InstallMikTex
+Section "Include MiKTeX" InstallMiKTeX
 
   ; register R's texmf directory with MiKTeK
   Var /GLOBAL R_LOC
@@ -91,20 +97,20 @@ Section "Include MiKTeX" InstallMikTex
 
   Var /GLOBAL texInstaller
 
-  IfFileExists 'T:\TEX\CTAN\basic-miktex.exe' MikTexFromDrive DownloadMikTex
-  DownloadMikTex:
+  IfFileExists 'T:\TEX\CTAN\basic-miktex.exe' MiKTeXFromDrive DownloadMiKTeX
+  DownloadMiKTeX:
     StrCpy $texInstaller "$TEMP\miktex-install.exe"
-	IfFileExists $texInstaller MikTexInstall ContinueMikTexDL
-	ContinueMikTexDL:
+	IfFileExists $texInstaller MiKTeXInstall ContinueMiKTeXDL
+	ContinueMiKTeXDL:
       DetailPrint "Downloading MiKTeX to $texInstaller"
       NSISdl::download "http://ftp.math.purdue.edu/mirrors/ctan.org/systems/win32/miktex/setup/basic-miktex.exe" $texInstaller
-      Goto MikTexInstall
+      Goto MiKTeXInstall
 
-  MikTexFromDrive:
+  MiKTeXFromDrive:
     DetailPrint "Using MiKTeX from T drive"
     StrCpy $texInstaller "T:\TEX\CTAN\basic-miktex.exe"
 
-  MikTexInstall:
+  MiKTeXInstall:
   ExecWait '$texInstaller -private "-user-roots=$R_LOC\share\texmf" "-user-install=$ProgramFiles\miktex" -unattended'
   DetailPrint "MiKTeX installed"
 
@@ -138,16 +144,18 @@ SectionEnd
 
   ;Language strings
   LangString DESC_InstallMarla ${LANG_ENGLISH} "Installs the core maRla framework"
-  LangString DESC_InstallR ${LANG_ENGLISH} "(~37 mb) Only select this if you do not already have R installed. R is the statistical engine needed to run operations."
-  LangString DESC_InstallMikTex ${LANG_ENGLISH} "(~138 mb) Only select this if you do not already have MikTex or an equivalent LaTeX editor installed." 
-  LangString DESC_StartShortcuts ${LANG_ENGLISH} "Installs start menu shortcuts to the user's account."
+  LangString DESC_InstallR ${LANG_ENGLISH} "(~37 mb) R must be installed for maRla to work properly; only uncheck this option if you are certain you already have R installed."
+  LangString DESC_InstallMiKTeX ${LANG_ENGLISH} "(~138 mb) MiKTeX must be installed for maRla to work properly; only uncheck this option if you are certain you already have R installed." 
+  LangString DESC_StartShortcuts ${LANG_ENGLISH} "Install shortcuts to your Start Menu."
+  LangString DESC_DesktopShortcut ${LANG_ENGLISH} "Install shortcut to your Desktop."
 
   ;Assign language strings to sections
   !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
     !insertmacro MUI_DESCRIPTION_TEXT ${InstallMarla} $(DESC_InstallMarla)
 	!insertmacro MUI_DESCRIPTION_TEXT ${InstallR} $(DESC_InstallR)
-	!insertmacro MUI_DESCRIPTION_TEXT ${InstallMikTex} $(DESC_InstallMikTex)
+	!insertmacro MUI_DESCRIPTION_TEXT ${InstallMiKTeX} $(DESC_InstallMiKTeX)
 	!insertmacro MUI_DESCRIPTION_TEXT ${StartShortcuts} $(DESC_StartShortcuts)
+	!insertmacro MUI_DESCRIPTION_TEXT ${DesktopShortcuts} $(DESC_DesktopShortcut)
   !insertmacro MUI_FUNCTION_DESCRIPTION_END
 
 ;--------------------------------
