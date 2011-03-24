@@ -47,21 +47,24 @@
 ;--------------------------------
 ;Installer Sections
 
-
-Section "Start Menu Shortcuts" StartShortcuts
-
-  SetOutPath "$INSTDIR"
-  CreateDirectory "$SMPROGRAMS\maRla"
-  CreateShortCut "$SMPROGRAMS\maRla\Uninstall.lnk" "$INSTDIR\uninstall.exe"
-  CreateShortCut "$SMPROGRAMS\maRla\maRla.lnk" "$INSTDIR\maRlaIDE.exe"
-  
-SectionEnd
-
-Section "Desktop Shortcut" DesktopShortcut
+Section "Install maRla" InstallMarla
 
   SetOutPath "$INSTDIR"
-  CreateShortCut "$DESKTOP\maRla.lnk" "$INSTDIR\maRlaIDE.exe"
+  File maRlaIDE.jar
+  File ops.xml
+  File export_template.xml
+  File maRlaIDE.exe
   
+  ;Store installation folder
+  WriteRegStr HKCU "Software\maRla" "" $INSTDIR
+
+  ;Configure maRla
+  DetailPrint "Configuring maRla"
+  ExecWait 'java -classpath "$INSTDIR\maRlaIDE.jar" marla.ide.resource.Configuration "--PrimaryOpsXML=$INSTDIR\ops.xml" "--TexTemplate=$INSTDIR\export_template.xml"'
+
+  ;Create uninstaller
+  WriteUninstaller "$INSTDIR\Uninstall.exe"
+
 SectionEnd
 
 Section "Include R-2.12" InstallR
@@ -119,24 +122,20 @@ Section "Include MiKTeX" InstallMiKTeX
 
 SectionEnd
 
-Section "Install maRla" InstallMarla
+Section "Start Menu Shortcuts" StartShortcuts
 
   SetOutPath "$INSTDIR"
-  File maRlaIDE.jar
-  File ops.xml
-  File export_template.xml
-  File maRlaIDE.exe
+  CreateDirectory "$SMPROGRAMS\maRla"
+  CreateShortCut "$SMPROGRAMS\maRla\Uninstall.lnk" "$INSTDIR\uninstall.exe"
+  CreateShortCut "$SMPROGRAMS\maRla\maRla.lnk" "$INSTDIR\maRlaIDE.exe"
   
-  ;Store installation folder
-  WriteRegStr HKCU "Software\maRla" "" $INSTDIR
+SectionEnd
 
-  ;Configure maRla
-  DetailPrint "Configuring maRla"
-  ExecWait 'java -classpath "$INSTDIR\maRlaIDE.jar" marla.ide.resource.Configuration "--PrimaryOpsXML=$INSTDIR\ops.xml" "--TexTemplate=$INSTDIR\export_template.xml"'
+Section "Desktop Shortcut" DesktopShortcut
 
-  ;Create uninstaller
-  WriteUninstaller "$INSTDIR\Uninstall.exe"
-
+  SetOutPath "$INSTDIR"
+  CreateShortCut "$DESKTOP\maRla.lnk" "$INSTDIR\maRlaIDE.exe"
+  
 SectionEnd
 
 ;--------------------------------

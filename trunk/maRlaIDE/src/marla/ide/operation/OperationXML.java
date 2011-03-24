@@ -96,11 +96,19 @@ public class OperationXML extends Operation
 	 * @param newPath Path to main XML operation file
 	 * @return Previously set path
 	 */
-	public static String setPrimaryXMLPath(String newPath)
+	public static String setPrimaryXMLPath(String newPath) throws ConfigurationException
 	{
-		String old = primaryOpsPath;
-		primaryOpsPath = newPath;
-		return old;
+		try
+		{
+			String old = primaryOpsPath;
+			primaryOpsPath = newPath;
+			loadXML();
+			return old;
+		}
+		catch(OperationXMLException ex)
+		{
+			throw new ConfigurationException("Primary operation XML file '" + newPath + "' appears to have errors", ConfigType.PrimaryOpsXML, ex);
+		}
 	}
 
 	/**
@@ -118,11 +126,19 @@ public class OperationXML extends Operation
 	 * @param newPaths Path(s) to user-created XML operation files
 	 * @return Previously set user paths
 	 */
-	public static List<String> setUserXMLPaths(List<String> newPaths)
+	public static List<String> setUserXMLPaths(List<String> newPaths) throws ConfigurationException
 	{
-		List<String> old = additionalOpsPaths;
-		additionalOpsPaths = newPaths;
-		return old;
+		try
+		{
+			List<String> old = additionalOpsPaths;
+			additionalOpsPaths = newPaths;
+			loadXML();
+			return old;
+		}
+		catch(OperationXMLException ex)
+		{
+			throw new ConfigurationException("User operation XML file(s) appears to have errors", ConfigType.UserOpsXML, ex);
+		}
 	}
 
 	/**
