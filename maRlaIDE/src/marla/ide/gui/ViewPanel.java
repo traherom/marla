@@ -565,7 +565,7 @@ public class ViewPanel extends JPanel
         toolBar.setRollover(true);
         toolBar.setPreferredSize(new java.awt.Dimension(13, 35));
 
-        newButton.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        newButton.setFont(new java.awt.Font("Verdana", 0, 12));
         newButton.setToolTipText("New Problem");
         newButton.setEnabled(false);
         newButton.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -584,7 +584,7 @@ public class ViewPanel extends JPanel
         });
         toolBar.add(newButton);
 
-        openButton.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        openButton.setFont(new java.awt.Font("Verdana", 0, 12));
         openButton.setToolTipText("Open Problem");
         openButton.setEnabled(false);
         openButton.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -603,7 +603,7 @@ public class ViewPanel extends JPanel
         });
         toolBar.add(openButton);
 
-        saveButton.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        saveButton.setFont(new java.awt.Font("Verdana", 0, 12));
         saveButton.setToolTipText("Save Problem");
         saveButton.setEnabled(false);
         saveButton.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -625,12 +625,12 @@ public class ViewPanel extends JPanel
         jSeparator1.setEnabled(false);
         toolBar.add(jSeparator1);
 
-        fontSizeLabel.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        fontSizeLabel.setFont(new java.awt.Font("Verdana", 0, 12));
         fontSizeLabel.setText("Font Size:");
         fontSizeLabel.setEnabled(false);
         toolBar.add(fontSizeLabel);
 
-        plusFontButton.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        plusFontButton.setFont(new java.awt.Font("Verdana", 0, 12));
         plusFontButton.setToolTipText("Increase font size");
         plusFontButton.setEnabled(false);
         plusFontButton.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -649,7 +649,7 @@ public class ViewPanel extends JPanel
         });
         toolBar.add(plusFontButton);
 
-        minusFontButton.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        minusFontButton.setFont(new java.awt.Font("Verdana", 0, 12));
         minusFontButton.setToolTipText("Decrease font size");
         minusFontButton.setEnabled(false);
         minusFontButton.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -672,7 +672,7 @@ public class ViewPanel extends JPanel
         toolBar.add(jSeparator3);
         toolBar.add(jLabel2);
 
-        abbreviateButton.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        abbreviateButton.setFont(new java.awt.Font("Verdana", 0, 12));
         abbreviateButton.setText("Abbreviate");
         abbreviateButton.setToolTipText("Show abbreviated operation and column names");
         abbreviateButton.setEnabled(false);
@@ -695,7 +695,7 @@ public class ViewPanel extends JPanel
         jSeparator2.setEnabled(false);
         toolBar.add(jSeparator2);
 
-        settingsButton.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        settingsButton.setFont(new java.awt.Font("Verdana", 0, 12));
         settingsButton.setToolTipText("Settings");
         settingsButton.setEnabled(false);
         settingsButton.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -771,7 +771,7 @@ public class ViewPanel extends JPanel
         });
         workspacePanel.setLayout(null);
 
-        trashCan.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/trash_button.png"))); // NOI18N
+        trashCan.setIcon(new javax.swing.ImageIcon(getClass().getResource("/marla/ide/images/trash_button.png"))); // NOI18N
         trashCan.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseExited(java.awt.event.MouseEvent evt) {
                 trashCanMouseExited(evt);
