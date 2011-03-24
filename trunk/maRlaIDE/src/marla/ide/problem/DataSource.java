@@ -192,7 +192,7 @@ public abstract class DataSource extends JLabel implements Loadable
 	public final Operation addOperation(int index, Operation op) throws MarlaException
 	{
 		// Tell the operation to set us as the parent
-		op.setParentData(this);
+		op.setParentData(index, this);
 
 		if(!solutionOps.contains(op))
 		{
