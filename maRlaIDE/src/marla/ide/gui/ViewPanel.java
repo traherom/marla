@@ -399,7 +399,7 @@ public class ViewPanel extends JPanel
 		compConstraints.weighty = 1;
 		componentsScrollablePanel.add(new JLabel (""), compConstraints);
 
-		componentsScrollablePanel.invalidate();
+		componentsScrollablePanel.updateUI();
 	}
 
 	/** This method is called from within the constructor to
