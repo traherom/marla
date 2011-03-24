@@ -20,6 +20,7 @@ package marla.opedit.gui;
 
 import java.io.File;
 import java.util.ArrayList;
+import marla.opedit.operation.OperationFile;
 import marla.opedit.resource.LoadSaveThread;
 
 /**
@@ -50,7 +51,7 @@ public class Domain
     /** The reference to the view of the application.*/
     private ViewPanel viewPanel;
 	/** The currently open operation XML file.*/
-	public File operationFile = null;
+	public OperationFile operationFile = null;
 	/** True if the operation XML file has been changed, false otherwise.*/
 	public boolean isChanged = false;
 
@@ -238,7 +239,7 @@ public class Domain
 	 *
 	 * @return The open operation XML file.
 	 */
-	public File getOperationFile()
+	public OperationFile getOperationFile()
 	{
 		return operationFile;
 	}
