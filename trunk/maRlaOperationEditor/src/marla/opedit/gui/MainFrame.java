@@ -21,6 +21,7 @@ package marla.opedit.gui;
 import java.awt.Dimension;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 
 /**
@@ -108,10 +109,11 @@ public class MainFrame extends JFrame
         aboutMenuItem = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setIconImage(new ImageIcon (getClass ().getResource ("/marla/ide/images/logo.png")).getImage ());
         getContentPane().setLayout(new java.awt.GridLayout(1, 1));
 
         fileMenu.setText("File");
-        fileMenu.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        fileMenu.setFont(new java.awt.Font("Verdana", 0, 12));
         fileMenu.addMenuListener(new javax.swing.event.MenuListener() {
             public void menuCanceled(javax.swing.event.MenuEvent evt) {
             }
@@ -143,7 +145,7 @@ public class MainFrame extends JFrame
         fileMenu.add(openOperationMenuItem);
 
         closeOperationMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_W, java.awt.event.InputEvent.CTRL_MASK));
-        closeOperationMenuItem.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        closeOperationMenuItem.setFont(new java.awt.Font("Verdana", 0, 12));
         closeOperationMenuItem.setText("Close Operation XML");
         closeOperationMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -153,7 +155,7 @@ public class MainFrame extends JFrame
         fileMenu.add(closeOperationMenuItem);
 
         saveMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_S, java.awt.event.InputEvent.CTRL_MASK));
-        saveMenuItem.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        saveMenuItem.setFont(new java.awt.Font("Verdana", 0, 12));
         saveMenuItem.setText("Save");
         saveMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -163,7 +165,7 @@ public class MainFrame extends JFrame
         fileMenu.add(saveMenuItem);
 
         saveAsMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F12, 0));
-        saveAsMenuItem.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        saveAsMenuItem.setFont(new java.awt.Font("Verdana", 0, 12));
         saveAsMenuItem.setText("Save As...");
         saveAsMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -186,7 +188,7 @@ public class MainFrame extends JFrame
         menuBar.add(fileMenu);
 
         helpMenu.setText("Help");
-        helpMenu.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        helpMenu.setFont(new java.awt.Font("Verdana", 0, 12));
         helpMenu.addMenuListener(new javax.swing.event.MenuListener() {
             public void menuCanceled(javax.swing.event.MenuEvent evt) {
             }
@@ -197,18 +199,18 @@ public class MainFrame extends JFrame
             }
         });
 
-        helpContentsMenuItem.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        helpContentsMenuItem.setFont(new java.awt.Font("Verdana", 0, 12));
         helpContentsMenuItem.setText("Help Contents");
         helpContentsMenuItem.setEnabled(false);
         helpMenu.add(helpContentsMenuItem);
         helpMenu.add(helpSeparator1);
 
-        checkForUpdatesMenuItem.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        checkForUpdatesMenuItem.setFont(new java.awt.Font("Verdana", 0, 12));
         checkForUpdatesMenuItem.setText("Check for Updates");
         checkForUpdatesMenuItem.setEnabled(false);
         helpMenu.add(checkForUpdatesMenuItem);
 
-        aboutMenuItem.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        aboutMenuItem.setFont(new java.awt.Font("Verdana", 0, 12));
         aboutMenuItem.setText("About");
         aboutMenuItem.setEnabled(false);
         helpMenu.add(aboutMenuItem);
