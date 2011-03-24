@@ -921,7 +921,7 @@ public abstract class Operation extends DataSource implements Changeable
 	@Override
 	public boolean equals(Object other)
 	{		
-		// Ourselves?islo
+		// Ourselves?
 		if(other == this)
 			return true;
 
@@ -939,10 +939,10 @@ public abstract class Operation extends DataSource implements Changeable
 		if(this.getClass() != otherOp.getClass())
 			return false;
 
-		// Two operations of the same type and same parent must be
-		// _different_. This allows multiple operations of the same
-		// type to fall under the  the same parent
-		if(parent == otherOp.parent)
+		// Two operations of the same type and same parent must be _different_
+		// This allows multiple operations of the same type to fall under the
+		// the same parent and avoids detchment problems
+		if(parent == otherOp.parent || (parent == null && otherOp.parent != null) || (parent != null && otherOp.parent == null))
 			return false;
 
 		// Remarks different

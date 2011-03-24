@@ -868,7 +868,7 @@ public class Configuration
 
 	private static boolean findAndSetOpsXML()
 	{
-		List<String> possibilities = findFile("ops\\.xml", "config|xml|test", null);
+		List<String> possibilities = findFile("ops\\.xml", "config|xml|test|etc|ma[rR]la|Program Files.*", null);
 
 		// Test each possibility until one loads
 		for(String path : possibilities)
@@ -900,7 +900,7 @@ public class Configuration
 
 	private static boolean findAndSetLatexTemplate()
 	{
-		List<String> possibilities = findFile("export_template\\.xml", "config|xml|test", null);
+		List<String> possibilities = findFile("export_template\\.xml", "config|xml|test|etc|ma[rR]la|Program Files.*", null);
 
 		// Test each possibility until one loads
 		for(String path : possibilities)
