@@ -17,11 +17,12 @@
  */
 package latex;
 
-import problem.MarlaException;
-import resource.Configuration;
+import marla.ide.latex.LatexExporter;
+import marla.ide.problem.MarlaException;
+import marla.ide.resource.Configuration;
 import java.io.File;
 import problem.ProblemTest;
-import problem.Problem;
+import marla.ide.problem.Problem;
 import org.junit.*;
 import static org.junit.Assert.*;
 

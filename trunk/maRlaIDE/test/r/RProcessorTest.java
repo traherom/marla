@@ -17,11 +17,14 @@
  */
 package r;
 
-import resource.Configuration;
+import marla.ide.r.RProcessorDeadException;
+import marla.ide.r.RProcessor;
+import marla.ide.r.RProcessorParseException;
+import marla.ide.resource.Configuration;
 import java.util.List;
 import java.io.File;
-import problem.DataColumn.DataMode;
-import problem.DataColumn;
+import marla.ide.problem.DataColumn.DataMode;
+import marla.ide.problem.DataColumn;
 import problem.DataColumnTest;
 import java.util.ArrayList;
 import org.junit.*;

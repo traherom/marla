@@ -17,16 +17,20 @@
  */
 package operation;
 
-import resource.Configuration;
+import marla.ide.operation.Operation;
+import marla.ide.operation.OperationTester;
+import marla.ide.operation.OperationInfoRequiredException;
+import marla.ide.operation.OperationException;
+import marla.ide.resource.Configuration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import org.jdom.Element;
 import org.junit.*;
-import problem.DataSet;
+import marla.ide.problem.DataSet;
 import problem.DataSetTest;
-import problem.MarlaException;
-import r.RProcessor;
+import marla.ide.problem.MarlaException;
+import marla.ide.r.RProcessor;
 import static org.junit.Assert.*;
 
 /**

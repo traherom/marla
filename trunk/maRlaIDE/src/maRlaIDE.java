@@ -19,9 +19,9 @@
 // Intentionlly in the default package. This makes the title
 // appear correctly(ish) on OS X
 
-import gui.Domain;
-import gui.MainFrame;
-import gui.ProgressFrame;
+import marla.ide.gui.Domain;
+import marla.ide.gui.MainFrame;
+import marla.ide.gui.ProgressFrame;
 import java.awt.Color;
 import java.awt.EventQueue;
 import java.awt.Font;
@@ -32,7 +32,7 @@ import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
-import resource.BuildInfo;
+import marla.ide.resource.BuildInfo;
 
 /**
  * The launcher for maRla IDE.

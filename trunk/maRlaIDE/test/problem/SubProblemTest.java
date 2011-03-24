@@ -17,7 +17,10 @@
  */
 package problem;
 
-import resource.Configuration;
+import marla.ide.problem.SubProblem;
+import marla.ide.problem.Problem;
+import marla.ide.problem.DataSet;
+import marla.ide.resource.Configuration;
 import org.jdom.Element;
 import org.junit.*;
 import static org.junit.Assert.*;

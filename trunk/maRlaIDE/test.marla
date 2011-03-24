@@ -2,7 +2,7 @@
 <problem person="Ryan Morehart" course_long="Software Engineering II" course_short="CS4820" chapter="2" section="3" probnum="4">
   <statement>Problem description</statement>
   <conclusion>50% isn't bad.</conclusion>
-  <data name="Data Set 1" id="-1421489198" x="256" y="124" height="16" width="70">
+  <data name="Data Set 1" id="-1421489198" x="172" y="34" height="16" width="53">
     <column name="Column 1" mode="NUMERIC">
       <value>2.0</value>
       <value>213.0</value>
@@ -36,9 +36,9 @@
       <value>0.0</value>
       <value>0.0</value>
     </column>
-    <operation type="operation.OperationXML" name="sin()" id="1648532359" x="121" y="154" height="16" width="95">
+    <operation type="operation.OperationXML" name="sin()" id="1648532359" x="50" y="64" height="16" width="75">
       <remark>And a remark for sin</remark>
-      <operation type="operation.OperationXML" name="Barplot" id="1240439882" x="107" y="184" height="16" width="123">
+      <operation type="operation.OperationXML" name="Barplot" id="1240439882" x="36" y="94" height="16" width="103">
         <remark />
         <question name="col" answer="Column 1" />
         <extra name="Barplot" />
@@ -46,11 +46,11 @@
       <question name="col" answer="Column 1" />
       <extra name="sin()" />
     </operation>
-    <operation type="operation.OperationXML" name="cos()" id="-1749331733" x="251" y="154" height="16" width="98">
+    <operation type="operation.OperationXML" name="cos()" id="-1749331733" x="168" y="64" height="16" width="78">
       <remark>Nice long removk for cos()</remark>
-      <operation type="operation.OperationXML" name="Histogram" id="-1586253957" x="250" y="184" height="16" width="100">
+      <operation type="operation.OperationXML" name="Histogram" id="-1586253957" x="167" y="94" height="16" width="80">
         <remark />
-        <operation type="operation.OperationXML" name="Repeat" id="1622297566" x="252" y="214" height="16" width="97">
+        <operation type="operation.OperationXML" name="Repeat" id="1622297566" x="159" y="124" height="16" width="97">
           <remark />
           <question name="val" answer="3.0" />
           <question name="count" answer="50.0" />
@@ -63,31 +63,314 @@
       <question name="col" answer="Column 1" />
       <extra name="cos()" />
     </operation>
-    <operation type="operation.OperationXML" name="atan()" id="485666988" x="370" y="154" height="16" width="105">
+    <operation type="operation.OperationXML" name="atan()" id="485666988" x="276" y="64" height="16" width="85">
       <remark />
       <question name="col" answer="Column 1" />
       <extra name="atan()" />
     </operation>
   </data>
+  <data name="Data Set 2" id="1608357360" x="537" y="161" height="16" width="53">
+    <column name="Column 1" mode="NUMERIC">
+      <value>0.0</value>
+      <value>1.0</value>
+      <value>2.0</value>
+      <value>3.0</value>
+      <value>4.0</value>
+      <value>5.0</value>
+      <value>6.0</value>
+      <value>7.0</value>
+      <value>8.0</value>
+      <value>9.0</value>
+      <value>10.0</value>
+      <value>11.0</value>
+      <value>12.0</value>
+      <value>13.0</value>
+      <value>14.0</value>
+      <value>15.0</value>
+      <value>16.0</value>
+      <value>17.0</value>
+      <value>18.0</value>
+      <value>19.0</value>
+      <value>20.0</value>
+      <value>21.0</value>
+      <value>22.0</value>
+      <value>23.0</value>
+      <value>24.0</value>
+      <value>25.0</value>
+      <value>26.0</value>
+      <value>27.0</value>
+      <value>28.0</value>
+      <value>29.0</value>
+      <value>30.0</value>
+      <value>31.0</value>
+      <value>32.0</value>
+      <value>33.0</value>
+      <value>34.0</value>
+      <value>35.0</value>
+      <value>36.0</value>
+      <value>37.0</value>
+      <value>38.0</value>
+      <value>39.0</value>
+      <value>40.0</value>
+      <value>41.0</value>
+      <value>42.0</value>
+      <value>43.0</value>
+      <value>44.0</value>
+      <value>45.0</value>
+      <value>46.0</value>
+      <value>47.0</value>
+      <value>48.0</value>
+      <value>49.0</value>
+    </column>
+    <column name="Column 2" mode="NUMERIC">
+      <value>0.0</value>
+      <value>1.0</value>
+      <value>2.0</value>
+      <value>3.0</value>
+      <value>4.0</value>
+      <value>5.0</value>
+      <value>6.0</value>
+      <value>7.0</value>
+      <value>8.0</value>
+      <value>9.0</value>
+      <value>10.0</value>
+      <value>11.0</value>
+      <value>12.0</value>
+      <value>13.0</value>
+      <value>14.0</value>
+      <value>15.0</value>
+      <value>16.0</value>
+      <value>17.0</value>
+      <value>18.0</value>
+      <value>19.0</value>
+      <value>20.0</value>
+      <value>21.0</value>
+      <value>22.0</value>
+      <value>23.0</value>
+      <value>24.0</value>
+      <value>25.0</value>
+      <value>26.0</value>
+      <value>27.0</value>
+      <value>28.0</value>
+      <value>29.0</value>
+      <value>30.0</value>
+      <value>31.0</value>
+      <value>32.0</value>
+      <value>33.0</value>
+      <value>34.0</value>
+      <value>35.0</value>
+      <value>36.0</value>
+      <value>37.0</value>
+      <value>38.0</value>
+      <value>39.0</value>
+      <value>40.0</value>
+      <value>41.0</value>
+      <value>42.0</value>
+      <value>43.0</value>
+      <value>44.0</value>
+      <value>45.0</value>
+      <value>46.0</value>
+      <value>47.0</value>
+      <value>48.0</value>
+      <value>49.0</value>
+    </column>
+    <column name="Column 3" mode="NUMERIC">
+      <value>0.0</value>
+      <value>1.0</value>
+      <value>2.0</value>
+      <value>3.0</value>
+      <value>4.0</value>
+      <value>5.0</value>
+      <value>6.0</value>
+      <value>7.0</value>
+      <value>8.0</value>
+      <value>9.0</value>
+      <value>10.0</value>
+      <value>11.0</value>
+      <value>12.0</value>
+      <value>13.0</value>
+      <value>14.0</value>
+      <value>15.0</value>
+      <value>16.0</value>
+      <value>17.0</value>
+      <value>18.0</value>
+      <value>19.0</value>
+      <value>20.0</value>
+      <value>21.0</value>
+      <value>22.0</value>
+      <value>23.0</value>
+      <value>24.0</value>
+      <value>25.0</value>
+      <value>26.0</value>
+      <value>27.0</value>
+      <value>28.0</value>
+      <value>29.0</value>
+      <value>30.0</value>
+      <value>31.0</value>
+      <value>32.0</value>
+      <value>33.0</value>
+      <value>34.0</value>
+      <value>35.0</value>
+      <value>36.0</value>
+      <value>37.0</value>
+      <value>38.0</value>
+      <value>39.0</value>
+      <value>40.0</value>
+      <value>41.0</value>
+      <value>42.0</value>
+      <value>43.0</value>
+      <value>44.0</value>
+      <value>45.0</value>
+      <value>46.0</value>
+      <value>47.0</value>
+      <value>48.0</value>
+      <value>49.0</value>
+    </column>
+    <column name="Column 4" mode="NUMERIC">
+      <value>0.0</value>
+      <value>1.0</value>
+      <value>2.0</value>
+      <value>3.0</value>
+      <value>4.0</value>
+      <value>5.0</value>
+      <value>6.0</value>
+      <value>7.0</value>
+      <value>8.0</value>
+      <value>9.0</value>
+      <value>10.0</value>
+      <value>11.0</value>
+      <value>12.0</value>
+      <value>13.0</value>
+      <value>14.0</value>
+      <value>15.0</value>
+      <value>16.0</value>
+      <value>17.0</value>
+      <value>18.0</value>
+      <value>19.0</value>
+      <value>20.0</value>
+      <value>21.0</value>
+      <value>22.0</value>
+      <value>23.0</value>
+      <value>24.0</value>
+      <value>25.0</value>
+      <value>26.0</value>
+      <value>27.0</value>
+      <value>28.0</value>
+      <value>29.0</value>
+      <value>30.0</value>
+      <value>31.0</value>
+      <value>32.0</value>
+      <value>33.0</value>
+      <value>34.0</value>
+      <value>35.0</value>
+      <value>36.0</value>
+      <value>37.0</value>
+      <value>38.0</value>
+      <value>39.0</value>
+      <value>40.0</value>
+      <value>41.0</value>
+      <value>42.0</value>
+      <value>43.0</value>
+      <value>44.0</value>
+      <value>45.0</value>
+      <value>46.0</value>
+      <value>47.0</value>
+      <value>48.0</value>
+      <value>49.0</value>
+    </column>
+    <column name="Column 5" mode="NUMERIC">
+      <value>0.0</value>
+      <value>1.0</value>
+      <value>2.0</value>
+      <value>3.0</value>
+      <value>4.0</value>
+      <value>5.0</value>
+      <value>6.0</value>
+      <value>7.0</value>
+      <value>8.0</value>
+      <value>9.0</value>
+      <value>10.0</value>
+      <value>11.0</value>
+      <value>12.0</value>
+      <value>13.0</value>
+      <value>14.0</value>
+      <value>15.0</value>
+      <value>16.0</value>
+      <value>17.0</value>
+      <value>18.0</value>
+      <value>19.0</value>
+      <value>20.0</value>
+      <value>21.0</value>
+      <value>22.0</value>
+      <value>23.0</value>
+      <value>24.0</value>
+      <value>25.0</value>
+      <value>26.0</value>
+      <value>27.0</value>
+      <value>28.0</value>
+      <value>29.0</value>
+      <value>30.0</value>
+      <value>31.0</value>
+      <value>32.0</value>
+      <value>33.0</value>
+      <value>34.0</value>
+      <value>35.0</value>
+      <value>36.0</value>
+      <value>37.0</value>
+      <value>38.0</value>
+      <value>39.0</value>
+      <value>40.0</value>
+      <value>41.0</value>
+      <value>42.0</value>
+      <value>43.0</value>
+      <value>44.0</value>
+      <value>45.0</value>
+      <value>46.0</value>
+      <value>47.0</value>
+      <value>48.0</value>
+      <value>49.0</value>
+    </column>
+    <operation type="operation.OperationXML" name="Subtract" id="1462626958" x="464" y="191" height="16" width="70">
+      <remark />
+      <question name="val" />
+      <question name="col" />
+      <extra name="Subtract" />
+    </operation>
+    <operation type="operation.OperationXML" name="1-Var variance" id="1875170332" x="554" y="191" height="16" width="44">
+      <remark />
+      <question name="col" />
+      <extra name="1-Var variance" />
+    </operation>
+    <operation type="operation.OperationXML" name="Absolute Value" id="-1007594316" x="618" y="191" height="16" width="45">
+      <remark />
+      <operation type="operation.OperationXML" name="Exponential" id="1969871291" x="633" y="221" height="21" width="15">
+        <remark />
+        <question name="col" />
+        <extra name="Exponential" />
+      </operation>
+      <question name="col" />
+      <extra name="Absolute Value" />
+    </operation>
+  </data>
   <part id="a." color="-721152">
-    <step id="1240439882" />
     <step id="-1749331733" />
     <step id="-1586253957" />
     <step id="1622297566" />
+    <step id="1240439882" />
     <statement>Part A!</statement>
     <conclusion>A was great</conclusion>
   </part>
   <part id="b." color="-13352999">
-    <step id="1622297566" />
     <step id="1240439882" />
+    <step id="1622297566" />
     <statement>Part B :(</statement>
     <conclusion>Sad Day</conclusion>
   </part>
   <part id="c." color="-3206776">
-    <step id="1240439882" />
     <step id="-1749331733" />
     <step id="-1586253957" />
     <step id="1622297566" />
+    <step id="1240439882" />
     <statement />
     <conclusion />
   </part>
@@ -96,11 +379,11 @@
     <conclusion />
   </part>
   <part id="e." color="-6225507">
+    <step id="1648532359" />
+    <step id="1240439882" />
     <step id="-1749331733" />
     <step id="-1586253957" />
     <step id="1622297566" />
-    <step id="1648532359" />
-    <step id="1240439882" />
     <statement />
     <conclusion />
   </part>
