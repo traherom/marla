@@ -76,11 +76,16 @@ Section "Include MiKTeX" InstallMikTex
   Var /GLOBAL R_LOC
   ReadRegStr $R_LOC HKLM Software\R-Core\R InstallPath
   DetailPrint "R is installed at: $R_LOC"
-  
+
+  DetailPrint "Downloading MiKTeX"
   NSISdl::download http://mirrors.ibiblio.org/pub/mirrors/CTAN/systems/win32/miktex/setup/basic-miktex.exe $TEMP\miktex-install.exe
+  DetailPrint "Installing MiKTeX"
   ExecWait '$TEMP\miktex-install.exe -private "-user-roots=$R_LOC\share\texmf" "-user-install=$ProgramFiles\miktex" -unattended'
   ;ExecWait 'H:\Docs\Downloads\basic-miktex-2.9.3972.exe -private "-user-roots=$R_LOC\share\texmf" "-user-install=$ProgramFiles\miktex" -unattended'
-  
+
+  DetailPrint "Configuring MiKTeX"
+  ExecWait 'H:\Docs\Downloads\basic-miktex-2.9.3972.exe -private "-user-roots=$R_LOC\share\texmf" "-user-install=$ProgramFiles\miktex" -unattended'
+
   DetailPrint "MiKTeX installed"
 
 SectionEnd

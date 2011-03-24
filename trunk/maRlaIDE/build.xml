@@ -113,7 +113,7 @@
 		classname="net.sf.launch4j.ant.Launch4jTask"
 		classpath="${launch4j.dir}/launch4j.jar:${launch4j.dir}/lib/xstream.jar" />
 
-    <target name="package-for-store" depends="jar">
+    <target name="package-for-store" depends="clean,jar">
         <!-- Change the value of this property to be the name of your JAR,
              minus the .jar extension. It should not have spaces.
              <property name="store.jar.name" value="MyJarName"/>
@@ -172,9 +172,6 @@
 		</copy>
 
 		<!-- What should the files start with? -->
-		<svn>
-			<status path="${basedir}\src\resource\BuildInfo.java" revisionProperty="svn.revision" />
-		</svn>
 		<property name="setup.base" value="${store.dir}/maRla-r${svn.revision}" />
 
 		<!-- Generate various packages -->
