@@ -17,11 +17,19 @@
  */
 package marla.opedit.operation;
 
+import java.io.BufferedWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.util.ArrayList;
+import java.util.List;
+import marla.opedit.gui.Domain;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
+import org.jdom.output.Format;
+import org.jdom.output.XMLOutputter;
 
 /**
  * @author Ryan Morehart
@@ -31,11 +39,11 @@ public class OperationFile
 	/**
 	 * Location to save operation XML to
 	 */
-	private String xmlPath = null;
+	private final String xmlPath;
 	/**
-	 * Storage location for parsed operation XML file
+	 * Operations in this file
 	 */
-	private static Element operationXML = null;
+	private final List<OperationXMLEditable> ops = new ArrayList<OperationXMLEditable>();
 
 	/**
 	 * 
@@ -63,17 +71,158 @@ public class OperationFile
 
 			SAXBuilder parser = new SAXBuilder();
 			Document doc = parser.build(xmlPath);
+			Element operationXML = doc.getRootElement();
 
-			// Just save it or bring it into the combined doc?
-			operationXML = doc.getRootElement();
+			// Pull each separate operation out
+			ops.clear();
+			for(Object opObj : operationXML.getChildren("operation"))
+			{
+				Element opEl = (Element)opObj;
+
+				OperationXMLEditable op = new OperationXMLEditable();
+				ops.add(op);
+
+				try
+				{
+					op.setConfiguration(opEl);
+				}
+				catch(OperationEditorException ex)
+				{
+					// Ignore
+				}
+			}
 		}
 		catch(JDOMException ex)
 		{
-			throw new OperationEditorException("Operation XML file '" +xmlPath + "' contains XML error(s)", ex);
+			throw new OperationEditorException("Operation XML file '" +xmlPath + "' is invalid XML. Edit it manually before loading.", ex);
 		}
 		catch(IOException ex)
 		{
 			throw new OperationEditorException("Unable to read the operation XML file '" + xmlPath + "'", ex);
+		}
+	}
+
+	/**
+	 * Gets the names in the current operations in this file
+	 * @return List of the op names in the current file
+	 */
+	public List<String> getOperationNames()
+	{
+		List<String> names = new ArrayList<String>(ops.size());
+		for(OperationXMLEditable op : ops)
+			names.add(op.getName());
+		return names;
+	}
+
+	/**
+	 * Adds a new operation to this file with the given name
+	 * @param operationName Name of the new operation
+	 * @return Newly added operation
+	 */
+	public OperationXMLEditable addOperation(String operationName) throws OperationEditorException
+	{
+		// Ensure it's a unique name
+		if(getOperationNames().contains(operationName))
+			throw new OperationEditorException("Duplicate operation name '" + operationName + "' not allowed");
+
+		OperationXMLEditable newOp = new OperationXMLEditable();
+		ops.add(newOp);
+		
+		// Create XML for basic operation
+		Element newOpEl = new Element("operation");
+		newOpEl.setAttribute("name", operationName);
+		newOpEl.addContent(new Element("displayname"));
+		newOpEl.addContent(new Element("computation"));
+
+		try
+		{
+			newOp.setConfiguration(newOpEl);
+		}
+		catch(OperationEditorException ex)
+		{
+			// This shouldn't happen, means our template is messed up
+			Domain.logger.add(ex);
+		}
+
+		return newOp;
+	}
+
+	/**
+	 * Removes the given operation via name
+	 * @param name Name of the operation to remove
+	 * @return Removed operation
+	 */
+	public OperationXMLEditable removeOperation(String name)
+	{
+		return removeOperation(getOperation(name));
+	}
+
+	/**
+	 * Removes the given operation
+	 * @param op Operation to remove from file
+	 * @return Removed operation
+	 */
+	public OperationXMLEditable removeOperation(OperationXMLEditable op)
+	{
+		ops.remove(op);
+		return op;
+	}
+
+	/**
+	 * Returns the operation with the given name
+	 * @param name Operation name to search for
+	 * @return Operation to find, null if it doesn't exist
+	 */
+	public OperationXMLEditable getOperation(String name)
+	{
+		for(OperationXMLEditable op : ops)
+		{
+			if(op.getName().equals(name))
+				return op;
+		}
+
+		return null;
+	}
+
+	/**
+	 * Returns a unique name for a new operation
+	 * @return Name for operation
+	 */
+	public String getUniqueName()
+	{
+		List<String> names = getOperationNames();
+		String newName = "New Operation ";
+		int i = 1;
+		while(names.contains(newName + i))
+			i++;
+
+		return newName + i;
+	}
+
+	/**
+	 * Saves the file to disk
+	 */
+	public void save() throws OperationEditorException
+	{
+		Element rootEl = new Element("operations");
+		for(OperationXMLEditable op : ops)
+			rootEl.addContent(op.getConfiguration());
+
+		try
+		{
+			// Output to file
+			OutputStreamWriter os = new OutputStreamWriter(new FileOutputStream(xmlPath));
+			BufferedWriter outputStream = new BufferedWriter(os);
+
+			Document doc = new Document(rootEl);
+			Format formatter = Format.getPrettyFormat();
+			formatter.setEncoding(os.getEncoding());
+			XMLOutputter xml = new XMLOutputter(formatter);
+			xml.output(doc, outputStream);
+		}
+		catch(IOException ex)
+		{
+			throw new OperationEditorException("Problem occured writing to file during save", ex);
 		}
 	}
 }
