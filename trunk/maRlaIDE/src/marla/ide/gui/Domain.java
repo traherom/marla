@@ -84,6 +84,8 @@ public class Domain
 	public static final SimpleDateFormat FULL_TIME_FORMAT = new SimpleDateFormat("MM/dd/yyyy h:mm:ss a");
 	/** The logger holds all caught exceptions for recording in the log file.*/
 	public static final ArrayList<Exception> logger = new ArrayList<Exception> ();
+	/** Debug mode */
+	public static boolean debug = false;
 	/** Domain object currently created. Only one allowed, ever */
 	public static Domain currDomain = null;
 	/**
@@ -226,6 +228,27 @@ public class Domain
 	{
 		boolean old = sendErrorReport;
 		sendErrorReport = send;
+		return old;
+	}
+
+	/**
+	 * Gets the current debug mode
+	 * @return Current debug mode. True if debugging, false otherwise
+	 */
+	public static boolean getDebugMode()
+	{
+		return debug;
+	}
+
+	/**
+	 * Sets the current debug mode
+	 * @param newMode New debug mode
+	 * @return Previous debug mode. True if debugging, false otherwise
+	 */
+	public static boolean setDebugMode(boolean newMode)
+	{
+		boolean old = debug;
+		debug = newMode;
 		return old;
 	}
 
