@@ -533,14 +533,7 @@ public class SettingsDialog extends EscapeDialog
 	private void debugModeCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_debugModeCheckBoxActionPerformed
 		try
 		{
-			if (debugModeCheckBox.isSelected())
-			{
-				Configuration.getInstance().set(Configuration.ConfigType.DebugMode, RProcessor.RecordMode.FULL);
-			}
-			else
-			{
-				Configuration.getInstance().set(Configuration.ConfigType.DebugMode, RProcessor.RecordMode.DISABLED);
-			}
+			Configuration.getInstance().set(Configuration.ConfigType.DebugMode, debugModeCheckBox.isSelected());
 		}
 		catch (MarlaException ex)
 		{
@@ -788,6 +781,10 @@ public class SettingsDialog extends EscapeDialog
 			lineWidthSpinner.setValue(config.get(Configuration.ConfigType.MinLineWidth));
 		}
 		catch (MarlaException ex)
+		{
+			Domain.logger.add(ex);
+		}
+		catch (ClassCastException ex)
 		{
 			Domain.logger.add(ex);
 		}
