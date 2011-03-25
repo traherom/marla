@@ -286,8 +286,7 @@ public class Domain
 		if(MainFrame.progressFrame != null)
 		{
 			MainFrame.progressFrame.setLocationRelativeTo(currDomain.getMainFrame());
-			MainFrame.progressFrame.progressBar.setVisible(visible);
-			MainFrame.progressFrame.toFront();
+			MainFrame.progressFrame.setVisible(visible);
 		}
 	}
 
@@ -761,8 +760,9 @@ public class Domain
 				{
 					file = new File (viewPanel.saveChooserDialog.getSelectedFile ().toString () + ".pdf");
 				}
+				final File finalFile = file;
 				// ensure the file is a valid backup file
-				if (!file.toString ().endsWith (".pdf"))
+				if (!finalFile.toString ().endsWith (".pdf"))
 				{
 					JOptionPane.showMessageDialog (viewPanel, "The extension for the file must be .pdf.", "Invalid Extension", JOptionPane.WARNING_MESSAGE);
 					viewPanel.saveChooserDialog.setSelectedFile (new File (viewPanel.saveChooserDialog.getSelectedFile ().toString ().substring (0, viewPanel.saveChooserDialog.getSelectedFile ().toString ().lastIndexOf (".")) + ".pdf"));
@@ -771,7 +771,7 @@ public class Domain
 				}
 				// Ensure the problem name given does not match an already existing file
 				boolean continueAllowed = true;
-				if (file.exists ())
+				if (finalFile.exists ())
 				{
 					response = JOptionPane.showConfirmDialog (getTopWindow(), "The selected file already exists.\n"
 																		 + "Would you like to overwrite the existing file?",
@@ -786,54 +786,69 @@ public class Domain
 
 				if (continueAllowed)
 				{
-					String filePath = null;
-					try
+					Domain.setProgressVisible(true);
+					Domain.setProgressIndeterminate(true);
+					Domain.setProgressString("");
+					Domain.setProgressStatus("Beginning PDF export...");
+
+					new Thread(new Runnable()
 					{
-						// Ensure all operations have been fulfilled, info wise
-						for (int i = 0; i < problem.getDataCount (); i++)
+						@Override
+						public void run()
 						{
-							List<Operation> ops = problem.getData (i).getAllLeafOperations ();
-							for (Operation op : ops)
+							String filePath = null;
+							try
 							{
-								ensureRequirementsMet (op);
+								// Ensure all operations have been fulfilled, info wise
+								for (int i = 0; i < problem.getDataCount (); i++)
+								{
+									List<Operation> ops = problem.getData (i).getAllLeafOperations ();
+									for (Operation op : ops)
+									{
+										ensureRequirementsMet (op);
+									}
+								}
+
+								LatexExporter exporter = new LatexExporter (problem);
+								File genFile = new File (exporter.exportPDF (finalFile.getPath ()));
+								filePath = genFile.getCanonicalPath();
+								if (desktop != null)
+								{
+									Domain.setProgressStatus("Opening PDF...");
+
+									desktop.open (genFile);
+									try
+									{
+										Thread.sleep(3000);
+									}
+									catch (InterruptedException ex) {}
+								}
+							}
+							catch (IOException ex)
+							{
+								if (filePath != null)
+								{
+									Domain.setProgressIndeterminate(false);
+									JOptionPane.showMessageDialog(getTopWindow(), "The file was exported successfully.\nLocation: " + filePath, "Export Successful", JOptionPane.INFORMATION_MESSAGE);
+								}
+								else
+								{
+									Domain.logger.add (ex);
+									JOptionPane.showMessageDialog(getTopWindow(), ex.getMessage(), "PDF Export Failed", JOptionPane.ERROR_MESSAGE);
+								}
+							}
+							catch (MarlaException ex)
+							{
+								Domain.logger.add (ex);
+								JOptionPane.showMessageDialog(getTopWindow(), ex.getMessage(), "PDF Export Failed", JOptionPane.ERROR_MESSAGE);
+							}
+							finally
+							{
+								Domain.setProgressVisible(false);
+								Domain.setProgressIndeterminate(false);
 							}
 						}
-
-						Domain.setProgressVisible(true);
-						Domain.setProgressIndeterminate(true);
-						Domain.setProgressString("");
-						Domain.setProgressStatus("Beginning PDF export...");
-
-						LatexExporter exporter = new LatexExporter (problem);
-						File genFile = new File (exporter.exportPDF (file.getPath ()));
-						filePath = genFile.getCanonicalPath();
-						if (desktop != null)
-						{
-							Domain.setProgressStatus("Opening PDF...");
-							
-							desktop.open (genFile);
-
-							Domain.setProgressVisible(false);
-							Domain.setProgressIndeterminate(false);
-						}
-					}
-					catch (IOException ex)
-					{
-						if (filePath != null)
-						{
-							JOptionPane.showMessageDialog(getTopWindow(), "The file was exported successfully.\nLocation: " + filePath, "Export Successful", JOptionPane.INFORMATION_MESSAGE);
-						}
-						else
-						{
-							Domain.logger.add (ex);
-							JOptionPane.showMessageDialog(getTopWindow(), ex.getMessage(), "PDF Export Failed", JOptionPane.ERROR_MESSAGE);
-						}
-					}
-					catch (MarlaException ex)
-					{
-						Domain.logger.add (ex);
-						JOptionPane.showMessageDialog(getTopWindow(), ex.getMessage(), "PDF Export Failed", JOptionPane.ERROR_MESSAGE);
-					}
+					}).start();
 					break;
 				}
 				else
@@ -868,8 +883,9 @@ public class Domain
 				{
 					file = new File (viewPanel.saveChooserDialog.getSelectedFile ().toString () + ".rnw");
 				}
+				final File finalFile = file;
 				// ensure the file is a valid backup file
-				if (!file.toString ().endsWith (".rnw"))
+				if (!finalFile.toString ().endsWith (".rnw"))
 				{
 					JOptionPane.showMessageDialog (getTopWindow(), "The extension for the file must be .rnw.", "Invalid Extension", JOptionPane.WARNING_MESSAGE);
 					viewPanel.saveChooserDialog.setSelectedFile (new File (viewPanel.saveChooserDialog.getSelectedFile ().toString ().substring (0, viewPanel.saveChooserDialog.getSelectedFile ().toString ().lastIndexOf (".")) + ".tex"));
@@ -878,7 +894,7 @@ public class Domain
 				}
 				// Ensure the problem name given does not match an already existing file
 				boolean continueAllowed = true;
-				if (file.exists ())
+				if (finalFile.exists ())
 				{
 					response = JOptionPane.showConfirmDialog (getTopWindow(), "The selected file already exists.\n"
 																		 + "Would you like to overwrite the existing file?",
@@ -893,48 +909,71 @@ public class Domain
 
 				if (continueAllowed)
 				{
-					String filePath = null;
-					try
+					Domain.setProgressVisible(true);
+					Domain.setProgressIndeterminate(true);
+					Domain.setProgressString("");
+					Domain.setProgressStatus("Beginning LaTeX export...");
+
+					new Thread(new Runnable()
 					{
-						// Ensure all operations have been fulfilled, info wise
-						for (int i = 0; i < problem.getDataCount (); i++)
+						@Override
+						public void run()
 						{
-							List<Operation> ops = problem.getData (i).getAllLeafOperations ();
-							for (Operation op : ops)
+							String filePath = null;
+							try
 							{
-								ensureRequirementsMet (op);
+								// Ensure all operations have been fulfilled, info wise
+								for (int i = 0; i < problem.getDataCount (); i++)
+								{
+									List<Operation> ops = problem.getData (i).getAllLeafOperations ();
+									for (Operation op : ops)
+									{
+										ensureRequirementsMet (op);
+									}
+								}
+
+								LatexExporter exporter = new LatexExporter (problem);
+								File genFile = new File (exporter.cleanExport (finalFile.getPath ()));
+								filePath = genFile.getCanonicalPath();
+								if (desktop != null)
+								{
+									desktop.open (genFile);
+									try
+									{
+										Thread.sleep(3000);
+									}
+									catch (InterruptedException ex) {}
+								}
+								else
+								{
+									throw new IOException ();
+								}
+							}
+							catch (IOException ex)
+							{
+								if (filePath != null)
+								{
+									Domain.setProgressIndeterminate(false);
+									JOptionPane.showMessageDialog(getTopWindow(), "The file was exported successfully.\nLocation: " + filePath, "Export Successful", JOptionPane.INFORMATION_MESSAGE);
+								}
+								else
+								{
+									Domain.logger.add (ex);
+									JOptionPane.showMessageDialog(getTopWindow(), ex.getMessage(), "Export Failed", JOptionPane.ERROR_MESSAGE);
+								}
+							}
+							catch (MarlaException ex)
+							{
+								Domain.logger.add (ex);
+								JOptionPane.showMessageDialog(getTopWindow(), ex.getMessage(), "Export Failed", JOptionPane.ERROR_MESSAGE);
+							}
+							finally
+							{
+								Domain.setProgressVisible(false);
+								Domain.setProgressIndeterminate(false);
 							}
 						}
-
-						LatexExporter exporter = new LatexExporter (problem);
-						File genFile = new File (exporter.cleanExport (file.getPath ()));
-						filePath = genFile.getCanonicalPath();
-						if (desktop != null)
-						{
-							desktop.open (genFile);
-						}
-						else
-						{
-							throw new IOException ();
-						}
-					}
-					catch (IOException ex)
-					{
-						if (filePath != null)
-						{
-							JOptionPane.showMessageDialog(getTopWindow(), "The file was exported successfully.\nLocation: " + filePath, "Export Successful", JOptionPane.INFORMATION_MESSAGE);
-						}
-						else
-						{
-							Domain.logger.add (ex);
-							JOptionPane.showMessageDialog(getTopWindow(), ex.getMessage(), "Export Failed", JOptionPane.ERROR_MESSAGE);
-						}
-					}
-					catch (MarlaException ex)
-					{
-						Domain.logger.add (ex);
-						JOptionPane.showMessageDialog(getTopWindow(), ex.getMessage(), "Export Failed", JOptionPane.ERROR_MESSAGE);
-					}
+					}).start();
 					break;
 				}
 				else

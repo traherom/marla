@@ -11,7 +11,7 @@
 ;--------------------------------
 ;General
 
-  !define JRE_VERSION "1.6"
+  Var /GLOBAL JRE_VERSION
   Var /GLOBAL InstallJRE
   Var /GLOBAL JavaInstaller
   Var /GLOBAL RInstaller
@@ -70,10 +70,12 @@
 ;Installer Sections
 
 Section -installjre jre
+  StrCpy $JRE_VERSION "1.6"
   Call CheckInstalledJRE
   StrCmp $InstallJRE "yes" JREInstaller JREEnd
 
 JREInstaller:
+  DetailPrint "Java requires an update..."
   StrCpy $JavaInstaller "$TEMP\jre_setup.exe"
   IfFileExists $JavaInstaller JavaInstall ContinueJavaDL
   ContinueJavaDL:
@@ -179,11 +181,11 @@ SectionEnd
 ;Descriptions
 
   ;Language strings
-  LangString DESC_InstallMarla ${LANG_ENGLISH} "Installs the core maRla framework"
-  LangString DESC_InstallR ${LANG_ENGLISH} "(~37 mb) R must be installed for maRla to work properly; only uncheck this option if you are certain you already have R installed."
-  LangString DESC_InstallMiKTeX ${LANG_ENGLISH} "(~138 mb) MiKTeX must be installed for maRla to work properly; only uncheck this option if you are certain you already have R installed." 
-  LangString DESC_StartShortcuts ${LANG_ENGLISH} "Install shortcuts to your Start Menu."
-  LangString DESC_DesktopShortcut ${LANG_ENGLISH} "Install shortcut to your Desktop."
+  LangString DESC_InstallMarla ${LANG_ENGLISH} "Installs the core maRla framework."
+  LangString DESC_InstallR ${LANG_ENGLISH} "(~37 mb) Install R. R must be installed for maRla to work properly--only uncheck this option if you are certain you already have R installed."
+  LangString DESC_InstallMiKTeX ${LANG_ENGLISH} "(~138 mb) Install MiKTeX. MiKTeX must be installed for maRla to work properly--only uncheck this option if you are certain you already have R installed." 
+  LangString DESC_StartShortcuts ${LANG_ENGLISH} "Create shortcuts to your Start Menu."
+  LangString DESC_DesktopShortcut ${LANG_ENGLISH} "Create shortcut to your Desktop."
 
   ;Assign language strings to sections
   !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
@@ -242,12 +244,12 @@ NoJREFound:
 
 FoundJRE:
   ;Ensure that the JRE found is at least our lowest compatibile version
-  ${If} $JavaVer >= JRE_VERSION
+  ${If} $JRE_VERSION > $JavaVer
 	StrCpy $InstallJRE "yes"
   ${Else}
     StrCpy $InstallJRE "no"
-	DetailPrint "Java requires an update..."
   ${EndIf}
 
 DetectJREEnd:
+
 FunctionEnd

@@ -1758,67 +1758,61 @@ public class NewProblemWizardDialog extends EscapeDialog
 				int response = VIEW_PANEL.openChooserDialog.showOpenDialog(NEW_PROBLEM_WIZARD);
 				if(response == JFileChooser.APPROVE_OPTION)
 				{
-					try
+					// If the user selected a file that exists, point the problem's location to the newly selected location
+					if(VIEW_PANEL.openChooserDialog.getSelectedFile().exists())
 					{
-						// If the user selected a file that exists, point the problem's location to the newly selected location
-						if(VIEW_PANEL.openChooserDialog.getSelectedFile().exists())
+						domain.lastGoodCsvFile = VIEW_PANEL.openChooserDialog.getSelectedFile().toString();
+						try
 						{
-							domain.lastGoodCsvFile = VIEW_PANEL.openChooserDialog.getSelectedFile().toString();
-							try
+							ignoreDataChanging = true;
+							DataSet importedDataSet = DataSet.importFile(domain.lastGoodCsvFile);
+
+							// Clear existing data
+							for(int i = dataSet.getColumnCount() - 1; 0 <= i; i--)
 							{
-								ignoreDataChanging = true;
-								DataSet importedDataSet = DataSet.importFile(domain.lastGoodCsvFile);
-
-								// Clear existing data
-								for(int i = dataSet.getColumnCount() - 1; 0 <= i; i--)
-								{
-									dataSet.removeColumn(i);
-								}
-
-								// Copy new columns
-								for(int i = 0; i < importedDataSet.getColumnCount(); i++)
-								{
-									DataColumn importCol = importedDataSet.getColumn(i);
-									DataColumn newCol = dataSet.addColumn(importCol.getName());
-									newCol.addAll(importCol);
-								}
-
-								// Change spinners to new size
-								columnsSpinner.setValue(dataSet.getColumnCount());
-								rowsSpinner.setValue(dataSet.getColumnLength());
-
-								// Change the model so that the old columns are no longer displayed
-								final ExtendedTableModel newModel = new ExtendedTableModel(dataSet);
-								table.setModel(newModel);
-								newModel.addTableModelListener(new TableModelListener()
-								{
-									@Override
-									public void tableChanged(TableModelEvent evt)
-									{
-										fireTableChanged(newModel, evt);
-									}
-								});
-
-								// Set the column headers
-								for(int i = 0; i < dataSet.getColumnCount(); i++)
-								{
-									table.getColumnModel().getColumn(i).setHeaderValue(dataSet.getColumn(i).getName());
-								}
-
-								table.setModel(newModel);
-								table.invalidate();
-								table.getTableHeader().resizeAndRepaint();
-
-								ignoreDataChanging = false;
+								dataSet.removeColumn(i);
 							}
-							catch(MarlaException ex)
+
+							// Copy new columns
+							for(int i = 0; i < importedDataSet.getColumnCount(); i++)
 							{
-								JOptionPane.showMessageDialog(VIEW_PANEL.domain.getTopWindow(), ex.getMessage(), "Load failed", JOptionPane.WARNING_MESSAGE);
+								DataColumn importCol = importedDataSet.getColumn(i);
+								DataColumn newCol = dataSet.addColumn(importCol.getName());
+								newCol.addAll(importCol);
 							}
+
+							// Change spinners to new size
+							columnsSpinner.setValue(dataSet.getColumnCount());
+							rowsSpinner.setValue(dataSet.getColumnLength());
+
+							// Change the model so that the old columns are no longer displayed
+							final ExtendedTableModel newModel = new ExtendedTableModel(dataSet);
+							table.setModel(newModel);
+							newModel.addTableModelListener(new TableModelListener()
+							{
+								@Override
+								public void tableChanged(TableModelEvent evt)
+								{
+									fireTableChanged(newModel, evt);
+								}
+							});
+
+							// Set the column headers
+							for(int i = 0; i < dataSet.getColumnCount(); i++)
+							{
+								table.getColumnModel().getColumn(i).setHeaderValue(dataSet.getColumn(i).getName());
+							}
+
+							table.setModel(newModel);
+							table.invalidate();
+							table.getTableHeader().resizeAndRepaint();
+
+							ignoreDataChanging = false;
 						}
-					}
-					catch(FileNotFoundException e)
-					{
+						catch(MarlaException ex)
+						{
+							JOptionPane.showMessageDialog(VIEW_PANEL.domain.getTopWindow(), ex.getMessage(), "Load failed", JOptionPane.WARNING_MESSAGE);
+						}
 					}
 				}
 			}
