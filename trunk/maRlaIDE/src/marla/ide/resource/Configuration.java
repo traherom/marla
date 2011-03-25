@@ -86,7 +86,7 @@ public class Configuration
 	 * Possible elements that can be configured through this class
 	 */
 	public enum ConfigType {
-			DebugMode,
+			DebugMode, FirstRun,
 			WindowX, WindowY, WindowHeight, WindowWidth,
 			PdfTex, R, PrimaryOpsXML, UserOpsXML, TexTemplate,
 			UserName, ClassShort, ClassLong,
@@ -318,7 +318,10 @@ public class Configuration
 				return RProcessor.getRLocation();
 
 			case DebugMode:
-				return Domain.getDebugMode();
+				return Domain.isDebugMode();
+				
+			case FirstRun:
+				return Domain.isFirstRun();
 
 			case TexTemplate:
 				return LatexExporter.getDefaultTemplate();
@@ -422,7 +425,7 @@ public class Configuration
 				else
 					mode = Boolean.valueOf(val.toString());
 				
-				previous = Domain.setDebugMode(mode);
+				previous = Domain.isDebugMode(mode);
 
 				// Toggle our own output
 				detailedConfigStatus = mode;
@@ -433,6 +436,16 @@ public class Configuration
 				else
 					RProcessor.setDebugMode(RecordMode.DISABLED);
 				
+				break;
+
+			case FirstRun:
+				Boolean first = true;
+				if(val instanceof Boolean)
+					first = (Boolean) val;
+				else
+					first = Boolean.valueOf(val.toString());
+
+				previous = Domain.isFirstRun(first);
 				break;
 
 			case TexTemplate:
@@ -687,7 +700,12 @@ public class Configuration
 			switch(setting)
 			{
 				case DebugMode:
-					set(setting, RProcessor.RecordMode.DISABLED);
+					set(setting, false);
+					success = true;
+					break;
+
+				case FirstRun:
+					set(setting, true);
 					success = true;
 					break;
 
