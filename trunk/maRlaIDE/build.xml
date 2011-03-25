@@ -189,10 +189,14 @@
 
 	<target name="-windows-installer" if="is.linux.or.windows">
 		<echo>Creating Windows installer</echo>
+
 		<copy file="FileAssociation.nsh" todir="${store.dir}" />
+
 		<exec executable="makensis" dir="${store.dir}" resultproperty="build.result" searchpath="true">
 			<arg value="install_script.nsi"/>
 		</exec>
+
+		<delete file="${store.dir}\FileAssociation.nsh" />
 
 		<!-- Move (if needed) to file with revision name -->
 		<move file="${store.dir}/Setup.exe" tofile="${setup.base}.exe" />
@@ -201,7 +205,13 @@
 
 	<target name="-zip-package">
 		<echo>Creating archive of files</echo>
-		<zip destfile="${setup.base}.zip" basedir="${store.dir}" />
+		<zip destfile="${setup.base}.zip">
+			<zipfileset file="${store.dir}/maRlaIDE.jar" />
+			<zipfileset file="${store.dir}/maRlaIDE.exe" />
+			<zipfileset file="${store.dir}/ops.xml" />
+			<zipfileset file="${store.dir}/export_template.xml" />
+			<zipfileset file="${store.dir}/gpl-3.0.txt" />
+		</zip>
 		<echo message="Zip file placed in ${store.dir}" />
 	</target>
 
