@@ -86,6 +86,8 @@ public class Domain
 	public static final ArrayList<Exception> logger = new ArrayList<Exception> ();
 	/** Debug mode */
 	public static boolean debug = false;
+	/** First run of maRla */
+	public static boolean firstRun = false;
 	/** Domain object currently created. Only one allowed, ever */
 	public static Domain currDomain = null;
 	/**
@@ -235,7 +237,7 @@ public class Domain
 	 * Gets the current debug mode
 	 * @return Current debug mode. True if debugging, false otherwise
 	 */
-	public static boolean getDebugMode()
+	public static boolean isDebugMode()
 	{
 		return debug;
 	}
@@ -245,10 +247,31 @@ public class Domain
 	 * @param newMode New debug mode
 	 * @return Previous debug mode. True if debugging, false otherwise
 	 */
-	public static boolean setDebugMode(boolean newMode)
+	public static boolean isDebugMode(boolean newMode)
 	{
 		boolean old = debug;
 		debug = newMode;
+		return old;
+	}
+
+	/**
+	 * Returns whether this is the first time maRla has run
+	 * @return true if first run, false otherwise
+	 */
+	public static boolean isFirstRun()
+	{
+		return firstRun;
+	}
+
+	/**
+	 * Sets whether this is the first run of maRla
+	 * @param newMode New value for first run
+	 * @return true if first run was set, false otherwise
+	 */
+	public static boolean isFirstRun(boolean newMode)
+	{
+		boolean old = firstRun;
+		firstRun = newMode;
 		return old;
 	}
 
