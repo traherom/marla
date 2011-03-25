@@ -119,11 +119,4 @@ public class SubProblemTest
 		newSub.equals(testSub1);
 		assertEquals(testSub1, newSub);
 	}
-
-	@Test
-	public void testCopy()
-	{
-		SubProblem newSub = new SubProblem(testSub1, null);
-		assertEquals(testSub1, newSub);
-	}
 }

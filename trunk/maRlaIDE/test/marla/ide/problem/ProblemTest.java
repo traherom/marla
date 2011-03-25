@@ -279,12 +279,4 @@ public class ProblemTest
 
 		new File(tempFileName).delete();
 	}
-
-	@Test
-	public void testCopy() throws Exception
-	{
-		Problem instance = createProblem(2, 3, 4, 10);
-		Problem copied = new Problem(instance);
-		assertEquals(instance, copied);
-	}
 }

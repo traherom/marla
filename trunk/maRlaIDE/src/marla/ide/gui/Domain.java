@@ -253,6 +253,22 @@ public class Domain
 	}
 
 	/**
+	 * Show or hide the progress bar. Must be set to false if you wish
+	 * to set values manually.
+	 *
+	 * @param visible True for an indeterminate progress bar, false otherwise.
+	 */
+	public static void setProgressVisible(final boolean visible)
+	{
+		if(MainFrame.progressFrame != null)
+		{
+			MainFrame.progressFrame.setLocationRelativeTo(currDomain.getMainFrame());
+			MainFrame.progressFrame.progressBar.setVisible(visible);
+			MainFrame.progressFrame.toFront();
+		}
+	}
+
+	/**
 	 * Enable or disable the indeterminate state of the progress bar. Must be
 	 * set to false if you wish to set values manually.
 	 *
@@ -760,12 +776,22 @@ public class Domain
 							}
 						}
 
+						Domain.setProgressVisible(true);
+						Domain.setProgressIndeterminate(true);
+						Domain.setProgressString("");
+						Domain.setProgressStatus("Beginning PDF export...");
+
 						LatexExporter exporter = new LatexExporter (problem);
-						File genFile = new File (exporter.generatePDF (file.getPath ()));
+						File genFile = new File (exporter.exportPDF (file.getPath ()));
 						filePath = genFile.getCanonicalPath();
 						if (desktop != null)
 						{
+							Domain.setProgressStatus("Opening PDF...");
+							
 							desktop.open (genFile);
+
+							Domain.setProgressVisible(false);
+							Domain.setProgressIndeterminate(false);
 						}
 					}
 					catch (IOException ex)
