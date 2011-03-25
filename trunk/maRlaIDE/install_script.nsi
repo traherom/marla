@@ -11,7 +11,7 @@
 ;--------------------------------
 ;General
 
-  !define JRE_VERSION "1.6.0"
+  !define JRE_VERSION "1.6"
   Var /GLOBAL InstallJRE
   Var /GLOBAL JavaInstaller
   Var /GLOBAL RInstaller
@@ -72,13 +72,13 @@
 Section -installjre jre
   Call CheckInstalledJRE
   StrCmp $InstallJRE "yes" JREInstaller JREEnd
-  
+
 JREInstaller:
   StrCpy $JavaInstaller "$TEMP\jre_setup.exe"
   IfFileExists $JavaInstaller JavaInstall ContinueJavaDL
   ContinueJavaDL:
     DetailPrint "Downloading Java to $JavaInstaller"
-    NSISdl::download "http://www.moreharts.com/marla/extra/jre_setup.exe" $JavaInstaller
+	inetc::get "http://javadl.sun.com/webapps/download/AutoDL?BundleId=33787" $JavaInstaller /END
 
   JavaInstall:
     ExecWait '"$JavaInstaller" /s /v\"/qn REBOOT=Suppress JAVAUPDATE=0 WEBSTARTICON=0\"' $0
@@ -217,49 +217,37 @@ Section "Uninstall"
 SectionEnd
 
 Function LaunchLink
-
   ExecShell "" "$INSTDIR\marlaIDE.exe"
-  
 FunctionEnd
 
 Function CheckInstalledJRE
-  
-  DetailPrint "Detecting JRE ..."
-  Call DetectJRE
- 
-FunctionEnd
- 
-; Returns: 0 - JRE not found. -1 - JRE found but too old. Otherwise - Path to JAVA EXE
- 
-; DetectJRE. Version requested is on the stack.
-; Returns (on stack)	"0" on failure (java too old or not installed), otherwise path to java interpreter
-; Stack value will be overwritten!
- 
-Function DetectJRE
-  
+  DetailPrint "Detecting Java..."
+  ClearErrors
   ReadRegStr $JavaVer HKLM "SOFTWARE\JavaSoft\Java Runtime Environment" "CurrentVersion"
-  StrCmp $JavaVer "" DetectTry2
   ReadRegStr $JavaHome HKLM "SOFTWARE\JavaSoft\Java Runtime Environment\$JavaVer" "JavaHome"
-  StrCmp $JavaHome "" DetectTry2
-  Goto GetJRE
- 
-DetectTry2:
-
+  IfErrors 0 GetJRE
+  ;Otherwise check for the JDK
+  ClearErrors
   ReadRegStr $JavaVer HKLM "SOFTWARE\JavaSoft\Java Development Kit" "CurrentVersion"
-  StrCmp $JavaVer "" NoFound
   ReadRegStr $JavaHome HKLM "SOFTWARE\JavaSoft\Java Development Kit\$JavaVer" "JavaHome"
-  StrCmp $JavaHome "" NoFound
+  IfErrors 0 GetJRE
+  Goto NoJREFound
  
 GetJRE:
-  IfFileExists "$JavaHome\bin\java.exe" FoundNew NoFound
+  IfFileExists "$JavaHome\bin\java.exe" FoundJRE NoJREFound
 
-NoFound:
+NoJREFound:
   StrCpy $InstallJRE "yes"
   Goto DetectJREEnd
 
-FoundNew:
-  StrCpy $InstallJRE "no"
-  
-DetectJREEnd:
+FoundJRE:
+  ;Ensure that the JRE found is at least our lowest compatibile version
+  ${If} $JavaVer >= JRE_VERSION
+	StrCpy $InstallJRE "yes"
+  ${Else}
+    StrCpy $InstallJRE "no"
+	DetailPrint "Java requires an update..."
+  ${EndIf}
 
+DetectJREEnd:
 FunctionEnd
