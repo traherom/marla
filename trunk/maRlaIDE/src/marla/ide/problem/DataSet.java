@@ -102,7 +102,7 @@ public final class DataSet extends DataSource implements Changeable
 	 * @param filePath Absolute or relative path to file to import.
 	 * @return New DataSet containing the imported values
 	 */
-	public static DataSet importFile(String filePath) throws FileNotFoundException, DuplicateNameException, ProblemException
+	public static DataSet importFile(String filePath) throws DuplicateNameException, MarlaException
 	{
 		try
 		{
@@ -177,7 +177,7 @@ public final class DataSet extends DataSource implements Changeable
 		}
 		catch(IOException ex)
 		{
-			throw new ProblemException("Error occured working with import file", ex);
+			throw new MarlaException("Error occured working with import file", ex);
 		}
 	}
 

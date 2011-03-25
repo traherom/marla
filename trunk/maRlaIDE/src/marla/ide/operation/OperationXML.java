@@ -206,6 +206,7 @@ public class OperationXML extends Operation
 			Document doc = parser.build(xmlPath);
 
 			// Just save it or bring it into the combined doc?
+			// TODO make later operations override older ones (IE, user overrides primary)
 			Element root = doc.getRootElement();
 			if(operationXML == null)
 				operationXML = root;
@@ -367,9 +368,18 @@ public class OperationXML extends Operation
 	 * used opConfig needs to be set, which can only occur through fromXMLExtra(Element)
 	 * or createOperation()
 	 */
-	public OperationXML() throws RProcessorException
+	public OperationXML()
 	{
 		super("Unconfigured");
+	}
+
+	/**
+	 * Returns the XML that powers this operation
+	 * @return XML which operation follows, null if not set
+	 */
+	protected Element getConfiguration()
+	{
+		return opConfig;
 	}
 
 	/**
@@ -378,7 +388,15 @@ public class OperationXML extends Operation
 	 */
 	protected void setConfiguration(Element newOpConfig) throws OperationXMLException, MarlaException
 	{
+		// Ignore if it's the same
+		if(opConfig == newOpConfig)
+			return;
+
 		opConfig = newOpConfig;
+
+		// Obviously we'll need to update
+		markDirty();
+
 		setOperationName(opConfig.getAttributeValue("name"));
 
 		// Parse all the questions
