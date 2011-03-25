@@ -2,7 +2,7 @@
 <problem person="Test student" course_long="Long name" course_short="Short name" chapter="Chapter" section="Section" probnum="Number">
   <statement>Problem description ...</statement>
   <conclusion>Conclusion</conclusion>
-  <data name="Data Set 1" id="2064948438" x="214" y="45" height="16" width="70">
+  <data name="Data Set 1" id="2064948438" x="281" y="68" height="16" width="70">
     <column name="Column 1" mode="NUMERIC">
       <value>0.0</value>
       <value>1.0</value>
@@ -263,9 +263,9 @@
       <value>48.0</value>
       <value>49.0</value>
     </column>
-    <operation type="marla.ide.operation.OperationXML" name="cos()" id="-1613836180" x="140" y="75" height="16" width="44">
+    <operation type="marla.ide.operation.OperationXML" name="cos()" id="-1613836180" x="207" y="98" height="16" width="44">
       <remark />
-      <operation type="marla.ide.operation.OperationXML" name="Barplot" id="-1259616404" x="128" y="105" height="16" width="69">
+      <operation type="marla.ide.operation.OperationXML" name="Barplot" id="-1259616404" x="195" y="128" height="16" width="69">
         <remark />
         <question name="col" />
         <extra name="Barplot" />
@@ -273,11 +273,11 @@
       <question name="col" />
       <extra name="cos()" />
     </operation>
-    <operation type="marla.ide.operation.OperationXML" name="Mean" id="1915277269" x="223" y="75" height="16" width="58">
+    <operation type="marla.ide.operation.OperationXML" name="Mean" id="1915277269" x="290" y="98" height="16" width="58">
       <remark />
-      <operation type="marla.ide.operation.OperationXML" name="Boxplot" id="1217894410" x="217" y="105" height="16" width="71">
+      <operation type="marla.ide.operation.OperationXML" name="Boxplot" id="1217894410" x="284" y="128" height="16" width="71">
         <remark />
-        <operation type="marla.ide.operation.OperationXML" name="Absolute Value" id="740021789" x="230" y="135" height="16" width="45">
+        <operation type="marla.ide.operation.OperationXML" name="Absolute Value" id="740021789" x="297" y="158" height="16" width="45">
           <remark />
           <question name="col" />
           <extra name="Absolute Value" />
@@ -288,9 +288,9 @@
       <question name="col" />
       <extra name="Mean" />
     </operation>
-    <operation type="marla.ide.operation.OperationXML" name="Q-Q Line" id="1725846927" x="308" y="75" height="16" width="62">
+    <operation type="marla.ide.operation.OperationXML" name="Q-Q Line" id="1725846927" x="375" y="98" height="16" width="62">
       <remark />
-      <operation type="marla.ide.operation.OperationXML" name="Single Var Plot" id="-1023348318" x="312" y="105" height="16" width="55">
+      <operation type="marla.ide.operation.OperationXML" name="Single Var Plot" id="-1023348318" x="379" y="128" height="16" width="55">
         <remark />
         <question name="x" />
         <extra name="Single Var Plot" />
@@ -300,30 +300,30 @@
     </operation>
   </data>
   <part id="a." color="-4100327">
-    <step id="1725846927" />
-    <step id="-1023348318" />
+    <step id="-1613836180" />
+    <step id="-1259616404" />
     <step id="1915277269" />
     <step id="1217894410" />
     <step id="740021789" />
-    <step id="-1613836180" />
-    <step id="-1259616404" />
+    <step id="1725846927" />
+    <step id="-1023348318" />
     <statement>This is a sub problem ...</statement>
     <conclusion>This is a conclusion ...</conclusion>
   </part>
   <part id="b." color="-16519193">
+    <step id="-1613836180" />
+    <step id="-1259616404" />
     <step id="1915277269" />
     <step id="1217894410" />
     <step id="740021789" />
-    <step id="-1613836180" />
-    <step id="-1259616404" />
     <statement>This is a sub problem ...</statement>
     <conclusion>This is a conclusion ...</conclusion>
   </part>
   <part id="c." color="-10017304">
-    <step id="-1023348318" />
     <step id="1915277269" />
     <step id="1217894410" />
     <step id="740021789" />
+    <step id="-1023348318" />
     <statement>This is a sub problem ...</statement>
     <conclusion>This is a conclusion ...</conclusion>
   </part>
