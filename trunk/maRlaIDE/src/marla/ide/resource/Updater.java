@@ -77,15 +77,18 @@ public class Updater implements Runnable
 			return false;
 		}
 
+		// Update available
+		return true;
+
 		// Start download of update jar in background
-		String updateFileURL = "http://marla.googlecode.com/files/update-r" + rev + ".jar";
+		/*String updateFileURL = "http://marla.googlecode.com/files/update-r" + rev + ".jar";
 		System.out.println("maRla is out of date. Fetching update file '" + updateFileURL + "'");
 		Updater up = new Updater(updateFileURL);
 		Thread upThread = new Thread(up);
 		upThread.setDaemon(true);
 		upThread.start();
 
-		return true;
+		return true;*/
 	}
 
 	/**

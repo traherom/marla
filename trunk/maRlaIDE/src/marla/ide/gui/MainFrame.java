@@ -27,6 +27,8 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -180,7 +182,7 @@ public class MainFrame extends JFrame
 				Domain.setProgressString("98%");
 				Domain.setProgressValue(98);
 				Domain.setProgressStatus("Checking for updates...");
-				Updater.checkForUpdates();
+				boolean isUpdate = Updater.checkForUpdates();
 
 				// Done!
 				Domain.setProgressString("100%");
@@ -189,6 +191,30 @@ public class MainFrame extends JFrame
 
 				progressFrame.setVisible(false);
 				setCursor(Cursor.getDefaultCursor());
+
+				if(isUpdate)
+				{
+					int res = JOptionPane.showConfirmDialog(viewPanel.domain.getTopWindow(),
+							"An update for maRla is avaible.\nWould you like to go to the download page?",
+							"Update Available",
+							JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+					if(res == JOptionPane.YES_OPTION)
+					{
+						try
+						{
+							if(viewPanel.domain.desktop != null)
+								viewPanel.domain.desktop.browse(new URI("https://code.google.com/p/marla/downloads/list"));
+						}
+						catch(IOException ex)
+						{
+							Domain.logger.add(ex);
+						}
+						catch(URISyntaxException ex)
+						{
+							Domain.logger.add(ex);
+						}
+					}
+				}
 			}
 		}).start();
 
