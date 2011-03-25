@@ -6,6 +6,7 @@
 ;Include Modern UI
 
   !include "MUI2.nsh"
+  !include "LogicLib.nsh"
   !include "FileAssociation.nsh"
 
 ;--------------------------------

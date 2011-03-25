@@ -783,7 +783,7 @@ public class SettingsDialog extends EscapeDialog
 			courseLongNameTextField.setText (config.get(Configuration.ConfigType.ClassLong).toString());
 			sendErrorReportsCheckBox.setSelected(Boolean.valueOf(config.get(Configuration.ConfigType.SendErrorReports).toString()));
 			includeProblemCheckBox.setSelected(Boolean.valueOf(config.get(Configuration.ConfigType.ReportWithProblem).toString()));
-			debugModeCheckBox.setSelected(((RProcessor.RecordMode) config.get(Configuration.ConfigType.DebugMode)) == RProcessor.RecordMode.FULL);
+			debugModeCheckBox.setSelected((Boolean) config.get(Configuration.ConfigType.DebugMode));
 			lineSpaceSpinner.setValue(config.get(Configuration.ConfigType.LineSpacing));
 			lineWidthSpinner.setValue(config.get(Configuration.ConfigType.MinLineWidth));
 		}
