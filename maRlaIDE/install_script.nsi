@@ -6,9 +6,19 @@
 ;Include Modern UI
 
   !include "MUI2.nsh"
+  !include "FileAssociation.nsh"
 
 ;--------------------------------
 ;General
+
+  !define JRE_VERSION "1.6.0"
+  Var /GLOBAL InstallJRE
+  Var /GLOBAL JavaInstaller
+  Var /GLOBAL RInstaller
+  Var /GLOBAL R_LOC
+  Var /GLOBAL texInstaller
+  Var /GLOBAL JavaVer
+  Var /GLOBAL JavaHome
 
   ;Name and file
   Name "maRla"
@@ -31,6 +41,11 @@
 ;--------------------------------
 ;Pages
 
+  !define MUI_INSTFILESPAGE_FINISHHEADER_TEXT "Java installation complete"
+  !define MUI_PAGE_HEADER_TEXT "Installing Java runtime"
+  !define MUI_PAGE_HEADER_SUBTEXT "Please wait while we install the Java runtime"
+  !define MUI_INSTFILESPAGE_FINISHHEADER_SUBTEXT "Java runtime installed successfully."
+  
   !insertmacro MUI_PAGE_LICENSE "gpl-3.0.txt"
   !insertmacro MUI_PAGE_COMPONENTS
   !insertmacro MUI_PAGE_DIRECTORY
@@ -42,6 +57,7 @@
     !define MUI_FINISHPAGE_RUN_FUNCTION "LaunchLink"
   !insertmacro MUI_PAGE_FINISH
   
+  LangString TEXT_JRE_TITLE ${LANG_ENGLISH} "Java Runtime Environment"
   !insertmacro MUI_UNPAGE_CONFIRM
   !insertmacro MUI_UNPAGE_INSTFILES
   
@@ -52,6 +68,25 @@
 
 ;--------------------------------
 ;Installer Sections
+
+Section -installjre jre
+  Call CheckInstalledJRE
+  StrCmp $InstallJRE "yes" JREInstaller JREEnd
+  
+JREInstaller:
+  StrCpy $JavaInstaller "$TEMP\jre_setup.exe"
+  IfFileExists $JavaInstaller JavaInstall ContinueJavaDL
+  ContinueJavaDL:
+    DetailPrint "Downloading Java to $JavaInstaller"
+    NSISdl::download "http://www.moreharts.com/marla/extra/jre_setup.exe" $JavaInstaller
+
+  JavaInstall:
+    ExecWait '"$JavaInstaller" /s /v\"/qn REBOOT=Suppress JAVAUPDATE=0 WEBSTARTICON=0\"' $0
+
+JREEnd:
+  DetailPrint "Java is up to date"
+
+SectionEnd
 
 Section "Install maRla" InstallMarla
 
@@ -67,6 +102,9 @@ Section "Install maRla" InstallMarla
   ;Configure maRla
   DetailPrint "Configuring maRla"
   ExecWait 'java -classpath "$INSTDIR\maRlaIDE.jar" marla.ide.resource.Configuration "--PrimaryOpsXML=$INSTDIR\ops.xml" "--TexTemplate=$INSTDIR\export_template.xml"'
+  
+  ;Register .marla files with maRla
+  ${registerExtension} "$INSTDIR\maRlaIDE.exe" ".marla" "maRla File"
 
   ;Create uninstaller
   WriteUninstaller "$INSTDIR\Uninstall.exe"
@@ -74,8 +112,6 @@ Section "Install maRla" InstallMarla
 SectionEnd
 
 Section "Include R-2.12" InstallR
-
-  Var /GLOBAL RInstaller
   
   ;installer is both 32 and 64 bit, chooses automatically, so silent works.
   IfFileExists 'T:\TEX\CRAN\R-win.exe' RDrive DownloadR
@@ -100,11 +136,8 @@ SectionEnd
 Section "Include MiKTeX" InstallMiKTeX
 
   ; register R's texmf directory with MiKTeK
-  Var /GLOBAL R_LOC
   ReadRegStr $R_LOC HKLM Software\R-Core\R InstallPath
   DetailPrint "R is installed at: $R_LOC"
-
-  Var /GLOBAL texInstaller
 
   IfFileExists 'T:\TEX\CTAN\basic-miktex.exe' MiKTeXFromDrive DownloadMiKTeX
   DownloadMiKTeX:
@@ -158,7 +191,7 @@ SectionEnd
 	!insertmacro MUI_DESCRIPTION_TEXT ${InstallR} $(DESC_InstallR)
 	!insertmacro MUI_DESCRIPTION_TEXT ${InstallMiKTeX} $(DESC_InstallMiKTeX)
 	!insertmacro MUI_DESCRIPTION_TEXT ${StartShortcuts} $(DESC_StartShortcuts)
-	!insertmacro MUI_DESCRIPTION_TEXT ${DesktopShortcuts} $(DESC_DesktopShortcut)
+	!insertmacro MUI_DESCRIPTION_TEXT ${DesktopShortcut} $(DESC_DesktopShortcut)
   !insertmacro MUI_FUNCTION_DESCRIPTION_END
 
 ;--------------------------------
@@ -179,9 +212,54 @@ Section "Uninstall"
   RMDir "$INSTDIR"
 
   DeleteRegKey /ifempty HKCU "Software\maRla"
+  ${unregisterExtension} ".marla" "maRla File"
 
 SectionEnd
 
 Function LaunchLink
+
   ExecShell "" "$INSTDIR\marlaIDE.exe"
+  
+FunctionEnd
+
+Function CheckInstalledJRE
+  
+  DetailPrint "Detecting JRE ..."
+  Call DetectJRE
+ 
+FunctionEnd
+ 
+; Returns: 0 - JRE not found. -1 - JRE found but too old. Otherwise - Path to JAVA EXE
+ 
+; DetectJRE. Version requested is on the stack.
+; Returns (on stack)	"0" on failure (java too old or not installed), otherwise path to java interpreter
+; Stack value will be overwritten!
+ 
+Function DetectJRE
+  
+  ReadRegStr $JavaVer HKLM "SOFTWARE\JavaSoft\Java Runtime Environment" "CurrentVersion"
+  StrCmp $JavaVer "" DetectTry2
+  ReadRegStr $JavaHome HKLM "SOFTWARE\JavaSoft\Java Runtime Environment\$JavaVer" "JavaHome"
+  StrCmp $JavaHome "" DetectTry2
+  Goto GetJRE
+ 
+DetectTry2:
+
+  ReadRegStr $JavaVer HKLM "SOFTWARE\JavaSoft\Java Development Kit" "CurrentVersion"
+  StrCmp $JavaVer "" NoFound
+  ReadRegStr $JavaHome HKLM "SOFTWARE\JavaSoft\Java Development Kit\$JavaVer" "JavaHome"
+  StrCmp $JavaHome "" NoFound
+ 
+GetJRE:
+  IfFileExists "$JavaHome\bin\java.exe" FoundNew NoFound
+
+NoFound:
+  StrCpy $InstallJRE "yes"
+  Goto DetectJREEnd
+
+FoundNew:
+  StrCpy $InstallJRE "no"
+  
+DetectJREEnd:
+
 FunctionEnd

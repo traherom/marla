@@ -189,6 +189,7 @@
 
 	<target name="-windows-installer" if="is.linux.or.windows">
 		<echo>Creating Windows installer</echo>
+		<copy file="FileAssociation.nsh" todir="${store.dir}" />
 		<exec executable="makensis" dir="${store.dir}" resultproperty="build.result" searchpath="true">
 			<arg value="install_script.nsi"/>
 		</exec>
