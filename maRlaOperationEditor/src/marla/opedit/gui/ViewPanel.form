@@ -40,15 +40,15 @@
                           <Group type="102" alignment="0" attributes="0">
                               <Component id="categoryLabel" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
-                              <Component id="categoryTextField" pref="259" max="32767" attributes="0"/>
+                              <Component id="categoryTextField" pref="281" max="32767" attributes="0"/>
                           </Group>
                           <Group type="102" alignment="0" attributes="0">
                               <Component id="opsNameLabel" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
-                              <Component id="opsNameTextField" pref="252" max="32767" attributes="0"/>
+                              <Component id="opsNameTextField" pref="274" max="32767" attributes="0"/>
                           </Group>
                           <Component id="updateTestButton" min="-2" max="-2" attributes="0"/>
-                          <Component id="jScrollPane2" alignment="0" pref="334" max="32767" attributes="0"/>
+                          <Component id="jScrollPane2" alignment="0" pref="356" max="32767" attributes="0"/>
                       </Group>
                   </Group>
               </Group>
@@ -91,7 +91,7 @@
                                   <Component id="categoryTextField" alignment="3" min="-2" max="-2" attributes="0"/>
                               </Group>
                               <EmptySpace max="-2" attributes="0"/>
-                              <Component id="jScrollPane2" pref="344" max="32767" attributes="0"/>
+                              <Component id="jScrollPane2" pref="356" max="32767" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="updateTestButton" min="-2" max="-2" attributes="0"/>
                           </Group>
@@ -121,7 +121,7 @@
               <Group type="102" alignment="1" attributes="0">
                   <EmptySpace min="-2" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="1" attributes="0">
-                      <Component id="jScrollPane3" alignment="0" pref="352" max="32767" attributes="2"/>
+                      <Component id="jScrollPane3" alignment="0" pref="396" max="32767" attributes="2"/>
                       <Group type="102" alignment="0" attributes="0">
                           <Component id="dataCsvLabel" min="-2" max="-2" attributes="0"/>
                           <EmptySpace min="-2" max="-2" attributes="0"/>
@@ -135,7 +135,7 @@
                       <Group type="102" alignment="0" attributes="1">
                           <Component id="displayNameLabel" min="-2" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
-                          <Component id="displayNameTextField" pref="250" max="32767" attributes="0"/>
+                          <Component id="displayNameTextField" pref="294" max="32767" attributes="0"/>
                       </Group>
                       <Component id="questionPanel" alignment="0" max="32767" attributes="2"/>
                   </Group>
@@ -161,7 +161,7 @@
                       <Component id="displayNameTextField" alignment="3" min="-2" max="-2" attributes="0"/>
                   </Group>
                   <EmptySpace max="-2" attributes="0"/>
-                  <Component id="jScrollPane3" pref="248" max="32767" attributes="0"/>
+                  <Component id="jScrollPane3" pref="254" max="32767" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
               </Group>
           </Group>
@@ -234,7 +234,7 @@
           <Layout>
             <DimensionLayout dim="0">
               <Group type="103" groupAlignment="0" attributes="0">
-                  <EmptySpace min="0" pref="348" max="32767" attributes="0"/>
+                  <EmptySpace min="0" pref="392" max="32767" attributes="0"/>
               </Group>
             </DimensionLayout>
             <DimensionLayout dim="1">

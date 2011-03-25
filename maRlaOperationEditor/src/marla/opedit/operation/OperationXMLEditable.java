@@ -17,15 +17,23 @@
  */
 package marla.opedit.operation;
 
+import java.io.IOException;
+import java.io.StringReader;
+import java.io.StringWriter;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import marla.ide.operation.OperationXML;
 import marla.ide.operation.OperationXMLException;
 import marla.ide.problem.MarlaException;
 import marla.ide.resource.ConfigurationException;
+import marla.opedit.gui.Domain;
+import org.jdom.Content;
+import org.jdom.Document;
 import org.jdom.Element;
+import org.jdom.JDOMException;
+import org.jdom.input.SAXBuilder;
+import org.jdom.output.Format;
+import org.jdom.output.XMLOutputter;
 
 /**
  * @author Ryan Morehart
@@ -65,6 +73,7 @@ public class OperationXMLEditable extends OperationXML
 	@Override
 	public Element getConfiguration()
 	{
+		// TODO name could update without making it here
 		return opEl;
 	}
 
@@ -93,6 +102,116 @@ public class OperationXMLEditable extends OperationXML
 	public OperationEditorException getError()
 	{
 		return lastError;
+	}
+
+	/**
+	 * Gets the category this operation is currently in
+	 * @return Category operation is in. Blank if there is none set
+	 */
+	public String getCategory()
+	{
+		return opEl.getAttributeValue("category", "");
+	}
+
+	/**
+	 * Sets the category for this operation
+	 * @param newCat New category to place this operation in. Setting it to null
+	 *		or blank removes the category
+	 * @return Previously set category
+	 */
+	public String setCategory(String newCat) throws OperationEditorException
+	{
+		String old = opEl.getAttributeValue("category");
+
+		if(newCat != null && !newCat.isEmpty())
+			opEl.setAttribute("category", newCat);
+		else
+			opEl.removeAttribute("category");
+
+		setConfiguration(opEl);
+
+		return old;
+	}
+
+	/**
+	 * Sets the name for this operation
+	 * @param newName New name for this operation
+	 * @return Previously set name
+	 */
+	public String setEditableName(String newName) throws OperationEditorException
+	{
+		String old = opEl.getAttributeValue("name");
+
+		if(newName != null && !newName.isEmpty())
+			opEl.setAttribute("name", newName);
+		else
+			throw new OperationEditorException("Operation name must be specified");
+
+		setConfiguration(opEl);
+
+		return old;
+	}
+
+
+	/**
+	 * String version of the inner XML powering this operation
+	 * @return Current XML
+	 */
+	public String getInnerXML() throws OperationEditorException
+	{
+		try
+		{
+			// Get previous XML
+			Document doc = new Document(opEl);
+			Format formatter = Format.getPrettyFormat();
+			XMLOutputter xml = new XMLOutputter(formatter);
+
+			StringWriter sw = new StringWriter();
+			xml.output(doc, sw);
+			return sw.toString();
+		}
+		catch(IOException ex)
+		{
+			return ex.getMessage();
+		}
+	}
+
+	/**
+	 * Changes the XML that the operation contains internally.
+	 * @param newXMLStr New XML to parse and use for operation guts
+	 * @return Previously set XML
+	 */
+	public String setInnerXML(String newXMLStr) throws OperationEditorException
+	{
+		String oldXML = getInnerXML();
+
+		try
+		{
+			// Load file into JDOM
+			String wrappedStr = "<wrapper>" + newXMLStr + "</wrapper>";
+			StringReader sr = new StringReader(wrappedStr);
+			SAXBuilder parser = new SAXBuilder();
+			Document doc = parser.build(sr);
+
+			// Stick parsed version into opEl
+			opEl.removeContent();
+			for(Object o : doc.getContent())
+				opEl.addContent((Content)((Content)o).clone());
+
+			// And use these settings
+			setConfiguration(opEl);
+		}
+		catch(JDOMException ex)
+		{
+			throw new OperationEditorException("XML is invalid", ex);
+		}
+		catch(IOException ex)
+		{
+			Domain.logger.add(ex);
+			throw new OperationEditorException("XML is invalid", ex);
+		}
+
+		return oldXML;
 	}
 
 	/**

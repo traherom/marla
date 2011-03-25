@@ -27,6 +27,12 @@ import java.util.Date;
 import javax.swing.DefaultListModel;
 import javax.swing.JPanel;
 import javax.swing.table.DefaultTableModel;
+import marla.ide.problem.DataSet;
+import marla.ide.problem.DuplicateNameException;
+import marla.ide.problem.MarlaException;
+import marla.opedit.operation.OperationEditorException;
+import marla.opedit.operation.OperationFile;
+import marla.opedit.operation.OperationXMLEditable;
 import marla.opedit.resource.LoadSaveThread;
 
 /**
@@ -55,6 +61,13 @@ public class ViewPanel extends JPanel
     protected Domain domain = new Domain (this);
 	/** True while the interface is loading, false otherwise.*/
 	boolean initLoading;
+
+	/** Current data the user wants to use for testing */
+	protected DataSet testData = null;
+	/** Current file the user has opened */
+	protected OperationFile currentFile = null;
+	/** Current operation the user is editing */
+	protected OperationXMLEditable currentOperation = null;
 
     /**
      * Creates new form MainFrame for a stand-alone application.
@@ -364,17 +377,38 @@ public class ViewPanel extends JPanel
 
 	private void addButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_addButtonActionPerformed
 	{//GEN-HEADEREND:event_addButtonActionPerformed
-		// TODO add your handling code here:
+		try
+		{
+			OperationXMLEditable newOp = currentFile.addOperation();
+		}
+		catch(OperationEditorException ex)
+		{
+			// Shouldn't happen
+			Domain.logger.add(ex);
+		}
+		
+		// TODO refresh operation listing and change the current operation
 	}//GEN-LAST:event_addButtonActionPerformed
 
 	private void removeButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_removeButtonActionPerformed
 	{//GEN-HEADEREND:event_removeButtonActionPerformed
-		// TODO add your handling code here:
+		currentFile.removeOperation(currentOperation);
+
+		// TODO refresh operation listing and change the current operation
 	}//GEN-LAST:event_removeButtonActionPerformed
 
 	private void updateTestButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_updateTestButtonActionPerformed
 	{//GEN-HEADEREND:event_updateTestButtonActionPerformed
-		// TODO add your handling code here:
+		try
+		{
+			currentOperation.setParentData(testData);
+		}
+		catch(MarlaException ex)
+		{
+			Domain.logger.add(ex);
+		}
+		
+		// TODO rebuild questions section, then call walk through the data and build the table
 	}//GEN-LAST:event_updateTestButtonActionPerformed
 
 	private void browseEditingButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_browseEditingButtonActionPerformed
@@ -384,27 +418,73 @@ public class ViewPanel extends JPanel
 
 	private void opsNameTextFieldActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_opsNameTextFieldActionPerformed
 	{//GEN-HEADEREND:event_opsNameTextFieldActionPerformed
-		// TODO add your handling code here:
+		String newName = opsNameTextField.getText();
+		
+		if(!currentFile.getOperationNames().contains(newName))
+		{
+			try
+			{
+				currentOperation.setEditableName(newName);
+			}
+			catch(OperationEditorException ex)
+			{
+				// TODO invalid name
+			}
+		}
+		else
+		{
+			// TODO dulicate name, don't allow it
+		}
 	}//GEN-LAST:event_opsNameTextFieldActionPerformed
 
 	private void categoryTextFieldActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_categoryTextFieldActionPerformed
 	{//GEN-HEADEREND:event_categoryTextFieldActionPerformed
+
+
 		// TODO add your handling code here:
 	}//GEN-LAST:event_categoryTextFieldActionPerformed
 
 	private void browseDataButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_browseDataButtonActionPerformed
 	{//GEN-HEADEREND:event_browseDataButtonActionPerformed
-		// TODO add your handling code here:
+		try
+		{
+			testData = DataSet.importFile(browseDataTextField.getText());
+
+			if(currentOperation != null)
+				currentOperation.setParentData(testData);
+		}
+		catch(DuplicateNameException ex)
+		{
+			// TODO CSV is invalid
+		}
+		catch(MarlaException ex)
+		{
+			// TODO unable to read CSV probably
+		}
 	}//GEN-LAST:event_browseDataButtonActionPerformed
 
 	private void reloadButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_reloadButtonActionPerformed
 	{//GEN-HEADEREND:event_reloadButtonActionPerformed
-		// TODO add your handling code here:
+		try
+		{
+			testData = DataSet.importFile(browseDataTextField.getText());
+
+			if(currentOperation != null)
+				currentOperation.setParentData(testData);
+		}
+		catch(DuplicateNameException ex)
+		{
+			// TODO CSV is invalid
+		}
+		catch(MarlaException ex)
+		{
+			// TODO unable to read CSV probably
+		}
 	}//GEN-LAST:event_reloadButtonActionPerformed
 
 	private void operationTextAreaFocusLost(java.awt.event.FocusEvent evt)//GEN-FIRST:event_operationTextAreaFocusLost
 	{//GEN-HEADEREND:event_operationTextAreaFocusLost
-		// TODO add your handling code here:
+		// TODO
 	}//GEN-LAST:event_operationTextAreaFocusLost
 
 	private void opsNameTextFieldFocusLost(java.awt.event.FocusEvent evt)//GEN-FIRST:event_opsNameTextFieldFocusLost
@@ -471,7 +551,15 @@ public class ViewPanel extends JPanel
 	 */
 	public void newOperation()
 	{
-
+		try
+		{
+			// TODO path to it... where does it come from?
+			currentFile = new OperationFile("");
+		}
+		catch(OperationEditorException ex)
+		{
+			// TODO handle unable to open
+		}
 	}
 
 	/**
@@ -479,7 +567,15 @@ public class ViewPanel extends JPanel
 	 */
 	public void closeOperation()
 	{
-		
+		try
+		{
+			currentFile.save();
+			currentFile = null;
+		}
+		catch(OperationEditorException ex)
+		{
+			// TODO handle unable to save
+		}
 	}
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

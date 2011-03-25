@@ -115,6 +115,15 @@ public class OperationFile
 	}
 
 	/**
+	 * Adds a new operation to this file. Name is automatically created
+	 * @return Newly added operation
+	 */
+	public OperationXMLEditable addOperation() throws OperationEditorException
+	{
+		return addOperation(getUniqueName());
+	}
+	
+	/**
 	 * Adds a new operation to this file with the given name
 	 * @param operationName Name of the new operation
 	 * @return Newly added operation
