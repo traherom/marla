@@ -1,5 +1,5 @@
 #summary Instructions for building maRla
-#labels Phase-Implementation
+#labels Phase-Implementation,Featured
 
 =Quick Start=
 maRla builds through an ant script and will build at a basic level in any JDK environment. To fully use the package-for-store and create-installer build targets (producing the Windows installer, most notably), [http://nsis.sourceforge.net/ NSIS] and [http://launch4j.sourceforge.net/ launch4j] need to be installed and on the path.
@@ -18,3 +18,25 @@ The following environments are recommended for building maRla. Most development 
     * By default, this would be `%Program Files%\NSIS`
   # [http://nsis.sourceforge.net/Inetc_plug-in Inetc] NSIS plugin - version used is in repository at [http://code.google.com/p/marla/source/browse/trunk/maRlaIDE/inetc.dll inetc.dll]
     * Copy into NSIS plugin directory (`install directory\plugins`)
+
+==Linux==
+  # *[http://www.oracle.com/technetwork/java/javase/downloads/index.html Java Development Kit]* v1.6+
+  # [http://netbeans.org/downloads/index.html NetBeans] v6.9.1+
+  # [http://launch4j.sourceforge.net/ launch4j] v3.0.2
+    * Must be installed to `/opt/launch4j/`
+    * If moved, modifications to [http://code.google.com/p/marla/source/browse/trunk/maRlaIDE/build.xml build.xml] will be needed. See the launch4j task definition in that file
+  # [http://nsis.sourceforge.net/ Nullsoft Scriptable Install System] v2.46
+    * After install, ensure the directory with `makensis` on the `PATH`
+  # [http://nsis.sourceforge.net/Inetc_plug-in Inetc] NSIS plugin - version used is in repository at [http://code.google.com/p/marla/source/browse/trunk/maRlaIDE/inetc.dll inetc.dll]
+    * Copy into NSIS plugin directory (`install directory\plugins`)
+
+===Ubuntu===
+Quick setup for Ubuntu/Debian:
+{{{
+sudo apt-get install netbeans nsis default-jdk
+}}}
+
+Launch4j still needs separate installation.
+
+==Mac OSX==
+TBD
