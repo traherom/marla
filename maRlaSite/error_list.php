@@ -1,5 +1,28 @@
 <?php
+session_start();
+if(!@$_SESSION['logged_in'])
+{
+	header('Location: login.php');
+	die();
+}
+
 require_once('lib.inc');
+
+if(isset($_REQUEST['resolve_all']))
+{
+	$stmt = fetchErrors(isset($_REQUEST['resolved']),
+				@$_REQUEST['dmin'], @$_REQUEST['dmax'],
+				@$_REQUEST['rmin'], @$_REQUEST['rmax'],
+				@$_REQUEST['contains']);
+	
+	$ids = array();
+	while($row = $stmt->fetch(PDO::FETCH_ASSOC))
+		$ids[] = $row['id'];
+
+	$stmt->closeCursor();
+
+	resolveErrors($ids);
+}
 ?>
 <!DOCTYPE html>
 <html>
@@ -7,6 +30,8 @@ require_once('lib.inc');
 	<title>The maRla Project - Exception Report Listing</title>
 </head>
 <body>
+
+<a href="logout.php">Logout</a>
 
 <form method="get" action="error_list.php">
 	<table>
@@ -38,6 +63,8 @@ require_once('lib.inc');
 		</tr>
 	</table>
 </form>
+
+<p><a href="error_list.php?resolve_all">Resolve All</a></p>
 
 <table style="width=100%; height: 100%;">
 	<tr>
