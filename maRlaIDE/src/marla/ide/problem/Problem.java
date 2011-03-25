@@ -142,25 +142,6 @@ public class Problem implements ProblemPart
 	}
 
 	/**
-	 * Creates a duplicate of the supplied problem. Any changes to the new
-	 * problem do _not_ reflect on the original.
-	 * @param prob Problem to copy
-	 */
-	public Problem(Problem prob)
-	{
-		isSaved = false;
-		statement = prob.statement;
-		for(DataSet ds : prob.datasets)
-		{
-			datasets.add(new DataSet(ds, this));
-		}
-		for(SubProblem sp : prob.subProblems)
-		{
-			subProblems.add(new SubProblem(sp, this));
-		}
-	}
-
-	/**
 	 * Sets all Problems to work with a new Domain
 	 * @return Previous Domain. Null if there was none
 	 */

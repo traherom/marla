@@ -32,6 +32,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import marla.ide.gui.Domain;
 import org.apache.commons.io.FileUtils;
 import org.jdom.Document;
 import org.jdom.Element;
@@ -312,8 +313,11 @@ public class LatexExporter
 	 */
 	public String cleanExport(String rnwPath) throws LatexException, MarlaException
 	{
+		Domain.setProgressStatus("Creating LaTeX file...");
+
 		// Export to the temporary file and them move
 		String tempFile = cleanTempExport();
+
 		return moveFile(tempFile, rnwPath);
 	}
 
@@ -982,8 +986,10 @@ public class LatexExporter
 	 * @param pdfPath Path for the newly created PDF file
 	 * @return Path to the newly created PDF
 	 */
-	public String generatePDF(String pdfPath) throws LatexException, RProcessorException, MarlaException
+	public String exportPDF(String pdfPath) throws LatexException, RProcessorException, MarlaException
 	{
+		Domain.setProgressStatus("Creating LaTeX file...");
+
 		// Get current files in dir. Any new files will be removed
 		File currentDir = new File(".");
 		List<File> originalFiles = new ArrayList<File>();
@@ -992,6 +998,8 @@ public class LatexExporter
 		// Create the rnw
 		String rnwPath = cleanTempExport();
 		String baseFileName = new File(rnwPath).getName().replace(".rnw", "");
+
+		Domain.setProgressStatus("Sweaving LaTeX file...");
 
 		try
 		{
@@ -1016,6 +1024,7 @@ public class LatexExporter
 			String texPath = texMatcher.group(1);
 
 			// Run through pdflatex, save results here
+			Domain.setProgressStatus("Generating PDF file...");
 			Process texProc = null;
 			BufferedReader texOutStream = null;
 			int exitVal = 0;
@@ -1096,6 +1105,7 @@ public class LatexExporter
 		finally
 		{
 			// Clean up by removing any new files
+			Domain.setProgressStatus("Removing temporary files...");
 			List<File> newFiles = new ArrayList<File>();
 			newFiles.addAll(Arrays.asList(currentDir.listFiles()));
 			newFiles.removeAll(originalFiles);

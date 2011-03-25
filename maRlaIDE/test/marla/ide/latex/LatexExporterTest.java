@@ -57,7 +57,7 @@ public class LatexExporterTest
 	public void testPDFExport() throws Exception
 	{
 		File tempFile = File.createTempFile("marla", ".pdf");
-		testExp.generatePDF(tempFile.getPath());
+		testExp.exportPDF(tempFile.getPath());
 		System.out.println("Look at " + tempFile);
 	}
 }

@@ -84,23 +84,6 @@ public class SubProblem implements ProblemPart, Comparable
 	}
 
 	/**
-	 * Copy constructor, creates a deep copy of the subproblem. CURRENTLY
-	 * NOT PERFECT! TODO: The start and end solution steps would need to be
-	 * updated to match the copied versions of themselves in our parent
-	 * problem
-	 * @param sp SubProblem to copy
-	 * @param parent Problem to set as the parent of the copy
-	 */
-	public SubProblem(SubProblem sp, Problem parent)
-	{
-		partDesc = sp.partDesc;
-		id = sp.id;
-
-		this.parent = parent;
-		throw new InternalMarlaException("TBD");
-	}
-
-	/**
 	 * Sets the "highlight" color for the SubProblems and returns the previously
 	 * set color
 	 * @param newColor New color to set for problem
