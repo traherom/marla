@@ -201,12 +201,12 @@ public class LatexExporter
 			try
 			{
 				// Get current files in dir. Any new files will be removed
-				File currentDir = new File(".");
+				File currentDir = File.createTempFile("marla", "test").getParentFile();
 				List<File> originalFiles = Arrays.asList(currentDir.listFiles());
 
 				// Test to see if pdflatex works by running a test file through it
 				ProcessBuilder procBuild = new ProcessBuilder(newPdfTexPath);
-				procBuild.directory(File.createTempFile("marla", "test").getParentFile());
+				procBuild.directory(currentDir);
 				Process texProc = procBuild.start();
 				BufferedReader texOutStream = new BufferedReader(new InputStreamReader(texProc.getInputStream()));
 
@@ -219,10 +219,10 @@ public class LatexExporter
 				// Look for where it says that pdf output was produced
 				validInstall = false;
 				String line = texOutStream.readLine();
-				StringBuilder outputFull = new StringBuilder();
+				//StringBuilder outputFull = new StringBuilder();
 				while(line != null)
 				{
-					outputFull.append(line);
+					//outputFull.append(line);
 					
 					if(line.startsWith("Output written on"))
 						validInstall = true;
@@ -230,7 +230,7 @@ public class LatexExporter
 					line = texOutStream.readLine();
 				}
 
-				System.out.println(outputFull);
+				//System.out.println(outputFull);
 
 				// Good game boys, gg
 				texProc.waitFor();

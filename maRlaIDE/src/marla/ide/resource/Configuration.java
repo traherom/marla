@@ -318,7 +318,7 @@ public class Configuration
 				return RProcessor.getRLocation();
 
 			case DebugMode:
-				return RProcessor.getDebugMode();
+				return Domain.getDebugMode();
 
 			case TexTemplate:
 				return LatexExporter.getDefaultTemplate();
@@ -416,20 +416,23 @@ public class Configuration
 				break;
 
 			case DebugMode:
-				try
-				{
-					RecordMode valCast = null;
-					if(val instanceof RecordMode)
-						valCast = (RecordMode) val;
-					else
-						valCast = RecordMode.valueOf (val.toString().toUpperCase());
+				Boolean mode = true;
+				if(val instanceof Boolean)
+					mode = (Boolean) val;
+				else
+					mode = Boolean.valueOf(val.toString());
+				
+				previous = Domain.setDebugMode(mode);
 
-					previous = RProcessor.setDebugMode(valCast);
-				}
-				catch(IllegalArgumentException ex)
-				{
-					throw new ConfigurationException("Invalid setting '" + val + "' for debug mode", ConfigType.DebugMode);
-				}
+				// Toggle our own output
+				detailedConfigStatus = mode;
+
+				// Also set RProcessor correctly
+				if(mode)
+					RProcessor.setDebugMode(RecordMode.FULL);
+				else
+					RProcessor.setDebugMode(RecordMode.DISABLED);
+				
 				break;
 
 			case TexTemplate:
