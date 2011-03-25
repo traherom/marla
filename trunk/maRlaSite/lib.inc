@@ -33,6 +33,18 @@ function fetchErrors($resolved, $dmin, $dmax, $rmin, $rmax, $contains, $limit=nu
 	return $db->query($query);
 }
 
+function resolveErrors($ids)
+{
+	global $db;
+	$stmt = $db->prepare('UPDATE errors SET resolved=1 WHERE id=?');
+	foreach($ids as $id)
+	{
+		$stmt->execute(array($id));
+		$stmt->closeCursor();
+	}
+
+}
+
 function head($str, $lineCount)
 {
 	$lines = explode("\n", $str, $lineCount + 1);

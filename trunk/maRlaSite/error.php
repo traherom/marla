@@ -1,4 +1,11 @@
 <?php
+session_start();
+if(!@$_SESSION['logged_in'])
+{
+	header('Location: login.php');
+	die();
+}
+
 if(!isset($_REQUEST['id']))
 {
 	header('Location: error_list.php');
@@ -33,7 +40,7 @@ if(isset($_REQUEST['download']))
 	<title>The maRla Project - Error #<?=$error['id']?></title>
 </head>
 <body>
-<p><a href="error_list.php">&lt;&lt;&lt; Back to list</a></p>
+<p><a href="error_list.php">&lt;&lt;&lt; Back to list</a> | <a href="logout.php">Logout</a></p>
 
 <table>
 	<tr>
