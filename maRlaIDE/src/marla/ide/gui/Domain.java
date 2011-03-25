@@ -71,9 +71,9 @@ public class Domain
 	/** The name of the application.*/
 	public static final String NAME = "The maRla Project";
 	/** The version number of the application.*/
-	public static final String VERSION = "0.05";
+	public static final String VERSION = "0.5";
 	/** The pre-release version name of the application.*/
-	public static final String PRE_RELEASE = "Alpha";
+	public static final String PRE_RELEASE = "Beta";
 	/** The location of the application as it runs.*/
 	public static final String CWD = System.getProperty ("user.dir");
 	/** The name of the operating system being used.*/
