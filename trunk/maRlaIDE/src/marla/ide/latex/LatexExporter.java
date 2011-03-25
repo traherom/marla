@@ -91,6 +91,7 @@ public class LatexExporter
 		l.add(new Object[]{Pattern.compile("\\\\"), "\\\\backslash"});
 		l.add(new Object[]{Pattern.compile("\\$"), "\\\\$"});
 		l.add(new Object[]{Pattern.compile("%"), "\\\\%"});
+		l.add(new Object[]{Pattern.compile("\\^"), "\\\\^"});
 		l.add(new Object[]{Pattern.compile("&"), "\\\\&"});
 		l.add(new Object[]{Pattern.compile("\\{"), "\\\\{"});
 		l.add(new Object[]{Pattern.compile("}"), "\\\\}"});
