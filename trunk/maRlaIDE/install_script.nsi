@@ -11,7 +11,7 @@
 ;--------------------------------
 ;General
 
-  Var /GLOBAL JRE_VERSION
+  !define JRE_VERSION "1.6"
   Var /GLOBAL InstallJRE
   Var /GLOBAL JavaInstaller
   Var /GLOBAL RInstaller
@@ -70,23 +70,32 @@
 ;Installer Sections
 
 Section -installjre jre
-  StrCpy $JRE_VERSION "1.6"
   Call CheckInstalledJRE
   StrCmp $InstallJRE "yes" JREInstaller JREEnd
 
 JREInstaller:
   DetailPrint "Java requires an update..."
   StrCpy $JavaInstaller "$TEMP\jre_setup.exe"
-  IfFileExists $JavaInstaller JavaInstall ContinueJavaDL
-  ContinueJavaDL:
-    DetailPrint "Downloading Java to $JavaInstaller"
-	inetc::get "http://javadl.sun.com/webapps/download/AutoDL?BundleId=33787" $JavaInstaller /END
-
-  JavaInstall:
-    ExecWait '"$JavaInstaller" /s /v\"/qn REBOOT=Suppress JAVAUPDATE=0 WEBSTARTICON=0\"' $0
+  IfFileExists $JavaInstaller DownloadSuccessful ContinueJDL
+  
+ContinueJDL:
+  DetailPrint "Downloading Java to $JavaInstaller"
+  Inetc::get "http://javadl.sun.com/webapps/download/AutoDL?BundleId=33787" "$JavaInstaller" /END
+  Pop $0
+  StrCmp $0 "OK" DownloadSuccessful
+  Goto JREFail
+  
+DownloadSuccessful:
+    ExecWait '"$JavaInstaller" /S REBOOT=Suppress JAVAUPDATE=0 WEBSTARTICON=0 /L \"$TEMP\jre_setup.log\"'
 
 JREEnd:
   DetailPrint "Java is up to date"
+  Goto JREEnd2
+  
+JREFail:
+  DetailPrint "Java failed to download and install"
+  
+JREEnd2:
 
 SectionEnd
 
@@ -244,7 +253,7 @@ NoJREFound:
 
 FoundJRE:
   ;Ensure that the JRE found is at least our lowest compatibile version
-  ${If} $JRE_VERSION > $JavaVer
+  ${If} ${JRE_VERSION} > $JavaVer
 	StrCpy $InstallJRE "yes"
   ${Else}
     StrCpy $InstallJRE "no"
