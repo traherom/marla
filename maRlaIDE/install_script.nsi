@@ -35,6 +35,12 @@
   !insertmacro MUI_PAGE_COMPONENTS
   !insertmacro MUI_PAGE_DIRECTORY
   !insertmacro MUI_PAGE_INSTFILES
+    !define MUI_FINISHPAGE_NOAUTOCLOSE
+    !define MUI_FINISHPAGE_RUN
+    !define MUI_FINISHPAGE_RUN_CHECKED
+    !define MUI_FINISHPAGE_RUN_TEXT "Launch maRla"
+    !define MUI_FINISHPAGE_RUN_FUNCTION "LaunchLink"
+  !insertmacro MUI_PAGE_FINISH
   
   !insertmacro MUI_UNPAGE_CONFIRM
   !insertmacro MUI_UNPAGE_INSTFILES
@@ -124,16 +130,14 @@ SectionEnd
 
 Section "Start Menu Shortcuts" StartShortcuts
 
-  SetOutPath "$INSTDIR"
   CreateDirectory "$SMPROGRAMS\maRla"
-  CreateShortCut "$SMPROGRAMS\maRla\Uninstall.lnk" "$INSTDIR\uninstall.exe"
+  CreateShortCut "$SMPROGRAMS\maRla\Uninstall maRla.lnk" "$INSTDIR\Uninstall.exe"
   CreateShortCut "$SMPROGRAMS\maRla\maRla.lnk" "$INSTDIR\maRlaIDE.exe"
   
 SectionEnd
 
 Section "Desktop Shortcut" DesktopShortcut
 
-  SetOutPath "$INSTDIR"
   CreateShortCut "$DESKTOP\maRla.lnk" "$INSTDIR\maRlaIDE.exe"
   
 SectionEnd
@@ -177,3 +181,7 @@ Section "Uninstall"
   DeleteRegKey /ifempty HKCU "Software\maRla"
 
 SectionEnd
+
+Function LaunchLink
+  ExecShell "" "$INSTDIR\marlaIDE.exe"
+FunctionEnd
