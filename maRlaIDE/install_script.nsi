@@ -81,9 +81,9 @@ JREInstaller:
   
 ContinueJDL:
   DetailPrint "Downloading Java to $JavaInstaller"
-  Inetc::get "http://javadl.sun.com/webapps/download/AutoDL?BundleId=33787" "$JavaInstaller" /END
+  NSISdl::download "http://javadl.sun.com/webapps/download/AutoDL?BundleId=33787" "$JavaInstaller"
   Pop $0
-  StrCmp $0 "OK" DownloadSuccessful
+  StrCmp $0 "success" DownloadSuccessful
   Goto JREFail
   
 DownloadSuccessful:

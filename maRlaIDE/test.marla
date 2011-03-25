@@ -2,7 +2,7 @@
 <problem person="Test student" course_long="Long name" course_short="Short name" chapter="Chapter" section="Section" probnum="Number">
   <statement>Problem description ...</statement>
   <conclusion>Conclusion</conclusion>
-  <data name="Data Set 1" id="2064948438" x="281" y="68" height="16" width="70">
+  <data name="Data Set 1" id="2064948438" x="209" y="32" height="16" width="70">
     <column name="Column 1" mode="NUMERIC">
       <value>0.0</value>
       <value>1.0</value>
@@ -263,9 +263,9 @@
       <value>48.0</value>
       <value>49.0</value>
     </column>
-    <operation type="marla.ide.operation.OperationXML" name="cos()" id="-1613836180" x="126" y="98" height="16" width="98">
+    <operation type="marla.ide.operation.OperationXML" name="cos()" id="-1613836180" x="42" y="62" height="16" width="98">
       <remark />
-      <operation type="marla.ide.operation.OperationXML" name="Barplot" id="-1259616404" x="114" y="128" height="16" width="123">
+      <operation type="marla.ide.operation.OperationXML" name="Barplot" id="-1259616404" x="30" y="92" height="16" width="123">
         <remark />
         <question name="col" answer="Column 1" />
         <extra name="Barplot" />
@@ -273,24 +273,24 @@
       <question name="col" answer="Column 1" />
       <extra name="cos()" />
     </operation>
-    <operation type="marla.ide.operation.OperationXML" name="Mean" id="1915277269" x="263" y="98" height="16" width="112">
+    <operation type="marla.ide.operation.OperationXML" name="Mean" id="1915277269" x="191" y="62" height="16" width="112">
       <remark />
-      <operation type="marla.ide.operation.OperationXML" name="Boxplot" id="1217894410" x="257" y="128" height="16" width="125">
+      <operation type="marla.ide.operation.OperationXML" name="Boxplot" id="1217894410" x="185" y="92" height="16" width="125">
         <remark />
-        <operation type="marla.ide.operation.OperationXML" name="Absolute Value" id="740021789" x="270" y="158" height="16" width="99">
+        <operation type="marla.ide.operation.OperationXML" name="Absolute Value" id="740021789" x="173" y="122" height="16" width="149">
           <remark />
-          <question name="col" answer="Column 1" />
+          <question name="col" answer="mean(Column 1)" />
           <extra name="Absolute Value" />
         </operation>
-        <question name="col" answer="Column 1" />
+        <question name="col" answer="Column 3" />
         <extra name="Boxplot" />
       </operation>
       <question name="col" answer="Column 1" />
       <extra name="Mean" />
     </operation>
-    <operation type="marla.ide.operation.OperationXML" name="Q-Q Line" id="1725846927" x="402" y="98" height="16" width="116">
+    <operation type="marla.ide.operation.OperationXML" name="Q-Q Line" id="1725846927" x="342" y="62" height="16" width="116">
       <remark />
-      <operation type="marla.ide.operation.OperationXML" name="Single Var Plot" id="-1023348318" x="406" y="128" height="16" width="109">
+      <operation type="marla.ide.operation.OperationXML" name="Single Var Plot" id="-1023348318" x="346" y="92" height="16" width="109">
         <remark />
         <question name="x" answer="Column 1" />
         <extra name="Single Var Plot" />
@@ -299,12 +299,52 @@
       <extra name="Q-Q Line" />
     </operation>
   </data>
+  <data name="Data Set 2" id="-337497176" x="379" y="180" height="16" width="70">
+    <column name="Column 1" mode="NUMERIC">
+      <value>2.0</value>
+      <value>213.0</value>
+      <value>4.0</value>
+      <value>235.0</value>
+      <value>25.0</value>
+      <value>2.0</value>
+    </column>
+    <column name="Blah" mode="NUMERIC">
+      <value>64.0</value>
+      <value>88.0</value>
+      <value>98.0</value>
+      <value>903.0</value>
+      <value>3142.0</value>
+      <value>89.0</value>
+    </column>
+    <column name="Another" mode="NUMERIC">
+      <value>38.0</value>
+      <value>3.0</value>
+      <value>19.0</value>
+      <value>5.0</value>
+      <value>920.0</value>
+      <value>541.0</value>
+    </column>
+    <operation type="marla.ide.operation.OperationXML" name="Absolute Value" id="344326009" x="381" y="210" height="16" width="66">
+      <remark />
+      <operation type="marla.ide.operation.OperationXML" name="Log 10" id="199039912" x="364" y="240" height="22" width="100">
+        <remark />
+        <operation type="marla.ide.operation.OperationXML" name="Natural Log" id="-848634779" x="342" y="270" height="16" width="144">
+          <remark />
+          <question name="col" answer="log10(abs(Blah))" />
+          <extra name="Natural Log" />
+        </operation>
+        <question name="col" answer="abs(Blah)" />
+        <extra name="Log 10" />
+      </operation>
+      <question name="col" answer="Blah" />
+      <extra name="Absolute Value" />
+    </operation>
+  </data>
   <part id="a." color="-4100327">
     <step id="1725846927" />
     <step id="-1023348318" />
     <step id="1915277269" />
     <step id="1217894410" />
-    <step id="740021789" />
     <step id="-1613836180" />
     <step id="-1259616404" />
     <statement>This is a sub problem ...</statement>
@@ -312,8 +352,6 @@
   </part>
   <part id="b." color="-16519193">
     <step id="1915277269" />
-    <step id="1217894410" />
-    <step id="740021789" />
     <step id="-1613836180" />
     <step id="-1259616404" />
     <statement>This is a sub problem ...</statement>
