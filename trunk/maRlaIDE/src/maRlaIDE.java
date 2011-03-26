@@ -35,6 +35,7 @@ import javax.swing.UnsupportedLookAndFeelException;
 import marla.ide.problem.MarlaException;
 import marla.ide.resource.BuildInfo;
 import marla.ide.resource.Configuration;
+import marla.ide.resource.Configuration.ConfigType;
 
 /**
  * The launcher for maRla IDE.
@@ -65,20 +66,29 @@ public class maRlaIDE
 		// Rather than having to call in to Configuration directly, if
 		// configure_only comes in as our first parameter we call it and then
 		// exit. Only configures off of command line parameters
-		if(args.length > 0 && args[0].equals("configure_only"))
+		if(args.length > 0)
 		{
-			try
+			if(args[0].equals("configure_only"))
 			{
-				System.out.println("Configuring...");
-				Configuration.main(args);
-				System.out.println("Done");
+				try
+				{
+					System.out.println("Configuring...");
+					Configuration.main(args);
+					System.out.println("Done");
+				}
+				catch(MarlaException ex)
+				{
+					System.err.println(ex);
+				}
+				System.exit(0);
 			}
-			catch(MarlaException ex)
+			else if(args[0].equals("--help"))
 			{
-				System.err.println(ex);
+				System.out.println("Possible configuration options:");
+				for(ConfigType c : ConfigType.values())
+					System.out.println("\t--" + c + "=<value>");
+				System.exit(0);
 			}
-
-			System.exit(0);
 		}
 
 		progressFrame.progressBar.setValue(0);
