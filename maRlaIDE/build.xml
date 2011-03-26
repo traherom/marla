@@ -207,7 +207,6 @@
 		<echo>Creating archive of files</echo>
 		<zip destfile="${setup.base}.zip">
 			<zipfileset file="${store.dir}/maRlaIDE.jar" />
-			<zipfileset file="${store.dir}/maRlaIDE.exe" />
 			<zipfileset file="${store.dir}/ops.xml" />
 			<zipfileset file="${store.dir}/export_template.xml" />
 			<zipfileset file="${store.dir}/gpl-3.0.txt" />
