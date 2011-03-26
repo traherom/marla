@@ -16,10 +16,9 @@ The following environments are recommended for building maRla. Most development 
   # [http://nsis.sourceforge.net/ Nullsoft Scriptable Install System] v2.46
     * After install, place the directory with `makensis.exe` on the `PATH`
     * By default, this would be `%Program Files%\NSIS`
-  # [http://nsis.sourceforge.net/Inetc_plug-in Inetc] NSIS plugin - version used is in repository at [http://code.google.com/p/marla/source/browse/trunk/maRlaIDE/inetc.dll inetc.dll]
-    * Copy into NSIS plugin directory (`install directory\plugins`)
 
 ==Linux==
+Your distribution may have packages for many of these items:
   # *[http://www.oracle.com/technetwork/java/javase/downloads/index.html Java Development Kit]* v1.6+
   # [http://netbeans.org/downloads/index.html NetBeans] v6.9.1+
   # [http://launch4j.sourceforge.net/ launch4j] v3.0.2
@@ -27,16 +26,11 @@ The following environments are recommended for building maRla. Most development 
     * If moved, modifications to [http://code.google.com/p/marla/source/browse/trunk/maRlaIDE/build.xml build.xml] will be needed. See the launch4j task definition in that file
   # [http://nsis.sourceforge.net/ Nullsoft Scriptable Install System] v2.46
     * After install, ensure the directory with `makensis` on the `PATH`
-  # [http://nsis.sourceforge.net/Inetc_plug-in Inetc] NSIS plugin - version used is in repository at [http://code.google.com/p/marla/source/browse/trunk/maRlaIDE/inetc.dll inetc.dll]
-    * Copy into NSIS plugin directory (`install directory\plugins`)
-
-===Ubuntu===
-Quick setup for Ubuntu/Debian:
-{{{
-sudo apt-get install netbeans nsis default-jdk
-}}}
-
-Launch4j still needs separate installation.
 
 ==Mac OSX==
 TBD
+
+=Ant targets=
+Once the build environment is setup, building of maRla can be done through ant (or NetBeans interface to ant). The most important special targets are the following.
+  * package-for-store - creates a single jar that contains all of maRla and its libraries, plus copies the needed default ops.xml and export_template.xml to the `./store` directory.
+  * create-installer - builds the Windows installer and zips up required files for distribution to other platforms.
