@@ -23,17 +23,21 @@ Var /GLOBAL RHome
 Var /GLOBAL MikTexVer
 Var /GLOBAL MikTexHome
 
-;Name and file
+; Settings
+SetCompress auto
+SetCompressor /SOLID lzma
+
+; Name and file
 Name "maRla"
 OutFile "Setup.exe"
 
-;Default installation folder
+; Default installation folder
 InstallDir "$ProgramFiles\maRla"
 
-;Get installation folder from registry if available
+; Get installation folder from registry if available
 InstallDirRegKey HKCU "Software\maRla" ""
 
-;Request admin privileges for Windows Vista
+; Request admin privileges for Windows Vista
 RequestExecutionLevel admin
 
 ; Quick selection options
@@ -274,6 +278,14 @@ LangString DESC_DesktopShortcut ${LANG_ENGLISH} "Create shortcut on Desktop."
 ;Uninstaller Section
 
 Section "Uninstall"
+
+	; Ensure it's not running
+	System::Call 'kernel32::OpenMutex(i 0x100000, b 0, t "themarlaproject") i .R0'
+	IntCmp $R0 0 notRunning
+		System::Call 'kernel32::CloseHandle(i $R0)'
+		MessageBox MB_OK|MB_ICONEXCLAMATION "The maRla Project is running. Please close it first" /SD IDOK
+		Abort
+	notRunning:
 
 	Delete "$INSTDIR\Uninstall.exe"
 	Delete "$INSTDIR\export_template.xml"
