@@ -52,6 +52,14 @@ public class maRlaIDE
 	 */
 	public static void main(final String args[])
 	{
+		Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
+			@Override
+			public void uncaughtException(Thread t, Throwable e)
+			{
+				Domain.logger.add(e);
+			}
+		});
+
 		progressFrame.progressBar.setValue(0);
 		progressFrame.progressBar.setString("0%");
 		progressFrame.statusLabel.setText("Loading framework ...");

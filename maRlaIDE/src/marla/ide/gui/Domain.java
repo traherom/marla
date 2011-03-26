@@ -83,7 +83,7 @@ public class Domain
 	/** The full time format for debug output.*/
 	public static final SimpleDateFormat FULL_TIME_FORMAT = new SimpleDateFormat("MM/dd/yyyy h:mm:ss a");
 	/** The logger holds all caught exceptions for recording in the log file.*/
-	public static final ArrayList<Exception> logger = new ArrayList<Exception> ();
+	public static final List<Throwable> logger = new ArrayList<Throwable> ();
 	/** Debug mode */
 	public static boolean debug = false;
 	/** First run of maRla */
@@ -433,7 +433,7 @@ public class Domain
 
 			for(int i = 0; i < logger.size(); ++i)
 			{
-				Exception ex = logger.get(i);
+				Throwable ex = logger.get(i);
 
 				// To file
 				ex.printStackTrace(out);
