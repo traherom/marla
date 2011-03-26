@@ -784,10 +784,6 @@ public class SettingsDialog extends EscapeDialog
 		{
 			Domain.logger.add(ex);
 		}
-		catch (ClassCastException ex)
-		{
-			Domain.logger.add(ex);
-		}
 
 		// Pack and show the Settings dialog
 		pack ();
