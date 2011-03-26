@@ -158,6 +158,8 @@ public class Configuration
 		List<ConfigType> unconfigured = new ArrayList<ConfigType>();
 		unconfigured.addAll(Arrays.asList(ConfigType.values()));
 
+		// TODO change this to use configureFromBest()
+
 		// Set up stuff for incrementing progress bar nicely
 		int currProgress = 10;
 		int max = 80;
@@ -580,11 +582,32 @@ public class Configuration
 	}
 
 	/**
+	 * Runs down the chain of possibilities, configuring the given setting
+	 * from the "best" source (command line->xml->search->default)
+	 * @param setting Setting to configure
+	 * @param args The command line. If null, will be skipped entirely
+	 * @return true if setting was configured, false otherwise
+	 */
+	public boolean configureFromBest(ConfigType setting, String[] args)
+	{
+		if(args != null && configureFromCmdLine(setting, args))
+			return true;
+		else if(configureFromXML(setting))
+			return true;
+		else if(configureFromSearch(setting))
+			return true;
+		else if(configureFromDefault(setting))
+			return true;
+		else
+			return false;
+	}
+
+	/**
 	 * Sets configuration parameters based loaded configuration file
 	 * @param setting Setting to configure
 	 * @return true if successfully configured, false otherwise
 	 */
-	private boolean configureFromXML(ConfigType setting)
+	public boolean configureFromXML(ConfigType setting)
 	{
 		boolean success = false;
 
@@ -616,7 +639,7 @@ public class Configuration
 	 * @param args Command line parameters, as given to main() by the VM
 	 * @return true if successfully configured, false otherwise
 	 */
-	private boolean configureFromCmdLine(ConfigType setting, String[] args)
+	public boolean configureFromCmdLine(ConfigType setting, String[] args)
 	{
 		// Look for key in args
 		String setName = "--" + setting.toString();
@@ -649,7 +672,7 @@ public class Configuration
 	 * @param setting Configuration setting to look for
 	 * @return true if the item is configured successfully, false otherwise
 	 */
-	private boolean configureFromSearch(ConfigType setting)
+	public boolean configureFromSearch(ConfigType setting)
 	{
 		boolean success = false;
 
@@ -691,7 +714,7 @@ public class Configuration
 	 * @param setting Configuration setting to find a default for
 	 * @return true if the item is configured successfully, false otherwise
 	 */
-	private boolean configureFromDefault(ConfigType setting)
+	public boolean configureFromDefault(ConfigType setting)
 	{
 		boolean success = false;
 
@@ -1147,7 +1170,7 @@ public class Configuration
 			if(conf.configureFromCmdLine(c, args))
 				System.out.println("Configured " + c);
 		}
-		
+
 		conf.save();
 	}
 }
