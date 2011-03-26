@@ -31,7 +31,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -107,7 +106,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 	 * @param viewPanel A reference to the view panel.
 	 * @param domain A reference to the domain.
 	 */
-	public NewProblemWizardDialog(final ViewPanel viewPanel, Domain domain)
+	public NewProblemWizardDialog(final ViewPanel viewPanel, final Domain domain)
 	{
 		super(viewPanel.mainFrame, viewPanel);
 		this.domain = domain;
@@ -123,20 +122,28 @@ public class NewProblemWizardDialog extends EscapeDialog
 				{
 					if(dataSetTabbedPane.getUI().getTabBounds(dataSetTabbedPane, i).contains(evt.getPoint()) && evt.getClickCount() == 2)
 					{
+						String oldName = dataSetTabbedPane.getTitleAt(i);
 						Object name = JOptionPane.showInputDialog(viewPanel.domain.getTopWindow(),
 																  "Give the data set a new name:",
 																  "Data Set Name",
 																  JOptionPane.QUESTION_MESSAGE,
 																  null,
 																  null,
-																  dataSetTabbedPane.getTitleAt(i));
+																  oldName);
 						if(name != null)
 						{
-							if(!name.toString().equals(dataSetTabbedPane.getTitleAt(i)))
+							if(!name.toString().equals(oldName))
 							{
 								if(!dataSetNameExists(i, name.toString()))
 								{
 									dataSetTabbedPane.setTitleAt(i, name.toString());
+									try
+									{
+										domain.problem.getData(oldName).setDataName(name.toString());
+									}
+									catch(DataNotFoundException ex) {}
+									catch(DuplicateNameException ex) {}
+									VIEW_PANEL.workspacePanel.invalidate();
 								}
 								else
 								{
@@ -196,7 +203,7 @@ public class NewProblemWizardDialog extends EscapeDialog
         subProblemsWizardLabel = new javax.swing.JLabel();
         subProblemsPanel = new javax.swing.JPanel();
         subProblemsScrollPane = new javax.swing.JScrollPane();
-        subProblemsScollablePanel = new javax.swing.JPanel();
+        subProblemsScrollablePanel = new javax.swing.JPanel();
         addSubProblemButton = new javax.swing.JButton();
         removeSubProblemButton = new javax.swing.JButton();
         valuesCardPanel = new javax.swing.JPanel();
@@ -455,8 +462,8 @@ public class NewProblemWizardDialog extends EscapeDialog
 
         subProblemsScrollPane.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 
-        subProblemsScollablePanel.setLayout(new javax.swing.BoxLayout(subProblemsScollablePanel, javax.swing.BoxLayout.PAGE_AXIS));
-        subProblemsScrollPane.setViewportView(subProblemsScollablePanel);
+        subProblemsScrollablePanel.setLayout(new javax.swing.BoxLayout(subProblemsScrollablePanel, javax.swing.BoxLayout.PAGE_AXIS));
+        subProblemsScrollPane.setViewportView(subProblemsScrollablePanel);
 
         javax.swing.GroupLayout subProblemsPanelLayout = new javax.swing.GroupLayout(subProblemsPanel);
         subProblemsPanel.setLayout(subProblemsPanelLayout);
@@ -777,9 +784,9 @@ public class NewProblemWizardDialog extends EscapeDialog
 		}
 
 		// Add the JPanel to the New Problem Wizard
-		subProblemsScollablePanel.add(panel);
-		subProblemsScollablePanel.invalidate();
-		subProblemsScollablePanel.scrollRectToVisible(new Rectangle(0, subProblemsScollablePanel.getHeight() + 150, 1, 1));
+		subProblemsScrollablePanel.add(panel);
+		subProblemsScrollablePanel.invalidate();
+		subProblemsScrollablePanel.scrollRectToVisible(new Rectangle(0, subProblemsScrollablePanel.getHeight() + 150, 1, 1));
 
 		if (editing)
 		{
@@ -838,7 +845,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 		{
 			domain.problem.removeSubProblem(domain.problem.getSubProblem(domain.problem.getSubProblemCount() - 1));
 		}
-		subProblemsScollablePanel.remove(panel);
+		subProblemsScrollablePanel.remove(panel);
 
 		if(subProblemPanels.isEmpty())
 		{
@@ -849,7 +856,9 @@ public class NewProblemWizardDialog extends EscapeDialog
 			addSubProblemButton.setEnabled(true);
 		}
 
-		subProblemsScollablePanel.invalidate();
+		subProblemsScrollablePanel.invalidate();
+		subProblemsScrollablePanel.revalidate();
+		subProblemsScrollablePanel.repaint();
 
 		if (editing)
 		{
@@ -1160,7 +1169,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 			{
 				((JTextArea) ((JViewport) ((JScrollPane) ((JPanel) subProblemPanels.get(subProblemPanels.size() - 1)).getComponent(1)).getComponent(0)).getComponent(0)).requestFocus();
 				((JTextArea) ((JViewport) ((JScrollPane) ((JPanel) subProblemPanels.get(subProblemPanels.size() - 1)).getComponent(1)).getComponent(0)).getComponent(0)).selectAll();
-				subProblemsScollablePanel.scrollRectToVisible(new Rectangle(0, subProblemsScollablePanel.getHeight() + 150, 1, 1));
+				subProblemsScrollablePanel.scrollRectToVisible(new Rectangle(0, subProblemsScrollablePanel.getHeight() + 150, 1, 1));
 			}
 			catch(ArrayIndexOutOfBoundsException ex)
 			{
@@ -1303,7 +1312,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 			{
 				((JTextArea) ((JViewport) ((JScrollPane) ((JPanel) subProblemPanels.get(subProblemPanels.size() - 1)).getComponent(1)).getComponent(0)).getComponent(0)).requestFocus();
 				((JTextArea) ((JViewport) ((JScrollPane) ((JPanel) subProblemPanels.get(subProblemPanels.size() - 1)).getComponent(1)).getComponent(0)).getComponent(0)).selectAll();
-				subProblemsScollablePanel.scrollRectToVisible(new Rectangle(0, subProblemsScollablePanel.getHeight(), 1, 1));
+				subProblemsScrollablePanel.scrollRectToVisible(new Rectangle(0, subProblemsScrollablePanel.getHeight(), 1, 1));
 			}
 			catch(ArrayIndexOutOfBoundsException ex)
 			{
@@ -1400,8 +1409,8 @@ public class NewProblemWizardDialog extends EscapeDialog
     protected javax.swing.JPanel subProblemsCardPanel;
     protected javax.swing.JLabel subProblemsLabel;
     private javax.swing.JPanel subProblemsPanel;
-    protected javax.swing.JPanel subProblemsScollablePanel;
     private javax.swing.JScrollPane subProblemsScrollPane;
+    protected javax.swing.JPanel subProblemsScrollablePanel;
     private javax.swing.JLabel subProblemsWizardLabel;
     protected javax.swing.JPanel valuesCardPanel;
     protected javax.swing.JLabel valuesLabel;
@@ -1649,6 +1658,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 		final JLabel columnsLabel = new JLabel("Columns:");
 		columnsLabel.setFont(new java.awt.Font("Verdana", 0, 12));
 		final JSpinner columnsSpinner = new JSpinner();
+		columnsSpinner.setPreferredSize(new Dimension(40, 20));
 		columnsSpinner.addChangeListener(new ChangeListener()
 		{
 			@Override
@@ -1705,6 +1715,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 		final JLabel rowsLabel = new JLabel("Rows:");
 		rowsLabel.setFont(new java.awt.Font("Verdana", 0, 12));
 		final JSpinner rowsSpinner = new JSpinner();
+		rowsSpinner.setPreferredSize(new Dimension(40, 20));
 		rowsSpinner.addChangeListener(new ChangeListener()
 		{
 			@Override
@@ -1732,6 +1743,8 @@ public class NewProblemWizardDialog extends EscapeDialog
 					}
 
 					table.invalidate();
+					table.repaint();
+					table.getTableHeader().resizeAndRepaint();
 				}
 			}
 		});
@@ -1938,8 +1951,8 @@ public class NewProblemWizardDialog extends EscapeDialog
 		nextWizardButton.setText("Next >");
 		// Set properties in the sub problems panel
 		subProblemPanels.clear();
-		subProblemsScollablePanel.removeAll();
-		subProblemsScollablePanel.invalidate();
+		subProblemsScrollablePanel.removeAll();
+		subProblemsScrollablePanel.invalidate();
 		addSubProblemButton.setEnabled(true);
 		removeSubProblemButton.setEnabled(true);
 		// Set properties for the values tabs
@@ -2077,7 +2090,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 				subProblemPanels.add(panel);
 
 				// Add the JPanel to the New Problem Wizard
-				subProblemsScollablePanel.add(panel);
+				subProblemsScrollablePanel.add(panel);
 			}
 			if(subProblemPanels.size() > 0)
 			{
@@ -2095,8 +2108,8 @@ public class NewProblemWizardDialog extends EscapeDialog
 			{
 				addSubProblemButton.setEnabled(false);
 			}
-			subProblemsScollablePanel.invalidate();
-			subProblemsScollablePanel.scrollRectToVisible(new Rectangle(0, subProblemsScollablePanel.getHeight(), 1, 1));
+			subProblemsScrollablePanel.invalidate();
+			subProblemsScrollablePanel.scrollRectToVisible(new Rectangle(0, subProblemsScrollablePanel.getHeight(), 1, 1));
 
 			for(int i = 0; i < domain.problem.getDataCount(); ++i)
 			{
