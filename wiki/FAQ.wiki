@@ -1,0 +1,12 @@
+#summary Frequently Asked Questions about The maRla Project
+#labels Featured,Phase-Support
+
+<wiki:toc max_depth="1" />
+
+=What is the maRla project?=
+maRla is intended to be a work environment for students in early statistical classes. It has the ability to take a student all the way from typing the problem statement--straight from the book--out to a final, polished PDF to turn into a professor.
+
+maRla does this in a graphical environment, where most work is done by dragging around data and operations. Operations may be attached to data, data can have multiple operations working off of it, and operations may chain together to perform more complex calculations.
+
+=Who should use maRla?=
+First year statistics students are the primary target. However, operations may be defined by the user, so any sort of math could theoretically be supported.
