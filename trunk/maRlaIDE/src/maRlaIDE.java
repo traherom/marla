@@ -76,11 +76,14 @@ public class maRlaIDE
 					Configuration.main(args);
 					System.out.println("Done");
 				}
-				catch(MarlaException ex)
+				catch(Exception ex)
 				{
 					System.err.println(ex);
 				}
-				System.exit(0);
+				finally
+				{
+					System.exit(0);
+				}
 			}
 			else if(args[0].equals("--help"))
 			{
