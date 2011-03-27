@@ -21,8 +21,8 @@ package marla.ide.gui;
 import java.io.File;
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 import marla.ide.problem.MarlaException;
-import marla.ide.r.RProcessor;
 import marla.ide.resource.Configuration;
 
 /**
@@ -441,8 +441,11 @@ public class SettingsDialog extends EscapeDialog
 				Configuration.getInstance().set(Configuration.ConfigType.R, VIEW_PANEL.openChooserDialog.getSelectedFile().getPath());
 				rPathTextField.setText(VIEW_PANEL.openChooserDialog.getSelectedFile().getPath());
 			}
-			// If an exception occurs, the path should not be changed, so nothing happens in a caught exception
-			catch (MarlaException ex) {}
+			catch (MarlaException ex)
+			{
+				// Path should not be changed, but display dialog telling user the problem
+				JOptionPane.showMessageDialog(Domain.getInstance().getTopWindow(), ex.getMessage(), "R Error", JOptionPane.WARNING_MESSAGE);
+			}
 		}
 	}//GEN-LAST:event_rPathButtonActionPerformed
 
@@ -465,8 +468,11 @@ public class SettingsDialog extends EscapeDialog
 				Configuration.getInstance().set(Configuration.ConfigType.PdfTex, VIEW_PANEL.openChooserDialog.getSelectedFile().getPath());
 				rPathTextField.setText(VIEW_PANEL.openChooserDialog.getSelectedFile().getPath());
 			}
-			// If an exception occurs, the path should not be changed, so nothing happens in a caught exception
-			catch (MarlaException ex) {}
+			catch (MarlaException ex)
+			{
+				// Path should not be changed, but display dialog telling user the problem
+				JOptionPane.showMessageDialog(Domain.getInstance().getTopWindow(), ex.getMessage(), "PDFLaTeX Error", JOptionPane.WARNING_MESSAGE);
+			}
 		}
 	}//GEN-LAST:event_latexPathButtonActionPerformed
 
@@ -489,8 +495,11 @@ public class SettingsDialog extends EscapeDialog
 				Configuration.getInstance().set(Configuration.ConfigType.TexTemplate, VIEW_PANEL.openChooserDialog.getSelectedFile().getPath());
 				rPathTextField.setText(VIEW_PANEL.openChooserDialog.getSelectedFile().getPath());
 			}
-			// If an exception occurs, the path should not be changed, so nothing happens in a caught exception
-			catch (MarlaException ex) {}
+			catch (MarlaException ex)
+			{
+				// Path should not be changed, but display dialog telling user the problem
+				JOptionPane.showMessageDialog(Domain.getInstance().getTopWindow(), ex.getMessage(), "LaTeX Export Template Error", JOptionPane.WARNING_MESSAGE);
+			}
 		}
 	}//GEN-LAST:event_latexTemplateButtonActionPerformed
 
@@ -514,8 +523,11 @@ public class SettingsDialog extends EscapeDialog
 				rPathTextField.setText(VIEW_PANEL.openChooserDialog.getSelectedFile().getPath());
 				VIEW_PANEL.reloadOperations();
 			}
-			// If an exception occurs, the path should not be changed, so nothing happens in a caught exception
-			catch (MarlaException ex) {}
+			catch (MarlaException ex)
+			{
+				// Path should not be changed, but display dialog telling user the problem
+				JOptionPane.showMessageDialog(Domain.getInstance().getTopWindow(), ex.getMessage(), "Primary Operation XML Error", JOptionPane.WARNING_MESSAGE);
+			}
 		}
 	}//GEN-LAST:event_operationsButtonActionPerformed
 
@@ -635,8 +647,11 @@ public class SettingsDialog extends EscapeDialog
 				customOpsTextField.setText(userOpsText);
 				VIEW_PANEL.reloadOperations();
 			}
-			// If an exception occurs, the path should not be changed, so nothing happens in a caught exception
-			catch (MarlaException ex) {}
+			catch (MarlaException ex)
+			{
+				// Path should not be changed, but display dialog telling user the problem
+				JOptionPane.showMessageDialog(Domain.getInstance().getTopWindow(), ex.getMessage(), "User XML Error", JOptionPane.WARNING_MESSAGE);
+			}
 		}
 	}//GEN-LAST:event_customOpsBrowseActionPerformed
 
@@ -653,8 +668,10 @@ public class SettingsDialog extends EscapeDialog
 				{
 					customOpsTextField.setText((String) Configuration.getInstance().get(Configuration.ConfigType.UserOpsXML));
 				}
-				// Exception won't happen
-				catch(MarlaException innerEx) {}
+				catch(MarlaException innerEx)
+				{
+					Domain.logger.add(innerEx);
+				}
 			}
 		}
 	}//GEN-LAST:event_customOpsTextFieldActionPerformed

@@ -144,8 +144,12 @@ public final class RProcessor
 
 			// Set options and eat up an error about "no --no-readline"
 			// option on Windows if needed.
-			// show.error.messages=F?
 			execute("options(error=dump.frames, warn=-1, device=png)");
+
+			// Ensure R responds correctly to us
+			Boolean isWorking = executeBoolean("1==1");
+			if(!isWorking)
+				throw new ConfigurationException("'" + rPath + "' does not appear to be a valid R installation", ConfigType.R);
 		}
 		catch(IOException ex)
 		{
@@ -161,11 +165,21 @@ public final class RProcessor
 	public static String setRLocation(String newRPath) throws ConfigurationException, RProcessorException
 	{
 		String oldPath = rPath;
-		rPath = newRPath;
 
-		// Restart RProcessor if needed
-		if(oldPath == null || !oldPath.equals(newRPath))
-			restartInstance();
+		try
+		{
+			rPath = newRPath;
+
+			// Restart RProcessor if needed
+			if(oldPath == null || !oldPath.equals(newRPath))
+				restartInstance();
+		}
+		catch(ConfigurationException ex)
+		{
+			// Restore
+			rPath = oldPath;
+			throw ex;
+		}
 
 		return oldPath;
 	}
@@ -186,7 +200,7 @@ public final class RProcessor
 	 * locations for Windows, Linux, and OSX.
 	 * @return Instance of RProcessor that can be used for calculations
 	 */
-	public static RProcessor getInstance() throws RProcessorDeadException, ConfigurationException
+	public static RProcessor getInstance() throws ConfigurationException
 	{
 		try
 		{
@@ -197,8 +211,7 @@ public final class RProcessor
 		}
 		catch(RProcessorException ex)
 		{
-			System.err.println("No R installation found, dying.");
-			throw new ConfigurationException("R installion not found", ConfigType.R);
+			throw new ConfigurationException("R installation not found", ConfigType.R);
 		}
 	}
 
@@ -206,7 +219,7 @@ public final class RProcessor
 	 * Kills any existing instances of the RProcessor and starts a new one.
 	 * @return Newly created RProcessor instance
 	 */
-	public static RProcessor restartInstance() throws RProcessorException, ConfigurationException
+	public static RProcessor restartInstance() throws ConfigurationException
 	{
 		if(singleRProcessor != null)
 		{
