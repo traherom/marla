@@ -238,13 +238,20 @@ SectionGroup "MiKTeX"
 		; Put in registry and tell tex to rebuild database
 		DetailPrint "Adding R texmf root to MiKTeX"
 		Call CheckInstalledR
-		ClearErrors
-		WriteRegStr HKCU "Software\MiKTeX.org\MiKTeX\$MikTexVer\Core" "UserRoots" "$RHome\share\texmf"
-		ExecWait '"$MikTexHome\miktex\bin\initexmf" --update-fndb"'
 		
-		${If} ${Errors}
-			DetailPrint "Failed to add R to MiKTeX's texmf roots"
-			MessageBox MB_OK "Failed to link R's Sweave files with MiKTeX. May cause problems with exporting PDFs."
+		${If} $RETURN == "exists"		
+			ClearErrors
+			WriteRegStr HKCU "Software\MiKTeX.org\MiKTeX\$MikTexVer\Core" "UserRoots" "$RHome\share\texmf"
+			ExecWait '"$MikTexHome\miktex\bin\initexmf" --update-fndb"'
+			
+			${If} ${Errors}
+				DetailPrint "Failed to add R to MiKTeX's texmf roots"
+				MessageBox MB_OK "Failed to link R's Sweave files with MiKTeX. May cause problems with exporting PDFs."
+			${EndIf}
+			
+		${Else}
+			DetailPrint "R not available to configure MiKTeX with"
+			MessageBox MB_OK "Unable to locate R and register it with MiKTeX.$\nRerun the installer once R is installed or register Sweave.stf manually with MiKTeX."
 		${EndIf}
 		
 	SectionEnd
