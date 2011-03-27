@@ -137,22 +137,28 @@ public class LatexExporter
 	public final String setTemplate(String newTemplatePath) throws LatexException, ConfigurationException
 	{
 		String oldPath = templatePath;
-		templatePath = newTemplatePath;
 
 		try
 		{
 			// Load the XML
 			SAXBuilder parser = new SAXBuilder();
-			Document doc = parser.build(templatePath);
-			templateXML = doc.getRootElement();
+			Document doc = parser.build(newTemplatePath);
+			Element root = doc.getRootElement();
+			
+			if(!root.getName().equals("template"))
+				throw new ConfigurationException("LaTeX template '" + newTemplatePath + "' does not appear to contain an export template", ConfigType.TexTemplate);
+
+			// Accept
+			templatePath = newTemplatePath;
+			templateXML = root;
 		}
 		catch(JDOMException ex)
 		{
-			throw new LatexException("LaTeX template could not be parsed", ex);
+			throw new ConfigurationException("LaTeX template '" + newTemplatePath + "' could not be parse", ConfigType.TexTemplate, ex);
 		}
 		catch(IOException ex)
 		{
-			throw new ConfigurationException("LaTeX template '" + templatePath + "' XML file could not be read", ConfigType.TexTemplate, ex);
+			throw new ConfigurationException("LaTeX template '" + newTemplatePath + "' could not be read", ConfigType.TexTemplate, ex);
 		}
 
 		return oldPath;
@@ -202,7 +208,9 @@ public class LatexExporter
 			try
 			{
 				// Get current files in dir. Any new files will be removed
-				File currentDir = File.createTempFile("marla", "test").getParentFile();
+				File tempFile = File.createTempFile("marla", "test");
+				File currentDir = tempFile.getParentFile();
+				tempFile.deleteOnExit();
 				List<File> originalFiles = Arrays.asList(currentDir.listFiles());
 
 				// Test to see if pdflatex works by running a test file through it
@@ -220,10 +228,12 @@ public class LatexExporter
 				// Look for where it says that pdf output was produced
 				validInstall = false;
 				String line = texOutStream.readLine();
-				//StringBuilder outputFull = new StringBuilder();
+				StringBuilder outputFull = new StringBuilder();
 				while(line != null)
 				{
-					//outputFull.append(line);
+					outputFull.append('\t');
+					outputFull.append(line);
+					outputFull.append('\n');
 					
 					if(line.startsWith("Output written on"))
 						validInstall = true;
@@ -231,8 +241,12 @@ public class LatexExporter
 					line = texOutStream.readLine();
 				}
 
-				//System.out.println(outputFull);
-
+				if(Domain.isDebugMode())
+				{
+					System.out.println("Response from pdfTeX '" + newPdfTexPath + "' to test document:");
+					System.out.println(outputFull);
+				}
+				
 				// Good game boys, gg
 				texProc.waitFor();
 				texOutStream.close();
@@ -257,6 +271,7 @@ public class LatexExporter
 				throw new ConfigurationException("pdfTeX could not be located at '" + defaultTemplate + "'", ConfigType.PdfTex);
 		}
 
+		// Accept new path
 		pdfTexPath = newPdfTexPath;
 		return oldPath;
 	}

@@ -98,16 +98,26 @@ public class OperationXML extends Operation
 	 */
 	public static String setPrimaryXMLPath(String newPath) throws ConfigurationException
 	{
+		String old = primaryOpsPath;
+
 		try
 		{
-			String old = primaryOpsPath;
+			clearXMLOps();
 			primaryOpsPath = newPath;
 			loadXML();
 			return old;
 		}
 		catch(OperationXMLException ex)
 		{
+			// Revert back
+			primaryOpsPath = old;
 			throw new ConfigurationException("Primary operation XML file '" + newPath + "' appears to have errors", ConfigType.PrimaryOpsXML, ex);
+		}
+		catch(ConfigurationException ex)
+		{
+			// Revert back
+			primaryOpsPath = old;
+			throw ex;
 		}
 	}
 
@@ -128,16 +138,26 @@ public class OperationXML extends Operation
 	 */
 	public static List<String> setUserXMLPaths(List<String> newPaths) throws ConfigurationException
 	{
+		List<String> old = additionalOpsPaths;
+
 		try
 		{
-			List<String> old = additionalOpsPaths;
+			clearXMLOps();
 			additionalOpsPaths = newPaths;
 			loadXML();
 			return old;
 		}
 		catch(OperationXMLException ex)
 		{
-			throw new ConfigurationException("User operation XML file(s) appears to have errors", ConfigType.UserOpsXML, ex);
+			// Revert back
+			additionalOpsPaths = old;
+			throw new ConfigurationException("User operation XML file(s) appear to have errors", ConfigType.UserOpsXML, ex);
+		}
+		catch(ConfigurationException ex)
+		{
+			// Revert back
+			additionalOpsPaths = old;
+			throw ex;
 		}
 	}
 
@@ -167,7 +187,7 @@ public class OperationXML extends Operation
 		if(operationXML == null)
 		{
 			if(primaryOpsPath != null)
-				loadXML(primaryOpsPath);
+				loadXML(primaryOpsPath, true);
 
 			if(additionalOpsPaths != null)
 				loadXML(additionalOpsPaths);
@@ -184,7 +204,7 @@ public class OperationXML extends Operation
 		for(String path : xmlPaths)
 		{
 			if(path != null && !path.isEmpty())
-				loadXML(path);
+				loadXML(path, false);
 		}
 	}
 
@@ -192,26 +212,74 @@ public class OperationXML extends Operation
 	 * Loads the XML. If the XML path has not been set by loadXML then an
 	 * IncompleteInitializationException is thrown. If the XML is contains
 	 * parse errors an exception will be thrown.
-	 * @param xmlPath Path to the operation XML file to include 
+	 * @param xmlPath Path to the operation XML file to include
+	 * @param isPrimary true if this file is the primary (base). false if it's secondary/user supplied
 	 */
-	private static void loadXML(String xmlPath) throws OperationXMLException, ConfigurationException
+	private static void loadXML(String xmlPath, boolean isPrimary) throws OperationXMLException, ConfigurationException
 	{
 		try
 		{
 			// Make sure we know where we're looking
 			if(xmlPath == null)
-				throw new ConfigurationException("XML file for operations has not been specified", ConfigType.PrimaryOpsXML);
+			{
+				if(isPrimary)
+					throw new ConfigurationException("XML file for operations has not been specified", ConfigType.PrimaryOpsXML);
+				else
+					throw new ConfigurationException("Null name for user XML operations given", ConfigType.UserOpsXML);
+			}
 
 			SAXBuilder parser = new SAXBuilder();
 			Document doc = parser.build(xmlPath);
 
+			// It is an operation file, right?
+			Element root = doc.getRootElement();
+			if(!root.getName().equals("operations"))
+				throw new ConfigurationException("XML file '" + xmlPath + "' does not appear to contain operations", ConfigType.PrimaryOpsXML);
+
 			// Just save it or bring it into the combined doc?
 			// TODO make later operations override older ones (IE, user overrides primary)
-			Element root = doc.getRootElement();
-			if(operationXML == null)
+			if(isPrimary)
 				operationXML = root;
-			else
+			else if(operationXML != null)
+			{
+				// Check each additional operation to see if it overrides a current one
+				List<String> currNames = getAvailableOperations();
+				List<Element> toBeRemoved = new ArrayList<Element>();
+				for(Object newOpObj : root.getChildren("operation"))
+				{
+					Element newOpEl = (Element)newOpObj;
+					String newOpName = newOpEl.getAttributeValue("name");
+
+					// Remove from document if it's not named at all
+					if(newOpName == null)
+					{
+						toBeRemoved.add(newOpEl);
+						continue;
+					}
+
+					// See if the current operations already contain an operation
+					// with the same name
+					// Overwrite the XML for the current one by removing
+					// the current element, wherever that might be.
+					// We will then add the new one to the end
+					for(Object currOpObj : operationXML.getChildren("operation"))
+					{
+						Element currOpEl = (Element)currOpObj;
+						if(newOpName.equals(currOpEl.getAttributeValue("name")))
+							toBeRemoved.add(currOpEl);
+					}
+				}
+
+				// Now remove the duplicates/unnamed elements. Couldn't do it above because we
+				// were looping over the tree
+				for(Element opEl : toBeRemoved)
+					opEl.getParentElement().removeContent(opEl);
+
+				// Add all the new operations to the end
 				operationXML.addContent(root.cloneContent());
+			}
+			else
+				throw new InternalMarlaException("User XML given before primary XML");
 		}
 		catch(JDOMException ex)
 		{
@@ -219,7 +287,10 @@ public class OperationXML extends Operation
 		}
 		catch(IOException ex)
 		{
-			throw new ConfigurationException("Unable to read the operation XML file '" + xmlPath + "'", ConfigType.PrimaryOpsXML, ex);
+			if(isPrimary)
+				throw new ConfigurationException("Unable to read the primary operation XML file '" + xmlPath + "'", ConfigType.PrimaryOpsXML, ex);
+			else
+				throw new ConfigurationException("Unable to read the user operation XML file '" + xmlPath + "'", ConfigType.UserOpsXML, ex);
 		}
 	}
 

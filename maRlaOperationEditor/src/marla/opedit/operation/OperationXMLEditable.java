@@ -195,8 +195,8 @@ public class OperationXMLEditable extends OperationXML
 
 			// Stick parsed version into opEl
 			opEl.removeContent();
-			for(Object o : doc.getContent())
-				opEl.addContent((Content)((Content)o).clone());
+			for(Object o : doc.getRootElement().getChildren())
+				opEl.addContent((Element)((Element)o).clone());
 
 			// And use these settings
 			setConfiguration(opEl);
