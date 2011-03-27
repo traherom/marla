@@ -4,9 +4,62 @@
 <wiki:toc max_depth="1" />
 
 =What is the maRla project?=
-maRla is intended to be a work environment for students in early statistical classes. It has the ability to take a student all the way from typing the problem statement--straight from the book--out to a final, polished PDF to turn into a professor.
+maRla is intended to be a work environment for students in early statistical classes. It has the
+ability to take a student all the way from typing the problem statement--straight from the book--out
+to a final, polished PDF to turn into a professor.
 
-maRla does this in a graphical environment, where most work is done by dragging around data and operations. Operations may be attached to data, data can have multiple operations working off of it, and operations may chain together to perform more complex calculations.
+maRla does this in a graphical environment, where most work is done by dragging around data and operations.
+Operations may be attached to data, data can have multiple operations working off of it, and operations
+may chain together to perform more complex calculations. Once the needed calculations are done by the user,
+maRla can export to a PDF file that includes the original problem statement, data that was given, the
+steps (and associated analysis) needed to solve the various parts of the problem, resulting data, and
+any conclusions the user drew from their work.
 
 =Who should use maRla?=
-First year statistics students are the primary target. However, operations may be defined by the user, so any sort of math could theoretically be supported.
+First year statistics students are the primary target. However, operations may be defined by the user,
+so any sort of math could theoretically be supported.
+
+=When I export to PDF, I get a message saying "Sweave does not appear to be registered correctly with LaTeX." Can you fix it?=
+Well, the Windows installer attempts to fix it for you. Assuming it didn't work or you're on a different
+operating system, what the message means is that latex doesn't know about R. To tell latex about R, you
+need to register the "Sweave.sty" file with LaTeX. Usually this file is in R's share/texmf folder, but
+how exactly to register it depends on your system. Try Googling it, but if your still need help, submit
+a [http://code.google.com/p/marla/issues/entry?template=Support%20Request support request].
+
+=maRla refuses to recognize LaTeX and/or R=
+On occasion an R or LaTeX install will be corrupt and maRla is unable to use them. Usually reinstalling the offending
+program will solve the problem (if on Windows, the [http://code.google.com/p/marla/downloads/list maRla installer]
+can make it easy).
+
+There are some versions of pdfTeX that are just plain incompatible with maRla, possibily due
+to their age. Ensure you have a fairly recent version. If you still have problems, submit a 
+[http://code.google.com/p/marla/issues/entry?template=Support%20Request support request] and we
+can try to help you out.
+
+=Why does maRla want to use my internet connection?=
+At start up maRla checks to ensure it's up-to-date and connects to our error server.
+If maRla encounters any internal issues, it tries to send information about it to our servers,
+allowing us to fix issues quicker.
+
+If you want to disable error reporting, go into the maRla preferences and uncheck the relevant
+option. If you do run into issues that you need help with, maRla also logs them to a file
+called log.dat in whatever directory it runs from (on Windows, probably the installation
+directory).
+
+=Where does maRla save my preferences?=
+It varies by operating system, but generally speaking in `%UserHome%/.marla/`. 
+Common ones are the following
+  * Windows 7/Vista: `C:\Users\<your user>\.marla\`
+  * Cedarville University computers: `H:\NET\CFG\.marla\`
+  * Linux: `~/.marla/`
+
+=How did this take two semesters to make?=
+Because we're awesome like that.
+
+=I want to see details as maRla works/I want want to debug an issue myself!=
+First, be sure to use the cross-platform maRlaIDE.jar file rather than the maRlaIDE.exe file.
+The executable wrapper unfortunately eats all command line output. Then run navigate 
+to wherever the `.jar` file is and run `java -jar maRlaIDE.jar --DebugMode=true`.
+
+=I found a bug. How do I tell you about it?=
+[http://code.google.com/p/marla/issues/entry?template=Defect%20report%20from%20user Report it].
