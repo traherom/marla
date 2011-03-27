@@ -32,6 +32,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintStream;
 import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -425,76 +426,87 @@ public class Domain
 		{
 			isWritingLog = true;
 			
-			PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(logFile, true)));
-			
-			Date date = new Date();
-			out.write("------------------------------------\n");
-			out.write("Date: " + FULL_TIME_FORMAT.format(date) + "\n");
+			PrintWriter out = null;
+			try
+			{
+				out = new PrintWriter(new BufferedWriter(new FileWriter(logFile, true)));
+
+				Date date = new Date();
+				out.write("------------------------------------\n");
+				out.write("Date: " + FULL_TIME_FORMAT.format(date) + "\n");
+			}
+			catch(IOException ex2)
+			{
+				out = null;
+				System.err.println("Unable to write error log file: " + ex2.getMessage());
+			}
 
 			for(int i = 0; i < logger.size(); ++i)
 			{
 				Throwable ex = logger.get(i);
 
 				// To file
-				ex.printStackTrace(out);
+				if(out != null)
+					ex.printStackTrace(out);
 
 				// To console
-				ex.printStackTrace(System.err);
+				if(isDebugMode())
+					ex.printStackTrace(System.err);
 
 				// To server
 				if(sendErrorReport)
 				{
-					// Construct data
-					StringBuilder dataSB = new StringBuilder();
-					
-					// "security" key
-					dataSB.append(URLEncoder.encode("secret", "UTF-8"));
-					dataSB.append('=');
-					dataSB.append(URLEncoder.encode("badsecurity", "UTF-8"));
-
-					// Send version number
-					dataSB.append('&');
-					dataSB.append(URLEncoder.encode("version", "UTF-8"));
-					dataSB.append('=');
-					dataSB.append(URLEncoder.encode(BuildInfo.revisionNumber, "UTF-8"));
-
-					// Exception message
-					dataSB.append('&');
-					dataSB.append(URLEncoder.encode("msg", "UTF-8"));
-					dataSB.append('=');
-					dataSB.append(URLEncoder.encode(ex.getMessage(), "UTF-8"));
-
-					// Stack trace
-					ByteArrayOutputStream trace = new ByteArrayOutputStream();
-					ex.printStackTrace(new PrintStream(trace));
-					dataSB.append('&');
-					dataSB.append(URLEncoder.encode("trace", "UTF-8"));
-					dataSB.append('=');
-					dataSB.append(URLEncoder.encode(trace.toString(), "UTF-8"));
-
-					// Problem, if applicable
-					if(includeProbInReport && problem != null)
-					{
-						dataSB.append('&');
-						dataSB.append(URLEncoder.encode("problem", "UTF-8"));
-						dataSB.append('=');
-
-						try
-						{
-							Document doc = new Document(problem.toXml());
-							Format formatter = Format.getPrettyFormat();
-							formatter.setEncoding("UTF-8");
-							XMLOutputter xml = new XMLOutputter(formatter);
-							dataSB.append(URLEncoder.encode(xml.outputString(doc), "UTF-8"));
-						}
-						catch(MarlaException ex2)
-						{
-							dataSB.append(URLEncoder.encode("Unable to get XML: " + ex2.toString(), "UTF-8"));
-						}
-					}
-
 					try
 					{
+						// Construct data
+						StringBuilder dataSB = new StringBuilder();
+
+						// "security" key
+						dataSB.append(URLEncoder.encode("secret", "UTF-8"));
+						dataSB.append('=');
+						dataSB.append(URLEncoder.encode("badsecurity", "UTF-8"));
+
+						// Send version number
+						dataSB.append('&');
+						dataSB.append(URLEncoder.encode("version", "UTF-8"));
+						dataSB.append('=');
+						dataSB.append(URLEncoder.encode(BuildInfo.revisionNumber, "UTF-8"));
+
+						// Exception message
+						dataSB.append('&');
+						dataSB.append(URLEncoder.encode("msg", "UTF-8"));
+						dataSB.append('=');
+						dataSB.append(URLEncoder.encode(ex.getMessage(), "UTF-8"));
+
+						// Stack trace
+						ByteArrayOutputStream trace = new ByteArrayOutputStream();
+						ex.printStackTrace(new PrintStream(trace));
+						dataSB.append('&');
+						dataSB.append(URLEncoder.encode("trace", "UTF-8"));
+						dataSB.append('=');
+						dataSB.append(URLEncoder.encode(trace.toString(), "UTF-8"));
+
+						// Problem, if applicable
+						if(includeProbInReport && problem != null)
+						{
+							dataSB.append('&');
+							dataSB.append(URLEncoder.encode("problem", "UTF-8"));
+							dataSB.append('=');
+
+							try
+							{
+								Document doc = new Document(problem.toXml());
+								Format formatter = Format.getPrettyFormat();
+								formatter.setEncoding("UTF-8");
+								XMLOutputter xml = new XMLOutputter(formatter);
+								dataSB.append(URLEncoder.encode(xml.outputString(doc), "UTF-8"));
+							}
+							catch(MarlaException ex2)
+							{
+								dataSB.append(URLEncoder.encode("Unable to get XML: " + ex2.toString(), "UTF-8"));
+							}
+						}
+
 						// Send data
 						URL url = new URL(errorServerURL);
 						URLConnection conn = url.openConnection();
@@ -532,17 +544,16 @@ public class Domain
 				}
 			}
 
-			out.write("------------------------------------\n\n\n");
-			out.flush();
-			out.close();
-
+			if(out != null)
+			{
+				out.write("------------------------------------\n\n\n");
+				out.flush();
+				out.close();
+			}
+			
 			System.out.println(logger.size() + " exceptions written to " + logFile.getAbsolutePath());
 
 			logger.clear();
-		}
-		catch(IOException ex)
-		{
-			System.err.println("Unable to write error log file: " + ex.getMessage());
 		}
 		finally
 		{

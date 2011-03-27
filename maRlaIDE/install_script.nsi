@@ -105,7 +105,7 @@ SectionGroup "maRla Core"
 				
 		; Try to install
 		ClearErrors
-		ExecWait '"$JavaInstaller" /S REBOOT=Suppress JAVAUPDATE=0 WEBSTARTICON=0 /L \"$TEMP\jre_setup.log\"'
+		ExecWait '"$JavaInstaller" /s REBOOT=Suppress'
 		
 		${If} ${Errors}
 			MessageBox MB_OK "Java failed to install properly. Manually install and try again."
@@ -176,50 +176,86 @@ Section "Include R-2.12" InstallR
 
 SectionEnd
 
-Section "Include MiKTeX" InstallMiKTeX
+SectionGroup "MiKTeX"
 
-	AddSize 382976
-	SectionIn 1 3
+	Section "Install MiKTeX" InstallMiKTeX
 
-	; Ensure R path is set
-	Call CheckInstalledR
-	
-	; First check if we have an accessible T: copy of R
-	StrCpy $MikTexInstaller 'T:\TEX\CTAN\basic-miktex.exe'
-	${IfNot} ${FileExists} $MikTexInstaller
-		; Nope, try downloading to temp (if needed)
-		StrCpy $MikTexInstaller "$TEMP\basic-miktex.exe"
+		AddSize 382976
+		SectionIn 1
 		
+		; First check if we have an accessible T: copy of miktex
+		StrCpy $MikTexInstaller 'T:\TEX\CTAN\basic-miktex.exe'
 		${IfNot} ${FileExists} $MikTexInstaller
-			DetailPrint "Downloading MiKTeX to $MikTexInstaller"
-			NSISdl::download "http://ftp.math.purdue.edu/mirrors/ctan.org/systems/win32/miktex/setup/basic-miktex.exe" $MikTexInstaller
-			Pop $0
-			DetailPrint "Download result: $0"
+			; Nope, try downloading to temp (if needed)
+			StrCpy $MikTexInstaller "$TEMP\basic-miktex.exe"
 			
-			${If} $0 != "success"
-				; Download failed
-				DetailPrint "MiKTeX download failed"
-				MessageBox MB_OK "MiKTeX installer could not be downloaded.$\nTry again later or manually install"
-				Abort
+			${IfNot} ${FileExists} $MikTexInstaller
+				DetailPrint "Downloading MiKTeX to $MikTexInstaller"
+				NSISdl::download "http://ftp.math.purdue.edu/mirrors/ctan.org/systems/win32/miktex/setup/basic-miktex.exe" $MikTexInstaller
+				Pop $0
+				DetailPrint "Download result: $0"
+				
+				${If} $0 != "success"
+					; Download failed
+					DetailPrint "MiKTeX download failed"
+					MessageBox MB_OK "MiKTeX installer could not be downloaded.$\nTry again later or manually install"
+					Abort
+				${EndIf}
 			${EndIf}
 		${EndIf}
-	${EndIf}
 
-	; Install!
-	DetailPrint "Installing MiKTeX from '$MikTexInstaller'"
-	ClearErrors
-	ExecWait '$MikTexInstaller -private "-user-roots=$RHome\share\texmf" "-user-install=$ProgramFiles\miktex" -unattended'
+		; Install!
+		DetailPrint "Installing MiKTeX from '$MikTexInstaller'"
+		ClearErrors
+		;ExecWait '$MikTexInstaller -private "-user-roots=$RHome\share\texmf" -unattended'
+		ExecWait '$MikTexInstaller -private -unattended'
+		
+		${If} ${Errors}
+			MessageBox MB_OK "Failed to install MikTex correctly$\nInstallation aborted."
+			Abort
+		${EndIf}
+
+	SectionEnd
 	
-	${If} ${Errors}
-		MessageBox MB_OK "Failed to install MikTex correctly$\nInstallation aborted."
-		Abort
-	${EndIf}
+	Section "Configure MiKTeX" ConfigureMiKTex
+		
+		SectionIn 1 RO
+		
+		; Add extra packages that we know it'll need
+		Call CheckInstalledMikTex
+		DetailPrint "Installing extra MiKTeX packages"
+		
+		; Write out batch file to avoid a weird "this util doesn't support non-option arguments" error from mpm
+		ClearErrors
+		ExecWait '"$MikTexHome\miktex\bin\mpm.exe" --install=mptopdf'
+		ExecWait '"$MikTexHome\miktex\bin\mpm.exe" --install=fancyvrb'
+		
+		${If} ${Errors}
+			DetailPrint "Failed to install extra packages (could mean they're already installed)"
+		${EndIf}
+		
+		; Try adding user root... is there a better way to do this?
+		; Put in registry and tell tex to rebuild database
+		DetailPrint "Adding R texmf root to MiKTeX"
+		Call CheckInstalledR
+		ClearErrors
+		WriteRegStr HKCU "Software\MiKTeX.org\MiKTeX\$MikTexVer\Core" "UserRoots" "$RHome\share\texmf"
+		ExecWait '"$MikTexHome\miktex\bin\initexmf" --update-fndb"'
+		
+		${If} ${Errors}
+			DetailPrint "Failed to add R to MiKTeX's texmf roots"
+			MessageBox MB_OK "Failed to link R's Sweave files with MiKTeX. May cause problems with exporting PDFs."
+		${EndIf}
+		
+	SectionEnd
 
-SectionEnd
+SectionGroupEnd
 
 Section "-configure-marla" ConfigureMarla
 
-		;Configure maRla
+		SectionIn 1 2 RO
+
+		; Configure maRla
 		DetailPrint "Configuring maRla"
 		
 		Call CheckInstalledR
@@ -305,18 +341,42 @@ SectionEnd
 
 Function .onInit
 	Call SetSectionConfiguration
+	Call .onSelChange
 FunctionEnd
 
 Function .onSelChange
 
-	; Keey installing and configuring marla in sync
-	!insertmacro SectionFlagIsSet ${InstallMarla} ${SF_SELECTED} setConf unsetConf
-	setConf:
+	; Keey installing marla and configuring marla in sync
+	!insertmacro SectionFlagIsSet ${InstallMarla} ${SF_SELECTED} setConfMarla unsetConfMarla
+	setConfMarla:
 		!insertmacro SelectSection ${ConfigureMarla}
-		Return
-	unsetConf:
+		Goto checkMT
+	unsetConfMarla:
 		!insertmacro UnselectSection ${ConfigureMarla}
+	
+	; Only enable miktex configuration if either we're installing it or we
+	; were able to locate where it's installed
+	checkMT:
+	!insertmacro SectionFlagIsSet ${InstallMiKTeX} ${SF_SELECTED} setConfMT unsetConfMT
+	setConfMT:
+		; We're installing MT, so no matter what configure it
+		!insertmacro SetSectionFlag ${ConfigureMiKTex} ${SF_RO}
+		!insertmacro SelectSection ${ConfigureMiKTex}
 		Return
+	unsetConfMT:
+		; Can we find it?
+		Call CheckInstalledMikTex
+		
+		${If} $RETURN == "exists"
+			; Found it, go ahead and select, by default, to configure it
+			!insertmacro SelectSection ${ConfigureMiKTex}
+			!insertmacro ClearSectionFlag ${ConfigureMiKTex} ${SF_RO}
+			
+		${Else}
+			; Not installing and can't find it, so don't configure
+			!insertmacro SetSectionFlag ${ConfigureMiKTex} ${SF_RO}
+			!insertmacro UnselectSection ${ConfigureMiKTex}
+		${EndIf}
 	
 FunctionEnd
 
@@ -419,15 +479,33 @@ FunctionEnd
 
 Function CheckInstalledMikTex
 	
-	; Try checking for version 2.9 first
+	; Try checking for on Vista/7 first
 	ClearErrors
 	StrCpy $MikTexVer "2.9"
-	ReadRegStr $MikTexHome HKLM "SOFTWARE\Wow6432Node\MiKTeX.org\MiKTeX\MiKTeX 2.9\Core" "UserInstall"
+	ReadRegStr $MikTexHome HKLM "SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\MiKTeX $MikTexVer" "InstallLocation"
 	
 	${If} ${Errors}
-		DetailPrint "MiKTeX not found in registry, assuming not installed"
-		StrCpy $RETURN "install"
-		Return
+		; Hm... XP?
+		ClearErrors
+		ReadRegStr $MikTexHome HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\MiKTeX $MikTexVer" "InstallLocation"
+	${EndIf}
+	
+	${If} ${Errors}
+		DetailPrint "MiKTeX not found in registry, searching for in '$ProgramFiles'"
+		
+		ClearErrors
+		FindFirst $0 $MikTexHome "$ProgramFiles\miktex*"
+		FindClose $0
+		
+		${If} ${Errors}
+			; Nothing found
+			DetailPrint "MiKTeX directory not found"
+			StrCpy $RETURN "install"
+			Return
+		${EndIf}
+		
+		; Done with the search, found something
+		DetailPrint "Found possible MiKTeX installation at '$MikTexHome'"
 	${EndIf}
  
 	; Ensure the file exists
@@ -437,7 +515,7 @@ Function CheckInstalledMikTex
 		Return
 	${Else}
 		; Not found, need to install
-		DetailPrint "MiKTeX found in registry but executable not correct"
+		DetailPrint "MiKTeX found but executable not correct"
 		StrCpy $RETURN "install"
 		Return
 	${EndIf}
