@@ -30,6 +30,9 @@ Your distribution may have packages for many of these items:
 ==Mac OSX==
 TBD
 
+=Getting the source=
+Instructions for getting the maRla source code are available under the [http://code.google.com/p/marla/source/checkout Source] tab.
+
 =Ant targets=
 Once the build environment is setup, building of maRla can be done through ant (or NetBeans interface to ant). The most important special targets are the following.
   * package-for-store - creates a single jar that contains all of maRla and its libraries, plus copies the needed default ops.xml and export_template.xml to the `./store` directory.

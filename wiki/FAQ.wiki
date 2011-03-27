@@ -20,11 +20,14 @@ First year statistics students are the primary target. However, operations may b
 so any sort of math could theoretically be supported.
 
 =When I export to PDF, I get a message saying "Sweave does not appear to be registered correctly with LaTeX." Can you fix it?=
-Well, the Windows installer attempts to fix it for you. Assuming it didn't work or you're on a different
-operating system, what the message means is that latex doesn't know about R. To tell latex about R, you
-need to register the "Sweave.sty" file with LaTeX. Usually this file is in R's share/texmf folder, but
-how exactly to register it depends on your system. Try Googling it, but if your still need help, submit
-a [http://code.google.com/p/marla/issues/entry?template=Support%20Request support request].
+The Windows installer attempts to fix it for you, so try that first.
+
+Assuming it didn't work or you're on a different operating system, the message means
+that LaTeX doesn't know about R. To fix that you need to register the "Sweave.sty" file
+with LaTeX. Usually this file is in R's share/texmf folder, but how exactly to register
+it depends on your system and can be complicated. Try Googling it, but if you still need help, submit
+a [http://code.google.com/p/marla/issues/entry?template=Support%20Request support request]. Be sure
+to tell us what operation system you're using and where R and LaTeX are installed.
 
 =maRla refuses to recognize LaTeX and/or R=
 On occasion an R or LaTeX install will be corrupt and maRla is unable to use them. Usually reinstalling the offending
@@ -60,6 +63,9 @@ Because we're awesome like that.
 First, be sure to use the cross-platform maRlaIDE.jar file rather than the maRlaIDE.exe file.
 The executable wrapper unfortunately eats all command line output. Then run navigate 
 to wherever the `.jar` file is and run `java -jar maRlaIDE.jar --DebugMode=true`.
+
+You'll probably have more fun actually debugging it in NetBeans though. Follow the instructions
+on setup your [Building build environment]
 
 =I found a bug. How do I tell you about it?=
 [http://code.google.com/p/marla/issues/entry?template=Defect%20report%20from%20user Report it].
