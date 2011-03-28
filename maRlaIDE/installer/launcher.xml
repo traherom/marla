@@ -1,8 +1,8 @@
 <launch4jConfig>
   <dontWrapJar>false</dontWrapJar>
   <headerType>gui</headerType>
-  <jar>store/maRlaIDE.jar</jar>
-  <outfile>store/maRlaIDE.exe</outfile>
+  <jar>maRlaIDE.jar</jar>
+  <outfile>maRlaIDE.exe</outfile>
   <errTitle>Install Java</errTitle>
   <cmdLine></cmdLine>
   <chdir></chdir>
