@@ -29,6 +29,11 @@ it depends on your system and can be complicated. Try Googling it, but if you st
 a [http://code.google.com/p/marla/issues/entry?template=Support%20Request support request]. Be sure
 to tell us what operation system you're using and where R and LaTeX are installed.
 
+=maRla isn't able to install R and/or MiKTeX automatically and tells me to do it manually=
+If you have a limited user account, it will break the automatic installation of R and MiKTeX. The work-around is to install both of these manually and then re-run the maRla installer. The latest R installer is available from [http://cran.case.edu/bin/windows/base/release.htm www.r-project.org]. MiKTeX can be found at [http://miktex.org/2.9/setup miktex.org].
+
+The installer may handle this more gracefully in the future.
+
 =maRla refuses to recognize LaTeX and/or R=
 On occasion an R or LaTeX install will be corrupt and maRla is unable to use them. Usually reinstalling the offending
 program will solve the problem (if on Windows, the [http://code.google.com/p/marla/downloads/list maRla installer]
