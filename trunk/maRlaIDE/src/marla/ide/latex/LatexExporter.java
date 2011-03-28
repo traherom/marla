@@ -208,9 +208,7 @@ public class LatexExporter
 			try
 			{
 				// Get current files in dir. Any new files will be removed
-				File tempFile = File.createTempFile("marla", "test");
-				File currentDir = tempFile.getParentFile();
-				tempFile.deleteOnExit();
+				File currentDir = new File(System.getProperty("java.io.tmpdir"));
 				List<File> originalFiles = Arrays.asList(currentDir.listFiles());
 
 				// Test to see if pdflatex works by running a test file through it

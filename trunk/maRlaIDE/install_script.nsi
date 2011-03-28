@@ -8,6 +8,7 @@
 !include "LogicLib.nsh"
 !include "FileAssociation.nsh"
 !include "Sections.nsh"
+!include "StrUtils.nsh"
 
 ;--------------------------------
 ;General
@@ -20,6 +21,7 @@ Var /GLOBAL MikTexInstaller
 Var /GLOBAL JavaVer
 Var /GLOBAL JavaHome
 Var /GLOBAL RHome
+Var /GLOBAL RTexmfRoot
 Var /GLOBAL MikTexVer
 Var /GLOBAL MikTexHome
 
@@ -238,11 +240,33 @@ SectionGroup "MiKTeX"
 		; Put in registry and tell tex to rebuild database
 		DetailPrint "Adding R texmf root to MiKTeX"
 		Call CheckInstalledR
+		StrCpy $RTexmfRoot "$RHome\share\texmf"
 		
-		${If} $RETURN == "exists"		
+		${If} $RETURN == "exists"
+			; Check if there are existing user roots
+			ReadRegStr $1 HKCU "Software\MiKTeX.org\MiKTeX\$MikTexVer\Core" "UserRoots"
+			
+			${If} $1 != ""
+				; There are existing roots, are we a part of them?
+				${StrStr} $0 $1 $RTexmfRoot 
+				MessageBox MB_OK "$0, $1, $RTexmfRoot"
+				
+				${If} $0 == ""
+					; We aren't included yet, add us to the end
+					StrCpy $1 "$1;$RTexmfRoot"
+				${EndIf}
+				
+			${Else}
+				; No current roots
+				StrCpy $1 $RTexmfRoot
+			${EndIf}
+			
+			; Write root(s) to registry and then tell miktex to refresh the filename database
+			DetailPrint "Setting user roots to '$1'"
+			MessageBox MB_OK "Roots: $1, R: $RTexmfRoot"
 			ClearErrors
-			WriteRegStr HKCU "Software\MiKTeX.org\MiKTeX\$MikTexVer\Core" "UserRoots" "$RHome\share\texmf"
-			ExecWait '"$MikTexHome\miktex\bin\initexmf" --update-fndb"'
+			WriteRegStr HKCU "Software\MiKTeX.org\MiKTeX\$MikTexVer\Core" "UserRoots" $1
+			ExecWait '"$MikTexHome\miktex\bin\initexmf" "--update-fndb=$RTexmfRoot"'
 			
 			${If} ${Errors}
 				DetailPrint "Failed to add R to MiKTeX's texmf roots"
@@ -354,23 +378,20 @@ FunctionEnd
 Function .onSelChange
 
 	; Keey installing marla and configuring marla in sync
-	!insertmacro SectionFlagIsSet ${InstallMarla} ${SF_SELECTED} setConfMarla unsetConfMarla
-	setConfMarla:
+	${If} ${SectionIsSelected} ${InstallMarla}
 		!insertmacro SelectSection ${ConfigureMarla}
-		Goto checkMT
-	unsetConfMarla:
+	${Else}
 		!insertmacro UnselectSection ${ConfigureMarla}
+	${EndIf}
 	
 	; Only enable miktex configuration if either we're installing it or we
 	; were able to locate where it's installed
-	checkMT:
-	!insertmacro SectionFlagIsSet ${InstallMiKTeX} ${SF_SELECTED} setConfMT unsetConfMT
-	setConfMT:
+	${If} ${SectionIsSelected} ${InstallMiKTeX}
 		; We're installing MT, so no matter what configure it
 		!insertmacro SetSectionFlag ${ConfigureMiKTex} ${SF_RO}
 		!insertmacro SelectSection ${ConfigureMiKTex}
-		Return
-	unsetConfMT:
+		
+	${Else}
 		; Can we find it?
 		Call CheckInstalledMikTex
 		
@@ -384,6 +405,7 @@ Function .onSelChange
 			!insertmacro SetSectionFlag ${ConfigureMiKTex} ${SF_RO}
 			!insertmacro UnselectSection ${ConfigureMiKTex}
 		${EndIf}
+	${EndIf}
 	
 FunctionEnd
 

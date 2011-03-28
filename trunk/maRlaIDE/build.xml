@@ -190,13 +190,19 @@
 	<target name="-windows-installer" if="is.linux.or.windows">
 		<echo>Creating Windows installer</echo>
 
-		<copy file="FileAssociation.nsh" todir="${store.dir}" />
+		<copy todir="${store.dir}">
+			<fileset file="FileAssociation.nsh" />
+			<fileset file="StrUtils.nsh" />
+		</copy>
 
 		<exec executable="makensis" dir="${store.dir}" resultproperty="build.result" searchpath="true">
 			<arg value="install_script.nsi"/>
 		</exec>
 
-		<delete file="${store.dir}\FileAssociation.nsh" />
+		<delete>
+			<fileset file="${store.dir}\FileAssociation.nsh" />
+			<fileset file="${store.dir}\StrUtils.nsh" />
+		</delete>
 
 		<!-- Move (if needed) to file with revision name -->
 		<move file="${store.dir}/Setup.exe" tofile="${setup.base}.exe" />
