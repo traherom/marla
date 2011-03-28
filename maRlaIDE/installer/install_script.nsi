@@ -144,14 +144,15 @@ Section "Include R-2.12" InstallR
 	AddSize 67891
 	SectionIn 1
 	
-	; First check if we have an accessible T: copy of R
-	StrCpy $RInstaller "T:\TEX\CRAN\R-win.exe"
+	; First check if we have a copy in the temp folder already 
+	StrCpy $RInstaller "$TEMP\R-win.exe"
 	
 	${IfNot} ${FileExists} $RInstaller
-		; Nope, try downloading to temp (if needed)
-		StrCpy $RInstaller "$TEMP\R-win.exe"
+		; Nope, is it on the T drive?
+		StrCpy $RInstaller "T:\TEX\CRAN\R-win.exe"
 		
 		${IfNot} ${FileExists} $RInstaller
+			; Download
 			DetailPrint "Downloading R to $RInstaller"
 			NSISdl::download "http://streaming.stat.iastate.edu/CRAN/bin/windows/base/R-2.12.2-win.exe" $RInstaller
 			Pop $0
@@ -163,13 +164,25 @@ Section "Include R-2.12" InstallR
 				MessageBox MB_OK "R installer could not be downloaded.$\nTry again later or manually install"
 				Abort
 			${EndIf}
+			
+		${Else}
+			; Copy from T to temp for speed and to show progress
+			ClearErrors
+			StrCpy $1 "$TEMP\R-win.exe"
+			CopyFiles $RInstaller $1
+			
+			${IfNot} ${Errors}
+				StrCpy $RInstaller $1
+			${Else}
+				DetailPrint "Failed to copy R to temporary folder"
+			${EndIf}
 		${EndIf}
 	${EndIf}
 
 	; Install!
 	DetailPrint "Installing R from '$RInstaller'"
 	ClearErrors
-	ExecWait '$RInstaller /SILENT'
+	ExecWait "$RInstaller /SILENT"
 	
 	${If} ${Errors}
 		MessageBox MB_OK "Failed to install R correctly.$\nInstallation aborted."
@@ -185,13 +198,15 @@ SectionGroup "MiKTeX"
 		AddSize 382976
 		SectionIn 1
 		
-		; First check if we have an accessible T: copy of miktex
-		StrCpy $MikTexInstaller 'T:\TEX\CTAN\basic-miktex.exe'
+		; First check if we have an accessible copy in temp
+		StrCpy $MikTexInstaller "$TEMP\basic-miktex.exe"
+		
 		${IfNot} ${FileExists} $MikTexInstaller
-			; Nope, try downloading to temp (if needed)
-			StrCpy $MikTexInstaller "$TEMP\basic-miktex.exe"
+			; Nope. Is there a copy on the T drive?
+			StrCpy $MikTexInstaller "T:\TEX\CTAN\basic-miktex.exe"
 			
 			${IfNot} ${FileExists} $MikTexInstaller
+				; No T drive copy, get from internet
 				DetailPrint "Downloading MiKTeX to $MikTexInstaller"
 				NSISdl::download "http://ftp.math.purdue.edu/mirrors/ctan.org/systems/win32/miktex/setup/basic-miktex.exe" $MikTexInstaller
 				Pop $0
@@ -203,6 +218,18 @@ SectionGroup "MiKTeX"
 					MessageBox MB_OK "MiKTeX installer could not be downloaded.$\nTry again later or manually install"
 					Abort
 				${EndIf}
+			
+			${Else}
+				; Copy from T to temp for speed and to show progress
+				ClearErrors
+				StrCpy $1 "$TEMP\basic-miktex.exe"
+				CopyFiles $MikTexInstaller $1
+				
+				${IfNot} ${Errors}
+					StrCpy $MikTexInstaller $1
+				${Else}
+					DetailPrint "Failed to copy MiKTeX to temporary folder"
+				${EndIf}
 			${EndIf}
 		${EndIf}
 
@@ -210,7 +237,7 @@ SectionGroup "MiKTeX"
 		DetailPrint "Installing MiKTeX from '$MikTexInstaller'"
 		ClearErrors
 		;ExecWait '$MikTexInstaller -private "-user-roots=$RHome\share\texmf" -unattended'
-		ExecWait '$MikTexInstaller -private -unattended'
+		ExecWait '$MikTexInstaller "--user-install=$ProgramFiles\MiKTeX 2.9\" --private --unattended'
 		
 		${If} ${Errors}
 			MessageBox MB_OK "Failed to install MikTex correctly$\nInstallation aborted."
@@ -227,13 +254,21 @@ SectionGroup "MiKTeX"
 		Call CheckInstalledMikTex
 		DetailPrint "Installing extra MiKTeX packages"
 		
-		; Write out batch file to avoid a weird "this util doesn't support non-option arguments" error from mpm
 		ClearErrors
 		ExecWait '"$MikTexHome\miktex\bin\mpm.exe" --install=mptopdf'
 		ExecWait '"$MikTexHome\miktex\bin\mpm.exe" --install=fancyvrb'
 		
 		${If} ${Errors}
 			DetailPrint "Failed to install extra packages (could mean they're already installed)"
+		${EndIf}
+
+		; Turn on auto-installing of miktex packages for current user
+		DetailPrint "Enabling MiKTeX's automatic package installation"
+		ClearErrors
+		WriteRegStr HKCU "Software\MiKTeX.org\MiKTeX\$MikTexVer\MPM" "AutoInstall" 1
+		
+		${If} ${Errors}
+			DetailPrint "Unable to enable"
 		${EndIf}
 		
 		; Try adding user root... is there a better way to do this?
@@ -506,33 +541,35 @@ FunctionEnd
 
 Function CheckInstalledMikTex
 	
-	; Try checking for on Vista/7 first
+	; Try checking for current user install on Vista/7 first
 	ClearErrors
 	StrCpy $MikTexVer "2.9"
-	ReadRegStr $MikTexHome HKLM "SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\MiKTeX $MikTexVer" "InstallLocation"
+	; TODO determine this actual key. It's a guess!
+	ReadRegStr $MikTexHome HKCU "SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\MiKTeX $MikTexVer" "InstallLocation"
 	
 	${If} ${Errors}
-		; Hm... XP?
+		; 7 system install?
+		ClearErrors
+		ReadRegStr $MikTexHome HKLM "SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\MiKTeX $MikTexVer" "InstallLocation"
+	${EndIf}
+	
+	${If} ${Errors}
+		; XP current user?
+		ClearErrors
+		ReadRegStr $MikTexHome HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\MiKTeX $MikTexVer" "InstallLocation"
+	${EndIf}
+	
+	${If} ${Errors}
+		; XP system install?
 		ClearErrors
 		ReadRegStr $MikTexHome HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\MiKTeX $MikTexVer" "InstallLocation"
 	${EndIf}
 	
 	${If} ${Errors}
-		DetailPrint "MiKTeX not found in registry, searching for in '$ProgramFiles'"
-		
-		ClearErrors
-		FindFirst $0 $MikTexHome "$ProgramFiles\miktex*"
-		FindClose $0
-		
-		${If} ${Errors}
-			; Nothing found
-			DetailPrint "MiKTeX directory not found"
-			StrCpy $RETURN "install"
-			Return
-		${EndIf}
-		
-		; Done with the search, found something
-		DetailPrint "Found possible MiKTeX installation at '$MikTexHome'"
+		; No key was found, apparently
+		DetailPrint "MiKTeX not found in registry"
+		StrCpy $RETURN "install"
+		Return
 	${EndIf}
  
 	; Ensure the file exists
