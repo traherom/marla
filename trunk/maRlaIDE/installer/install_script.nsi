@@ -1,19 +1,27 @@
 ;maRla installer
 ;Written by Andrew Sterling
 
+SetCompress auto
+SetCompressor /SOLID lzma
+
 ;--------------------------------
 ;Include Modern UI
 
 !include "MUI2.nsh"
 !include "LogicLib.nsh"
-!include "FileAssociation.nsh"
 !include "Sections.nsh"
+!include "WinMessages.nsh"
+
+!include "FileAssociation.nsh"
 !include "StrUtils.nsh"
 
 ;--------------------------------
 ;General
 
 !define JRE_VERSION "1.6"
+!define TDRIVE_TEX "T:\TEX\CTAN\basic-miktex.exe"
+!define TDRIVE_R "T:\TEX\CRAN\R-win.exe"
+
 Var /GLOBAL RETURN ; Used by functions for returning values
 Var /GLOBAL JavaInstaller
 Var /GLOBAL RInstaller
@@ -24,10 +32,6 @@ Var /GLOBAL RHome
 Var /GLOBAL RTexmfRoot
 Var /GLOBAL MikTexVer
 Var /GLOBAL MikTexHome
-
-; Settings
-SetCompress auto
-SetCompressor /SOLID lzma
 
 ; Name and file
 Name "maRla"
@@ -100,7 +104,7 @@ SectionGroup "maRla Core"
 			
 			${If} $0 != "success"
 				; Download failed
-				MessageBox MB_OK "Java installer could not be downloaded. Manually install and try again."
+				MessageBox MB_OK|MB_ICONEXCLAMATION "Java installer could not be downloaded. Manually install and try again."
 				Abort
 			${EndIf}
 		${EndIf}
@@ -110,7 +114,7 @@ SectionGroup "maRla Core"
 		ExecWait '"$JavaInstaller" /s REBOOT=Suppress'
 		
 		${If} ${Errors}
-			MessageBox MB_OK "Java failed to install properly. Manually install and try again."
+			MessageBox MB_OK|MB_ICONEXCLAMATION "Java failed to install properly. Manually install and try again."
 			Abort
 		${EndIf}
 
@@ -121,18 +125,48 @@ SectionGroup "maRla Core"
 		AddSize 800
 		SectionIn 1 2 RO
 		
+		; Make sure the install directory is usable
 		SetOutPath "$INSTDIR"
-		File ops.xml
-		File export_template.xml
-		File maRlaIDE.exe
 		
-		;Store installation folder
+		ClearErrors
+		Push $0
+		Push $1
+		StrCpy $1 "$INSTDIR/.TESTFILESHOULDBEWRITABLEmarla1231231231"
+		FileOpen $0 $1 w
+		FileWrite $0 "blah"
+		FileClose $0
+		Pop $1
+		Pop $0
+		
+		${If} ${Errors}
+			; Directory not writable
+			MessageBox MB_OK|MB_ICONINFORMATION "'$INSTDIR' cannot be written to. Please choose a new directory."
+			SendMessage $HWNDPARENT "0x408" "-1" ""
+			Abort
+			
+		${Else}
+			; remove temp file
+			Delete $1
+		${EndIf}
+		
+		; Watch for errors on first file's installation, should catch any permission errors
+		ClearErrors
+		File maRlaIDE.exe
+		File export_template.xml
+		File ops.xml
+		
+		${If} ${Errors}
+			MessageBox MB_OK|MB_ICONSTOP "Unable to copy to '$INSTDIR'. Please install again using a new directory."
+			Abort
+		${EndIf}
+		
+		; Store installation folder
 		WriteRegStr HKCU "Software\maRla" "" $INSTDIR
 		
-		;Register .marla files with maRla
+		; Register .marla files with maRla
 		${registerExtension} "$INSTDIR\maRlaIDE.exe" ".marla" "maRla File"
 
-		;Create uninstaller
+		; Create uninstaller
 		WriteUninstaller "$INSTDIR\Uninstall.exe"
 
 	SectionEnd
@@ -148,10 +182,10 @@ Section "Include R-2.12" InstallR
 	StrCpy $RInstaller "$TEMP\R-win.exe"
 	
 	${IfNot} ${FileExists} $RInstaller
+	
 		; Nope, is it on the T drive?
-		StrCpy $RInstaller "T:\TEX\CRAN\R-win.exe"
+		${IfNot} ${FileExists} ${TDRIVE_R}
 		
-		${IfNot} ${FileExists} $RInstaller
 			; Download
 			DetailPrint "Downloading R to $RInstaller"
 			NSISdl::download "http://streaming.stat.iastate.edu/CRAN/bin/windows/base/R-2.12.2-win.exe" $RInstaller
@@ -161,20 +195,18 @@ Section "Include R-2.12" InstallR
 			${If} $0 != "success"
 				; Download failed
 				DetailPrint "R download failed"
-				MessageBox MB_OK "R installer could not be downloaded.$\nTry again later or manually install"
+				MessageBox MB_OK|MB_ICONEXCLAMATION "R installer could not be downloaded.$\nTry again later or manually install."
 				Abort
 			${EndIf}
 			
 		${Else}
 			; Copy from T to temp for speed and to show progress
 			ClearErrors
-			StrCpy $1 "$TEMP\R-win.exe"
-			CopyFiles $RInstaller $1
+			CopyFiles ${TDRIVE_R} $RInstaller
 			
-			${IfNot} ${Errors}
-				StrCpy $RInstaller $1
-			${Else}
+			${If} ${Errors}
 				DetailPrint "Failed to copy R to temporary folder"
+				StrCpy $RInstaller ${TDRIVE_R}
 			${EndIf}
 		${EndIf}
 	${EndIf}
@@ -185,7 +217,7 @@ Section "Include R-2.12" InstallR
 	ExecWait "$RInstaller /SILENT"
 	
 	${If} ${Errors}
-		MessageBox MB_OK "Failed to install R correctly.$\nInstallation aborted."
+		MessageBox MB_OK|MB_ICONEXCLAMATION "Failed to install R correctly. Please install manually or retry later.$\nInstallation aborted."
 		Abort
 	${EndIf}
 
@@ -202,12 +234,12 @@ SectionGroup "MiKTeX"
 		StrCpy $MikTexInstaller "$TEMP\basic-miktex.exe"
 		
 		${IfNot} ${FileExists} $MikTexInstaller
-			; Nope. Is there a copy on the T drive?
-			StrCpy $MikTexInstaller "T:\TEX\CTAN\basic-miktex.exe"
+		
+			; Is there a copy on the T drive?
+			${IfNot} ${FileExists} ${TDRIVE_TEX}
 			
-			${IfNot} ${FileExists} $MikTexInstaller
 				; No T drive copy, get from internet
-				DetailPrint "Downloading MiKTeX to $MikTexInstaller"
+				DetailPrint "Downloading MiKTeX to '$MikTexInstaller'"
 				NSISdl::download "http://ftp.math.purdue.edu/mirrors/ctan.org/systems/win32/miktex/setup/basic-miktex.exe" $MikTexInstaller
 				Pop $0
 				DetailPrint "Download result: $0"
@@ -215,20 +247,18 @@ SectionGroup "MiKTeX"
 				${If} $0 != "success"
 					; Download failed
 					DetailPrint "MiKTeX download failed"
-					MessageBox MB_OK "MiKTeX installer could not be downloaded.$\nTry again later or manually install"
+					MessageBox MB_OK|MB_ICONEXCLAMATION "MiKTeX installer could not be downloaded.$\nTry again later or manually install"
 					Abort
 				${EndIf}
 			
 			${Else}
 				; Copy from T to temp for speed and to show progress
 				ClearErrors
-				StrCpy $1 "$TEMP\basic-miktex.exe"
-				CopyFiles $MikTexInstaller $1
+				CopyFiles ${TDRIVE_TEX} $MikTexInstaller
 				
-				${IfNot} ${Errors}
-					StrCpy $MikTexInstaller $1
-				${Else}
+				${If} ${Errors}
 					DetailPrint "Failed to copy MiKTeX to temporary folder"
+					StrCpy $MikTexInstaller ${TDRIVE_TEX}
 				${EndIf}
 			${EndIf}
 		${EndIf}
@@ -236,11 +266,10 @@ SectionGroup "MiKTeX"
 		; Install!
 		DetailPrint "Installing MiKTeX from '$MikTexInstaller'"
 		ClearErrors
-		;ExecWait '$MikTexInstaller -private "-user-roots=$RHome\share\texmf" -unattended'
 		ExecWait '$MikTexInstaller "--user-install=$ProgramFiles\MiKTeX 2.9\" --private --unattended'
 		
 		${If} ${Errors}
-			MessageBox MB_OK "Failed to install MikTex correctly$\nInstallation aborted."
+			MessageBox MB_OK|MB_ICONEXCLAMATION "Failed to install MikTex correctly. Please install manually or retry later.$\nInstallation aborted."
 			Abort
 		${EndIf}
 
@@ -303,12 +332,12 @@ SectionGroup "MiKTeX"
 			
 			${If} ${Errors}
 				DetailPrint "Failed to add R to MiKTeX's texmf roots"
-				MessageBox MB_OK "Failed to link R's Sweave files with MiKTeX. May cause problems with exporting PDFs."
+				MessageBox MB_OK|MB_ICONINFORMATION "Failed to link R's Sweave files with MiKTeX. May cause problems with exporting PDFs."
 			${EndIf}
 			
 		${Else}
 			DetailPrint "R not available to configure MiKTeX with"
-			MessageBox MB_OK "Unable to locate R and register it with MiKTeX.$\nRerun the installer once R is installed or register Sweave.stf manually with MiKTeX."
+			MessageBox MB_OK|MB_ICONINFORMATION "Unable to locate R and register it with MiKTeX.$\nRerun the installer once R is installed or register Sweave.stf manually with MiKTeX."
 		${EndIf}
 		
 	SectionEnd
@@ -330,7 +359,7 @@ Section "-configure-marla" ConfigureMarla
 		
 		${If} ${Errors}
 			DetailPrint "Failed to configure"
-			MessageBox MB_OK "Unable to automatically configure maRla, manual configuration may be required."
+			MessageBox MB_OK|MB_ICONINFORMATION "Unable to automatically configure maRla, manual configuration may be required."
 		${EndIf}
 		
 SectionEnd
