@@ -249,7 +249,6 @@ SectionGroup "MiKTeX"
 			${If} $1 != ""
 				; There are existing roots, are we a part of them?
 				${StrStr} $0 $1 $RTexmfRoot 
-				MessageBox MB_OK "$0, $1, $RTexmfRoot"
 				
 				${If} $0 == ""
 					; We aren't included yet, add us to the end
@@ -263,7 +262,6 @@ SectionGroup "MiKTeX"
 			
 			; Write root(s) to registry and then tell miktex to refresh the filename database
 			DetailPrint "Setting user roots to '$1'"
-			MessageBox MB_OK "Roots: $1, R: $RTexmfRoot"
 			ClearErrors
 			WriteRegStr HKCU "Software\MiKTeX.org\MiKTeX\$MikTexVer\Core" "UserRoots" $1
 			ExecWait '"$MikTexHome\miktex\bin\initexmf" "--update-fndb=$RTexmfRoot"'
