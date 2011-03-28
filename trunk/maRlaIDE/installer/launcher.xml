@@ -10,7 +10,7 @@
   <downloadUrl>http://java.com/download</downloadUrl>
   <supportUrl>http://marla.googlecode.com/</supportUrl>
   <customProcName>true</customProcName>
-  <stayAlive>false</stayAlive>
+  <stayAlive>true</stayAlive>
   <manifest></manifest>
   <icon>maRla.ico</icon>
   <singleInstance>

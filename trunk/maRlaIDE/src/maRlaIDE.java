@@ -32,7 +32,6 @@ import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
-import marla.ide.problem.MarlaException;
 import marla.ide.resource.BuildInfo;
 import marla.ide.resource.Configuration;
 import marla.ide.resource.Configuration.ConfigType;
@@ -94,6 +93,8 @@ public class maRlaIDE
 			}
 		}
 
+		progressFrame.setLocationRelativeTo(null);
+		progressFrame.setVisible(true);
 		progressFrame.progressBar.setValue(0);
 		progressFrame.progressBar.setString("0%");
 		progressFrame.statusLabel.setText("Loading framework ...");

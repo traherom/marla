@@ -36,9 +36,6 @@ public class ProgressFrame extends JFrame
 	public ProgressFrame()
 	{
 		initComponents();
-
-		setLocationRelativeTo(null);
-		setVisible(true);
 	}
 
 	/** This method is called from within the constructor to
