@@ -40,7 +40,7 @@ InstallDir "$ProgramFiles\maRla"
 InstallDirRegKey HKCU "Software\maRla" ""
 
 ; Request admin privileges for Windows Vista
-RequestExecutionLevel admin
+RequestExecutionLevel highest
 
 ; Quick selection options
 InstType "Full"
