@@ -61,10 +61,12 @@ public class OperationXMLEditable extends OperationXML
 	/**
 	 * Denotes that this operation has changed in some way
 	 */
-	private void markChanged()
+	@Override
+	public void markUnsaved()
 	{
+		super.markUnsaved();
 		if(parent != null)
-			parent.markChanged();
+			parent.markUnsaved();
 	}
 
 	@Override
@@ -73,7 +75,7 @@ public class OperationXMLEditable extends OperationXML
 		try
 		{
 			opEl = newConfig;
-			markChanged();
+			markUnsaved();
 			super.setConfiguration((Element)newConfig.clone());
 			lastError = null;
 		}
