@@ -734,7 +734,7 @@ public final class DataSet extends DataSource implements Changeable
 		if(len < ds.getColumnLength())
 		{
 			sb.append("<tr><td colspan='");
-			sb.append(ds.getColumnCount());
+			sb.append(ds.getColumnCount() + 1);
 			sb.append("' style='text-align: center'>-First ");
 			sb.append(len);
 			sb.append(" rows shown-</td></tr>");
