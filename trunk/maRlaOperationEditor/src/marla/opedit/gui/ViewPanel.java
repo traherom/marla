@@ -90,23 +90,7 @@ public class ViewPanel extends JPanel
 	public ViewPanel(MainFrame mainFrame)
 	{
 		this.mainFrame = mainFrame;
-		viewPanel = this;
 		init();
-	}
-
-	/**
-	 * If constructed, return the instance of the view panel.
-	 *
-	 * @return The instance of the view panel.
-	 */
-	public static ViewPanel getInstance()
-	{
-		if (viewPanel != null)
-		{
-			return viewPanel;
-		}
-
-		return null;
 	}
 
 	/**
@@ -116,6 +100,7 @@ public class ViewPanel extends JPanel
 	{
 		initComponents();
 		initMyComponents();
+		viewPanel = this;
 	}
 
 	/**
@@ -169,6 +154,21 @@ public class ViewPanel extends JPanel
 		});
 
 		xmlStatusLabel.setText ("");
+	}
+
+	/**
+	 * If constructed, return the instance of the view panel.
+	 *
+	 * @return The instance of the view panel.
+	 */
+	public static ViewPanel getInstance()
+	{
+		if (viewPanel != null)
+		{
+			return viewPanel;
+		}
+
+		return null;
 	}
 
 	/** This method is called from within the constructor to
@@ -500,6 +500,8 @@ public class ViewPanel extends JPanel
 		{
 			OperationXMLEditable newOp = currentFile.addOperation();
 			operationsModel.addElement(newOp.toString());
+			operationsList.invalidate();
+			operationsList.repaint();
 			removeButton.setEnabled(true);
 		}
 		catch(OperationEditorException ex)
@@ -516,6 +518,8 @@ public class ViewPanel extends JPanel
 		{
 			currentFile.removeOperation(currentOperation);
 			operationsModel.remove(getOperationIndex(currentOperation.toString()));
+			operationsList.invalidate();
+			operationsList.repaint();
 			if (operationsModel.isEmpty())
 			{
 				removeButton.setEnabled(false);
@@ -601,6 +605,8 @@ public class ViewPanel extends JPanel
 			{
 				currentOperation.setEditableName(newName);
 				operationsModel.setElementAt(newName, operationsList.getSelectedIndex());
+				operationsList.invalidate();
+				operationsList.repaint();
 			}
 			catch(OperationEditorException ex)
 			{
@@ -609,7 +615,7 @@ public class ViewPanel extends JPanel
 		}
 		else
 		{
-			// TODO dulicate name, don't allow it
+			System.out.print ("duplicate name: " + newName);
 		}
 	}//GEN-LAST:event_operationsNameTextFieldActionPerformed
 
