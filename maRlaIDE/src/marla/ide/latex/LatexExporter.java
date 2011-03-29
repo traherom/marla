@@ -1099,7 +1099,7 @@ public class LatexExporter
 			if(notFoundMatcher.find())
 			{
 				// Some include file (probably Sweave) not registered with latex
-				throw new LatexException(notFoundMatcher.group(0) + " does not appear to be registered correctly with LaTeX");
+				throw new LatexException(notFoundMatcher.group(1) + " does not appear to be registered correctly with LaTeX");
 			}
 
 			// Get the output file name reported by pdflatex
