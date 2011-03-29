@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF8"?>
 <operations>
-  <operation name="NOP" list="false" category="NOP">
+  <operation name="NOP" list="false">
+    <!-- This operation is used for testing. It does nothing except print
+			that it was encountered -->
     <computation>
       <cmd>print("NOP happened")</cmd>
     </computation>
@@ -166,7 +168,7 @@
       <save type="numeric" r_column="paste(colName, val, sep=' * ')">colVals * val</save>
     </computation>
   </operation>
-  <operation name="Add" category="Add">
+  <operation name="Add" category="Basic Math">
     <query type="column" name="col" prompt="Column?" column_type="numeric" />
     <query type="numeric" name="val" prompt="Add" />
     <displayname>

@@ -44,15 +44,6 @@ public class MainFrame extends JFrame
 	{
 		// Construct the view panel
 		viewPanel = new ViewPanel(this);
-		// Add the shutdown hook to ensure saving prior to a close
-		Runtime.getRuntime().addShutdownHook(new Thread()
-		{
-			@Override
-			public void run()
-			{
-				viewPanel.quit(false);
-			}
-		});
 
 		// Add the view to the frame
 		add(viewPanel);

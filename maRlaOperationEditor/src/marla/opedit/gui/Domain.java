@@ -18,24 +18,10 @@
 
 package marla.opedit.gui;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.ByteArrayOutputStream;
+import java.awt.Desktop;
 import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.io.PrintStream;
-import java.io.PrintWriter;
-import java.net.URL;
-import java.net.URLConnection;
-import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import marla.ide.resource.BuildInfo;
 import marla.ide.resource.Configuration;
 import marla.opedit.operation.OperationFile;
 import marla.opedit.resource.LoadSaveThread;
@@ -75,6 +61,8 @@ public class Domain
 	public OperationFile operationFile = null;
 	/** True if the operation XML file has been changed, false otherwise.*/
 	public boolean isChanged = false;
+	/** A reference to the desktop.*/
+	protected Desktop desktop = null;
 
     /**
      * Construct the domain with the view reference.
@@ -88,6 +76,12 @@ public class Domain
 		Configuration conf = Configuration.getInstance();
 		conf.configureFromSearch(Configuration.ConfigType.ErrorServer);
 		System.out.println("Error server found at " + marla.ide.gui.Domain.getErrorServer());
+
+		// If the Desktop object is supported, get the reference
+		if (Desktop.isDesktopSupported ())
+		{
+			desktop = Desktop.getDesktop ();
+		}
     }
     
     /**

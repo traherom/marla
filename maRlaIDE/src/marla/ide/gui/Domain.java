@@ -1085,7 +1085,7 @@ public class Domain
 			}
 			catch (OperationInfoRequiredException ex)
 			{
-				viewPanel.getRequiredInfoDialog (ex.getOperation ());
+				viewPanel.getRequiredInfoDialog (ex.getOperation (), true);
 			}
 		}
 	}
