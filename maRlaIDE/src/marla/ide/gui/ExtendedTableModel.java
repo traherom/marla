@@ -18,8 +18,6 @@
 
 package marla.ide.gui;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.table.AbstractTableModel;
 import marla.ide.problem.DataColumn;
 import marla.ide.problem.DataSet;
