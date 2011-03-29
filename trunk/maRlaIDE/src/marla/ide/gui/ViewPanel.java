@@ -136,6 +136,8 @@ public class ViewPanel extends JPanel
 	 * of the window too soon
 	 */
 	protected boolean startingAnswerPanelDisplay = false;
+	/** A static reference to the view panel after it has been created.*/
+	private static ViewPanel viewPanel = null;
 	/** Layout constraints for the palette.*/
 	public GridBagConstraints compConstraints = new GridBagConstraints();
 	/** True while the program is in startup, false otherwise.*/
@@ -266,6 +268,21 @@ public class ViewPanel extends JPanel
 		((JButton) access.getComponent(1)).setToolTipText("Cancel open");
 		access = (JPanel) ((JPanel) saveChooserDialog.getComponent(3)).getComponent(3);
 		((JButton) access.getComponent(1)).setToolTipText("Cancel save");
+	}
+
+	/**
+	 * If constructed, return the instance of the view panel.
+	 *
+	 * @return The instance of the view panel.
+	 */
+	public static ViewPanel getInstance()
+	{
+		if (viewPanel != null)
+		{
+			return viewPanel;
+		}
+
+		return null;
 	}
 
 	/**
@@ -1369,7 +1386,7 @@ public class ViewPanel extends JPanel
 			{
 				if(((Operation) rightClickedComponent).isInfoRequired())
 				{
-					getRequiredInfoDialog((Operation) rightClickedComponent);
+					ViewPanel.getRequiredInfoDialog((Operation) rightClickedComponent, true);
 				}
 			}
 			catch(MarlaException ex)
@@ -1812,9 +1829,10 @@ public class ViewPanel extends JPanel
 	 * Display the Info Required dialog for the given operation.
 	 *
 	 * @param newOperation The operation to get information for.
+	 * @param showDialog True if the dialog should be shown, false if the panel should just be created and returned.
 	 * @throws MarlaException
 	 */
-	public void getRequiredInfoDialog(final Operation newOperation) throws MarlaException
+	public static JPanel getRequiredInfoDialog(final Operation newOperation, boolean showDialog) throws MarlaException
 	{
 		// Create the dialog which will be launched to ask about requirements
 		final List<OperationInformation> prompts = newOperation.getRequiredInfoPrompt();
@@ -1898,7 +1916,7 @@ public class ViewPanel extends JPanel
 		}
 
 		JButton doneButton = new JButton("Done");
-		final ViewPanel viewPanel = this;
+		final ViewPanel VIEW_PANEL = ViewPanel.getInstance();
 		// When the user is done with the assumptions, forms will be validated and their values stored into the operation before continuing
 		doneButton.addActionListener(new ActionListener()
 		{
@@ -1934,7 +1952,7 @@ public class ViewPanel extends JPanel
 						// If the users input was not valid, the form is not accepted and the dialog will not close
 						((JTextField) valueComponents.get(i)).requestFocus();
 						((JTextField) valueComponents.get(i)).selectAll();
-						JOptionPane.showMessageDialog(domain.getTopWindow(), ex.getMessage(), "Invalid Input", JOptionPane.ERROR_MESSAGE);
+						JOptionPane.showMessageDialog(ViewPanel.getInstance().domain.getTopWindow(), ex.getMessage(), "Invalid Input", JOptionPane.ERROR_MESSAGE);
 						pass = false;
 					}
 				}
@@ -1947,10 +1965,15 @@ public class ViewPanel extends JPanel
 		});
 		panel.add(doneButton);
 
-		// Display dialog
-		dialog.pack();
-		dialog.setLocationRelativeTo(this);
-		dialog.setVisible(true);
+		if (showDialog)
+		{
+			// Display dialog
+			dialog.pack();
+			dialog.setLocationRelativeTo(VIEW_PANEL);
+			dialog.setVisible(true);
+		}
+
+		return panel;
 	}
 
 	/**

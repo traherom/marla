@@ -19,10 +19,13 @@
 package marla.opedit.gui;
 
 import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.Font;
 import java.io.File;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.text.SimpleDateFormat;
-import javax.swing.DefaultListModel;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -59,7 +62,7 @@ public class ViewPanel extends JPanel
 	/** The main frame of a stand-alone application.*/
 	public MainFrame mainFrame;
 	/** The model for the operations list.*/
-	protected DefaultListModel operationsModel = new DefaultListModel();
+	protected ExtendedTableModel operationsModel = new ExtendedTableModel();
 	/** The model for the output table.*/
 	protected DefaultTableModel outputModel = new DefaultTableModel();
 	/** The domain object reference performs generic actions specific to the GUI.*/
@@ -118,48 +121,16 @@ public class ViewPanel extends JPanel
 		domain.loadSaveThread.start();
 		domain.setLoadSaveThread(domain.loadSaveThread);
 
-		operationsList.addListSelectionListener(new ListSelectionListener()
+		operationsTable.getSelectionModel ().addListSelectionListener (new ListSelectionListener ()
 		{
 			@Override
-			public void valueChanged(ListSelectionEvent e)
+			public void valueChanged(ListSelectionEvent evt)
 			{
-				ignoreChanges = true;
-				if (operationsList.getSelectedIndex() != -1)
-				{
-					try
-					{
-						setOperationInnerXml();
-
-						operationsNameTextField.setEnabled (true);
-						categoryTextField.setEnabled(true);
-						operationTextArea.setEnabled(true);
-						updateTestButton.setEnabled(true);
-
-						currentOperation = currentFile.getOperation(operationsList.getSelectedValue().toString());
-						operationsNameTextField.setText(currentOperation.getName());
-						categoryTextField.setText(currentOperation.getCategory());
-						operationTextArea.setText(currentOperation.getInnerXML());
-						xmlStatusLabel.setForeground(Color.BLACK);
-						xmlStatusLabel.setText("<html>" + VALID_XML_STRING + "</html>");
-					}
-					catch (OperationEditorException ex)
-					{
-						xmlStatusLabel.setForeground(Color.RED);
-						xmlStatusLabel.setText("<html>" + ex.getMessage() + "</html>");
-					}
-				}
-				else
-				{
-					operationsNameTextField.setEnabled (false);
-					categoryTextField.setEnabled(false);
-					operationTextArea.setEnabled(false);
-					updateTestButton.setEnabled(false);
-
-					currentOperation = null;
-				}
-				ignoreChanges = false;
+				operationsTableRowSelected (evt);
 			}
 		});
+		operationsTable.getTableHeader ().setFont (FONT_PLAIN_12);
+		operationsTable.getTableHeader().getColumnModel().getColumn(0).setHeaderValue("Operations");
 
 		xmlStatusLabel.setText ("");
 	}
@@ -193,7 +164,6 @@ public class ViewPanel extends JPanel
         dataCsvLabel = new javax.swing.JLabel();
         browseDataTextField = new javax.swing.JTextField();
         browseDataButton = new javax.swing.JButton();
-        reloadButton = new javax.swing.JButton();
         displayNameLabel = new javax.swing.JLabel();
         displayNameTextField = new javax.swing.JTextField();
         questionPanel = new javax.swing.JPanel();
@@ -202,8 +172,6 @@ public class ViewPanel extends JPanel
         editingLabel = new javax.swing.JLabel();
         editingTextField = new javax.swing.JTextField();
         browseEditingButton = new javax.swing.JButton();
-        operationsScrollPane = new javax.swing.JScrollPane();
-        operationsList = new javax.swing.JList();
         opsNameLabel = new javax.swing.JLabel();
         categoryLabel = new javax.swing.JLabel();
         operationScrollPane = new javax.swing.JScrollPane();
@@ -216,6 +184,9 @@ public class ViewPanel extends JPanel
         saveButton = new javax.swing.JButton();
         newButton = new javax.swing.JButton();
         xmlStatusLabel = new javax.swing.JLabel();
+        operationsScrollPane = new javax.swing.JScrollPane();
+        operationsTable = new ExtendedJTable(operationsModel);
+        innerXmlLinkLabel = new javax.swing.JLabel();
 
         fileChooser.setApproveButtonToolTipText("Choose selected file");
         fileChooser.setDialogTitle("Browse Operation File");
@@ -237,15 +208,6 @@ public class ViewPanel extends JPanel
             }
         });
 
-        reloadButton.setFont(new java.awt.Font("Verdana", 0, 12));
-        reloadButton.setText("Reload");
-        reloadButton.setEnabled(false);
-        reloadButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                reloadButtonActionPerformed(evt);
-            }
-        });
-
         displayNameLabel.setFont(new java.awt.Font("Verdana", 0, 12));
         displayNameLabel.setText("Display Name:");
 
@@ -258,7 +220,7 @@ public class ViewPanel extends JPanel
         questionPanel.setLayout(questionPanelLayout);
         questionPanelLayout.setHorizontalGroup(
             questionPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(0, 414, Short.MAX_VALUE)
+            .add(0, 317, Short.MAX_VALUE)
         );
         questionPanelLayout.setVerticalGroup(
             questionPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
@@ -275,20 +237,17 @@ public class ViewPanel extends JPanel
             .add(org.jdesktop.layout.GroupLayout.TRAILING, testingPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .add(testingPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
-                    .add(org.jdesktop.layout.GroupLayout.LEADING, outputScrollPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 418, Short.MAX_VALUE)
+                    .add(org.jdesktop.layout.GroupLayout.LEADING, outputScrollPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 321, Short.MAX_VALUE)
                     .add(org.jdesktop.layout.GroupLayout.LEADING, testingPanelLayout.createSequentialGroup()
                         .add(dataCsvLabel)
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(browseDataTextField, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 168, Short.MAX_VALUE)
+                        .add(browseDataTextField, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 170, Short.MAX_VALUE)
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(browseDataButton)
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(reloadButton)
-                        .add(6, 6, 6))
+                        .add(browseDataButton))
                     .add(org.jdesktop.layout.GroupLayout.LEADING, testingPanelLayout.createSequentialGroup()
                         .add(displayNameLabel)
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(displayNameTextField, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 324, Short.MAX_VALUE))
+                        .add(displayNameTextField, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 219, Short.MAX_VALUE))
                     .add(org.jdesktop.layout.GroupLayout.LEADING, questionPanel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
@@ -299,8 +258,7 @@ public class ViewPanel extends JPanel
                 .add(testingPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                     .add(dataCsvLabel)
                     .add(browseDataTextField, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                    .add(browseDataButton)
-                    .add(reloadButton))
+                    .add(browseDataButton))
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(questionPanel, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
@@ -308,7 +266,7 @@ public class ViewPanel extends JPanel
                     .add(displayNameLabel)
                     .add(displayNameTextField, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(outputScrollPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 269, Short.MAX_VALUE)
+                .add(outputScrollPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 248, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -326,12 +284,6 @@ public class ViewPanel extends JPanel
             }
         });
 
-        operationsScrollPane.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-
-        operationsList.setFont(new java.awt.Font("Verdana", 0, 12));
-        operationsList.setModel(operationsModel);
-        operationsScrollPane.setViewportView(operationsList);
-
         opsNameLabel.setFont(new java.awt.Font("Verdana", 0, 12));
         opsNameLabel.setText("Operation Name:");
 
@@ -339,7 +291,7 @@ public class ViewPanel extends JPanel
         categoryLabel.setText("Category:");
 
         operationTextArea.setColumns(20);
-        operationTextArea.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        operationTextArea.setFont(new java.awt.Font("Verdana", 0, 12));
         operationTextArea.setRows(5);
         operationTextArea.setEnabled(false);
         operationTextArea.addFocusListener(new java.awt.event.FocusAdapter() {
@@ -349,7 +301,7 @@ public class ViewPanel extends JPanel
         });
         operationScrollPane.setViewportView(operationTextArea);
 
-        operationsNameTextField.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        operationsNameTextField.setFont(new java.awt.Font("Verdana", 0, 12));
         operationsNameTextField.setEnabled(false);
         operationsNameTextField.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -422,6 +374,26 @@ public class ViewPanel extends JPanel
         xmlStatusLabel.setFont(new java.awt.Font("Verdana", 1, 12));
         xmlStatusLabel.setText("Operation XML valid!");
 
+        operationsTable.setFont(new java.awt.Font("Verdana", 0, 12));
+        operationsTable.setModel(operationsModel);
+        operationsTable.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        operationsScrollPane.setViewportView(operationsTable);
+
+        innerXmlLinkLabel.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        innerXmlLinkLabel.setForeground(java.awt.Color.blue);
+        innerXmlLinkLabel.setText("<html><u>View documentation for XML</u></html>");
+        innerXmlLinkLabel.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                innerXmlLinkLabelMouseEntered(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                innerXmlLinkLabelMouseExited(evt);
+            }
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                innerXmlLinkLabelMouseReleased(evt);
+            }
+        });
+
         org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -429,18 +401,18 @@ public class ViewPanel extends JPanel
             .add(org.jdesktop.layout.GroupLayout.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
-                    .add(layout.createSequentialGroup()
+                    .add(org.jdesktop.layout.GroupLayout.LEADING, layout.createSequentialGroup()
                         .add(newButton)
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                         .add(editingLabel)
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(editingTextField, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 339, Short.MAX_VALUE)
+                        .add(editingTextField, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 387, Short.MAX_VALUE)
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                         .add(browseEditingButton)
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                         .add(saveButton))
                     .add(org.jdesktop.layout.GroupLayout.LEADING, layout.createSequentialGroup()
-                        .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING, false)
+                        .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                             .add(layout.createSequentialGroup()
                                 .add(addButton, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 68, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
@@ -448,18 +420,21 @@ public class ViewPanel extends JPanel
                             .add(operationsScrollPane, 0, 0, Short.MAX_VALUE))
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                         .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                            .add(operationScrollPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 438, Short.MAX_VALUE)
+                            .add(operationScrollPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 435, Short.MAX_VALUE)
                             .add(layout.createSequentialGroup()
                                 .add(categoryLabel)
                                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                                .add(categoryTextField, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 371, Short.MAX_VALUE))
+                                .add(categoryTextField, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 360, Short.MAX_VALUE))
                             .add(layout.createSequentialGroup()
                                 .add(opsNameLabel)
                                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                                .add(operationsNameTextField, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 326, Short.MAX_VALUE))
-                            .add(org.jdesktop.layout.GroupLayout.TRAILING, updateTestButton)
-                            .add(xmlStatusLabel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 438, Short.MAX_VALUE))))
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                                .add(operationsNameTextField, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 315, Short.MAX_VALUE))
+                            .add(org.jdesktop.layout.GroupLayout.TRAILING, layout.createSequentialGroup()
+                                .add(innerXmlLinkLabel, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                                .add(updateTestButton))
+                            .add(xmlStatusLabel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 435, Short.MAX_VALUE))))
+                .add(6, 6, 6)
                 .add(testingPanel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
         );
@@ -472,14 +447,14 @@ public class ViewPanel extends JPanel
                     .add(layout.createSequentialGroup()
                         .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                             .add(editingTextField, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                            .add(browseEditingButton)
-                            .add(saveButton)
                             .add(newButton)
-                            .add(editingLabel))
+                            .add(editingLabel)
+                            .add(browseEditingButton)
+                            .add(saveButton))
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                         .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                             .add(layout.createSequentialGroup()
-                                .add(operationsScrollPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 427, Short.MAX_VALUE)
+                                .add(operationsScrollPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 408, Short.MAX_VALUE)
                                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                                     .add(addButton)
@@ -495,9 +470,11 @@ public class ViewPanel extends JPanel
                                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                                 .add(xmlStatusLabel)
                                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                                .add(operationScrollPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 349, Short.MAX_VALUE)
+                                .add(operationScrollPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 322, Short.MAX_VALUE)
                                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                                .add(updateTestButton)))))
+                                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                                    .add(updateTestButton)
+                                    .add(innerXmlLinkLabel, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))))))
                 .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
@@ -507,46 +484,61 @@ public class ViewPanel extends JPanel
 		try
 		{
 			OperationXMLEditable newOp = currentFile.addOperation();
-			operationsModel.addElement(newOp.toString());
-			operationsList.invalidate();
-			operationsList.repaint();
+			operationsModel.addRow(new Object[] {newOp.getName()});
+			((ExtendedJTable) operationsTable).refreshTableUI();
+			((ExtendedJTable) operationsTable).setSelectedRow(operationsModel.getRowCount() - 1);
+			operationsTable.scrollRectToVisible (operationsTable.getCellRect (operationsModel.getRowCount() - 1, 0, false));
 			removeButton.setEnabled(true);
 		}
 		catch(OperationEditorException ex)
 		{
 			Domain.logger.add(ex);
 		}
-
-		// TODO refresh operation listing and change the current operation
 	}//GEN-LAST:event_addButtonActionPerformed
 
 	private void removeButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_removeButtonActionPerformed
 	{//GEN-HEADEREND:event_removeButtonActionPerformed
 		if (currentOperation != null)
 		{
+			int index = getOperationIndex(currentOperation.getName());
+			operationsModel.removeRow(index);
 			currentFile.removeOperation(currentOperation);
-			operationsModel.remove(getOperationIndex(currentOperation.toString()));
-			operationsList.invalidate();
-			operationsList.repaint();
-			if (operationsModel.isEmpty())
+			((ExtendedJTable) operationsTable).refreshTableUI();
+			if (operationsModel.getRowCount() == 0)
 			{
 				removeButton.setEnabled(false);
+			}
+			
+			boolean changeCallNeeded = false;
+			if (index >= operationsModel.getRowCount())
+			{
+				((ExtendedJTable) operationsTable).setSelectedRow(operationsTable.getSelectedRow() - 1);
+			}
+			else
+			{
+				changeCallNeeded = true;
+			}
+			if (operationsTable.getSelectedRow () != -1)
+			{
+				currentOperation = currentFile.getOperation(operationsTable.getValueAt(operationsTable.getSelectedRow(), 0).toString());
+			}
+			if (changeCallNeeded)
+			{
+				operationsTableRowSelected(null);
 			}
 		}
 	}//GEN-LAST:event_removeButtonActionPerformed
 
 	private void updateTestButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_updateTestButtonActionPerformed
 	{//GEN-HEADEREND:event_updateTestButtonActionPerformed
-		try
+		if (currentDataSet != null)
 		{
-			currentOperation.setParentData(currentDataSet);
+			updateTest();
 		}
-		catch(MarlaException ex)
+		else
 		{
-			Domain.logger.add(ex);
+			JOptionPane.showMessageDialog(this, "You must browse for a data file to use before you\ncan test an operation.", "No Data Set", JOptionPane.INFORMATION_MESSAGE);
 		}
-
-		// TODO rebuild questions section, then call walk through the data and build the table
 	}//GEN-LAST:event_updateTestButtonActionPerformed
 
 	private void browseEditingButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_browseEditingButtonActionPerformed
@@ -614,9 +606,8 @@ public class ViewPanel extends JPanel
 				try
 				{
 					currentOperation.setEditableName(newName);
-					operationsModel.setElementAt(newName, operationsList.getSelectedIndex());
-					operationsList.invalidate();
-					operationsList.repaint();
+					operationsModel.setValueAt(newName, operationsTable.getSelectedRow(), 0);
+					((ExtendedJTable) operationsTable).refreshTableUI();
 				}
 				catch(OperationEditorException ex)
 				{
@@ -707,30 +698,6 @@ public class ViewPanel extends JPanel
 		}
 	}//GEN-LAST:event_browseDataButtonActionPerformed
 
-	private void reloadButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_reloadButtonActionPerformed
-	{//GEN-HEADEREND:event_reloadButtonActionPerformed
-		try
-		{
-			if(currentDataSet != null)
-			{
-				currentDataSet = DataSet.importFile(browseDataTextField.getText());
-
-				if(currentOperation != null)
-				{
-					currentOperation.setParentData(currentDataSet);
-				}
-			}
-		}
-		catch(DuplicateNameException ex)
-		{
-			Domain.logger.add(ex);
-		}
-		catch(MarlaException ex)
-		{
-			Domain.logger.add(ex);
-		}
-	}//GEN-LAST:event_reloadButtonActionPerformed
-
 	private void operationTextAreaFocusLost(java.awt.event.FocusEvent evt)//GEN-FIRST:event_operationTextAreaFocusLost
 	{//GEN-HEADEREND:event_operationTextAreaFocusLost
 		if (!ignoreChanges)
@@ -780,7 +747,7 @@ public class ViewPanel extends JPanel
 			fileChooser.resetChoosableFileFilters();
 			fileChooser.setFileFilter(xmlFilter);
 			fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-			fileChooser.setDialogType(JFileChooser.OPEN_DIALOG);
+			fileChooser.setDialogType(JFileChooser.SAVE_DIALOG);
 			fileChooser.setDialogTitle("New Operation File");
 			fileChooser.setCurrentDirectory(new File(lastGoodDir));
 			// Display the chooser and retrieve the selected file
@@ -835,6 +802,118 @@ public class ViewPanel extends JPanel
 		}
 	}//GEN-LAST:event_newButtonActionPerformed
 
+	private void innerXmlLinkLabelMouseEntered(java.awt.event.MouseEvent evt)//GEN-FIRST:event_innerXmlLinkLabelMouseEntered
+	{//GEN-HEADEREND:event_innerXmlLinkLabelMouseEntered
+		setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+	}//GEN-LAST:event_innerXmlLinkLabelMouseEntered
+
+	private void innerXmlLinkLabelMouseExited(java.awt.event.MouseEvent evt)//GEN-FIRST:event_innerXmlLinkLabelMouseExited
+	{//GEN-HEADEREND:event_innerXmlLinkLabelMouseExited
+		setCursor(Cursor.getDefaultCursor());
+	}//GEN-LAST:event_innerXmlLinkLabelMouseExited
+
+	private void innerXmlLinkLabelMouseReleased(java.awt.event.MouseEvent evt)//GEN-FIRST:event_innerXmlLinkLabelMouseReleased
+	{//GEN-HEADEREND:event_innerXmlLinkLabelMouseReleased
+		boolean success = true;
+		if (domain.desktop != null)
+		{
+			try
+			{
+				domain.desktop.browse(new URI("http://code.google.com/p/marla/wiki/XMLOperationSpecification"));
+			}
+			catch(IOException ex)
+			{
+				success = false;
+			}
+			catch(URISyntaxException ex)
+			{
+				success = false;
+			}
+		}
+		else
+		{
+			success = false;
+		}
+		if (!success)
+		{
+			JOptionPane.showMessageDialog(this, "Launching the web browser failed. To view Inner XML documentation,\nvisit http://code.google.com/p/marla/wiki/XMLOperationSpecification manually in your web browser.", "Desktop Not Supported", JOptionPane.INFORMATION_MESSAGE);
+		}
+	}//GEN-LAST:event_innerXmlLinkLabelMouseReleased
+
+	/**
+	 * Update the test in the right panel.
+	 */
+	private void updateTest()
+	{
+		if (currentOperation != null)
+		{
+			if (currentDataSet != null)
+			{
+				try
+				{
+					currentOperation.setParentData(currentDataSet);
+
+					questionPanel.removeAll();
+					questionPanel.add(marla.ide.gui.ViewPanel.getRequiredInfoDialog(currentOperation, false));
+				}
+				catch(MarlaException ex)
+				{
+					JOptionPane.showMessageDialog(this, "The test panel could not be refresh.\n" + ex.getMessage(), "Error Testing", JOptionPane.ERROR_MESSAGE);
+					Domain.logger.add(ex);
+				}
+			}
+		}
+	}
+
+	/**
+	 * Fired when a new item has been selected in the operations table.
+	 *
+	 * @param evt The list selection event.
+	 */
+	private void operationsTableRowSelected(ListSelectionEvent evt)
+	{
+		ignoreChanges = true;
+		if (operationsTable.getSelectedRow() != -1)
+		{
+			try
+			{
+				setOperationInnerXml();
+
+				operationsNameTextField.setEnabled (true);
+				categoryTextField.setEnabled(true);
+				operationTextArea.setEnabled(true);
+				updateTestButton.setEnabled(true);
+
+				currentOperation = currentFile.getOperation(operationsTable.getValueAt(operationsTable.getSelectedRow(), 0).toString());
+				operationsNameTextField.setText(currentOperation.getName());
+				categoryTextField.setText(currentOperation.getCategory());
+				operationTextArea.setText(currentOperation.getInnerXML());
+				xmlStatusLabel.setForeground(Color.BLACK);
+				xmlStatusLabel.setText("<html>" + VALID_XML_STRING + "</html>");
+			}
+			catch (OperationEditorException ex)
+			{
+				xmlStatusLabel.setForeground(Color.RED);
+				xmlStatusLabel.setText("<html>" + ex.getMessage() + "</html>");
+			}
+		}
+		else
+		{
+			operationsNameTextField.setEnabled (false);
+			operationsNameTextField.setText("");
+			categoryTextField.setEnabled(false);
+			categoryTextField.setText("");
+			operationTextArea.setEnabled(false);
+			operationTextArea.setText("");
+			updateTestButton.setEnabled(false);
+			xmlStatusLabel.setText("");
+
+			currentOperation = null;
+		}
+		updateTest();
+		ignoreChanges = false;
+	}
+
 	/**
 	 * Set the inner XML code from the text area.
 	 */
@@ -857,16 +936,17 @@ public class ViewPanel extends JPanel
 			editingTextField.setText(currentFile.toString());
 			addButton.setEnabled(true);
 
-			operationsModel.removeAllElements();
+			operationsModel.removeAllRows();
 			for (String item : currentFile.getOperationNames())
 			{
-				operationsModel.addElement(item);
+				operationsModel.addRow(new Object[] {item});
 			}
-			if (!operationsModel.isEmpty())
+			if (operationsModel.getRowCount() != 0)
 			{
-				operationsList.setSelectedIndex(0);
+				((ExtendedJTable) operationsTable).setSelectedRow(0);
 				removeButton.setEnabled(true);
 			}
+			((ExtendedJTable) operationsTable).refreshTableUI();
 		}
 	}
 
@@ -908,9 +988,9 @@ public class ViewPanel extends JPanel
 	 */
 	public int getOperationIndex(String name)
 	{
-		for (int i = 0; i < operationsModel.size(); ++i)
+		for (int i = 0; i < operationsModel.getRowCount(); ++i)
 		{
-			if (operationsModel.get(i).toString().equals(name))
+			if (operationsModel.getValueAt(i, 0).toString().equals(name))
 			{
 				return i;
 			}
@@ -927,7 +1007,8 @@ public class ViewPanel extends JPanel
 		if(currentDataSet != null)
 		{
 			browseDataTextField.setText(currentDataSetPath);
-			reloadButton.setEnabled(true);
+
+			updateTest();
 		}
 	}
 
@@ -936,9 +1017,21 @@ public class ViewPanel extends JPanel
 	 */
 	private void checkTextFieldChanges()
 	{
-		operationsNameTextFieldActionPerformed(null);
-		categoryTextFieldActionPerformed(null);
-		operationTextAreaFocusLost(null);
+		if (currentOperation != null)
+		{
+			if (!operationsNameTextField.getText().equals(currentOperation.getName()))
+			{
+				operationsNameTextFieldActionPerformed(null);
+			}
+			if (!categoryTextField.getText().equals(currentOperation.getCategory()))
+			{
+				categoryTextFieldActionPerformed(null);
+			}
+			if (!operationTextArea.getText().equals(currentOperation.getInnerXML()))
+			{
+				operationTextAreaFocusLost(null);
+			}
+		}
 	}
 
 	/**
@@ -999,17 +1092,17 @@ public class ViewPanel extends JPanel
     private javax.swing.JLabel editingLabel;
     private javax.swing.JTextField editingTextField;
     protected javax.swing.JFileChooser fileChooser;
+    private javax.swing.JLabel innerXmlLinkLabel;
     private javax.swing.JButton newButton;
     private javax.swing.JScrollPane operationScrollPane;
     private javax.swing.JTextArea operationTextArea;
-    private javax.swing.JList operationsList;
     private javax.swing.JTextField operationsNameTextField;
     private javax.swing.JScrollPane operationsScrollPane;
+    private javax.swing.JTable operationsTable;
     private javax.swing.JLabel opsNameLabel;
     private javax.swing.JScrollPane outputScrollPane;
     private javax.swing.JTable outputTable;
     private javax.swing.JPanel questionPanel;
-    private javax.swing.JButton reloadButton;
     private javax.swing.JButton removeButton;
     protected javax.swing.JButton saveButton;
     private javax.swing.JPanel testingPanel;
