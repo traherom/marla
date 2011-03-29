@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF8"?>
 <operations>
-  <operation name="NOP" list="false">
+  <operation name="NOP" list="false" category="NOP">
     <computation>
       <cmd>print("NOP happened")</cmd>
     </computation>
