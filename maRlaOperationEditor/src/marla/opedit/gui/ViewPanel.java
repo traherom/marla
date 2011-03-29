@@ -38,6 +38,7 @@ import javax.swing.table.TableColumn;
 import marla.ide.problem.DataSet;
 import marla.ide.problem.DuplicateNameException;
 import marla.ide.problem.MarlaException;
+import marla.opedit.gui.xmlpane.XmlTextPane;
 import marla.opedit.operation.OperationEditorException;
 import marla.opedit.operation.OperationFile;
 import marla.opedit.operation.OperationXMLEditable;
@@ -94,6 +95,8 @@ public class ViewPanel extends JPanel
 	protected OperationXMLEditable currentOperation = null;
 	/** Ignore changes made to operation components when true, otherwise accept them.*/
 	private boolean ignoreChanges = true;
+	/** Ignore the second table change event when an operation is invalid.*/
+	private boolean ignoreSecond = false;
 
 	/**
 	 * Creates new form MainFrame for a stand-alone application.
@@ -182,8 +185,6 @@ public class ViewPanel extends JPanel
         browseEditingButton = new javax.swing.JButton();
         opsNameLabel = new javax.swing.JLabel();
         categoryLabel = new javax.swing.JLabel();
-        operationScrollPane = new javax.swing.JScrollPane();
-        operationTextArea = new javax.swing.JTextArea();
         operationsNameTextField = new javax.swing.JTextField();
         categoryTextField = new javax.swing.JTextField();
         addButton = new javax.swing.JButton();
@@ -195,6 +196,8 @@ public class ViewPanel extends JPanel
         operationsScrollPane = new javax.swing.JScrollPane();
         operationsTable = new ExtendedJTable(operationsModel);
         innerXmlLinkLabel = new javax.swing.JLabel();
+        operationScrollPane = new javax.swing.JScrollPane();
+        operationTextPane = new XmlTextPane();
 
         fileChooser.setApproveButtonToolTipText("Choose selected file");
         fileChooser.setDialogTitle("Browse Operation File");
@@ -202,11 +205,11 @@ public class ViewPanel extends JPanel
 
         testingPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Testing", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Verdana", 0, 12))); // NOI18N
 
-        dataCsvLabel.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        dataCsvLabel.setFont(new java.awt.Font("Verdana", 0, 12));
         dataCsvLabel.setText("Data (CSV):");
 
         browseDataTextField.setEditable(false);
-        browseDataTextField.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        browseDataTextField.setFont(new java.awt.Font("Verdana", 0, 12));
 
         browseDataButton.setFont(new java.awt.Font("Verdana", 0, 12));
         browseDataButton.setText("Browse");
@@ -219,7 +222,7 @@ public class ViewPanel extends JPanel
         questionPanel.setBorder(javax.swing.BorderFactory.createEtchedBorder());
         questionPanel.setLayout(new java.awt.BorderLayout());
 
-        displayNameLabel.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        displayNameLabel.setFont(new java.awt.Font("Verdana", 0, 12));
         displayNameLabel.setText("Display name:");
 
         outputTable.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
@@ -230,7 +233,7 @@ public class ViewPanel extends JPanel
 
         displayNameTextPane.setContentType("text/html");
         displayNameTextPane.setEditable(false);
-        displayNameTextPane.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        displayNameTextPane.setFont(new java.awt.Font("Verdana", 0, 12));
         displayNameTextPane.setOpaque(false);
         displayNameScrollPane.setViewportView(displayNameTextPane);
 
@@ -288,23 +291,11 @@ public class ViewPanel extends JPanel
             }
         });
 
-        opsNameLabel.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        opsNameLabel.setFont(new java.awt.Font("Verdana", 0, 12));
         opsNameLabel.setText("Operation name:");
 
         categoryLabel.setFont(new java.awt.Font("Verdana", 0, 12));
         categoryLabel.setText("Category:");
-
-        operationTextArea.setColumns(20);
-        operationTextArea.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
-        operationTextArea.setRows(5);
-        operationTextArea.setToolTipText("The XML for the selected operation");
-        operationTextArea.setEnabled(false);
-        operationTextArea.addFocusListener(new java.awt.event.FocusAdapter() {
-            public void focusLost(java.awt.event.FocusEvent evt) {
-                operationTextAreaFocusLost(evt);
-            }
-        });
-        operationScrollPane.setViewportView(operationTextArea);
 
         operationsNameTextField.setFont(new java.awt.Font("Verdana", 0, 12));
         operationsNameTextField.setEnabled(false);
@@ -376,14 +367,14 @@ public class ViewPanel extends JPanel
             }
         });
 
-        xmlStatusLabel.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        xmlStatusLabel.setFont(new java.awt.Font("Verdana", 0, 12));
         xmlStatusLabel.setText("<html><b>XML status:</b> valid</html>");
 
-        operationsTable.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        operationsTable.setFont(new java.awt.Font("Verdana", 0, 12));
         operationsTable.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         operationsScrollPane.setViewportView(operationsTable);
 
-        innerXmlLinkLabel.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        innerXmlLinkLabel.setFont(new java.awt.Font("Verdana", 0, 12));
         innerXmlLinkLabel.setForeground(java.awt.Color.blue);
         innerXmlLinkLabel.setText("<html><u>View documentation for XML</u></html>");
         innerXmlLinkLabel.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -397,6 +388,14 @@ public class ViewPanel extends JPanel
                 innerXmlLinkLabelMouseReleased(evt);
             }
         });
+
+        operationTextPane.setFont(new java.awt.Font("Courier New", 0, 12)); // NOI18N
+        operationTextPane.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                operationTextPaneFocusLost(evt);
+            }
+        });
+        operationScrollPane.setViewportView(operationTextPane);
 
         org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(this);
         this.setLayout(layout);
@@ -601,7 +600,7 @@ public class ViewPanel extends JPanel
 
 	private void operationsNameTextFieldActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_operationsNameTextFieldActionPerformed
 	{//GEN-HEADEREND:event_operationsNameTextFieldActionPerformed
-		if (!ignoreChanges)
+		if (!ignoreChanges && !operationsNameTextField.getText().equals(currentOperation.getName()))
 		{
 			String newName = operationsNameTextField.getText();
 
@@ -627,7 +626,7 @@ public class ViewPanel extends JPanel
 
 	private void categoryTextFieldActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_categoryTextFieldActionPerformed
 	{//GEN-HEADEREND:event_categoryTextFieldActionPerformed
-		if (!ignoreChanges)
+		if (!ignoreChanges && !categoryTextField.getText().equals(currentOperation.getCategory()))
 		{
 			String newCat = operationsNameTextField.getText();
 
@@ -701,24 +700,6 @@ public class ViewPanel extends JPanel
 			Domain.logger.add(ex);
 		}
 	}//GEN-LAST:event_browseDataButtonActionPerformed
-
-	private void operationTextAreaFocusLost(java.awt.event.FocusEvent evt)//GEN-FIRST:event_operationTextAreaFocusLost
-	{//GEN-HEADEREND:event_operationTextAreaFocusLost
-		if (!ignoreChanges)
-		{
-			try
-			{
-				setOperationInnerXml();
-				xmlStatusLabel.setForeground(Color.BLACK);
-				xmlStatusLabel.setText("<html><b>XML status:</b> " + VALID_XML_STRING + "</html>");
-			}
-			catch (OperationEditorException ex)
-			{
-				xmlStatusLabel.setForeground(Color.RED);
-				xmlStatusLabel.setText("<html><b>XML status:</b> " + ex.getMessage() + "</html>");
-			}
-		}
-	}//GEN-LAST:event_operationTextAreaFocusLost
 
 	private void operationsNameTextFieldFocusLost(java.awt.event.FocusEvent evt)//GEN-FIRST:event_operationsNameTextFieldFocusLost
 	{//GEN-HEADEREND:event_operationsNameTextFieldFocusLost
@@ -844,6 +825,23 @@ public class ViewPanel extends JPanel
 		}
 	}//GEN-LAST:event_innerXmlLinkLabelMouseReleased
 
+	private void operationTextPaneFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_operationTextPaneFocusLost
+		if (!ignoreChanges && !operationTextPane.getText().equals(currentOperation.getInnerXML()))
+		{
+			try
+			{
+				setOperationInnerXml();
+				xmlStatusLabel.setForeground(Color.BLACK);
+				xmlStatusLabel.setText("<html><b>XML status:</b> " + VALID_XML_STRING + "</html>");
+			}
+			catch (OperationEditorException ex)
+			{
+				xmlStatusLabel.setForeground(Color.RED);
+				xmlStatusLabel.setText("<html><b>XML status:</b> " + ex.getMessage() + "</html>");
+			}
+		}
+	}//GEN-LAST:event_operationTextPaneFocusLost
+
 	/**
 	 * Update the test in the right panel.
 	 */
@@ -935,13 +933,13 @@ public class ViewPanel extends JPanel
 
 				operationsNameTextField.setEnabled (true);
 				categoryTextField.setEnabled(true);
-				operationTextArea.setEnabled(true);
+				operationTextPane.setEnabled(true);
 				updateTestButton.setEnabled(true);
 
 				currentOperation = currentFile.getOperation(operationsTable.getValueAt(operationsTable.getSelectedRow(), 0).toString());
 				operationsNameTextField.setText(currentOperation.getName());
 				categoryTextField.setText(currentOperation.getCategory());
-				operationTextArea.setText(currentOperation.getInnerXML());
+				operationTextPane.setText(currentOperation.getInnerXML());
 				xmlStatusLabel.setForeground(Color.BLACK);
 				xmlStatusLabel.setText("<html><b>XML status:</b> " + VALID_XML_STRING + "</html>");
 			}
@@ -949,6 +947,19 @@ public class ViewPanel extends JPanel
 			{
 				xmlStatusLabel.setForeground(Color.RED);
 				xmlStatusLabel.setText("<html><b>XML status:</b> " + ex.getMessage() + "</html>");
+
+				((ExtendedJTable) operationsTable).setSelectedRow (getOperationIndex(currentOperation.getName()));
+
+				// Since the table change event will fire twice, ignore the second change back to the invalid operation
+				if(!ignoreSecond)
+				{
+					ignoreSecond = true;
+					JOptionPane.showMessageDialog(this, "The XML entered is not valid. You cannot edit another operation\nthe current operation has been made valid.", "Invalid XML", JOptionPane.ERROR_MESSAGE);
+				}
+				else
+				{
+					ignoreSecond = false;
+				}
 			}
 		}
 		else
@@ -957,8 +968,8 @@ public class ViewPanel extends JPanel
 			operationsNameTextField.setText("");
 			categoryTextField.setEnabled(false);
 			categoryTextField.setText("");
-			operationTextArea.setEnabled(false);
-			operationTextArea.setText("");
+			operationTextPane.setEnabled(false);
+			operationTextPane.setText("");
 			updateTestButton.setEnabled(false);
 			xmlStatusLabel.setText("");
 
@@ -973,9 +984,9 @@ public class ViewPanel extends JPanel
 	 */
 	public void setOperationInnerXml() throws OperationEditorException
 	{
-		if (currentOperation != null && !ignoreChanges)
+		if (currentOperation != null)
 		{
-			currentOperation.setInnerXML(operationTextArea.getText());
+			currentOperation.setInnerXML(operationTextPane.getText());
 		}
 	}
 
@@ -1073,18 +1084,9 @@ public class ViewPanel extends JPanel
 	{
 		if (currentOperation != null)
 		{
-			if (!operationsNameTextField.getText().equals(currentOperation.getName()))
-			{
-				operationsNameTextFieldActionPerformed(null);
-			}
-			if (!categoryTextField.getText().equals(currentOperation.getCategory()))
-			{
-				categoryTextFieldActionPerformed(null);
-			}
-			if (!operationTextArea.getText().equals(currentOperation.getInnerXML()))
-			{
-				operationTextAreaFocusLost(null);
-			}
+			operationsNameTextFieldActionPerformed(null);
+			categoryTextFieldActionPerformed(null);
+			operationTextPaneFocusLost(null);
 		}
 	}
 
@@ -1150,7 +1152,7 @@ public class ViewPanel extends JPanel
     private javax.swing.JLabel innerXmlLinkLabel;
     private javax.swing.JButton newButton;
     private javax.swing.JScrollPane operationScrollPane;
-    private javax.swing.JTextArea operationTextArea;
+    private javax.swing.JTextPane operationTextPane;
     private javax.swing.JTextField operationsNameTextField;
     private javax.swing.JScrollPane operationsScrollPane;
     private javax.swing.JTable operationsTable;
