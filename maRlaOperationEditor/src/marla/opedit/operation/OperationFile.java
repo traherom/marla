@@ -234,4 +234,14 @@ public class OperationFile
 			throw new OperationEditorException("Problem occured writing to file during save", ex);
 		}
 	}
+
+	/**
+	 * Returns the path of the XML file.
+	 *
+	 * @return The path of the XML file.
+	 */
+	public String toString()
+	{
+		return xmlPath;
+	}
 }
