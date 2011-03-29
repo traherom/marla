@@ -72,9 +72,29 @@
 
     -->
 
+	<!-- Determine OS -->
+	<condition property="is.mac">
+		<os family="mac" />
+	</condition>
+
+	<condition property="is.linux">
+		<os family="unix" />
+	</condition>
+
+	<condition property="is.windows">
+		<os family="windows" />
+	</condition>
+
+	<condition property="is.linux.or.windows">
+		<or>
+			<os family="unix" />
+			<os family="windows" />
+		</or>
+	</condition>
+
 	<!-- Settings -->
 	<property name="store.dir" value="store" />
-	
+
 	<condition property="launch4j.dir" value="/opt/launch4j">
 		<isset property="is.linux" />
 	</condition>
@@ -132,11 +152,5 @@
 			<fileset file="${store.dir}/launcher.xml" />
 			<fileset file="${store.dir}/maRla.ico" />
 		</delete>
-
-		<!-- Copy in required files for running marla -->
-		<copy todir="${store.dir}">
-			<fileset file="test/ops.xml" />
-			<fileset file="test/export_template.xml" />
-		</copy>
     </target>
 </project>
