@@ -1054,10 +1054,6 @@ public class Domain
 			Domain.logger.add(ex);
 			JOptionPane.showMessageDialog (getTopWindow(), ex.getMessage (), "Error Loading Save File", JOptionPane.WARNING_MESSAGE);
 		}
-		catch (FileNotFoundException ex)
-		{
-			JOptionPane.showMessageDialog (getTopWindow(), "Unable to locate ", "Error Loading Save File", JOptionPane.WARNING_MESSAGE);
-		}
 	}
 
 	public void ensureRequirementsMet(Operation op)
