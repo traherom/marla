@@ -954,7 +954,30 @@ public class ViewPanel extends JPanel
 		
 		if (closeFile ())
 		{
+			// Hide the main window to give the appearance of better responsiveness
+			mainFrame.setVisible(false);
+
+			// Write out any final errors we encountered and didn't hit yet
+			// We do this now, then write the configuration because, if the loadsavethread
+			// is already writing, then we'll give it a bit of extra time
+			domain.flushLog();
+
+			// Tell thread to stop
 			domain.loadSaveThread.stopRunning();
+
+			try
+			{
+				// Wait for an extra couple seconds beyond the longest it'll take
+				// the load save thread to get around to checking if it's closing again
+				// The extra time lets it write if needed
+				domain.loadSaveThread.join(domain.loadSaveThread.getDelay() + 3000);
+			}
+			catch(InterruptedException ex)
+			{
+				// Took too long to finish saving or whatever. Not much we can
+				// do about that
+				System.err.println("Delay in save thread exiting: " + ex.getMessage());
+			}
 
 			if(forceQuit)
 			{
