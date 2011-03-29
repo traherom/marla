@@ -1,0 +1,26 @@
+<launch4jConfig>
+  <dontWrapJar>false</dontWrapJar>
+  <headerType>gui</headerType>
+  <jar>maRla Operation Editor.jar</jar>
+  <outfile>maRla Operation Editor.exe</outfile>
+  <errTitle>Install Java</errTitle>
+  <cmdLine></cmdLine>
+  <chdir></chdir>
+  <priority>normal</priority>
+  <downloadUrl>http://java.com/download</downloadUrl>
+  <supportUrl>http://marla.googlecode.com/</supportUrl>
+  <customProcName>true</customProcName>
+  <stayAlive>true</stayAlive>
+  <manifest></manifest>
+  <icon>maRla.ico</icon>
+  <singleInstance>
+    <mutexName>themarlaprojectopeditor</mutexName>
+    <windowTitle></windowTitle>
+  </singleInstance>
+  <jre>
+    <path></path>
+    <minVersion>1.6.0</minVersion>
+    <maxVersion></maxVersion>
+    <jdkPreference>preferJre</jdkPreference>
+  </jre>
+</launch4jConfig>
