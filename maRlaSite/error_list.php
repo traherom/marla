@@ -22,6 +22,8 @@ if(isset($_REQUEST['resolve_all']))
 	$stmt->closeCursor();
 
 	resolveErrors($ids);
+
+	header('Location: error_list.php');
 }
 ?>
 <!DOCTYPE html>
