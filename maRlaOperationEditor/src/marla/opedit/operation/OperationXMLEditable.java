@@ -162,7 +162,7 @@ public class OperationXMLEditable extends OperationXML
 		try
 		{
 			// Get previous XML
-			Document doc = new Document(opEl);
+			Document doc = new Document((Element)opEl.clone());
 			Format formatter = Format.getPrettyFormat();
 			XMLOutputter xml = new XMLOutputter(formatter);
 
