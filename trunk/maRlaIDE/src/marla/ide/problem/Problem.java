@@ -487,7 +487,7 @@ public class Problem implements ProblemPart
 	}
 
 	@Override
-	public DataSet getData(String name) throws DataNotFoundException
+	public DataSet getData(String name) 
 	{
 		return getData(getDataIndex(name));
 	}
@@ -499,7 +499,7 @@ public class Problem implements ProblemPart
 	}
 
 	@Override
-	public int getDataIndex(String name) throws DataNotFoundException
+	public int getDataIndex(String name)
 	{
 		for(int i = 0; i < datasets.size(); i++)
 		{
@@ -630,7 +630,7 @@ public class Problem implements ProblemPart
 	 * Attempts to save problem to file path given.
 	 * @param fileName Where to attempt to save the problem.
 	 */
-	private void save(String fileName) throws MarlaException
+	private void save(String fileName)
 	{
 		if(fileName == null)
 			throw new ProblemException("File name may not be null");
@@ -658,7 +658,7 @@ public class Problem implements ProblemPart
 	/**
 	 * Attempts to save problem to file specified by fileName
 	 */
-	public void save() throws MarlaException
+	public void save()
 	{
 		save(fileName);
 		isSaved = true;
@@ -675,7 +675,7 @@ public class Problem implements ProblemPart
 	 * @param fileName Path to save file
 	 * @return Restored Problem object
 	 */
-	public static Problem load(String fileName) throws FileNotFoundException, MarlaException
+	public static Problem load(String fileName)
 	{
 		try
 		{
@@ -775,7 +775,7 @@ public class Problem implements ProblemPart
 	}
 
 	@Override
-	public Element toXml() throws MarlaException
+	public Element toXml()
 	{
 		Element rootEl = new Element("problem");
 
@@ -821,7 +821,7 @@ public class Problem implements ProblemPart
 	 * @param rootEl JDOM Tree to load problem from
 	 * @return Newly created problem from the given XML
 	 */
-	public static Problem fromXml(Element rootEl) throws MarlaException
+	public static Problem fromXml(Element rootEl)
 	{
 		Problem newProb = new Problem();
 		newProb.isLoading = true;

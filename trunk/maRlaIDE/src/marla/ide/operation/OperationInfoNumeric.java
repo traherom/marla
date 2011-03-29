@@ -47,14 +47,14 @@ public class OperationInfoNumeric extends OperationInformation
 	 * @param options Options to display to the user, will be presented in the
 	 *	order given, not sorted in any way.
 	 */
-	public OperationInfoNumeric(Operation op, String name, String prompt) throws OperationException
+	public OperationInfoNumeric(Operation op, String name, String prompt)
 	{
 		super(op, name, prompt, PromptType.NUMERIC);
 		this.min = Double.MIN_VALUE;
 		this.max = Double.MAX_VALUE;
 	}
 
-	public OperationInfoNumeric(Operation op, String name, String prompt, double min, double max) throws OperationException
+	public OperationInfoNumeric(Operation op, String name, String prompt, double min, double max)
 	{
 		super(op, name, prompt, PromptType.NUMERIC);
 		this.min = min;
@@ -72,7 +72,7 @@ public class OperationInfoNumeric extends OperationInformation
 	}
 
 	@Override
-	public Double setAnswer(Object newAnswer) throws OperationInfoRequiredException
+	public Double setAnswer(Object newAnswer)
 	{
 		Double oldAnswer = answer;
 

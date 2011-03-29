@@ -86,7 +86,7 @@ public interface ProblemPart extends Changeable, Loadable
 	 * @param name Dataset name
 	 * @return Dataset with matching name
 	 */
-	public DataSet getData(String name) throws DataNotFoundException;
+	public DataSet getData(String name);
 
 	/**
 	 * Returns the DataSet at the given index
@@ -101,7 +101,7 @@ public interface ProblemPart extends Changeable, Loadable
 	 * @param name Dataset name
 	 * @return Dataset with matching name
 	 */
-	public int getDataIndex(String name) throws DataNotFoundException;
+	public int getDataIndex(String name);
 
 	/**
 	 * Returns the number of DataSets this Problem contains
@@ -114,5 +114,5 @@ public interface ProblemPart extends Changeable, Loadable
 	 * @return JDOM element containing all information needed to rebuild
 	 *		this exact problem
 	 */
-	public Element toXml() throws MarlaException;
+	public Element toXml();
 }

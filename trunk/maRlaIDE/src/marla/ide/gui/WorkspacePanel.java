@@ -66,7 +66,7 @@ public class WorkspacePanel extends JPanel
 	 * @param newMin Size in pixels for the lines. Must be 1 or greater
 	 * @return Previously set line width
 	 */
-	public static int setMinLineWidth(int newMin) throws ConfigurationException
+	public static int setMinLineWidth(int newMin) 
 	{
 		int oldMin = minLineWidth;
 
@@ -91,7 +91,7 @@ public class WorkspacePanel extends JPanel
 	 * @param newMin Size in pixels between the lines. Must be 0 or greater
 	 * @return Previously set line spacing
 	 */
-	public static int setLineSpacing(int newSpace) throws ConfigurationException
+	public static int setLineSpacing(int newSpace) 
 	{
 		int oldSpace = lineSpacing;
 

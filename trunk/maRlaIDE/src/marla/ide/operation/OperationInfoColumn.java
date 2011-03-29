@@ -47,7 +47,7 @@ public class OperationInfoColumn extends OperationInfoCombo
 	 * @param prompt User-visible prompt
 	 * @param ds DataSource from which to pull column information
 	 */
-	public OperationInfoColumn(Operation op, String name, String prompt) throws MarlaException
+	public OperationInfoColumn(Operation op, String name, String prompt) 
 	{
 		this(op, name, prompt, null);
 	}
@@ -60,14 +60,14 @@ public class OperationInfoColumn extends OperationInfoCombo
 	 * @param ds DataSource from which to pull column information
 	 * @param columnType Type of column to include in the list
 	 */
-	public OperationInfoColumn(Operation op, String name, String prompt, DataMode columnType) throws MarlaException
+	public OperationInfoColumn(Operation op, String name, String prompt, DataMode columnType)
 	{
 		super(op, name, prompt, PromptType.COLUMN);
 		this.columnType = columnType;
 	}
 
 	@Override
-	public String setAnswer(Object newAnswer) throws OperationInfoRequiredException
+	public String setAnswer(Object newAnswer)
 	{
 		String oldAnswer = answer;
 

@@ -122,7 +122,7 @@ public final class RProcessor
 	 * Creates a new R instance that can be fed commands
 	 * @param newRPath R executable to run
 	 */
-	private RProcessor(String newRPath) throws RProcessorException, ConfigurationException
+	private RProcessor(String newRPath)
 	{
 		try
 		{
@@ -162,7 +162,7 @@ public final class RProcessor
 	 * @param newRPath New location of the R binary
 	 * @return The previously assigned location of R
 	 */
-	public static String setRLocation(String newRPath) throws ConfigurationException, RProcessorException
+	public static String setRLocation(String newRPath)
 	{
 		String oldPath = rPath;
 
@@ -200,7 +200,7 @@ public final class RProcessor
 	 * locations for Windows, Linux, and OSX.
 	 * @return Instance of RProcessor that can be used for calculations
 	 */
-	public static RProcessor getInstance() throws ConfigurationException
+	public static RProcessor getInstance()
 	{
 		try
 		{
@@ -219,7 +219,7 @@ public final class RProcessor
 	 * Kills any existing instances of the RProcessor and starts a new one.
 	 * @return Newly created RProcessor instance
 	 */
-	public static RProcessor restartInstance() throws ConfigurationException
+	public static RProcessor restartInstance()
 	{
 		if(singleRProcessor != null)
 		{
@@ -318,7 +318,7 @@ public final class RProcessor
 	 * @param cmd R command to execute
 	 * @return String output from R. Use one of the parse functions to processor further
 	 */
-	public String execute(String cmd) throws RProcessorException, RProcessorDeadException
+	public String execute(String cmd)
 	{
 		return execute(cmd, false);
 	}
@@ -333,7 +333,7 @@ public final class RProcessor
 	 *		on either occurrence
 	 * @return String output from R. Use one of the parse functions to processor further
 	 */
-	public String execute(String cmd, boolean ignoreErrors) throws RProcessorException, RProcessorDeadException
+	public String execute(String cmd, boolean ignoreErrors)
 	{
 		// Ensure the processor is still running
 		if(!isRunning())
@@ -418,7 +418,7 @@ public final class RProcessor
 	 * @param cmds List of R commands to execute
 	 * @return ArrayList of Strings, where each entry is the output from one of the commands given.
 	 */
-	public List<String> execute(List<String> cmds) throws RProcessorException
+	public List<String> execute(List<String> cmds)
 	{
 		List<String> output = new ArrayList<String>(cmds.size());
 
@@ -435,7 +435,7 @@ public final class RProcessor
 	 * @param cmd R command to execute
 	 * @return Double value of the R call
 	 */
-	public Double executeDouble(String cmd) throws RProcessorException, RProcessorParseException
+	public Double executeDouble(String cmd)
 	{
 		return parseDouble(execute(cmd));
 	}
@@ -446,7 +446,7 @@ public final class RProcessor
 	 * @param cmd R command to execute
 	 * @return ArrayList of doubles that the R command returned
 	 */
-	public List<Double> executeDoubleArray(String cmd) throws RProcessorException, RProcessorParseException
+	public List<Double> executeDoubleArray(String cmd)
 	{
 		return parseDoubleArray(execute(cmd));
 	}
@@ -457,7 +457,7 @@ public final class RProcessor
 	 * @param cmd R command to execute
 	 * @return String value of the R call
 	 */
-	public String executeString(String cmd) throws RProcessorException, RProcessorParseException
+	public String executeString(String cmd)
 	{
 		return parseString(execute(cmd));
 	}
@@ -468,7 +468,7 @@ public final class RProcessor
 	 * @param cmd R command to execute
 	 * @return ArrayList of strings that the R command returned
 	 */
-	public List<String> executeStringArray(String cmd) throws RProcessorException, RProcessorParseException
+	public List<String> executeStringArray(String cmd)
 	{
 		return parseStringArray(execute(cmd));
 	}
@@ -479,7 +479,7 @@ public final class RProcessor
 	 * @param cmd R command to execute
 	 * @return String value of the R call
 	 */
-	public Boolean executeBoolean(String cmd) throws RProcessorException, RProcessorParseException
+	public Boolean executeBoolean(String cmd)
 	{
 		return parseBoolean(execute(cmd));
 	}
@@ -490,7 +490,7 @@ public final class RProcessor
 	 * @param cmd R command to execute
 	 * @return ArrayList of strings that the R command returned
 	 */
-	public List<Boolean> executeBooleanArray(String cmd) throws RProcessorException, RProcessorParseException
+	public List<Boolean> executeBooleanArray(String cmd)
 	{
 		return parseBooleanArray(execute(cmd));
 	}
@@ -502,7 +502,7 @@ public final class RProcessor
 	 * @param cmd R command to execute
 	 * @return R variable name that contains the results of the executed command
 	 */
-	public String executeSave(String cmd) throws RProcessorException
+	public String executeSave(String cmd)
 	{
 		String varName = getUniqueName();
 		execute(varName + " = " + cmd);
@@ -515,7 +515,7 @@ public final class RProcessor
 	 * @param rOutput R output, as returned by execute(String)
 	 * @return Double value contained in the output
 	 */
-	public Double parseDouble(String rOutput) throws RProcessorParseException
+	public Double parseDouble(String rOutput)
 	{
 		ArrayList<Double> arr = parseDoubleArray(rOutput);
 
@@ -531,7 +531,7 @@ public final class RProcessor
 	 * @param rOutput R output, as returned by execute(String)
 	 * @return ArrayList of Doubles from the output
 	 */
-	public ArrayList<Double> parseDoubleArray(String rOutput) throws RProcessorParseException
+	public ArrayList<Double> parseDoubleArray(String rOutput)
 	{
 		ArrayList<Double> vals = new ArrayList<Double>();
 
@@ -569,7 +569,7 @@ public final class RProcessor
 	 * @param rOutput R output, as returned by execute(String)
 	 * @return String value contained in the output
 	 */
-	public String parseString(String rOutput) throws RProcessorParseException
+	public String parseString(String rOutput)
 	{
 		ArrayList<String> arr = parseStringArray(rOutput);
 
@@ -585,7 +585,7 @@ public final class RProcessor
 	 * @param rOutput R output, as returned by execute(String)
 	 * @return ArrayList of Strings from the output
 	 */
-	public ArrayList<String> parseStringArray(String rOutput) throws RProcessorParseException
+	public ArrayList<String> parseStringArray(String rOutput)
 	{
 		ArrayList<String> vals = new ArrayList<String>();
 
@@ -609,7 +609,7 @@ public final class RProcessor
 	 * @param rOutput R output, as returned by execute(String)
 	 * @return String value contained in the output
 	 */
-	public Boolean parseBoolean(String rOutput) throws RProcessorParseException
+	public Boolean parseBoolean(String rOutput)
 	{
 		List<Boolean> arr = parseBooleanArray(rOutput);
 
@@ -625,7 +625,7 @@ public final class RProcessor
 	 * @param rOutput R output, as returned by execute(String)
 	 * @return ArrayList of Strings from the output
 	 */
-	public List<Boolean> parseBooleanArray(String rOutput) throws RProcessorParseException
+	public List<Boolean> parseBooleanArray(String rOutput)
 	{
 		List<Boolean> vals = new ArrayList<Boolean>();
 
@@ -656,7 +656,7 @@ public final class RProcessor
 	 * @param val Value to store in the variable
 	 * @return Name of the variable used
 	 */
-	public String setVariable(Object val) throws RProcessorException
+	public String setVariable(Object val)
 	{
 		return setVariable(getUniqueName(), val);
 	}
@@ -667,7 +667,7 @@ public final class RProcessor
 	 * @param val Value to store in the variable
 	 * @return Name of the variable used
 	 */
-	public String setVariable(String name, Object val) throws RProcessorException
+	public String setVariable(String name, Object val)
 	{
 		if(val instanceof Double)
 		{
@@ -692,7 +692,7 @@ public final class RProcessor
 	 * @param vals Array of values to store in the variable
 	 * @return Name of the variable used
 	 */
-	public String setVariable(List<Object> vals) throws RProcessorException
+	public String setVariable(List<Object> vals)
 	{
 		return setVariable(getUniqueName(), vals);
 	}
@@ -704,7 +704,7 @@ public final class RProcessor
 	 * @param vals Array of values to store in the variable
 	 * @return Name of the variable used
 	 */
-	public String setVariable(String name, List<Object> vals) throws RProcessorException
+	public String setVariable(String name, List<Object> vals)
 	{
 		// Builds an R command to set the given variable name with the values in the array
 		StringBuilder cmd = new StringBuilder();
@@ -766,7 +766,7 @@ public final class RProcessor
 	 * back to the GUI. Returns the path to the file that will hold the output.
 	 * @return Path where the new graphics device will write to
 	 */
-	public String startGraphicOutput() throws RProcessorException
+	public String startGraphicOutput()
 	{
 		// Figure out path
 		lastPngName = getUniqueName() + ".png";
@@ -780,7 +780,7 @@ public final class RProcessor
 	 * Stops the current graphic device, flushing it to disk.
 	 * @return Path where the new graphic has been written to
 	 */
-	public String stopGraphicOutput() throws RProcessorException
+	public String stopGraphicOutput()
 	{
 		String pngName = lastPngName;
 		lastPngName = null;
@@ -862,7 +862,7 @@ public final class RProcessor
 	/**
 	 * Allows for direct testing of the RProcessor execute() function
 	 */
-	public static void main(String[] args) throws Exception
+	public static void main(String[] args)
 	{
 		RProcessor proc = null;
 		try

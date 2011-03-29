@@ -110,7 +110,7 @@ public class OperationTester
 	 * Automatically fills required information as best as possible
 	 * @param op Operation to answer questions to
 	 */
-	public static void fillRequiredInfo(Operation op) throws MarlaException
+	public static void fillRequiredInfo(Operation op) 
 	{
 		List<OperationInformation> info = op.getRequiredInfoPrompt();
 
