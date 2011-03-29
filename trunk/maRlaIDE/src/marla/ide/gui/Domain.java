@@ -25,7 +25,6 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -195,7 +194,7 @@ public class Domain
 		{
 			// We likely just timed out instantly and there's no network
 			// connection. Accept though, for when the network comes back online
-			System.out.println("Acceting setting");
+			System.out.println("Accepting setting for error sever, unable to check");
 		}
 		catch(MalformedURLException ex)
 		{
@@ -416,147 +415,163 @@ public class Domain
 	 * Writes any current log file out to disk and clears the logger (so
 	 * that the same exceptions won't be written again)
 	 */
-	public void writeLoggerFile()
+	public void flushLog()
 	{
-		if(isWritingLog || logger.isEmpty())
+		if(isWritingLog)
 			return;
-
+		
 		try
 		{
 			isWritingLog = true;
-			
-			PrintWriter out = null;
-			try
-			{
-				out = new PrintWriter(new BufferedWriter(new FileWriter(logFile, true)));
-
-				Date date = new Date();
-				out.write("------------------------------------\n");
-				out.write("Date: " + FULL_TIME_FORMAT.format(date) + "\n");
-			}
-			catch(IOException ex2)
-			{
-				out = null;
-				System.err.println("Unable to write error log file: " + ex2.getMessage());
-			}
-
-			for(int i = 0; i < logger.size(); ++i)
-			{
-				Throwable ex = logger.get(i);
-
-				// To file
-				if(out != null)
-					ex.printStackTrace(out);
-
-				// To console
-				if(isDebugMode())
-					ex.printStackTrace(System.err);
-
-				// To server
-				if(sendErrorReport)
-				{
-					try
-					{
-						// Construct data
-						StringBuilder dataSB = new StringBuilder();
-
-						// "security" key
-						dataSB.append(URLEncoder.encode("secret", "UTF-8"));
-						dataSB.append('=');
-						dataSB.append(URLEncoder.encode("badsecurity", "UTF-8"));
-
-						// Send version number
-						dataSB.append('&');
-						dataSB.append(URLEncoder.encode("version", "UTF-8"));
-						dataSB.append('=');
-						dataSB.append(URLEncoder.encode(BuildInfo.revisionNumber, "UTF-8"));
-
-						// Exception message
-						dataSB.append('&');
-						dataSB.append(URLEncoder.encode("msg", "UTF-8"));
-						dataSB.append('=');
-						dataSB.append(URLEncoder.encode(ex.getMessage(), "UTF-8"));
-
-						// Stack trace
-						ByteArrayOutputStream trace = new ByteArrayOutputStream();
-						ex.printStackTrace(new PrintStream(trace));
-						dataSB.append('&');
-						dataSB.append(URLEncoder.encode("trace", "UTF-8"));
-						dataSB.append('=');
-						dataSB.append(URLEncoder.encode(trace.toString(), "UTF-8"));
-
-						// Problem, if applicable
-						if(includeProbInReport && problem != null)
-						{
-							dataSB.append('&');
-							dataSB.append(URLEncoder.encode("problem", "UTF-8"));
-							dataSB.append('=');
-
-							try
-							{
-								Document doc = new Document(problem.toXml());
-								Format formatter = Format.getPrettyFormat();
-								formatter.setEncoding("UTF-8");
-								XMLOutputter xml = new XMLOutputter(formatter);
-								dataSB.append(URLEncoder.encode(xml.outputString(doc), "UTF-8"));
-							}
-							catch(MarlaException ex2)
-							{
-								dataSB.append(URLEncoder.encode("Unable to get XML: " + ex2.toString(), "UTF-8"));
-							}
-						}
-
-						// Send data
-						URL url = new URL(errorServerURL);
-						URLConnection conn = url.openConnection();
-						conn.setDoOutput(true);
-						OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());
-						wr.write(dataSB.toString());
-						wr.flush();
-
-						// Check for success
-						BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-						String response = null;
-						String line = null;
-						while((line = rd.readLine()) != null)
-						{
-							// Only the first line actually counts as the return
-							// but we get the rest for debugging
-							if(response == null)
-								response = line;
-							else
-								System.out.println(line);
-						}
-						wr.close();
-						rd.close();
-
-						if(response.equals("success"))
-							System.out.println("Exception sent to maRla development team");
-						else
-							System.out.println("Unable to send exception to development team: " + response);
-					}
-					catch(IOException ex2)
-					{
-						// Too bad, but ignore
-						System.out.println("Unable to send exception to development team: " + ex2.getMessage());
-					}
-				}
-			}
-
-			if(out != null)
-			{
-				out.write("------------------------------------\n\n\n");
-				out.flush();
-				out.close();
-			}
-			
-			System.out.println(logger.size() + " exceptions written to " + logFile.getAbsolutePath());
-
+			flushLog(logger, debug, logFile, errorServerURL, (includeProbInReport ? problem : null));
 			logger.clear();
 		}
 		finally
 		{
 			isWritingLog = false;
+		}
+	}
+
+	/**
+	 * Writes the given log to the various sources
+	 * @param log Exception log to write
+	 * @param toConsole if true, sends trace to standard out
+	 * @param logFile if not null, writes tace to given file
+	 * @param errorServer if not null, sends trace to given error server
+	 * @param currProb if not null, sends given problem along with report to server
+	 */
+	public static void flushLog(List<Throwable> log, boolean toConsole, File logFile, String errorServer, Problem currProb)
+	{
+		if(log.isEmpty())
+			return;
+
+		PrintWriter out = null;
+		if(logFile != null)
+		{
+			try
+			{
+				out = new PrintWriter(new BufferedWriter(new FileWriter(logFile, true)));
+
+				Date date = new Date();
+				out.write("Date: " + FULL_TIME_FORMAT.format(date) + "\n");
+			}
+			catch(IOException ex)
+			{
+				out = null;
+				System.err.println("Unable to write error log file: " + ex.getMessage());
+			}
+		}
+
+		for(int i = 0; i < logger.size(); ++i)
+		{
+			Throwable ex = logger.get(i);
+
+			if(toConsole)
+				ex.printStackTrace(System.err);
+
+			if(out != null)
+				ex.printStackTrace(out);
+
+			if(errorServer != null)
+				sendExceptionToServer(errorServer, ex, currProb);
+		}
+
+		if(out != null)
+		{
+			out.flush();
+			out.close();
+		}
+	}
+
+	/**
+	 * Sends the given exception to the error server
+	 */
+	private static void sendExceptionToServer(String server, Throwable ex, Problem prob)
+	{
+		try
+		{
+			// Construct data
+			StringBuilder dataSB = new StringBuilder();
+
+			// "security" key
+			dataSB.append(URLEncoder.encode("secret", "UTF-8"));
+			dataSB.append('=');
+			dataSB.append(URLEncoder.encode("badsecurity", "UTF-8"));
+
+			// Send version number
+			dataSB.append('&');
+			dataSB.append(URLEncoder.encode("version", "UTF-8"));
+			dataSB.append('=');
+			dataSB.append(URLEncoder.encode(BuildInfo.revisionNumber, "UTF-8"));
+
+			// Exception message
+			dataSB.append('&');
+			dataSB.append(URLEncoder.encode("msg", "UTF-8"));
+			dataSB.append('=');
+			dataSB.append(URLEncoder.encode(ex.getMessage(), "UTF-8"));
+
+			// Stack trace
+			ByteArrayOutputStream trace = new ByteArrayOutputStream();
+			ex.printStackTrace(new PrintStream(trace));
+			dataSB.append('&');
+			dataSB.append(URLEncoder.encode("trace", "UTF-8"));
+			dataSB.append('=');
+			dataSB.append(URLEncoder.encode(trace.toString(), "UTF-8"));
+
+			// Problem, if applicable
+			if(prob != null)
+			{
+				dataSB.append('&');
+				dataSB.append(URLEncoder.encode("problem", "UTF-8"));
+				dataSB.append('=');
+
+				try
+				{
+					Document doc = new Document(prob.toXml());
+					Format formatter = Format.getPrettyFormat();
+					formatter.setEncoding("UTF-8");
+					XMLOutputter xml = new XMLOutputter(formatter);
+					dataSB.append(URLEncoder.encode(xml.outputString(doc), "UTF-8"));
+				}
+				catch(MarlaException ex2)
+				{
+					dataSB.append(URLEncoder.encode("Unable to get XML: " + ex2.toString(), "UTF-8"));
+				}
+			}
+
+			// Send data
+			URL url = new URL(errorServerURL);
+			URLConnection conn = url.openConnection();
+			conn.setDoOutput(true);
+			OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());
+			wr.write(dataSB.toString());
+			wr.flush();
+
+			// Check for success
+			BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+			String response = null;
+			String line = null;
+			while((line = rd.readLine()) != null)
+			{
+				// Only the first line actually counts as the return
+				// but we get the rest for debugging
+				if(response == null)
+					response = line;
+				else
+					System.out.println(line);
+			}
+			wr.close();
+			rd.close();
+
+			if(response.equals("success"))
+				System.out.println("Exception sent to maRla development team");
+			else
+				System.out.println("Unable to send exception to development team: " + response);
+		}
+		catch(IOException ex2)
+		{
+			// Too bad, but ignore
+			System.out.println("Unable to send exception to development team: " + ex2.getMessage());
 		}
 	}
 

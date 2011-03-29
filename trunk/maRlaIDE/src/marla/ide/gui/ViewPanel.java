@@ -2176,7 +2176,7 @@ public class ViewPanel extends JPanel
 			// Write out any final errors we encountered and didn't hit yet
 			// We do this now, then write the configuration because, if the loadsavethread
 			// is already writing, then we'll give it a bit of extra time
-			domain.writeLoggerFile();
+			domain.flushLog();
 
 			// Save the maRla configuration
 			try
