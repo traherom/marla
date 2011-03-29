@@ -27,6 +27,7 @@ import javax.swing.JViewport;
 import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
 import javax.swing.table.TableModel;
 
 /**
@@ -59,6 +60,30 @@ public class ExtendedJTable extends JTable
 		invalidate();
 		repaint();
 		getTableHeader().resizeAndRepaint();
+	}
+
+	/**
+	 * Add a new column first to the data model, then using the JTable's add column default method.
+	 *
+	 * @param column The column to be added.
+	 */
+	@Override
+	public void addColumn(TableColumn column)
+	{
+		((ExtendedTableModel) getModel()).addColumn(column.getHeaderValue().toString());
+		super.addColumn(column);
+	}
+
+	/**
+	 * Remove all columns from the table and the model.
+	 */
+	public void removeAllColumns()
+	{
+		for (int i = 0; i < getModel().getColumnCount(); ++i)
+		{
+			getColumnModel().removeColumn(getColumnModel().getColumn(i));
+		}
+		((ExtendedTableModel) getModel()).removeAllColumns();
 	}
 
 	/**
