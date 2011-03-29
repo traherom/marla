@@ -1620,10 +1620,9 @@ public class ViewPanel extends JPanel
 		}
 
 		// Set the label for the dataset itself
-		JLabel dsLbl = (JLabel)ds;
-		dsLbl.setFont(workspaceFontBold);
-		dsLbl.setText("<html>" + ds.getDisplayString(abbreviated) + "</html>");
-		dsLbl.setSize(dsLbl.getPreferredSize());
+		ds.setFont(workspaceFontBold);
+		ds.setText("<html>" + ds.getDisplayString(abbreviated) + "</html>");
+		ds.setSize(ds.getPreferredSize());
 
 		int opCount = ds.getOperationCount();
 		if(opCount > 0)
@@ -1639,14 +1638,39 @@ public class ViewPanel extends JPanel
 			// Total width, including spacer between columns
 			int totalWidth = (widths.length - 1) * spaceWidth;
 			for(int i = 0; i < opCount; i++)
-			{
 				totalWidth += widths[i];
-			}
 
 			// Figure out where the columns should start based on our center
-			int dsWidth = dsLbl.getWidth();
-			int dsCenterX = dsLbl.getX() + dsWidth / 2;
-			int farLeftX = dsCenterX - totalWidth / 2;
+			int dsWidth = ds.getWidth();
+			int dsCenterX = ds.getX() + dsWidth / 2;
+
+			// Find the median value
+			int halfWidth = 0;
+			if(opCount == 1)
+			{
+				halfWidth = widths[0] / 2;
+			}
+			else if(opCount % 2 == 0)
+			{
+				// Even number of columns, balance them below dataset
+				for(int i = 0; i < opCount / 2; i++)
+					halfWidth += widths[i] + spaceWidth;
+
+				// Eliminate half of the middle spacing
+				halfWidth -= spaceWidth / 2;
+			}
+			else
+			{
+				// Odd number of columns, center the middle one under the
+				// dataset
+				for(int i = 0; i < opCount / 2; i++)
+					halfWidth += widths[i] + spaceWidth;
+
+				// And add enough to move through half the middle column
+				halfWidth += widths[opCount / 2] / 2;
+			}
+
+			int farLeftX = dsCenterX - halfWidth;
 
 			int previousLeftX = farLeftX;
 			int[] centerXs = new int[opCount];

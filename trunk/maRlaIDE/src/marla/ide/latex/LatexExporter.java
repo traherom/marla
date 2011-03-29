@@ -1094,10 +1094,12 @@ public class LatexExporter
 			}
 
 			// Ensure we actually succeeded. Check for the Sweave file error
-			if(pdfOutput.contains(".sty' not found"))
+			Pattern styNotFound = Pattern.compile("File [`'](.*?)\\.sty' not found");
+			Matcher notFoundMatcher = styNotFound.matcher(pdfOutput);
+			if(notFoundMatcher.find())
 			{
-				// Sweave not tied into LaTeX properly
-				throw new LatexException("Sweave does not appear to be registered correctly with LaTeX");
+				// Some include file (probably Sweave) not registered with latex
+				throw new LatexException(notFoundMatcher.group(0) + " does not appear to be registered correctly with LaTeX");
 			}
 
 			// Get the output file name reported by pdflatex
