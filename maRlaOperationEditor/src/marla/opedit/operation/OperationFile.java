@@ -146,7 +146,7 @@ public class OperationFile
 	 * Adds a new operation to this file. Name is automatically created
 	 * @return Newly added operation
 	 */
-	public OperationXMLEditable addOperation() throws OperationEditorException
+	public OperationXMLEditable addOperation()
 	{
 		return addOperation(getUniqueName());
 	}
@@ -156,7 +156,7 @@ public class OperationFile
 	 * @param operationName Name of the new operation
 	 * @return Newly added operation
 	 */
-	public OperationXMLEditable addOperation(String operationName) throws OperationEditorException
+	public OperationXMLEditable addOperation(String operationName)
 	{
 		// Ensure it's a unique name
 		if(getOperationNames().contains(operationName))
@@ -239,7 +239,7 @@ public class OperationFile
 	/**
 	 * Saves the file to disk
 	 */
-	public void save() throws OperationEditorException
+	public void save()
 	{
 		Element rootEl = new Element("operations");
 		for(OperationXMLEditable op : ops)

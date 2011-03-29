@@ -91,7 +91,7 @@ public abstract class OperationInformation
 	 * @param newAnswer New answer to use for this question
 	 * @return Previously set answer, null if there was none
 	 */
-	public abstract Object setAnswer(Object newAnswer) throws OperationInfoRequiredException;
+	public abstract Object setAnswer(Object newAnswer) ;
 
 	/**
 	 * Clears any currently set answer to this question
@@ -130,7 +130,7 @@ public abstract class OperationInformation
 	 * Returns this OperationInformation object as an XML element
 	 * @return New XML holding all relevant information 
 	 */
-	public final Element toXml() throws MarlaException
+	public final Element toXml()
 	{
 		Element questionEl = new Element("question");
 

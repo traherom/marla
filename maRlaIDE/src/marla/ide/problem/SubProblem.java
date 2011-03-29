@@ -292,7 +292,7 @@ public class SubProblem implements ProblemPart, Comparable
 	 * of a solution--because export of R code doesn't want to work with those.
 	 * @return Chain of operations, from start to finish, that solve this subproblem
 	 */
-	public List<Operation> getSolutionChain() throws MarlaException
+	public List<Operation> getSolutionChain()
 	{
 		List<Operation> solOps = new ArrayList<Operation>(solutionSteps.size());
 		for(DataSource ds : solutionSteps)
@@ -357,7 +357,7 @@ public class SubProblem implements ProblemPart, Comparable
 	 * @param chainTop DataSource to start chain from
 	 * @return Chain of operations, from start to finish
 	 */
-	public static List<Operation> getOperationChain(DataSource chainTop) throws MarlaException
+	public static List<Operation> getOperationChain(DataSource chainTop)
 	{
 		Deque<Operation> chainRev = new ArrayDeque<Operation>();
 
@@ -439,7 +439,7 @@ public class SubProblem implements ProblemPart, Comparable
 	}
 
 	@Override
-	public Element toXml() throws MarlaException
+	public Element toXml()
 	{
 		Element subEl = new Element("part");
 		subEl.setAttribute("id", id);
@@ -529,7 +529,7 @@ public class SubProblem implements ProblemPart, Comparable
 	}
 
 	@Override
-	public DataSet getData(String name) throws DataNotFoundException
+	public DataSet getData(String name)
 	{
 		return parent.getData(name);
 	}
@@ -541,7 +541,7 @@ public class SubProblem implements ProblemPart, Comparable
 	}
 
 	@Override
-	public int getDataIndex(String name) throws DataNotFoundException
+	public int getDataIndex(String name)
 	{
 		return parent.getDataIndex(name);
 	}

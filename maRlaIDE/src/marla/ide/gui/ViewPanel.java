@@ -296,7 +296,7 @@ public class ViewPanel extends JPanel
 	 *
 	 * @throws MarlaException Throws any Marla exceptions to the calling function.
 	 */
-	protected void loadOperations() throws MarlaException
+	protected void loadOperations() 
 	{
 		Map<String, List<String>> ops = Operation.getAvailableOperationsCategorized();
 		Set<String> categories = ops.keySet();

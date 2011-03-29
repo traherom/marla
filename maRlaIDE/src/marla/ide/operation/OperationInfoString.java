@@ -60,7 +60,7 @@ public class OperationInfoString extends OperationInformation
 	}
 
 	@Override
-	public String setAnswer(Object newAnswer) throws OperationInfoRequiredException
+	public String setAnswer(Object newAnswer) 
 	{
 		String oldAnswer = answer;
 

@@ -20,7 +20,6 @@ package marla.ide.latex;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import marla.ide.problem.MarlaException;
 import marla.ide.problem.Problem;
 import java.io.File;
 import java.io.FileWriter;
@@ -106,7 +105,7 @@ public class LatexExporter
 	 * Creates a new Latex exporter for the given problem
 	 * @param problem Problem to export to
 	 */
-	public LatexExporter(Problem problem) throws LatexException, ConfigurationException
+	public LatexExporter(Problem problem)
 	{
 		this(problem, null);
 	}
@@ -116,7 +115,7 @@ public class LatexExporter
 	 * @param problem Problem to export to
 	 * @param templatePath Path to the template to use for exporting.
 	 */
-	public LatexExporter(Problem problem, String templatePath) throws LatexException, ConfigurationException
+	public LatexExporter(Problem problem, String templatePath)
 	{
 		if(problem == null)
 			throw new LatexException("Problem to export may not be null");
@@ -134,7 +133,7 @@ public class LatexExporter
 	 * @param newTemplatePath Path to the template file
 	 * @return Previously set template path
 	 */
-	public final String setTemplate(String newTemplatePath) throws LatexException, ConfigurationException
+	public final String setTemplate(String newTemplatePath)
 	{
 		String oldPath = templatePath;
 
@@ -170,7 +169,7 @@ public class LatexExporter
 	 * @param newTemplatePath new default template to use
 	 * @return Previously set default template
 	 */
-	public static String setDefaultTemplate(String newTemplatePath) throws ConfigurationException
+	public static String setDefaultTemplate(String newTemplatePath)
 	{
 		String oldTemplate = defaultTemplate;
 
@@ -196,7 +195,7 @@ public class LatexExporter
 	 * @param newPdfTexPath New path to executable
 	 * @return Previously set path to pdflatex
 	 */
-	public static String setPdfTexPath(String newPdfTexPath) throws ConfigurationException
+	public static String setPdfTexPath(String newPdfTexPath)
 	{
 		String oldPath = pdfTexPath;
 
@@ -288,7 +287,7 @@ public class LatexExporter
 	 * doesn't already exist or refreshExport() if there is one
 	 * @param rnwPath Path for new Sweave file
 	 */
-	public String export(String rnwPath) throws LatexException, MarlaException
+	public String export(String rnwPath)
 	{
 		return cleanExport(rnwPath);
 	}
@@ -299,7 +298,7 @@ public class LatexExporter
 	 * @param toPath Path to move the file to
 	 * @returns New path of the moved file
 	 */
-	private String moveFile(String fromPath, String toPath) throws LatexException
+	private String moveFile(String fromPath, String toPath)
 	{
 		// Figure out file paths
 		File fromFile = new File(fromPath);
@@ -324,7 +323,7 @@ public class LatexExporter
 	 * @param rnwPath Path at which to save the newly produced Sweave file
 	 * @return Path to the main LaTeX file that has been exported
 	 */
-	public String cleanExport(String rnwPath) throws LatexException, MarlaException
+	public String cleanExport(String rnwPath)
 	{
 		Domain.setProgressStatus("Creating LaTeX file...");
 
@@ -338,7 +337,7 @@ public class LatexExporter
 	 * Completely exports the problem as temporary files
 	 * @return Path to the main temporary LaTeX file that has been exported
 	 */
-	private String cleanTempExport() throws LatexException, MarlaException
+	private String cleanTempExport()
 	{
 		try
 		{
@@ -361,7 +360,7 @@ public class LatexExporter
 		}
 	}
 
-	private void processSequenceClean(Element el, Writer out) throws LatexException, MarlaException
+	private void processSequenceClean(Element el, Writer out)
 	{
 		// And start looking through the template
 		// Text nodes get placed in verbatim, XML elements get processing
@@ -461,7 +460,7 @@ public class LatexExporter
 		}
 	}
 
-	private void processLoopClean(Element el, Writer out) throws LatexException, MarlaException
+	private void processLoopClean(Element el, Writer out)
 	{
 		// Double loops not allowed.
 		if(currentSub != null)
@@ -477,7 +476,7 @@ public class LatexExporter
 		currentSub = null;
 	}
 
-	private void processClassClean(Element el, Writer out) throws LatexException, MarlaException
+	private void processClassClean(Element el, Writer out)
 	{
 		try
 		{
@@ -502,7 +501,7 @@ public class LatexExporter
 		}
 	}
 
-	private void processStatementClean(Element el, Writer out) throws LatexException
+	private void processStatementClean(Element el, Writer out)
 	{
 		// Are we in a loop?
 		String statement = null;
@@ -528,7 +527,7 @@ public class LatexExporter
 		}
 	}
 
-	private void processSolutionClean(Element el, Writer out) throws LatexException, MarlaException
+	private void processSolutionClean(Element el, Writer out)
 	{
 		// Are we supposed to show the raw R code?
 		boolean withR = Boolean.parseBoolean(el.getAttributeValue("rcode", "false"));
@@ -597,7 +596,7 @@ public class LatexExporter
 	 * @param includeR Should the R code be included in the summary?
 	 * @return Latex string that gives information about the operation
 	 */
-	private String summarizeOperation(Operation op, int abbrvLen, boolean includeR) throws LatexException, MarlaException
+	private String summarizeOperation(Operation op, int abbrvLen, boolean includeR)
 	{
 		if(abbrvLen < 3)
 			throw new LatexException("Abbreviation length for summarizing operations must be 3 or greater (" + abbrvLen + ") given");
@@ -742,7 +741,7 @@ public class LatexExporter
 		return sb.toString();
 	}
 
-	private void processConclusionClean(Element el, Writer out) throws LatexException, MarlaException
+	private void processConclusionClean(Element el, Writer out)
 	{
 		StringBuilder sb = new StringBuilder();
 		if(currentSub == null)
@@ -762,7 +761,7 @@ public class LatexExporter
 		}
 	}
 
-	private void processDataClean(Element el, Writer out) throws LatexException, MarlaException
+	private void processDataClean(Element el, Writer out)
 	{
 		// Are we showing start or end data?
 		String type = el.getAttributeValue("type", "start");
@@ -849,7 +848,7 @@ public class LatexExporter
 		}
 	}
 
-	private String dataToLatex(DataSource ds) throws MarlaException
+	private String dataToLatex(DataSource ds)
 	{
 		return dataToLatex(ds.getName(), ds.getColumnLength(), ds.getColumns());
 	}
@@ -918,7 +917,7 @@ public class LatexExporter
 		return sb.toString();
 	}
 
-	private void processIfClean(Element ifEl, Writer out) throws LatexException, MarlaException
+	private void processIfClean(Element ifEl, Writer out)
 	{
 		// Process if questions and determine the truthiness of the statement
 		// Short circuit, so if we ever go false just stop thinking about it
@@ -999,7 +998,7 @@ public class LatexExporter
 	 * @param pdfPath Path for the newly created PDF file
 	 * @return Path to the newly created PDF
 	 */
-	public String exportPDF(String pdfPath) throws LatexException, RProcessorException, MarlaException
+	public String exportPDF(String pdfPath)
 	{
 		Domain.setProgressStatus("Creating LaTeX file...");
 

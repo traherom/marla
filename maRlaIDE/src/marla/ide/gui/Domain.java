@@ -168,7 +168,7 @@ public class Domain
 	 * @param newServer URL to send reports to
 	 * @return Previously set value for server
 	 */
-	public static String setErrorServer(String newServer) throws ConfigurationException
+	public static String setErrorServer(String newServer)
 	{
 		String old = errorServerURL;
 
@@ -1060,7 +1060,7 @@ public class Domain
 		}
 	}
 
-	public void ensureRequirementsMet(Operation op) throws MarlaException
+	public void ensureRequirementsMet(Operation op)
 	{
 		// Iteratively attempts to tell operation to recompute itself until
 		// no operation that it depends on has missing requirements

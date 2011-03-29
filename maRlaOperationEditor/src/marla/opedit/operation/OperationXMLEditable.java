@@ -50,7 +50,7 @@ public class OperationXMLEditable extends OperationXML
 	private OperationEditorException lastError = null;
 
 	@Override
-	public void setConfiguration(Element newConfig) throws OperationEditorException
+	public void setConfiguration(Element newConfig) 
 	{
 		try
 		{
@@ -119,7 +119,7 @@ public class OperationXMLEditable extends OperationXML
 	 *		or blank removes the category
 	 * @return Previously set category
 	 */
-	public String setCategory(String newCat) throws OperationEditorException
+	public String setCategory(String newCat) 
 	{
 		String old = opEl.getAttributeValue("category");
 
@@ -138,7 +138,7 @@ public class OperationXMLEditable extends OperationXML
 	 * @param newName New name for this operation
 	 * @return Previously set name
 	 */
-	public String setEditableName(String newName) throws OperationEditorException
+	public String setEditableName(String newName) 
 	{
 		String old = opEl.getAttributeValue("name");
 
@@ -157,7 +157,7 @@ public class OperationXMLEditable extends OperationXML
 	 * String version of the inner XML powering this operation
 	 * @return Current XML
 	 */
-	public String getInnerXML() throws OperationEditorException
+	public String getInnerXML() 
 	{
 		try
 		{
@@ -181,7 +181,7 @@ public class OperationXMLEditable extends OperationXML
 	 * @param newXMLStr New XML to parse and use for operation guts
 	 * @return Previously set XML
 	 */
-	public String setInnerXML(String newXMLStr) throws OperationEditorException
+	public String setInnerXML(String newXMLStr) 
 	{
 		String oldXML = getInnerXML();
 

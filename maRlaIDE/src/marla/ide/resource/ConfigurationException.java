@@ -46,7 +46,7 @@ public class ConfigurationException extends MarlaException
 		return Configuration.getName(type);
 	}
 
-	public void setOption(String newPath) throws ConfigurationException, MarlaException
+	public void setOption(String newPath)
 	{
 		Configuration.getInstance().set(type, newPath);
 	}
