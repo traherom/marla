@@ -51,7 +51,7 @@ public class OperationXMLEditable extends OperationXML
 		try
 		{
 			opEl = newConfig;
-			super.setConfiguration(newConfig);
+			super.setConfiguration((Element)newConfig.clone());
 			lastError = null;
 		}
 		catch(MarlaException ex)
@@ -180,20 +180,19 @@ public class OperationXMLEditable extends OperationXML
 
 			// Stick parsed version into opEl
 			opEl.removeContent();
-			for(Object o : doc.getRootElement().getChildren())
-				opEl.addContent((Element)((Element)o).clone());
+			opEl.addContent(doc.getRootElement().cloneContent());
 
 			// And use these settings
 			setConfiguration(opEl);
 		}
 		catch(JDOMException ex)
 		{
-			throw new OperationEditorException("XML is invalid", ex);
+			throw new OperationEditorException("XML is invalid: " + ex.getMessage(), ex);
 		}
 		catch(IOException ex)
 		{
 			Domain.logger.add(ex);
-			throw new OperationEditorException("XML is invalid", ex);
+			throw new OperationEditorException("IO error setting, shouldn't happen: " + ex.getMessage(), ex);
 		}
 
 		return oldXML;

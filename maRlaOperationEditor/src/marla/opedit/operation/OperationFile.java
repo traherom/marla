@@ -45,6 +45,10 @@ public class OperationFile
 	 * Operations in this file
 	 */
 	private final List<OperationXMLEditable> ops = new ArrayList<OperationXMLEditable>();
+	/**
+	 * Denotes if this file has unsaved changes
+	 */
+	private boolean isChanged = false;
 
 	/**
 	 * Creates a new operation file pointed at the given location.
@@ -117,8 +121,7 @@ public class OperationFile
 				}
 			}
 
-			// Ensure the domain know's we're saved
-			Domain.markSaved();
+			markSaved();
 		}
 		catch(JDOMException ex)
 		{
@@ -259,8 +262,7 @@ public class OperationFile
 			XMLOutputter xml = new XMLOutputter(formatter);
 			xml.output(doc, outputStream);
 
-			// Tell domain we successfully saved
-			Domain.markSaved();
+			markSaved();
 		}
 		catch(IOException ex)
 		{
@@ -273,7 +275,26 @@ public class OperationFile
 	 */
 	public void markChanged()
 	{
+		isChanged = true;
 		Domain.markUnsaved();
+	}
+
+	/**
+	 * Denotes that the operation file has no unsaved changes
+	 */
+	public void markSaved()
+	{
+		isChanged = false;
+		Domain.markSaved();
+	}
+
+	/**
+	 * Indicates if this operation file has unsaved changes
+	 * @return true if there are unsaved changes, false otherwise
+	 */
+	public boolean isChanged()
+	{
+		return isChanged;
 	}
 
 	/**
