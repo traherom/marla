@@ -37,6 +37,10 @@ import org.jdom.output.XMLOutputter;
 public class OperationXMLEditable extends OperationXML
 {
 	/**
+	 * Parent file that we belong to
+	 */
+	private OperationFile parent = null;
+	/**
 	 * XML we have, whether it's parsable as an operation or not
 	 */
 	private Element opEl = null;
@@ -45,12 +49,31 @@ public class OperationXMLEditable extends OperationXML
 	 */
 	private OperationEditorException lastError = null;
 
+	/**
+	 * Constructs a new editable xml operation which belows to the given parent
+	 * @param parent OperationFile we belong to
+	 */
+	public OperationXMLEditable(OperationFile parent)
+	{
+		this.parent = parent;
+	}
+
+	/**
+	 * Denotes that this operation has changed in some way
+	 */
+	private void markChanged()
+	{
+		if(parent != null)
+			parent.markChanged();
+	}
+
 	@Override
 	public void setConfiguration(Element newConfig) 
 	{
 		try
 		{
 			opEl = newConfig;
+			markChanged();
 			super.setConfiguration((Element)newConfig.clone());
 			lastError = null;
 		}
