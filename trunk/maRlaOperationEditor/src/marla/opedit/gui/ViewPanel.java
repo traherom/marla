@@ -117,10 +117,17 @@ public class ViewPanel extends JPanel
 			{
 				if (operationsList.getSelectedIndex() != -1)
 				{
+					setOperationInnerXml();
+					
 					operationsNameTextField.setEnabled (true);
 					categoryTextField.setEnabled(true);
 					operationTextArea.setEnabled(true);
 					updateTestButton.setEnabled(true);
+
+					currentOperation = currentFile.getOperation(operationsList.getSelectedValue().toString());
+					operationsNameTextField.setText(currentOperation.getName());
+					categoryTextField.setText(currentOperation.getCategory());
+					operationTextArea.setText(currentOperation.getInnerXML());
 				}
 				else
 				{
@@ -128,6 +135,8 @@ public class ViewPanel extends JPanel
 					categoryTextField.setEnabled(false);
 					operationTextArea.setEnabled(false);
 					updateTestButton.setEnabled(false);
+
+					currentOperation = null;
 				}
 			}
 			
@@ -454,8 +463,9 @@ public class ViewPanel extends JPanel
 	{//GEN-HEADEREND:event_addButtonActionPerformed
 		try
 		{
-			throw new MarlaException("argh");
-			//OperationXMLEditable newOp = currentFile.addOperation();
+			OperationXMLEditable newOp = currentFile.addOperation();
+			operationsModel.addElement(newOp.toString());
+			removeButton.setEnabled(true);
 		}
 		catch(OperationEditorException ex)
 		{
@@ -467,9 +477,15 @@ public class ViewPanel extends JPanel
 
 	private void removeButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_removeButtonActionPerformed
 	{//GEN-HEADEREND:event_removeButtonActionPerformed
-		currentFile.removeOperation(currentOperation);
-
-		// TODO refresh operation listing and change the current operation
+		if (currentOperation != null)
+		{
+			currentFile.removeOperation(currentOperation);
+			operationsModel.remove(getOperationIndex(currentOperation.toString()));
+			if (operationsModel.isEmpty())
+			{
+				removeButton.setEnabled(false);
+			}
+		}
 	}//GEN-LAST:event_removeButtonActionPerformed
 
 	private void updateTestButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_updateTestButtonActionPerformed
@@ -563,7 +579,16 @@ public class ViewPanel extends JPanel
 
 	private void categoryTextFieldActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_categoryTextFieldActionPerformed
 	{//GEN-HEADEREND:event_categoryTextFieldActionPerformed
-		// TODO add your handling code here:
+		String newCat = operationsNameTextField.getText();
+
+		try
+		{
+			currentOperation.setCategory(newCat);
+		}
+		catch(OperationEditorException ex)
+		{
+			Domain.logger.add(ex);
+		}
 	}//GEN-LAST:event_categoryTextFieldActionPerformed
 
 	private void browseDataButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_browseDataButtonActionPerformed
@@ -652,7 +677,7 @@ public class ViewPanel extends JPanel
 
 	private void operationTextAreaFocusLost(java.awt.event.FocusEvent evt)//GEN-FIRST:event_operationTextAreaFocusLost
 	{//GEN-HEADEREND:event_operationTextAreaFocusLost
-		// TODO handle this item
+		setOperationInnerXml();
 	}//GEN-LAST:event_operationTextAreaFocusLost
 
 	private void operationsNameTextFieldFocusLost(java.awt.event.FocusEvent evt)//GEN-FIRST:event_operationsNameTextFieldFocusLost
@@ -742,6 +767,17 @@ public class ViewPanel extends JPanel
 	}//GEN-LAST:event_newButtonActionPerformed
 
 	/**
+	 * Set the inner XML code from the text area.
+	 */
+	public void setOperationInnerXml()
+	{
+		if (currentOperation != null)
+		{
+			currentOperation.setInnerXML(operationTextArea.getText());
+		}
+	}
+
+	/**
 	 * Open the current problem.
 	 */
 	public void openFile()
@@ -752,7 +788,6 @@ public class ViewPanel extends JPanel
 			editingTextField.setText(currentFile.toString());
 			saveButton.setEnabled(true);
 			addButton.setEnabled(true);
-			removeButton.setEnabled(true);
 
 			operationsModel.removeAllElements();
 			for (String item : currentFile.getOperationNames())
@@ -762,8 +797,28 @@ public class ViewPanel extends JPanel
 			if (!operationsModel.isEmpty())
 			{
 				operationsList.setSelectedIndex(0);
+				removeButton.setEnabled(true);
 			}
 		}
+	}
+
+	/**
+	 * Find the index of the given operation name in the model.
+	 *
+	 * @param name The name of the operation to search for.
+	 * @return The index of the operation.
+	 */
+	public int getOperationIndex(String name)
+	{
+		for (int i = 0; i < operationsModel.size(); ++i)
+		{
+			if (operationsModel.get(i).toString().equals(name))
+			{
+				return i;
+			}
+		}
+
+		return -1;
 	}
 
 	/**
