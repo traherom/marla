@@ -125,7 +125,7 @@ public abstract class Operation extends DataSource implements Changeable
 	 *		operation with the same name as a Java operation exists then the XML version will
 	 *		be used. Otherwise an OperationException is thrown.
 	 */
-	public static List<String> getAvailableOperationsList() throws OperationException, ConfigurationException
+	public static List<String> getAvailableOperationsList()
 	{
 		List<String> ops = new ArrayList<String>();
 
@@ -154,7 +154,7 @@ public abstract class Operation extends DataSource implements Changeable
 	 *		same name as a Java operation exists then the XML version will
 	 *		be used. Otherwise an OperationException is thrown.
 	 */
-	public static Map<String, List<String>> getAvailableOperationsCategorized() throws OperationException, ConfigurationException
+	public static Map<String, List<String>> getAvailableOperationsCategorized()
 	{
 		Map<String, List<String>> opCategories = new HashMap<String, List<String>>();
 
@@ -207,7 +207,7 @@ public abstract class Operation extends DataSource implements Changeable
 	 * @param opName Name of operation to search for, usually taken from getAvailableOperations().
 	 * @return Newly created operation of the given type
 	 */
-	public static Operation createOperation(String opName) throws MarlaException
+	public static Operation createOperation(String opName)
 	{
 		// Locate the operation
 		Operation op = null;
@@ -310,7 +310,7 @@ public abstract class Operation extends DataSource implements Changeable
 	 * @param opEl JDOM Element with the information to construct Operation
 	 * @return Constructed and initialized operation
 	 */
-	public static Operation fromXml(Element opEl) throws MarlaException
+	public static Operation fromXml(Element opEl)
 	{
 		String opName = opEl.getAttributeValue("type");
 
@@ -357,7 +357,7 @@ public abstract class Operation extends DataSource implements Changeable
 	 * information saved for their type of Operation
 	 * @param extraEl JDOM Element with all data for Operation
 	 */
-	protected void fromXmlExtra(Element extraEl) throws MarlaException
+	protected void fromXmlExtra(Element extraEl)
 	{
 	}
 
@@ -386,7 +386,7 @@ public abstract class Operation extends DataSource implements Changeable
 	 * Assigns this Operation to a new parent.
 	 * @param newParent Parent DataSet/Operation we're a part of
 	 */
-	public final void setParentData(DataSource newParent) throws MarlaException
+	public final void setParentData(DataSource newParent)
 	{
 		if(newParent != null)
 			setParentData(newParent.getOperationCount(), newParent);
@@ -399,7 +399,7 @@ public abstract class Operation extends DataSource implements Changeable
 	 * @param index Index at which to insert ourselves into the parent
 	 * @param newParent Parent DataSet/Operation we're a part of
 	 */
-	public final void setParentData(int index, DataSource newParent) throws MarlaException
+	public final void setParentData(int index, DataSource newParent)
 	{
 		// If we're already a part of this parent, ignore request
 		if(parent == newParent)
@@ -484,7 +484,7 @@ public abstract class Operation extends DataSource implements Changeable
 	}
 
 	@Override
-	public final boolean isUniqueColumnName(String name) throws MarlaException
+	public final boolean isUniqueColumnName(String name)
 	{
 		checkCache();
 
@@ -498,7 +498,7 @@ public abstract class Operation extends DataSource implements Changeable
 	}
 
 	@Override
-	public final int getColumnIndex(String colName) throws MarlaException
+	public final int getColumnIndex(String colName)
 	{
 		checkCache();
 
@@ -518,7 +518,7 @@ public abstract class Operation extends DataSource implements Changeable
 	 * the operation modified a column that is NOT included here.
 	 * @return List of added columns
 	 */
-	public final List<DataColumn> getNewColumns() throws MarlaException
+	public final List<DataColumn> getNewColumns()
 	{
 		checkCache();
 
@@ -530,7 +530,7 @@ public abstract class Operation extends DataSource implements Changeable
 	}
 
 	@Override
-	public final DataColumn getColumn(String colName) throws MarlaException
+	public final DataColumn getColumn(String colName)
 	{
 		checkCache();
 
@@ -555,7 +555,7 @@ public abstract class Operation extends DataSource implements Changeable
 	}
 
 	@Override
-	public List<DataColumn> getColumns() throws MarlaException
+	public List<DataColumn> getColumns()
 	{
 		List<DataColumn> cols = new ArrayList<DataColumn>();
 		cols.addAll(data.getColumns());
@@ -568,7 +568,7 @@ public abstract class Operation extends DataSource implements Changeable
 	}
 
 	@Override
-	public final DataColumn getColumn(int index) throws MarlaException
+	public final DataColumn getColumn(int index)
 	{
 		checkCache();
 
@@ -580,7 +580,7 @@ public abstract class Operation extends DataSource implements Changeable
 	}
 
 	@Override
-	public final int getColumnLength() throws MarlaException
+	public final int getColumnLength()
 	{
 		checkCache();
 
@@ -602,7 +602,7 @@ public abstract class Operation extends DataSource implements Changeable
 	 * @return Maximum length of the newly added columns. -1 if there are no
 	 * new columns
 	 */
-	public final int getNewColumnLength() throws MarlaException
+	public final int getNewColumnLength()
 	{
 		checkCache();
 
@@ -618,7 +618,7 @@ public abstract class Operation extends DataSource implements Changeable
 	}
 
 	@Override
-	public final String[] getColumnNames() throws MarlaException
+	public final String[] getColumnNames()
 	{
 		checkCache();
 
@@ -640,7 +640,7 @@ public abstract class Operation extends DataSource implements Changeable
 	 * @param colName Name of the new column to add
 	 * @return Newly created DataColumn
 	 */
-	protected final DataColumn addColumn(String colName) throws DuplicateNameException
+	protected final DataColumn addColumn(String colName)
 	{
 		return data.addColumn(colName);
 	}
@@ -650,7 +650,7 @@ public abstract class Operation extends DataSource implements Changeable
 	 * @param colName Name of the column to copy
 	 * @return Newly created DataColumn copy
 	 */
-	protected final DataColumn copyColumn(String colName) throws DuplicateNameException, DataNotFoundException, MarlaException
+	protected final DataColumn copyColumn(String colName)
 	{
 		return copyColumn(parent.getColumn(colName));
 	}
@@ -660,7 +660,7 @@ public abstract class Operation extends DataSource implements Changeable
 	 * @param col DataColumn to copy into this operation
 	 * @return Newly created DataColumn copy
 	 */
-	protected final DataColumn copyColumn(DataColumn col) throws DuplicateNameException, DataNotFoundException, MarlaException
+	protected final DataColumn copyColumn(DataColumn col)
 	{
 		return data.copyColumn(col);
 	}
@@ -710,7 +710,7 @@ public abstract class Operation extends DataSource implements Changeable
 	/**
 	 * Refreshes the cache if needed
 	 */
-	public final void checkCache() throws MarlaException
+	public final void checkCache()
 	{
 		if(isCacheDirty && !inRecompute)
 			refreshCache();
@@ -729,7 +729,7 @@ public abstract class Operation extends DataSource implements Changeable
 	/**
 	 * Recalculates columns and saves the R operations needed for computation
 	 */
-	private synchronized void refreshCache() throws OperationException, RProcessorException, MarlaException
+	private synchronized void refreshCache()
 	{
 		if(parent == null)
 			throw new OperationException("No parent for operation to get data from");
@@ -784,7 +784,7 @@ public abstract class Operation extends DataSource implements Changeable
 	 * arises.
 	 * @param proc RProcessor to use for computations
 	 */
-	protected abstract void computeColumns(RProcessor proc) throws MarlaException;
+	protected abstract void computeColumns(RProcessor proc);
 
 
 	/**
@@ -816,7 +816,7 @@ public abstract class Operation extends DataSource implements Changeable
 	 * returns the actual list of data needed
 	 * @return true if additional information is required
 	 */
-	public final boolean isInfoRequired() throws MarlaException
+	public final boolean isInfoRequired()
 	{
 		return !questions.isEmpty();
 	}
@@ -826,7 +826,7 @@ public abstract class Operation extends DataSource implements Changeable
 	 * unanswered. getRequiredInfoPrompt() returns the actual list of data needed
 	 * @return true if additional information is required
 	 */
-	public final boolean isInfoUnanswered() throws MarlaException
+	public final boolean isInfoUnanswered()
 	{
 		if(questions.isEmpty())
 			return false;
@@ -853,7 +853,7 @@ public abstract class Operation extends DataSource implements Changeable
 	 *			combo selection box), then the third element in Object[] will
 	 *			be whatever is needed.
 	 */
-	public final List<OperationInformation> getRequiredInfoPrompt() throws MarlaException
+	public final List<OperationInformation> getRequiredInfoPrompt()
 	{
 		// Converts the hashmap to an immutable list
 		List<OperationInformation> info = new ArrayList<OperationInformation>(questions.size());
@@ -869,7 +869,7 @@ public abstract class Operation extends DataSource implements Changeable
 	/**
 	 * Clears any set answers to required information
 	 */
-	public final void clearRequiredInfo() throws OperationInfoRequiredException
+	public final void clearRequiredInfo()
 	{
 		// Clear all the question answers
 		Set<String> names = questions.keySet();
@@ -897,14 +897,14 @@ public abstract class Operation extends DataSource implements Changeable
 	 * determining answer.
 	 * @return true if there is available graphical output via getPlot(), false otherwise
 	 */
-	public abstract boolean hasPlot() throws MarlaException;
+	public abstract boolean hasPlot();
 
 	/**
 	 * Returns the path to the graphical plot this operation generated. An exception
 	 * is thrown if an error occurs creating the plot.
 	 * @return Path to plot, null if there is none associated with this operation.
 	 */
-	public String getPlot() throws MarlaException
+	public String getPlot()
 	{
 		// Check derivative implementation
 		if(hasPlot())
@@ -972,7 +972,7 @@ public abstract class Operation extends DataSource implements Changeable
 	 * @return XML Element with all settings for this Operation
 	 */
 	@Override
-	public final Element toXml() throws MarlaException
+	public final Element toXml()
 	{
 		Element opEl = new Element("operation");
 		opEl.setAttribute("type", this.getClass().getName());
@@ -1004,7 +1004,7 @@ public abstract class Operation extends DataSource implements Changeable
 	 * @param extraEl Element which toXmlExtra should attach its information to
 	 * @return null if no extra information, JDOM Element otherwise
 	 */
-	protected Element toXmlExtra(Element extraEl) throws MarlaException
+	protected Element toXmlExtra(Element extraEl)
 	{
 		return null;
 	}
@@ -1033,13 +1033,13 @@ public abstract class Operation extends DataSource implements Changeable
 	}
 
 	@Override
-	public String getRCommands() throws MarlaException
+	public String getRCommands()
 	{
 		return getRCommands(true);
 	}
 
 	@Override
-	public final String getRCommands(boolean chain) throws MarlaException
+	public final String getRCommands(boolean chain)
 	{
 		checkCache();
 
@@ -1056,7 +1056,7 @@ public abstract class Operation extends DataSource implements Changeable
 	}
 
 	@Override
-	public final String toHTML() throws MarlaException
+	public final String toHTML()
 	{
 		// We only output ourselves as a DataSet if we don't have a plot
 		if(hasPlot())
@@ -1093,21 +1093,21 @@ public abstract class Operation extends DataSource implements Changeable
 	}
 
 	@Override
-	public final void exportFile(String filePath) throws MarlaException
+	public final void exportFile(String filePath)
 	{
 		checkCache();
 		data.exportFile(filePath);
 	}
 
 	@Override
-	public final String toRFrame() throws MarlaException
+	public final String toRFrame()
 	{
 		checkCache();
 		return DataSet.toRFrame(this);
 	}
 
 	@Override
-	public final int getColumnCount() throws MarlaException
+	public final int getColumnCount()
 	{
 		checkCache();
 		

@@ -17,12 +17,18 @@
  */
 package marla.opedit.operation;
 
+import java.io.BufferedOutputStream;
 import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import marla.opedit.gui.Domain;
 import org.jdom.Document;
 import org.jdom.Element;
@@ -46,11 +52,33 @@ public class OperationFile
 	private final List<OperationXMLEditable> ops = new ArrayList<OperationXMLEditable>();
 
 	/**
-	 * 
-	 * @param savePath
-	 * @throws OperationEditorException
+	 * Creates a new operation file pointed at the given location.
+	 * @param savePath Path to XML file
 	 */
-	public OperationFile(String savePath) throws OperationEditorException
+	public static OperationFile createNew(String savePath)
+	{
+		try
+		{
+			// Build new file
+			String newOpFileContents = "<?xml version='1.0' ?><operations></operations>";
+			BufferedWriter bw = new BufferedWriter(new FileWriter(savePath));
+			bw.write(newOpFileContents, 0, newOpFileContents.length());
+			bw.close();
+		}
+		catch(IOException ex)
+		{
+			throw new OperationEditorException("Unable to write new file to '" + savePath + "'", ex);
+		}
+
+		// And return operation file pointed to new file
+		return new OperationFile(savePath);
+	}
+
+	/**
+	 * Opens an operation file pointed at the given location.
+	 * @param savePath Path to XML file
+	 */
+	public OperationFile(String savePath)
 	{
 		xmlPath = savePath;
 
@@ -61,7 +89,7 @@ public class OperationFile
 	/**
 	 * (Re)loads the current XML file operations
 	 */
-	private void loadOperations() throws OperationEditorException
+	private void loadOperations()
 	{
 		try
 		{
@@ -215,7 +243,7 @@ public class OperationFile
 	{
 		Element rootEl = new Element("operations");
 		for(OperationXMLEditable op : ops)
-			rootEl.addContent(op.getConfiguration());
+			rootEl.addContent((Element)op.getConfiguration().clone());
 
 		try
 		{

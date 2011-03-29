@@ -96,7 +96,7 @@ public class Updater implements Runnable
 	 * @param urlLocation URL to fetch
 	 * @return path to downloaded file
 	 */
-	private static String fetchFile(String urlLocation) throws MarlaException
+	private static String fetchFile(String urlLocation)
 	{
 		try
 		{

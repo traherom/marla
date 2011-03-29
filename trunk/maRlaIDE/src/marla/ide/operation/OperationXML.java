@@ -96,7 +96,7 @@ public class OperationXML extends Operation
 	 * @param newPath Path to main XML operation file
 	 * @return Previously set path
 	 */
-	public static String setPrimaryXMLPath(String newPath) throws ConfigurationException
+	public static String setPrimaryXMLPath(String newPath)
 	{
 		String old = primaryOpsPath;
 
@@ -136,7 +136,7 @@ public class OperationXML extends Operation
 	 * @param newPaths Path(s) to user-created XML operation files
 	 * @return Previously set user paths
 	 */
-	public static List<String> setUserXMLPaths(List<String> newPaths) throws ConfigurationException
+	public static List<String> setUserXMLPaths(List<String> newPaths)
 	{
 		List<String> old = additionalOpsPaths;
 
@@ -182,7 +182,7 @@ public class OperationXML extends Operation
 	 * Loads the XML operations from disk using the set paths (user and primary)
 	 * if they are not already. To force a reload, first call clearXMLOps()
 	 */
-	public static void loadXML() throws OperationXMLException, ConfigurationException
+	public static void loadXML()
 	{
 		if(operationXML == null)
 		{
@@ -198,7 +198,7 @@ public class OperationXML extends Operation
 	 * Clears any current XML operations and loads the ones given
 	 * @param xmlPaths Path(s) to operation XML files
 	 */
-	private static void loadXML(List<String> xmlPaths) throws OperationXMLException, ConfigurationException
+	private static void loadXML(List<String> xmlPaths)
 	{
 		// Load each path listed
 		for(String path : xmlPaths)
@@ -215,7 +215,7 @@ public class OperationXML extends Operation
 	 * @param xmlPath Path to the operation XML file to include
 	 * @param isPrimary true if this file is the primary (base). false if it's secondary/user supplied
 	 */
-	private static void loadXML(String xmlPath, boolean isPrimary) throws OperationXMLException, ConfigurationException
+	private static void loadXML(String xmlPath, boolean isPrimary)
 	{
 		try
 		{
@@ -237,7 +237,6 @@ public class OperationXML extends Operation
 				throw new ConfigurationException("XML file '" + xmlPath + "' does not appear to contain operations", ConfigType.PrimaryOpsXML);
 
 			// Just save it or bring it into the combined doc?
-			// TODO make later operations override older ones (IE, user overrides primary)
 			if(isPrimary)
 				operationXML = root;
 			else if(operationXML != null)
@@ -301,7 +300,7 @@ public class OperationXML extends Operation
 	 * that will perform the calculations.
 	 * @return ArrayList of the names of all available XML operations
 	 */
-	public static List<String> getAvailableOperations() throws OperationXMLException, ConfigurationException
+	public static List<String> getAvailableOperations()
 	{
 		// Attempt to load operations if it hasn't been done yet
 		if(operationXML == null)
@@ -346,7 +345,7 @@ public class OperationXML extends Operation
 	 * with the same name are detected.
 	 * @return ArrayList of the names of all available XML operations
 	 */
-	public static Map<String, List<String>> getAvailableOperationsCategorized() throws OperationXMLException, ConfigurationException
+	public static Map<String, List<String>> getAvailableOperationsCategorized()
 	{
 		// Attempt to load operations if it hasn't been done yet
 		if(operationXML == null)
@@ -402,7 +401,7 @@ public class OperationXML extends Operation
 	 * @param opName Name of the operation to load from the XML file
 	 * @return New operation that will perform the specified computations
 	 */
-	public static OperationXML createOperation(String opName) throws MarlaException
+	public static OperationXML createOperation(String opName)
 	{
 		OperationXML newOp = new OperationXML();
 		newOp.setConfiguration(findConfiguration(opName));
@@ -415,7 +414,7 @@ public class OperationXML extends Operation
 	 * @param opName XML operation to find in the file, as specified by its "name" attribute.
 	 * @return Element holding the configuration information for the operation
 	 */
-	protected static Element findConfiguration(String opName) throws OperationXMLException, ConfigurationException
+	protected static Element findConfiguration(String opName)
 	{
 		// Attempt to load operations if it hasn't been done yet
 		if(operationXML == null)
@@ -457,7 +456,7 @@ public class OperationXML extends Operation
 	 * Creates a new operation with the given computational... stuff
 	 * @param newOpConfig JDOM XML Element that contains the needed configuration information
 	 */
-	protected void setConfiguration(Element newOpConfig) throws OperationXMLException, MarlaException
+	protected void setConfiguration(Element newOpConfig)
 	{
 		// Ignore if it's the same
 		if(opConfig == newOpConfig)
@@ -568,21 +567,12 @@ public class OperationXML extends Operation
 	@Override
 	public void checkDisplayName()
 	{
-		try
+		if(updateDynamicName() && !isLoading())
 		{
-			if(updateDynamicName() && !isLoading())
-			{
-				// We actually did change from what was being used
-				DataSource root = getRootDataSource();
-				if(Problem.getDomain() != null && root instanceof DataSet)
-					Problem.getDomain().rebuildTree((DataSet)root);
-			}
-		}
-		catch(MarlaException ex)
-		{
-			// Error occured
-			// TODO better handling
-			setText(ex.getMessage());
+			// We actually did change from what was being used
+			DataSource root = getRootDataSource();
+			if(Problem.getDomain() != null && root instanceof DataSet)
+				Problem.getDomain().rebuildTree((DataSet)root);
 		}
 	}
 
@@ -590,7 +580,7 @@ public class OperationXML extends Operation
 	 * Performs the appropriate operations according to whatever the XML says. Fun!
 	 */
 	@Override
-	protected void computeColumns(RProcessor proc) throws RProcessorException, RProcessorParseException, OperationXMLException, OperationInfoRequiredException, MarlaException
+	protected void computeColumns(RProcessor proc)
 	{
 		// Ensure any requirements were met already
 		if(isInfoUnanswered())
@@ -623,7 +613,7 @@ public class OperationXML extends Operation
 		}
 	}
 
-	private void processSequence(RProcessor proc, Element compEl) throws RProcessorException, RProcessorParseException, OperationXMLException, MarlaException
+	private void processSequence(RProcessor proc, Element compEl)
 	{
 		// Walk through each command/control structure sequentially
 		for(Object elObj : compEl.getChildren())
@@ -652,7 +642,7 @@ public class OperationXML extends Operation
 		}
 	}
 
-	private void processCmd(RProcessor proc, Element cmdEl) throws OperationXMLException
+	private void processCmd(RProcessor proc, Element cmdEl)
 	{
 		try
 		{
@@ -669,7 +659,7 @@ public class OperationXML extends Operation
 		}
 	}
 
-	private void processSet(RProcessor proc, Element setEl) throws OperationXMLException, OperationInfoRequiredException, RProcessorException, MarlaException
+	private void processSet(RProcessor proc, Element setEl)
 	{
 		// What answer are we looking for here?
 		String promptKey = setEl.getAttributeValue("name");
@@ -724,7 +714,7 @@ public class OperationXML extends Operation
 		proc.setRecorderMode(RecordMode.DISABLED);
 	}
 
-	private void processSave(RProcessor proc, Element cmdEl) throws RProcessorException, RProcessorParseException, OperationXMLException, MarlaException
+	private void processSave(RProcessor proc, Element cmdEl)
 	{
 		// Get the command we will execute for the value
 		String cmd = cmdEl.getTextTrim();
@@ -774,7 +764,7 @@ public class OperationXML extends Operation
 		proc.setRecorderMode(RecordMode.DISABLED);
 	}
 
-	private void processLoop(RProcessor proc, Element loopEl) throws RProcessorException, RProcessorParseException, OperationXMLException, MarlaException
+	private void processLoop(RProcessor proc, Element loopEl)
 	{
 		// Make up the loop we're going to work over and pass iteration back to processSequence()
 		String indexVar = loopEl.getAttributeValue("index_var");
@@ -845,7 +835,7 @@ public class OperationXML extends Operation
 			throw new OperationXMLException("Loop type '" + loopType + "' not recognized.");
 	}
 
-	private void processIf(RProcessor proc, Element ifEl) throws RProcessorException, RProcessorParseException, OperationXMLException, MarlaException
+	private void processIf(RProcessor proc, Element ifEl)
 	{
 		// Figure out what type of if it is and check if it's true or false
 		boolean ifExprResult = false;
@@ -902,7 +892,7 @@ public class OperationXML extends Operation
 		}
 	}
 
-	private void processPlot(RProcessor proc, Element cmdEl) throws RProcessorException, RProcessorParseException, OperationXMLException, MarlaException
+	private void processPlot(RProcessor proc, Element cmdEl)
 	{
 		// An operation may only have one plot in it
 		if(plotPath != null)
@@ -914,7 +904,7 @@ public class OperationXML extends Operation
 		proc.stopGraphicOutput();
 	}
 
-	private void processError(RProcessor proc, Element errorEl) throws OperationXMLException
+	private void processError(RProcessor proc, Element errorEl)
 	{
 		// The operation wants us to throw an error to the user
 		String msg = errorEl.getAttributeValue("msg", "");
@@ -924,7 +914,7 @@ public class OperationXML extends Operation
 			throw new OperationXMLException("No message supplied for error");
 	}
 
-	private void processLoad(RProcessor proc, Element loadEl) throws OperationXMLException, RProcessorParseException, RProcessorException, MarlaException
+	private void processLoad(RProcessor proc, Element loadEl)
 	{
 		// Find what library the operation wants to load
 		String libToLoad = loadEl.getAttributeValue("library");
@@ -995,7 +985,7 @@ public class OperationXML extends Operation
 	 * given in the longname element and the answers to queries
 	 * @return true if the dynamic name actually changed
 	 */
-	private boolean updateDynamicName() throws MarlaException
+	private boolean updateDynamicName()
 	{
 		String oldLongName = dynamicNameLong;
 
@@ -1068,14 +1058,14 @@ public class OperationXML extends Operation
 	}
 
 	@Override
-	public boolean hasPlot() throws MarlaException
+	public boolean hasPlot()
 	{
 		// Check if plot="true" is set for this op
 		return Boolean.parseBoolean(opConfig.getAttributeValue("plot", "false"));
 	}
 
 	@Override
-	public String getPlot() throws MarlaException
+	public String getPlot()
 	{
 		// Only bother if we have a plot
 		if(!hasPlot())
@@ -1155,7 +1145,7 @@ public class OperationXML extends Operation
 	 * @return Element with the XML operation name
 	 */
 	@Override
-	protected Element toXmlExtra(Element extraEl) throws MarlaException
+	protected Element toXmlExtra(Element extraEl)
 	{
 		extraEl.setAttribute("name", opConfig.getAttributeValue("name"));
 		return extraEl;
@@ -1166,7 +1156,7 @@ public class OperationXML extends Operation
 	 * @param extraEl Element with the needed name of the XML operation to use
 	 */
 	@Override
-	protected void fromXmlExtra(Element extraEl) throws MarlaException
+	protected void fromXmlExtra(Element extraEl)
 	{
 		// Load the correct XML specification
 		setConfiguration(findConfiguration(extraEl.getAttributeValue("name")));
