@@ -217,7 +217,7 @@ public class OperationXMLEditable extends OperationXML
 	/**
 	 * Override things we don't want to have available. Hackish, I know
 	 */
-	public static String setPrimaryXMLPath(String newPath) throws ConfigurationException
+	public static String setPrimaryXMLPath(String newPath)
 	{
 		throw new UnsupportedOperationException("Blocked");
 	}
@@ -225,7 +225,7 @@ public class OperationXMLEditable extends OperationXML
 	{
 		throw new UnsupportedOperationException("Blocked");
 	}
-	public static List<String> setUserXMLPaths(List<String> newPaths) throws ConfigurationException
+	public static List<String> setUserXMLPaths(List<String> newPaths)
 	{
 		throw new UnsupportedOperationException("Blocked");
 	}
@@ -237,19 +237,19 @@ public class OperationXMLEditable extends OperationXML
 	{
 		throw new UnsupportedOperationException("Blocked");
 	}
-	public static void loadXML() throws OperationXMLException, ConfigurationException
+	public static void loadXML()
 	{
 		throw new UnsupportedOperationException("Blocked");
 	}
-	public static OperationXML createOperation(String opName) throws MarlaException
+	public static OperationXML createOperation(String opName) 
 	{
 		throw new UnsupportedOperationException("Blocked");
 	}
-	public static Map<String, List<String>> getAvailableOperationsCategorized() throws OperationXMLException, ConfigurationException
+	public static Map<String, List<String>> getAvailableOperationsCategorized()
 	{
 		throw new UnsupportedOperationException("Blocked");
 	}
-	public static List<String> getAvailableOperations() throws OperationXMLException, ConfigurationException
+	public static List<String> getAvailableOperations()
 	{
 		throw new UnsupportedOperationException("Blocked");
 	}

@@ -64,7 +64,7 @@ public final class DataSet extends DataSource implements Changeable
 	 * Creates a blank dataset with the given name.
 	 * @param name New dataset name
 	 */
-	public DataSet(String name) throws DuplicateNameException
+	public DataSet(String name)
 	{
 		this(null, name);
 	}
@@ -74,7 +74,7 @@ public final class DataSet extends DataSource implements Changeable
 	 * @param parent The problem set this dataset is used by
 	 * @param name New dataset name
 	 */
-	public DataSet(Changeable parent, String name) throws DuplicateNameException
+	public DataSet(Changeable parent, String name)
 	{
 		this.parent = parent;
 		setDataName(name);
@@ -102,7 +102,7 @@ public final class DataSet extends DataSource implements Changeable
 	 * @param filePath Absolute or relative path to file to import.
 	 * @return New DataSet containing the imported values
 	 */
-	public static DataSet importFile(String filePath) throws DuplicateNameException, MarlaException
+	public static DataSet importFile(String filePath)
 	{
 		try
 		{
@@ -186,7 +186,7 @@ public final class DataSet extends DataSource implements Changeable
 	 * @param ds DataSource to export to CSV
 	 * @param filePath CSV file to write to. File will be overwritten if needed.
 	 */
-	public static void exportFile(DataSource ds, String filePath) throws MarlaException
+	public static void exportFile(DataSource ds, String filePath)
 	{
 		try
 		{
@@ -252,7 +252,7 @@ public final class DataSet extends DataSource implements Changeable
 	}
 
 	@Override
-	public void exportFile(String filePath) throws MarlaException
+	public void exportFile(String filePath)
 	{
 		exportFile(this, filePath);
 	}
@@ -263,7 +263,7 @@ public final class DataSet extends DataSource implements Changeable
 	 * @param varName Variable name within the global RProcessor instance to work with
 	 * @return New DataSet containing the loaded data
 	 */
-	public static DataSet fromRFrame(String varName) throws RProcessorException, RProcessorParseException, DuplicateNameException, ConfigurationException
+	public static DataSet fromRFrame(String varName)
 	{
 		DataSet ds = new DataSet(varName);
 
@@ -364,7 +364,7 @@ public final class DataSet extends DataSource implements Changeable
 	 * Sets the dataset name
 	 * @param newName New name to call this DataSet by
 	 */
-	public final void setDataName(String newName) throws DuplicateNameException
+	public final void setDataName(String newName)
 	{
 		// Make sure no other datasets have this name
 		if(parent != null && parent instanceof ProblemPart)
@@ -406,7 +406,7 @@ public final class DataSet extends DataSource implements Changeable
 	 * @param colName Name for new column
 	 * @return Newly created data column
 	 */
-	public DataColumn addColumn(String colName) throws DuplicateNameException
+	public DataColumn addColumn(String colName)
 	{
 		return addColumn(columns.size(), colName);
 	}
@@ -420,7 +420,7 @@ public final class DataSet extends DataSource implements Changeable
 	 * @param colName Name of the new Column to create and add to set
 	 * @return Column that was added (same as passed in)
 	 */
-	public DataColumn addColumn(int index, String colName) throws DuplicateNameException
+	public DataColumn addColumn(int index, String colName)
 	{
 		// Ensure the name of this new column is ok
 		if(!isUniqueColumnName(colName))
@@ -442,7 +442,7 @@ public final class DataSet extends DataSource implements Changeable
 	 * @param oldCol Column to copy. Should not be part of this DataSet, as a DuplicateNameException will result
 	 * @return Newly created column that is a part of this DataSet
 	 */
-	public DataColumn copyColumn(DataColumn oldCol) throws DuplicateNameException
+	public DataColumn copyColumn(DataColumn oldCol)
 	{
 		return copyColumn(columns.size(), oldCol);
 	}
@@ -454,7 +454,7 @@ public final class DataSet extends DataSource implements Changeable
 	 * @param oldCol Column to copy. Should not be part of this DataSet, as a DuplicateNameException will result
 	 * @return Newly created column that is a part of this DataSet
 	 */
-	public DataColumn copyColumn(int index, DataColumn oldCol) throws DuplicateNameException
+	public DataColumn copyColumn(int index, DataColumn oldCol)
 	{
 		DataColumn newCol = addColumn(index, oldCol.getName());
 
@@ -503,7 +503,7 @@ public final class DataSet extends DataSource implements Changeable
 	}
 
 	@Override
-	public DataColumn getColumn(String colName) throws DataNotFoundException
+	public DataColumn getColumn(String colName)
 	{
 		int index = getColumnIndex(colName);
 		if(index != -1)
@@ -531,7 +531,7 @@ public final class DataSet extends DataSource implements Changeable
 	}
 
 	@Override
-	public List<DataColumn> getColumns() throws MarlaException
+	public List<DataColumn> getColumns()
 	{
 		return Collections.unmodifiableList(columns);
 	}
@@ -589,18 +589,18 @@ public final class DataSet extends DataSource implements Changeable
 	}
 
 	@Override
-	public String getRCommands() throws MarlaException
+	public String getRCommands()
 	{
 		return getRCommands(false);
 	}
 
 	/**
 	 * This should only be called as part of an Operation chaining up here
-	 * @throws chain false if we should output the R frame for this data, false for blank.
+	 * @param chain false if we should output the R frame for this data, false for blank.
 	 * @return R commands to make an R data frame
 	 */
 	@Override
-	public final String getRCommands(boolean chain) throws MarlaException
+	public final String getRCommands(boolean chain)
 	{
 		if(!chain)
 		{
@@ -615,7 +615,7 @@ public final class DataSet extends DataSource implements Changeable
 	}
 
 	@Override
-	public String toRFrame() throws MarlaException
+	public String toRFrame()
 	{
 		return toRFrame(this);
 	}
@@ -625,7 +625,7 @@ public final class DataSet extends DataSource implements Changeable
 	 * @param ds DataSource to work over
 	 * @return Name of the R variable the frame is saved to
 	 */
-	public static String toRFrame(DataSource ds) throws MarlaException
+	public static String toRFrame(DataSource ds)
 	{
 		RProcessor proc = RProcessor.getInstance();
 
@@ -656,7 +656,7 @@ public final class DataSet extends DataSource implements Changeable
 	}
 
 	@Override
-	public String toHTML() throws MarlaException
+	public String toHTML()
 	{
 		return toHTML(this);
 	}
@@ -683,7 +683,7 @@ public final class DataSet extends DataSource implements Changeable
 	 * @param ds DataSource to create string for
 	 * @return String of the data inside the given DataSource
 	 */
-	public static String toHTML(DataSource ds) throws MarlaException
+	public static String toHTML(DataSource ds)
 	{
 		StringBuilder sb = new StringBuilder();
 		sb.append("<table>\n");
@@ -739,7 +739,7 @@ public final class DataSet extends DataSource implements Changeable
 	 * @param ds DataSource to create string for
 	 * @return String of the data inside the given DataSource
 	 */
-	public static String toString(DataSource ds) throws MarlaException
+	public static String toString(DataSource ds)
 	{
 		StringBuilder sb = new StringBuilder();
 
@@ -824,7 +824,7 @@ public final class DataSet extends DataSource implements Changeable
 	}
 
 	@Override
-	public Element toXml() throws MarlaException
+	public Element toXml()
 	{
 		Element dataEl = new Element("data");
 
@@ -855,7 +855,7 @@ public final class DataSet extends DataSource implements Changeable
 	 * @param dataEl JDOM Element with the information to construct DataSet
 	 * @return Constructed and initialized DataSet
 	 */
-	public static DataSet fromXml(Element dataEl) throws MarlaException
+	public static DataSet fromXml(Element dataEl)
 	{
 		DataSet newData = new DataSet("initializing");
 		newData.isLoading = true;

@@ -288,7 +288,7 @@ public class Configuration
 	 * @param setting Setting to adjust
 	 * @return Currently set value for configuration item, null if there was none
 	 */
-	public Object get(ConfigType setting) throws MarlaException
+	public Object get(ConfigType setting)
 	{
 		switch(setting)
 		{
@@ -387,7 +387,7 @@ public class Configuration
 	 * @param val Value to assign to setting
 	 * @return Previously set value for configuration item, null if there was none
 	 */
-	public Object set(ConfigType setting, Object val) throws MarlaException
+	public Object set(ConfigType setting, Object val)
 	{
 		Object previous = null;
 		MainFrame frame = null;
@@ -816,7 +816,7 @@ public class Configuration
 	/**
 	 * Saves current maRla configuration to the location we loaded from
 	 */
-	public void save() throws MarlaException
+	public void save()
 	{
 		// Build document
 		Element rootEl = new Element("marla");
@@ -1161,7 +1161,7 @@ public class Configuration
 	 * Loads given command line configuration and saves to
 	 * file. Useful for creating new configuration
 	 */
-	public static void main(String[] args) throws MarlaException
+	public static void main(String[] args)
 	{
 		Configuration conf = Configuration.getInstance();
 

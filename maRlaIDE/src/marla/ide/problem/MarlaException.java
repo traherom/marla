@@ -22,7 +22,7 @@ package marla.ide.problem;
  * derives from this.
  * @author Ryan Morehart
  */
-public class MarlaException extends Exception
+public class MarlaException extends RuntimeException
 {
 	public MarlaException(String msg)
 	{

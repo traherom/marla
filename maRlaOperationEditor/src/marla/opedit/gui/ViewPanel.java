@@ -720,7 +720,7 @@ public class ViewPanel extends JPanel
 					currentFile.save();
 				}
 
-				currentFile = new OperationFile(file.toString());
+				currentFile = OperationFile.createNew(file.toString());
 				if(file.isDirectory())
 				{
 					lastGoodDir = file.toString();

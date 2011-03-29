@@ -118,7 +118,7 @@ public abstract class DataSource extends JLabel implements Loadable
 
 	/**
 	 * Returns a string that could be displayed to the user
-	 * @param abbrv If true, abreviate the returned string in order 
+	 * @param abbrv If true, abbreviate the returned string in order
 	 * @return String suitable for display to user
 	 */
 	public abstract String getDisplayString(boolean abbrv);
@@ -129,13 +129,13 @@ public abstract class DataSource extends JLabel implements Loadable
 	 *					be reflected in the dataset itself unless a copy is made.
 	 * @return The DataColumn requested
 	 */
-	public abstract DataColumn getColumn(String colName) throws DataNotFoundException, MarlaException;
+	public abstract DataColumn getColumn(String colName);
 
 	/**
 	 * Returns a list of all the columns in the DataSource
 	 * @return The DataColumns in the current DataSource
 	 */
-	public abstract List<DataColumn> getColumns() throws MarlaException;
+	public abstract List<DataColumn> getColumns();
 
 	/**
 	 * Returns the column index (as would be passed to getColumn(int))
@@ -143,39 +143,39 @@ public abstract class DataSource extends JLabel implements Loadable
 	 * @param colName Column name to search for
 	 * @return index of corresponding column, -1 if not found
 	 */
-	public abstract int getColumnIndex(String colName) throws MarlaException;
+	public abstract int getColumnIndex(String colName);
 
 	/**
 	 * Returns the column requested by index
 	 * @param index Index of the column to access
 	 * @return DataColumn at the given index
 	 */
-	public abstract DataColumn getColumn(int index) throws DataNotFoundException, MarlaException;
+	public abstract DataColumn getColumn(int index);
 
 	/**
 	 * Returns the number of columns in this DataSet
 	 * @return Number of columns in DataSet
 	 */
-	public abstract int getColumnCount() throws MarlaException;
+	public abstract int getColumnCount();
 
 	/**
 	 * Returns the length of the <em>longest</em> column in this dataset
 	 * @return Length of the longest column in this dataset. -1 if there are none
 	 */
-	public abstract int getColumnLength() throws MarlaException;
+	public abstract int getColumnLength();
 
 	/**
 	 * Returns a list of column names.
 	 * @return All column names in this dataset
 	 */
-	public abstract String[] getColumnNames() throws MarlaException;
+	public abstract String[] getColumnNames();
 
 	/**
 	 * Add given operation to the end of DataSource. See addOperation(index, op)
 	 * @param op Operation to add to perform on DataSet
 	 * @return Newly added operation
 	 */
-	public final Operation addOperation(Operation op) throws MarlaException
+	public final Operation addOperation(Operation op)
 	{
 		return addOperation(solutionOps.size(), op);
 	}
@@ -189,7 +189,7 @@ public abstract class DataSource extends JLabel implements Loadable
 	 * @param op Operation to add to perform on DataSet
 	 * @return Newly added operation
 	 */
-	public final Operation addOperation(int index, Operation op) throws MarlaException
+	public final Operation addOperation(int index, Operation op)
 	{
 		// Tell the operation to set us as the parent
 		op.setParentData(index, this);
@@ -214,7 +214,7 @@ public abstract class DataSource extends JLabel implements Loadable
 	 * @param op Operation to remove from data
 	 * @return The removed Operation
 	 */
-	public final Operation removeOperation(Operation op) throws MarlaException
+	public final Operation removeOperation(Operation op)
 	{
 		// Tell operation to we're not its parent any more
 		op.setParentData(null);
@@ -233,7 +233,7 @@ public abstract class DataSource extends JLabel implements Loadable
 	 * @param index Index of the operation to remove
 	 * @return The removed Operation
 	 */
-	public final Operation removeOperation(int index) throws MarlaException
+	public final Operation removeOperation(int index)
 	{
 		return removeOperation(solutionOps.get(index));
 	}
@@ -314,44 +314,44 @@ public abstract class DataSource extends JLabel implements Loadable
 	 * Outputs this DataSource as the string of R commands needed to perform
 	 * the calculations for itself. If chain is true then R commands from higher
 	 * up the chain are also included in the string
-	 * @throws chain True if R commands from higher up the chain should be included
+	 * @param chain True if R commands from higher up the chain should be included
 	 * @return String of R commands
 	 */
-	public abstract String getRCommands(boolean chain) throws MarlaException;
+	public abstract String getRCommands(boolean chain);
 
 	/**
 	 * Outputs this DataSource as the string of R commands needed to perform
 	 * the calculations for itself.
 	 * @return String of R commands
 	 */
-	public abstract String getRCommands() throws MarlaException;
+	public abstract String getRCommands();
 
 	/**
 	 * Outputs this DataSet as a constructed R data frame and returns the
 	 * variable the data frame is stored in.
 	 * @return R variable the data frame is in
 	 */
-	public abstract String toRFrame() throws MarlaException;
+	public abstract String toRFrame();
 
 	/**
 	 * Outputs this DataSource as an HTML table with the contained data
 	 * @return String of the HTML table representing this DataSource
 	 */
-	public abstract String toHTML() throws MarlaException;
+	public abstract String toHTML();
 
 	/**
 	 * Returns a JDOM Element that encapsulates this DataSet's
 	 * name, columns, and child operations
 	 * @return JDOM Element of this DataSet
 	 */
-	public abstract Element toXml() throws MarlaException;
+	public abstract Element toXml();
 
 	/**
 	 * Takes the DataSource-specific information and bundles it into
 	 * an the given XML element
 	 * @return XML element in which the data was placed
 	 */
-	protected Element toXml(Element dataEl) throws MarlaException
+	protected Element toXml(Element dataEl)
 	{
 		dataEl.setAttribute("name", getName());
 		dataEl.setAttribute("id", getUniqueID().toString());
@@ -374,7 +374,7 @@ public abstract class DataSource extends JLabel implements Loadable
 	 * @param dsEl XML Element containing DataSource information
 	 * @return Reference to DataSource object
 	 */
-	protected final DataSource fromXmlBase(Element dsEl) throws MarlaException
+	protected final DataSource fromXmlBase(Element dsEl)
 	{
 		setName(dsEl.getAttributeValue("name"));
 
@@ -404,14 +404,14 @@ public abstract class DataSource extends JLabel implements Loadable
 	 * Exports this DataSource to a CSV file at the given path. Use R to perform the export.
 	 * @param filePath CSV file to write to. File will be overwritten if needed.
 	 */
-	public abstract void exportFile(String filePath) throws MarlaException;
+	public abstract void exportFile(String filePath);
 
 	/**
 	 * Ensures the given name is unique within the DataSet
 	 * @param name Name to check for in existing columns
 	 * @return true if the name is unique, false otherwise
 	 */
-	public abstract boolean isUniqueColumnName(String name) throws MarlaException;
+	public abstract boolean isUniqueColumnName(String name);
 
 	/**
 	 * Tell the DataSource that some aspect of it has changed
