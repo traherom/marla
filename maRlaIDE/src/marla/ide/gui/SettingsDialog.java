@@ -111,13 +111,22 @@ public class SettingsDialog extends EscapeDialog
 
         preferencesPanel.setLayout(null);
 
-        lineWidthLabel.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        lineWidthLabel.setFont(new java.awt.Font("Verdana", 0, 12));
         lineWidthLabel.setText("Workspace line width:");
         preferencesPanel.add(lineWidthLabel);
         lineWidthLabel.setBounds(330, 70, 140, 20);
 
-        rPathTextField.setEditable(false);
-        rPathTextField.setFont(new java.awt.Font("Verdana", 0, 12));
+        rPathTextField.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        rPathTextField.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                rPathTextFieldActionPerformed(evt);
+            }
+        });
+        rPathTextField.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                rPathTextFieldFocusLost(evt);
+            }
+        });
         preferencesPanel.add(rPathTextField);
         rPathTextField.setBounds(70, 140, 330, 22);
 
@@ -141,8 +150,17 @@ public class SettingsDialog extends EscapeDialog
         preferencesPanel.add(latexPathButton);
         latexPathButton.setBounds(410, 180, 90, 25);
 
-        latexPathTextField.setEditable(false);
-        latexPathTextField.setFont(new java.awt.Font("Verdana", 0, 12));
+        latexPathTextField.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        latexPathTextField.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                latexPathTextFieldActionPerformed(evt);
+            }
+        });
+        latexPathTextField.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                latexPathTextFieldFocusLost(evt);
+            }
+        });
         preferencesPanel.add(latexPathTextField);
         latexPathTextField.setBounds(110, 180, 290, 22);
 
@@ -161,8 +179,17 @@ public class SettingsDialog extends EscapeDialog
         preferencesPanel.add(latexTemplateButton);
         latexTemplateButton.setBounds(410, 220, 90, 25);
 
-        latexTemplateTextField.setEditable(false);
         latexTemplateTextField.setFont(new java.awt.Font("Verdana", 0, 12));
+        latexTemplateTextField.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                latexTemplateTextFieldActionPerformed(evt);
+            }
+        });
+        latexTemplateTextField.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                latexTemplateTextFieldFocusLost(evt);
+            }
+        });
         preferencesPanel.add(latexTemplateTextField);
         latexTemplateTextField.setBounds(130, 220, 270, 22);
 
@@ -181,8 +208,17 @@ public class SettingsDialog extends EscapeDialog
         preferencesPanel.add(operationsButton);
         operationsButton.setBounds(410, 260, 90, 25);
 
-        operationsTextField.setEditable(false);
-        operationsTextField.setFont(new java.awt.Font("Verdana", 0, 12));
+        operationsTextField.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        operationsTextField.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                operationsTextFieldActionPerformed(evt);
+            }
+        });
+        operationsTextField.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                operationsTextFieldFocusLost(evt);
+            }
+        });
         preferencesPanel.add(operationsTextField);
         operationsTextField.setBounds(130, 260, 270, 22);
 
@@ -237,7 +273,7 @@ public class SettingsDialog extends EscapeDialog
         preferencesPanel.add(lineSpaceLabel);
         lineSpaceLabel.setBounds(330, 40, 150, 20);
 
-        lineSpaceSpinner.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        lineSpaceSpinner.setFont(new java.awt.Font("Verdana", 0, 12));
         lineSpaceSpinner.setModel(new javax.swing.SpinnerNumberModel(Integer.valueOf(0), Integer.valueOf(0), null, Integer.valueOf(1)));
         lineSpaceSpinner.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
@@ -247,7 +283,7 @@ public class SettingsDialog extends EscapeDialog
         preferencesPanel.add(lineSpaceSpinner);
         lineSpaceSpinner.setBounds(480, 40, 40, 20);
 
-        lineWidthSpinner.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        lineWidthSpinner.setFont(new java.awt.Font("Verdana", 0, 12));
         lineWidthSpinner.setModel(new javax.swing.SpinnerNumberModel(Integer.valueOf(1), Integer.valueOf(1), null, Integer.valueOf(1)));
         lineWidthSpinner.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
@@ -680,6 +716,98 @@ public class SettingsDialog extends EscapeDialog
 		customOpsTextFieldActionPerformed (null);
 	}//GEN-LAST:event_customOpsTextFieldFocusLost
 
+	private void rPathTextFieldFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_rPathTextFieldFocusLost
+		rPathTextFieldActionPerformed(null);
+	}//GEN-LAST:event_rPathTextFieldFocusLost
+
+	private void rPathTextFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rPathTextFieldActionPerformed
+		if (!rPathTextField.getText().equals(Configuration.getInstance().get(Configuration.ConfigType.R)))
+		{
+			try
+			{
+				Configuration.getInstance().set(Configuration.ConfigType.R, rPathTextField.getText());
+			}
+			catch(MarlaException ex)
+			{
+				try
+				{
+					rPathTextField.setText((String) Configuration.getInstance().get(Configuration.ConfigType.R));
+				}
+				// Exception won't happen
+				catch(MarlaException innerEx) {}
+			}
+		}
+	}//GEN-LAST:event_rPathTextFieldActionPerformed
+
+	private void latexPathTextFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_latexPathTextFieldActionPerformed
+		if (!latexPathTextField.getText().equals(Configuration.getInstance().get(Configuration.ConfigType.PdfTex)))
+		{
+			try
+			{
+				Configuration.getInstance().set(Configuration.ConfigType.PdfTex, latexPathTextField.getText());
+			}
+			catch(MarlaException ex)
+			{
+				try
+				{
+					latexPathTextField.setText((String) Configuration.getInstance().get(Configuration.ConfigType.PdfTex));
+				}
+				// Exception won't happen
+				catch(MarlaException innerEx) {}
+			}
+		}
+	}//GEN-LAST:event_latexPathTextFieldActionPerformed
+
+	private void latexPathTextFieldFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_latexPathTextFieldFocusLost
+		latexPathTextFieldActionPerformed(null);
+	}//GEN-LAST:event_latexPathTextFieldFocusLost
+
+	private void latexTemplateTextFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_latexTemplateTextFieldActionPerformed
+		if (!latexTemplateTextField.getText().equals(Configuration.getInstance().get(Configuration.ConfigType.TexTemplate)))
+		{
+			try
+			{
+				Configuration.getInstance().set(Configuration.ConfigType.TexTemplate, latexTemplateTextField.getText());
+			}
+			catch(MarlaException ex)
+			{
+				try
+				{
+					latexTemplateTextField.setText((String) Configuration.getInstance().get(Configuration.ConfigType.TexTemplate));
+				}
+				// Exception won't happen
+				catch(MarlaException innerEx) {}
+			}
+		}
+	}//GEN-LAST:event_latexTemplateTextFieldActionPerformed
+
+	private void latexTemplateTextFieldFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_latexTemplateTextFieldFocusLost
+		latexTemplateTextFieldActionPerformed(null);
+	}//GEN-LAST:event_latexTemplateTextFieldFocusLost
+
+	private void operationsTextFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_operationsTextFieldActionPerformed
+		if (!operationsTextField.getText().equals(Configuration.getInstance().get(Configuration.ConfigType.PrimaryOpsXML)))
+		{
+			try
+			{
+				Configuration.getInstance().set(Configuration.ConfigType.PrimaryOpsXML, operationsTextField.getText());
+			}
+			catch(MarlaException ex)
+			{
+				try
+				{
+					operationsTextField.setText((String) Configuration.getInstance().get(Configuration.ConfigType.PrimaryOpsXML));
+				}
+				// Exception won't happen
+				catch(MarlaException innerEx) {}
+			}
+		}
+	}//GEN-LAST:event_operationsTextFieldActionPerformed
+
+	private void operationsTextFieldFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_operationsTextFieldFocusLost
+		operationsTextFieldActionPerformed(null);
+	}//GEN-LAST:event_operationsTextFieldFocusLost
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton closeButton;
     private javax.swing.JLabel courseLongNameLabel;
@@ -726,11 +854,10 @@ public class SettingsDialog extends EscapeDialog
     // End of variables declaration//GEN-END:variables
 
 	/**
-	 * Close the settings dialog.
+	 * Ensure settings text fields are up to date.
 	 */
-	protected void closeSettings()
+	private void validateSettingsTextFields()
 	{
-		// Ensure a valid custom operations list
 		if (customOpsTextField.getText().endsWith ("|"))
 		{
 			customOpsTextField.setText(customOpsTextField.getText().substring(0, customOpsTextField.getText().length() - 1));
@@ -748,6 +875,20 @@ public class SettingsDialog extends EscapeDialog
 			// Exception won't happen
 			catch(MarlaException innerEx) {}
 		}
+
+		rPathTextFieldActionPerformed(null);
+		latexPathTextFieldActionPerformed(null);
+		latexTemplateTextFieldActionPerformed(null);
+		operationsTextFieldActionPerformed(null);
+	}
+
+	/**
+	 * Close the settings dialog.
+	 */
+	protected void closeSettings()
+	{
+		// Ensure text fields are saved, if they have changed
+		validateSettingsTextFields();
 
 		try
 		{
