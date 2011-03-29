@@ -1635,11 +1635,6 @@ public class ViewPanel extends JPanel
 				widths[i] = rebuildOperationColumn(ds.getOperation(i), 0, true);
 			}
 
-			// Total width, including spacer between columns
-			int totalWidth = (widths.length - 1) * spaceWidth;
-			for(int i = 0; i < opCount; i++)
-				totalWidth += widths[i];
-
 			// Figure out where the columns should start based on our center
 			int dsWidth = ds.getWidth();
 			int dsCenterX = ds.getX() + dsWidth / 2;
