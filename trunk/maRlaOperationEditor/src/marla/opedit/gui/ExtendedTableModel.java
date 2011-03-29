@@ -32,14 +32,38 @@ import javax.swing.table.AbstractTableModel;
 public class ExtendedTableModel extends AbstractTableModel
 {
     /** The column names for this table.*/
-    private String[] columnNames =
-    {
-        "Operations"
-    };
+    private String[] columnNames = {};
     /** The data array keeps track of rows in this table.*/
     private Object[][] data =
     {
     };
+
+	/**
+	 * Add a new column to the end of the columns list with the given name.
+	 *
+	 * @param name The name for the new column.
+	 */
+	public void addColumn(String name)
+	{
+		String[] newColumns = new String[columnNames.length + 1];
+		for (int i = 0; i < columnNames.length; ++i)
+		{
+			newColumns[i] = columnNames[i];
+		}
+		
+		newColumns[newColumns.length - 1] = name;
+		columnNames = newColumns;
+
+		fireTableDataChanged ();
+	}
+
+	/**
+	 * Remove all columns from the model.
+	 */
+	public void removeAllColumns()
+	{
+		columnNames = new String[0];
+	}
 
     /**
      * Adds a row to the table filled with data from the passed in array.

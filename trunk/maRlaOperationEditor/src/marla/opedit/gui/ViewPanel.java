@@ -18,20 +18,23 @@
 
 package marla.opedit.gui;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Font;
+import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.SimpleDateFormat;
+import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumn;
 import marla.ide.problem.DataSet;
 import marla.ide.problem.DuplicateNameException;
 import marla.ide.problem.MarlaException;
@@ -58,13 +61,13 @@ public class ViewPanel extends JPanel
 	/** Default, bold, 12-point font.*/
 	public static final Font FONT_BOLD_12 = new Font("Verdana", Font.BOLD, 12);
 	/** The string shown when XML for an operation is valid.*/
-	public final String VALID_XML_STRING = "Operation XML is valid!";
+	public final String VALID_XML_STRING = "valid";
 	/** The main frame of a stand-alone application.*/
 	public MainFrame mainFrame;
 	/** The model for the operations list.*/
 	protected ExtendedTableModel operationsModel = new ExtendedTableModel();
 	/** The model for the output table.*/
-	protected DefaultTableModel outputModel = new DefaultTableModel();
+	protected ExtendedTableModel outputModel = new ExtendedTableModel();
 	/** The domain object reference performs generic actions specific to the GUI.*/
 	protected Domain domain = new Domain(this);
 	/** True while the interface is loading, false otherwise.*/
@@ -130,7 +133,11 @@ public class ViewPanel extends JPanel
 			}
 		});
 		operationsTable.getTableHeader ().setFont (FONT_PLAIN_12);
+		TableColumn column = new TableColumn();
+		column.setHeaderValue("Operations");
+		((ExtendedJTable) operationsTable).addColumn(column);
 		operationsTable.getTableHeader().getColumnModel().getColumn(0).setHeaderValue("Operations");
+		outputTable.getTableHeader ().setFont (FONT_PLAIN_12);
 
 		xmlStatusLabel.setText ("");
 	}
@@ -164,11 +171,12 @@ public class ViewPanel extends JPanel
         dataCsvLabel = new javax.swing.JLabel();
         browseDataTextField = new javax.swing.JTextField();
         browseDataButton = new javax.swing.JButton();
-        displayNameLabel = new javax.swing.JLabel();
-        displayNameTextField = new javax.swing.JTextField();
         questionPanel = new javax.swing.JPanel();
+        displayNameLabel = new javax.swing.JLabel();
         outputScrollPane = new javax.swing.JScrollPane();
-        outputTable = new javax.swing.JTable();
+        outputTable = new ExtendedJTable(outputModel);
+        displayNameScrollPane = new javax.swing.JScrollPane();
+        displayNameTextPane = new javax.swing.JTextPane();
         editingLabel = new javax.swing.JLabel();
         editingTextField = new javax.swing.JTextField();
         browseEditingButton = new javax.swing.JButton();
@@ -194,11 +202,11 @@ public class ViewPanel extends JPanel
 
         testingPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Testing", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Verdana", 0, 12))); // NOI18N
 
-        dataCsvLabel.setFont(new java.awt.Font("Verdana", 0, 12));
+        dataCsvLabel.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
         dataCsvLabel.setText("Data (CSV):");
 
         browseDataTextField.setEditable(false);
-        browseDataTextField.setFont(new java.awt.Font("Verdana", 0, 12));
+        browseDataTextField.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
 
         browseDataButton.setFont(new java.awt.Font("Verdana", 0, 12));
         browseDataButton.setText("Browse");
@@ -208,27 +216,23 @@ public class ViewPanel extends JPanel
             }
         });
 
-        displayNameLabel.setFont(new java.awt.Font("Verdana", 0, 12));
-        displayNameLabel.setText("Display Name:");
-
-        displayNameTextField.setEditable(false);
-        displayNameTextField.setFont(new java.awt.Font("Verdana", 0, 12));
-
         questionPanel.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+        questionPanel.setLayout(new java.awt.BorderLayout());
 
-        org.jdesktop.layout.GroupLayout questionPanelLayout = new org.jdesktop.layout.GroupLayout(questionPanel);
-        questionPanel.setLayout(questionPanelLayout);
-        questionPanelLayout.setHorizontalGroup(
-            questionPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(0, 317, Short.MAX_VALUE)
-        );
-        questionPanelLayout.setVerticalGroup(
-            questionPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(0, 100, Short.MAX_VALUE)
-        );
+        displayNameLabel.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        displayNameLabel.setText("Display name:");
 
-        outputTable.setModel(outputModel);
+        outputTable.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         outputScrollPane.setViewportView(outputTable);
+
+        displayNameScrollPane.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        displayNameScrollPane.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
+
+        displayNameTextPane.setContentType("text/html");
+        displayNameTextPane.setEditable(false);
+        displayNameTextPane.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        displayNameTextPane.setOpaque(false);
+        displayNameScrollPane.setViewportView(displayNameTextPane);
 
         org.jdesktop.layout.GroupLayout testingPanelLayout = new org.jdesktop.layout.GroupLayout(testingPanel);
         testingPanel.setLayout(testingPanelLayout);
@@ -237,18 +241,18 @@ public class ViewPanel extends JPanel
             .add(org.jdesktop.layout.GroupLayout.TRAILING, testingPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .add(testingPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
-                    .add(org.jdesktop.layout.GroupLayout.LEADING, outputScrollPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 321, Short.MAX_VALUE)
+                    .add(org.jdesktop.layout.GroupLayout.LEADING, outputScrollPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 307, Short.MAX_VALUE)
+                    .add(org.jdesktop.layout.GroupLayout.LEADING, questionPanel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 307, Short.MAX_VALUE)
                     .add(org.jdesktop.layout.GroupLayout.LEADING, testingPanelLayout.createSequentialGroup()
                         .add(dataCsvLabel)
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(browseDataTextField, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 170, Short.MAX_VALUE)
+                        .add(browseDataTextField, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 144, Short.MAX_VALUE)
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                         .add(browseDataButton))
                     .add(org.jdesktop.layout.GroupLayout.LEADING, testingPanelLayout.createSequentialGroup()
                         .add(displayNameLabel)
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(displayNameTextField, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 219, Short.MAX_VALUE))
-                    .add(org.jdesktop.layout.GroupLayout.LEADING, questionPanel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .add(displayNameScrollPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 214, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         testingPanelLayout.setVerticalGroup(
@@ -262,11 +266,11 @@ public class ViewPanel extends JPanel
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(questionPanel, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(testingPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                    .add(displayNameLabel)
-                    .add(displayNameTextField, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                .add(testingPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING, false)
+                    .add(displayNameLabel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .add(displayNameScrollPane, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 25, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(outputScrollPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 248, Short.MAX_VALUE)
+                .add(outputScrollPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 352, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -284,15 +288,16 @@ public class ViewPanel extends JPanel
             }
         });
 
-        opsNameLabel.setFont(new java.awt.Font("Verdana", 0, 12));
-        opsNameLabel.setText("Operation Name:");
+        opsNameLabel.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        opsNameLabel.setText("Operation name:");
 
         categoryLabel.setFont(new java.awt.Font("Verdana", 0, 12));
         categoryLabel.setText("Category:");
 
         operationTextArea.setColumns(20);
-        operationTextArea.setFont(new java.awt.Font("Verdana", 0, 12));
+        operationTextArea.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
         operationTextArea.setRows(5);
+        operationTextArea.setToolTipText("The XML for the selected operation");
         operationTextArea.setEnabled(false);
         operationTextArea.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusLost(java.awt.event.FocusEvent evt) {
@@ -371,11 +376,10 @@ public class ViewPanel extends JPanel
             }
         });
 
-        xmlStatusLabel.setFont(new java.awt.Font("Verdana", 1, 12));
-        xmlStatusLabel.setText("Operation XML valid!");
+        xmlStatusLabel.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        xmlStatusLabel.setText("<html><b>XML status:</b> valid</html>");
 
-        operationsTable.setFont(new java.awt.Font("Verdana", 0, 12));
-        operationsTable.setModel(operationsModel);
+        operationsTable.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
         operationsTable.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         operationsScrollPane.setViewportView(operationsTable);
 
@@ -406,7 +410,7 @@ public class ViewPanel extends JPanel
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                         .add(editingLabel)
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(editingTextField, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 387, Short.MAX_VALUE)
+                        .add(editingTextField, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 360, Short.MAX_VALUE)
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                         .add(browseEditingButton)
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
@@ -420,21 +424,21 @@ public class ViewPanel extends JPanel
                             .add(operationsScrollPane, 0, 0, Short.MAX_VALUE))
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                         .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                            .add(operationScrollPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 435, Short.MAX_VALUE)
                             .add(layout.createSequentialGroup()
                                 .add(categoryLabel)
                                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                                .add(categoryTextField, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 360, Short.MAX_VALUE))
+                                .add(categoryTextField, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 392, Short.MAX_VALUE))
                             .add(layout.createSequentialGroup()
                                 .add(opsNameLabel)
                                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                                .add(operationsNameTextField, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 315, Short.MAX_VALUE))
+                                .add(operationsNameTextField, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 348, Short.MAX_VALUE))
                             .add(org.jdesktop.layout.GroupLayout.TRAILING, layout.createSequentialGroup()
                                 .add(innerXmlLinkLabel, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                                 .add(updateTestButton))
-                            .add(xmlStatusLabel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 435, Short.MAX_VALUE))))
-                .add(6, 6, 6)
+                            .add(xmlStatusLabel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 459, Short.MAX_VALUE)
+                            .add(operationScrollPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 459, Short.MAX_VALUE))))
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(testingPanel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
         );
@@ -454,7 +458,7 @@ public class ViewPanel extends JPanel
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                         .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                             .add(layout.createSequentialGroup()
-                                .add(operationsScrollPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 408, Short.MAX_VALUE)
+                                .add(operationsScrollPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 416, Short.MAX_VALUE)
                                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                                     .add(addButton)
@@ -468,9 +472,9 @@ public class ViewPanel extends JPanel
                                     .add(categoryLabel)
                                     .add(categoryTextField, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
                                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                                .add(xmlStatusLabel)
+                                .add(xmlStatusLabel, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                                .add(operationScrollPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 322, Short.MAX_VALUE)
+                                .add(operationScrollPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 338, Short.MAX_VALUE)
                                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                                     .add(updateTestButton)
@@ -706,12 +710,12 @@ public class ViewPanel extends JPanel
 			{
 				setOperationInnerXml();
 				xmlStatusLabel.setForeground(Color.BLACK);
-				xmlStatusLabel.setText("<html>" + VALID_XML_STRING + "</html>");
+				xmlStatusLabel.setText("<html><b>XML status:</b> " + VALID_XML_STRING + "</html>");
 			}
 			catch (OperationEditorException ex)
 			{
 				xmlStatusLabel.setForeground(Color.RED);
-				xmlStatusLabel.setText("<html>" + ex.getMessage() + "</html>");
+				xmlStatusLabel.setText("<html><b>XML status:</b> " + ex.getMessage() + "</html>");
 			}
 		}
 	}//GEN-LAST:event_operationTextAreaFocusLost
@@ -845,6 +849,7 @@ public class ViewPanel extends JPanel
 	 */
 	private void updateTest()
 	{
+		boolean clearTest = false;
 		if (currentOperation != null)
 		{
 			if (currentDataSet != null)
@@ -854,14 +859,63 @@ public class ViewPanel extends JPanel
 					currentOperation.setParentData(currentDataSet);
 
 					questionPanel.removeAll();
-					questionPanel.add(marla.ide.gui.ViewPanel.getRequiredInfoDialog(currentOperation, false));
+					JPanel panel = marla.ide.gui.ViewPanel.getRequiredInfoDialog(currentOperation, false);
+					// Hunt down the button(s) in the panel and remove the action listener
+					for (int i = 0; i < panel.getComponentCount(); ++i)
+					{
+						if (panel.getComponent(i) instanceof JButton)
+						{
+							JButton button = (JButton) panel.getComponent(i);
+							for (ActionListener listener : button.getActionListeners())
+							{
+								button.removeActionListener(listener);
+							}
+						}
+					}
+					questionPanel.add(panel, BorderLayout.CENTER);
+					testingPanel.invalidate();
+					testingPanel.revalidate();
+					testingPanel.repaint();
+
+					displayNameTextPane.setText("<html><div style=\"font-family: Verdana, sans-serif;font-size: 10px;\">" + currentOperation.getDisplayString(false).trim() + "</div></html>");
+
+					((ExtendedTableModel) outputModel).removeAllRows();
+					((ExtendedTableModel) outputModel).removeAllColumns();
+
+					// TODO fill table with data
+					//System.out.println (currentOperation.toString());
+					
+					((ExtendedJTable) outputTable).refreshTableUI();
 				}
 				catch(MarlaException ex)
 				{
+					clearTest = true;
+
 					JOptionPane.showMessageDialog(this, "The test panel could not be refresh.\n" + ex.getMessage(), "Error Testing", JOptionPane.ERROR_MESSAGE);
 					Domain.logger.add(ex);
 				}
 			}
+			else
+			{
+				clearTest = true;
+				displayNameTextPane.setText("<html><div style=\"font-family: Verdana, sans-serif;font-size: 10px;\">" + currentOperation.getDisplayString(false).trim() + "</div></html>");
+			}
+		}
+		else
+		{
+			clearTest = true;
+			displayNameTextPane.setText("");
+		}
+		
+		if (clearTest)
+		{
+			testingPanel.invalidate();
+			testingPanel.revalidate();
+			testingPanel.repaint();
+
+			((ExtendedTableModel) outputModel).removeAllRows();
+			((ExtendedTableModel) outputModel).removeAllColumns();
+			((ExtendedJTable) outputTable).refreshTableUI();
 		}
 	}
 
@@ -889,12 +943,12 @@ public class ViewPanel extends JPanel
 				categoryTextField.setText(currentOperation.getCategory());
 				operationTextArea.setText(currentOperation.getInnerXML());
 				xmlStatusLabel.setForeground(Color.BLACK);
-				xmlStatusLabel.setText("<html>" + VALID_XML_STRING + "</html>");
+				xmlStatusLabel.setText("<html><b>XML status:</b> " + VALID_XML_STRING + "</html>");
 			}
 			catch (OperationEditorException ex)
 			{
 				xmlStatusLabel.setForeground(Color.RED);
-				xmlStatusLabel.setText("<html>" + ex.getMessage() + "</html>");
+				xmlStatusLabel.setText("<html><b>XML status:</b> " + ex.getMessage() + "</html>");
 			}
 		}
 		else
@@ -1088,7 +1142,8 @@ public class ViewPanel extends JPanel
     private javax.swing.JTextField categoryTextField;
     private javax.swing.JLabel dataCsvLabel;
     private javax.swing.JLabel displayNameLabel;
-    private javax.swing.JTextField displayNameTextField;
+    private javax.swing.JScrollPane displayNameScrollPane;
+    private javax.swing.JTextPane displayNameTextPane;
     private javax.swing.JLabel editingLabel;
     private javax.swing.JTextField editingTextField;
     protected javax.swing.JFileChooser fileChooser;
