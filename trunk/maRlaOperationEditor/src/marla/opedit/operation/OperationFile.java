@@ -17,18 +17,13 @@
  */
 package marla.opedit.operation;
 
-import java.io.BufferedOutputStream;
 import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import marla.opedit.gui.Domain;
 import org.jdom.Document;
 import org.jdom.Element;
@@ -71,7 +66,9 @@ public class OperationFile
 		}
 
 		// And return operation file pointed to new file
-		return new OperationFile(savePath);
+		OperationFile newFile = new OperationFile(savePath);
+		newFile.markChanged();
+		return newFile;
 	}
 
 	/**
@@ -119,6 +116,9 @@ public class OperationFile
 					// Ignore
 				}
 			}
+
+			// Ensure the domain know's we're saved
+			Domain.markSaved();
 		}
 		catch(JDOMException ex)
 		{
@@ -181,6 +181,7 @@ public class OperationFile
 			Domain.logger.add(ex);
 		}
 
+		markUnsaved();
 		return newOp;
 	}
 
@@ -202,6 +203,7 @@ public class OperationFile
 	public OperationXMLEditable removeOperation(OperationXMLEditable op)
 	{
 		ops.remove(op);
+		markUnsaved();
 		return op;
 	}
 
@@ -256,6 +258,9 @@ public class OperationFile
 			formatter.setEncoding(os.getEncoding());
 			XMLOutputter xml = new XMLOutputter(formatter);
 			xml.output(doc, outputStream);
+
+			// Tell domain we successfully saved
+			Domain.markSaved();
 		}
 		catch(IOException ex)
 		{
@@ -264,10 +269,19 @@ public class OperationFile
 	}
 
 	/**
+	 * Denotes that something within the operation file needs saving
+	 */
+	public void markChanged()
+	{
+		Domain.markUnsaved();
+	}
+
+	/**
 	 * Returns the path of the XML file.
 	 *
 	 * @return The path of the XML file.
 	 */
+	@Override
 	public String toString()
 	{
 		return xmlPath;
