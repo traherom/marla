@@ -108,7 +108,7 @@ public class OperationFile
 			{
 				Element opEl = (Element)opObj;
 
-				OperationXMLEditable op = new OperationXMLEditable();
+				OperationXMLEditable op = new OperationXMLEditable(this);
 				ops.add(op);
 
 				try
@@ -165,7 +165,7 @@ public class OperationFile
 		if(getOperationNames().contains(operationName))
 			throw new OperationEditorException("Duplicate operation name '" + operationName + "' not allowed");
 
-		OperationXMLEditable newOp = new OperationXMLEditable();
+		OperationXMLEditable newOp = new OperationXMLEditable(this);
 		ops.add(newOp);
 		
 		// Create XML for basic operation
