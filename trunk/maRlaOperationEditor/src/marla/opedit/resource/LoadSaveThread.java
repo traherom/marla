@@ -96,29 +96,4 @@ public class LoadSaveThread extends Thread
 			domain.writeLoggerFile();
 		}
 	}
-
-	/**
-	 * Calls the respective save methods if changes have been made.
-	 */
-	public synchronized void save()
-	{
-		if (domain.getOperationFile () != null)
-		{
-			
-		}
-	}
-
-	/**
-	 * Calls the overarching load method in the utility to load all GUI
-	 * elements.
-	 */
-	public synchronized void load()
-	{
-		if (!loading)
-		{
-			loading = true;
-			domain.load ();
-			loading = false;
-		}
-	}
 }

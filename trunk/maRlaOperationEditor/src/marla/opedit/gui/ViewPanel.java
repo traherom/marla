@@ -955,7 +955,6 @@ public class ViewPanel extends JPanel
 		if (closeFile ())
 		{
 			domain.loadSaveThread.stopRunning();
-			domain.loadSaveThread.save();
 
 			if(forceQuit)
 			{
