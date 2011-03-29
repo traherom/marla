@@ -35,8 +35,6 @@ import marla.ide.problem.MarlaException;
 import marla.ide.problem.Problem;
 import marla.ide.problem.SubProblem;
 import marla.ide.r.RProcessor;
-import marla.ide.r.RProcessorException;
-import marla.ide.resource.ConfigurationException;
 
 /**
  * Operation to perform on a parent object that implements

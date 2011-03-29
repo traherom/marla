@@ -71,7 +71,7 @@ public class OperationFile
 
 		// And return operation file pointed to new file
 		OperationFile newFile = new OperationFile(savePath);
-		newFile.markChanged();
+		newFile.markUnsaved();
 		return newFile;
 	}
 
@@ -184,7 +184,7 @@ public class OperationFile
 			Domain.logger.add(ex);
 		}
 
-		markChanged();
+		markUnsaved();
 		return newOp;
 	}
 
@@ -206,7 +206,7 @@ public class OperationFile
 	public OperationXMLEditable removeOperation(OperationXMLEditable op)
 	{
 		ops.remove(op);
-		markChanged();
+		markUnsaved();
 		return op;
 	}
 
@@ -273,7 +273,7 @@ public class OperationFile
 	/**
 	 * Denotes that something within the operation file needs saving
 	 */
-	public void markChanged()
+	public void markUnsaved()
 	{
 		isChanged = true;
 		Domain.markUnsaved();
