@@ -19,7 +19,6 @@ package marla.opedit.operation;
 
 import java.io.BufferedWriter;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
@@ -58,11 +57,15 @@ public class OperationFile
 	{
 		try
 		{
-			// Build new file
-			String newOpFileContents = "<?xml version='1.0' ?><operations></operations>";
-			BufferedWriter bw = new BufferedWriter(new FileWriter(savePath));
-			bw.write(newOpFileContents, 0, newOpFileContents.length());
-			bw.close();
+			// Output to file
+			OutputStreamWriter os = new OutputStreamWriter(new FileOutputStream(savePath));
+			BufferedWriter outputStream = new BufferedWriter(os);
+
+			Document doc = new Document(new Element("operations"));
+			Format formatter = Format.getPrettyFormat();
+			formatter.setEncoding(os.getEncoding());
+			XMLOutputter xml = new XMLOutputter(formatter);
+			xml.output(doc, outputStream);
 		}
 		catch(IOException ex)
 		{

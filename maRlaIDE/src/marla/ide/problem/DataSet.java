@@ -20,7 +20,6 @@ package marla.ide.problem;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -33,9 +32,7 @@ import org.jdom.Element;
 import marla.ide.problem.DataColumn.DataMode;
 import marla.ide.r.RProcessor;
 import marla.ide.r.RProcessor.RecordMode;
-import marla.ide.r.RProcessorException;
 import marla.ide.r.RProcessorParseException;
-import marla.ide.resource.ConfigurationException;
 
 /**
  * Contains a simple dataset that essentially amounts to a table
@@ -706,7 +703,11 @@ public final class DataSet extends DataSource implements Changeable
 		sb.append("</tr>\n");
 
 		// Data
-		for(int i = 0; i < ds.getColumnLength(); i++)
+		int len = ds.getColumnLength();
+		if(len > 50)
+			len = 50;
+		
+		for(int i = 0; i < len; i++)
 		{
 			sb.append("\t<tr><td>");
 			sb.append(i + 1);
@@ -727,6 +728,16 @@ public final class DataSet extends DataSource implements Changeable
 			}
 
 			sb.append("</tr>\n");
+		}
+
+		// If we truncated tell the user
+		if(len < ds.getColumnLength())
+		{
+			sb.append("<tr><td colspan='");
+			sb.append(ds.getColumnCount());
+			sb.append("' style='text-align: center'>-First ");
+			sb.append(len);
+			sb.append(" rows shown-</td></tr>");
 		}
 
 		sb.append("</table>");
