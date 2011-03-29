@@ -104,30 +104,6 @@ public class Domain
 		this.loadSaveThread = loadSaveThread;
     }
 
-    /**
-     * Load a given operation XML file to edit.
-     */
-    public void load()
-    {
-
-    }
-
-	/**
-	 * Save the currently open operation XML file.
-	 */
-	public void save()
-	{
-		
-	}
-
-	/**
-	 * Save the currently open operation XML file as a new file.
-	 */
-	public void saveAs()
-	{
-
-	}
-
 	/**
 	 * Mark the View as unsaved.
 	 */
