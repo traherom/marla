@@ -129,6 +129,25 @@ public class Domain
 	}
 
 	/**
+	 * Mark the View as unsaved.
+	 */
+	public static void markUnsaved()
+	{
+		if (ViewPanel.getInstance().currentFile != null)
+		{
+			ViewPanel.getInstance().saveButton.setEnabled (true);
+		}
+	}
+
+	/**
+	 * Mark the View as saved.
+	 */
+	public static void markSaved()
+	{
+		ViewPanel.getInstance().saveButton.setEnabled (false);
+	}
+
+	/**
 	 * Write the logger file, if it exists.
 	 */
 	public void writeLoggerFile()

@@ -181,7 +181,7 @@ public class OperationFile
 			Domain.logger.add(ex);
 		}
 
-		markUnsaved();
+		markChanged();
 		return newOp;
 	}
 
@@ -203,7 +203,7 @@ public class OperationFile
 	public OperationXMLEditable removeOperation(OperationXMLEditable op)
 	{
 		ops.remove(op);
-		markUnsaved();
+		markChanged();
 		return op;
 	}
 

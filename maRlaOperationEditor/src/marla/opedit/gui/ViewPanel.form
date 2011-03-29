@@ -36,7 +36,7 @@
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="editingLabel" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
-                      <Component id="editingTextField" pref="335" max="32767" attributes="0"/>
+                      <Component id="editingTextField" pref="339" max="32767" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="browseEditingButton" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
@@ -52,19 +52,20 @@
                           <Component id="operationsScrollPane" min="0" pref="0" max="32767" attributes="1"/>
                       </Group>
                       <EmptySpace min="-2" max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="1" attributes="0">
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Component id="jScrollPane2" pref="387" max="32767" attributes="0"/>
                           <Group type="102" alignment="0" attributes="0">
                               <Component id="categoryLabel" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
-                              <Component id="categoryTextField" pref="315" max="32767" attributes="0"/>
+                              <Component id="categoryTextField" pref="312" max="32767" attributes="0"/>
                           </Group>
                           <Group type="102" alignment="0" attributes="0">
                               <Component id="opsNameLabel" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
-                              <Component id="operationsNameTextField" pref="270" max="32767" attributes="0"/>
+                              <Component id="operationsNameTextField" pref="267" max="32767" attributes="0"/>
                           </Group>
-                          <Component id="updateTestButton" min="-2" max="-2" attributes="0"/>
-                          <Component id="jScrollPane2" alignment="0" pref="383" max="32767" attributes="0"/>
+                          <Component id="updateTestButton" alignment="1" min="-2" max="-2" attributes="0"/>
+                          <Component id="xmlStatusLabel" alignment="0" pref="387" max="32767" attributes="0"/>
                       </Group>
                   </Group>
               </Group>
@@ -91,7 +92,7 @@
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Group type="102" attributes="0">
-                              <Component id="operationsScrollPane" pref="423" max="32767" attributes="0"/>
+                              <Component id="operationsScrollPane" pref="427" max="32767" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="3" attributes="0">
                                   <Component id="addButton" alignment="3" min="-2" max="-2" attributes="0"/>
@@ -109,7 +110,9 @@
                                   <Component id="categoryTextField" alignment="3" min="-2" max="-2" attributes="0"/>
                               </Group>
                               <EmptySpace max="-2" attributes="0"/>
-                              <Component id="jScrollPane2" pref="363" max="32767" attributes="0"/>
+                              <Component id="xmlStatusLabel" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="jScrollPane2" pref="341" max="32767" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="updateTestButton" min="-2" max="-2" attributes="0"/>
                           </Group>
@@ -139,11 +142,11 @@
               <Group type="102" alignment="1" attributes="0">
                   <EmptySpace min="-2" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="1" attributes="0">
-                      <Component id="jScrollPane3" alignment="0" pref="385" max="32767" attributes="2"/>
+                      <Component id="jScrollPane3" alignment="0" pref="386" max="32767" attributes="2"/>
                       <Group type="102" alignment="0" attributes="0">
                           <Component id="dataCsvLabel" min="-2" max="-2" attributes="0"/>
                           <EmptySpace min="-2" max="-2" attributes="0"/>
-                          <Component id="browseDataTextField" pref="167" max="32767" attributes="0"/>
+                          <Component id="browseDataTextField" pref="168" max="32767" attributes="0"/>
                           <EmptySpace min="-2" max="-2" attributes="0"/>
                           <Component id="browseDataButton" min="-2" max="-2" attributes="0"/>
                           <EmptySpace min="-2" max="-2" attributes="0"/>
@@ -153,7 +156,7 @@
                       <Group type="102" alignment="0" attributes="1">
                           <Component id="displayNameLabel" min="-2" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
-                          <Component id="displayNameTextField" pref="287" max="32767" attributes="0"/>
+                          <Component id="displayNameTextField" pref="284" max="32767" attributes="0"/>
                       </Group>
                       <Component id="questionPanel" alignment="0" max="32767" attributes="2"/>
                   </Group>
@@ -179,7 +182,7 @@
                       <Component id="displayNameTextField" alignment="3" min="-2" max="-2" attributes="0"/>
                   </Group>
                   <EmptySpace max="-2" attributes="0"/>
-                  <Component id="jScrollPane3" pref="263" max="32767" attributes="0"/>
+                  <Component id="jScrollPane3" pref="267" max="32767" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
               </Group>
           </Group>
@@ -253,7 +256,7 @@
           <Layout>
             <DimensionLayout dim="0">
               <Group type="103" groupAlignment="0" attributes="0">
-                  <EmptySpace min="0" pref="381" max="32767" attributes="0"/>
+                  <EmptySpace min="0" pref="382" max="32767" attributes="0"/>
               </Group>
             </DimensionLayout>
             <DimensionLayout dim="1">
@@ -439,6 +442,9 @@
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="saveButtonActionPerformed"/>
       </Events>
+      <AuxValues>
+        <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="4"/>
+      </AuxValues>
     </Component>
     <Component class="javax.swing.JButton" name="newButton">
       <Properties>
@@ -450,6 +456,14 @@
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="newButtonActionPerformed"/>
       </Events>
+    </Component>
+    <Component class="javax.swing.JLabel" name="xmlStatusLabel">
+      <Properties>
+        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+          <Font name="Verdana" size="12" style="1"/>
+        </Property>
+        <Property name="text" type="java.lang.String" value="Operation XML valid!"/>
+      </Properties>
     </Component>
   </SubComponents>
 </Form>
