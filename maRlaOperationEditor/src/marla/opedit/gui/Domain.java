@@ -91,6 +91,7 @@ public class Domain
 		Configuration conf = Configuration.getInstance();
 		conf.configureFromSearch(Configuration.ConfigType.ErrorServer);
 		errorServerURL = (String)conf.get(Configuration.ConfigType.ErrorServer);
+		System.out.println("Error server found at " + errorServerURL);
     }
     
     /**

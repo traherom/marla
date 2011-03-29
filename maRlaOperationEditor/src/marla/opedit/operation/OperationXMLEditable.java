@@ -19,15 +19,11 @@ package marla.opedit.operation;
 
 import java.io.IOException;
 import java.io.StringReader;
-import java.io.StringWriter;
 import java.util.List;
 import java.util.Map;
 import marla.ide.operation.OperationXML;
-import marla.ide.operation.OperationXMLException;
 import marla.ide.problem.MarlaException;
-import marla.ide.resource.ConfigurationException;
 import marla.opedit.gui.Domain;
-import org.jdom.Content;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
@@ -159,21 +155,10 @@ public class OperationXMLEditable extends OperationXML
 	 */
 	public String getInnerXML() 
 	{
-		try
-		{
-			// Get previous XML
-			Document doc = new Document((Element)opEl.clone());
-			Format formatter = Format.getPrettyFormat();
-			XMLOutputter xml = new XMLOutputter(formatter);
-
-			StringWriter sw = new StringWriter();
-			xml.output(doc, sw);
-			return sw.toString();
-		}
-		catch(IOException ex)
-		{
-			return ex.getMessage();
-		}
+		// Get previous XML
+		Format formatter = Format.getPrettyFormat();
+		XMLOutputter xml = new XMLOutputter(formatter);
+		return xml.outputString(opEl.getContent());
 	}
 
 	/**
