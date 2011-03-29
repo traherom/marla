@@ -35,6 +35,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import marla.ide.resource.BuildInfo;
+import marla.ide.resource.Configuration;
 import marla.opedit.operation.OperationFile;
 import marla.opedit.resource.LoadSaveThread;
 
@@ -85,7 +86,11 @@ public class Domain
      */
     public Domain(ViewPanel viewPanel)
     {
-            this.viewPanel = viewPanel;
+		this.viewPanel = viewPanel;
+
+		Configuration conf = Configuration.getInstance();
+		conf.configureFromSearch(Configuration.ConfigType.ErrorServer);
+		errorServerURL = (String)conf.get(Configuration.ConfigType.ErrorServer);
     }
     
     /**
@@ -95,7 +100,7 @@ public class Domain
      */
     public void setLoadSaveThread(LoadSaveThread loadSaveThread)
     {
-            this.loadSaveThread = loadSaveThread;
+		this.loadSaveThread = loadSaveThread;
     }
 
     /**
