@@ -454,7 +454,8 @@ public class ViewPanel extends JPanel
 	{//GEN-HEADEREND:event_addButtonActionPerformed
 		try
 		{
-			OperationXMLEditable newOp = currentFile.addOperation();
+			throw new MarlaException("argh");
+			//OperationXMLEditable newOp = currentFile.addOperation();
 		}
 		catch(OperationEditorException ex)
 		{
