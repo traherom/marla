@@ -399,7 +399,7 @@
                   <Color blue="66" green="66" red="66" type="rgb"/>
                 </Property>
                 <Property name="horizontalAlignment" type="int" value="0"/>
-                <Property name="text" type="java.lang.String" value="&lt;html&gt;&lt;div align=&quot;center&quot;&gt;To get started, load a previous problem or use the&lt;br /&gt;&lt;em&gt;New Problem Wizard&lt;/em&gt; to create a new problem&lt;/div&gt;&lt;/html&gt;"/>
+                <Property name="text" type="java.lang.String" value="&lt;html&gt;&lt;div align=&quot;center&quot;&gt;To get started, load a previous problem or use the&lt;br /&gt;&lt;em&gt;New Problem Wizard&lt;/em&gt; (File-&gt;New Problem...) to&lt;br /&gt;create a new problem&lt;/div&gt;&lt;/html&gt;"/>
               </Properties>
             </Component>
           </SubComponents>
