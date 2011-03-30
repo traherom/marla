@@ -964,13 +964,31 @@ public class NewProblemWizardDialog extends EscapeDialog
 		}
 		else
 		{
+			// Set the label
+			dataSet.setFont(ViewPanel.workspaceFontBold);
+			dataSet.setText("<html>" + dataSet.getDisplayString(false) + "</html>");
+			dataSet.setSize(dataSet.getPreferredSize());
+
 			// Find somewhere it doesn't intersect with any other DataSource
-			int x = 200;
-			int y = 20;
-			dataSet.setBounds(x, y, dataSet.getPreferredSize().width, dataSet.getPreferredSize().height);
-			while(true)
+			int x = VIEW_PANEL.workspacePanel.getWidth() / 2 - dataSet.getWidth() / 2;
+			int y = VIEW_PANEL.workspacePanel.getHeight() / 3;
+
+			Component compL = VIEW_PANEL.workspacePanel.getComponentAt(x, y);
+			Component compR = VIEW_PANEL.workspacePanel.getComponentAt(x + dataSet.getWidth(), y);
+			while(compL != VIEW_PANEL.workspacePanel || compR != VIEW_PANEL.workspacePanel)
 			{
+				y += dataSet.getHeight() + 20;
+
+				compL = VIEW_PANEL.workspacePanel.getComponentAt(x, y);
+				compR = VIEW_PANEL.workspacePanel.getComponentAt(x + dataSet.getWidth(), y);
+	
+				// catch if we went all the way off the panel
+				if(compL == null || compR == null)
+					x += 30;
 			}
+
+			// Move it
+			dataSet.setLocation(x, y);
 		}
 
 		JPanel panel = createValuesTabbedPanel(dataSet);
@@ -2315,7 +2333,6 @@ public class NewProblemWizardDialog extends EscapeDialog
 			ds.setFont(ViewPanel.workspaceFontBold);
 			ds.setText("<html>" + ds.getDisplayString(false) + "</html>");
 			ds.setSize(ds.getPreferredSize());
-			VIEW_PANEL.workspacePanel.add(ds); // TODO remove after testing
 
 			widths[i] = ds.getWidth();
 		}
