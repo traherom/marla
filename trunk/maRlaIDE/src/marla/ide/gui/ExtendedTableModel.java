@@ -227,7 +227,7 @@ public class ExtendedTableModel extends AbstractTableModel
 		{
 			return data.getColumn(col).get(row);
 		}
-		catch(ArrayIndexOutOfBoundsException ex)
+		catch(IndexOutOfBoundsException ex)
 		{
 			return null;
 		}

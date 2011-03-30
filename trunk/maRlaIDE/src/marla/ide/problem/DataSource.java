@@ -48,26 +48,6 @@ public abstract class DataSource extends JLabel implements Loadable
 	 * SubProblems this DataSet is a part of
 	 */
 	private final List<SubProblem> subProblems = new ArrayList<SubProblem>();
-	
-	/**
-	 * Empty constructor for normal initialization
-	 */
-	public DataSource()
-	{
-		// Blank
-	}
-
-	/**
-	 * Helper for copy constructors in children
-	 * @param copy DataSource to copy information from
-	 */
-	protected DataSource(DataSource copy)
-	{
-		name = copy.name;
-
-		for(Operation op : copy.solutionOps)
-			solutionOps.add(op.clone());
-	}
 
 	/**
 	 * Creates an ID for this DataSource and saves it. If the DataSource
@@ -93,6 +73,12 @@ public abstract class DataSource extends JLabel implements Loadable
 	{
 		internalID = newID;
 	}
+
+	/**
+	 * Sets the DataSource to it-s normal color. Convenience item for resetting
+	 * after drags, hovers, etc
+	 */
+	public abstract void setDefaultColor();
 
 	/**
 	 * Gets the current DataSource name
