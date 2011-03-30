@@ -939,7 +939,7 @@ public class ViewPanel extends JPanel
 								if(parent != null)
 								{
 									int oldIndex = parent.getOperationIndex((Operation) draggingComponent);
-									parent.removeOperation((Operation) draggingComponent);
+									parent.getParentProblem().addUnusedOperation(parent.removeOperation((Operation) draggingComponent));
 									if(childOperation != null)
 									{
 										parent.addOperation(oldIndex, childOperation);
@@ -1002,6 +1002,7 @@ public class ViewPanel extends JPanel
 					}
 					else
 					{
+						domain.problem.removeUnusedOperation((Operation)draggingComponent);
 						rebuildWorkspace();
 					}
 
@@ -1033,9 +1034,10 @@ public class ViewPanel extends JPanel
 						draggingComponent.setBorder(NO_BORDER);
 						draggingComponent.setSize(draggingComponent.getPreferredSize());
 					}
+
+					rebuildTree((DataSource) draggingComponent);
 				}
 
-				rebuildTree((DataSource) draggingComponent);
 				draggingComponent = null;
 			}
 		}
@@ -1598,58 +1600,25 @@ public class ViewPanel extends JPanel
 		// Ensure all datasets are within our new bounds
 		if(domain.problem != null)
 		{
-			for(int i = 0; i < domain.problem.getDataCount(); i++)
+			for(DataSource ds : domain.problem.getAllData())
 			{
-				DataSet ds = domain.problem.getData(i);
-
 				int x = ds.getX();
 				int y = ds.getY();
 
-				// Only do the move if we're within the workspace still
+				// Move if we're not within the workspace
 				if(x < 0)
-				{
 					x = 0;
-				}
 				if(x > workspacePanel.getWidth() - ds.getWidth())
-				{
 					x = workspacePanel.getWidth() - ds.getWidth();
-				}
+
 				if(y < 0)
-				{
 					y = 0;
-				}
 				if(y > workspacePanel.getHeight() - ds.getHeight())
-				{
 					y = workspacePanel.getHeight() - ds.getHeight();
-				}
 
+				// Add to workspace and move
 				ds.setLocation (x, y);
-			}
-
-			for(Operation op : domain.getUnattachedOperations())
-			{
-				int x = op.getX();
-				int y = op.getY();
-
-				// Only do the move if we're within the workspace still
-				if(x < 0)
-				{
-					x = 0;
-				}
-				if(x > workspacePanel.getWidth() - op.getWidth())
-				{
-					x = workspacePanel.getWidth() - op.getWidth();
-				}
-				if(y < 0)
-				{
-					y = 0;
-				}
-				if(y > workspacePanel.getHeight() - op.getHeight())
-				{
-					y = workspacePanel.getHeight() - op.getHeight();
-				}
-
-				op.setLocation(x, y);
+				workspacePanel.add(ds);
 			}
 
 			rebuildWorkspace();
@@ -1733,13 +1702,9 @@ public class ViewPanel extends JPanel
 		}
 		if (problem != null)
 		{
-			for(int i = 0; i < problem.getDataCount(); ++i)
+			for(DataSource ds : problem.getAllData())
 			{
-				rebuildTree(problem.getData(i));
-			}
-			for(Operation op : domain.getUnattachedOperations())
-			{
-				rebuildTree(op);
+				rebuildTree(ds);
 			}
 			workspacePanel.repaint();
 		}
@@ -1755,11 +1720,10 @@ public class ViewPanel extends JPanel
 		// Don't bother listening yet if the problem is still loading
 		Problem prob = ds.getParentProblem();
 		if(prob != null && prob.isLoading())
-		{
 			return;
-		}
 
 		// Set the label for the data source itself
+		workspacePanel.add(ds);
 		ds.setFont(workspaceFontBold);
 		ds.setText("<html>" + ds.getDisplayString(abbreviated) + "</html>");
 		ds.setSize(ds.getPreferredSize());
@@ -1979,6 +1943,8 @@ public class ViewPanel extends JPanel
 				newOperation = Operation.createOperation(operation.getName());
 				newOperation.setText("<html>" + operation.getDisplayString(abbreviated) + "</html>");
 				newOperation.setFont(ViewPanel.workspaceFontBold);
+
+				domain.problem.addUnusedOperation(newOperation);
 
 				if (showSecond)
 				{

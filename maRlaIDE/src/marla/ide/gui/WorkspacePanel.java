@@ -135,14 +135,10 @@ public class WorkspacePanel extends JPanel
 
 			// Work across each DataSource that we know about
 			List<DataSource> data = viewPanel.domain.problem.getAllData();
-			//viewPanel.domain.getAllDataOnWorkspace();
-			data.addAll(viewPanel.domain.getAllRootlessOperationsOnWorkspace());
 			for(DataSource ds : data)
 			{
 				// Ensure we're part of the workspace
-				if(ds.getParent() != this)
-					add(ds);
-
+				add(ds);
 				drawConnection(g2, ds);
 			}
 
