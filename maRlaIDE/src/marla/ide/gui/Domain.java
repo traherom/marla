@@ -607,6 +607,25 @@ public class Domain
 	}
 
 	/**
+	 * Retrieves a list of DataSource
+	 *
+	 * @return The list of DataSources on the workspace
+	 */
+	public ArrayList<Operation> getAllRootlessOperationsOnWorkspace()
+	{
+		ArrayList<Operation> ops = new ArrayList<Operation> ();
+
+		for (int i = 0; i < viewPanel.workspacePanel.getComponentCount(); ++i)
+		{
+			Component comp = viewPanel.workspacePanel.getComponent(i);
+			if(comp instanceof Operation && ((Operation)comp).getRootDataSource() instanceof Operation)
+				ops.add((Operation)comp);
+		}
+
+		return ops;
+	}
+
+	/**
 	 * Adds the given operation to the workspace
 	 * @param op Operation to add to workspace
 	 */

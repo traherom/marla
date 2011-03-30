@@ -399,8 +399,8 @@ public abstract class Operation extends DataSource implements Changeable
 	 */
 	public final void setParentData(int index, DataSource newParent)
 	{
-		// If we're already a part of this parent, ignore request
-		if(parent == newParent)
+		// If we're already a part of this parent or its ourselves, ignore request
+		if(parent == newParent || newParent == this)
 			return;
 
 		// Tell our old parent we're removing ourselves
