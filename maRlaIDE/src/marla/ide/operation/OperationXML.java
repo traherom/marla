@@ -470,6 +470,7 @@ public class OperationXML extends Operation
 		setOperationName(opConfig.getAttributeValue("name"));
 
 		// Parse all the questions
+		clearQuestions();
 		@SuppressWarnings("unchecked")
 		List<Element> queries = opConfig.getChildren("query");
 

@@ -784,6 +784,14 @@ public abstract class Operation extends DataSource implements Changeable
 	 */
 	protected abstract void computeColumns(RProcessor proc);
 
+	/**
+	 * Removes all questions currently attached to this operation
+	 */
+	protected final void clearQuestions()
+	{
+		questions.clear();
+		markUnsaved();
+	}
 
 	/**
 	 * Adds the given information to the information this operation
@@ -797,6 +805,7 @@ public abstract class Operation extends DataSource implements Changeable
 			throw new InternalMarlaException("Attempt to add information that did not point to same operation");
 
 		questions.put(info.getName(), info);
+		markUnsaved();
 	}
 
 	/**
