@@ -191,6 +191,10 @@ public abstract class DataSource extends JLabel implements Loadable
 	 */
 	public final Operation addOperation(int index, Operation op)
 	{
+		// No adding ourselves
+		if(op == this)
+			return op;
+
 		// Tell the operation to set us as the parent
 		op.setParentData(index, this);
 

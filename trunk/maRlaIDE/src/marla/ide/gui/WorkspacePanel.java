@@ -135,8 +135,9 @@ public class WorkspacePanel extends JPanel
 			g2.setStroke(new BasicStroke(lineWidth, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
 
 			// Work across each DataSource that we know about
-			Problem prob = viewPanel.domain.problem;
-			List<DataSource> data = prob.getAllData();
+			List<DataSource> data = viewPanel.domain.problem.getAllData();
+			//viewPanel.domain.getAllDataOnWorkspace();
+			data.addAll(viewPanel.domain.getAllRootlessOperationsOnWorkspace());
 			for(DataSource ds : data)
 			{
 				// Ensure we're part of the workspace
