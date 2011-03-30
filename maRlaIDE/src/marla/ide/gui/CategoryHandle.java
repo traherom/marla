@@ -34,23 +34,30 @@ import javax.swing.JPanel;
  */
 public class CategoryHandle extends JPanel
 {
+	/** A reference to the view panel.*/
+	private ViewPanel viewPanel;
+	/** True if the category is selected, false otherwise.*/
 	private boolean selected;
+	/** The open icon for the category.*/
 	ImageIcon open;
+	/** The close icon for the category.*/
 	ImageIcon close;
+	/** The label for the category.*/
 	JLabel label;
+	/** The clickable target to open or close the category.*/
 	Rectangle target;
-	final int OFFSET = 30;
-	final int PAD = 5;
 
 	/**
 	 * Create the category handle header, which contains the name of the category
 	 * and the plus/minus button to collapse/uncollapse each category.
 	 *
+	 * @param viewPanel A reference to the view panel.
 	 * @param text The name of the category.
 	 * @param listener The listener for the mouse click.
 	 */
-	public CategoryHandle(String text, MouseListener listener) throws IOException
+	public CategoryHandle(ViewPanel viewPanel, String text, MouseListener listener) throws IOException
 	{
+		this.viewPanel = viewPanel;
 		addMouseListener(listener);
 		selected = false;
 		setOpaque(false);
@@ -76,6 +83,11 @@ public class CategoryHandle extends JPanel
 		if (selected)
 		{
 			label.setIcon(close);
+			if (viewPanel.showFirst)
+			{
+				viewPanel.showFirst = false;
+				viewPanel.refreshTip();
+			}
 		}
 		else
 		{

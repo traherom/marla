@@ -399,7 +399,7 @@
                   <Color blue="66" green="66" red="66" type="rgb"/>
                 </Property>
                 <Property name="horizontalAlignment" type="int" value="0"/>
-                <Property name="text" type="java.lang.String" value="&lt;html&gt;&lt;div align=&quot;center&quot;&gt;To get started, load a previous problem or use the&lt;br /&gt;&lt;em&gt;New Problem Wizard&lt;/em&gt; (File-&gt;New Problem...) to&lt;br /&gt;create a new problem&lt;/div&gt;&lt;/html&gt;"/>
+                <Property name="text" type="java.lang.String" value="&lt;html&gt;&lt;div align=&quot;center&quot;&gt;To get started, load a previous problem or use the&lt;br /&gt;&lt;em&gt;New Problem Wizard&lt;/em&gt; (File --&gt; New Problem...) to&lt;br /&gt;create a new problem&lt;/div&gt;&lt;/html&gt;"/>
               </Properties>
             </Component>
           </SubComponents>
@@ -415,6 +415,7 @@
             <EventHandler event="mouseReleased" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="workspacePanelMouseReleased"/>
             <EventHandler event="componentResized" listener="java.awt.event.ComponentListener" parameters="java.awt.event.ComponentEvent" handler="workspacePanelComponentResized"/>
             <EventHandler event="mouseDragged" listener="java.awt.event.MouseMotionListener" parameters="java.awt.event.MouseEvent" handler="workspacePanelMouseDragged"/>
+            <EventHandler event="mouseMoved" listener="java.awt.event.MouseMotionListener" parameters="java.awt.event.MouseEvent" handler="workspacePanelMouseMoved"/>
             <EventHandler event="componentAdded" listener="java.awt.event.ContainerListener" parameters="java.awt.event.ContainerEvent" handler="workspacePanelComponentAdded"/>
           </Events>
           <AuxValues>
@@ -443,7 +444,7 @@
               </Events>
               <Constraints>
                 <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout" value="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout$AbsoluteConstraintsDescription">
-                  <AbsoluteConstraints x="730" y="420" width="-1" height="40"/>
+                  <AbsoluteConstraints x="730" y="610" width="-1" height="40"/>
                 </Constraint>
               </Constraints>
             </Component>
