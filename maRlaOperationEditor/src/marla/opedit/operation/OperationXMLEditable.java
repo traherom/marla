@@ -173,6 +173,24 @@ public class OperationXMLEditable extends OperationXML
 		return old;
 	}
 
+	/**
+	 * Changes whether this operation produces a plot or not
+	 * @param newVal true if it should produce a plot, false otherwise
+	 * @return previously set value for plot producing
+	 */
+	public boolean setHasPlot(boolean newVal)
+	{
+		boolean old = hasPlot();
+
+		if(newVal)
+			opEl.setAttribute("plot", "true");
+		else
+			opEl.removeAttribute("plot");
+
+		setConfiguration(opEl);
+
+		return old;
+	}
 
 	/**
 	 * String version of the inner XML powering this operation
