@@ -50,7 +50,7 @@ public final class DataSet extends DataSource implements Changeable
 	 * Actual values in dataset. All values are assumed to be doubles as
 	 * a majority of statistics problems go at least somewhat into decimals.
 	 */
-	private final ArrayList<DataColumn> columns = new ArrayList<DataColumn>();
+	private final List<DataColumn> columns = new ArrayList<DataColumn>();
 	/**
 	 * Problem this dataset belongs to. Lets us tell the parent when
 	 * we've been updated in some way.
@@ -627,7 +627,7 @@ public final class DataSet extends DataSource implements Changeable
 		RProcessor proc = RProcessor.getInstance();
 
 		// Save all of the columns to variables
-		ArrayList<String> colVars = new ArrayList<String>();
+		List<String> colVars = new ArrayList<String>();
 		for(int i = 0; i < ds.getColumnCount(); i++)
 		{
 			DataColumn dc = ds.getColumn(i);
