@@ -66,7 +66,17 @@ if(isset($_REQUEST['resolve_all']))
 	</table>
 </form>
 
-<p><a href="error_list.php?resolve_all">Resolve All</a></p>
+<p>
+<?php
+	echo('<a href="error_list.php?resolve_all');
+	
+	$search = implode('&amp;', $_REQUEST);
+	if(!empty($search))
+		echo("&amp;$search");
+	
+	echo('">Resolve All</a>');
+?>
+</p>
 
 <table style="width=100%; height: 100%;">
 	<tr>
