@@ -35,11 +35,28 @@ import marla.ide.problem.MarlaException;
 public class ExtendedTableModel extends AbstractTableModel
 {
 	/** The column names for this table.*/
-	private final DataSet data;
+	private DataSet data = null;
 
+	/**
+	 * Construct a table model with the given data set.
+	 *
+	 * @param data The data set to construct with.
+	 */
 	public ExtendedTableModel(DataSet data)
 	{
 		this.data = data;
+	}
+
+	/**
+	 * Set the data set for this table.
+	 *
+	 * @param data
+	 */
+	public void setData(DataSet data)
+	{
+		this.data = data;
+
+		fireTableDataChanged();
 	}
 
 	/**
@@ -64,6 +81,8 @@ public class ExtendedTableModel extends AbstractTableModel
 		int len = data.getColumnLength();
 		for(int i = 0; i < len; i++)
 			newCol.add(0);
+
+		fireTableDataChanged();
 	}
 
 	/**
@@ -112,6 +131,8 @@ public class ExtendedTableModel extends AbstractTableModel
 	{
 		for(int i = 0; i < data.getColumnCount(); i++)
 			data.getColumn(i).clear();
+
+		fireTableDataChanged();
 	}
 
 	/**
@@ -232,6 +253,8 @@ public class ExtendedTableModel extends AbstractTableModel
 		{
 			throw new InternalMarlaException("Should never occur", ex);
 		}
+
+		fireTableDataChanged();
 	}
 
 	/**
@@ -244,5 +267,7 @@ public class ExtendedTableModel extends AbstractTableModel
 	{
 		for(int i = 0; i < rowObject.length; i++)
 			data.getColumn(i).set(row, rowObject[i]);
+		
+		fireTableRowsUpdated(row, row);
 	}
 }

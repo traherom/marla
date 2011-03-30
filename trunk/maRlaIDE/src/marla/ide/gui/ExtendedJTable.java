@@ -59,6 +59,16 @@ public class ExtendedJTable extends JTable
 	}
 
 	/**
+	 * Invalidate, repaint, and resize the table after model changes have been made.
+	 */
+	public void refreshTableUI()
+	{
+		invalidate();
+		repaint();
+		getTableHeader().resizeAndRepaint();
+	}
+
+	/**
 	 * Sets the selected row in the table based on an index.
 	 *
 	 * @param index The index of the row to be set.
