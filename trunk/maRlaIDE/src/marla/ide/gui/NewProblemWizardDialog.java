@@ -955,16 +955,23 @@ public class NewProblemWizardDialog extends EscapeDialog
 		// This check has already occured, so this exception will never be thrown
 		catch(DuplicateNameException ex)
 		{
+			Domain.logger.add(ex);
 		}
 
-		int x = 200;
-		int y = 20;
-		int count = problem.getDataCount() - 1;
-		if(count > 0)
+		if(newProblem != null)
 		{
-			x = problem.getData(count - 1).getX() + 150;
+			repositionDataSets(problem);
 		}
-		dataSet.setBounds(x, y, dataSet.getPreferredSize().width, dataSet.getPreferredSize().height);
+		else
+		{
+			// Find somewhere it doesn't intersect with any other DataSource
+			int x = 200;
+			int y = 20;
+			dataSet.setBounds(x, y, dataSet.getPreferredSize().width, dataSet.getPreferredSize().height);
+			while(true)
+			{
+			}
+		}
 
 		JPanel panel = createValuesTabbedPanel(dataSet);
 		dataSetTabbedPane.add(dataSet.getName(), panel);
@@ -1014,6 +1021,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 		if(newProblem != null)
 		{
 			removedData = newProblem.removeData(newProblem.getData(dataSetTabbedPane.getSelectedIndex()));
+			repositionDataSets(newProblem);
 		}
 		else
 		{
@@ -2287,5 +2295,73 @@ public class NewProblemWizardDialog extends EscapeDialog
 		// Transition to the values card panel
 		nextWizardButtonActionPerformed(null);
 		nextWizardButtonActionPerformed(null);
+	}
+
+	/**
+	 * Repositions all datasets in a problem. Only recommended for new problems
+	 * @param problem Problem to move datasets around in
+	 */
+	protected void repositionDataSets(Problem problem)
+	{
+		// Position all datasets relative to each other
+		// Get the total width we're going to need to cover
+		int dsCount = problem.getDataCount();
+		int[] widths = new int[dsCount];
+		for(int i = 0; i < dsCount; i++)
+		{
+			DataSet ds = problem.getData(i);
+
+			// Set the label for the data source and get its width
+			ds.setFont(ViewPanel.workspaceFontBold);
+			ds.setText("<html>" + ds.getDisplayString(false) + "</html>");
+			ds.setSize(ds.getPreferredSize());
+			VIEW_PANEL.workspacePanel.add(ds); // TODO remove after testing
+
+			widths[i] = ds.getWidth();
+		}
+
+		// Figure out where the columns should start based on our center
+		int wsWidth = VIEW_PANEL.workspacePanel.getWidth();
+		int wsCenterX = wsWidth / 2;
+
+		// Find the median value
+		int spaceWidth = 20;
+		int halfWidth = 0;
+		if(dsCount == 1)
+		{
+			halfWidth = widths[0] / 2;
+		}
+		else if(dsCount % 2 == 0)
+		{
+			// Even number of datasets, balance them aronud center
+			for(int i = 0; i < dsCount / 2; i++)
+				halfWidth += widths[i] + spaceWidth;
+
+			// Eliminate half of the middle spacing
+			halfWidth -= spaceWidth / 2;
+		}
+		else
+		{
+			// Odd number of datasets, center the middle one
+			for(int i = 0; i < dsCount / 2; i++)
+				halfWidth += widths[i] + spaceWidth;
+
+			// And add enough to move through half the middle column
+			halfWidth += widths[dsCount / 2] / 2;
+		}
+
+		// Put datasets a third of the way down the workspace
+		int y = VIEW_PANEL.workspacePanel.getHeight() / 3;
+
+		int previousLeftX = wsCenterX - halfWidth;
+		for(int i = 0; i < dsCount; i++)
+		{
+			DataSet ds = problem.getData(i);
+
+			ds.setLocation(previousLeftX, y);
+			previousLeftX += widths[i] + spaceWidth;
+
+			VIEW_PANEL.rebuildTree(ds);
+		}
 	}
 }
