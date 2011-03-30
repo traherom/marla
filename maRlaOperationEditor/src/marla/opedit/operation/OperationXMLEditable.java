@@ -64,9 +64,8 @@ public class OperationXMLEditable extends OperationXML
 	@Override
 	public void markUnsaved()
 	{
-		super.markUnsaved();
-		if(parent != null)
-			parent.markUnsaved();
+		//super.markUnsaved();
+		// WE DON'T CARE!
 	}
 
 	@Override
@@ -75,8 +74,12 @@ public class OperationXMLEditable extends OperationXML
 		try
 		{
 			opEl = newConfig;
-			markUnsaved();
+
+			if(parent != null)
+				parent.markUnsaved();
+
 			super.setConfiguration((Element)newConfig.clone());
+
 			lastError = null;
 		}
 		catch(MarlaException ex)
