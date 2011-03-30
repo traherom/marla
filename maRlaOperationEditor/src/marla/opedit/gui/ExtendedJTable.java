@@ -75,18 +75,6 @@ public class ExtendedJTable extends JTable
 	}
 
 	/**
-	 * Remove all columns from the table and the model.
-	 */
-	public void removeAllColumns()
-	{
-		for (int i = 0; i < getModel().getColumnCount(); ++i)
-		{
-			getColumnModel().removeColumn(getColumnModel().getColumn(i));
-		}
-		((ExtendedTableModel) getModel()).removeAllColumns();
-	}
-
-	/**
 	 * Sets the selected row in the table based on an index.
 	 *
 	 * @param index The index of the row to be set.
