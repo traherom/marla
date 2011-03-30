@@ -19,8 +19,10 @@
 package marla.ide.gui;
 
 import javax.swing.table.AbstractTableModel;
+import marla.ide.operation.Operation;
 import marla.ide.problem.DataColumn;
 import marla.ide.problem.DataSet;
+import marla.ide.problem.DataSource;
 import marla.ide.problem.DuplicateNameException;
 import marla.ide.problem.InternalMarlaException;
 import marla.ide.problem.MarlaException;
@@ -35,7 +37,17 @@ import marla.ide.problem.MarlaException;
 public class ExtendedTableModel extends AbstractTableModel
 {
 	/** The column names for this table.*/
-	private DataSet data = null;
+	private DataSource data = null;
+
+	/**
+	 * Construct a table model with the given operation.
+	 *
+	 * @param data The data set to construct with.
+	 */
+	public ExtendedTableModel(Operation data)
+	{
+		this.data = (DataSource) data;
+	}
 
 	/**
 	 * Construct a table model with the given data set.
@@ -44,17 +56,29 @@ public class ExtendedTableModel extends AbstractTableModel
 	 */
 	public ExtendedTableModel(DataSet data)
 	{
-		this.data = data;
+		this.data = (DataSource) data;
+	}
+	
+	/**
+	 * Set the operation for this table.
+	 *
+	 * @param data The operation to set as the data source.
+	 */
+	public void setData(Operation data)
+	{
+		this.data = (DataSource) data;
+
+		fireTableDataChanged();
 	}
 
 	/**
 	 * Set the data set for this table.
 	 *
-	 * @param data
+	 * @param data The data set to set as the data source.
 	 */
 	public void setData(DataSet data)
 	{
-		this.data = data;
+		this.data = (DataSource) data;
 
 		fireTableDataChanged();
 	}
@@ -66,23 +90,33 @@ public class ExtendedTableModel extends AbstractTableModel
 	 */
 	public void addColumn(String name)
 	{
-		// Create a new column including the new column name
-		DataColumn newCol;
-		try
+		// Only a data set will recognize columns
+		if(data instanceof DataSet)
 		{
-			newCol = data.addColumn(name);
+			// Create a new column including the new column name
+			DataColumn newCol;
+			try
+			{
+				newCol = ((DataSet) data).addColumn(name);
+			}
+			catch(DuplicateNameException ex)
+			{
+				throw new InternalMarlaException("Duplicate name for column", ex);
+			}
+
+			// Make the length the same as all the others
+			int len = data.getColumnLength();
+			for(int i = 0; i < len; i++)
+			{
+				newCol.add(0);
+			}
+
+			fireTableDataChanged();
 		}
-		catch(DuplicateNameException ex)
+		else
 		{
-			throw new InternalMarlaException("Duplicate name for column", ex);
+
 		}
-
-		// Make the length the same as all the others
-		int len = data.getColumnLength();
-		for(int i = 0; i < len; i++)
-			newCol.add(0);
-
-		fireTableDataChanged();
 	}
 
 	/**
@@ -92,8 +126,12 @@ public class ExtendedTableModel extends AbstractTableModel
 	 */
 	public void removeColumn(int index)
 	{
-		data.removeColumn(index);
-		fireTableDataChanged ();
+		// Only a data set will recognize columns
+		if(data instanceof DataSet)
+		{
+			((DataSet) data).removeColumn(index);
+			fireTableDataChanged();
+		}
 	}
 
 	/**
@@ -103,10 +141,12 @@ public class ExtendedTableModel extends AbstractTableModel
 	{
 		// Add 0 to the end of all columns
 		for(int i = 0; i < data.getColumnCount(); i++)
+		{
 			data.getColumn(i).add(0);
+		}
 
 		int newLen = data.getColumnLength();
-		fireTableRowsUpdated (newLen, newLen);
+		fireTableRowsUpdated(newLen, newLen);
 	}
 
 	/**
@@ -118,10 +158,12 @@ public class ExtendedTableModel extends AbstractTableModel
 	{
 		// Remove bottom element of each column
 		for(int i = 0; i < data.getColumnCount(); i++)
+		{
 			data.getColumn(i).remove(index);
+		}
 
 		int newLen = data.getColumnLength();
-		fireTableRowsUpdated (newLen, newLen);
+		fireTableRowsUpdated(newLen, newLen);
 	}
 
 	/**
@@ -130,7 +172,9 @@ public class ExtendedTableModel extends AbstractTableModel
 	public void removeAllRows()
 	{
 		for(int i = 0; i < data.getColumnCount(); i++)
+		{
 			data.getColumn(i).clear();
+		}
 
 		fireTableDataChanged();
 	}
@@ -183,7 +227,7 @@ public class ExtendedTableModel extends AbstractTableModel
 		{
 			return data.getColumn(col).get(row);
 		}
-		catch (ArrayIndexOutOfBoundsException ex)
+		catch(ArrayIndexOutOfBoundsException ex)
 		{
 			return null;
 		}
@@ -200,8 +244,10 @@ public class ExtendedTableModel extends AbstractTableModel
 		// Build row
 		Object[] row = new Object[data.getColumnCount()];
 		for(int i = 0; i < row.length; i++)
+		{
 			row[i] = data.getColumn(i).get(rowIndex);
-		
+		}
+
 		return row;
 	}
 
@@ -230,7 +276,7 @@ public class ExtendedTableModel extends AbstractTableModel
 	public void setValueAt(Object value, int row, int col)
 	{
 		data.getColumn(col).set(row, value);
-		fireTableCellUpdated (row, col);
+		fireTableCellUpdated(row, col);
 	}
 
 	/**
@@ -266,8 +312,10 @@ public class ExtendedTableModel extends AbstractTableModel
 	public void setRow(Object[] rowObject, int row)
 	{
 		for(int i = 0; i < rowObject.length; i++)
+		{
 			data.getColumn(i).set(row, rowObject[i]);
-		
+		}
+
 		fireTableRowsUpdated(row, row);
 	}
 }

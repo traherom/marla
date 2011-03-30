@@ -2009,9 +2009,10 @@ public class ViewPanel extends JPanel
 	 *
 	 * @param newOperation The operation to get information for.
 	 * @param showDialog True if the dialog should be shown, false if the panel should just be created and returned.
+	 * @return Returns the panel created (element 0) and the list of value components within that panel (element 1).
 	 * @throws MarlaException
 	 */
-	public static JPanel getRequiredInfoDialog(final Operation newOperation, boolean showDialog) throws MarlaException
+	public static Object[] getRequiredInfoDialog(final Operation newOperation, final boolean showDialog) throws MarlaException
 	{
 		// Create the dialog which will be launched to ask about requirements
 		final List<OperationInformation> prompts = newOperation.getRequiredInfoPrompt();
@@ -2102,41 +2103,7 @@ public class ViewPanel extends JPanel
 			@Override
 			public void actionPerformed(ActionEvent evt)
 			{
-				boolean pass = true;
-				for(int i = 0; i < prompts.size(); i++)
-				{
-					OperationInformation question = prompts.get(i);
-
-					try
-					{
-						if(question.getType() == PromptType.CHECKBOX)
-						{
-							question.setAnswer(((JCheckBox) valueComponents.get(i)).isSelected());
-						}
-						else if(question.getType() == PromptType.COMBO || question.getType() == PromptType.COLUMN)
-						{
-							question.setAnswer(((JComboBox) valueComponents.get(i)).getSelectedItem());
-						}
-						else if(question.getType() == PromptType.FIXED)
-						{
-							// Don't set the answer, we're not allowed to change this
-						}
-						else
-						{
-							question.setAnswer(((JTextField) valueComponents.get(i)).getText());
-						}
-					}
-					catch(OperationInfoRequiredException ex)
-					{
-						// If the users input was not valid, the form is not accepted and the dialog will not close
-						((JTextField) valueComponents.get(i)).requestFocus();
-						((JTextField) valueComponents.get(i)).selectAll();
-						JOptionPane.showMessageDialog(ViewPanel.getInstance().domain.getTopWindow(), ex.getMessage(), "Invalid Input", JOptionPane.ERROR_MESSAGE);
-						pass = false;
-					}
-				}
-
-				if(pass)
+				if (requirementsButtonClick(prompts, valueComponents, showDialog))
 				{
 					dialog.setVisible(false);
 				}
@@ -2152,7 +2119,60 @@ public class ViewPanel extends JPanel
 			dialog.setVisible(true);
 		}
 
-		return panel;
+		return new Object[] {panel, valueComponents};
+	}
+
+	/**
+	 * 
+	 * @param prompts
+	 * @param valueComponents
+	 * @param showDialog
+	 * @return
+	 */
+	public static boolean requirementsButtonClick(List<OperationInformation> prompts, List<Object> valueComponents, boolean showDialog)
+	{
+		boolean pass = true;
+		for(int i = 0; i < prompts.size(); i++)
+		{
+			OperationInformation question = prompts.get(i);
+
+			try
+			{
+				if(question.getType() == PromptType.CHECKBOX)
+				{
+					question.setAnswer(((JCheckBox) valueComponents.get(i)).isSelected());
+				}
+				else if(question.getType() == PromptType.COMBO || question.getType() == PromptType.COLUMN)
+				{
+					question.setAnswer(((JComboBox) valueComponents.get(i)).getSelectedItem());
+				}
+				else if(question.getType() == PromptType.FIXED)
+				{
+					// Don't set the answer, we're not allowed to change this
+				}
+				else
+				{
+					question.setAnswer(((JTextField) valueComponents.get(i)).getText());
+				}
+			}
+			catch(OperationInfoRequiredException ex)
+			{
+				// If the users input was not valid, the form is not accepted and the dialog will not close
+				((JTextField) valueComponents.get(i)).requestFocus();
+				((JTextField) valueComponents.get(i)).selectAll();
+				if (showDialog)
+				{
+					JOptionPane.showMessageDialog(ViewPanel.getInstance().domain.getTopWindow(), ex.getMessage(), "Invalid Input", JOptionPane.ERROR_MESSAGE);
+				}
+				pass = false;
+			}
+		}
+
+		if(pass)
+		{
+			return true;
+		}
+		return false;
 	}
 
 	/**

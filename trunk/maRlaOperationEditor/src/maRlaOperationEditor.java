@@ -30,6 +30,7 @@ import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import marla.ide.resource.BuildInfo;
+import marla.ide.resource.Configuration;
 import marla.opedit.gui.Domain;
 import marla.opedit.gui.MainFrame;
 
@@ -73,6 +74,8 @@ public class maRlaOperationEditor
 		// Build info message
 		System.out.println("Starting " + Domain.NAME + " " + Domain.VERSION + " " + Domain.PRE_RELEASE);
 		System.out.println("Revision " + BuildInfo.revisionNumber + ", built " + BuildInfo.timeStamp);
+
+		Configuration.getInstance().configureAll(args);
 
 		EventQueue.invokeLater(new Runnable()
 		{

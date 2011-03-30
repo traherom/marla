@@ -1090,6 +1090,11 @@ public class Domain
 		}
 	}
 
+	/**
+	 * Ensure the requirements are met for the given operation.
+	 *
+	 * @param op The operation to check for.
+	 */
 	public void ensureRequirementsMet(Operation op)
 	{
 		// Iteratively attempts to tell operation to recompute itself until
@@ -1104,7 +1109,7 @@ public class Domain
 			}
 			catch (OperationInfoRequiredException ex)
 			{
-				viewPanel.getRequiredInfoDialog (ex.getOperation (), true);
+				ViewPanel.getRequiredInfoDialog (ex.getOperation (), true);
 			}
 		}
 	}
