@@ -19,7 +19,6 @@ package marla.ide.problem;
 
 import marla.ide.gui.Domain;
 import java.io.BufferedWriter;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -77,11 +76,16 @@ public class Problem implements ProblemPart
 	/**
 	 * All datasets associated with this problem.
 	 */
-	private final ArrayList<DataSet> datasets = new ArrayList<DataSet>();
+	private final List<DataSet> datasets = new ArrayList<DataSet>();
+	/**
+	 * Operations associated with this problem that are not actually attached to
+	 * a dataset
+	 */
+	private final List<Operation> unusedOperations = new ArrayList<Operation>();
 	/**
 	 * All subproblems associated with this problem.
 	 */
-	private final ArrayList<SubProblem> subProblems = new ArrayList<SubProblem>();
+	private final List<SubProblem> subProblems = new ArrayList<SubProblem>();
 	/**
 	 * Name of the person who is working on this problem. Arbitrary, used for
 	 * export and that's about it
@@ -385,6 +389,56 @@ public class Problem implements ProblemPart
 		return oldNum;
 	}
 
+	/**
+	 * Adds the given operation as an "unused," unattached operation.
+	 * It is unused in the sense that it is not used in any calculation
+	 * @param op Operation to add
+	 * @return Newly added operation
+	 */
+	public final Operation addUnusedOperation(Operation op)
+	{
+		// Only add if it's not already on the list
+		if(unusedOperations.contains(op))
+			return op;
+		
+		if(unusedOperations.add(op))
+			markUnsaved();
+		
+		return op;
+	}
+
+	/**
+	 * Removes the given operation from our list of unused operations
+	 * @param op Operation to remove from list
+	 * @return Removed operation
+	 */
+	public final Operation removeUnusedOperation(Operation op)
+	{
+		if(unusedOperations.remove(op))
+			markUnsaved();
+
+		return op;
+	}
+
+	/**
+	 * Number of unused operations attached to this problem
+	 * @return number of unattached operations on this problem
+	 */
+	public final int getUnusedOperationCount()
+	{
+		return unusedOperations.size();
+	}
+
+	/**
+	 * Returns the unused operation at the given index
+	 * @param i Index of the operation to retrieve
+	 * @return Operation at the given index
+	 */
+	public final Operation getUnusedOperation(int i)
+	{
+		return unusedOperations.get(i);
+	}
+
 	@Override
 	public DataSet addData(DataSet data)
 	{
@@ -402,7 +456,6 @@ public class Problem implements ProblemPart
 			oldParent.removeData(data);
 
 		markUnsaved();
-		isSaved = false;
 		data.setParentProblem(this);
 		datasets.add(data);
 
@@ -459,13 +512,24 @@ public class Problem implements ProblemPart
 	{
 		List<DataSource> myData = new ArrayList<DataSource>();
 
-		// Add either each DataSet
+		// Add each DataSet and their attached operations
 		for(DataSet ds : datasets)
 		{
 			myData.add(ds);
 			myData.addAll(ds.getAllChildOperations());
 		}
 
+		// And all our unsused stuff
+		for(Operation op : unusedOperations)
+		{
+			// TODO Safety checking, maybe remove in a few days
+			if(op.getParentData() != null)
+				throw new ProblemException("Operation was still part of unused operations of problem and yet has a parent");
+
+			myData.add(op);
+			myData.addAll(op.getAllChildOperations());
+		}
+		
 		return myData;
 	}
 
@@ -796,21 +860,18 @@ public class Problem implements ProblemPart
 			rootEl.addContent(data.toXml());
 		}
 
+		// Add the unused operations problems
+		Element unusedOpEl = new Element("unused");
+		rootEl.addContent(unusedOpEl);
+		for(Operation op : unusedOperations)
+		{
+			unusedOpEl.addContent(op.toXml());
+		}
+
 		// Add each subproblem
 		for(SubProblem sub : subProblems)
 		{
 			rootEl.addContent(sub.toXml());
-		}
-
-		// Add the stupid unattached problems, if applicable
-		if(domain != null)
-		{
-			Element unattachedEl = new Element("unattached");
-			rootEl.addContent(unattachedEl);
-			for(Operation op : domain.getUnattachedOperations())
-			{
-				unattachedEl.addContent(op.toXml());
-			}
 		}
 
 		return rootEl;
@@ -842,28 +903,26 @@ public class Problem implements ProblemPart
 			newProb.addData(DataSet.fromXml((Element) dataEl));
 		}
 
+		// Add the unattached operations, if applicable
+		Element unusedOpsEl = rootEl.getChild("unused");
+		if(unusedOpsEl != null)
+		{
+			for(Object partEl : unusedOpsEl.getChildren("operation"))
+			{
+				newProb.addUnusedOperation(Operation.fromXml((Element) partEl));
+			}
+		}
+
 		for(Object partEl : rootEl.getChildren("part"))
 		{
 			newProb.addSubProblem(SubProblem.fromXml((Element) partEl, newProb));
-		}
-
-		// Add the stupid unattached problems, if applicable
-		Element unattachedEl = rootEl.getChild("unattached");
-		if(domain != null && unattachedEl != null)
-		{
-			for(Object partEl : unattachedEl.getChildren("operation"))
-			{
-				domain.addUnattachedOperation(Operation.fromXml((Element) partEl));
-			}
 		}
 
 		newProb.isLoading = false;
 
 		// After we're all done loading, rebuild the trees
 		if(domain != null)
-		{
 			domain.rebuildWorkspace();
-		}
 
 		return newProb;
 	}

@@ -430,7 +430,14 @@ public abstract class Operation extends DataSource implements Changeable
 		// Assign ourselves to the new guy
 		parent = newParent;
 		if(parent != null)
+		{
+			// Make sure we're not in the unused section of the problem
+			Problem prob = parent.getParentProblem();
+			if(prob != null)
+				prob.removeUnusedOperation(this);
+
 			parent.addOperation(index, this);
+		}
 
 		// Fill our questions from the new parent if possible
 		for(OperationInformation q : getRequiredInfoPrompt())

@@ -584,58 +584,7 @@ public class Domain
 	{
 		this.loadSaveThread = loadSaveThread;
 	}
-
-	/**
-	 * Retrieves a list of Operations in the View panel that does are not attached to a data set.
-	 *
-	 * @return The list of operations not attached to a data set.
-	 */
-	public ArrayList<Operation> getUnattachedOperations()
-	{
-		ArrayList<Operation> ops = new ArrayList<Operation> ();
-
-		for (int i = 0; i < viewPanel.workspacePanel.getComponentCount(); ++i)
-		{
-			Component comp = viewPanel.workspacePanel.getComponent(i);
-			if (comp instanceof Operation && ((Operation) comp).getParentData() == null)
-			{
-				ops.add ((Operation) comp);
-			}
-		}
-
-		return ops;
-	}
-
-	/**
-	 * Retrieves a list of DataSource
-	 *
-	 * @return The list of DataSources on the workspace
-	 */
-	public ArrayList<Operation> getAllRootlessOperationsOnWorkspace()
-	{
-		ArrayList<Operation> ops = new ArrayList<Operation> ();
-
-		for (int i = 0; i < viewPanel.workspacePanel.getComponentCount(); ++i)
-		{
-			Component comp = viewPanel.workspacePanel.getComponent(i);
-			if(comp instanceof Operation && ((Operation)comp).getRootDataSource() instanceof Operation)
-				ops.add((Operation)comp);
-		}
-
-		return ops;
-	}
-
-	/**
-	 * Adds the given operation to the workspace
-	 * @param op Operation to add to workspace
-	 */
-	public void addUnattachedOperation(Operation op)
-	{
-		viewPanel.workspacePanel.add(op);
-		op.setText("<html>" + op.getDisplayString(false) + "</html>");
-		op.setSize(op.getPreferredSize());
-	}
-
+	
 	/**
 	 * Retrieves the reference to the currently open problem.
 	 *
