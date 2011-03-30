@@ -27,7 +27,6 @@ import java.awt.geom.Line2D;
 import java.util.List;
 import javax.swing.JPanel;
 import marla.ide.problem.DataSource;
-import marla.ide.problem.Problem;
 import marla.ide.problem.SubProblem;
 import marla.ide.resource.Configuration.ConfigType;
 import marla.ide.resource.ConfigurationException;
@@ -146,6 +145,11 @@ public class WorkspacePanel extends JPanel
 
 				drawConnection(g2, ds);
 			}
+
+			// Lines for center of workspace
+			g2.setPaint(Color.PINK);
+			g2.draw(new Line2D.Double(getWidth() / 2, 0, getWidth() / 2, getHeight()));
+			g2.draw(new Line2D.Double(0, getHeight() / 2, getWidth(), getHeight() / 2));
 		}
 		catch(Exception ex)
 		{
