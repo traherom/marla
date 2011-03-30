@@ -179,20 +179,21 @@ public abstract class DataSource extends JLabel implements Loadable
 		int rowCount = getColumnLength();
 		int colCount = getColumnCount();
 
-		Object[][] arr = new Object[rowCount][];
-		for(int row = 0; row < rowCount; row++)
+		// Col x Row
+		Object[][] arr = new Object[colCount][];
+		for(int col = 0; col < colCount; col++)
 		{
-			arr[row] = new Object[colCount];
-			
-			for(int col = 0; col < colCount; col++)
-			{
-				// Does this column extend to this row?
-				DataColumn currCol = getColumn(col);
-				if(row < currCol.size())
-					arr[row][col] = currCol.get(row);
-				else
-					arr[row][col] = null;
-			}
+			DataColumn currCol = getColumn(col);
+
+			arr[colCount] = new Object[rowCount];
+
+			// Copy vals over
+			for(int row = 0; row < currCol.size(); row++)
+				arr[col][row] = currCol.get(row);
+
+			// Fill remainder with ""
+			for(int row = currCol.size(); row < rowCount; row++)
+				arr[col][row] = "";
 		}
 
 		return arr;
