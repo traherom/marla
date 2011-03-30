@@ -186,7 +186,14 @@ public class ViewPanel extends JPanel
         questionPanel = new javax.swing.JPanel();
         displayNameLabel = new javax.swing.JLabel();
         outputScrollPane = new javax.swing.JScrollPane();
-        outputTable = new marla.ide.gui.ExtendedJTable(outputModel);
+        outputTable = new marla.ide.gui.ExtendedJTable(outputModel)
+        {
+            public boolean isCellEditable(int row, int column)
+            {
+                return false;
+            }
+        }
+        ;
         displayNameScrollPane = new javax.swing.JScrollPane();
         displayNameTextPane = new javax.swing.JTextPane();
         editingLabel = new javax.swing.JLabel();
@@ -409,7 +416,7 @@ public class ViewPanel extends JPanel
             }
         });
 
-        operationTextPane.setFont(new java.awt.Font("Courier New", 0, 12)); // NOI18N
+        operationTextPane.setFont(new java.awt.Font("Courier New", 0, 12));
         operationTextPane.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusLost(java.awt.event.FocusEvent evt) {
                 operationTextPaneFocusLost(evt);
