@@ -373,7 +373,10 @@ public class ViewPanel extends JPanel
 				});
 			}
 			// Images are missing; should never happen
-			catch (IOException ex) {}
+			catch (IOException ex)
+			{
+				Domain.logger.add(ex);
+			}
 			catContentPanel.setLayout (new GridBagLayout());
 			GridBagConstraints catConstraints = new GridBagConstraints();
 			catConstraints.fill = GridBagConstraints.VERTICAL;
@@ -387,6 +390,7 @@ public class ViewPanel extends JPanel
 				try
 				{
 					final Operation operation = Operation.createOperation(operations.get(i));
+					operation.setForeground(Color.BLACK);
 					operation.setText("<html>" + operation.getDisplayString(abbreviated) + "</html>");
 					operation.setToolTipText("<html>" + operation.getDescription() + "</html>");
 					DRAG_SOURCE.createDefaultDragGestureRecognizer(operation, DnDConstants.ACTION_MOVE, DND_LISTENER);
