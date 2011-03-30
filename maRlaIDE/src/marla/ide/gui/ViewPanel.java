@@ -1918,10 +1918,10 @@ public class ViewPanel extends JPanel
 
 			if(component instanceof Operation)
 			{
-				//if(((Operation) component).getParentData() != null)
+				Operation dropOperation = (Operation) component;
+				if(dropOperation != newOperation)
 				{
 					y = component.getY() + spaceHeight;
-					Operation dropOperation = (Operation) component;
 					if(dropOperation.getOperationCount() > 0)
 					{
 						dropOperation.addOperation(newOperation);
@@ -1996,6 +1996,7 @@ public class ViewPanel extends JPanel
 		if(hoverInDragComponent != null)
 		{
 			hoverInDragComponent.setBorder(NO_BORDER);
+			hoverInDragComponent = null;
 		}
 
 		rebuildWorkspace();
