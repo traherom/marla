@@ -24,6 +24,7 @@ if(isset($_REQUEST['resolve_all']))
 	resolveErrors($ids);
 
 	header('Location: error_list.php');
+	die();
 }
 ?>
 <!DOCTYPE html>
@@ -70,7 +71,7 @@ if(isset($_REQUEST['resolve_all']))
 <?php
 	echo('<a href="error_list.php?resolve_all');
 	
-	$search = implode('&amp;', $_REQUEST);
+	$search = http_build_query($_REQUEST);
 	if(!empty($search))
 		echo("&amp;$search");
 	
