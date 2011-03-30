@@ -286,7 +286,7 @@
                 </Property>
               </Properties>
               <AuxValues>
-                <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new marla.ide.gui.ExtendedJTable(outputModel)"/>
+                <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new marla.ide.gui.ExtendedJTable(outputModel)&#xa;{&#xa;    public boolean isCellEditable(int row, int column)&#xa;    {&#xa;        return false;&#xa;    }&#xa;}&#xa;"/>
               </AuxValues>
             </Component>
           </SubComponents>
