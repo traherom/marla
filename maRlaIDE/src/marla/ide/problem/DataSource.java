@@ -171,6 +171,34 @@ public abstract class DataSource extends JLabel implements Loadable
 	public abstract String[] getColumnNames();
 
 	/**
+	 * Returns the DataSource data as a two-dimensional array
+	 * @return
+	 */
+	public final Object[][] toArray()
+	{
+		int rowCount = getColumnLength();
+		int colCount = getColumnCount();
+
+		Object[][] arr = new Object[rowCount][];
+		for(int row = 0; row < rowCount; row++)
+		{
+			arr[row] = new Object[colCount];
+			
+			for(int col = 0; col < colCount; col++)
+			{
+				// Does this column extend to this row?
+				DataColumn currCol = getColumn(col);
+				if(row < currCol.size())
+					arr[row][col] = currCol.get(row);
+				else
+					arr[row][col] = null;
+			}
+		}
+
+		return arr;
+	}
+
+	/**
 	 * Add given operation to the end of DataSource. See addOperation(index, op)
 	 * @param op Operation to add to perform on DataSet
 	 * @return Newly added operation
