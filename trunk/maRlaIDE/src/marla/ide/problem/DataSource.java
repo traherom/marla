@@ -185,7 +185,7 @@ public abstract class DataSource extends JLabel implements Loadable
 		{
 			DataColumn currCol = getColumn(col);
 
-			arr[colCount] = new Object[rowCount];
+			arr[col] = new Object[rowCount];
 
 			// Copy vals over
 			for(int row = 0; row < currCol.size(); row++)
