@@ -21,6 +21,7 @@ package marla.ide.gui;
 import java.awt.AWTEvent;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
@@ -73,6 +74,7 @@ import marla.ide.problem.InternalMarlaException;
 import marla.ide.problem.Problem;
 import marla.ide.problem.SubProblem;
 import marla.ide.r.RProcessorException;
+import marla.ide.resource.Configuration;
 import marla.ide.resource.LoadSaveThread;
 import marla.ide.resource.Updater;
 
@@ -100,6 +102,10 @@ public class ViewPanel extends JPanel
 												 + "more or remove current sub problems.<br /><br />Values given for the data sets can be changed.  If these "
 												 + "values are already interacting with statistical interactions in the workspace, the results will be updated with "
 												 + "new values when this dialog is closed.  More data sets can be added or current data sets may be removed.</html>";
+	public static final String FIRST_TIP = "- Click the plus (+) symbols in the Palette to the right to expand the categories";
+	public static final String SECOND_TIP = "- Drag operations from the Palette into the workspace";
+	public static final String THIRD_TIP = "- Drag operations over data sets or other operations to connect them";
+	public static final String FOURTH_TIP = "- Drag unused items over the trash can to remove them";
 	/** No border.*/
 	private final Border NO_BORDER = BorderFactory.createEmptyBorder();
 	/** A red border display.*/
@@ -112,6 +118,8 @@ public class ViewPanel extends JPanel
 	public final DragDrop DND_LISTENER = new DragDrop(this);
 	/** Default, plain, 12-point font.*/
 	public static Font FONT_PLAIN_12 = new Font("Verdana", Font.PLAIN, 12);
+	/** Default, bold, 14-point font.*/
+	public static Font FONT_BOLD_14 = new Font("Verdana", Font.BOLD, 14);
 	/** Default, plain, 11-point font.*/
 	public static Font FONT_PLAIN_11 = new Font("Verdana", Font.PLAIN, 11);
 	/** Default, bold, 11-point font.*/
@@ -154,8 +162,10 @@ public class ViewPanel extends JPanel
 	public static Font workspaceFontBold = new Font("Verdana", Font.BOLD, ViewPanel.fontSize);
 	/** The data set being dragged.*/
 	protected JComponent draggingComponent = null;
-	/** The component currently being hovered over.*/
-	private JComponent hoveredComponent = null;
+	/** The component currently being hovered over during a drag.*/
+	private JComponent hoverInDragComponent = null;
+	/** The component currently being hovered over in the workspace (not during a drag).*/
+	private JComponent hoverComponent = null;
 	/** The component that has been right-clicked on.*/
 	private JComponent rightClickedComponent = null;
 	/** The x-offset for dragging an item*/
@@ -202,6 +212,14 @@ public class ViewPanel extends JPanel
 	private boolean abbreviated = false;
 	/** 0 when no button is pressed, otherwise the number of the button pressed.*/
 	private int buttonPressed = 0;
+	/** The label that presents helpful hints on first run.*/
+	JLabel firstRunLabel = new JLabel();
+	/** The tip to display in the workspace when problem is being edited.*/
+	protected String tipRemainder = FIRST_TIP + "<br />" + SECOND_TIP + "<br />" + THIRD_TIP + "<br />" + FOURTH_TIP;
+	protected boolean showFirst = true;
+	protected boolean showSecond = true;
+	protected boolean showThird = true;
+	protected boolean showFourth = true;
 
 	/**
 	 * Creates new form MainFrame for a stand-alone application.
@@ -333,7 +351,7 @@ public class ViewPanel extends JPanel
 			CategoryHandle catHandlePanel = null;
 			try
 			{
-				catHandlePanel = new CategoryHandle(key, new MouseAdapter()
+				catHandlePanel = new CategoryHandle(this, key, new MouseAdapter()
 				{
 					@Override
 					public void mousePressed(MouseEvent evt)
@@ -378,6 +396,20 @@ public class ViewPanel extends JPanel
 					catContentPanel.add(operation, catConstraints);
 					operation.addMouseListener(new MouseAdapter()
 					{
+						@Override
+						public void mouseEntered(MouseEvent evt)
+						{
+							setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+							operation.setForeground(Color.GRAY);
+						}
+
+						@Override
+						public void mouseExited(MouseEvent evt)
+						{
+							setCursor(Cursor.getDefaultCursor());
+							operation.setForeground(Color.BLACK);
+						}
+
 						@Override
 						public void mousePressed(MouseEvent evt)
 						{
@@ -735,7 +767,7 @@ public class ViewPanel extends JPanel
         preWorkspaceLabel.setFont(new java.awt.Font("Verdana", 1, 14)); // NOI18N
         preWorkspaceLabel.setForeground(new java.awt.Color(102, 102, 102));
         preWorkspaceLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        preWorkspaceLabel.setText("<html><div align=\"center\">To get started, load a previous problem or use the<br /><em>New Problem Wizard</em> (File->New Problem...) to<br />create a new problem</div></html>");
+        preWorkspaceLabel.setText("<html><div align=\"center\">To get started, load a previous problem or use the<br /><em>New Problem Wizard</em> (File --> New Problem...) to<br />create a new problem</div></html>");
 
         org.jdesktop.layout.GroupLayout preWorkspacePanelLayout = new org.jdesktop.layout.GroupLayout(preWorkspacePanel);
         preWorkspacePanel.setLayout(preWorkspacePanelLayout);
@@ -774,6 +806,9 @@ public class ViewPanel extends JPanel
             public void mouseDragged(java.awt.event.MouseEvent evt) {
                 workspacePanelMouseDragged(evt);
             }
+            public void mouseMoved(java.awt.event.MouseEvent evt) {
+                workspacePanelMouseMoved(evt);
+            }
         });
         workspacePanel.addContainerListener(new java.awt.event.ContainerAdapter() {
             public void componentAdded(java.awt.event.ContainerEvent evt) {
@@ -792,7 +827,7 @@ public class ViewPanel extends JPanel
             }
         });
         workspacePanel.add(trashCan);
-        trashCan.setBounds(730, 420, 26, 40);
+        trashCan.setBounds(730, 610, 26, 40);
 
         workspaceCardPanel.add(workspacePanel, "card2");
 
@@ -881,18 +916,14 @@ public class ViewPanel extends JPanel
 					JComponent component = (JComponent) workspacePanel.getComponentAt(point);
 					if(component != null
 					   && component != workspacePanel
-					   && component != trashCan)
+					   && component != trashCan
+					   && component != firstRunLabel)
 					{
 						draggingComponent = component;
 						draggingComponent.setBorder(RED_BORDER);
 						draggingComponent.setSize(component.getPreferredSize());
 						if(draggingComponent instanceof Operation)
 						{
-							DataSet parentData = null;
-							if(((Operation) draggingComponent).getParentData() != null)
-							{
-								parentData = (DataSet) (((Operation) draggingComponent).getRootDataSource());
-							}
 							try
 							{
 								Operation childOperation = null;
@@ -929,6 +960,10 @@ public class ViewPanel extends JPanel
 						}
 						workspacePanel.setComponentZOrder(draggingComponent, workspacePanel.getComponentCount() - 1);
 						workspacePanel.setComponentZOrder(trashCan, workspacePanel.getComponentCount() - 1);
+						if (firstRunLabel.getParent() == workspacePanel)
+						{
+							workspacePanel.setComponentZOrder(firstRunLabel, workspacePanel.getComponentCount() - 1);
+						}
 
 						domain.problem.markUnsaved();
 					}
@@ -944,7 +979,7 @@ public class ViewPanel extends JPanel
 		{
 			if(draggingComponent != null)
 			{
-				if(trashCan.getBounds().contains(evt.getPoint()))
+				if(trashCan.getBounds().intersects(draggingComponent.getBounds()))
 				{
 					if(draggingComponent instanceof DataSet)
 					{
@@ -967,6 +1002,12 @@ public class ViewPanel extends JPanel
 					}
 
 					workspacePanel.remove(draggingComponent);
+
+					if (showFourth)
+					{
+						showFourth = false;
+						refreshTip();
+					}
 				}
 				else
 				{
@@ -999,7 +1040,8 @@ public class ViewPanel extends JPanel
 			JComponent component = (JComponent) workspacePanel.getComponentAt(evt.getPoint());
 			if(component != null
 			   && component != workspacePanel
-			   && component != trashCan)
+			   && component != trashCan
+			   && component != firstRunLabel)
 			{
 				rightClickedComponent = component;
 				answerDialogLocation = evt.getLocationOnScreen();
@@ -1102,6 +1144,8 @@ public class ViewPanel extends JPanel
 				rightClickMenu.show(workspacePanel, evt.getX(), evt.getY());
 			}
 		}
+
+		setCursor(Cursor.getDefaultCursor());
 
 		buttonPressed = 0;
 		startX = -1;
@@ -1242,6 +1286,7 @@ public class ViewPanel extends JPanel
 
 	private void workspacePanelComponentResized(java.awt.event.ComponentEvent evt)//GEN-FIRST:event_workspacePanelComponentResized
 	{//GEN-HEADEREND:event_workspacePanelComponentResized
+		firstRunLabel.setLocation((workspacePanel.getWidth() - firstRunLabel.getWidth()) / 2, (workspacePanel.getHeight() - firstRunLabel.getHeight()) / 2);
 		trashCan.setLocation(workspacePanel.getWidth() - 40, workspacePanel.getHeight() - 40);
 		ensureComponentsVisible();
 	}//GEN-LAST:event_workspacePanelComponentResized
@@ -1249,6 +1294,10 @@ public class ViewPanel extends JPanel
 	private void workspacePanelComponentAdded(java.awt.event.ContainerEvent evt)//GEN-FIRST:event_workspacePanelComponentAdded
 	{//GEN-HEADEREND:event_workspacePanelComponentAdded
 		workspacePanel.setComponentZOrder(trashCan, workspacePanel.getComponentCount() - 1);
+		if (firstRunLabel.getParent() == workspacePanel)
+		{
+			workspacePanel.setComponentZOrder(firstRunLabel, workspacePanel.getComponentCount() - 1);
+		}
 	}//GEN-LAST:event_workspacePanelComponentAdded
 
 	private void rCodeMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rCodeMenuItemActionPerformed
@@ -1434,6 +1483,18 @@ public class ViewPanel extends JPanel
 
 	private void workspacePanelMousePressed(java.awt.event.MouseEvent evt)//GEN-FIRST:event_workspacePanelMousePressed
 	{//GEN-HEADEREND:event_workspacePanelMousePressed
+		// If we were hovering, clear any of those elements
+		if (hoverComponent != null)
+		{
+			if (hoverComponent != null)
+			{
+				hoverComponent.setForeground(Color.BLACK);
+				hoverComponent = null;
+			}
+		}
+
+		setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+
 		buttonPressed = evt.getButton();
 		Component comp = workspacePanel.getComponentAt(evt.getPoint());
 		if (comp instanceof Operation)
@@ -1449,6 +1510,81 @@ public class ViewPanel extends JPanel
 			broken = true;
 		}
 	}//GEN-LAST:event_workspacePanelMousePressed
+
+	private void workspacePanelMouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_workspacePanelMouseMoved
+		// We only care if the mouse has moved when we're NOT dragging
+		if (buttonPressed == 0)
+		{
+			JComponent component = (JComponent) workspacePanel.getComponentAt(evt.getPoint());
+			if(component != null
+			   && component != workspacePanel
+			   && component != trashCan
+			   && component != firstRunLabel)
+			{
+				if (component != hoverComponent)
+				{
+					setCursor(Cursor.getDefaultCursor());
+					if (hoverComponent != null)
+					{
+						hoverComponent.setForeground(Color.BLACK);
+						hoverComponent = null;
+					}
+				}
+
+				if (component instanceof DataSource)
+				{
+					hoverComponent = component;
+					setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+					hoverComponent.setForeground(Color.GRAY);
+				}
+			}
+			else if (hoverComponent != null)
+			{
+				setCursor(Cursor.getDefaultCursor());
+				hoverComponent.setForeground(Color.BLACK);
+			}
+		}
+	}//GEN-LAST:event_workspacePanelMouseMoved
+
+	/**
+	 * Refresh the text displayed for the tip.
+	 */
+	protected void refreshTip()
+	{
+		tipRemainder = "";
+		
+		if (showFirst)
+		{
+			tipRemainder += FIRST_TIP;
+		}
+		if (showSecond)
+		{
+			tipRemainder += ("<br />" + SECOND_TIP);
+		}
+		if (showThird)
+		{
+			tipRemainder += ("<br />" + THIRD_TIP);
+		}
+		if (showFourth)
+		{
+			tipRemainder += ("<br />" + FOURTH_TIP);
+		}
+
+		if (tipRemainder.startsWith("<br />"))
+		{
+			tipRemainder = tipRemainder.substring(6, tipRemainder.length());
+		}
+		if (!tipRemainder.equals(""))
+		{
+			firstRunLabel.setText("<html><div align=\"center\">" + tipRemainder + "</div></html>");
+			firstRunLabel.setSize(firstRunLabel.getPreferredSize());
+			firstRunLabel.setLocation((workspacePanel.getWidth() - firstRunLabel.getWidth()) / 2, (workspacePanel.getHeight() - firstRunLabel.getHeight()) / 2);
+		}
+		else if (firstRunLabel.getParent() == workspacePanel)
+		{
+			workspacePanel.remove(firstRunLabel);
+		}
+	}
 
 	/**
 	 * Ensure all data sets are within the bounds of the workspace.
@@ -1525,31 +1661,31 @@ public class ViewPanel extends JPanel
 	{
 		if(buttonPressed == MouseEvent.BUTTON1)
 		{
-			if(hoveredComponent != null)
+			if(hoverInDragComponent != null)
 			{
-				hoveredComponent.setBorder(NO_BORDER);
-				hoveredComponent.setSize(hoveredComponent.getPreferredSize());
-				hoveredComponent = null;
+				hoverInDragComponent.setBorder(NO_BORDER);
+				hoverInDragComponent.setSize(hoverInDragComponent.getPreferredSize());
+				hoverInDragComponent = null;
 			}
 
 			Component component = workspacePanel.getComponentAt(evt.getPoint());
 			if(component != null
 			   && component != workspacePanel
 			   && component != trashCan
+			   && component != firstRunLabel
 			   && component != draggingComponent)
 			{
-				if((component instanceof Operation && ((Operation) component).getParentData() != null)
-				   || component instanceof DataSet)
+				if(component instanceof DataSource)
 				{
-					hoveredComponent = (JComponent) workspacePanel.getComponentAt(evt.getPoint());
-					hoveredComponent.setBorder(BLACK_BORDER);
-					hoveredComponent.setSize(hoveredComponent.getPreferredSize());
+					hoverInDragComponent = (JComponent) workspacePanel.getComponentAt(evt.getPoint());
+					hoverInDragComponent.setBorder(BLACK_BORDER);
+					hoverInDragComponent.setSize(hoverInDragComponent.getPreferredSize());
 				}
-				else if(hoveredComponent != null)
+				else if(hoverInDragComponent != null)
 				{
-					hoveredComponent.setBorder(NO_BORDER);
-					hoveredComponent.setSize(hoveredComponent.getPreferredSize());
-					hoveredComponent = null;
+					hoverInDragComponent.setBorder(NO_BORDER);
+					hoverInDragComponent.setSize(hoverInDragComponent.getPreferredSize());
+					hoverInDragComponent = null;
 				}
 			}
 
@@ -1619,7 +1755,7 @@ public class ViewPanel extends JPanel
 			return;
 		}
 
-		// Set the label for the dataset itself
+		// Set the label for the data source itself
 		ds.setFont(workspaceFontBold);
 		ds.setText("<html>" + ds.getDisplayString(abbreviated) + "</html>");
 		ds.setSize(ds.getPreferredSize());
@@ -1748,24 +1884,30 @@ public class ViewPanel extends JPanel
 	 * @param operation The operation to drop.
 	 * @param duplicate True if the drop should create a new instance of the given operation, false if it should drop the given instance.
 	 * @param location The location of the mouse pointer.
-	 * @throws OperationException
-	 * @throws RProcessorException
-	 * @throws MarlaException
 	 */
 	protected void drop(Operation operation, boolean duplicate, Point location) throws OperationException, RProcessorException, MarlaException
 	{
 		JComponent component = (JComponent) workspacePanel.getComponentAt(location);
 		if(component != null
 		   && component != workspacePanel
-		   && component != operation
 		   && component != trashCan
+		   && component != firstRunLabel
 		   && (component instanceof DataSet || component instanceof Operation))
 		{
 			final Operation newOperation;
 			if(duplicate)
 			{
+				setCursor(Cursor.getDefaultCursor());
+				operation.setForeground(Color.BLACK);
+
 				newOperation = Operation.createOperation(operation.getName());
 				newOperation.setFont(ViewPanel.workspaceFontBold);
+
+				if (showSecond)
+				{
+					showSecond = false;
+					refreshTip();
+				}
 			}
 			else
 			{
@@ -1774,17 +1916,12 @@ public class ViewPanel extends JPanel
 			int x = component.getX();
 			int y = component.getY();
 
-			DataSet dataSet = null;
 			if(component instanceof Operation)
 			{
-				if(((Operation) component).getParentData() != null)
+				//if(((Operation) component).getParentData() != null)
 				{
 					y = component.getY() + spaceHeight;
 					Operation dropOperation = (Operation) component;
-					if(dropOperation.getRootDataSource() instanceof DataSet)
-					{
-						dataSet = (DataSet) dropOperation.getRootDataSource();
-					}
 					if(dropOperation.getOperationCount() > 0)
 					{
 						dropOperation.addOperation(newOperation);
@@ -1797,31 +1934,53 @@ public class ViewPanel extends JPanel
 						dropOperation.addOperation(newOperation);
 					}
 				}
+
+				if (showThird)
+				{
+					showThird = false;
+					refreshTip();
+				}
 			}
 			else
 			{
-				y = component.getY() + spaceHeight;
-				dataSet = (DataSet) component;
-				dataSet.addOperation(newOperation);
-				if(dataSet.getOperationCount() > 1)
+				if (component instanceof DataSet)
 				{
-					x += (dataSet.getOperationCount() * spaceWidth);
+					y = component.getY() + spaceHeight;
+					DataSet dataSet = (DataSet) component;
+					dataSet.addOperation(newOperation);
+					if(dataSet.getOperationCount() > 1)
+					{
+						x += (dataSet.getOperationCount() * spaceWidth);
+					}
+				}
+
+				if (showThird)
+				{
+					showThird = false;
+					refreshTip();
 				}
 			}
 
-			if((component instanceof Operation && ((Operation) component).getParentData() != null) || component instanceof DataSet)
-			{
-				newOperation.setBounds(x, y, newOperation.getPreferredSize().width, newOperation.getPreferredSize().height);
-			}
+			newOperation.setBounds(x, y, newOperation.getPreferredSize().width, newOperation.getPreferredSize().height);
+			workspacePanel.add(newOperation);
 		}
 		else if(component != trashCan)
 		{
 			final Operation newOperation;
 			if(duplicate)
 			{
+				setCursor(Cursor.getDefaultCursor());
+				operation.setForeground(Color.BLACK);
+				
 				newOperation = Operation.createOperation(operation.getName());
 				newOperation.setText("<html>" + operation.getDisplayString(abbreviated) + "</html>");
 				newOperation.setFont(ViewPanel.workspaceFontBold);
+
+				if (showSecond)
+				{
+					showSecond = false;
+					refreshTip();
+				}
 			}
 			else
 			{
@@ -1834,9 +1993,9 @@ public class ViewPanel extends JPanel
 				workspacePanel.add(newOperation);
 			}
 		}
-		if(hoveredComponent != null)
+		if(hoverInDragComponent != null)
 		{
-			hoveredComponent.setBorder(NO_BORDER);
+			hoverInDragComponent.setBorder(NO_BORDER);
 		}
 
 		rebuildWorkspace();
@@ -2004,6 +2163,13 @@ public class ViewPanel extends JPanel
 	{
 		if(domain.problem != null)
 		{
+			if (Domain.isFirstRun())
+			{
+				firstRunLabel.setFont(FONT_BOLD_14);
+				firstRunLabel.setForeground(Color.LIGHT_GRAY);
+				refreshTip();
+				workspacePanel.add (firstRunLabel);
+			}
 			componentsPanel.setVisible(true);
 			emptyPalettePanel.setVisible(false);
 			workspacePanel.setVisible(true);
@@ -2223,7 +2389,8 @@ public class ViewPanel extends JPanel
 			// Save the maRla configuration
 			try
 			{
-				marla.ide.resource.Configuration.getInstance().save();
+				Configuration.getInstance().set(Configuration.ConfigType.FirstRun, false);
+				Configuration.getInstance().save();
 			}
 			catch(MarlaException ex)
 			{
