@@ -893,7 +893,7 @@ public abstract class Operation extends DataSource implements Changeable
 	 */
 	@Override
 	public boolean equals(Object other)
-	{		
+	{
 		// Ourselves?
 		if(other == this)
 			return true;

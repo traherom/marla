@@ -141,14 +141,6 @@ public class OperationTest
 	}
 
 	@Test
-	public void testClone() throws Exception
-	{
-		Operation op2 = op1.clone();
-
-		assertEquals(op1, op2);
-	}
-
-	@Test
 	public void testCheckCache() throws Exception
 	{
 		// Cache should be dirty and nothing computed

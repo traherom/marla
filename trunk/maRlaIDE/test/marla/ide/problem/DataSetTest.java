@@ -255,14 +255,6 @@ public class DataSetTest
 	}
 
 	@Test
-	public void testCopy() throws Exception
-	{
-		DataSet testDS1 = createDataSet(5, 50, 2);
-		DataSet testDS2 = new DataSet(testDS1, new Problem());
-		assertEquals(testDS1, testDS2);
-	}
-
-	@Test
 	public void testUniqueName() throws Exception
 	{
 		DataSet testDS1 = createDataSet(2, 20, 0);

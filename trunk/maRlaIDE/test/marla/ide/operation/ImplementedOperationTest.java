@@ -72,7 +72,7 @@ public class ImplementedOperationTest
 	public void setUp() throws Exception
 	{
 		// Ensure everything shows
-		RProcessor.getInstance().setDebugMode(RProcessor.RecordMode.FULL);
+		RProcessor.setDebugMode(RProcessor.RecordMode.FULL);
 
 		// Create fake dataset to work with
 		ds1 = DataSetTest.createDataSet(4, 10, 0);
@@ -119,14 +119,6 @@ public class ImplementedOperationTest
 		op2.addOperation(op3);
 
 		assertFalse(op1.equals(op2));
-	}
-
-	@Test
-	public void testClone() throws Exception
-	{
-		Operation op2 = op1.clone();
-
-		assertEquals(op1, op2);
 	}
 
 	@Test
@@ -217,9 +209,8 @@ public class ImplementedOperationTest
 			OperationTester.fillRequiredInfo(op1);
 
 			el = op1.toXml();
-			DataSet ds2 = new DataSet(ds1, ds1.getParentProblem());
 			op2 = Operation.fromXml(el);
-			ds2.addOperation(op2);
+			ds1.addOperation(op2);
 
 			op1.equals(op2);
 
