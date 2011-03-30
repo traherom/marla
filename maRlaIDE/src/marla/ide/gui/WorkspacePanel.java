@@ -147,9 +147,9 @@ public class WorkspacePanel extends JPanel
 			}
 
 			// Lines for center of workspace
-			g2.setPaint(Color.PINK);
-			g2.draw(new Line2D.Double(getWidth() / 2, 0, getWidth() / 2, getHeight()));
-			g2.draw(new Line2D.Double(0, getHeight() / 2, getWidth(), getHeight() / 2));
+			//g2.setPaint(Color.PINK);
+			//g2.draw(new Line2D.Double(getWidth() / 2, 0, getWidth() / 2, getHeight()));
+			//g2.draw(new Line2D.Double(0, getHeight() / 2, getWidth(), getHeight() / 2));
 		}
 		catch(Exception ex)
 		{
