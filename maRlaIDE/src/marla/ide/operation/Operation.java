@@ -17,6 +17,7 @@
  */
 package marla.ide.operation;
 
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -246,6 +247,7 @@ public abstract class Operation extends DataSource implements Changeable
 	protected Operation(String newName)
 	{
 		setOperationName(newName);
+		setDefaultColor();
 
 		try
 		{
@@ -255,6 +257,12 @@ public abstract class Operation extends DataSource implements Changeable
 		{
 			throw new InternalMarlaException("DataSet reported it had a duplicate name when it shouldn't. Report to developers.", ex);
 		}
+	}
+
+	@Override
+	public final void setDefaultColor()
+	{
+		setForeground(new Color(89, 93, 212));
 	}
 
 	/**
@@ -661,48 +669,6 @@ public abstract class Operation extends DataSource implements Changeable
 	protected final DataColumn copyColumn(DataColumn col)
 	{
 		return data.copyColumn(col);
-	}
-
-	/**
-	 * Duplicates an operation. Derivative classes should override this
-	 * if additional information needs to be copied.
-	 * @return Newly created duplicate Operation
-	 */
-	@Override
-	public Operation clone()
-	{
-		try
-		{
-			// Create an operation with the same type
-			Operation newOp = Operation.createOperation(getName());
-			newOp.isLoading = true;
-
-			// Copy remark
-			newOp.setRemark(remark);
-
-			// Copy our child operations
-			//for(Operation op : solutionOps)
-			//	newOp.addOperation(op.clone());
-
-			// Copy configuration questions
-			List<OperationInformation> myConf = getRequiredInfoPrompt();
-			List<OperationInformation> newConf = newOp.getRequiredInfoPrompt();
-			for(int i = 0; i < myConf.size(); i++)
-			{
-				OperationInformation myConfCurr = myConf.get(i);
-				OperationInformation newConfCurr = newConf.get(i);
-
-				if(myConfCurr.isAnswered())
-					newConfCurr.setAnswer(myConfCurr.getAnswer());
-			}
-
-			newOp.isLoading = false;
-			return newOp;
-		}
-		catch(MarlaException ex)
-		{
-			throw new InternalMarlaException("Unable to clone Operation. See internal exception.", ex);
-		}
 	}
 
 	/**

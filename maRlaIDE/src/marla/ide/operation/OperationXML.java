@@ -1097,42 +1097,6 @@ public class OperationXML extends Operation
 	}
 
 	@Override
-	public Operation clone()
-	{
-		try
-		{
-			OperationXML newOp = (OperationXML)Operation.createOperation(getName());
-			newOp.isLoading(true);
-			
-			// Copy remark
-			newOp.setRemark(getRemark());
-
-			// Copy our child operations
-			for(int i = 0; i < getOperationCount(); i++)
-				newOp.addOperation(getOperation(i).clone());
-
-			// Copy configuration questions
-			List<OperationInformation> myConf = getRequiredInfoPrompt();
-			List<OperationInformation> newConf = newOp.getRequiredInfoPrompt();
-			for(int i = 0; i < myConf.size(); i++)
-			{
-				OperationInformation myConfCurr = myConf.get(i);
-				OperationInformation newConfCurr = newConf.get(i);
-
-				if(myConfCurr.isAnswered())
-					newConfCurr.setAnswer(myConfCurr.getAnswer());
-			}
-
-			newOp.isLoading(false);
-			return newOp;
-		}
-		catch(MarlaException ex)
-		{
-			throw new InternalMarlaException("Unable to clone OperationXML. See internal exception.", ex);
-		}
-	}
-
-	@Override
 	public int hashCode()
 	{
 		int hash = super.hashCode();

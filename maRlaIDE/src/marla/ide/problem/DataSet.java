@@ -17,6 +17,7 @@
  */
 package marla.ide.problem;
 
+import java.awt.Color;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -64,6 +65,7 @@ public final class DataSet extends DataSource implements Changeable
 	public DataSet(String name)
 	{
 		this(null, name);
+		setDefaultColor();
 	}
 
 	/**
@@ -77,19 +79,10 @@ public final class DataSet extends DataSource implements Changeable
 		setDataName(name);
 	}
 
-	/**
-	 * Create a deep copy of a dataset.
-	 * @param copy Dataset to be copied.
-	 * @param newParent Parent for the copy to use
-	 */
-	public DataSet(DataSet copy, Changeable newParent)
+	@Override
+	public void setDefaultColor()
 	{
-		super(copy);
-		
-		parent = newParent;
-
-		for(DataColumn dc : copy.columns)
-			columns.add(new DataColumn(dc, this));
+		setForeground(new Color(143, 10, 43));
 	}
 
 	/**
