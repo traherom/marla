@@ -22,20 +22,26 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Font;
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.SimpleDateFormat;
+import java.util.List;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.table.DefaultTableColumnModel;
 import javax.swing.table.TableColumn;
 import marla.ide.gui.ExtensionFileFilter;
+import marla.ide.operation.OperationXMLException;
 import marla.ide.problem.DataSet;
 import marla.ide.problem.DuplicateNameException;
 import marla.ide.problem.MarlaException;
@@ -171,6 +177,8 @@ public class ViewPanel extends JPanel
     private void initComponents() {
 
         fileChooser = new javax.swing.JFileChooser();
+        answerDialog = new javax.swing.JDialog();
+        answerPanel = new javax.swing.JPanel();
         testingPanel = new javax.swing.JPanel();
         dataCsvLabel = new javax.swing.JLabel();
         browseDataTextField = new javax.swing.JTextField();
@@ -204,6 +212,16 @@ public class ViewPanel extends JPanel
         fileChooser.setApproveButtonToolTipText("Choose selected file");
         fileChooser.setDialogTitle("Browse Operation File");
         fileChooser.setFileSelectionMode(javax.swing.JFileChooser.FILES_AND_DIRECTORIES);
+
+        answerDialog.setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        answerDialog.setTitle("Solution to Point");
+        answerDialog.setAlwaysOnTop(true);
+        answerDialog.setResizable(false);
+        answerDialog.getContentPane().setLayout(new java.awt.GridLayout(1, 1));
+
+        answerPanel.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+        answerPanel.setLayout(new javax.swing.BoxLayout(answerPanel, javax.swing.BoxLayout.PAGE_AXIS));
+        answerDialog.getContentPane().add(answerPanel);
 
         testingPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Testing", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Verdana", 0, 12))); // NOI18N
 
@@ -369,7 +387,7 @@ public class ViewPanel extends JPanel
             }
         });
 
-        xmlStatusLabel.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        xmlStatusLabel.setFont(new java.awt.Font("Verdana", 0, 12));
         xmlStatusLabel.setText("<html><b>XML status:</b> valid</html>");
 
         operationsTable.setFont(new java.awt.Font("Verdana", 0, 12));
@@ -399,7 +417,7 @@ public class ViewPanel extends JPanel
         });
         operationScrollPane.setViewportView(operationTextPane);
 
-        hasPlotCheckBox.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        hasPlotCheckBox.setFont(new java.awt.Font("Verdana", 0, 12));
         hasPlotCheckBox.setText("Has plot");
         hasPlotCheckBox.setEnabled(false);
         hasPlotCheckBox.addActionListener(new java.awt.event.ActionListener() {
@@ -469,7 +487,7 @@ public class ViewPanel extends JPanel
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                         .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                             .add(layout.createSequentialGroup()
-                                .add(operationsScrollPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 416, Short.MAX_VALUE)
+                                .add(operationsScrollPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 419, Short.MAX_VALUE)
                                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                                     .add(addButton)
@@ -487,7 +505,7 @@ public class ViewPanel extends JPanel
                                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                                 .add(xmlStatusLabel, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                                .add(operationScrollPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 315, Short.MAX_VALUE)
+                                .add(operationScrollPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 318, Short.MAX_VALUE)
                                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                                     .add(updateTestButton)
@@ -881,7 +899,9 @@ public class ViewPanel extends JPanel
 					currentOperation.setParentData(currentDataSet);
 
 					questionPanel.removeAll();
-					JPanel panel = marla.ide.gui.ViewPanel.getRequiredInfoDialog(currentOperation, false);
+					Object[] items = marla.ide.gui.ViewPanel.getRequiredInfoDialog(currentOperation, false);
+					final JPanel panel = (JPanel) items[0];
+					final List<Object> valueComponents = (List<Object>) items[1];
 					// Hunt down the button(s) in the panel and remove the action listener
 					for (int i = 0; i < panel.getComponentCount(); ++i)
 					{
@@ -891,6 +911,25 @@ public class ViewPanel extends JPanel
 							for (ActionListener listener : button.getActionListeners())
 							{
 								button.removeActionListener(listener);
+								final ViewPanel VIEW_PANEL = this;
+								button.addActionListener(new ActionListener()
+								{
+									public void actionPerformed(ActionEvent evt)
+									{
+										if (marla.ide.gui.ViewPanel.requirementsButtonClick(currentOperation.getRequiredInfoPrompt(), valueComponents, false))
+										{
+											try
+											{
+												fillOutputTable();
+											}
+											catch(OperationXMLException ex)
+											{
+												JOptionPane.showMessageDialog(VIEW_PANEL, ex.getMessage(), "No Data", JOptionPane.INFORMATION_MESSAGE);
+											}
+										}
+									}
+								});
+								break;
 							}
 						}
 					}
@@ -898,12 +937,13 @@ public class ViewPanel extends JPanel
 					testingPanel.invalidate();
 					testingPanel.revalidate();
 					testingPanel.repaint();
+					
+					DefaultTableColumnModel newColumnModel = new DefaultTableColumnModel();
+					((marla.ide.gui.ExtendedJTable) outputTable).setColumnModel(newColumnModel);
+					((marla.ide.gui.ExtendedTableModel) outputModel).setData (new DataSet("empty"));
+					((marla.ide.gui.ExtendedJTable) outputTable).refreshTableUI();
 
 					displayNameTextPane.setText("<html><div style=\"font-family: Verdana, sans-serif;font-size: 10px;\">" + currentOperation.getDisplayString(false).trim() + "</div></html>");
-
-					
-					
-					((marla.ide.gui.ExtendedJTable) outputTable).refreshTableUI();
 				}
 				catch(MarlaException ex)
 				{
@@ -933,6 +973,40 @@ public class ViewPanel extends JPanel
 
 			((marla.ide.gui.ExtendedTableModel) outputModel).setData (new DataSet("empty"));
 			((marla.ide.gui.ExtendedJTable) outputTable).refreshTableUI();
+		}
+	}
+
+	/**
+	 * 
+	 */
+	public void fillOutputTable()
+	{
+		if (currentOperation != null && !currentOperation.isInfoUnanswered())
+		{
+			DefaultTableColumnModel newColumnModel = new DefaultTableColumnModel();
+			for (int i = 0; i < currentOperation.getColumnCount(); i++)
+			{
+				TableColumn column = new TableColumn(i);
+				column.setHeaderValue(currentOperation.getColumn(i).getName());
+				newColumnModel.addColumn(column);
+			}
+			((marla.ide.gui.ExtendedJTable) outputTable).setColumnModel(newColumnModel);
+			((marla.ide.gui.ExtendedTableModel) outputModel).setData (currentOperation);
+			((marla.ide.gui.ExtendedJTable) outputTable).refreshTableUI();
+
+			if (currentOperation.hasPlot())
+			{
+				answerPanel.removeAll();
+				JLabel label = new JLabel("");
+				label.setIcon(new ImageIcon((currentOperation.getPlot())));
+				answerPanel.add(label);
+
+				answerDialog.setTitle("Solution to Point");
+
+				answerDialog.pack();
+				answerDialog.setLocationRelativeTo(this);
+				answerDialog.setVisible(true);
+			}
 		}
 	}
 
@@ -1159,6 +1233,8 @@ public class ViewPanel extends JPanel
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton addButton;
+    protected javax.swing.JDialog answerDialog;
+    private javax.swing.JPanel answerPanel;
     private javax.swing.JButton browseDataButton;
     private javax.swing.JTextField browseDataTextField;
     private javax.swing.JButton browseEditingButton;
