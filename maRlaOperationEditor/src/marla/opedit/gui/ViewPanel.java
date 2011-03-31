@@ -617,7 +617,6 @@ public class ViewPanel extends JPanel
 					currentFile.save();
 				}
 
-				currentFile = new OperationFile(file.toString());
 				if(file.isDirectory())
 				{
 					lastGoodDir = file.toString();
@@ -627,7 +626,17 @@ public class ViewPanel extends JPanel
 					lastGoodDir = file.toString().substring(0, file.toString().lastIndexOf(File.separatorChar));
 				}
 
-				openFile();
+				try
+				{
+					currentFile = new OperationFile(file.toString());
+					openFile();
+				}
+				catch(OperationEditorException ex)
+				{
+					JOptionPane.showMessageDialog(this, ex.getMessage(), "Unable to open", JOptionPane.WARNING_MESSAGE);
+				}
+
+
 				break;
 			}
 		}

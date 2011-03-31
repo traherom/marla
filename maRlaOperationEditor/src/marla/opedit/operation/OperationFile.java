@@ -105,6 +105,10 @@ public class OperationFile
 			Document doc = parser.build(xmlPath);
 			Element operationXML = doc.getRootElement();
 
+			// Ensure it's actually an operations file
+			if(!operationXML.getName().equals("operations"))
+				throw new OperationEditorException("'" + xmlPath + "' does not appear to be an operations file");
+
 			// Pull each separate operation out
 			ops.clear();
 			for(Object opObj : operationXML.getChildren("operation"))
