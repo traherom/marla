@@ -145,7 +145,7 @@ public final class DataSet extends DataSource implements Changeable
 				String cell = cellMatcher.group(2);
 				if(hasHeader)
 				{
-					ds.addColumn(cell);
+					ds.addColumn(cell.trim());
 				}
 				else
 				{
