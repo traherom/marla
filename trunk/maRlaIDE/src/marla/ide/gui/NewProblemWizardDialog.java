@@ -1784,10 +1784,10 @@ public class NewProblemWizardDialog extends EscapeDialog
 				// Construct the folder-based open chooser dialog
 				VIEW_PANEL.openChooserDialog.setFileFilter(VIEW_PANEL.csvFilter);
 				VIEW_PANEL.openChooserDialog.setFileSelectionMode(JFileChooser.FILES_ONLY);
-				VIEW_PANEL.openChooserDialog.setCurrentDirectory(new File(domain.lastGoodCsvFile));
-				if(new File(domain.lastGoodCsvFile).isFile())
+				VIEW_PANEL.openChooserDialog.setCurrentDirectory(new File(domain.lastGoodDir));
+				if(new File(domain.lastGoodDir).isFile())
 				{
-					VIEW_PANEL.openChooserDialog.setSelectedFile(new File(domain.lastGoodCsvFile));
+					VIEW_PANEL.openChooserDialog.setSelectedFile(new File(domain.lastGoodDir));
 				}
 				else
 				{
@@ -1800,11 +1800,11 @@ public class NewProblemWizardDialog extends EscapeDialog
 					// If the user selected a file that exists, point the problem's location to the newly selected location
 					if(VIEW_PANEL.openChooserDialog.getSelectedFile().exists())
 					{
-						domain.lastGoodCsvFile = VIEW_PANEL.openChooserDialog.getSelectedFile().toString();
+						domain.lastGoodDir = VIEW_PANEL.openChooserDialog.getSelectedFile().toString();
 						try
 						{
 							ignoreDataChanging = true;
-							DataSet importedDataSet = DataSet.importFile(domain.lastGoodCsvFile);
+							DataSet importedDataSet = DataSet.importFile(domain.lastGoodDir);
 
 							// Clear existing data
 							for(int i = dataSet.getColumnCount() - 1; 0 <= i; i--)
