@@ -939,7 +939,10 @@ public class ViewPanel extends JPanel
 								if(parent != null)
 								{
 									int oldIndex = parent.getOperationIndex((Operation) draggingComponent);
-									parent.getParentProblem().addUnusedOperation(parent.removeOperation((Operation) draggingComponent));
+									
+									parent.removeOperation((Operation) draggingComponent);
+									domain.problem.addUnusedOperation(parent.removeOperation((Operation) draggingComponent));
+									
 									if(childOperation != null)
 									{
 										parent.addOperation(oldIndex, childOperation);
@@ -1892,13 +1895,16 @@ public class ViewPanel extends JPanel
 					y = component.getY() + spaceHeight;
 					if(dropOperation.getOperationCount() > 0)
 					{
+						// Add as child and ensure we're not listed as unused
+						domain.problem.removeUnusedOperation(newOperation);
 						dropOperation.addOperation(newOperation);
+
 						Operation childOperation = dropOperation.getOperation(0);
 						childOperation.setParentData(newOperation);
-						childOperation.setLocation(childOperation.getX(), childOperation.getY() + spaceHeight);
 					}
 					else
 					{
+						domain.problem.removeUnusedOperation(newOperation);
 						dropOperation.addOperation(newOperation);
 					}
 				}
@@ -1913,13 +1919,10 @@ public class ViewPanel extends JPanel
 			{
 				if (component instanceof DataSet)
 				{
-					y = component.getY() + spaceHeight;
+					// Add as child and ensure we're not listed as unused
 					DataSet dataSet = (DataSet) component;
+					domain.problem.removeUnusedOperation(newOperation);
 					dataSet.addOperation(newOperation);
-					if(dataSet.getOperationCount() > 1)
-					{
-						x += (dataSet.getOperationCount() * spaceWidth);
-					}
 				}
 
 				if (showThird)
@@ -1929,7 +1932,6 @@ public class ViewPanel extends JPanel
 				}
 			}
 
-			newOperation.setBounds(x, y, newOperation.getPreferredSize().width, newOperation.getPreferredSize().height);
 			workspacePanel.add(newOperation);
 		}
 		else if(component != trashCan)

@@ -400,7 +400,12 @@ public class Problem implements ProblemPart
 		// Only add if it's not already on the list
 		if(unusedOperations.contains(op))
 			return op;
-		
+
+		// Ensure it actually has no parent
+		if(op.getParentData() != null)
+			throw new ProblemException("Operation was not detached before being marked as unused");
+
+		// Add to our list
 		if(unusedOperations.add(op))
 			markUnsaved();
 		
