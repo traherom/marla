@@ -292,7 +292,13 @@ public class Domain
 	public static String lastBrowseLocation(String newLoc)
 	{
 		String old = lastGoodDir;
-		lastGoodDir = newLoc;
+
+		File loc = new File(newLoc);
+		if(loc.isDirectory())
+			lastGoodDir = loc.toString();
+		else
+			lastGoodDir = loc.getParent();
+		
 		return old;
 	}
 
@@ -1046,7 +1052,7 @@ public class Domain
 				}
 				else
 				{
-					lastGoodDir = file.toString ().substring (0, file.toString ().lastIndexOf (File.separatorChar));
+					lastGoodDir = file.getParent();
 				}
 				problem = Problem.load (file.toString ());
 

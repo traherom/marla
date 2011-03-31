@@ -173,7 +173,7 @@ public class DataColumn implements List<Object>
 		DataMode oldMode = mode;
 		mode = DataMode.NUMERIC;
 
-		// Try to cast everything
+		// Try to cast everything as a number
 		try
 		{
 			for(Object o : values)
@@ -376,7 +376,7 @@ public class DataColumn implements List<Object>
 
 	/**
 	 * Changes a value in the list. Marks DataSource as changed if the value
-	 * differs from the original.
+	 * differs from the original. Changes mode to string if needed
 	 * @param index Index in the column to change
 	 * @param element New value for column
 	 * @return Old value at given location
@@ -384,12 +384,22 @@ public class DataColumn implements List<Object>
 	@Override
 	public Object set(int index, Object element)
 	{
-		// Only mark unsaved if it actually set a new value
-		Object old = values.set(index, element);
-		if(!old.equals(element) && parent != null)
+		Object old = values.get(index);
+
+		try
 		{
-			markChanged();
+			values.set(index, castToMode(element));
 		}
+		catch(NumberFormatException ex)
+		{
+			// Change modes and try again
+			mode = DataMode.STRING;
+			values.set(index, castToMode(element));
+		}
+
+		// Only mark unsaved if it actually set a new value
+		if(!old.equals(element))
+			markChanged();
 
 		return old;
 	}

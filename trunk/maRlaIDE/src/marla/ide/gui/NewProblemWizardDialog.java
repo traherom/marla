@@ -737,7 +737,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 		VIEW_PANEL.openChooserDialog.setFileFilter(VIEW_PANEL.defaultFilter);
 		VIEW_PANEL.openChooserDialog.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 		VIEW_PANEL.openChooserDialog.setSelectedFile(new File(""));
-		VIEW_PANEL.openChooserDialog.setCurrentDirectory(new File(domain.lastGoodDir));
+		VIEW_PANEL.openChooserDialog.setCurrentDirectory(new File(Domain.lastGoodDir));
 		// Display the chooser and retrieve the selected folder
 		int response = VIEW_PANEL.openChooserDialog.showOpenDialog(this);
 		if(response == JFileChooser.APPROVE_OPTION)
@@ -748,13 +748,13 @@ public class NewProblemWizardDialog extends EscapeDialog
 				File file = VIEW_PANEL.openChooserDialog.getSelectedFile();
 				if(file.isDirectory())
 				{
-					domain.lastGoodDir = file.toString();
+					Domain.lastGoodDir = file.toString();
 				}
 				else
 				{
-					domain.lastGoodDir = file.toString().substring(0, file.toString().lastIndexOf(File.separatorChar));
+					Domain.lastGoodDir = file.getParent();
 				}
-				problemLocationTextField.setText(domain.lastGoodDir);
+				problemLocationTextField.setText(Domain.lastGoodDir);
 			}
 		}
 }//GEN-LAST:event_browseButtonActionPerformed
@@ -892,7 +892,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 					{
 						((GridLayout) VIEW_PANEL.legendContentPanel.getLayout()).setColumns(1);
 						JLabel noneLabel = new JLabel ("-No Sub Problems-");
-						noneLabel.setFont(VIEW_PANEL.FONT_BOLD_12);
+						noneLabel.setFont(ViewPanel.FONT_BOLD_12);
 						VIEW_PANEL.legendContentPanel.add (noneLabel);
 					}
 				}
@@ -1784,10 +1784,10 @@ public class NewProblemWizardDialog extends EscapeDialog
 				// Construct the folder-based open chooser dialog
 				VIEW_PANEL.openChooserDialog.setFileFilter(VIEW_PANEL.csvFilter);
 				VIEW_PANEL.openChooserDialog.setFileSelectionMode(JFileChooser.FILES_ONLY);
-				VIEW_PANEL.openChooserDialog.setCurrentDirectory(new File(domain.lastGoodDir));
-				if(new File(domain.lastGoodDir).isFile())
+				VIEW_PANEL.openChooserDialog.setCurrentDirectory(new File(Domain.lastGoodDir));
+				if(new File(Domain.lastGoodDir).isFile())
 				{
-					VIEW_PANEL.openChooserDialog.setSelectedFile(new File(domain.lastGoodDir));
+					VIEW_PANEL.openChooserDialog.setSelectedFile(new File(Domain.lastGoodDir));
 				}
 				else
 				{
@@ -1800,11 +1800,11 @@ public class NewProblemWizardDialog extends EscapeDialog
 					// If the user selected a file that exists, point the problem's location to the newly selected location
 					if(VIEW_PANEL.openChooserDialog.getSelectedFile().exists())
 					{
-						domain.lastGoodDir = VIEW_PANEL.openChooserDialog.getSelectedFile().toString();
+						Domain.lastGoodDir = VIEW_PANEL.openChooserDialog.getSelectedFile().getParent();
 						try
 						{
 							ignoreDataChanging = true;
-							DataSet importedDataSet = DataSet.importFile(domain.lastGoodDir);
+							DataSet importedDataSet = DataSet.importFile(VIEW_PANEL.openChooserDialog.getSelectedFile().toString());
 
 							// Clear existing data
 							for(int i = dataSet.getColumnCount() - 1; 0 <= i; i--)
@@ -1817,6 +1817,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 							{
 								DataColumn importCol = importedDataSet.getColumn(i);
 								DataColumn newCol = dataSet.addColumn(importCol.getName());
+								newCol.setMode(importCol.getMode());
 								newCol.addAll(importCol);
 							}
 
@@ -1915,29 +1916,9 @@ public class NewProblemWizardDialog extends EscapeDialog
 			try
 			{
 				String value = model.getValueAt(evt.getFirstRow(), evt.getColumn()).toString();
-				try
-				{
-					int intValue = Integer.parseInt(value.toString());
-					changingDataSet = true;
-					model.setValueAt(intValue, evt.getFirstRow(), evt.getColumn());
-					changingDataSet = false;
-				}
-				catch(NumberFormatException ex)
-				{
-					try
-					{
-						double doubleValue = Double.parseDouble(value.toString());
-						changingDataSet = true;
-						model.setValueAt(doubleValue, evt.getFirstRow(), evt.getColumn());
-						changingDataSet = false;
-					}
-					catch(NumberFormatException innerEx)
-					{
-						changingDataSet = true;
-						model.setValueAt(changingValue, evt.getFirstRow(), evt.getColumn());
-						changingDataSet = false;
-					}
-				}
+				changingDataSet = true;
+				model.setValueAt(value, evt.getFirstRow(), evt.getColumn());
+				changingDataSet = false;
 			}
 			catch(NullPointerException ex)
 			{
@@ -2005,7 +1986,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 		{
 			// Create the new Problem object with default values
 			newProblem = new Problem("");
-			newProblem.setFileName(domain.lastGoodDir + "/" + "New Problem.marla");
+			newProblem.setFileName(Domain.lastGoodDir + "/" + "New Problem.marla");
 			DataSet dataSet = null;
 			try
 			{
@@ -2035,12 +2016,13 @@ public class NewProblemWizardDialog extends EscapeDialog
 			// Will never be thrown at this point
 			catch(DuplicateNameException ex)
 			{
+				Domain.logger.add(ex);
 			}
 
 			// Set problem defaults for name and location
 			problemNameTextField.setText("New Problem");
 			problemNameTextField.setEnabled(true);
-			problemLocationTextField.setText(domain.lastGoodDir);
+			problemLocationTextField.setText(Domain.lastGoodDir);
 			browseButton.setEnabled(true);
 			descriptionTextArea.setText("");
 			studentNameTextField.setText(newProblem.getPersonName());
