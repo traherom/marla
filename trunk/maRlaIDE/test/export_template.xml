@@ -6,6 +6,7 @@
 		\usepackage{enumerate}
 		\usepackage{array}
 		\usepackage{multirow}
+		\usepackage{longtable}
 
 		\begin{document}
 		\begin{flushright}
