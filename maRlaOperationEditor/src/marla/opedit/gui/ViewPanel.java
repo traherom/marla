@@ -80,8 +80,6 @@ public class ViewPanel extends JPanel
 	protected Domain domain = new Domain(this);
 	/** True while the interface is loading, false otherwise.*/
 	boolean initLoading;
-	/** The last good problem directory.*/
-	public String lastGoodDir = Domain.HOME_DIR;
 	/** The extensions file filter for XML files.*/
 	protected ExtensionFileFilter xmlFilter = new ExtensionFileFilter("The maRla Project Operation Files (.xml)", new String[]
 		{
@@ -593,7 +591,7 @@ public class ViewPanel extends JPanel
 			fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
 			fileChooser.setDialogType(JFileChooser.OPEN_DIALOG);
 			fileChooser.setDialogTitle("Browse Operation File");
-			fileChooser.setCurrentDirectory(new File(lastGoodDir));
+			fileChooser.setCurrentDirectory(new File(marla.ide.gui.Domain.lastGoodDir));
 			// Display the chooser and retrieve the selected file
 			int response = fileChooser.showOpenDialog(this);
 			while(response == JFileChooser.APPROVE_OPTION)
@@ -619,11 +617,11 @@ public class ViewPanel extends JPanel
 
 				if(file.isDirectory())
 				{
-					lastGoodDir = file.toString();
+					marla.ide.gui.Domain.lastGoodDir = file.toString();
 				}
 				else
 				{
-					lastGoodDir = file.toString().substring(0, file.toString().lastIndexOf(File.separatorChar));
+					marla.ide.gui.Domain.lastGoodDir = file.getParent();
 				}
 
 				try
@@ -699,7 +697,7 @@ public class ViewPanel extends JPanel
 			fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
 			fileChooser.setDialogType(JFileChooser.OPEN_DIALOG);
 			fileChooser.setDialogTitle("Browse Data File");
-			fileChooser.setCurrentDirectory(new File(lastGoodDir));
+			fileChooser.setCurrentDirectory(new File(marla.ide.gui.Domain.lastGoodDir));
 			// Display the chooser and retrieve the selected file
 			int response = fileChooser.showOpenDialog(this);
 			while(response == JFileChooser.APPROVE_OPTION)
@@ -730,11 +728,11 @@ public class ViewPanel extends JPanel
 
 				if(file.isDirectory())
 				{
-					lastGoodDir = file.toString();
+					marla.ide.gui.Domain.lastGoodDir = file.toString();
 				}
 				else
 				{
-					lastGoodDir = file.toString().substring(0, file.toString().lastIndexOf(File.separatorChar));
+					marla.ide.gui.Domain.lastGoodDir = file.getParent();
 				}
 
 				openDataSet();
@@ -784,7 +782,7 @@ public class ViewPanel extends JPanel
 			fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
 			fileChooser.setDialogType(JFileChooser.SAVE_DIALOG);
 			fileChooser.setDialogTitle("New Operation File");
-			fileChooser.setCurrentDirectory(new File(lastGoodDir));
+			fileChooser.setCurrentDirectory(new File(marla.ide.gui.Domain.lastGoodDir));
 			// Display the chooser and retrieve the selected file
 			int response = fileChooser.showOpenDialog(this);
 			while(response == JFileChooser.APPROVE_OPTION)
@@ -820,11 +818,11 @@ public class ViewPanel extends JPanel
 				currentFile = OperationFile.createNew(file.toString());
 				if(file.isDirectory())
 				{
-					lastGoodDir = file.toString();
+					marla.ide.gui.Domain.lastGoodDir = file.toString();
 				}
 				else
 				{
-					lastGoodDir = file.toString().substring(0, file.toString().lastIndexOf(File.separatorChar));
+					marla.ide.gui.Domain.lastGoodDir = file.toString().substring(0, file.toString().lastIndexOf(File.separatorChar));
 				}
 
 				openFile();
@@ -940,7 +938,13 @@ public class ViewPanel extends JPanel
 											}
 											catch(OperationXMLException ex)
 											{
-												JOptionPane.showMessageDialog(VIEW_PANEL, ex.getMessage(), "No Data", JOptionPane.INFORMATION_MESSAGE);
+												//JOptionPane.showMessageDialog(VIEW_PANEL, ex.getMessage(), "No Data", JOptionPane.INFORMATION_MESSAGE);
+												xmlStatusLabel.setForeground(Color.RED);
+												if(ex.getCause() == null)
+													xmlStatusLabel.setText("<html><b>XML status:</b> " + ex.getMessage() + "</html>");
+												else
+													xmlStatusLabel.setText("<html><b>XML status:</b> " + ex.getCause().getMessage() + "</html>");
+
 											}
 										}
 									}
