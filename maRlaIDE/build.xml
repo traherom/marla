@@ -190,7 +190,7 @@
 		</copy>
 
 		<!-- What should the files start with? -->
-		<property name="setup.base" value="${store.dir}/maRla-r${svn.revision}" />
+		<property name="setup.base" value="maRla-r${svn.revision}" />
 
 		<!-- Generate various packages -->
 		<antcall target="-zip-package" />
@@ -223,13 +223,13 @@
 		</delete>
 
 		<!-- Move (if needed) to file with revision name -->
-		<move file="${store.dir}/Setup.exe" tofile="${setup.base}.exe" />
+		<move file="${store.dir}/Setup.exe" tofile="${store.dir}/installer-${setup.base}.exe" />
 		<echo message="Windows installer placed in ${store.dir}" />
 	</target>
 
 	<target name="-zip-package">
 		<echo>Creating archive of files</echo>
-		<zip destfile="${setup.base}.zip">
+		<zip destfile="${store.dir}/${setup.base}.zip">
 			<zipfileset file="${store.dir}/maRlaIDE.jar" />
 			<zipfileset file="${store.dir}/maRla Operation Editor.jar" />
 			<zipfileset file="${store.dir}/ops.xml" />

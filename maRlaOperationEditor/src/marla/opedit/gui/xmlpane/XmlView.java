@@ -47,14 +47,14 @@ import javax.swing.text.Utilities;
  */
 public class XmlView extends PlainView
 {
-	private static HashMap<Pattern, Color> patternColors;
-	private static String GENERIC_XML_NAME = "[A-Za-z]+[A-Za-z0-9\\-_]*(:[A-Za-z]+[A-Za-z0-9\\-_]+)?";
-	private static String TAG_PATTERN = "(</?" + GENERIC_XML_NAME + ")";
-	private static String TAG_END_PATTERN = "(>|/>)";
-	private static String TAG_ATTRIBUTE_PATTERN = "(" + GENERIC_XML_NAME + ")\\w*\\=";
-	private static String TAG_ATTRIBUTE_VALUE = "\\w*\\=\\w*(\"[^\"]*\")";
-	private static String TAG_COMMENT = "(<\\!--[\\w ]*-->)";
-	private static String TAG_CDATA = "(<\\!\\[CDATA\\[.*\\]\\]>)";
+	private static final HashMap<Pattern, Color> patternColors;
+	private static final String GENERIC_XML_NAME = "[A-Za-z]+[A-Za-z0-9\\-_]*(:[A-Za-z]+[A-Za-z0-9\\-_]+)?";
+	private static final String TAG_PATTERN = "(</?" + GENERIC_XML_NAME + ")";
+	private static final String TAG_END_PATTERN = "(>|/>)";
+	private static final String TAG_ATTRIBUTE_PATTERN = "(" + GENERIC_XML_NAME + ")\\w*\\=";
+	private static final String TAG_ATTRIBUTE_VALUE = "\\w*\\=\\w*(\"[^\"]*\")";
+	private static final String TAG_COMMENT = "(<\\!--[\\w ]*-->)";
+	private static final String TAG_CDATA = "(<\\!\\[CDATA\\[.*\\]\\]>)";
 
 	static
 	{
