@@ -861,7 +861,7 @@ public class LatexExporter
 		StringBuilder sb = new StringBuilder();
 
 		// Start tabular
-		sb.append("\\begin{tabular}{r || ");
+		sb.append("\\begin{longtable}{r || ");
 		for(int i = 0; i < columns.size(); i++)
 			sb.append("r | ");
 		sb.append("}\n");
@@ -888,7 +888,7 @@ public class LatexExporter
 			if(i + 1 < columns.size())
 				sb.append("& ");
 		}
-		sb.append("\\\\ \\hline\n");
+		sb.append("\\\\ \\hline \\endhead\n");
 
 		// Data
 		for(int i = 0; i < maxLen; i++)
@@ -912,7 +912,7 @@ public class LatexExporter
 			sb.append("\\\\\n");
 		}
 
-		sb.append("\\end{tabular}\n");
+		sb.append("\\end{longtable}\n");
 
 		return sb.toString();
 	}
