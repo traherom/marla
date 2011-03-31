@@ -11,8 +11,7 @@
     <description>Builds, tests, and runs the project maRla.</description>
     <import file="nbproject/build-impl.xml"/>
 
-    <import file="nbproject/build-impl.xml"/>    <!--
-
+    <!--
     There exist several targets which are by default empty and which can be 
     used for execution of your tasks. These targets are usually executed 
     before and after some main targets. They are: 
@@ -171,6 +170,13 @@
 		<xmlvalidate lenient="yes" warn="yes">
 			<fileset dir="${store.dir}" includes="*.xml"/>
 		</xmlvalidate>
+
+		<!-- Make the operation editor, if possible, and copy that to our store -->
+		<subant buildpath="../maRlaOperationEditor" target="package-for-store"
+			verbose="true">
+				<property name="ide.store" value="../maRlaIDE/${store.dir}" />
+		</subant>
+
     </target>
 
 	<target name="create-installer" depends="package-for-store">
@@ -225,6 +231,7 @@
 		<echo>Creating archive of files</echo>
 		<zip destfile="${setup.base}.zip">
 			<zipfileset file="${store.dir}/maRlaIDE.jar" />
+			<zipfileset file="${store.dir}/maRla Operation Editor.jar" />
 			<zipfileset file="${store.dir}/ops.xml" />
 			<zipfileset file="${store.dir}/export_template.xml" />
 			<zipfileset file="${store.dir}/gpl-3.0.txt" />

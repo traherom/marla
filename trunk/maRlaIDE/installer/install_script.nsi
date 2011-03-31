@@ -149,11 +149,12 @@ SectionGroup "maRla Core"
 			Delete $1
 		${EndIf}
 		
-		; Watch for errors on first file's installation, should catch any permission errors
+		; Install files!
 		ClearErrors
-		File maRlaIDE.exe
-		File export_template.xml
-		File ops.xml
+		File "maRlaIDE.exe"
+		File "maRla Operation Editor.exe"
+		File "export_template.xml"
+		File "ops.xml"
 		
 		${If} ${Errors}
 			MessageBox MB_OK|MB_ICONSTOP "Unable to copy to '$INSTDIR'. Please install again using a new directory."
@@ -371,6 +372,7 @@ Section "Start Menu Shortcuts" StartShortcuts
 	CreateDirectory "$SMPROGRAMS\maRla"
 	CreateShortCut "$SMPROGRAMS\maRla\Uninstall maRla.lnk" "$INSTDIR\Uninstall.exe"
 	CreateShortCut "$SMPROGRAMS\maRla\maRla.lnk" "$INSTDIR\maRlaIDE.exe"
+	CreateShortCut "$SMPROGRAMS\maRla\maRla Operation Editor.lnk" "$INSTDIR\maRla Operation Editor.exe"
 	
 SectionEnd
 
@@ -422,6 +424,7 @@ Section "Uninstall"
 	Delete "$INSTDIR\ops.xml"
 	Delete "$SMPROGRAMS\maRla\Uninstall.lnk"
 	Delete "$SMPROGRAMS\maRla\maRla.lnk"
+	Delete "$SMPROGRAMS\maRla\maRla Operation Editor.lnk"
 	Delete "$DESKTOP\maRla.lnk"
 	
 	RMDir "$SMPROGRAMS\maRla"
