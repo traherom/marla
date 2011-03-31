@@ -87,6 +87,7 @@ public class Configuration
 	 */
 	public enum ConfigType {
 			DebugMode, FirstRun,
+			BrowseLocation,
 			WindowX, WindowY, WindowHeight, WindowWidth,
 			PdfTex, R, PrimaryOpsXML, UserOpsXML, TexTemplate,
 			UserName, ClassShort, ClassLong,
@@ -152,113 +153,41 @@ public class Configuration
 	 */
 	public List<ConfigType> configureAll(String[] args)
 	{
-		// We will assume all fail for now, then remove things that get configured
-		// We make the array this way because Arrays.asList() returns a list that can't
-		// use removeAll()
-		List<ConfigType> unconfigured = new ArrayList<ConfigType>();
-		unconfigured.addAll(Arrays.asList(ConfigType.values()));
-
-		// TODO change this to use configureFromBest()
-
 		// Set up stuff for incrementing progress bar nicely
+		ConfigType[] vals = ConfigType.values();
 		int currProgress = 10;
 		int max = 80;
-		int valCount = unconfigured.size();
+		int valCount = vals.length;
 		int incr = max;
 		if(valCount > 0)
 			incr = (int)Math.floor((max - currProgress) / valCount);
 		else
 			incr = max;
 
-		// Command line (10-20)
-		List<ConfigType> fixed = new ArrayList<ConfigType> (unconfigured.size ());
-		for(ConfigType c : unconfigured)
-		{
-			if(configureFromCmdLine(c, args))
-			{
-				currProgress += incr;
-				Domain.setProgressString(currProgress + "%");
-				Domain.setProgressValue(currProgress);
+		// Add any that fail to configure to here
+		List<ConfigType> unconfigured = new ArrayList<ConfigType>();
 
-				fixed.add(c);
+		for(ConfigType c : vals)
+		{
+			if(!configureFromBest(c, args))
+			{
+				// Unable to configure
+				unconfigured.add(c);
 			}
+			
+			currProgress += incr;
+			Domain.setProgressString(currProgress + "%");
+			Domain.setProgressValue(currProgress);
 		}
 
-		unconfigured.removeAll(fixed);
-
-		// Try XML config
-		valCount = unconfigured.size();
-		if(valCount > 0)
-			incr = (int)Math.floor((max - currProgress) / valCount);
+		if(unconfigured.isEmpty())
+		{
+			Domain.setProgressStatus("Configuration complete");
+		}
 		else
-			incr = max;
-
-		fixed.clear();
-		if(reloadXML())
 		{
-			int count = unconfigured.size();
-			for(ConfigType c : unconfigured)
-			{
-				if(configureFromXML(c))
-				{
-					currProgress += incr;
-					Domain.setProgressString(currProgress + "%");
-					Domain.setProgressValue(currProgress);
-
-					fixed.add(c);
-				}
-			}
+			Domain.setProgressStatus(unconfigured.size() + " unconfigured");
 		}
-
-		unconfigured.removeAll(fixed);
-
-		// Try searching
-		valCount = unconfigured.size();
-		if(valCount > 0)
-			incr = (int)Math.floor((max - currProgress) / valCount);
-		else
-			incr = max;
-
-		fixed.clear();
-		Domain.setProgressIndeterminate(true);
-		for(ConfigType c : unconfigured)
-		{
-			Domain.setProgressStatus("Searching for " + getName(c));
-			if(configureFromSearch(c))
-			{
-				currProgress += incr;
-				Domain.setProgressString(currProgress + "%");
-				Domain.setProgressValue(currProgress);
-
-				fixed.add(c);
-			}
-		}
-		Domain.setProgressIndeterminate(false);
-
-		unconfigured.removeAll(fixed);
-
-		// Try defaults
-		valCount = unconfigured.size();
-		if(valCount > 0)
-			incr = (int)Math.floor((max - currProgress) / valCount);
-		else
-			incr = max;
-
-		fixed.clear();
-		Domain.setProgressStatus("Setting configuration defaults");
-		for(ConfigType c : unconfigured)
-		{
-			if(configureFromDefault(c))
-			{
-				currProgress += incr;
-				Domain.setProgressString(currProgress + "%");
-				Domain.setProgressValue(currProgress);
-
-				fixed.add(c);
-			}
-		}
-
-		unconfigured.removeAll(fixed);
 
 		if(detailedConfigStatus)
 		{
@@ -324,6 +253,9 @@ public class Configuration
 				
 			case FirstRun:
 				return Domain.isFirstRun();
+
+			case BrowseLocation:
+				return Domain.lastBrowseLocation();
 
 			case TexTemplate:
 				return LatexExporter.getDefaultTemplate();
@@ -448,6 +380,10 @@ public class Configuration
 					first = Boolean.valueOf(val.toString());
 
 				previous = Domain.isFirstRun(first);
+				break;
+
+			case BrowseLocation:
+				previous = Domain.lastBrowseLocation(val.toString());
 				break;
 
 			case TexTemplate:
@@ -590,16 +526,28 @@ public class Configuration
 	 */
 	public boolean configureFromBest(ConfigType setting, String[] args)
 	{
+		String dispStr = getName(setting);
+
+		Domain.setProgressStatus("Configuring " + dispStr + " from command line...");
 		if(args != null && configureFromCmdLine(setting, args))
 			return true;
-		else if(configureFromXML(setting))
+
+		Domain.setProgressStatus("Configuring " + dispStr + " from XML...");
+		if(configPath != null && configXML == null)
+			reloadXML();
+		if(configXML != null && configureFromXML(setting))
 			return true;
-		else if(configureFromSearch(setting))
+
+		Domain.setProgressStatus("Searching for " + dispStr + "...");
+		if(configureFromSearch(setting))
 			return true;
-		else if(configureFromDefault(setting))
+
+		Domain.setProgressStatus("Using default for " + dispStr + "...");
+		if(configureFromDefault(setting))
 			return true;
-		else
-			return false;
+
+		// Rats
+		return false;
 	}
 
 	/**
@@ -762,6 +710,11 @@ public class Configuration
 
 				case UserOpsXML:
 					set(setting, "");
+					success = true;
+					break;
+
+				case BrowseLocation:
+					set(setting, System.getProperty("user.home"));
 					success = true;
 					break;
 

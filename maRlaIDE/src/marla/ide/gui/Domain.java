@@ -103,9 +103,9 @@ public class Domain
 	 */
 	private static boolean includeProbInReport = true;
 	/** The last good problem directory.*/
-	public String lastGoodDir = HOME_DIR;
+	public static String lastGoodDir = HOME_DIR;
 	/** The last good file that was a CSV file.*/
-	public String lastGoodCsvFile = lastGoodDir;
+	//public String lastGoodDir = lastGoodDir;
 	/** The error file that keeps track of all errors and their occurrences.*/
 	protected File logFile;
 	/** Denotes if the log is being written. Prevents double writing */
@@ -271,6 +271,28 @@ public class Domain
 	{
 		boolean old = firstRun;
 		firstRun = newMode;
+		return old;
+	}
+
+	/**
+	 * Gets the last used browse location
+	 * @return Last location the user browsed to in a dialog
+	 */
+	public static String lastBrowseLocation()
+	{
+		return lastGoodDir;
+	}
+
+	/**
+	 * Sets a new location that was "good" (selected and used) for the
+	 * browse dialogs.
+	 * @param newLoc New path to use
+	 * @return Previously set path
+	 */
+	public static String lastBrowseLocation(String newLoc)
+	{
+		String old = lastGoodDir;
+		lastGoodDir = newLoc;
 		return old;
 	}
 

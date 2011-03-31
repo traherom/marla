@@ -64,6 +64,10 @@ public class LatexExporter
 	 */
 	private static String pdfTexPath = null;
 	/**
+	 * Number of times to run pdflatex. Ensures that columns align correctly
+	 */
+	private static final int passes = 4;
+	/**
 	 * Problem this exporter is working with
 	 */
 	private final Problem prob;
@@ -877,7 +881,31 @@ public class LatexExporter
 			sb.append(columns.size() + 1);
 			sb.append("}\n");
 		}
-		
+
+		// Column names
+		sb.append("   & ");
+		for(int i = 0; i < columns.size(); i++)
+		{
+			sb.append(escapeLatex(columns.get(i).getName()));
+
+			// Don't end the row with the cell separator
+			if(i + 1 < columns.size())
+				sb.append("& ");
+		}
+		sb.append("\\\\ \\hline \\endfirsthead\n");
+
+		// DataSource name
+		if(dsName != null)
+		{
+			sb.append("\\multicolumn{");
+			sb.append(columns.size() + 1);
+			sb.append("}{c}{{\\bf ");
+			sb.append(escapeLatex(dsName));
+			sb.append("} (cont.)} \\\\\n \\cline{2-");
+			sb.append(columns.size() + 1);
+			sb.append("}\n");
+		}
+
 		// Column names
 		sb.append("   & ");
 		for(int i = 0; i < columns.size(); i++)
@@ -1036,71 +1064,80 @@ public class LatexExporter
 			String texPath = texMatcher.group(1);
 
 			// Run through pdflatex, save results here
-			Domain.setProgressStatus("Generating PDF file...");
+			Domain.setProgressStatus("Preparing to generate PDF...");
 			Process texProc = null;
 			BufferedReader texOutStream = null;
-			int exitVal = 0;
-			String pdfOutput = null;
 
 			// Create pdflatex instance
 			System.out.println("Running '" + texPath + "' through '" + pdfTexPath + "'");
 			ProcessBuilder procBuild = new ProcessBuilder(pdfTexPath, texPath);
 			procBuild.directory(new File(System.getProperty("java.io.tmpdir")));
 			procBuild.redirectErrorStream(true);
-			
-			try
-			{
-				texProc = procBuild.start();
-				texOutStream = new BufferedReader(new InputStreamReader(texProc.getInputStream()));
-				texProc.getOutputStream().close();
-			}
-			catch(IOException ex)
-			{
-				throw new ConfigurationException("Unable to run '" + pdfTexPath + "'", ConfigType.PdfTex, ex);
-			}
 
-			try
-			{
-				// Read the output and save the important parts
-				boolean output = (RProcessor.getDebugMode() == RecordMode.FULL
-						|| RProcessor.getDebugMode() == RecordMode.OUTPUT_ONLY);
+			// We'll use this every pass, might as well pre-compile it
+			Pattern styNotFound = Pattern.compile("File [`'](.*?)\\.sty' not found");
 
-				StringBuilder sb = new StringBuilder();
-				String line = texOutStream.readLine();
-				while(line != null)
+			// Run file through pdflatex multiple times to ensure the tables can align correctly
+			String pdfOutput = null;
+			int exitVal = 0;
+			for(int pass = 1; pass <= passes; pass++)
+			{
+				Domain.setProgressStatus("PDF generation pass " + pass + " of " + passes + "...");
+
+				try
 				{
-					if(output)
-						System.out.println(line);
-					
-					sb.append(line);
-					sb.append('\n');
-					line = texOutStream.readLine();
+					texProc = procBuild.start();
+					texOutStream = new BufferedReader(new InputStreamReader(texProc.getInputStream()));
+					texProc.getOutputStream().close();
+				}
+				catch(IOException ex)
+				{
+					throw new ConfigurationException("Unable to run '" + pdfTexPath + "'", ConfigType.PdfTex, ex);
 				}
 
-				pdfOutput = sb.toString();
+				try
+				{
+					// Read the output and save the important parts
+					boolean output = Domain.isDebugMode();
 
-				// Close process
-				texProc.waitFor();
-				texOutStream.close();
-				exitVal = texProc.exitValue();
-			}
-			catch(IOException ex)
-			{
-				throw new LatexException("Error occurred in reading output from pdfTeX", ex);
-			}
-			catch(InterruptedException ex)
-			{
-				throw new LatexException("Interrupted while waiting for pdfTeX to exit", ex);
+					StringBuilder sb = new StringBuilder();
+					String line = texOutStream.readLine();
+					while(line != null)
+					{
+						if(output)
+							System.out.println(line);
+
+						sb.append(line);
+						sb.append('\n');
+						line = texOutStream.readLine();
+					}
+
+					pdfOutput = sb.toString();
+
+					// Close process
+					texProc.waitFor();
+					texOutStream.close();
+					exitVal = texProc.exitValue();
+				}
+				catch(IOException ex)
+				{
+					throw new LatexException("Error occurred in reading output from pdfTeX", ex);
+				}
+				catch(InterruptedException ex)
+				{
+					throw new LatexException("Interrupted while waiting for pdfTeX to exit", ex);
+				}
+
+				// Ensure we actually succeeded. Check for the Sweave file error
+				Matcher notFoundMatcher = styNotFound.matcher(pdfOutput);
+				if(notFoundMatcher.find())
+				{
+					// Some include file (probably Sweave) not registered with latex
+					throw new LatexException(notFoundMatcher.group(1) + " does not appear to be registered correctly with LaTeX");
+				}
 			}
 
-			// Ensure we actually succeeded. Check for the Sweave file error
-			Pattern styNotFound = Pattern.compile("File [`'](.*?)\\.sty' not found");
-			Matcher notFoundMatcher = styNotFound.matcher(pdfOutput);
-			if(notFoundMatcher.find())
-			{
-				// Some include file (probably Sweave) not registered with latex
-				throw new LatexException(notFoundMatcher.group(1) + " does not appear to be registered correctly with LaTeX");
-			}
+			Domain.setProgressStatus("Moving PDF to save location...");
 
 			// Get the output file name reported by pdflatex
 			Pattern outfilePatt = Pattern.compile("^Output written on (.*\\.pdf)", Pattern.MULTILINE);
