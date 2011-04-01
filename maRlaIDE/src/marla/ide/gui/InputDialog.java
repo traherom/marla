@@ -168,7 +168,7 @@ public class InputDialog extends EscapeDialog
 
 		// Pack and show the input dialog
 		pack();
-		setLocationRelativeTo(VIEW_PANEL);
+		setLocationRelativeTo(viewPanel);
 		inputTextArea.requestFocus();
 		inputTextArea.selectAll();
 		setVisible(true);

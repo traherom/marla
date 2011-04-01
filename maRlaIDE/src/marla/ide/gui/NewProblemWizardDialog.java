@@ -143,7 +143,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 									}
 									catch(DataNotFoundException ex) {}
 									catch(DuplicateNameException ex) {}
-									VIEW_PANEL.workspacePanel.invalidate();
+									viewPanel.workspacePanel.invalidate();
 								}
 								else
 								{
@@ -254,23 +254,64 @@ public class NewProblemWizardDialog extends EscapeDialog
         stepsPanel.add(stepsLabel);
         stepsLabel.setBounds(10, 10, 170, 16);
 
-        welcomeLabel.setFont(new java.awt.Font("Verdana", 1, 12));
+        welcomeLabel.setFont(new java.awt.Font("Verdana", 1, 12)); // NOI18N
         welcomeLabel.setText("1. Welcome");
+        welcomeLabel.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                NewProblemWizardDialog.this.mouseEntered(evt);
+            }
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                NewProblemWizardDialog.this.mouseReleased(evt);
+            }
+        });
         stepsPanel.add(welcomeLabel);
         welcomeLabel.setBounds(20, 40, 140, 16);
 
         nameAndLocationLabel.setFont(new java.awt.Font("Verdana", 0, 12));
         nameAndLocationLabel.setText("2. Name and Location");
+        nameAndLocationLabel.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                NewProblemWizardDialog.this.mouseEntered(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                NewProblemWizardDialog.this.mouseExited(evt);
+            }
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                NewProblemWizardDialog.this.mouseReleased(evt);
+            }
+        });
         stepsPanel.add(nameAndLocationLabel);
         nameAndLocationLabel.setBounds(20, 60, 160, 16);
 
         descriptionLabel.setFont(new java.awt.Font("Verdana", 0, 12));
         descriptionLabel.setText("3. Description");
+        descriptionLabel.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                NewProblemWizardDialog.this.mouseEntered(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                NewProblemWizardDialog.this.mouseExited(evt);
+            }
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                NewProblemWizardDialog.this.mouseReleased(evt);
+            }
+        });
         stepsPanel.add(descriptionLabel);
         descriptionLabel.setBounds(20, 80, 140, 16);
 
         valuesLabel.setFont(new java.awt.Font("Verdana", 0, 12));
         valuesLabel.setText("5. Values");
+        valuesLabel.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                NewProblemWizardDialog.this.mouseEntered(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                NewProblemWizardDialog.this.mouseExited(evt);
+            }
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                NewProblemWizardDialog.this.mouseReleased(evt);
+            }
+        });
         stepsPanel.add(valuesLabel);
         valuesLabel.setBounds(20, 120, 140, 16);
 
@@ -281,11 +322,33 @@ public class NewProblemWizardDialog extends EscapeDialog
 
         subProblemsLabel.setFont(new java.awt.Font("Verdana", 0, 12));
         subProblemsLabel.setText("4. Sub Problems");
+        subProblemsLabel.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                NewProblemWizardDialog.this.mouseEntered(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                NewProblemWizardDialog.this.mouseExited(evt);
+            }
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                NewProblemWizardDialog.this.mouseReleased(evt);
+            }
+        });
         stepsPanel.add(subProblemsLabel);
         subProblemsLabel.setBounds(20, 100, 140, 16);
 
         informationLabel.setFont(new java.awt.Font("Verdana", 0, 12));
         informationLabel.setText("6. Information");
+        informationLabel.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                NewProblemWizardDialog.this.mouseEntered(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                NewProblemWizardDialog.this.mouseExited(evt);
+            }
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                NewProblemWizardDialog.this.mouseReleased(evt);
+            }
+        });
         stepsPanel.add(informationLabel);
         informationLabel.setBounds(20, 140, 140, 16);
 
@@ -314,14 +377,14 @@ public class NewProblemWizardDialog extends EscapeDialog
             .addGroup(welcomePanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(welcomeTextLabel)
-                .addContainerGap(247, Short.MAX_VALUE))
+                .addContainerGap(249, Short.MAX_VALUE))
         );
         welcomePanelLayout.setVerticalGroup(
             welcomePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(welcomePanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(welcomeTextLabel)
-                .addContainerGap(292, Short.MAX_VALUE))
+                .addContainerGap(293, Short.MAX_VALUE))
         );
 
         welcomeCardPanel.add(welcomePanel);
@@ -371,11 +434,11 @@ public class NewProblemWizardDialog extends EscapeDialog
                     .addGroup(nameAndLocationPanelLayout.createSequentialGroup()
                         .addComponent(problemNameLabel)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(problemNameTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 328, Short.MAX_VALUE))
+                        .addComponent(problemNameTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 340, Short.MAX_VALUE))
                     .addGroup(nameAndLocationPanelLayout.createSequentialGroup()
                         .addComponent(problemLocationLabel)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(problemLocationTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 311, Short.MAX_VALUE))
+                        .addComponent(problemLocationTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 323, Short.MAX_VALUE))
                     .addComponent(browseButton, javax.swing.GroupLayout.Alignment.TRAILING))
                 .addContainerGap())
         );
@@ -392,7 +455,7 @@ public class NewProblemWizardDialog extends EscapeDialog
                     .addComponent(problemLocationTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(browseButton)
-                .addContainerGap(204, Short.MAX_VALUE))
+                .addContainerGap(216, Short.MAX_VALUE))
         );
 
         nameAndLocationCardPanel.add(nameAndLocationPanel);
@@ -429,7 +492,7 @@ public class NewProblemWizardDialog extends EscapeDialog
             .addGroup(descriptionPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(descriptionPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(descroptionScollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 436, Short.MAX_VALUE)
+                    .addComponent(descroptionScollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 440, Short.MAX_VALUE)
                     .addComponent(problemDescriptionLabel))
                 .addContainerGap())
         );
@@ -439,7 +502,7 @@ public class NewProblemWizardDialog extends EscapeDialog
                 .addContainerGap()
                 .addComponent(problemDescriptionLabel)
                 .addGap(18, 18, 18)
-                .addComponent(descroptionScollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 262, Short.MAX_VALUE)
+                .addComponent(descroptionScollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 264, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -471,7 +534,7 @@ public class NewProblemWizardDialog extends EscapeDialog
             subProblemsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(subProblemsPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(subProblemsScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 449, Short.MAX_VALUE))
+                .addComponent(subProblemsScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 451, Short.MAX_VALUE))
         );
         subProblemsPanelLayout.setVerticalGroup(
             subProblemsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -490,7 +553,7 @@ public class NewProblemWizardDialog extends EscapeDialog
             }
         });
         subProblemsCardPanel.add(addSubProblemButton);
-        addSubProblemButton.setBounds(285, 330, 70, 28);
+        addSubProblemButton.setBounds(285, 330, 70, 25);
 
         removeSubProblemButton.setFont(new java.awt.Font("Verdana", 0, 12));
         removeSubProblemButton.setText("Remove");
@@ -502,7 +565,7 @@ public class NewProblemWizardDialog extends EscapeDialog
             }
         });
         subProblemsCardPanel.add(removeSubProblemButton);
-        removeSubProblemButton.setBounds(370, 330, 90, 28);
+        removeSubProblemButton.setBounds(370, 330, 90, 25);
 
         wizardCardPanel.add(subProblemsCardPanel, "card6");
 
@@ -531,7 +594,7 @@ public class NewProblemWizardDialog extends EscapeDialog
             }
         });
         valuesCardPanel.add(addDataSetButton);
-        addDataSetButton.setBounds(285, 330, 70, 28);
+        addDataSetButton.setBounds(285, 330, 70, 25);
 
         removeDataSetButton.setFont(new java.awt.Font("Verdana", 0, 12));
         removeDataSetButton.setText("Remove");
@@ -542,7 +605,7 @@ public class NewProblemWizardDialog extends EscapeDialog
             }
         });
         valuesCardPanel.add(removeDataSetButton);
-        removeDataSetButton.setBounds(370, 330, 90, 28);
+        removeDataSetButton.setBounds(370, 330, 90, 25);
 
         wizardCardPanel.add(valuesCardPanel, "card2");
 
@@ -580,27 +643,27 @@ public class NewProblemWizardDialog extends EscapeDialog
 
         studentNameTextField.setFont(new java.awt.Font("Verdana", 0, 12));
         informationCardPanel.add(studentNameTextField);
-        studentNameTextField.setBounds(110, 50, 289, 26);
+        studentNameTextField.setBounds(110, 50, 289, 22);
 
         courseShortNameTextField.setFont(new java.awt.Font("Verdana", 0, 12));
         informationCardPanel.add(courseShortNameTextField);
-        courseShortNameTextField.setBounds(147, 90, 150, 26);
+        courseShortNameTextField.setBounds(147, 90, 150, 22);
 
         courseLongNameTextField.setFont(new java.awt.Font("Verdana", 0, 12));
         informationCardPanel.add(courseLongNameTextField);
-        courseLongNameTextField.setBounds(140, 130, 240, 26);
+        courseLongNameTextField.setBounds(140, 130, 240, 22);
 
         chapterTextField.setFont(new java.awt.Font("Verdana", 0, 12));
         informationCardPanel.add(chapterTextField);
-        chapterTextField.setBounds(73, 170, 190, 26);
+        chapterTextField.setBounds(73, 170, 190, 22);
 
         sectionTextField.setFont(new java.awt.Font("Verdana", 0, 12));
         informationCardPanel.add(sectionTextField);
-        sectionTextField.setBounds(70, 210, 170, 26);
+        sectionTextField.setBounds(70, 210, 170, 22);
 
         problemNumberTextField.setFont(new java.awt.Font("Verdana", 0, 12));
         informationCardPanel.add(problemNumberTextField);
-        problemNumberTextField.setBounds(130, 250, 90, 26);
+        problemNumberTextField.setBounds(130, 250, 90, 22);
 
         wizardLineCard6.setFont(new java.awt.Font("Verdana", 0, 12));
         wizardLineCard6.setText("______________________________________________________");
@@ -682,7 +745,7 @@ public class NewProblemWizardDialog extends EscapeDialog
         newProblemPanel.setLayout(newProblemPanelLayout);
         newProblemPanelLayout.setHorizontalGroup(
             newProblemPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 755, Short.MAX_VALUE)
+            .addGap(0, 767, Short.MAX_VALUE)
             .addGroup(newProblemPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(newProblemPanelLayout.createSequentialGroup()
                     .addContainerGap()
@@ -690,7 +753,7 @@ public class NewProblemWizardDialog extends EscapeDialog
                         .addGroup(newProblemPanelLayout.createSequentialGroup()
                             .addComponent(stepsPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 193, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(wizardCardPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 532, Short.MAX_VALUE))
+                            .addComponent(wizardCardPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 548, Short.MAX_VALUE))
                         .addComponent(wizardControlPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addContainerGap()))
         );
@@ -701,8 +764,8 @@ public class NewProblemWizardDialog extends EscapeDialog
                 .addGroup(newProblemPanelLayout.createSequentialGroup()
                     .addContainerGap()
                     .addGroup(newProblemPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(wizardCardPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 390, Short.MAX_VALUE)
-                        .addComponent(stepsPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 390, Short.MAX_VALUE))
+                        .addComponent(wizardCardPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 397, Short.MAX_VALUE)
+                        .addComponent(stepsPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 397, Short.MAX_VALUE))
                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                     .addComponent(wizardControlPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addContainerGap()))
@@ -712,7 +775,7 @@ public class NewProblemWizardDialog extends EscapeDialog
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 755, Short.MAX_VALUE)
+            .addGap(0, 767, Short.MAX_VALUE)
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(layout.createSequentialGroup()
                     .addGap(0, 0, 0)
@@ -734,18 +797,18 @@ public class NewProblemWizardDialog extends EscapeDialog
 
 	private void browseButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_browseButtonActionPerformed
 		// Construct the folder-based open chooser dialog
-		VIEW_PANEL.openChooserDialog.setFileFilter(VIEW_PANEL.defaultFilter);
-		VIEW_PANEL.openChooserDialog.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-		VIEW_PANEL.openChooserDialog.setSelectedFile(new File(""));
-		VIEW_PANEL.openChooserDialog.setCurrentDirectory(new File(Domain.lastGoodDir));
+		viewPanel.openChooserDialog.setFileFilter(viewPanel.defaultFilter);
+		viewPanel.openChooserDialog.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+		viewPanel.openChooserDialog.setSelectedFile(new File(""));
+		viewPanel.openChooserDialog.setCurrentDirectory(new File(Domain.lastGoodDir));
 		// Display the chooser and retrieve the selected folder
-		int response = VIEW_PANEL.openChooserDialog.showOpenDialog(this);
+		int response = viewPanel.openChooserDialog.showOpenDialog(this);
 		if(response == JFileChooser.APPROVE_OPTION)
 		{
 			// If the user selected a folder that exists, point the problem's location to the newly selected location
-			if(VIEW_PANEL.openChooserDialog.getSelectedFile().exists())
+			if(viewPanel.openChooserDialog.getSelectedFile().exists())
 			{
-				File file = VIEW_PANEL.openChooserDialog.getSelectedFile();
+				File file = viewPanel.openChooserDialog.getSelectedFile();
 				if(file.isDirectory())
 				{
 					Domain.lastGoodDir = file.toString();
@@ -790,45 +853,45 @@ public class NewProblemWizardDialog extends EscapeDialog
 
 		if (editing)
 		{
-			if (VIEW_PANEL.legendContentPanel.getComponentCount() == 1)
+			if (viewPanel.legendContentPanel.getComponentCount() == 1)
 			{
-				VIEW_PANEL.legendContentPanel.removeAll();
-				((GridLayout) VIEW_PANEL.legendContentPanel.getLayout()).setColumns(3);
+				viewPanel.legendContentPanel.removeAll();
+				((GridLayout) viewPanel.legendContentPanel.getLayout()).setColumns(3);
 			}
 			
 			// Add sub problem to legend
 			JLabel label;
-			if (VIEW_PANEL.firstCounter == 1)
+			if (viewPanel.firstCounter == 1)
 			{
-				label = VIEW_PANEL.second;
+				label = viewPanel.second;
 			}
-			else if (VIEW_PANEL.firstCounter == 2)
+			else if (viewPanel.firstCounter == 2)
 			{
-				label = VIEW_PANEL.third;
+				label = viewPanel.third;
 			}
 			else
 			{
 				label = new JLabel ("");
-				VIEW_PANEL.second = new JLabel ("");
-				VIEW_PANEL.third = new JLabel ("");
+				viewPanel.second = new JLabel ("");
+				viewPanel.third = new JLabel ("");
 			}
 			label.setText(subProblem.getSubproblemID());
 			label.setForeground(subProblem.getColor());
 
-			if (VIEW_PANEL.firstCounter == 3)
+			if (viewPanel.firstCounter == 3)
 			{
-				VIEW_PANEL.firstCounter = 0;
+				viewPanel.firstCounter = 0;
 				
-				GridLayout layout = (GridLayout) VIEW_PANEL.legendContentPanel.getLayout();
+				GridLayout layout = (GridLayout) viewPanel.legendContentPanel.getLayout();
 				layout.setRows(layout.getRows() + 1);
 
-				VIEW_PANEL.legendContentPanel.add(label);
-				VIEW_PANEL.legendContentPanel.add(VIEW_PANEL.second);
-				VIEW_PANEL.legendContentPanel.add(VIEW_PANEL.third);
+				viewPanel.legendContentPanel.add(label);
+				viewPanel.legendContentPanel.add(viewPanel.second);
+				viewPanel.legendContentPanel.add(viewPanel.third);
 
-				VIEW_PANEL.legendContentPanel.invalidate();
+				viewPanel.legendContentPanel.invalidate();
 			}
-			++VIEW_PANEL.firstCounter;
+			++viewPanel.firstCounter;
 		}
 
 		((JTextArea) ((JViewport) ((JScrollPane) ((JPanel) subProblemPanels.get(subProblemPanels.size() - 1)).getComponent(1)).getComponent(0)).getComponent(0)).requestFocus();
@@ -862,44 +925,46 @@ public class NewProblemWizardDialog extends EscapeDialog
 
 		if (editing)
 		{
-			if (VIEW_PANEL.firstCounter == 3)
+			if (viewPanel.firstCounter == 3)
 			{
-				VIEW_PANEL.third.setText ("");
+				viewPanel.third.setText ("");
 			}
-			else if (VIEW_PANEL.firstCounter == 2)
+			else if (viewPanel.firstCounter == 2)
 			{
-				VIEW_PANEL.second.setText ("");
+				viewPanel.second.setText ("");
 			}
-			else if(VIEW_PANEL.firstCounter == 1)
+			else if(viewPanel.firstCounter == 1)
 			{
-				VIEW_PANEL.firstCounter = 4;
+				viewPanel.firstCounter = 4;
 
-				VIEW_PANEL.legendContentPanel.remove(VIEW_PANEL.legendContentPanel.getComponentCount() - 1);
-				VIEW_PANEL.legendContentPanel.remove(VIEW_PANEL.legendContentPanel.getComponentCount() - 1);
-				VIEW_PANEL.legendContentPanel.remove(VIEW_PANEL.legendContentPanel.getComponentCount() - 1);
+				viewPanel.legendContentPanel.remove(viewPanel.legendContentPanel.getComponentCount() - 1);
+				viewPanel.legendContentPanel.remove(viewPanel.legendContentPanel.getComponentCount() - 1);
+				viewPanel.legendContentPanel.remove(viewPanel.legendContentPanel.getComponentCount() - 1);
 
-				GridLayout layout = (GridLayout) VIEW_PANEL.legendContentPanel.getLayout();
+				GridLayout layout = (GridLayout) viewPanel.legendContentPanel.getLayout();
 				layout.setRows(layout.getRows() - 1);
 
-				if (VIEW_PANEL.legendContentPanel.getComponentCount() >= 3)
+				if (viewPanel.legendContentPanel.getComponentCount() >= 3)
 				{
-					VIEW_PANEL.third = (JLabel) VIEW_PANEL.legendContentPanel.getComponent(VIEW_PANEL.legendContentPanel.getComponentCount() - 1);
-					VIEW_PANEL.second = (JLabel) VIEW_PANEL.legendContentPanel.getComponent(VIEW_PANEL.legendContentPanel.getComponentCount() - 2);
+					viewPanel.third = (JLabel) viewPanel.legendContentPanel.getComponent(viewPanel.legendContentPanel.getComponentCount() - 1);
+					viewPanel.second = (JLabel) viewPanel.legendContentPanel.getComponent(viewPanel.legendContentPanel.getComponentCount() - 2);
 				}
 				else
 				{
-					if (VIEW_PANEL.legendContentPanel.getComponentCount() == 0)
+					if (viewPanel.legendContentPanel.getComponentCount() == 0)
 					{
-						((GridLayout) VIEW_PANEL.legendContentPanel.getLayout()).setColumns(1);
+						((GridLayout) viewPanel.legendContentPanel.getLayout()).setColumns(1);
 						JLabel noneLabel = new JLabel ("-No Sub Problems-");
 						noneLabel.setFont(ViewPanel.FONT_BOLD_12);
-						VIEW_PANEL.legendContentPanel.add (noneLabel);
+						viewPanel.legendContentPanel.add (noneLabel);
 					}
 				}
 
-				VIEW_PANEL.legendContentPanel.invalidate();
+				viewPanel.legendContentPanel.invalidate();
 			}
-			--VIEW_PANEL.firstCounter;
+			--viewPanel.firstCounter;
+
+			viewPanel.workspacePanel.repaint();
 		}
 
 		try
@@ -970,17 +1035,17 @@ public class NewProblemWizardDialog extends EscapeDialog
 			dataSet.setSize(dataSet.getPreferredSize());
 
 			// Find somewhere it doesn't intersect with any other DataSource
-			int x = VIEW_PANEL.workspacePanel.getWidth() / 2 - dataSet.getWidth() / 2;
-			int y = VIEW_PANEL.workspacePanel.getHeight() / 3;
+			int x = viewPanel.workspacePanel.getWidth() / 2 - dataSet.getWidth() / 2;
+			int y = viewPanel.workspacePanel.getHeight() / 3;
 
-			Component compL = VIEW_PANEL.workspacePanel.getComponentAt(x, y);
-			Component compR = VIEW_PANEL.workspacePanel.getComponentAt(x + dataSet.getWidth(), y);
-			while(compL != VIEW_PANEL.workspacePanel || compR != VIEW_PANEL.workspacePanel)
+			Component compL = viewPanel.workspacePanel.getComponentAt(x, y);
+			Component compR = viewPanel.workspacePanel.getComponentAt(x + dataSet.getWidth(), y);
+			while(compL != viewPanel.workspacePanel || compR != viewPanel.workspacePanel)
 			{
 				y += dataSet.getHeight() + 20;
 
-				compL = VIEW_PANEL.workspacePanel.getComponentAt(x, y);
-				compR = VIEW_PANEL.workspacePanel.getComponentAt(x + dataSet.getWidth(), y);
+				compL = viewPanel.workspacePanel.getComponentAt(x, y);
+				compR = viewPanel.workspacePanel.getComponentAt(x + dataSet.getWidth(), y);
 	
 				// catch if we went all the way off the panel
 				if(compL == null || compR == null)
@@ -1046,7 +1111,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 			removedData = domain.problem.removeData(domain.problem.getData(dataSetTabbedPane.getSelectedIndex()));
 		}
 
-		VIEW_PANEL.workspacePanel.remove(removedData);
+		viewPanel.workspacePanel.remove(removedData);
 
 		dataSetTabbedPane.remove(dataSetTabbedPane.getSelectedIndex());
 		if(dataSetTabbedPane.getTabCount() == 0)
@@ -1058,8 +1123,39 @@ public class NewProblemWizardDialog extends EscapeDialog
 	private void closeWizardButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_closeWizardButtonActionPerformed
 		ignoreDataChanging = true;
 
+		if (editing)
+		{
+			if(descriptionCardPanel.isVisible())
+			{
+				Problem problem = domain.problem;
+				if(newProblem != null)
+				{
+					problem = newProblem;
+				}
+				verifyDescriptionPanel(problem);
+			}
+			else if(subProblemsCardPanel.isVisible())
+			{
+				Problem problem = domain.problem;
+				if(newProblem != null)
+				{
+					problem = newProblem;
+				}
+				verifySubProblemsPanel(problem);
+			}
+			else if(informationCardPanel.isVisible())
+			{
+				Problem problem = domain.problem;
+				if(newProblem != null)
+				{
+					problem = newProblem;
+				}
+				verifyInfoPanel(problem);
+			}
+		}
+
 		dispose();
-		VIEW_PANEL.requestFocus();
+		viewPanel.requestFocus();
 
 		newProblem = null;
 		ignoreDataChanging = false;
@@ -1108,7 +1204,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 				}
 				catch(IOException ex)
 				{
-					JOptionPane.showMessageDialog(VIEW_PANEL.domain.getTopWindow(), "The problem name you have given contains characters that are\n"
+					JOptionPane.showMessageDialog(viewPanel.domain.getTopWindow(), "The problem name you have given contains characters that are\n"
 														+ "not legal in a filename. Please rename your file and avoid\n"
 														+ "using special characters.",
 												  "Invalid Filename",
@@ -1120,7 +1216,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 			// Ensure the problem name given does not match an already existing file
 			if(continueAllowed && file.exists() && !newProblemOverwrite && newProblem != null)
 			{
-				int response = JOptionPane.showConfirmDialog(VIEW_PANEL.domain.getTopWindow(), "The given problem name already exists as a file\n"
+				int response = JOptionPane.showConfirmDialog(viewPanel.domain.getTopWindow(), "The given problem name already exists as a file\n"
 																   + "at the specified location. If you would not like to overwrite the\n"
 																   + "existing file, change the problem name or the problem location.\n"
 																   + "Would you like to overwrite the existing file?",
@@ -1385,6 +1481,60 @@ public class NewProblemWizardDialog extends EscapeDialog
 
 		dispose();
 	}//GEN-LAST:event_formWindowClosing
+
+	private void mouseEntered(java.awt.event.MouseEvent evt)//GEN-FIRST:event_mouseEntered
+	{//GEN-HEADEREND:event_mouseEntered
+		setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+	}//GEN-LAST:event_mouseEntered
+
+	private void mouseExited(java.awt.event.MouseEvent evt)//GEN-FIRST:event_mouseExited
+	{//GEN-HEADEREND:event_mouseExited
+		setCursor(Cursor.getDefaultCursor());
+	}//GEN-LAST:event_mouseExited
+
+	private void mouseReleased(java.awt.event.MouseEvent evt)//GEN-FIRST:event_mouseReleased
+	{//GEN-HEADEREND:event_mouseReleased
+		JLabel label = (JLabel) evt.getSource();
+		while (backWizardButton.isEnabled())
+		{
+			backWizardButtonActionPerformed(null);
+		}
+		if(label.isEnabled() && label == welcomeLabel)
+		{
+			// do nothing, cuz we're here
+		}
+		else if(label.isEnabled() && label == nameAndLocationLabel)
+		{
+			nextWizardButtonActionPerformed(null);
+		}
+		else if(label.isEnabled() && label == descriptionLabel)
+		{
+			nextWizardButtonActionPerformed(null);
+			nextWizardButtonActionPerformed(null);
+		}
+		else if(label.isEnabled() && label == subProblemsLabel)
+		{
+			nextWizardButtonActionPerformed(null);
+			nextWizardButtonActionPerformed(null);
+			nextWizardButtonActionPerformed(null);
+		}
+		else if(label.isEnabled() && label == valuesLabel)
+		{
+			nextWizardButtonActionPerformed(null);
+			nextWizardButtonActionPerformed(null);
+			nextWizardButtonActionPerformed(null);
+			nextWizardButtonActionPerformed(null);
+		}
+		else if(label.isEnabled() && label == informationLabel)
+		{
+			nextWizardButtonActionPerformed(null);
+			nextWizardButtonActionPerformed(null);
+			nextWizardButtonActionPerformed(null);
+			nextWizardButtonActionPerformed(null);
+			nextWizardButtonActionPerformed(null);
+		}
+	}//GEN-LAST:event_mouseReleased
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton addDataSetButton;
     private javax.swing.JButton addSubProblemButton;
@@ -1464,7 +1614,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 	 */
 	private JLabel findLabel(String id)
 	{
-		for (Component comp : VIEW_PANEL.legendContentPanel.getComponents())
+		for (Component comp : viewPanel.legendContentPanel.getComponents())
 		{
 			if (((JLabel) comp).getText().equals(id))
 			{
@@ -1522,12 +1672,14 @@ public class NewProblemWizardDialog extends EscapeDialog
 			public void mouseReleased(MouseEvent evt)
 			{
 				Color color = evt.getComponent().getBackground();
-				Color newColor = ColorPicker.showDialog(WIZARD, "Select Color", color, false, VIEW_PANEL);
+				Color newColor = ColorPicker.showDialog(WIZARD, "Select Color", color, false, viewPanel);
 				if(newColor != null)
 				{
 					evt.getComponent().setBackground(newColor);
+					subProblem.setColor(newColor);
 					if (editing)
 					{
+						viewPanel.workspacePanel.repaint();
 						findLabel(subProblem.getSubproblemID()).setForeground(newColor);
 					}
 				}
@@ -1658,7 +1810,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 			public void mouseReleased(MouseEvent evt)
 			{
 				int index = table.getTableHeader().columnAtPoint(evt.getPoint());
-				Object name = JOptionPane.showInputDialog(VIEW_PANEL.domain.getTopWindow(), "Give the column a new name:", "Column Name",
+				Object name = JOptionPane.showInputDialog(viewPanel.domain.getTopWindow(), "Give the column a new name:", "Column Name",
 														  JOptionPane.QUESTION_MESSAGE, null, null,
 														  table.getColumnModel().getColumn(index).getHeaderValue());
 				if(name != null)
@@ -1673,7 +1825,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 						}
 						else
 						{
-							JOptionPane.showMessageDialog(VIEW_PANEL.domain.getTopWindow(), "A column with that name already exists.", "Duplicate Column", JOptionPane.WARNING_MESSAGE);
+							JOptionPane.showMessageDialog(viewPanel.domain.getTopWindow(), "A column with that name already exists.", "Duplicate Column", JOptionPane.WARNING_MESSAGE);
 						}
 					}
 				}
@@ -1782,29 +1934,29 @@ public class NewProblemWizardDialog extends EscapeDialog
 			public void actionPerformed(ActionEvent evt)
 			{
 				// Construct the folder-based open chooser dialog
-				VIEW_PANEL.openChooserDialog.setFileFilter(VIEW_PANEL.csvFilter);
-				VIEW_PANEL.openChooserDialog.setFileSelectionMode(JFileChooser.FILES_ONLY);
-				VIEW_PANEL.openChooserDialog.setCurrentDirectory(new File(Domain.lastGoodDir));
+				viewPanel.openChooserDialog.setFileFilter(viewPanel.csvFilter);
+				viewPanel.openChooserDialog.setFileSelectionMode(JFileChooser.FILES_ONLY);
+				viewPanel.openChooserDialog.setCurrentDirectory(new File(Domain.lastGoodDir));
 				if(new File(Domain.lastGoodDir).isFile())
 				{
-					VIEW_PANEL.openChooserDialog.setSelectedFile(new File(Domain.lastGoodDir));
+					viewPanel.openChooserDialog.setSelectedFile(new File(Domain.lastGoodDir));
 				}
 				else
 				{
-					VIEW_PANEL.openChooserDialog.setSelectedFile(new File(""));
+					viewPanel.openChooserDialog.setSelectedFile(new File(""));
 				}
 				// Display the chooser and retrieve the selected folder
-				int response = VIEW_PANEL.openChooserDialog.showOpenDialog(NEW_PROBLEM_WIZARD);
+				int response = viewPanel.openChooserDialog.showOpenDialog(NEW_PROBLEM_WIZARD);
 				if(response == JFileChooser.APPROVE_OPTION)
 				{
 					// If the user selected a file that exists, point the problem's location to the newly selected location
-					if(VIEW_PANEL.openChooserDialog.getSelectedFile().exists())
+					if(viewPanel.openChooserDialog.getSelectedFile().exists())
 					{
-						Domain.lastGoodDir = VIEW_PANEL.openChooserDialog.getSelectedFile().getParent();
+						Domain.lastGoodDir = viewPanel.openChooserDialog.getSelectedFile().getParent();
 						try
 						{
 							ignoreDataChanging = true;
-							DataSet importedDataSet = DataSet.importFile(VIEW_PANEL.openChooserDialog.getSelectedFile().toString());
+							DataSet importedDataSet = DataSet.importFile(viewPanel.openChooserDialog.getSelectedFile().toString());
 
 							// Clear existing data
 							for(int i = dataSet.getColumnCount() - 1; 0 <= i; i--)
@@ -1851,7 +2003,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 						}
 						catch(MarlaException ex)
 						{
-							JOptionPane.showMessageDialog(VIEW_PANEL.domain.getTopWindow(), ex.getMessage(), "Load failed", JOptionPane.WARNING_MESSAGE);
+							JOptionPane.showMessageDialog(viewPanel.domain.getTopWindow(), ex.getMessage(), "Load failed", JOptionPane.WARNING_MESSAGE);
 						}
 					}
 				}
@@ -1969,7 +2121,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 
 		// Pack and show the New Problem Wizard dialog
 		pack();
-		setLocationRelativeTo(VIEW_PANEL);
+		setLocationRelativeTo(viewPanel);
 		setVisible(true);
 
 		ignoreDataChanging = false;
@@ -2173,7 +2325,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 	private void finishNewProblemWizard(boolean editing)
 	{
 		// Close the current or old problem, if one is open
-		VIEW_PANEL.closeProblem(editing);
+		viewPanel.closeProblem(editing);
 
 		// Use values from the New Problem Wizard to construct a new problem
 		if(newProblem != null)
@@ -2183,7 +2335,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 		}
 
 		// Open data stored in the problem currently
-		VIEW_PANEL.openProblem(editing);
+		viewPanel.openProblem(editing);
 
 		// Save the problem immedietly
 		if(!editing)
@@ -2320,7 +2472,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 		}
 
 		// Figure out where the columns should start based on our center
-		int wsWidth = VIEW_PANEL.workspacePanel.getWidth();
+		int wsWidth = viewPanel.workspacePanel.getWidth();
 		int wsCenterX = wsWidth / 2;
 
 		// Find the median value
@@ -2350,7 +2502,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 		}
 
 		// Put datasets a third of the way down the workspace
-		int y = VIEW_PANEL.workspacePanel.getHeight() / 3;
+		int y = viewPanel.workspacePanel.getHeight() / 3;
 
 		int previousLeftX = wsCenterX - halfWidth;
 		for(int i = 0; i < dsCount; i++)
@@ -2360,7 +2512,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 			ds.setLocation(previousLeftX, y);
 			previousLeftX += widths[i] + spaceWidth;
 
-			VIEW_PANEL.rebuildTree(ds);
+			viewPanel.rebuildTree(ds);
 		}
 	}
 }
