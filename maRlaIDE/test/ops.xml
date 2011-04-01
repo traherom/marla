@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="Cp1252"?>
+<?xml version="1.0" encoding="UTF8"?>
 <operations>
   <operation name="NOP" list="false">
     <!-- This operation is used for testing. It does nothing except print
@@ -8,7 +8,7 @@
     </computation>
   </operation>
   <operation name="Histogram" category="Plots" plot="true">
-    <query type="column" name="col" prompt="Column:" />
+    <query type="column" name="col" prompt="Column:" column_type="numeric" />
     <displayname>
       hist(
       <response name="col" default="x" />
@@ -22,7 +22,7 @@
     </computation>
   </operation>
   <operation name="Boxplot" category="Plots" plot="true">
-    <query type="column" name="col" prompt="Column:" />
+    <query type="column" name="col" prompt="Column:" column_type="numeric" />
     <displayname>
       boxplot(
       <response name="col" default="x" />
@@ -36,7 +36,7 @@
     </computation>
   </operation>
   <operation name="Q-Q Norm" category="Plots" plot="true">
-    <query type="column" name="col" prompt="Column:" />
+    <query type="column" name="col" prompt="Column:" column_type="numeric" />
     <displayname>
       qqnorm(
       <response name="col" default="x" />
@@ -52,7 +52,7 @@
     </computation>
   </operation>
   <operation name="Q-Q Line" category="Plots" plot="true">
-    <query type="column" name="col" prompt="Column:" />
+    <query type="column" name="col" prompt="Column:" column_type="numeric" />
     <displayname>
       qqline(
       <response name="col" default="x" />
@@ -67,8 +67,8 @@
     </computation>
   </operation>
   <operation name="Q-Q Plot" category="Plots" plot="true">
-    <query type="column" name="x" prompt="Column 1:" />
-    <query type="column" name="y" prompt="Column 2:" />
+    <query type="column" name="x" prompt="Column 1:" column_type="numeric" />
+    <query type="column" name="y" prompt="Column 2:" column_type="numeric" />
     <displayname>
       qqplot(
       <response name="x" default="x" />
@@ -97,7 +97,7 @@
     </computation>
   </operation>
   <operation name="Barplot" category="Plots" plot="true">
-    <query type="column" name="col" prompt="Column:" />
+    <query type="column" name="col" prompt="Column:" column_type="numeric" />
     <displayname>
       barplot(
       <response name="col" default="x" />
@@ -111,7 +111,7 @@
     </computation>
   </operation>
   <operation name="Dot Chart" category="Plots" plot="true">
-    <query type="column" name="col" prompt="Column:" />
+    <query type="column" name="col" prompt="Column:" column_type="numeric" />
     <displayname>
       dotchart(
       <response name="col" default="x" />
@@ -125,7 +125,7 @@
     </computation>
   </operation>
   <operation name="Strip Chart" category="Plots" plot="true">
-    <query type="column" name="col" prompt="Column:" />
+    <query type="column" name="col" prompt="Column:" column_type="numeric" />
     <displayname>
       stripchart(
       <response name="col" default="x" />
@@ -139,8 +139,8 @@
     </computation>
   </operation>
   <operation name="Divide" category="Basic Math">
-    <query type="column" name="col" prompt="Column:" column_type="numeric" />
     <query type="numeric" name="val" prompt="Divide by:" />
+    <query type="column" name="col" prompt="Column:" column_type="numeric" />
     <displayname>
       <response name="col" default="column" />
       /
@@ -427,28 +427,26 @@
     </computation>
   </operation>
   <operation name="t-test" category="Statistical Test">
+    <query type="column" column_type="numeric" prompt="Column:" name="col" />
     <query type="checkbox" prompt="Assume data is normal" name="normal" />
     <computation>
-      <!-- Run t test on each column and save, plus prepare the top row -->
-      <cmd>t = list()</cmd>
-      <loop type="parent" value_var="col" key_var="colName" index_var="i">
-        <if rvar="col" vartype="numeric">
-          <then>
-            <cmd>t[[i]] = t.test(col)</cmd>
-            <save type="string" column="Column">colName</save>
-          </then>
-        </if>
-      </loop>
-      <!-- Save each -->
-      <loop type="numeric" loop_var="1:length(t)" index_var="i">
-        <save type="numeric" column="t">t[[i]]$statistic</save>
-        <save type="numeric" column="DF">t[[i]]$parameter</save>
-        <save type="numeric" column="P-Value">t[[i]]$p.value</save>
-        <save type="numeric" column="Mean">t[[i]]$estimate</save>
-        <save type="numeric" column="Lower CI">t[[i]]$conf.int[1]</save>
-        <save type="numeric" column="Upper CI">t[[i]]$conf.int[2]</save>
-        <save type="numeric" column="alpha">attr(t[[i]]$conf.int, 'conf.level')</save>
-      </loop>
+      <set rvar="colName" name="col" use="name" />
+      <set rvar="colVals" name="col" use="values" />
+      <cmd>t = t.test(colVals)</cmd>
+      <cmd>newColName = paste('t-test(', colName, ')', sep='')</cmd>
+      <!-- Create a "t-test vals" column, if it doesn't already exist -->
+      <if colexists="t-test">
+        <else>
+          <save type="string" column="t-test">c("estimate", "parameter", "P-Value", "Mean", "Lower CI", "Upper CI", "Alpha")</save>
+        </else>
+      </if>
+      <save type="numeric" r_column="newColName">t$statistic</save>
+      <save type="numeric" r_column="newColName">t$parameter</save>
+      <save type="numeric" r_column="newColName">t$p.value</save>
+      <save type="numeric" r_column="newColName">t$estimate</save>
+      <save type="numeric" r_column="newColName">t$conf.int[1]</save>
+      <save type="numeric" r_column="newColName">t$conf.int[2]</save>
+      <save type="numeric" r_column="newColName">attr(t$conf.int, 'conf.level')</save>
     </computation>
   </operation>
   <operation name="Mean" category="Basic Analysis">
@@ -467,7 +465,7 @@
   <operation name="StdDev" category="Basic Analysis">
     <query type="column" name="col" prompt="Column:" column_type="numeric" />
     <displayname>
-      &#x3c3;(
+      σ(
       <response name="col" default="x" />
       )
     </displayname>
@@ -480,7 +478,7 @@
   <operation name="Sum" category="Basic Analysis">
     <query type="column" name="col" prompt="Column:" column_type="numeric" />
     <displayname>
-      &#x2211;(
+      ∑(
       <response name="col" default="x" />
       )
     </displayname>
@@ -491,13 +489,16 @@
     </computation>
   </operation>
   <operation name="Summary" category="Basic Analysis">
+    <query type="column" prompt="Column:" name="col" />
     <computation>
-      <loop type="parent" key_var="colName" value_var="col">
-        <cmd>s = summary(col)</cmd>
-        <cmd>n = names(s)</cmd>
-        <loop type="numeric" loop_var="s" index_var="i">
-          <save type="numeric" r_column="paste(colName, n[i])">s[i]</save>
-        </loop>
+      <set rvar="colName" name="col" use="name" />
+      <set rvar="colVals" name="col" use="values" />
+      <!-- Get the summary of the column and then display whatever summary() tells us about it. Generically written -->
+      <cmd>s = summary(colVals)</cmd>
+      <cmd>n = names(s)</cmd>
+      <loop type="numeric" loop_var="s" index_var="i">
+        <save type="string" r_column="paste('summary(', colName, ')', sep='')">n[i]</save>
+        <save r_column="paste('summary(', colName, ')', ' vals', sep='')">s[i]</save>
       </loop>
     </computation>
   </operation>
@@ -512,15 +513,22 @@
       <set name="col" rvar="colName" use="name" />
       <set name="col" rvar="colVals" use="values" />
       <cmd>a = fivenum(colVals)</cmd>
-      <save type="numeric" r_column="paste('min(', colName, ')', sep='')">a[1]</save>
-      <save type="numeric" r_column="paste('Lower Hinge(', colName, ')', sep='')">a[2]</save>
-      <save type="numeric" r_column="paste('median(', colName, ')', sep='')">a[3]</save>
-      <save type="numeric" r_column="paste('Upper Hinge(', colName, ')', sep='')">a[4]</save>
-      <save type="numeric" r_column="paste('max(', colName, ')', sep='')">a[5]</save>
+      <cmd>newColName = paste('fivenum(', colName, ')', sep='')</cmd>
+      <!-- Create a "fivenums" column, if it doesn't already exist -->
+      <if colexists="fivenum">
+        <else>
+          <save type="string" column="fivenum">c("Min", "Lower Hinge", "Median", "Upper Hinge", "Max")</save>
+        </else>
+      </if>
+      <save type="numeric" r_column="newColName">a[1]</save>
+      <save type="numeric" r_column="newColName">a[2]</save>
+      <save type="numeric" r_column="newColName">a[3]</save>
+      <save type="numeric" r_column="newColName">a[4]</save>
+      <save type="numeric" r_column="newColName">a[5]</save>
     </computation>
   </operation>
   <operation name="rnorm" category="Data Creation">
-    <query type="string" name="saveTo" prompt="Save to:" />
+    <query type="string" name="saveTo" prompt="New Column Name:" />
     <query type="numeric" name="samples" prompt="Sample count:" />
     <query type="numeric" name="mean" prompt="Mean:" />
     <displayname>
@@ -538,7 +546,7 @@
     </computation>
   </operation>
   <operation name="Binomial Test" category="Statistical Test">
-    <query type="string" name="saveTo" prompt="Save to:" />
+    <query type="string" name="saveTo" prompt="New Column Name:" />
     <query type="numeric" name="successes" prompt="Sucess count:" />
     <query type="numeric" name="trials" prompt="Trial count:" />
     <query type="numeric" name="alpha" prompt="Alpha:" min="0" max="1" />
@@ -565,7 +573,7 @@
     </computation>
   </operation>
   <operation name="Proportionality Test" category="Statistical Test">
-    <query type="string" name="saveTo" prompt="Save to:" />
+    <query type="string" name="saveTo" prompt="New Column Name:" />
     <query type="column" name="successes" prompt="Sucess counts:" column_type="numeric" />
     <query type="column" name="trials" prompt="Trial counts:" column_type="numeric" />
     <query type="numeric" name="alpha" prompt="Alpha:" min="0" max="1" />
@@ -586,7 +594,7 @@
     </computation>
   </operation>
   <operation name="Correlation Test" category="Statistical Test">
-    <query type="string" name="saveTo" prompt="Save to:" />
+    <query type="string" name="saveTo" prompt="New Column Name:" />
     <query type="column" name="x" prompt="Column 1:" column_type="numeric" />
     <query type="column" name="y" prompt="Column 2:" column_type="numeric" />
     <query type="numeric" name="alpha" prompt="Alpha:" min="0" max="1" />
@@ -622,7 +630,7 @@
     </computation>
   </operation>
   <operation name="Power T-Test" category="Statistical Test" list="false">
-    <query type="string" name="saveTo" prompt="Save to:" />
+    <query type="string" name="saveTo" prompt="New Column Name:" />
     <query type="column" name="x" prompt="Column 1:" column_type="numeric" />
     <query type="column" name="y" prompt="Column 2:" column_type="numeric" />
     <query type="numeric" name="alpha" prompt="Alpha:" min="0" max="1" />
@@ -638,7 +646,7 @@
     </computation>
   </operation>
   <operation name="Power Prop Test" category="Statistical Test" list="false">
-    <query type="string" name="saveTo" prompt="Save to:" />
+    <query type="string" name="saveTo" prompt="New Column Name:" />
     <query type="column" name="x" prompt="Column 1:" column_type="numeric" />
     <query type="column" name="y" prompt="Column 2:" column_type="numeric" />
     <query type="numeric" name="alpha" prompt="Alpha:" min="0" max="1" />
@@ -684,7 +692,7 @@
     </computation>
   </operation>
   <operation name="Sequence" category="Data Creation">
-    <query type="string" name="colName" prompt="Column name:" />
+    <query type="string" name="colName" prompt="New column name:" />
     <query type="numeric" name="start" prompt="From:" />
     <query type="numeric" name="end" prompt="To:" />
     <displayname>
@@ -702,7 +710,7 @@
     </computation>
   </operation>
   <operation name="Repeat" category="Data Creation">
-    <query type="string" name="colName" prompt="Column name:" />
+    <query type="string" name="colName" prompt="New column name:" />
     <query type="numeric" name="val" prompt="Value:" />
     <query type="numeric" name="count" prompt="Count:" />
     <displayname>
@@ -760,7 +768,7 @@
   </operation>
   <operation name="Sort" category="Basic Analysis">
     <query type="column" name="colName" prompt="Column:" />
-    <query type="checkbox" name="desc" prompt="Descending:" />
+    <query type="checkbox" name="desc" prompt="Descending" />
     <displayname>
       sort(
       <response name="colName" default="x" />
@@ -772,10 +780,10 @@
       <set rvar="desc" name="desc" />
       <if expr="!desc">
         <then>
-          <save type="numeric" r_column="paste('sort(', colName, ')', sep='')">sort(colVals)</save>
+          <save r_column="paste('sort(', colName, ')', sep='')">sort(colVals)</save>
         </then>
         <else>
-          <save type="numeric" r_column="paste('sort(', colName, ')', sep='')">sort(colVals, decreasing=T)</save>
+          <save r_column="paste('sort(', colName, ')', sep='')">sort(colVals, decreasing=T)</save>
         </else>
       </if>
     </computation>
@@ -790,11 +798,11 @@
     <computation>
       <set rvar="colName" name="colName" use="name" />
       <set rvar="colVals" name="colName" use="values" />
-      <save type="numeric" r_column="paste('rev(', colName, ')', sep='')">rev(colVals)</save>
+      <save r_column="paste('rev(', colName, ')', sep='')">rev(colVals)</save>
     </computation>
   </operation>
-  <operation name="Prod" category="Basic Analysis">
-    <query type="column" name="colName" prompt="Column:" />
+  <operation name="Product" category="Basic Analysis">
+    <query type="column" name="colName" prompt="Column:" column_type="numeric" />
     <displayname>
       prod(
       <response name="colName" default="x" />
