@@ -539,13 +539,44 @@ public class Problem implements ProblemPart
 	}
 
 	/**
-	 * Gets data attached to this problem this is "visible." Only returns data
-	 * that is directly attached, not operations
-	 * @return All visible DataSets attached to the Probblem directly
+	 * Gets all visible data attached to this problem. These may be DataSets or Operations
+	 * @return All visible DataSources attached to the Problem directly or indirectly
 	 */
 	public List<DataSource> getVisibleData()
 	{
 		List<DataSource> myData = new ArrayList<DataSource>();
+
+		// Add each DataSet and their attached operations
+		for(DataSet ds : datasets)
+		{
+			if(!ds.isHidden())
+			{
+				myData.add(ds);
+				myData.addAll(ds.getAllChildOperations());
+			}
+		}
+
+		// And all our unused stuff is visible
+		for(Operation op : unusedOperations)
+		{
+			// TODO Safety checking, maybe remove in a few days
+			if(op.getParentData() != null)
+				throw new ProblemException("Operation was still part of unused operations of problem and yet has a parent");
+
+			myData.add(op);
+			myData.addAll(op.getAllChildOperations());
+		}
+
+		return myData;
+	}
+
+	/**
+	 * Gets all visible DataSets attached to this problem. These are only DataSets
+	 * @return All visible DataSets attached to the Problem directly
+	 */
+	public List<DataSet> getVisibleDataSets()
+	{
+		List<DataSet> myData = new ArrayList<DataSet>();
 
 		// Add each DataSet and their attached operations
 		for(DataSet ds : datasets)
