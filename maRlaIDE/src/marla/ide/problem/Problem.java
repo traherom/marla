@@ -617,6 +617,10 @@ public class Problem implements ProblemPart
 	 */
 	public SubProblem removeSubProblem(SubProblem sub)
 	{
+		// Tell any datasource that pointed to here to no longer do so
+		for(int i = 0; i < sub.getStepCount(); i++)
+			sub.removeStep(i);
+
 		markUnsaved();
 		subProblems.remove(sub);
 		return sub;
