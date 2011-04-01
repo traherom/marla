@@ -60,6 +60,10 @@ import marla.ide.r.RProcessorException;
 public class Configuration
 {
 	/**
+	 * Configuration elements which are required for maRla to run.
+	 */
+	public static ConfigType[] requiredConfig = new ConfigType[] {ConfigType.R, ConfigType.PrimaryOpsXML};
+	/**
 	 * Current instance oconfigXML.getChild("r")f Configuration
 	 */
 	private static Configuration instance = null;
@@ -81,7 +85,7 @@ public class Configuration
 	 * Parsed XML from config file
 	 */
 	private Element configXML = null;
-
+	
 	/**
 	 * Possible elements that can be configured through this class
 	 */
@@ -208,8 +212,20 @@ public class Configuration
 			}
 		}
 
+		// Never whine about anything _not_ required
+		List<ConfigType> requiredAndMissing = new ArrayList<ConfigType>();
+		for(ConfigType c : unconfigured)
+		{
+			for(ConfigType r : requiredConfig)
+			{
+				if(r == c)
+					requiredAndMissing.add(c);
+			}
+		}
+
+
 		// Return the failures
-		return unconfigured;
+		return requiredAndMissing;
 	}
 
 	/**

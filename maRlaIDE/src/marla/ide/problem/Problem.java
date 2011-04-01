@@ -480,6 +480,11 @@ public class Problem implements ProblemPart
 	public DataSet removeData(int index)
 	{
 		DataSet d = datasets.get(index);
+
+		// Ensure the SubProblems that are used 
+		for(SubProblem sub : d.getSubProblems())
+			sub.removeStep(d);
+
 		markUnsaved();
 		d.setParentProblem(null);
 		datasets.remove(index);
