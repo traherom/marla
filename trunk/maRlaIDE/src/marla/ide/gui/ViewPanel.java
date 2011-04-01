@@ -189,6 +189,12 @@ public class ViewPanel extends JPanel
 	protected JLabel second = null;
 	/** The second placeholder (third column) in the legend.*/
 	protected JLabel third = null;
+	/** The counter illustrating what column we're adding to in the data set panel.*/
+	protected int firstDataCounter = 3;
+	/** The first placeholder (second column) in the data set panel.*/
+	protected JLabel secondData = null;
+	/** The second placeholder (third column) in the data set panel.*/
+	protected JLabel thirdData = null;
 	/** True when the mouse has dragged far enough to break the component away, false otherwise.*/
 	private boolean broken = false;
 	/** The default file filter for a JFileChooser open dialog.*/
@@ -282,7 +288,7 @@ public class ViewPanel extends JPanel
 		emptyPalettePanel.setVisible(true);
 		componentsPanel.setVisible(false);
 		preWorkspacePanel.setVisible(true);
-		workspacePanel.setVisible(false);
+		workspaceSplitPane.setVisible(false);
 
 		componentsScrollPane.getViewport().setOpaque(false);
 
@@ -487,6 +493,7 @@ public class ViewPanel extends JPanel
         menuSeparator2 = new javax.swing.JPopupMenu.Separator();
         rCodeMenuItem = new javax.swing.JMenuItem();
         menuSeparator3 = new javax.swing.JPopupMenu.Separator();
+        addDataSetMenuItem = new javax.swing.JMenuItem();
         editDataSetMenuItem = new javax.swing.JMenuItem();
         toolBar = new javax.swing.JToolBar();
         newButton = new ToolbarButton (new ImageIcon (getClass ().getResource ("/marla/ide/images/new_button.png")));
@@ -505,14 +512,19 @@ public class ViewPanel extends JPanel
         workspaceCardPanel = new javax.swing.JPanel();
         preWorkspacePanel = new javax.swing.JPanel();
         preWorkspaceLabel = new javax.swing.JLabel();
+        workspaceSplitPane = new javax.swing.JSplitPane();
         workspacePanel = new WorkspacePanel (this);
         trashCan = new javax.swing.JLabel();
+        debugScrollPane = new javax.swing.JScrollPane();
+        debugTextArea = new javax.swing.JTextArea();
         rightSidePanel = new javax.swing.JPanel();
         paletteCardPanel = new javax.swing.JPanel();
         emptyPalettePanel = new javax.swing.JPanel();
         componentsPanel = new javax.swing.JPanel();
         componentsScrollPane = new javax.swing.JScrollPane();
         componentsScrollablePanel = new javax.swing.JPanel();
+        dataSetsPanel = new javax.swing.JPanel();
+        dataSetContentPanel = new javax.swing.JPanel();
         legendPanel = new javax.swing.JPanel();
         legendContentPanel = new javax.swing.JPanel();
 
@@ -608,6 +620,15 @@ public class ViewPanel extends JPanel
         rightClickMenu.add(rCodeMenuItem);
         rightClickMenu.add(menuSeparator3);
 
+        addDataSetMenuItem.setFont(new java.awt.Font("Verdana", 0, 11));
+        addDataSetMenuItem.setText("Add Data Set...");
+        addDataSetMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                addDataSetMenuItemActionPerformed(evt);
+            }
+        });
+        rightClickMenu.add(addDataSetMenuItem);
+
         editDataSetMenuItem.setFont(new java.awt.Font("Verdana", 0, 11));
         editDataSetMenuItem.setText("Edit Data Set...");
         editDataSetMenuItem.addActionListener(new java.awt.event.ActionListener() {
@@ -683,7 +704,7 @@ public class ViewPanel extends JPanel
         jSeparator4.setEnabled(false);
         toolBar.add(jSeparator4);
 
-        newDataButton.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        newDataButton.setFont(new java.awt.Font("Verdana", 0, 12));
         newDataButton.setToolTipText("New Data Set");
         newDataButton.setEnabled(false);
         newDataButton.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -800,7 +821,7 @@ public class ViewPanel extends JPanel
 
         preWorkspacePanel.setBackground(new java.awt.Color(204, 204, 204));
 
-        preWorkspaceLabel.setFont(new java.awt.Font("Verdana", 1, 14));
+        preWorkspaceLabel.setFont(new java.awt.Font("Verdana", 1, 14)); // NOI18N
         preWorkspaceLabel.setForeground(new java.awt.Color(102, 102, 102));
         preWorkspaceLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         preWorkspaceLabel.setText("<html><div align=\"center\">To get started, load a previous problem or use the<br /><em>New Problem Wizard</em> (File --> New Problem...) to<br />create a new problem</div></html>");
@@ -823,6 +844,10 @@ public class ViewPanel extends JPanel
         );
 
         workspaceCardPanel.add(preWorkspacePanel, "card3");
+
+        workspaceSplitPane.setDividerLocation(700);
+        workspaceSplitPane.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
+        workspaceSplitPane.setResizeWeight(1.0);
 
         workspacePanel.setBackground(new java.awt.Color(255, 255, 255));
         workspacePanel.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -865,7 +890,19 @@ public class ViewPanel extends JPanel
         workspacePanel.add(trashCan);
         trashCan.setBounds(730, 610, 26, 40);
 
-        workspaceCardPanel.add(workspacePanel, "card2");
+        workspaceSplitPane.setTopComponent(workspacePanel);
+
+        debugTextArea.setColumns(20);
+        debugTextArea.setEditable(false);
+        debugTextArea.setFont(new java.awt.Font("Cordia New", 0, 12)); // NOI18N
+        debugTextArea.setLineWrap(true);
+        debugTextArea.setRows(5);
+        debugTextArea.setWrapStyleWord(true);
+        debugScrollPane.setViewportView(debugTextArea);
+
+        workspaceSplitPane.setBottomComponent(debugScrollPane);
+
+        workspaceCardPanel.add(workspaceSplitPane, "card4");
 
         add(workspaceCardPanel, java.awt.BorderLayout.CENTER);
 
@@ -880,11 +917,11 @@ public class ViewPanel extends JPanel
         emptyPalettePanel.setLayout(emptyPalettePanelLayout);
         emptyPalettePanelLayout.setHorizontalGroup(
             emptyPalettePanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(0, 208, Short.MAX_VALUE)
+            .add(0, 204, Short.MAX_VALUE)
         );
         emptyPalettePanelLayout.setVerticalGroup(
             emptyPalettePanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(0, 607, Short.MAX_VALUE)
+            .add(0, 569, Short.MAX_VALUE)
         );
 
         paletteCardPanel.add(emptyPalettePanel, "card3");
@@ -911,6 +948,20 @@ public class ViewPanel extends JPanel
         gridBagConstraints.weighty = 1.0;
         rightSidePanel.add(paletteCardPanel, gridBagConstraints);
 
+        dataSetsPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Data Sets", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Verdana", 0, 12))); // NOI18N
+        dataSetsPanel.setLayout(new java.awt.GridLayout(1, 1));
+
+        dataSetContentPanel.setLayout(new java.awt.GridLayout(0, 3));
+        dataSetsPanel.add(dataSetContentPanel);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTH;
+        gridBagConstraints.weightx = 1.0;
+        rightSidePanel.add(dataSetsPanel, gridBagConstraints);
+
         legendPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Legend", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Verdana", 0, 12))); // NOI18N
         legendPanel.setLayout(new java.awt.GridLayout(1, 1));
 
@@ -919,7 +970,7 @@ public class ViewPanel extends JPanel
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 1;
+        gridBagConstraints.gridy = 2;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTH;
         gridBagConstraints.weightx = 1.0;
@@ -1113,6 +1164,12 @@ public class ViewPanel extends JPanel
 				answerDialogLocation = evt.getLocationOnScreen();
 
 				solutionMenuItem.setEnabled(true);
+				changeInfoMenuItem.setEnabled(true);
+				tieSubProblemSubMenu.setEnabled(true);
+				untieSubProblemSubMenu.setEnabled(true);
+				remarkMenuItem.setEnabled(true);
+				rCodeMenuItem.setEnabled(true);
+				editDataSetMenuItem.setEnabled(true);
 				tieSubProblemSubMenu.removeAll();
 				untieSubProblemSubMenu.removeAll();
 				for(int i = 0; i < domain.problem.getSubProblemCount(); ++i)
@@ -1206,9 +1263,23 @@ public class ViewPanel extends JPanel
 					}
 					remarkMenuItem.setEnabled(true);
 				}
-
-				rightClickMenu.show(workspacePanel, evt.getX(), evt.getY());
 			}
+			else
+			{
+				solutionMenuItem.setEnabled(false);
+				changeInfoMenuItem.setEnabled(false);
+				tieSubProblemSubMenu.setEnabled(false);
+				untieSubProblemSubMenu.setEnabled(false);
+				remarkMenuItem.setEnabled(false);
+				rCodeMenuItem.setEnabled(false);
+				editDataSetMenuItem.setEnabled(false);
+			}
+
+			rightClickMenu.show(workspacePanel, evt.getX(), evt.getY());
+		}
+		else
+		{
+
 		}
 
 		setCursor(Cursor.getDefaultCursor());
@@ -1469,10 +1540,7 @@ public class ViewPanel extends JPanel
 		}
 		else if (button.isEnabled() && button == newDataButton)
 		{
-			NEW_PROBLEM_WIZARD_DIALOG.setTitle("Edit Problem");
-			NEW_PROBLEM_WIZARD_DIALOG.welcomeTextLabel.setText(ViewPanel.welcomeEditText);
-			NEW_PROBLEM_WIZARD_DIALOG.editProblem();
-			NEW_PROBLEM_WIZARD_DIALOG.addNewDataSet();
+			addNewDataSet();
 		}
 	}//GEN-LAST:event_buttonMouseReleased
 
@@ -1616,6 +1684,10 @@ public class ViewPanel extends JPanel
 			}
 		}
 	}//GEN-LAST:event_workspacePanelMouseMoved
+
+	private void addDataSetMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addDataSetMenuItemActionPerformed
+		addNewDataSet();
+	}//GEN-LAST:event_addDataSetMenuItemActionPerformed
 
 	/**
 	 * Refresh the text displayed for the tip.
@@ -2045,6 +2117,17 @@ public class ViewPanel extends JPanel
 	}
 
 	/**
+	 * Add a new data set to the current problem.
+	 */
+	protected void addNewDataSet()
+	{
+		NEW_PROBLEM_WIZARD_DIALOG.setTitle("Edit Problem");
+		NEW_PROBLEM_WIZARD_DIALOG.welcomeTextLabel.setText(ViewPanel.welcomeEditText);
+		NEW_PROBLEM_WIZARD_DIALOG.editProblem();
+		NEW_PROBLEM_WIZARD_DIALOG.addNewDataSet();
+	}
+
+	/**
 	 * Display the Info Required dialog for the given operation.
 	 *
 	 * @param newOperation The operation to get information for.
@@ -2233,7 +2316,7 @@ public class ViewPanel extends JPanel
 			}
 			componentsPanel.setVisible(true);
 			emptyPalettePanel.setVisible(false);
-			workspacePanel.setVisible(true);
+			workspaceSplitPane.setVisible(true);
 			preWorkspacePanel.setVisible(false);
 
 			mainFrame.setTitle(mainFrame.getDefaultTitle() + " - " + domain.problem.getFileName().substring(domain.problem.getFileName().lastIndexOf(System.getProperty("file.separator")) + 1, domain.problem.getFileName().lastIndexOf(".")));
@@ -2249,6 +2332,48 @@ public class ViewPanel extends JPanel
 
 			// Move trees around if our workspace is smaller than the saving one
 			ensureComponentsVisible();
+
+			// Add data sets to legend
+			dataSetContentPanel.removeAll();
+			((GridLayout) dataSetContentPanel.getLayout()).setRows(0);
+			firstDataCounter = 3;
+			for (int i = 0; i < domain.problem.getDataCount(); ++i)
+			{
+				// Add sub problem to legend
+				JLabel label;
+				if (firstDataCounter == 1)
+				{
+					label = secondData;
+				}
+				else if (firstDataCounter == 2)
+				{
+					label = thirdData;
+				}
+				else
+				{
+					label = new JLabel("");
+					secondData = new JLabel ("");
+					thirdData = new JLabel ("");
+				}
+				label.setFont(FONT_PLAIN_12);
+				label.setText(domain.problem.getData(i).getName());
+				// TODO label.setForeground(DataSet.getDefaultColor());
+
+				if (firstDataCounter == 3)
+				{
+					firstDataCounter = 0;
+
+					GridLayout layout = (GridLayout) dataSetContentPanel.getLayout();
+					layout.setRows(layout.getRows() + 1);
+
+					dataSetContentPanel.add(label);
+					dataSetContentPanel.add(secondData);
+					dataSetContentPanel.add(thirdData);
+
+					dataSetContentPanel.invalidate();
+				}
+				++firstDataCounter;
+			}
 
 			// Add sub problems to legend
 			legendContentPanel.removeAll();
@@ -2291,6 +2416,14 @@ public class ViewPanel extends JPanel
 				}
 				++firstCounter;
 			}
+
+			if (dataSetContentPanel.getComponentCount() == 0)
+			{
+				((GridLayout) dataSetContentPanel.getLayout()).setColumns(1);
+				JLabel noneLabel = new JLabel ("-No Data Sets-");
+				noneLabel.setFont(FONT_BOLD_12);
+				dataSetContentPanel.add (noneLabel);
+			}
 			if (legendContentPanel.getComponentCount() == 0)
 			{
 				((GridLayout) legendContentPanel.getLayout()).setColumns(1);
@@ -2298,6 +2431,7 @@ public class ViewPanel extends JPanel
 				noneLabel.setFont(FONT_BOLD_12);
 				legendContentPanel.add (noneLabel);
 			}
+			dataSetContentPanel.invalidate();
 			legendContentPanel.invalidate();
 
 			workspacePanel.repaint();
@@ -2353,8 +2487,10 @@ public class ViewPanel extends JPanel
 				emptyPalettePanel.setVisible(true);
 				componentsPanel.setVisible(false);
 				preWorkspacePanel.setVisible(true);
-				workspacePanel.setVisible(false);
+				workspaceSplitPane.setVisible(false);
 
+				dataSetContentPanel.removeAll();
+				((GridLayout) dataSetContentPanel.getLayout()).setRows(0);
 				legendContentPanel.removeAll();
 				((GridLayout) legendContentPanel.getLayout()).setRows(0);
 
@@ -2487,12 +2623,17 @@ public class ViewPanel extends JPanel
 	}
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel abbreviateButton;
+    private javax.swing.JMenuItem addDataSetMenuItem;
     protected javax.swing.JDialog answerDialog;
     private javax.swing.JPanel answerPanel;
     private javax.swing.JMenuItem changeInfoMenuItem;
     protected javax.swing.JPanel componentsPanel;
     private javax.swing.JScrollPane componentsScrollPane;
     private javax.swing.JPanel componentsScrollablePanel;
+    protected javax.swing.JPanel dataSetContentPanel;
+    private javax.swing.JPanel dataSetsPanel;
+    protected javax.swing.JScrollPane debugScrollPane;
+    private javax.swing.JTextArea debugTextArea;
     private javax.swing.JMenuItem editDataSetMenuItem;
     protected javax.swing.JPanel emptyPalettePanel;
     private javax.swing.JLabel fontSizeLabel;
@@ -2528,5 +2669,6 @@ public class ViewPanel extends JPanel
     private javax.swing.JMenu untieSubProblemSubMenu;
     private javax.swing.JPanel workspaceCardPanel;
     protected javax.swing.JPanel workspacePanel;
+    protected javax.swing.JSplitPane workspaceSplitPane;
     // End of variables declaration//GEN-END:variables
 }
