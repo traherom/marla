@@ -213,6 +213,11 @@ public class MainFrame extends JFrame
 						}
 					}
 				}
+
+				if (!Boolean.valueOf(Configuration.getInstance().get(Configuration.ConfigType.DebugMode).toString()))
+				{
+					viewPanel.workspaceSplitPane.remove(viewPanel.debugScrollPane);
+				}
 			}
 		}).start();
 
@@ -721,10 +726,7 @@ public class MainFrame extends JFrame
 	}//GEN-LAST:event_editProblemMenuItemActionPerformed
 
 	private void newDataSetMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newDataSetMenuItemActionPerformed
-		viewPanel.NEW_PROBLEM_WIZARD_DIALOG.setTitle("Edit Problem");
-		viewPanel.NEW_PROBLEM_WIZARD_DIALOG.welcomeTextLabel.setText(ViewPanel.welcomeEditText);
-		editProblemMenuItemActionPerformed(null);
-		viewPanel.NEW_PROBLEM_WIZARD_DIALOG.addNewDataSet();
+		viewPanel.addNewDataSet();
 	}//GEN-LAST:event_newDataSetMenuItemActionPerformed
 
 	private void reloadOperationgsMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_reloadOperationgsMenuItemActionPerformed

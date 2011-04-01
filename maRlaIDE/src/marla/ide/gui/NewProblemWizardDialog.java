@@ -143,6 +143,11 @@ public class NewProblemWizardDialog extends EscapeDialog
 									}
 									catch(DataNotFoundException ex) {}
 									catch(DuplicateNameException ex) {}
+
+									if (editing)
+									{
+										updateLabelInRightPanel(oldName, name.toString());
+									}
 									viewPanel.workspacePanel.invalidate();
 								}
 								else
@@ -1096,6 +1101,11 @@ public class NewProblemWizardDialog extends EscapeDialog
 			removeDataSetButton.setEnabled(true);
 		}
 
+		if (editing)
+		{
+			addToRightPanel();
+		}
+
 		addingDataSet = false;
 }//GEN-LAST:event_addDataSetButtonActionPerformed
 
@@ -1117,6 +1127,11 @@ public class NewProblemWizardDialog extends EscapeDialog
 		if(dataSetTabbedPane.getTabCount() == 0)
 		{
 			removeDataSetButton.setEnabled(false);
+		}
+
+		if (editing)
+		{
+			removeFromRightPanel(removedData.getName());
 		}
 }//GEN-LAST:event_removeDataSetButtonActionPerformed
 
@@ -1607,6 +1622,116 @@ public class NewProblemWizardDialog extends EscapeDialog
     // End of variables declaration//GEN-END:variables
 
 	/**
+	 * Adds the new data set to the right panel.
+	 */
+	private void addToRightPanel()
+	{
+		if (viewPanel.firstDataCounter == 3)
+		{
+			viewPanel.thirdData.setText ("");
+		}
+		else if (viewPanel.firstDataCounter == 2)
+		{
+			viewPanel.secondData.setText ("");
+		}
+		else if(viewPanel.firstDataCounter == 1)
+		{
+			viewPanel.firstDataCounter = 4;
+
+			viewPanel.dataSetContentPanel.remove(viewPanel.dataSetContentPanel.getComponentCount() - 1);
+			viewPanel.dataSetContentPanel.remove(viewPanel.dataSetContentPanel.getComponentCount() - 1);
+			viewPanel.dataSetContentPanel.remove(viewPanel.dataSetContentPanel.getComponentCount() - 1);
+
+			GridLayout layout = (GridLayout) viewPanel.dataSetContentPanel.getLayout();
+			layout.setRows(layout.getRows() - 1);
+
+			if (viewPanel.dataSetContentPanel.getComponentCount() >= 3)
+			{
+				viewPanel.thirdData = (JLabel) viewPanel.dataSetContentPanel.getComponent(viewPanel.dataSetContentPanel.getComponentCount() - 1);
+				viewPanel.secondData = (JLabel) viewPanel.dataSetContentPanel.getComponent(viewPanel.dataSetContentPanel.getComponentCount() - 2);
+			}
+			else
+			{
+				if (viewPanel.dataSetContentPanel.getComponentCount() == 0)
+				{
+					((GridLayout) viewPanel.dataSetContentPanel.getLayout()).setColumns(1);
+					JLabel noneLabel = new JLabel ("-No Data Sets-");
+					noneLabel.setFont(ViewPanel.FONT_BOLD_12);
+					viewPanel.dataSetContentPanel.add (noneLabel);
+				}
+			}
+
+			viewPanel.dataSetContentPanel.invalidate();
+		}
+		--viewPanel.firstDataCounter;
+	}
+
+	/**
+	 * Remove the given last data set from the right panel.
+	 *
+	 * @param dataName The name of the data set to remove.
+	 */
+	private void removeFromRightPanel(String dataName)
+	{
+		if (viewPanel.firstDataCounter == 3)
+		{
+			viewPanel.thirdData.setText ("");
+		}
+		else if (viewPanel.firstDataCounter == 2)
+		{
+			viewPanel.secondData.setText ("");
+		}
+		else if(viewPanel.firstDataCounter == 1)
+		{
+			viewPanel.firstDataCounter = 4;
+
+			viewPanel.dataSetContentPanel.remove(viewPanel.dataSetContentPanel.getComponentCount() - 1);
+			viewPanel.dataSetContentPanel.remove(viewPanel.dataSetContentPanel.getComponentCount() - 1);
+			viewPanel.dataSetContentPanel.remove(viewPanel.dataSetContentPanel.getComponentCount() - 1);
+
+			GridLayout layout = (GridLayout) viewPanel.dataSetContentPanel.getLayout();
+			layout.setRows(layout.getRows() - 1);
+
+			if (viewPanel.dataSetContentPanel.getComponentCount() >= 3)
+			{
+				viewPanel.thirdData = (JLabel) viewPanel.dataSetContentPanel.getComponent(viewPanel.dataSetContentPanel.getComponentCount() - 1);
+				viewPanel.secondData = (JLabel) viewPanel.dataSetContentPanel.getComponent(viewPanel.dataSetContentPanel.getComponentCount() - 2);
+			}
+			else
+			{
+				if (viewPanel.dataSetContentPanel.getComponentCount() == 0)
+				{
+					((GridLayout) viewPanel.dataSetContentPanel.getLayout()).setColumns(1);
+					JLabel noneLabel = new JLabel ("-No Data Sets-");
+					noneLabel.setFont(ViewPanel.FONT_BOLD_12);
+					viewPanel.dataSetContentPanel.add (noneLabel);
+				}
+			}
+
+			viewPanel.dataSetContentPanel.invalidate();
+		}
+		--viewPanel.firstDataCounter;
+
+		viewPanel.workspacePanel.repaint();
+	}
+
+	/**
+	 * Update the value, if it exists, of the data set name in the right panel.
+	 */
+	private void updateLabelInRightPanel(String oldName, String name)
+	{
+		for (Component comp : viewPanel.dataSetContentPanel.getComponents())
+		{
+			if (((JLabel) comp).getText().equals(oldName))
+			{
+				((JLabel) comp).setText(name);
+				viewPanel.dataSetContentPanel.invalidate();
+				break;
+			}
+		}
+	}
+
+	/**
 	 * Retrieve the label object in the legend with the given ID.
 	 * 
 	 * @param id The ID to retrieve the JLabel for from the legend.
@@ -1810,9 +1935,10 @@ public class NewProblemWizardDialog extends EscapeDialog
 			public void mouseReleased(MouseEvent evt)
 			{
 				int index = table.getTableHeader().columnAtPoint(evt.getPoint());
+				String oldName = table.getColumnModel().getColumn(index).getHeaderValue().toString();
 				Object name = JOptionPane.showInputDialog(viewPanel.domain.getTopWindow(), "Give the column a new name:", "Column Name",
 														  JOptionPane.QUESTION_MESSAGE, null, null,
-														  table.getColumnModel().getColumn(index).getHeaderValue());
+														  oldName);
 				if(name != null)
 				{
 					if(!name.toString().equals(((ExtendedTableModel) table.getModel()).getColumnName(index)))
