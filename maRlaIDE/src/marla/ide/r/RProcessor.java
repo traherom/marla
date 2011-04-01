@@ -794,6 +794,47 @@ public final class RProcessor
 	}
 
 	/**
+	 * Loads the given library into R. If it is not installed, attempts to 
+	 * automatically install it
+	 * @param lib Name of the library to load
+	 * @return true if load succeeds, false otherwise
+	 */
+	public boolean loadLibrary(String lib)
+	{
+
+		Boolean loaded = false;
+		try
+		{
+			// Attempt to load.
+			loaded = executeBoolean("library('" + lib + "', logical.return=T)");
+		}
+		catch(RProcessorException ex)
+		{
+			// This is the "no package" error, right?
+			if(ex.getMessage().contains("no package"))
+				loaded = false;
+			else
+				throw ex;
+		}
+
+		// Install if needed and retry the load
+		if(!loaded)
+		{
+			try
+			{
+				execute("install.packages('" + lib + "', repos='http://cran.r-project.org')");
+				loaded = executeBoolean("library('" + lib + "', logical.return=T)");
+			}
+			catch(RProcessorException ex)
+			{
+				loaded = false;
+			}
+		}
+
+		return loaded;
+	}
+
+	/**
 	 * Sets the recording mode for the processor
 	 * @param mode RecordMode to place the processor in.
 	 * @return The mode the RProcessor was in before the switch

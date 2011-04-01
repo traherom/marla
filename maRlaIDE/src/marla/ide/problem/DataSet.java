@@ -33,6 +33,7 @@ import org.jdom.Element;
 import marla.ide.problem.DataColumn.DataMode;
 import marla.ide.r.RProcessor;
 import marla.ide.r.RProcessor.RecordMode;
+import marla.ide.r.RProcessorException;
 import marla.ide.r.RProcessorParseException;
 
 /**
@@ -91,9 +92,7 @@ public final class DataSet extends DataSource implements Changeable
 	}
 
 	/**
-	 * Imports the given file in as a dataset. Files may be either in table format or CSV,
-	 * as parsed by R read.table() and read.csv(). Column names may be given at the top
-	 * of each column. The dataset name is set from the file name.
+	 * Imports the given R dataset in as a Java DataSet
 	 * @param library Library to import from
 	 * @param frame Dataset within the library to import
 	 * @return New DataSet containing the imported values
@@ -102,8 +101,10 @@ public final class DataSet extends DataSource implements Changeable
 	{
 		// Ensure the library is imported
 		RProcessor proc = RProcessor.getInstance();
-		proc.execute("library(" + library + ")");
-		return fromRFrame(frame);
+		if(proc.loadLibrary(library))
+			return fromRFrame(frame);
+		else
+			throw new MarlaException("The library '" + library + "' could not be loaded into R (or automatically installed)");
 	}
 
 	/**

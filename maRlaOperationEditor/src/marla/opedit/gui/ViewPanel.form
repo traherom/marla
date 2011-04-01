@@ -88,20 +88,20 @@
                           <Group type="102" alignment="0" attributes="0">
                               <Component id="categoryLabel" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
-                              <Component id="categoryTextField" pref="393" max="32767" attributes="0"/>
+                              <Component id="categoryTextField" pref="396" max="32767" attributes="0"/>
                           </Group>
                           <Group type="102" alignment="0" attributes="0">
                               <Component id="opsNameLabel" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
-                              <Component id="operationsNameTextField" pref="349" max="32767" attributes="0"/>
+                              <Component id="operationsNameTextField" pref="352" max="32767" attributes="0"/>
                           </Group>
                           <Group type="102" alignment="1" attributes="0">
                               <Component id="innerXmlLinkLabel" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="updateTestButton" min="-2" max="-2" attributes="0"/>
                           </Group>
-                          <Component id="operationScrollPane" alignment="0" pref="460" max="32767" attributes="0"/>
-                          <Component id="xmlStatusLabel" alignment="0" pref="460" max="32767" attributes="0"/>
+                          <Component id="operationScrollPane" alignment="0" pref="471" max="32767" attributes="0"/>
+                          <Component id="xmlStatusLabel" alignment="0" pref="471" max="32767" attributes="0"/>
                       </Group>
                   </Group>
               </Group>
@@ -150,7 +150,7 @@
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="xmlStatusLabel" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
-                              <Component id="operationScrollPane" pref="318" max="32767" attributes="0"/>
+                              <Component id="operationScrollPane" pref="323" max="32767" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="3" attributes="0">
                                   <Component id="updateTestButton" alignment="3" min="-2" max="-2" attributes="0"/>
@@ -183,8 +183,8 @@
               <Group type="102" alignment="1" attributes="0">
                   <EmptySpace max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="1" attributes="0">
-                      <Component id="outputScrollPane" alignment="0" pref="306" max="32767" attributes="2"/>
-                      <Component id="questionPanel" alignment="0" pref="306" max="32767" attributes="2"/>
+                      <Component id="outputScrollPane" alignment="0" pref="316" max="32767" attributes="2"/>
+                      <Component id="questionPanel" alignment="0" pref="316" max="32767" attributes="2"/>
                       <Group type="102" alignment="0" attributes="0">
                           <Component id="dataCsvLabel" min="-2" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
@@ -195,7 +195,7 @@
                       <Group type="102" alignment="0" attributes="0">
                           <Component id="displayNameLabel" min="-2" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
-                          <Component id="displayNameScrollPane" pref="213" max="32767" attributes="0"/>
+                          <Component id="displayNameScrollPane" pref="215" max="32767" attributes="0"/>
                       </Group>
                   </Group>
                   <EmptySpace max="-2" attributes="0"/>
@@ -219,7 +219,7 @@
                       <Component id="displayNameScrollPane" alignment="0" min="-2" pref="25" max="-2" attributes="1"/>
                   </Group>
                   <EmptySpace max="-2" attributes="0"/>
-                  <Component id="outputScrollPane" pref="355" max="32767" attributes="0"/>
+                  <Component id="outputScrollPane" pref="360" max="32767" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
               </Group>
           </Group>

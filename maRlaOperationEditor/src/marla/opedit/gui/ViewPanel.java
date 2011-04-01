@@ -45,11 +45,13 @@ import marla.ide.operation.OperationXMLException;
 import marla.ide.problem.DataSet;
 import marla.ide.problem.DuplicateNameException;
 import marla.ide.problem.MarlaException;
+import marla.ide.resource.Configuration;
 import marla.opedit.gui.xmlpane.XmlTextPane;
 import marla.opedit.operation.OperationEditorException;
 import marla.opedit.operation.OperationFile;
 import marla.opedit.operation.OperationXMLEditable;
 import marla.opedit.resource.LoadSaveThread;
+import sun.security.krb5.Config;
 
 /**
  * The view of the application, which contains all user interactive components.
@@ -1224,6 +1226,8 @@ public class ViewPanel extends JPanel
 		{
 			// Hide the main window to give the appearance of better responsiveness
 			mainFrame.setVisible(false);
+
+			Configuration.getInstance().save();
 
 			// Write out any final errors we encountered and didn't hit yet
 			// We do this now, then write the configuration because, if the loadsavethread
