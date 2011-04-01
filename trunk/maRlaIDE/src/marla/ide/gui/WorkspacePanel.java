@@ -125,7 +125,7 @@ public class WorkspacePanel extends JPanel
 	{
 		for (Component comp : getComponents())
 		{
-			if (comp.contains(x, y) &&
+			if (comp.getBounds().contains(x, y) &&
 					comp != this &&
 					comp != ignore)
 			{

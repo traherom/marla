@@ -1796,13 +1796,8 @@ public class ViewPanel extends JPanel
 			{
 				if(component instanceof DataSource)
 				{
-					hoverInDragComponent = (JComponent) workspacePanel.getComponentAt(evt.getPoint());
+					hoverInDragComponent = (JComponent) ((WorkspacePanel) workspacePanel).getComponentAt(evt.getPoint().x, evt.getPoint().y, draggingComponent);
 					hoverInDragComponent.setBackground(HOVER_BACKGROUND_COLOR);
-				}
-				else if(hoverInDragComponent != null)
-				{
-					hoverInDragComponent.setBackground(NO_BACKGROUND_WORKSPACE);
-					hoverInDragComponent = null;
 				}
 			}
 
@@ -1825,6 +1820,10 @@ public class ViewPanel extends JPanel
 
 				// Just rebuild the dragged component
 				rebuildTree((DataSource) draggingComponent);
+			}
+			else
+			{
+				workspacePanel.repaint();
 			}
 		}
 	}
