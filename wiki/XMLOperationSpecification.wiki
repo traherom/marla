@@ -150,7 +150,7 @@ Attributes supported:
 
 === Conditionals ===
 {{{
-<if type="vartype|expr">
+<if [expr="<R expression>"] [vartype="<type>"] [rvar="<R variable>"] [colexists="<column name>"]>
   <then>...</then>
   <else>...</else>
 </if>
@@ -158,14 +158,12 @@ Attributes supported:
 Conditional work is supported through the `<if />` element. If the condition specified is true, then commands in a `<then />` block are executed. If it is false, then commands in the `<else />` block are executed. Either block may be left out if not needed.
 
 Supported attributes:
-  * *`type`* - One of the following:
-    * `vartype` - Switches on the type of an R variable, as deterimed by `str(rvar)`
-    * `expr` - Arbitrary R boolean expression will be used for evaluation
-  * `rvar` - Used by `vartype`. Gives the R variable which should have its type examined
-  * `expected` - Used by `vartype`. Gives the "true" type of the R variable. One of the following:
+  * `vartype`. Makes the if check if the given `rvar` (see below) is of the given type. The type is one of the following:
     * `string` - String or multiple strings of data
     * `numeric` - Number or multiple numbers
-  * `expr` - R expression to evaluate. Must evaluate to a single TRUE or FALSE value and be only a single statement
+  * `rvar` - Gives the R variable which should have its type examined
+  * `expr` - R expression to evaluate. Must evaluate to a single TRUE or FALSE value and be only a single statement. If more complexity is needed, save the result to a variable and give that as the expression.
+  * `colexists` - Evaluates to true if a column with the given name exists
 
 === Copy ===
 {{{
@@ -178,7 +176,7 @@ Supported attributes:
   * *`r_column`* - Specifies an R expression which returns a string to use as the column to copy
   * `all` - Boolean value which specifies if all parent columns should be copied. Must be `true` or `false`. Defaults to `false`. If given, `column`/`r_column` are ignored.
 
-=== Error ===
+=== Error Messages ===
 {{{
 <error msg="Message to display to user" />
 }}}
@@ -205,16 +203,28 @@ Example:
 </computation>
 }}}
 
-=== Save ===
+=== Library Loading ===
 {{{
-<save type="numeric|string" [column="<Column name>"] [r_column="<R command>"]>R command</save>
+<load [library="<library>"] [r_library="<R variable>"] />
+}}}
+Loads the given library into R. If the library is not installed an attempt is made to install it. This should be used in
+preference to something like `<cmd>library(<lib>)</cmd>`.
+
+Attributes supported:
+  * `library` - Verbatim name of the library to load
+  * `r_library` - R variable that contains the name of the library to load
+
+=== Saving Results ===
+{{{
+<save [type="numeric|string|auto"] [column="<Column name>"] [r_column="<R command>"]>R command</save>
 }}}
 To save the final values for the computation, `<save />` elements may be specified. The value saved is given by the single R command inside the save element.
 
 Attributes supported:
-  * *`type`* - One of the following
+  * *`type`* - One of the following. Defaults to `auto`
     * `numeric` - Process the result as one or more numeric values
     * `string` - Process the result as one or more string values
+    * `auto` - Automatically chooses the correct column type. Attempts numeric first, then string
   * `column` - Static name of the column to save these values into
   * `r_column` - R command from which to pull the name of the column to save into. Must return a single string
 
