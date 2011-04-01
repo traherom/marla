@@ -534,7 +534,26 @@ public class Problem implements ProblemPart
 			myData.add(op);
 			myData.addAll(op.getAllChildOperations());
 		}
-		
+
+		return myData;
+	}
+
+	/**
+	 * Gets data attached to this problem this is "visible." Only returns data
+	 * that is directly attached, not operations
+	 * @return All visible DataSets attached to the Probblem directly
+	 */
+	public List<DataSource> getVisibleData()
+	{
+		List<DataSource> myData = new ArrayList<DataSource>();
+
+		// Add each DataSet and their attached operations
+		for(DataSet ds : datasets)
+		{
+			if(!ds.isHidden())
+				myData.add(ds);
+		}
+
 		return myData;
 	}
 
