@@ -491,8 +491,8 @@ public class MainFrame extends JFrame
         });
         problemMenu.add(editSubProblemsMenuItem);
 
-        editConclusionMenuItem.setFont(new java.awt.Font("Verdana", 0, 12));
-        editConclusionMenuItem.setText("Edit Conclusion...");
+        editConclusionMenuItem.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        editConclusionMenuItem.setText("Edit Conclusion(s)...");
         editConclusionMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 editConclusionMenuItemActionPerformed(evt);
@@ -566,7 +566,7 @@ public class MainFrame extends JFrame
             }
         });
 
-        helpContentsMenuItem.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        helpContentsMenuItem.setFont(new java.awt.Font("Verdana", 0, 12));
         helpContentsMenuItem.setText("Help Contents");
         helpContentsMenuItem.setEnabled(false);
         helpContentsMenuItem.addActionListener(new java.awt.event.ActionListener() {
@@ -589,7 +589,7 @@ public class MainFrame extends JFrame
 	}//GEN-LAST:event_exitMenuItemActionPerformed
 
 	private void newProblemMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newProblemMenuItemActionPerformed
-		viewPanel.newOperation();
+		viewPanel.newProblem();
 	}//GEN-LAST:event_newProblemMenuItemActionPerformed
 
 	private void openProblemMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_openProblemMenuItemActionPerformed
@@ -726,7 +726,7 @@ public class MainFrame extends JFrame
 	}//GEN-LAST:event_editProblemMenuItemActionPerformed
 
 	private void newDataSetMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newDataSetMenuItemActionPerformed
-		viewPanel.addNewDataSet();
+		viewPanel.newProblemWizardDialog.addNewDataSet();
 	}//GEN-LAST:event_newDataSetMenuItemActionPerformed
 
 	private void reloadOperationgsMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_reloadOperationgsMenuItemActionPerformed
@@ -742,9 +742,6 @@ public class MainFrame extends JFrame
 	}//GEN-LAST:event_exportForLatexMenuItemActionPerformed
 
 	private void editSubProblemsMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editSubProblemsMenuItemActionPerformed
-		viewPanel.newProblemWizardDialog.setTitle("Edit Problem");
-		viewPanel.newProblemWizardDialog.welcomeTextLabel.setText(ViewPanel.welcomeEditText);
-		editProblemMenuItemActionPerformed(null);
 		viewPanel.newProblemWizardDialog.editSubProblems();
 	}//GEN-LAST:event_editSubProblemsMenuItemActionPerformed
 
@@ -768,22 +765,17 @@ public class MainFrame extends JFrame
 
 	private void settingsMenuItemActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_settingsMenuItemActionPerformed
 	{//GEN-HEADEREND:event_settingsMenuItemActionPerformed
+		viewPanel.settingsDialog.initSettingsDialog();
 		viewPanel.settingsDialog.launchSettingsDialog();
 	}//GEN-LAST:event_settingsMenuItemActionPerformed
 
 	private void editConclusionMenuItemActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_editConclusionMenuItemActionPerformed
 	{//GEN-HEADEREND:event_editConclusionMenuItemActionPerformed
-		viewPanel.newProblemWizardDialog.setTitle("Edit Problem");
-		viewPanel.newProblemWizardDialog.welcomeTextLabel.setText(ViewPanel.welcomeEditText);
-		editProblemMenuItemActionPerformed(null);
 		viewPanel.newProblemWizardDialog.editConclusion();
 	}//GEN-LAST:event_editConclusionMenuItemActionPerformed
 
 	private void editDataSetsMenuItemActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_editDataSetsMenuItemActionPerformed
 	{//GEN-HEADEREND:event_editDataSetsMenuItemActionPerformed
-		viewPanel.newProblemWizardDialog.setTitle("Edit Problem");
-		viewPanel.newProblemWizardDialog.welcomeTextLabel.setText(ViewPanel.welcomeEditText);
-		editProblemMenuItemActionPerformed(null);
 		viewPanel.newProblemWizardDialog.editDataSet(null);
 	}//GEN-LAST:event_editDataSetsMenuItemActionPerformed
 

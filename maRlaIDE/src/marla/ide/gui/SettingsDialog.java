@@ -98,8 +98,8 @@ public class SettingsDialog extends EscapeDialog
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         setTitle("Settings");
-        setAlwaysOnTop(true);
         setIconImage(new ImageIcon (getClass ().getResource ("/marla/ide/images/settings_button.png")).getImage ());
+        setModal(true);
         setResizable(false);
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
@@ -116,7 +116,7 @@ public class SettingsDialog extends EscapeDialog
         preferencesPanel.add(lineWidthLabel);
         lineWidthLabel.setBounds(330, 70, 140, 20);
 
-        rPathTextField.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        rPathTextField.setFont(new java.awt.Font("Verdana", 0, 12));
         rPathTextField.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 rPathTextFieldActionPerformed(evt);
@@ -150,7 +150,7 @@ public class SettingsDialog extends EscapeDialog
         preferencesPanel.add(latexPathButton);
         latexPathButton.setBounds(410, 180, 90, 25);
 
-        latexPathTextField.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        latexPathTextField.setFont(new java.awt.Font("Verdana", 0, 12));
         latexPathTextField.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 latexPathTextFieldActionPerformed(evt);
@@ -208,7 +208,7 @@ public class SettingsDialog extends EscapeDialog
         preferencesPanel.add(operationsButton);
         operationsButton.setBounds(410, 260, 90, 25);
 
-        operationsTextField.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        operationsTextField.setFont(new java.awt.Font("Verdana", 0, 12));
         operationsTextField.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 operationsTextFieldActionPerformed(evt);
@@ -247,7 +247,7 @@ public class SettingsDialog extends EscapeDialog
         preferencesPanel.add(debugModeCheckBox);
         debugModeCheckBox.setBounds(10, 100, 140, 25);
 
-        sendErrorReportsCheckBox.setFont(new java.awt.Font("Verdana", 0, 12));
+        sendErrorReportsCheckBox.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
         sendErrorReportsCheckBox.setText("Send error reports");
         sendErrorReportsCheckBox.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -918,9 +918,9 @@ public class SettingsDialog extends EscapeDialog
 	}
 
 	/**
-	 * Launch the Settings dialog.
+	 * Initialize the Settings dialog before it is launched.
 	 */
-	protected void launchSettingsDialog()
+	protected void initSettingsDialog()
 	{
 		try
 		{
@@ -942,7 +942,13 @@ public class SettingsDialog extends EscapeDialog
 		{
 			Domain.logger.add(ex);
 		}
+	}
 
+	/**
+	 * Launch the Settings dialog (initSettingsDialog must be called right before this).
+	 */
+	protected void launchSettingsDialog()
+	{
 		// Pack and show the Settings dialog
 		pack ();
 		setLocationRelativeTo (viewPanel);

@@ -74,7 +74,6 @@ public class InputDialog extends EscapeDialog
 
 		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 		setResizable(true);
-		setAlwaysOnTop(true);
 		setModal(true);
 
 		messageLabel.setFont(ViewPanel.FONT_BOLD_12);

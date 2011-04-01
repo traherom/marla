@@ -53,6 +53,7 @@ import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableColumnModel;
 import javax.swing.table.TableColumn;
+import marla.ide.operation.Operation;
 import org.jdesktop.layout.GroupLayout;
 import org.jdesktop.layout.LayoutStyle;
 import marla.ide.problem.DataColumn;
@@ -246,8 +247,8 @@ public class NewProblemWizardDialog extends EscapeDialog
         backWizardButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
-        setAlwaysOnTop(true);
         setIconImage(new ImageIcon (getClass ().getResource ("/marla/ide/images/new_button.png")).getImage ());
+        setModal(true);
         setResizable(false);
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
@@ -595,7 +596,7 @@ public class NewProblemWizardDialog extends EscapeDialog
         valuesCardPanel.add(dataSetTabbedPane);
         dataSetTabbedPane.setBounds(0, 30, 460, 299);
 
-        addDataSetButton.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        addDataSetButton.setFont(new java.awt.Font("Verdana", 0, 12));
         addDataSetButton.setText("Add");
         addDataSetButton.setToolTipText("Add a data set");
         addDataSetButton.addActionListener(new java.awt.event.ActionListener() {
@@ -606,7 +607,7 @@ public class NewProblemWizardDialog extends EscapeDialog
         valuesCardPanel.add(addDataSetButton);
         addDataSetButton.setBounds(285, 330, 70, 25);
 
-        removeDataSetButton.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        removeDataSetButton.setFont(new java.awt.Font("Verdana", 0, 12));
         removeDataSetButton.setText("Remove");
         removeDataSetButton.setToolTipText("Remove the last data set");
         removeDataSetButton.addActionListener(new java.awt.event.ActionListener() {
@@ -621,7 +622,7 @@ public class NewProblemWizardDialog extends EscapeDialog
         valuesCardPanel.add(tipTextLabel);
         tipTextLabel.setBounds(10, 360, 460, 30);
 
-        importDevoreButton.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        importDevoreButton.setFont(new java.awt.Font("Verdana", 0, 12));
         importDevoreButton.setText("Import from Devore7");
         importDevoreButton.setToolTipText("Import a data set from the Devore7 library");
         importDevoreButton.addActionListener(new java.awt.event.ActionListener() {
@@ -1140,9 +1141,19 @@ public class NewProblemWizardDialog extends EscapeDialog
 		else
 		{
 			removedData = domain.problem.removeData(domain.problem.getData(dataSetTabbedPane.getSelectedIndex()));
+			for (int i = 0; i < removedData.getOperationCount(); ++i)
+			{
+				Operation op = removedData.getOperation(i);
+				for (Operation childOp : op.getAllChildOperations())
+				{
+					viewPanel.workspacePanel.remove(childOp);
+				}
+				viewPanel.workspacePanel.remove(op);
+			}
 		}
 
 		viewPanel.workspacePanel.remove(removedData);
+		viewPanel.workspacePanel.repaint();
 
 		dataSetTabbedPane.remove(dataSetTabbedPane.getSelectedIndex());
 		if(dataSetTabbedPane.getTabCount() == 0)
@@ -2266,11 +2277,11 @@ public class NewProblemWizardDialog extends EscapeDialog
 	}
 
 	/**
-	 * Launch the New Problem Wizard with the default characteristics.
+	 * Initialized the New Problem Wizard before a launch.
 	 *
 	 * @param editing True when editing a problem, false when creating a new one.
 	 */
-	protected void launchNewProblemWizard(boolean editing)
+	protected void initializeNewProblemWizard(boolean editing)
 	{
 		ignoreDataChanging = true;
 
@@ -2304,14 +2315,31 @@ public class NewProblemWizardDialog extends EscapeDialog
 		// Set properties for the values tabs
 		dataSetTabbedPane.removeAll();
 
+		if (editing)
+		{
+			setTitle("Edit Problem");
+			welcomeTextLabel.setText(ViewPanel.welcomeEditText);
+		}
+		else
+		{
+			setTitle("New Problem Wizard");
+			welcomeTextLabel.setText(ViewPanel.welcomeNewText);
+		}
+
 		setNewProblemWizardDefaultValues(editing);
 
+		ignoreDataChanging = false;
+	}
+
+	/**
+	 * Display the New Problem Wizard (only call this after it has been initialized).
+	 */
+	protected void launchNewProblemWizard()
+	{
 		// Pack and show the New Problem Wizard dialog
 		pack();
 		setLocationRelativeTo(viewPanel);
 		setVisible(true);
-
-		ignoreDataChanging = false;
 	}
 
 	/**
@@ -2558,32 +2586,52 @@ public class NewProblemWizardDialog extends EscapeDialog
 
 	/**
 	 * Assuming the New Problem Wizard is already launched, this function will
+	 * move to edit sub problems for the currently displayed problem.
+	 */
+	protected void editSubProblems()
+	{
+		initializeNewProblemWizard(true);
+
+		// Transition to the values card panel
+		nextWizardButtonActionPerformed(null);
+		nextWizardButtonActionPerformed(null);
+		nextWizardButtonActionPerformed(null);
+
+		launchNewProblemWizard();
+	}
+
+	/**
+	 * Edit the current problem.
+	 */
+	protected void editProblem()
+	{
+		initializeNewProblemWizard(true);
+
+		// Transition to the values card panel
+		nextWizardButtonActionPerformed(null);
+		nextWizardButtonActionPerformed(null);
+
+		launchNewProblemWizard();
+	}
+
+	/**
+	 * Assuming the New Problem Wizard is already launched, this function will
 	 * move to add a new data set in the New Problem Wizard.
 	 */
 	protected void addNewDataSet()
 	{
+		initializeNewProblemWizard(true);
+
 		// Transition to the values card panel
+		nextWizardButtonActionPerformed(null);
+		nextWizardButtonActionPerformed(null);
 		nextWizardButtonActionPerformed(null);
 		nextWizardButtonActionPerformed(null);
 
 		// Add the new data set
 		addDataSetButtonActionPerformed(null);
-	}
 
-	/**
-	 * Assuming the New Problem Wizard is already launched, this function will
-	 * move to edit the conclusion of the current problem.
-	 */
-	protected void editConclusion()
-	{
-		// Transition to the values card panel
-		nextWizardButtonActionPerformed(null);
-		nextWizardButtonActionPerformed(null);
-		nextWizardButtonActionPerformed(null);
-
-		// Select the conclusion text area
-		problemConclusionTextArea.requestFocus();
-		problemConclusionTextArea.selectAll();
+		launchNewProblemWizard();
 	}
 
 	/**
@@ -2594,7 +2642,11 @@ public class NewProblemWizardDialog extends EscapeDialog
 	 */
 	protected void editDataSet(DataSet dataSet)
 	{
+		initializeNewProblemWizard(true);
+
 		// Transition to the values card panel
+		nextWizardButtonActionPerformed(null);
+		nextWizardButtonActionPerformed(null);
 		nextWizardButtonActionPerformed(null);
 		nextWizardButtonActionPerformed(null);
 
@@ -2610,30 +2662,28 @@ public class NewProblemWizardDialog extends EscapeDialog
 				Domain.logger.add(ex);
 			}
 		}
+
+		launchNewProblemWizard();
 	}
 
 	/**
 	 * Assuming the New Problem Wizard is already launched, this function will
-	 * move to edit sub problems for the currently displayed problem.
+	 * move to edit the conclusion of the current problem.
 	 */
-	protected void editSubProblems()
+	protected void editConclusion()
 	{
-		// Transition to the values card panel
-		nextWizardButtonActionPerformed(null);
-	}
-
-	/**
-	 * Edit the current problem.
-	 */
-	protected void editProblem()
-	{
-		setTitle("Edit Problem");
-		welcomeTextLabel.setText(ViewPanel.welcomeEditText);
-		launchNewProblemWizard(true);
-
+		initializeNewProblemWizard(true);
+		
 		// Transition to the values card panel
 		nextWizardButtonActionPerformed(null);
 		nextWizardButtonActionPerformed(null);
+		nextWizardButtonActionPerformed(null);
+
+		// Select the conclusion text area
+		problemConclusionTextArea.requestFocus();
+		problemConclusionTextArea.selectAll();
+
+		launchNewProblemWizard();
 	}
 
 	/**
