@@ -134,7 +134,7 @@ public class WorkspacePanel extends JPanel
 			g2.setStroke(new BasicStroke(lineWidth, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
 
 			// Work across each DataSource that we know about
-			List<DataSource> data = viewPanel.domain.problem.getAllData();
+			List<DataSource> data = viewPanel.domain.problem.getVisibleData();
 			for(DataSource ds : data)
 			{
 				drawConnection(g2, ds);

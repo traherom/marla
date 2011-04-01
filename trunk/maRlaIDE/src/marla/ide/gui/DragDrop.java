@@ -189,13 +189,25 @@ public class DragDrop implements DragGestureListener, DragSourceListener, DropTa
 				JLabel label = (JLabel) source.getComponent();
 				label.setForeground(DataSet.getDefaultColor());
 				DataSet dataSet = viewPanel.domain.problem.getData(label.getText());
-				if (dataSet.getParent() == viewPanel.workspacePanel)
+				if (!dataSet.isHidden())
 				{
 					JOptionPane.showMessageDialog(viewPanel, "This data set already exists in the workspace, so it\ncannot be added again.", "Data Set Exits", JOptionPane.INFORMATION_MESSAGE);
 				}
 				else
 				{
-					// TODO make the data set viewable in the data set again
+					dataSet.isHidden(false);
+					dataSet.setLocation(ev.getLocation());
+					viewPanel.workspacePanel.add(dataSet);
+					for (int i = 0; i < dataSet.getOperationCount(); ++i)
+					{
+						Operation op = dataSet.getOperation(i);
+						for (Operation childOp : op.getAllChildOperations())
+						{
+							viewPanel.workspacePanel.add(childOp);
+						}
+						viewPanel.workspacePanel.add(op);
+					}
+					viewPanel.rebuildWorkspace();
 				}
 			}
 			else
