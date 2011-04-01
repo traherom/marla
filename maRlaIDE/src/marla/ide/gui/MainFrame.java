@@ -221,6 +221,10 @@ public class MainFrame extends JFrame
 				{
 					viewPanel.workspaceSplitPane.remove(viewPanel.debugScrollPane);
 				}
+				else
+				{
+					viewPanel.workspaceSplitPane.setDividerLocation(viewPanel.getHeight() - 150);
+				}
 			}
 		}).start();
 

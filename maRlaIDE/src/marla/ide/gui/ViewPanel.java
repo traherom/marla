@@ -425,6 +425,7 @@ public class ViewPanel extends JPanel
 				try
 				{
 					final Operation operation = Operation.createOperation(operations.get(i));
+					operation.setFont(ViewPanel.FONT_PLAIN_12);
 					operation.setDefaultColor();
 					operation.setText("<html>" + operation.getDisplayString(abbreviated) + "</html>");
 					operation.setToolTipText("<html>" + operation.getDescription() + "</html>");
@@ -440,6 +441,7 @@ public class ViewPanel extends JPanel
 						{
 							setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 							operation.setForeground(Color.GRAY);
+							componentsScrollablePanel.repaint();
 						}
 
 						@Override
@@ -447,6 +449,7 @@ public class ViewPanel extends JPanel
 						{
 							setCursor(Cursor.getDefaultCursor());
 							operation.setDefaultColor();
+							componentsScrollablePanel.repaint();
 						}
 
 						@Override
@@ -487,7 +490,7 @@ public class ViewPanel extends JPanel
 		compConstraints.weighty = 1;
 		componentsScrollablePanel.add(new JLabel (""), compConstraints);
 
-		componentsScrollablePanel.updateUI();
+		componentsScrollablePanel.invalidate();
 	}
 
 	/** This method is called from within the constructor to
@@ -1688,6 +1691,7 @@ public class ViewPanel extends JPanel
 				setCursor(Cursor.getDefaultCursor());
 				((DataSource) hoverComponent).setDefaultColor();
 			}
+			workspacePanel.repaint();
 		}
 	}//GEN-LAST:event_workspacePanelMouseMoved
 
