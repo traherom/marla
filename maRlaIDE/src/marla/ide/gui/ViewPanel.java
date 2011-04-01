@@ -44,7 +44,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
@@ -58,7 +57,6 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-import javax.swing.border.Border;
 import javax.swing.filechooser.FileFilter;
 import marla.ide.problem.DataSet;
 import marla.ide.problem.DataSource;
@@ -107,12 +105,8 @@ public class ViewPanel extends JPanel
 	public static final String THIRD_TIP = "- Drag operations over data sets or other operations to connect them";
 	public static final String FOURTH_TIP = "- Drag unused items over the trash can to remove them";
 	public static final String FIFTH_TIP = "- Right-click on items in the workspace to have them perform specific tasks";
-	/** No border.*/
-	private final Border NO_BORDER = BorderFactory.createLineBorder(Color.WHITE);
 	/** A red border display.*/
-	private final Border RED_BORDER = BorderFactory.createLineBorder(Color.RED);
-	/** A black border display.*/
-	private final Border BLACK_BORDER = BorderFactory.createLineBorder(Color.BLACK);
+	private final Color HOVER_BACKGROUND_COLOR = new Color(255, 255, 110);
 	/** The source object for draggable assignments and events.*/
 	public final DragSource DRAG_SOURCE = new DragSource();
 	/** The drag-and-drop listener for assignments and events.*/
@@ -1008,8 +1002,6 @@ public class ViewPanel extends JPanel
 					   && component != firstRunLabel)
 					{
 						draggingComponent = component;
-						draggingComponent.setBorder(RED_BORDER);
-						draggingComponent.setSize(component.getPreferredSize());
 						if(draggingComponent instanceof Operation)
 						{
 							try
@@ -1133,12 +1125,12 @@ public class ViewPanel extends JPanel
 						{
 							Domain.logger.add(ex);
 						}
-						draggingComponent.setBorder(NO_BORDER);
+						draggingComponent.setBackground(Color.WHITE);
 						draggingComponent.setSize(draggingComponent.getPreferredSize());
 					}
 					else
 					{
-						draggingComponent.setBorder(NO_BORDER);
+						draggingComponent.setBackground(Color.WHITE);
 						draggingComponent.setSize(draggingComponent.getPreferredSize());
 					}
 
@@ -1349,35 +1341,29 @@ public class ViewPanel extends JPanel
 	{//GEN-HEADEREND:event_tieSubProblemSubMenuMenuSelected
 		if(rightClickedComponent != null && tieSubProblemSubMenu.isEnabled())
 		{
-			rightClickedComponent.setBorder(BLACK_BORDER);
-			rightClickedComponent.setSize(rightClickedComponent.getPreferredSize());
+			rightClickedComponent.setBackground(HOVER_BACKGROUND_COLOR);
 			if(rightClickedComponent instanceof Operation)
 			{
 				DataSource source = ((Operation) rightClickedComponent).getRootDataSource().getOperation(((Operation) rightClickedComponent).getIndexFromDataSet());
-				((JComponent) source).setBorder(BLACK_BORDER);
-				((JComponent) source).setSize(((JComponent) source).getPreferredSize());
+				((JComponent) source).setBackground(HOVER_BACKGROUND_COLOR);
 				List<Operation> tempOperations = source.getRootDataSource().getOperation(((Operation) source).getIndexFromDataSet()).getAllChildOperations();
 				for(int i = 0; i < tempOperations.size(); ++i)
 				{
-					tempOperations.get(i).setBorder(BLACK_BORDER);
-					tempOperations.get(i).setSize(tempOperations.get(i).getPreferredSize());
+					tempOperations.get(i).setBackground(HOVER_BACKGROUND_COLOR);
 				}
 			}
 			else
 			{
 				DataSet root = (DataSet) rightClickedComponent;
-				root.setBorder(BLACK_BORDER);
-				root.setSize(root.getPreferredSize());
+				root.setBackground(HOVER_BACKGROUND_COLOR);
 				for(int i = 0; i < root.getOperationCount(); ++i)
 				{
 					Operation operation = root.getOperation(i);
-					operation.setBorder(BLACK_BORDER);
-					operation.setSize(operation.getPreferredSize());
+					operation.setBackground(HOVER_BACKGROUND_COLOR);
 					List<Operation> tempOperations = operation.getAllChildOperations();
 					for(int j = 0; j < tempOperations.size(); ++j)
 					{
-						tempOperations.get(j).setBorder(BLACK_BORDER);
-						tempOperations.get(j).setSize(tempOperations.get(j).getPreferredSize());
+						tempOperations.get(j).setBackground(HOVER_BACKGROUND_COLOR);
 					}
 				}
 			}
@@ -1388,34 +1374,34 @@ public class ViewPanel extends JPanel
 	{//GEN-HEADEREND:event_tieSubProblemSubMenuMenuDeselected
 		if(rightClickedComponent != null && tieSubProblemSubMenu.isEnabled())
 		{
-			rightClickedComponent.setBorder(NO_BORDER);
+			rightClickedComponent.setBackground(Color.WHITE);
 			rightClickedComponent.setSize(rightClickedComponent.getPreferredSize());
 			if(rightClickedComponent instanceof Operation)
 			{
 				DataSource source = ((Operation) rightClickedComponent).getRootDataSource().getOperation(((Operation) rightClickedComponent).getIndexFromDataSet());
-				((JComponent) source).setBorder(NO_BORDER);
+				((JComponent) source).setBackground(Color.WHITE);
 				((JComponent) source).setSize(((JComponent) source).getPreferredSize());
 				List<Operation> tempOperations = source.getRootDataSource().getOperation(((Operation) source).getIndexFromDataSet()).getAllChildOperations();
 				for(int i = 0; i < tempOperations.size(); ++i)
 				{
-					tempOperations.get(i).setBorder(NO_BORDER);
+					tempOperations.get(i).setBackground(Color.WHITE);
 					tempOperations.get(i).setSize(tempOperations.get(i).getPreferredSize());
 				}
 			}
 			else
 			{
 				DataSet root = (DataSet) rightClickedComponent;
-				root.setBorder(NO_BORDER);
+				root.setBackground(Color.WHITE);
 				root.setSize(root.getPreferredSize());
 				for(int i = 0; i < root.getOperationCount(); ++i)
 				{
 					Operation operation = root.getOperation(i);
-					operation.setBorder(NO_BORDER);
+					operation.setBackground(Color.WHITE);
 					operation.setSize(operation.getPreferredSize());
 					List<Operation> tempOperations = operation.getAllChildOperations();
 					for(int j = 0; j < tempOperations.size(); ++j)
 					{
-						tempOperations.get(j).setBorder(NO_BORDER);
+						tempOperations.get(j).setBackground(Color.WHITE);
 						tempOperations.get(j).setSize(tempOperations.get(j).getPreferredSize());
 					}
 				}
@@ -1616,7 +1602,7 @@ public class ViewPanel extends JPanel
 	{//GEN-HEADEREND:event_untieSubProblemSubMenuMenuDeselected
 		if(rightClickedComponent != null && untieSubProblemSubMenu.isEnabled())
 		{
-			rightClickedComponent.setBorder(NO_BORDER);
+			rightClickedComponent.setBackground(Color.WHITE);
 			rightClickedComponent.setSize(rightClickedComponent.getPreferredSize());
 		}
 	}//GEN-LAST:event_untieSubProblemSubMenuMenuDeselected
@@ -1625,8 +1611,7 @@ public class ViewPanel extends JPanel
 	{//GEN-HEADEREND:event_untieSubProblemSubMenuMenuSelected
 		if(rightClickedComponent != null && untieSubProblemSubMenu.isEnabled())
 		{
-			rightClickedComponent.setBorder(BLACK_BORDER);
-			rightClickedComponent.setSize(rightClickedComponent.getPreferredSize());
+			rightClickedComponent.setBackground(HOVER_BACKGROUND_COLOR);
 		}
 	}//GEN-LAST:event_untieSubProblemSubMenuMenuSelected
 
@@ -1781,7 +1766,7 @@ public class ViewPanel extends JPanel
 			
 			if(hoverInDragComponent != null)
 			{
-				hoverInDragComponent.setBorder(NO_BORDER);
+				hoverInDragComponent.setBackground(Color.WHITE);
 				hoverInDragComponent.setSize(hoverInDragComponent.getPreferredSize());
 				hoverInDragComponent = null;
 			}
@@ -1796,13 +1781,11 @@ public class ViewPanel extends JPanel
 				if(component instanceof DataSource)
 				{
 					hoverInDragComponent = (JComponent) workspacePanel.getComponentAt(evt.getPoint());
-					hoverInDragComponent.setBorder(BLACK_BORDER);
-					hoverInDragComponent.setSize(hoverInDragComponent.getPreferredSize());
+					hoverInDragComponent.setBackground(HOVER_BACKGROUND_COLOR);
 				}
 				else if(hoverInDragComponent != null)
 				{
-					hoverInDragComponent.setBorder(NO_BORDER);
-					hoverInDragComponent.setSize(hoverInDragComponent.getPreferredSize());
+					hoverInDragComponent.setBackground(Color.WHITE);
 					hoverInDragComponent = null;
 				}
 			}
@@ -2108,7 +2091,7 @@ public class ViewPanel extends JPanel
 		}
 		if(hoverInDragComponent != null)
 		{
-			hoverInDragComponent.setBorder(NO_BORDER);
+			hoverInDragComponent.setBackground(Color.WHITE);
 			hoverInDragComponent = null;
 		}
 
