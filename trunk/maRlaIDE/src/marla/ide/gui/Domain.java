@@ -18,7 +18,6 @@
 
 package marla.ide.gui;
 
-import java.awt.Component;
 import java.awt.Container;
 import java.awt.Desktop;
 import java.io.BufferedReader;
@@ -104,8 +103,6 @@ public class Domain
 	private static boolean includeProbInReport = true;
 	/** The last good problem directory.*/
 	public static String lastGoodDir = HOME_DIR;
-	/** The last good file that was a CSV file.*/
-	//public String lastGoodDir = lastGoodDir;
 	/** The error file that keeps track of all errors and their occurrences.*/
 	protected File logFile;
 	/** Denotes if the log is being written. Prevents double writing */
@@ -650,7 +647,7 @@ public class Domain
 	 */
 	public boolean isEditing()
 	{
-		if (viewPanel.NEW_PROBLEM_WIZARD_DIALOG.newProblem != null)
+		if (viewPanel.newProblemWizardDialog.newProblem != null)
 		{
 			return false;
 		}
@@ -1102,13 +1099,13 @@ public class Domain
 		{
 			return MainFrame.progressFrame;
 		}
-		else if (viewPanel.SETTINGS_DIALOG.isVisible())
+		else if (viewPanel.settingsDialog.isVisible())
 		{
-			return viewPanel.SETTINGS_DIALOG;
+			return viewPanel.settingsDialog;
 		}
-		else if (viewPanel.NEW_PROBLEM_WIZARD_DIALOG.isVisible())
+		else if (viewPanel.newProblemWizardDialog.isVisible())
 		{
-			return viewPanel.NEW_PROBLEM_WIZARD_DIALOG;
+			return viewPanel.newProblemWizardDialog;
 		}
 		else
 		{

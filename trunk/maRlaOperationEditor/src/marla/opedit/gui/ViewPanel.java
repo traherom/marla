@@ -621,7 +621,7 @@ public class ViewPanel extends JPanel
 				}
 				else
 				{
-					marla.ide.gui.Domain.lastGoodDir = file.getParent();
+					marla.ide.gui.Domain.lastGoodDir = file.toString().substring(0, file.toString().lastIndexOf(File.separatorChar));
 				}
 
 				try
@@ -732,7 +732,7 @@ public class ViewPanel extends JPanel
 				}
 				else
 				{
-					marla.ide.gui.Domain.lastGoodDir = file.getParent();
+					marla.ide.gui.Domain.lastGoodDir = file.toString().substring(0, file.toString().lastIndexOf(File.separatorChar));
 				}
 
 				openDataSet();
@@ -919,37 +919,39 @@ public class ViewPanel extends JPanel
 					// Hunt down the button(s) in the panel and remove the action listener
 					for (int i = 0; i < panel.getComponentCount(); ++i)
 					{
-						if (panel.getComponent(i) instanceof JButton)
+						if (panel.getComponent(i) instanceof JPanel)
 						{
-							JButton button = (JButton) panel.getComponent(i);
-							for (ActionListener listener : button.getActionListeners())
+							JPanel buttonPanel = (JPanel) panel.getComponent(i);
+							if (buttonPanel.getComponent(0) instanceof JButton)
 							{
-								button.removeActionListener(listener);
-								final ViewPanel VIEW_PANEL = this;
-								button.addActionListener(new ActionListener()
+								final JButton doneButton = (JButton) buttonPanel.getComponent (0);
+								for (ActionListener listener : doneButton.getActionListeners())
 								{
-									public void actionPerformed(ActionEvent evt)
+									doneButton.removeActionListener(listener);
+									final ViewPanel finalViewPanel = this;
+									doneButton.addActionListener(new ActionListener()
 									{
-										if (marla.ide.gui.ViewPanel.requirementsButtonClick(currentOperation.getRequiredInfoPrompt(), valueComponents, false))
+										public void actionPerformed(ActionEvent evt)
 										{
-											try
+											if (marla.ide.gui.ViewPanel.requirementsButtonClick(currentOperation.getRequiredInfoPrompt(), valueComponents, false))
 											{
-												fillOutputTable();
-												displayNameTextPane.setText("<html><div style=\"font-family: Verdana, sans-serif;font-size: 10px;\">" + currentOperation.getDisplayString(false).trim() + "</div></html>");
-											}
-											catch(MarlaException ex)
-											{
-												//JOptionPane.showMessageDialog(VIEW_PANEL, ex.getMessage(), "No Data", JOptionPane.INFORMATION_MESSAGE);
-												xmlStatusLabel.setForeground(Color.RED);
-												if(ex.getCause() == null)
-													xmlStatusLabel.setText("<html><b>XML status:</b> " + ex.getMessage() + "</html>");
-												else
-													xmlStatusLabel.setText("<html><b>XML status:</b> " + ex.getCause().getMessage() + "</html>");
-
+												try
+												{
+													fillOutputTable();
+												}
+												catch(OperationXMLException ex)
+												{
+													JOptionPane.showMessageDialog(finalViewPanel, ex.getMessage(), "No Data", JOptionPane.INFORMATION_MESSAGE);
+												}
 											}
 										}
-									}
-								});
+									});
+								}
+								final JButton cancelButton = (JButton) buttonPanel.getComponent (1);
+								for (ActionListener listener : doneButton.getActionListeners())
+								{
+									cancelButton.removeActionListener(listener);
+								}
 								break;
 							}
 						}

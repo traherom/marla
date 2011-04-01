@@ -136,11 +136,11 @@ public class ViewPanel extends JPanel
 	/** The domain object reference performs generic actions specific to the GUI.*/
 	protected Domain domain = new Domain(this);
 	/** The New Problem Wizard dialog.*/
-	public final NewProblemWizardDialog NEW_PROBLEM_WIZARD_DIALOG = new NewProblemWizardDialog(this, domain);
+	public final NewProblemWizardDialog newProblemWizardDialog = new NewProblemWizardDialog(this, domain);
 	/** The Settings dialog.*/
-	public final SettingsDialog SETTINGS_DIALOG = new SettingsDialog(this);
+	public final SettingsDialog settingsDialog = new SettingsDialog(this);
 	/** The Input dialog.*/
-	public final InputDialog INPUT_DIALOG = new InputDialog(this);
+	public final InputDialog inputDialog = new InputDialog(this);
 	/** The main frame of a stand-alone application.*/
 	public MainFrame mainFrame;
 	/**
@@ -1099,6 +1099,7 @@ public class ViewPanel extends JPanel
 								}
 								workspacePanel.remove(operation);
 							}
+							// TODO the data set should not be removed, it should be hidden in the data set
 							domain.problem.removeData(dataSet);
 						}
 					}
@@ -1536,7 +1537,7 @@ public class ViewPanel extends JPanel
 		}
 		else if(button.isEnabled() && button == settingsButton)
 		{
-			SETTINGS_DIALOG.launchSettingsDialog();
+			settingsDialog.launchSettingsDialog();
 		}
 		else if (button.isEnabled() && button == newDataButton)
 		{
@@ -1569,8 +1570,8 @@ public class ViewPanel extends JPanel
 	private void editDataSetMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editDataSetMenuItemActionPerformed
 		if(rightClickedComponent != null)
 		{
-			NEW_PROBLEM_WIZARD_DIALOG.editProblem();
-			NEW_PROBLEM_WIZARD_DIALOG.editDataSet((DataSet) rightClickedComponent);
+			newProblemWizardDialog.editProblem();
+			newProblemWizardDialog.editDataSet((DataSet) rightClickedComponent);
 		}
 	}//GEN-LAST:event_editDataSetMenuItemActionPerformed
 
@@ -1602,7 +1603,7 @@ public class ViewPanel extends JPanel
 	private void remarkMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_remarkMenuItemActionPerformed
 		if(rightClickedComponent != null && rightClickedComponent instanceof Operation)
 		{
-			String newRemark = INPUT_DIALOG.launchInputDialog(this, "Operation Remark", "Give a remark for this operation:", ((Operation) rightClickedComponent).getRemark());
+			String newRemark = inputDialog.launchInputDialog(this, "Operation Remark", "Give a remark for this operation:", ((Operation) rightClickedComponent).getRemark());
 			if (!newRemark.equals (((Operation) rightClickedComponent).getRemark()))
 			{
 				((Operation) rightClickedComponent).setRemark(newRemark);
@@ -1835,9 +1836,9 @@ public class ViewPanel extends JPanel
 	protected void rebuildWorkspace()
 	{
 		Problem problem;
-		if (NEW_PROBLEM_WIZARD_DIALOG.newProblem != null)
+		if (newProblemWizardDialog.newProblem != null)
 		{
-			problem = NEW_PROBLEM_WIZARD_DIALOG.newProblem;
+			problem = newProblemWizardDialog.newProblem;
 		}
 		else
 		{
@@ -2121,10 +2122,10 @@ public class ViewPanel extends JPanel
 	 */
 	protected void addNewDataSet()
 	{
-		NEW_PROBLEM_WIZARD_DIALOG.setTitle("Edit Problem");
-		NEW_PROBLEM_WIZARD_DIALOG.welcomeTextLabel.setText(ViewPanel.welcomeEditText);
-		NEW_PROBLEM_WIZARD_DIALOG.editProblem();
-		NEW_PROBLEM_WIZARD_DIALOG.addNewDataSet();
+		newProblemWizardDialog.setTitle("Edit Problem");
+		newProblemWizardDialog.welcomeTextLabel.setText(ViewPanel.welcomeEditText);
+		newProblemWizardDialog.editProblem();
+		newProblemWizardDialog.addNewDataSet();
 	}
 
 	/**
@@ -2219,7 +2220,8 @@ public class ViewPanel extends JPanel
 		}
 
 		JButton doneButton = new JButton("Done");
-		final ViewPanel VIEW_PANEL = ViewPanel.getInstance();
+		JButton cancelButton = new JButton("Cancel");
+		final ViewPanel finalViewPanel = ViewPanel.getInstance();
 		// When the user is done with the assumptions, forms will be validated and their values stored into the operation before continuing
 		doneButton.addActionListener(new ActionListener()
 		{
@@ -2232,13 +2234,24 @@ public class ViewPanel extends JPanel
 				}
 			}
 		});
-		panel.add(doneButton);
+		cancelButton.addActionListener(new ActionListener()
+		{
+			@Override
+			public void actionPerformed(ActionEvent evt)
+			{
+				dialog.setVisible(false);
+			}
+		});
+		JPanel buttonPanel = new JPanel(new GridLayout(1, 2));
+		buttonPanel.add(doneButton);
+		buttonPanel.add(cancelButton);
+		panel.add(buttonPanel);
 
 		if (showDialog)
 		{
 			// Display dialog
 			dialog.pack();
-			dialog.setLocationRelativeTo(VIEW_PANEL);
+			dialog.setLocationRelativeTo(viewPanel);
 			dialog.setVisible(true);
 		}
 
@@ -2333,47 +2346,7 @@ public class ViewPanel extends JPanel
 			// Move trees around if our workspace is smaller than the saving one
 			ensureComponentsVisible();
 
-			// Add data sets to legend
-			dataSetContentPanel.removeAll();
-			((GridLayout) dataSetContentPanel.getLayout()).setRows(0);
-			firstDataCounter = 3;
-			for (int i = 0; i < domain.problem.getDataCount(); ++i)
-			{
-				// Add sub problem to legend
-				JLabel label;
-				if (firstDataCounter == 1)
-				{
-					label = secondData;
-				}
-				else if (firstDataCounter == 2)
-				{
-					label = thirdData;
-				}
-				else
-				{
-					label = new JLabel("");
-					secondData = new JLabel ("");
-					thirdData = new JLabel ("");
-				}
-				label.setFont(FONT_PLAIN_12);
-				label.setText(domain.problem.getData(i).getName());
-				// TODO label.setForeground(DataSet.getDefaultColor());
-
-				if (firstDataCounter == 3)
-				{
-					firstDataCounter = 0;
-
-					GridLayout layout = (GridLayout) dataSetContentPanel.getLayout();
-					layout.setRows(layout.getRows() + 1);
-
-					dataSetContentPanel.add(label);
-					dataSetContentPanel.add(secondData);
-					dataSetContentPanel.add(thirdData);
-
-					dataSetContentPanel.invalidate();
-				}
-				++firstDataCounter;
-			}
+			buildDataSetsOnRight();
 
 			// Add sub problems to legend
 			legendContentPanel.removeAll();
@@ -2435,6 +2408,109 @@ public class ViewPanel extends JPanel
 			legendContentPanel.invalidate();
 
 			workspacePanel.repaint();
+		}
+	}
+
+	/**
+	 * Assuming the data set content panel is empty, add all data sets to the
+	 * panel on the right.
+	 */
+	protected void buildDataSetsOnRight()
+	{
+		// Add data sets to legend
+		dataSetContentPanel.removeAll();
+		((GridLayout) dataSetContentPanel.getLayout()).setRows(0);
+		firstDataCounter = 3;
+		for (int i = 0; i < domain.problem.getDataCount(); ++i)
+		{
+			// Add sub problem to legend
+			JLabel label;
+			if (firstDataCounter == 1)
+			{
+				label = secondData;
+			}
+			else if (firstDataCounter == 2)
+			{
+				label = thirdData;
+			}
+			else
+			{
+				label = new JLabel("");
+				DRAG_SOURCE.createDefaultDragGestureRecognizer(label, DnDConstants.ACTION_MOVE, DND_LISTENER);
+				final JLabel thisLabel = label;
+				label.addMouseListener(new MouseAdapter()
+				{
+					@Override
+					public void mouseEntered(MouseEvent evt)
+					{
+						setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+						thisLabel.setForeground(Color.GRAY);
+					}
+
+					@Override
+					public void mouseExited(MouseEvent evt)
+					{
+						setCursor(Cursor.getDefaultCursor());
+						thisLabel.setForeground(DataSet.getDefaultColor());
+					}
+				});
+				secondData = new JLabel ("");
+				DRAG_SOURCE.createDefaultDragGestureRecognizer(secondData, DnDConstants.ACTION_MOVE, DND_LISTENER);
+				final JLabel finalSecondLabel = secondData;
+				secondData.addMouseListener(new MouseAdapter()
+				{
+					@Override
+					public void mouseEntered(MouseEvent evt)
+					{
+						setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+						finalSecondLabel.setForeground(Color.GRAY);
+					}
+
+					@Override
+					public void mouseExited(MouseEvent evt)
+					{
+						setCursor(Cursor.getDefaultCursor());
+						finalSecondLabel.setForeground(DataSet.getDefaultColor());
+					}
+				});
+				thirdData = new JLabel ("");
+				DRAG_SOURCE.createDefaultDragGestureRecognizer(thirdData, DnDConstants.ACTION_MOVE, DND_LISTENER);
+				final JLabel finalThirdLabel = thirdData;
+				thirdData.addMouseListener(new MouseAdapter()
+				{
+					@Override
+					public void mouseEntered(MouseEvent evt)
+					{
+						setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+						finalThirdLabel.setForeground(Color.GRAY);
+					}
+
+					@Override
+					public void mouseExited(MouseEvent evt)
+					{
+						setCursor(Cursor.getDefaultCursor());
+						finalThirdLabel.setForeground(DataSet.getDefaultColor());
+					}
+				});
+			}
+			label.setFont(FONT_PLAIN_12);
+			label.setText(domain.problem.getData(i).getName());
+			label.setForeground(DataSet.getDefaultColor());
+
+			if (firstDataCounter == 3)
+			{
+				firstDataCounter = 0;
+
+				GridLayout layout = (GridLayout) dataSetContentPanel.getLayout();
+				layout.setRows(layout.getRows() + 1);
+
+				dataSetContentPanel.add(label);
+				dataSetContentPanel.add(secondData);
+				dataSetContentPanel.add(thirdData);
+
+				dataSetContentPanel.invalidate();
+			}
+			++firstDataCounter;
 		}
 	}
 
@@ -2563,9 +2639,9 @@ public class ViewPanel extends JPanel
 	 */
 	protected void newOperation()
 	{
-		NEW_PROBLEM_WIZARD_DIALOG.setTitle("New Problem Wizard");
-		NEW_PROBLEM_WIZARD_DIALOG.welcomeTextLabel.setText(ViewPanel.welcomeNewText);
-		NEW_PROBLEM_WIZARD_DIALOG.launchNewProblemWizard(false);
+		newProblemWizardDialog.setTitle("New Problem Wizard");
+		newProblemWizardDialog.welcomeTextLabel.setText(ViewPanel.welcomeNewText);
+		newProblemWizardDialog.launchNewProblemWizard(false);
 	}
 
 	/**

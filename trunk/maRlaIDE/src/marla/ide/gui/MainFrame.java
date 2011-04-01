@@ -722,7 +722,7 @@ public class MainFrame extends JFrame
 	}//GEN-LAST:event_closeProblemMenuItemActionPerformed
 
 	private void editProblemMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editProblemMenuItemActionPerformed
-		viewPanel.NEW_PROBLEM_WIZARD_DIALOG.editProblem();
+		viewPanel.newProblemWizardDialog.editProblem();
 	}//GEN-LAST:event_editProblemMenuItemActionPerformed
 
 	private void newDataSetMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newDataSetMenuItemActionPerformed
@@ -742,10 +742,10 @@ public class MainFrame extends JFrame
 	}//GEN-LAST:event_exportForLatexMenuItemActionPerformed
 
 	private void editSubProblemsMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editSubProblemsMenuItemActionPerformed
-		viewPanel.NEW_PROBLEM_WIZARD_DIALOG.setTitle("Edit Problem");
-		viewPanel.NEW_PROBLEM_WIZARD_DIALOG.welcomeTextLabel.setText(ViewPanel.welcomeEditText);
+		viewPanel.newProblemWizardDialog.setTitle("Edit Problem");
+		viewPanel.newProblemWizardDialog.welcomeTextLabel.setText(ViewPanel.welcomeEditText);
 		editProblemMenuItemActionPerformed(null);
-		viewPanel.NEW_PROBLEM_WIZARD_DIALOG.editSubProblems();
+		viewPanel.newProblemWizardDialog.editSubProblems();
 	}//GEN-LAST:event_editSubProblemsMenuItemActionPerformed
 
 	private void helpMenuMenuSelected(javax.swing.event.MenuEvent evt)//GEN-FIRST:event_helpMenuMenuSelected
@@ -768,23 +768,23 @@ public class MainFrame extends JFrame
 
 	private void settingsMenuItemActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_settingsMenuItemActionPerformed
 	{//GEN-HEADEREND:event_settingsMenuItemActionPerformed
-		viewPanel.SETTINGS_DIALOG.launchSettingsDialog();
+		viewPanel.settingsDialog.launchSettingsDialog();
 	}//GEN-LAST:event_settingsMenuItemActionPerformed
 
 	private void editConclusionMenuItemActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_editConclusionMenuItemActionPerformed
 	{//GEN-HEADEREND:event_editConclusionMenuItemActionPerformed
-		viewPanel.NEW_PROBLEM_WIZARD_DIALOG.setTitle("Edit Problem");
-		viewPanel.NEW_PROBLEM_WIZARD_DIALOG.welcomeTextLabel.setText(ViewPanel.welcomeEditText);
+		viewPanel.newProblemWizardDialog.setTitle("Edit Problem");
+		viewPanel.newProblemWizardDialog.welcomeTextLabel.setText(ViewPanel.welcomeEditText);
 		editProblemMenuItemActionPerformed(null);
-		viewPanel.NEW_PROBLEM_WIZARD_DIALOG.editConclusion();
+		viewPanel.newProblemWizardDialog.editConclusion();
 	}//GEN-LAST:event_editConclusionMenuItemActionPerformed
 
 	private void editDataSetsMenuItemActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_editDataSetsMenuItemActionPerformed
 	{//GEN-HEADEREND:event_editDataSetsMenuItemActionPerformed
-		viewPanel.NEW_PROBLEM_WIZARD_DIALOG.setTitle("Edit Problem");
-		viewPanel.NEW_PROBLEM_WIZARD_DIALOG.welcomeTextLabel.setText(ViewPanel.welcomeEditText);
+		viewPanel.newProblemWizardDialog.setTitle("Edit Problem");
+		viewPanel.newProblemWizardDialog.welcomeTextLabel.setText(ViewPanel.welcomeEditText);
 		editProblemMenuItemActionPerformed(null);
-		viewPanel.NEW_PROBLEM_WIZARD_DIALOG.editDataSet(null);
+		viewPanel.newProblemWizardDialog.editDataSet(null);
 	}//GEN-LAST:event_editDataSetsMenuItemActionPerformed
 
 	private void helpContentsMenuItemActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_helpContentsMenuItemActionPerformed

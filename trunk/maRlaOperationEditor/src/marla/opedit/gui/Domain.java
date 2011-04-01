@@ -53,8 +53,6 @@ public class Domain
     protected File logFile;
 	/** Denotes if the log is being written. Prevents double writing */
 	protected boolean isWritingLog = false;
-    /** The reference to the view of the application.*/
-    private ViewPanel viewPanel;
 	/** The currently open operation XML file.*/
 	public OperationFile operationFile = null;
 	/** True if the operation XML file has been changed, false otherwise.*/
@@ -69,8 +67,6 @@ public class Domain
      */
     public Domain(ViewPanel viewPanel)
     {
-		this.viewPanel = viewPanel;
-
 		Configuration conf = Configuration.getInstance();
 		conf.configureFromSearch(Configuration.ConfigType.ErrorServer);
 		System.out.println("Error server found at " + marla.ide.gui.Domain.getErrorServer());
