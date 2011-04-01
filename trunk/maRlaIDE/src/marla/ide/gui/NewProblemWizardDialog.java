@@ -60,7 +60,6 @@ import org.jdesktop.layout.LayoutStyle;
 import marla.ide.problem.DataColumn;
 import marla.ide.problem.DataNotFoundException;
 import marla.ide.problem.DataSet;
-import marla.ide.problem.DataSource;
 import marla.ide.problem.DuplicateNameException;
 import marla.ide.problem.MarlaException;
 import marla.ide.problem.Problem;
@@ -85,8 +84,6 @@ public class NewProblemWizardDialog extends EscapeDialog
 	};
 	/** Tip text for the values panel.*/
 	private final String VALUES_TIP_TEXT = "<html>Double-click on a data set tab to rename it.<br />Double-click on a column header in the table to rename it.</html>";
-	/** The final reference to this dialog object.*/
-	private final NewProblemWizardDialog NEW_PROBLEM_WIZARD = this;
 	/** The list in the New Problem Wizard of sub problems within the current problem.*/
 	private ArrayList<JPanel> subProblemPanels = new ArrayList<JPanel>();
 	/** True if the New Problem Wizard is being opened and actions should be ignored.*/
@@ -2131,6 +2128,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 		});
 		final JButton csvButton = new JButton("Import from CSV");
 		csvButton.setFont(ViewPanel.FONT_PLAIN_12);
+		final NewProblemWizardDialog finalThis = this;
 		csvButton.addActionListener(new ActionListener()
 		{
 			@Override
@@ -2149,7 +2147,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 					viewPanel.openChooserDialog.setSelectedFile(new File(""));
 				}
 				// Display the chooser and retrieve the selected folder
-				int response = viewPanel.openChooserDialog.showOpenDialog(NEW_PROBLEM_WIZARD);
+				int response = viewPanel.openChooserDialog.showOpenDialog(finalThis);
 				if(response == JFileChooser.APPROVE_OPTION)
 				{
 					// If the user selected a file that exists, point the problem's location to the newly selected location

@@ -20,6 +20,7 @@ package marla.ide.gui;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
@@ -108,6 +109,31 @@ public class WorkspacePanel extends JPanel
 	public static int getLineSpacing()
 	{
 		return lineSpacing;
+	}
+
+	/**
+	 * Returns the component located at the given coordinates, ignoring the component
+	 * specified in ignore.  ignore can be passed as null if the user doesn't care.
+	 * If no component is found at the given point, null is returned.
+	 *
+	 * @param x The x-coordinate.
+	 * @param y The y-coordinate.
+	 * @param ignore The component to ignore, if any.
+	 * @return The component at the given coordinates, or null if none exists.
+	 */
+	public Component getComponentAt(int x, int y, Component ignore)
+	{
+		for (Component comp : getComponents())
+		{
+			if (comp.contains(x, y) &&
+					comp != this &&
+					comp != ignore)
+			{
+				return comp;
+			}
+		}
+
+		return null;
 	}
 
 	/**
