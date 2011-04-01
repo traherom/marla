@@ -258,7 +258,6 @@ public class NewProblemWizardDialog extends EscapeDialog
             }
         });
 
-        stepsPanel.setBackground(new java.awt.Color(240, 239, 239));
         stepsPanel.setBorder(javax.swing.BorderFactory.createEtchedBorder());
         stepsPanel.setLayout(null);
 

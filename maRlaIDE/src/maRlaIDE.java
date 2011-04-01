@@ -38,7 +38,7 @@ import marla.ide.resource.Configuration.ConfigType;
 public class maRlaIDE
 {
 	/** The progress frame to be built.*/
-	private static ProgressFrame progressFrame = new ProgressFrame();
+	private static ProgressFrame progressFrame;
 
 	/**
 	 * The method responsible for constructing the visual frame and maintaining
@@ -47,7 +47,7 @@ public class maRlaIDE
 	 * @param args The command-line arguments.
 	 */
 	public static void main(final String args[])
-	{
+	{	
 		Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
 			@Override
 			public void uncaughtException(Thread t, Throwable e)
@@ -55,6 +55,37 @@ public class maRlaIDE
 				Domain.logger.add(e);
 			}
 		});
+		
+		// Define UI characteristics before the application is instantiated
+		try
+		{
+			if (System.getProperty ("os.name").toLowerCase().contains ("windows"))
+			{
+				UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+			}
+			else
+			{
+				UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
+			}
+		}
+		catch(ClassNotFoundException ex)
+		{
+			Domain.logger.add(ex);
+		}
+		catch(InstantiationException ex)
+		{
+			Domain.logger.add(ex);
+		}
+		catch(IllegalAccessException ex)
+		{
+			Domain.logger.add(ex);
+		}
+		catch(UnsupportedLookAndFeelException ex)
+		{
+			Domain.logger.add(ex);
+		}
+
+		progressFrame = new ProgressFrame();
 
 		// Rather than having to call in to Configuration directly, if
 		// configure_only comes in as our first parameter we call it and then
@@ -92,28 +123,6 @@ public class maRlaIDE
 		progressFrame.progressBar.setValue(0);
 		progressFrame.progressBar.setString("0%");
 		progressFrame.statusLabel.setText("Loading framework ...");
-		
-		// Define UI characteristics before the application is instantiated
-		try
-		{
-			UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
-		}
-		catch(ClassNotFoundException ex)
-		{
-			Domain.logger.add(ex);
-		}
-		catch(InstantiationException ex)
-		{
-			Domain.logger.add(ex);
-		}
-		catch(IllegalAccessException ex)
-		{
-			Domain.logger.add(ex);
-		}
-		catch(UnsupportedLookAndFeelException ex)
-		{
-			Domain.logger.add(ex);
-		}
 
 		// Build info message
 		System.out.println("Starting " + Domain.NAME + " " + Domain.VERSION + " " + Domain.PRE_RELEASE);

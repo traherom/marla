@@ -107,6 +107,8 @@ public class ViewPanel extends JPanel
 	public static final String FIFTH_TIP = "- Right-click on items in the workspace to have them perform specific tasks";
 	/** A red border display.*/
 	private final Color HOVER_BACKGROUND_COLOR = new Color(255, 255, 110);
+	/** The default, no background workspace color.*/
+	private final Color NO_BACKGROUND_WORKSPACE = new Color(255, 255, 255, 0);
 	/** The source object for draggable assignments and events.*/
 	public final DragSource DRAG_SOURCE = new DragSource();
 	/** The drag-and-drop listener for assignments and events.*/
@@ -191,6 +193,8 @@ public class ViewPanel extends JPanel
 	protected JLabel thirdData = null;
 	/** True when the mouse has dragged far enough to break the component away, false otherwise.*/
 	private boolean broken = false;
+	/** True when dragging from the palette, false otherwise.*/
+	protected boolean dragFromPalette = false;
 	/** The default file filter for a JFileChooser open dialog.*/
 	protected FileFilter defaultFilter;
 	/** The extensions file filter for CSV files.*/
@@ -289,11 +293,34 @@ public class ViewPanel extends JPanel
 		// Retrieve the default file filter from the JFileChooser before it is ever changed
 		defaultFilter = openChooserDialog.getFileFilter();
 
-		// Set custom behavior of JFileChooser
-		JPanel access = (JPanel) ((JPanel) openChooserDialog.getComponent(3)).getComponent(3);
-		((JButton) access.getComponent(1)).setToolTipText("Cancel open");
-		access = (JPanel) ((JPanel) saveChooserDialog.getComponent(3)).getComponent(3);
-		((JButton) access.getComponent(1)).setToolTipText("Cancel save");
+		// Find the "Cancel" button and change the tooltip
+		setToolTipForButton(openChooserDialog, "Cancel", "Cancel file selection");
+		setToolTipForButton(saveChooserDialog, "Cancel", "Cancel file selection");
+	}
+
+	/**
+	 * Recurse through a given component to find the given JButton with the given string.
+	 * Then set the tooltip of that JButton to the requested tooltip.
+	 *
+	 * @param comp The component to iterate through.
+	 * @param string The string to search for in a JButton.
+	 * @param toolTip The tooltip to set for the JButton.
+	 */
+	private void setToolTipForButton(JComponent comp, String string, String toolTip)
+	{
+		if (comp instanceof JButton &&
+				((JButton) comp).getText() != null &&
+				((JButton) comp).getText().equals(string))
+		{
+			((JButton) comp).setToolTipText(toolTip);
+		}
+		for (int i = 0; i < comp.getComponentCount(); ++i)
+		{
+			if (comp.getComponent (i) instanceof JComponent)
+			{
+				setToolTipForButton ((JComponent) comp.getComponent (i), string, toolTip);
+			}
+		}
 	}
 
 	/**
@@ -522,11 +549,11 @@ public class ViewPanel extends JPanel
         legendPanel = new javax.swing.JPanel();
         legendContentPanel = new javax.swing.JPanel();
 
-        openChooserDialog.setApproveButtonToolTipText("Open selected folder");
+        openChooserDialog.setApproveButtonToolTipText("Open selection");
         openChooserDialog.setDialogTitle("Browse Problem Location");
         openChooserDialog.setFileSelectionMode(javax.swing.JFileChooser.DIRECTORIES_ONLY);
 
-        saveChooserDialog.setApproveButtonToolTipText("Save as selected file");
+        saveChooserDialog.setApproveButtonToolTipText("Save to selection");
         saveChooserDialog.setDialogTitle("Save As Problem Location");
         saveChooserDialog.setDialogType(javax.swing.JFileChooser.SAVE_DIALOG);
 
@@ -1077,7 +1104,7 @@ public class ViewPanel extends JPanel
 					int response = JOptionPane.YES_OPTION;
 					if(draggingComponent instanceof DataSet)
 					{
-						response = JOptionPane.showConfirmDialog(this, "You are about to remove this data set from the workspace.\nThe data set can be readded to the workspace anytime by dragging\nit back from the list of data sets to the right.\nAre you sure you want to remove this dta set?", "Remove Data Set", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+						response = JOptionPane.showConfirmDialog(this, "You are about to remove this data set from the workspace.\nThe data set can be readded to the workspace anytime by dragging\nit back from the list of data sets to the right.\nAre you sure you want to remove this data set?", "Remove Data Set", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
 						if (response == JOptionPane.YES_OPTION)
 						{
 							DataSet dataSet = (DataSet) draggingComponent;
@@ -1125,13 +1152,11 @@ public class ViewPanel extends JPanel
 						{
 							Domain.logger.add(ex);
 						}
-						draggingComponent.setBackground(Color.WHITE);
-						draggingComponent.setSize(draggingComponent.getPreferredSize());
+						draggingComponent.setBackground(NO_BACKGROUND_WORKSPACE);
 					}
 					else
 					{
-						draggingComponent.setBackground(Color.WHITE);
-						draggingComponent.setSize(draggingComponent.getPreferredSize());
+						draggingComponent.setBackground(NO_BACKGROUND_WORKSPACE);
 					}
 
 					rebuildTree((DataSource) draggingComponent);
@@ -1374,35 +1399,29 @@ public class ViewPanel extends JPanel
 	{//GEN-HEADEREND:event_tieSubProblemSubMenuMenuDeselected
 		if(rightClickedComponent != null && tieSubProblemSubMenu.isEnabled())
 		{
-			rightClickedComponent.setBackground(Color.WHITE);
-			rightClickedComponent.setSize(rightClickedComponent.getPreferredSize());
+			rightClickedComponent.setBackground(NO_BACKGROUND_WORKSPACE);
 			if(rightClickedComponent instanceof Operation)
 			{
 				DataSource source = ((Operation) rightClickedComponent).getRootDataSource().getOperation(((Operation) rightClickedComponent).getIndexFromDataSet());
-				((JComponent) source).setBackground(Color.WHITE);
-				((JComponent) source).setSize(((JComponent) source).getPreferredSize());
+				((JComponent) source).setBackground(NO_BACKGROUND_WORKSPACE);
 				List<Operation> tempOperations = source.getRootDataSource().getOperation(((Operation) source).getIndexFromDataSet()).getAllChildOperations();
 				for(int i = 0; i < tempOperations.size(); ++i)
 				{
-					tempOperations.get(i).setBackground(Color.WHITE);
-					tempOperations.get(i).setSize(tempOperations.get(i).getPreferredSize());
+					tempOperations.get(i).setBackground(NO_BACKGROUND_WORKSPACE);
 				}
 			}
 			else
 			{
 				DataSet root = (DataSet) rightClickedComponent;
-				root.setBackground(Color.WHITE);
-				root.setSize(root.getPreferredSize());
+				root.setBackground(NO_BACKGROUND_WORKSPACE);
 				for(int i = 0; i < root.getOperationCount(); ++i)
 				{
 					Operation operation = root.getOperation(i);
-					operation.setBackground(Color.WHITE);
-					operation.setSize(operation.getPreferredSize());
+					operation.setBackground(NO_BACKGROUND_WORKSPACE);
 					List<Operation> tempOperations = operation.getAllChildOperations();
 					for(int j = 0; j < tempOperations.size(); ++j)
 					{
-						tempOperations.get(j).setBackground(Color.WHITE);
-						tempOperations.get(j).setSize(tempOperations.get(j).getPreferredSize());
+						tempOperations.get(j).setBackground(NO_BACKGROUND_WORKSPACE);
 					}
 				}
 			}
@@ -1602,7 +1621,7 @@ public class ViewPanel extends JPanel
 	{//GEN-HEADEREND:event_untieSubProblemSubMenuMenuDeselected
 		if(rightClickedComponent != null && untieSubProblemSubMenu.isEnabled())
 		{
-			rightClickedComponent.setBackground(Color.WHITE);
+			rightClickedComponent.setBackground(NO_BACKGROUND_WORKSPACE);
 			rightClickedComponent.setSize(rightClickedComponent.getPreferredSize());
 		}
 	}//GEN-LAST:event_untieSubProblemSubMenuMenuDeselected
@@ -1728,7 +1747,7 @@ public class ViewPanel extends JPanel
 		// Ensure all datasets are within our new bounds
 		if(domain.problem != null)
 		{
-			for(DataSource ds : domain.problem.getAllData())
+			for(DataSource ds : domain.problem.getVisibleData())
 			{
 				int x = ds.getX();
 				int y = ds.getY();
@@ -1760,14 +1779,13 @@ public class ViewPanel extends JPanel
 	 */
 	protected void dragInWorkspace(MouseEvent evt)
 	{
-		if(draggingComponent != null && buttonPressed == MouseEvent.BUTTON1)
+		if((dragFromPalette || draggingComponent != null) && buttonPressed == MouseEvent.BUTTON1)
 		{
 			setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 			
 			if(hoverInDragComponent != null)
 			{
-				hoverInDragComponent.setBackground(Color.WHITE);
-				hoverInDragComponent.setSize(hoverInDragComponent.getPreferredSize());
+				hoverInDragComponent.setBackground(NO_BACKGROUND_WORKSPACE);
 				hoverInDragComponent = null;
 			}
 
@@ -1785,7 +1803,7 @@ public class ViewPanel extends JPanel
 				}
 				else if(hoverInDragComponent != null)
 				{
-					hoverInDragComponent.setBackground(Color.WHITE);
+					hoverInDragComponent.setBackground(NO_BACKGROUND_WORKSPACE);
 					hoverInDragComponent = null;
 				}
 			}
@@ -1833,6 +1851,10 @@ public class ViewPanel extends JPanel
 			for(DataSet ds : problem.getVisibleDataSets())
 			{
 				rebuildTree(ds);
+			}
+			for(int i = 0; i < problem.getUnusedOperationCount(); ++i)
+			{
+				rebuildTree(problem.getUnusedOperation(i));
 			}
 			workspacePanel.repaint();
 		}
@@ -1997,6 +2019,8 @@ public class ViewPanel extends JPanel
 
 				newOperation = Operation.createOperation(operation.getName());
 				newOperation.setFont(ViewPanel.workspaceFontBold);
+				newOperation.setText("<html>" + newOperation.getDisplayString(abbreviated) + "</html>");
+				newOperation.setSize(newOperation.getPreferredSize());
 
 				if (showSecond)
 				{
@@ -2008,15 +2032,12 @@ public class ViewPanel extends JPanel
 			{
 				newOperation = operation;
 			}
-			int x = component.getX();
-			int y = component.getY();
 
 			if(component instanceof Operation)
 			{
 				Operation dropOperation = (Operation) component;
 				if(dropOperation != newOperation)
 				{
-					y = component.getY() + spaceHeight;
 					if(dropOperation.getOperationCount() > 0)
 					{
 						// Add as child and ensure we're not listed as unused
@@ -2067,8 +2088,9 @@ public class ViewPanel extends JPanel
 				operation.setDefaultColor();
 				
 				newOperation = Operation.createOperation(operation.getName());
-				newOperation.setText("<html>" + operation.getDisplayString(abbreviated) + "</html>");
 				newOperation.setFont(ViewPanel.workspaceFontBold);
+				newOperation.setText("<html>" + newOperation.getDisplayString(abbreviated) + "</html>");
+				newOperation.setSize(newOperation.getPreferredSize());
 
 				domain.problem.addUnusedOperation(newOperation);
 
@@ -2091,7 +2113,7 @@ public class ViewPanel extends JPanel
 		}
 		if(hoverInDragComponent != null)
 		{
-			hoverInDragComponent.setBackground(Color.WHITE);
+			hoverInDragComponent.setBackground(NO_BACKGROUND_WORKSPACE);
 			hoverInDragComponent = null;
 		}
 
@@ -2425,6 +2447,14 @@ public class ViewPanel extends JPanel
 						setCursor(Cursor.getDefaultCursor());
 						thisLabel.setForeground(DataSet.getDefaultColor());
 					}
+
+					@Override
+					public void mousePressed(MouseEvent evt)
+					{
+						buttonPressed = evt.getButton();
+						xDragOffset = (int) evt.getLocationOnScreen().getX() - (int) thisLabel.getLocationOnScreen().getX();
+						yDragOffset = (int) evt.getLocationOnScreen().getY() - (int) thisLabel.getLocationOnScreen().getY();
+					}
 				});
 				secondData = new JLabel ("");
 				DRAG_SOURCE.createDefaultDragGestureRecognizer(secondData, DnDConstants.ACTION_MOVE, DND_LISTENER);
@@ -2444,6 +2474,14 @@ public class ViewPanel extends JPanel
 						setCursor(Cursor.getDefaultCursor());
 						finalSecondLabel.setForeground(DataSet.getDefaultColor());
 					}
+
+					@Override
+					public void mousePressed(MouseEvent evt)
+					{
+						buttonPressed = evt.getButton();
+						xDragOffset = (int) evt.getLocationOnScreen().getX() - (int) finalSecondLabel.getLocationOnScreen().getX();
+						yDragOffset = (int) evt.getLocationOnScreen().getY() - (int) finalSecondLabel.getLocationOnScreen().getY();
+					}
 				});
 				thirdData = new JLabel ("");
 				DRAG_SOURCE.createDefaultDragGestureRecognizer(thirdData, DnDConstants.ACTION_MOVE, DND_LISTENER);
@@ -2462,6 +2500,14 @@ public class ViewPanel extends JPanel
 					{
 						setCursor(Cursor.getDefaultCursor());
 						finalThirdLabel.setForeground(DataSet.getDefaultColor());
+					}
+
+					@Override
+					public void mousePressed(MouseEvent evt)
+					{
+						buttonPressed = evt.getButton();
+						xDragOffset = (int) evt.getLocationOnScreen().getX() - (int) finalThirdLabel.getLocationOnScreen().getX();
+						yDragOffset = (int) evt.getLocationOnScreen().getY() - (int) finalThirdLabel.getLocationOnScreen().getY();
 					}
 				});
 			}
@@ -2680,7 +2726,7 @@ public class ViewPanel extends JPanel
     protected javax.swing.JPanel dataSetContentPanel;
     private javax.swing.JPanel dataSetsPanel;
     protected javax.swing.JScrollPane debugScrollPane;
-    private javax.swing.JTextArea debugTextArea;
+    protected javax.swing.JTextArea debugTextArea;
     private javax.swing.JMenuItem editDataSetMenuItem;
     protected javax.swing.JPanel emptyPalettePanel;
     private javax.swing.JLabel fontSizeLabel;

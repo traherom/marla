@@ -4,7 +4,7 @@
   <NonVisualComponents>
     <Component class="javax.swing.JFileChooser" name="openChooserDialog">
       <Properties>
-        <Property name="approveButtonToolTipText" type="java.lang.String" value="Open selected folder"/>
+        <Property name="approveButtonToolTipText" type="java.lang.String" value="Open selection"/>
         <Property name="dialogTitle" type="java.lang.String" value="Browse Problem Location"/>
         <Property name="fileSelectionMode" type="int" value="1"/>
       </Properties>
@@ -14,7 +14,7 @@
     </Component>
     <Component class="javax.swing.JFileChooser" name="saveChooserDialog">
       <Properties>
-        <Property name="approveButtonToolTipText" type="java.lang.String" value="Save as selected file"/>
+        <Property name="approveButtonToolTipText" type="java.lang.String" value="Save to selection"/>
         <Property name="dialogTitle" type="java.lang.String" value="Save As Problem Location"/>
         <Property name="dialogType" type="int" value="1"/>
       </Properties>
@@ -409,7 +409,7 @@
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" alignment="0" attributes="0">
                       <EmptySpace max="-2" attributes="0"/>
-                      <Component id="preWorkspaceLabel" pref="752" max="32767" attributes="0"/>
+                      <Component id="preWorkspaceLabel" pref="756" max="32767" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                   </Group>
               </Group>
@@ -418,7 +418,7 @@
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" alignment="0" attributes="0">
                       <EmptySpace max="-2" attributes="0"/>
-                      <Component id="preWorkspaceLabel" pref="637" max="32767" attributes="0"/>
+                      <Component id="preWorkspaceLabel" pref="639" max="32767" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                   </Group>
               </Group>
@@ -526,6 +526,9 @@
                     <Property name="rows" type="int" value="5"/>
                     <Property name="wrapStyleWord" type="boolean" value="true"/>
                   </Properties>
+                  <AuxValues>
+                    <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="4"/>
+                  </AuxValues>
                 </Component>
               </SubComponents>
             </Container>
@@ -581,12 +584,12 @@
               <Layout>
                 <DimensionLayout dim="0">
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <EmptySpace min="0" pref="208" max="32767" attributes="0"/>
+                      <EmptySpace min="0" pref="204" max="32767" attributes="0"/>
                   </Group>
                 </DimensionLayout>
                 <DimensionLayout dim="1">
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <EmptySpace min="0" pref="581" max="32767" attributes="0"/>
+                      <EmptySpace min="0" pref="569" max="32767" attributes="0"/>
                   </Group>
                 </DimensionLayout>
               </Layout>
