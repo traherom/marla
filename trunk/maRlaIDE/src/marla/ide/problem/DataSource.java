@@ -17,6 +17,7 @@
  */
 package marla.ide.problem;
 
+import java.awt.Color;
 import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -53,6 +54,12 @@ public abstract class DataSource extends JLabel implements Loadable
 	 * to the user on the workspace
 	 */
 	private boolean isHidden = false;
+
+	public DataSource()
+	{
+		setOpaque(true);
+		setBackground(new Color(255, 255, 255, 0));
+	}
 
 	/**
 	 * Creates an ID for this DataSource and saves it. If the DataSource

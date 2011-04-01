@@ -140,6 +140,7 @@ public class DragDrop implements DragGestureListener, DragSourceListener, DropTa
 	public void dragOver(DragSourceDragEvent ev)
 	{
 		object = ev.getSource ();
+		viewPanel.dragFromPalette = true;
 	}
 
 	@Override
@@ -196,7 +197,7 @@ public class DragDrop implements DragGestureListener, DragSourceListener, DropTa
 				else
 				{
 					dataSet.isHidden(false);
-					dataSet.setLocation(ev.getLocation());
+					dataSet.setLocation((int) ev.getLocation().getX() - viewPanel.xDragOffset, (int) ev.getLocation().getY() - viewPanel.yDragOffset);
 					viewPanel.workspacePanel.add(dataSet);
 					for (int i = 0; i < dataSet.getOperationCount(); ++i)
 					{
@@ -234,5 +235,6 @@ public class DragDrop implements DragGestureListener, DragSourceListener, DropTa
 		}
 
 		ev.dropComplete (true);
+		viewPanel.dragFromPalette = false;
 	}
 }
