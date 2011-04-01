@@ -1099,8 +1099,9 @@ public class ViewPanel extends JPanel
 								}
 								workspacePanel.remove(operation);
 							}
-							// TODO the data set should not be removed, it should be hidden in the data set
-							domain.problem.removeData(dataSet);
+							dataSet.isHidden(true);
+							workspacePanel.remove(dataSet);
+							workspacePanel.repaint();
 						}
 					}
 					else
@@ -1475,7 +1476,7 @@ public class ViewPanel extends JPanel
 		button.setDepressed(false);
 		if(button.isEnabled() && button == newButton)
 		{
-			newOperation();
+			newProblem();
 		}
 		else if(button.isEnabled() && button == openButton)
 		{
@@ -1537,11 +1538,12 @@ public class ViewPanel extends JPanel
 		}
 		else if(button.isEnabled() && button == settingsButton)
 		{
+			settingsDialog.initSettingsDialog();
 			settingsDialog.launchSettingsDialog();
 		}
 		else if (button.isEnabled() && button == newDataButton)
 		{
-			addNewDataSet();
+			newProblemWizardDialog.addNewDataSet();
 		}
 	}//GEN-LAST:event_buttonMouseReleased
 
@@ -1570,7 +1572,6 @@ public class ViewPanel extends JPanel
 	private void editDataSetMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editDataSetMenuItemActionPerformed
 		if(rightClickedComponent != null)
 		{
-			newProblemWizardDialog.editProblem();
 			newProblemWizardDialog.editDataSet((DataSet) rightClickedComponent);
 		}
 	}//GEN-LAST:event_editDataSetMenuItemActionPerformed
@@ -1687,7 +1688,7 @@ public class ViewPanel extends JPanel
 	}//GEN-LAST:event_workspacePanelMouseMoved
 
 	private void addDataSetMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addDataSetMenuItemActionPerformed
-		addNewDataSet();
+		newProblemWizardDialog.addNewDataSet();
 	}//GEN-LAST:event_addDataSetMenuItemActionPerformed
 
 	/**
@@ -1867,7 +1868,6 @@ public class ViewPanel extends JPanel
 			return;
 
 		// Set the label for the data source itself
-		//workspacePanel.add(ds);
 		ds.setFont(workspaceFontBold);
 		ds.setText("<html>" + ds.getDisplayString(abbreviated) + "</html>");
 		ds.setSize(ds.getPreferredSize());
@@ -2115,17 +2115,6 @@ public class ViewPanel extends JPanel
 		rebuildWorkspace();
 
 		buttonPressed = 0;
-	}
-
-	/**
-	 * Add a new data set to the current problem.
-	 */
-	protected void addNewDataSet()
-	{
-		newProblemWizardDialog.setTitle("Edit Problem");
-		newProblemWizardDialog.welcomeTextLabel.setText(ViewPanel.welcomeEditText);
-		newProblemWizardDialog.editProblem();
-		newProblemWizardDialog.addNewDataSet();
 	}
 
 	/**
@@ -2637,11 +2626,10 @@ public class ViewPanel extends JPanel
 	/**
 	 * Create a new problem.
 	 */
-	protected void newOperation()
+	protected void newProblem()
 	{
-		newProblemWizardDialog.setTitle("New Problem Wizard");
-		newProblemWizardDialog.welcomeTextLabel.setText(ViewPanel.welcomeNewText);
-		newProblemWizardDialog.launchNewProblemWizard(false);
+		newProblemWizardDialog.initializeNewProblemWizard(false);
+		newProblemWizardDialog.launchNewProblemWizard();
 	}
 
 	/**
