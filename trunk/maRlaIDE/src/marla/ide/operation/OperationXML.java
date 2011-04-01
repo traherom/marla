@@ -952,34 +952,8 @@ public class OperationXML extends Operation
 			libToLoad = proc.executeString(dynamicName);
 		}
 
-		Boolean loaded = false;
-		try
-		{
-			// Attempt to load.
-			loaded = proc.executeBoolean("library('" + libToLoad + "', logical.return=T)");
-		}
-		catch(RProcessorException ex)
-		{
-			// This is the "no package" error, right?
-			if(ex.getMessage().contains("no package"))
-				loaded = false;
-			else
-				throw ex;
-		}
-
-		// Install if needed and retry the load
-		if(!loaded)
-		{
-			try
-			{
-				proc.execute("install.packages('" + libToLoad + "', repos='http://cran.r-project.org')");
-				proc.execute("library('" + libToLoad + "')");
-			}
-			catch(RProcessorException ex)
-			{
-				throw new OperationXMLException("Unable to load library '" + libToLoad + "' and could not install it", ex);
-			}
-		}
+		if(!proc.loadLibrary(libToLoad))
+			throw new OperationXMLException("Unable to load and/or install library '" + libToLoad + "' into R");
 	}
 
 	@Override
