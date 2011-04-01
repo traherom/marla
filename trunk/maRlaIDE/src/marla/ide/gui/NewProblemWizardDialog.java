@@ -1689,9 +1689,13 @@ public class NewProblemWizardDialog extends EscapeDialog
 
 				addingDataSet = false;
 			}
-			catch (RProcessorException ex)
+			catch(RProcessorException ex)
 			{
-				JOptionPane.showMessageDialog(this, "The data set " + response.toString() + " could not be found in the Devore7 library.", "Data Set Not Found", JOptionPane.WARNING_MESSAGE);
+				JOptionPane.showMessageDialog(this, "The dataset '" + response.toString() + "' could not be found in the Devore7 library.", "Data Set Not Loaded", JOptionPane.WARNING_MESSAGE);
+			}
+			catch (MarlaException ex)
+			{
+				JOptionPane.showMessageDialog(this, ex.getMessage(), "Data Set Not Loadable", JOptionPane.WARNING_MESSAGE);
 			}
 		}
 	}//GEN-LAST:event_importDevoreButtonActionPerformed
