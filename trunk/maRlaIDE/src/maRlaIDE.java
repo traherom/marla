@@ -22,13 +22,7 @@
 import marla.ide.gui.Domain;
 import marla.ide.gui.MainFrame;
 import marla.ide.gui.ProgressFrame;
-import java.awt.Color;
 import java.awt.EventQueue;
-import java.awt.Font;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import javax.swing.JButton;
-import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
@@ -139,24 +133,6 @@ public class maRlaIDE
 				}
 				catch(Exception ex)
 				{
-					UIManager.put("OptionPane.font", new Font("Verdana", Font.PLAIN, 12));
-					UIManager.put("OptionPane.messageFont", new Font("Verdana", Font.PLAIN, 12));
-					UIManager.put("OptionPane.buttonFont", new Font("Verdana", Font.PLAIN, 12));
-
-					/** The option pane which can be customized to have yes/no, ok/cancel, or just ok buttons in it.*/
-					final JOptionPane optionPane = new JOptionPane();
-					JButton okButton = new JButton("Ok");
-					okButton.setBackground(new Color(245, 245, 245));
-					okButton.setFont(new Font("Verdana", Font.PLAIN, 12));
-					okButton.addActionListener(new ActionListener()
-					{
-						@Override
-						public void actionPerformed(ActionEvent e)
-						{
-							optionPane.setValue(new Integer(JOptionPane.OK_OPTION));
-						}
-					});
-
 					System.out.println("Error: " + ex.getClass());
 					System.out.println("Message: " + ex.getMessage() + "\n--\nTrace:");
 					Object[] trace = ex.getStackTrace();
@@ -166,15 +142,8 @@ public class maRlaIDE
 					}
 					System.out.println();
 
-					optionPane.setOptions(new Object[]
-							{
-								okButton
-							});
-					optionPane.setMessage("A fatal error occured while launching The maRla Project.\n"
-										  + "Please contact the developer.");
-					optionPane.setMessageType(JOptionPane.ERROR_MESSAGE);
-					JDialog optionDialog = optionPane.createDialog("Fatal Error");
-					optionDialog.setVisible(true);
+					JOptionPane.showMessageDialog(null, "A fatal error occured while launching The maRla Project.\n"
+										  + "Please contact the developer.", "Fatal Error", JOptionPane.ERROR_MESSAGE);
 
 					System.exit(1);
 				}
