@@ -405,6 +405,8 @@ public abstract class DataSource extends JLabel implements Loadable
 		dataEl.setAttribute("height", Integer.toString((int) rect.getHeight()));
 		dataEl.setAttribute("width", Integer.toString((int) rect.getWidth()));
 
+		dataEl.setAttribute("hidden", Boolean.toString(isHidden));
+
 		// Add Ops
 		for(Operation op : solutionOps)
 			dataEl.addContent(op.toXml());
@@ -431,6 +433,7 @@ public abstract class DataSource extends JLabel implements Loadable
 		int width = Integer.parseInt(dsEl.getAttributeValue("width"));
 		setBounds(x, y, width, height);
 
+		isHidden = Boolean.parseBoolean(dsEl.getAttributeValue("hidden", "false"));
 
 		for(Object opEl : dsEl.getChildren("operation"))
 		{
