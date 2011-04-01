@@ -935,8 +935,9 @@ public class ViewPanel extends JPanel
 											try
 											{
 												fillOutputTable();
+												displayNameTextPane.setText("<html><div style=\"font-family: Verdana, sans-serif;font-size: 10px;\">" + currentOperation.getDisplayString(false).trim() + "</div></html>");
 											}
-											catch(OperationXMLException ex)
+											catch(MarlaException ex)
 											{
 												//JOptionPane.showMessageDialog(VIEW_PANEL, ex.getMessage(), "No Data", JOptionPane.INFORMATION_MESSAGE);
 												xmlStatusLabel.setForeground(Color.RED);

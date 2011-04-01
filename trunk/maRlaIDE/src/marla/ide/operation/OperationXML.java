@@ -34,7 +34,6 @@ import marla.ide.problem.DataNotFoundException;
 import marla.ide.problem.DataSet;
 import marla.ide.problem.DataSource;
 import marla.ide.problem.InternalMarlaException;
-import marla.ide.problem.MarlaException;
 import marla.ide.problem.Problem;
 import marla.ide.r.RProcessor;
 import marla.ide.r.RProcessor.RecordMode;
@@ -747,12 +746,26 @@ public class OperationXML extends Operation
 		proc.setRecorderMode(intendedRecordMode);
 		String result = proc.execute(cmd);
 
-		String processAs = cmdEl.getAttributeValue("type", "numeric");
-		if(processAs.equals("numeric"))
+		String processAs = cmdEl.getAttributeValue("type", "auto");
+		if(processAs.equals("auto"))
+		{
+			try
+			{
+				col.setMode(DataColumn.DataMode.NUMERIC);
+				col.addAll(proc.parseDoubleArray(result));
+			}
+			catch(RProcessorParseException ex)
+			{
+				col.setMode(DataMode.STRING);
+				col.addAll(proc.parseStringArray(result));
+			}
+		}
+		else if(processAs.equals("numeric"))
 		{
 			col.setMode(DataColumn.DataMode.NUMERIC);
 			col.addAll(proc.parseDoubleArray(result));
 		}
+
 		else if(processAs.equals("string"))
 		{
 			col.setMode(DataMode.STRING);
@@ -843,6 +856,7 @@ public class OperationXML extends Operation
 
 		String expr = ifEl.getAttributeValue("expr");
 		String expectedVarType = ifEl.getAttributeValue("vartype");
+		String colExists = ifEl.getAttributeValue("colexists");
 
 		if(expr != null)
 		{
@@ -867,6 +881,14 @@ public class OperationXML extends Operation
 			if(expectedVarType.equals("numeric") && realVarType.equals("num"))
 				ifExprResult = true;
 			else if(expectedVarType.equals("string") && realVarType.equals("chr"))
+				ifExprResult = true;
+			else
+				ifExprResult = false;
+		}
+		else if(colExists != null)
+		{
+			// Does a column with that name exist yet?
+			if(getColumnIndex(colExists) != -1)
 				ifExprResult = true;
 			else
 				ifExprResult = false;

@@ -44,8 +44,6 @@ public class Domain
     public static final String OS_NAME = System.getProperty("os.name");
     /** The home directory for the current user.*/
     public static final String HOME_DIR = System.getProperty("user.home");
-	/** The full time format for debug output.*/
-	public static final SimpleDateFormat FULL_TIME_FORMAT = new SimpleDateFormat("MM/dd/yyyy h:mm:ss a");
     /** The logger holds all caught exceptions for recording in the log file.*/
     public static final List<Throwable> logger = marla.ide.gui.Domain.logger;
 
