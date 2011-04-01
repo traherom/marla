@@ -48,6 +48,11 @@ public abstract class DataSource extends JLabel implements Loadable
 	 * SubProblems this DataSet is a part of
 	 */
 	private final List<SubProblem> subProblems = new ArrayList<SubProblem>();
+	/**
+	 * Denotes if this DataSource should not actually be shown
+	 * to the user on the workspace
+	 */
+	private boolean isHidden = false;
 
 	/**
 	 * Creates an ID for this DataSource and saves it. If the DataSource
@@ -79,6 +84,25 @@ public abstract class DataSource extends JLabel implements Loadable
 	 * after drags, hovers, etc
 	 */
 	public abstract void setDefaultColor();
+
+	/**
+	 * Returns true if the DataSource is meant to be hidden
+	 * @return true if hidden, false otherwise
+	 */
+	public final boolean isHidden()
+	{
+		return isHidden;
+	}
+	/**
+	 * Sets if the DataSource is meant to be hidden
+	 * @return Previously set hidden value
+	 */
+	public final boolean isHidden(boolean newHidden)
+	{
+		boolean old = isHidden;
+		isHidden = newHidden;
+		return old;
+	}
 
 	/**
 	 * Gets the current DataSource name
