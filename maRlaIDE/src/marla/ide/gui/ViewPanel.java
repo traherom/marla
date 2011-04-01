@@ -198,7 +198,7 @@ public class ViewPanel extends JPanel
 	/** The default file filter for a JFileChooser open dialog.*/
 	protected FileFilter defaultFilter;
 	/** The extensions file filter for CSV files.*/
-	protected ExtensionFileFilter csvFilter = new ExtensionFileFilter("Comma Separated Values (.csv, .txt)", new String[]
+	protected ExtensionFileFilter csvFilter = new ExtensionFileFilter("Comma Separated Value Files.csv, .txt)", new String[]
 			{
 				"CSV", "TXT"
 			});
@@ -1068,12 +1068,12 @@ public class ViewPanel extends JPanel
 							xDragOffset = (int) point.getX() - draggingComponent.getX();
 							yDragOffset = (int) point.getY() - draggingComponent.getY();
 						}
-						workspacePanel.setComponentZOrder(draggingComponent, workspacePanel.getComponentCount() - 1);
 						workspacePanel.setComponentZOrder(trashCan, workspacePanel.getComponentCount() - 1);
 						if (firstRunLabel.getParent() == workspacePanel)
 						{
 							workspacePanel.setComponentZOrder(firstRunLabel, workspacePanel.getComponentCount() - 1);
 						}
+						workspacePanel.setComponentZOrder(draggingComponent, 0);
 
 						domain.problem.markUnsaved();
 					}
@@ -1789,12 +1789,10 @@ public class ViewPanel extends JPanel
 				hoverInDragComponent = null;
 			}
 
-			Component component = workspacePanel.getComponentAt(evt.getPoint());
+			Component component = ((WorkspacePanel) workspacePanel).getComponentAt(evt.getPoint().x, evt.getPoint().y, draggingComponent);
 			if(component != null
-			   && component != workspacePanel
 			   && component != trashCan
-			   && component != firstRunLabel
-			   && component != draggingComponent)
+			   && component != firstRunLabel)
 			{
 				if(component instanceof DataSource)
 				{
