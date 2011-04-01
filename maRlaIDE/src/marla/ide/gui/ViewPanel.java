@@ -1075,7 +1075,7 @@ public class ViewPanel extends JPanel
 				hoverComponent = null;
 			}
 		}
-
+		
 		if(buttonPressed == MouseEvent.BUTTON1)
 		{
 			if(draggingComponent != null)
@@ -1085,7 +1085,7 @@ public class ViewPanel extends JPanel
 					int response = JOptionPane.YES_OPTION;
 					if(draggingComponent instanceof DataSet)
 					{
-						response = JOptionPane.showConfirmDialog(this, "You are about to remove this data set and all of its contents from the workspace.\nThe data set can be readded to the workspace by dragging it in again\nfrom the list of data sets to the right, but its operation contents will be lost.\nAre you sure you want to delete this data set and all of its contents?", "Remove Data Set", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+						response = JOptionPane.showConfirmDialog(this, "You are about to remove this data set from the workspace.\nThe data set can be readded to the workspace anytime by dragging\nit back from the list of data sets to the right.\nAre you sure you want to remove this dta set?", "Remove Data Set", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
 						if (response == JOptionPane.YES_OPTION)
 						{
 							DataSet dataSet = (DataSet) draggingComponent;
@@ -1825,7 +1825,7 @@ public class ViewPanel extends JPanel
 				draggingComponent.setLocation(x, y);
 
 				// Just rebuild the dragged component
-				rebuildTree((DataSource)draggingComponent);
+				rebuildTree((DataSource) draggingComponent);
 			}
 		}
 	}
@@ -1847,7 +1847,7 @@ public class ViewPanel extends JPanel
 		}
 		if (problem != null)
 		{
-			for(DataSource ds : problem.getAllData())
+			for(DataSet ds : problem.getVisibleDataSets())
 			{
 				rebuildTree(ds);
 			}

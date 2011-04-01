@@ -34,6 +34,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -59,6 +60,7 @@ import org.jdesktop.layout.LayoutStyle;
 import marla.ide.problem.DataColumn;
 import marla.ide.problem.DataNotFoundException;
 import marla.ide.problem.DataSet;
+import marla.ide.problem.DataSource;
 import marla.ide.problem.DuplicateNameException;
 import marla.ide.problem.MarlaException;
 import marla.ide.problem.Problem;
@@ -2698,11 +2700,12 @@ public class NewProblemWizardDialog extends EscapeDialog
 	{
 		// Position all datasets relative to each other
 		// Get the total width we're going to need to cover
-		int dsCount = problem.getDataCount();
+		List<DataSet> data = problem.getVisibleDataSets();
+		int dsCount = data.size();
 		int[] widths = new int[dsCount];
 		for(int i = 0; i < dsCount; i++)
 		{
-			DataSet ds = problem.getData(i);
+			DataSet ds = data.get(i);
 
 			// Set the label for the data source and get its width
 			ds.setFont(ViewPanel.workspaceFontBold);
@@ -2748,7 +2751,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 		int previousLeftX = wsCenterX - halfWidth;
 		for(int i = 0; i < dsCount; i++)
 		{
-			DataSet ds = problem.getData(i);
+			DataSet ds = data.get(i);
 
 			ds.setLocation(previousLeftX, y);
 			previousLeftX += widths[i] + spaceWidth;
