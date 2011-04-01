@@ -79,6 +79,11 @@ public final class DataSet extends DataSource implements Changeable
 		setDataName(name);
 	}
 
+	public static Color getDefaultColor()
+	{
+		return new Color(143, 10, 43);
+	}
+
 	@Override
 	public void setDefaultColor()
 	{

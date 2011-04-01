@@ -62,6 +62,7 @@ import marla.ide.problem.DuplicateNameException;
 import marla.ide.problem.MarlaException;
 import marla.ide.problem.Problem;
 import marla.ide.problem.SubProblem;
+import marla.ide.r.RProcessorException;
 
 /**
  * The New Problem Wizard Dialog.
@@ -79,6 +80,8 @@ public class NewProblemWizardDialog extends EscapeDialog
 		"s.", "t.", "u.", "v.", "w.", "x.",
 		"y.", "z."
 	};
+	/** Tip text for the values panel.*/
+	private final String VALUES_TIP_TEXT = "<html>Double-click on a data set tab to rename it.<br />Double-click on a column header in the table to rename it.</html>";
 	/** The final reference to this dialog object.*/
 	private final NewProblemWizardDialog NEW_PROBLEM_WIZARD = this;
 	/** The list in the New Problem Wizard of sub problems within the current problem.*/
@@ -217,6 +220,8 @@ public class NewProblemWizardDialog extends EscapeDialog
         dataSetTabbedPane = new javax.swing.JTabbedPane();
         addDataSetButton = new javax.swing.JButton();
         removeDataSetButton = new javax.swing.JButton();
+        tipTextLabel = new javax.swing.JLabel();
+        importDevoreButton = new javax.swing.JButton();
         informationCardPanel = new javax.swing.JPanel();
         studentNameLabel = new javax.swing.JLabel();
         courseShortNameLabel = new javax.swing.JLabel();
@@ -259,7 +264,7 @@ public class NewProblemWizardDialog extends EscapeDialog
         stepsPanel.add(stepsLabel);
         stepsLabel.setBounds(10, 10, 170, 16);
 
-        welcomeLabel.setFont(new java.awt.Font("Verdana", 1, 12)); // NOI18N
+        welcomeLabel.setFont(new java.awt.Font("Verdana", 1, 12));
         welcomeLabel.setText("1. Welcome");
         welcomeLabel.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
@@ -590,7 +595,7 @@ public class NewProblemWizardDialog extends EscapeDialog
         valuesCardPanel.add(dataSetTabbedPane);
         dataSetTabbedPane.setBounds(0, 30, 460, 299);
 
-        addDataSetButton.setFont(new java.awt.Font("Verdana", 0, 12));
+        addDataSetButton.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
         addDataSetButton.setText("Add");
         addDataSetButton.setToolTipText("Add a data set");
         addDataSetButton.addActionListener(new java.awt.event.ActionListener() {
@@ -601,7 +606,7 @@ public class NewProblemWizardDialog extends EscapeDialog
         valuesCardPanel.add(addDataSetButton);
         addDataSetButton.setBounds(285, 330, 70, 25);
 
-        removeDataSetButton.setFont(new java.awt.Font("Verdana", 0, 12));
+        removeDataSetButton.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
         removeDataSetButton.setText("Remove");
         removeDataSetButton.setToolTipText("Remove the last data set");
         removeDataSetButton.addActionListener(new java.awt.event.ActionListener() {
@@ -611,6 +616,21 @@ public class NewProblemWizardDialog extends EscapeDialog
         });
         valuesCardPanel.add(removeDataSetButton);
         removeDataSetButton.setBounds(370, 330, 90, 25);
+
+        tipTextLabel.setFont(new java.awt.Font("Verdana", 0, 12));
+        valuesCardPanel.add(tipTextLabel);
+        tipTextLabel.setBounds(10, 360, 460, 30);
+
+        importDevoreButton.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        importDevoreButton.setText("Import from Devore7");
+        importDevoreButton.setToolTipText("Import a data set from the Devore7 library");
+        importDevoreButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                importDevoreButtonActionPerformed(evt);
+            }
+        });
+        valuesCardPanel.add(importDevoreButton);
+        importDevoreButton.setBounds(0, 330, 180, 25);
 
         wizardCardPanel.add(valuesCardPanel, "card2");
 
@@ -876,10 +896,11 @@ public class NewProblemWizardDialog extends EscapeDialog
 			}
 			else
 			{
-				label = new JLabel ("");
+				label = new JLabel("");
 				viewPanel.second = new JLabel ("");
 				viewPanel.third = new JLabel ("");
 			}
+			label.setFont(ViewPanel.FONT_PLAIN_12);
 			label.setText(subProblem.getSubproblemID());
 			label.setForeground(subProblem.getColor());
 
@@ -1131,7 +1152,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 
 		if (editing)
 		{
-			removeFromRightPanel(removedData.getName());
+			removeFromRightPanel();
 		}
 }//GEN-LAST:event_removeDataSetButtonActionPerformed
 
@@ -1325,6 +1346,8 @@ public class NewProblemWizardDialog extends EscapeDialog
 			valuesCardPanel.setVisible(true);
 			subProblemsCardPanel.setVisible(false);
 
+			tipTextLabel.setText(VALUES_TIP_TEXT);
+
 			// Shift the boldness in the Steps panel to the next card
 			subProblemsLabel.setFont(ViewPanel.FONT_PLAIN_12);
 			valuesLabel.setFont(ViewPanel.FONT_BOLD_12);
@@ -1334,6 +1357,8 @@ public class NewProblemWizardDialog extends EscapeDialog
 			// Move to the next panel in the cards
 			informationCardPanel.setVisible(true);
 			valuesCardPanel.setVisible(false);
+
+			tipTextLabel.setText("");
 
 			// Shift the boldness in the Steps panel to the next card
 			valuesLabel.setFont(ViewPanel.FONT_PLAIN_12);
@@ -1440,6 +1465,8 @@ public class NewProblemWizardDialog extends EscapeDialog
 			subProblemsCardPanel.setVisible(true);
 			valuesCardPanel.setVisible(false);
 
+			tipTextLabel.setText("");
+
 			// Shift the boldness in the Steps panel to the next card
 			subProblemsLabel.setFont(ViewPanel.FONT_BOLD_12);
 			valuesLabel.setFont(ViewPanel.FONT_PLAIN_12);
@@ -1467,6 +1494,8 @@ public class NewProblemWizardDialog extends EscapeDialog
 			// Move to the previous panel in the cards
 			valuesCardPanel.setVisible(true);
 			informationCardPanel.setVisible(false);
+
+			tipTextLabel.setText(VALUES_TIP_TEXT);
 
 			// Shift the boldness in the Steps panel to the previous card
 			valuesLabel.setFont(ViewPanel.FONT_BOLD_12);
@@ -1550,6 +1579,112 @@ public class NewProblemWizardDialog extends EscapeDialog
 		}
 	}//GEN-LAST:event_mouseReleased
 
+	private void importDevoreButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_importDevoreButtonActionPerformed
+		Object response = JOptionPane.showInputDialog(this, "Enter the name of the Devore7 library you'd like to import:", "Devore7 Library", JOptionPane.QUESTION_MESSAGE);
+		if (response != null)
+		{
+			try
+			{
+				DataSet dataSet = DataSet.importFromR("Devore7", response.toString());
+				
+				addingDataSet = true;
+				Problem problem;
+				if (newProblem != null)
+				{
+					problem = newProblem;
+				}
+				else
+				{
+					problem = domain.problem;
+				}
+
+				if(newProblem != null)
+				{
+					repositionDataSets(problem);
+				}
+				else
+				{
+					// Set the label
+					dataSet.setFont(ViewPanel.workspaceFontBold);
+					dataSet.setText("<html>" + dataSet.getDisplayString(false) + "</html>");
+					dataSet.setSize(dataSet.getPreferredSize());
+
+					// Find somewhere it doesn't intersect with any other DataSource
+					int x = viewPanel.workspacePanel.getWidth() / 2 - dataSet.getWidth() / 2;
+					int y = viewPanel.workspacePanel.getHeight() / 3;
+
+					Component compL = viewPanel.workspacePanel.getComponentAt(x, y);
+					Component compR = viewPanel.workspacePanel.getComponentAt(x + dataSet.getWidth(), y);
+					while(compL != viewPanel.workspacePanel || compR != viewPanel.workspacePanel)
+					{
+						y += dataSet.getHeight() + 20;
+
+						compL = viewPanel.workspacePanel.getComponentAt(x, y);
+						compR = viewPanel.workspacePanel.getComponentAt(x + dataSet.getWidth(), y);
+
+						// catch if we went all the way off the panel
+						if(compL == null || compR == null)
+							x += 30;
+					}
+
+					// Move it
+					dataSet.setLocation(x, y);
+				}
+
+				JPanel panel = createValuesTabbedPanel(dataSet);
+				dataSetTabbedPane.add(dataSet.getName(), panel);
+				dataSetTabbedPane.setSelectedIndex(dataSetTabbedPane.getTabCount() - 1);
+				int columns = dataSet.getColumnCount();
+				int rows = dataSet.getColumnLength();
+
+				// Add minimum columns to the table model
+				JTable table = ((JTable) ((JViewport) ((JScrollPane) panel.getComponent(0)).getComponent(0)).getComponent(0));
+				final ExtendedTableModel newModel = new ExtendedTableModel(dataSet);
+				newModel.addTableModelListener(new TableModelListener()
+				{
+					@Override
+					public void tableChanged(TableModelEvent evt)
+					{
+						fireTableChanged(newModel, evt);
+					}
+				});
+
+				DefaultTableColumnModel newColumnModel = new DefaultTableColumnModel();
+				for(int i = 0; i < columns; ++i)
+				{
+					newColumnModel.addColumn(new TableColumn());
+					newColumnModel.getColumn(i).setHeaderValue(dataSet.getColumn(i).getName());
+				}
+				table.setColumnModel(newColumnModel);
+
+				table.setModel(newModel);
+				table.invalidate();
+				table.getTableHeader().resizeAndRepaint();
+
+				// Wait to change the spinners until after the model is set or they will
+				// try to do stuff to the columns (they see an increase from 0 to 5)
+				((JSpinner) panel.getComponent(2)).setValue(columns);
+				((JSpinner) panel.getComponent(4)).setValue(rows);
+
+				if(dataSetTabbedPane.getTabCount() == 1)
+				{
+					removeDataSetButton.setEnabled(true);
+				}
+
+				if (editing)
+				{
+					addToRightPanel();
+				}
+
+				addingDataSet = false;
+			}
+			catch (RProcessorException ex)
+			{
+				JOptionPane.showMessageDialog(this, "The data set " + response.toString() + " could not be found in the Devore7 library.", "Data Set Not Found", JOptionPane.WARNING_MESSAGE);
+			}
+		}
+	}//GEN-LAST:event_importDevoreButtonActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton addDataSetButton;
     private javax.swing.JButton addSubProblemButton;
@@ -1569,6 +1704,7 @@ public class NewProblemWizardDialog extends EscapeDialog
     private javax.swing.JTextArea descriptionTextArea;
     private javax.swing.JLabel descriptionWizardLabel;
     private javax.swing.JScrollPane descroptionScollPane;
+    private javax.swing.JButton importDevoreButton;
     private javax.swing.JPanel informationCardPanel;
     protected javax.swing.JLabel informationLabel;
     private javax.swing.JLabel informationWizardLabel;
@@ -1603,6 +1739,7 @@ public class NewProblemWizardDialog extends EscapeDialog
     private javax.swing.JScrollPane subProblemsScrollPane;
     protected javax.swing.JPanel subProblemsScrollablePanel;
     private javax.swing.JLabel subProblemsWizardLabel;
+    private javax.swing.JLabel tipTextLabel;
     protected javax.swing.JPanel valuesCardPanel;
     protected javax.swing.JLabel valuesLabel;
     private javax.swing.JLabel valuesWizardLabel;
@@ -1626,93 +1763,17 @@ public class NewProblemWizardDialog extends EscapeDialog
 	 */
 	private void addToRightPanel()
 	{
-		if (viewPanel.firstDataCounter == 3)
-		{
-			viewPanel.thirdData.setText ("");
-		}
-		else if (viewPanel.firstDataCounter == 2)
-		{
-			viewPanel.secondData.setText ("");
-		}
-		else if(viewPanel.firstDataCounter == 1)
-		{
-			viewPanel.firstDataCounter = 4;
-
-			viewPanel.dataSetContentPanel.remove(viewPanel.dataSetContentPanel.getComponentCount() - 1);
-			viewPanel.dataSetContentPanel.remove(viewPanel.dataSetContentPanel.getComponentCount() - 1);
-			viewPanel.dataSetContentPanel.remove(viewPanel.dataSetContentPanel.getComponentCount() - 1);
-
-			GridLayout layout = (GridLayout) viewPanel.dataSetContentPanel.getLayout();
-			layout.setRows(layout.getRows() - 1);
-
-			if (viewPanel.dataSetContentPanel.getComponentCount() >= 3)
-			{
-				viewPanel.thirdData = (JLabel) viewPanel.dataSetContentPanel.getComponent(viewPanel.dataSetContentPanel.getComponentCount() - 1);
-				viewPanel.secondData = (JLabel) viewPanel.dataSetContentPanel.getComponent(viewPanel.dataSetContentPanel.getComponentCount() - 2);
-			}
-			else
-			{
-				if (viewPanel.dataSetContentPanel.getComponentCount() == 0)
-				{
-					((GridLayout) viewPanel.dataSetContentPanel.getLayout()).setColumns(1);
-					JLabel noneLabel = new JLabel ("-No Data Sets-");
-					noneLabel.setFont(ViewPanel.FONT_BOLD_12);
-					viewPanel.dataSetContentPanel.add (noneLabel);
-				}
-			}
-
-			viewPanel.dataSetContentPanel.invalidate();
-		}
-		--viewPanel.firstDataCounter;
+		viewPanel.dataSetContentPanel.removeAll();
+		viewPanel.buildDataSetsOnRight();
 	}
 
 	/**
 	 * Remove the given last data set from the right panel.
-	 *
-	 * @param dataName The name of the data set to remove.
 	 */
-	private void removeFromRightPanel(String dataName)
+	private void removeFromRightPanel()
 	{
-		if (viewPanel.firstDataCounter == 3)
-		{
-			viewPanel.thirdData.setText ("");
-		}
-		else if (viewPanel.firstDataCounter == 2)
-		{
-			viewPanel.secondData.setText ("");
-		}
-		else if(viewPanel.firstDataCounter == 1)
-		{
-			viewPanel.firstDataCounter = 4;
-
-			viewPanel.dataSetContentPanel.remove(viewPanel.dataSetContentPanel.getComponentCount() - 1);
-			viewPanel.dataSetContentPanel.remove(viewPanel.dataSetContentPanel.getComponentCount() - 1);
-			viewPanel.dataSetContentPanel.remove(viewPanel.dataSetContentPanel.getComponentCount() - 1);
-
-			GridLayout layout = (GridLayout) viewPanel.dataSetContentPanel.getLayout();
-			layout.setRows(layout.getRows() - 1);
-
-			if (viewPanel.dataSetContentPanel.getComponentCount() >= 3)
-			{
-				viewPanel.thirdData = (JLabel) viewPanel.dataSetContentPanel.getComponent(viewPanel.dataSetContentPanel.getComponentCount() - 1);
-				viewPanel.secondData = (JLabel) viewPanel.dataSetContentPanel.getComponent(viewPanel.dataSetContentPanel.getComponentCount() - 2);
-			}
-			else
-			{
-				if (viewPanel.dataSetContentPanel.getComponentCount() == 0)
-				{
-					((GridLayout) viewPanel.dataSetContentPanel.getLayout()).setColumns(1);
-					JLabel noneLabel = new JLabel ("-No Data Sets-");
-					noneLabel.setFont(ViewPanel.FONT_BOLD_12);
-					viewPanel.dataSetContentPanel.add (noneLabel);
-				}
-			}
-
-			viewPanel.dataSetContentPanel.invalidate();
-		}
-		--viewPanel.firstDataCounter;
-
-		viewPanel.workspacePanel.repaint();
+		viewPanel.dataSetContentPanel.removeAll();
+		viewPanel.buildDataSetsOnRight();
 	}
 
 	/**
@@ -1960,7 +2021,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 
 		scrollPane.setViewportView(table);
 		final JLabel columnsLabel = new JLabel("Columns:");
-		columnsLabel.setFont(new java.awt.Font("Verdana", 0, 12));
+		columnsLabel.setFont(ViewPanel.FONT_PLAIN_12);
 		final JSpinner columnsSpinner = new JSpinner();
 		columnsSpinner.setPreferredSize(new Dimension(40, 20));
 		columnsSpinner.addChangeListener(new ChangeListener()
@@ -2017,7 +2078,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 			}
 		});
 		final JLabel rowsLabel = new JLabel("Rows:");
-		rowsLabel.setFont(new java.awt.Font("Verdana", 0, 12));
+		rowsLabel.setFont(ViewPanel.FONT_PLAIN_12);
 		final JSpinner rowsSpinner = new JSpinner();
 		rowsSpinner.setPreferredSize(new Dimension(40, 20));
 		rowsSpinner.addChangeListener(new ChangeListener()
@@ -2052,9 +2113,9 @@ public class NewProblemWizardDialog extends EscapeDialog
 				}
 			}
 		});
-		final JButton button = new JButton("Import from CSV");
-		button.setFont(new java.awt.Font("Verdana", 0, 12));
-		button.addActionListener(new ActionListener()
+		final JButton csvButton = new JButton("Import from CSV");
+		csvButton.setFont(ViewPanel.FONT_PLAIN_12);
+		csvButton.addActionListener(new ActionListener()
 		{
 			@Override
 			public void actionPerformed(ActionEvent evt)
@@ -2139,9 +2200,9 @@ public class NewProblemWizardDialog extends EscapeDialog
 		GroupLayout valuesPanelLayout = new GroupLayout(valuesPanel);
 		valuesPanel.setLayout(valuesPanelLayout);
 		valuesPanelLayout.setHorizontalGroup(
-				valuesPanelLayout.createParallelGroup(GroupLayout.LEADING).add(valuesPanelLayout.createSequentialGroup().addContainerGap().add(valuesPanelLayout.createParallelGroup(GroupLayout.LEADING).add(scrollPane, GroupLayout.DEFAULT_SIZE, 435, Short.MAX_VALUE).add(valuesPanelLayout.createSequentialGroup().add(columnsLabel).addPreferredGap(LayoutStyle.RELATED).add(columnsSpinner, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE).add(18, 18, 18).add(rowsLabel).addPreferredGap(LayoutStyle.RELATED).add(rowsSpinner, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE).addPreferredGap(LayoutStyle.RELATED, 108, Short.MAX_VALUE).add(button))).addContainerGap()));
+				valuesPanelLayout.createParallelGroup(GroupLayout.LEADING).add(valuesPanelLayout.createSequentialGroup().addContainerGap().add(valuesPanelLayout.createParallelGroup(GroupLayout.LEADING).add(scrollPane, GroupLayout.DEFAULT_SIZE, 435, Short.MAX_VALUE).add(valuesPanelLayout.createSequentialGroup().add(columnsLabel).addPreferredGap(LayoutStyle.RELATED).add(columnsSpinner, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE).add(18, 18, 18).add(rowsLabel).addPreferredGap(LayoutStyle.RELATED).add(rowsSpinner, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE).addPreferredGap(LayoutStyle.RELATED, 108, Short.MAX_VALUE).add(csvButton))).addContainerGap()));
 		valuesPanelLayout.setVerticalGroup(
-				valuesPanelLayout.createParallelGroup(GroupLayout.LEADING).add(valuesPanelLayout.createSequentialGroup().add(scrollPane, GroupLayout.PREFERRED_SIZE, 238, GroupLayout.PREFERRED_SIZE).addPreferredGap(LayoutStyle.RELATED).add(valuesPanelLayout.createParallelGroup(GroupLayout.LEADING).add(button).add(valuesPanelLayout.createParallelGroup(GroupLayout.LEADING, false).add(columnsLabel, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE).add(columnsSpinner, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)).add(valuesPanelLayout.createParallelGroup(GroupLayout.LEADING, false).add(rowsLabel, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE).add(rowsSpinner, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))).addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)));
+				valuesPanelLayout.createParallelGroup(GroupLayout.LEADING).add(valuesPanelLayout.createSequentialGroup().add(scrollPane, GroupLayout.PREFERRED_SIZE, 238, GroupLayout.PREFERRED_SIZE).addPreferredGap(LayoutStyle.RELATED).add(valuesPanelLayout.createParallelGroup(GroupLayout.LEADING).add(csvButton).add(valuesPanelLayout.createParallelGroup(GroupLayout.LEADING, false).add(columnsLabel, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE).add(columnsSpinner, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)).add(valuesPanelLayout.createParallelGroup(GroupLayout.LEADING, false).add(rowsLabel, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE).add(rowsSpinner, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))).addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)));
 
 		return valuesPanel;
 	}

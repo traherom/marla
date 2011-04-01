@@ -33,7 +33,7 @@ import javax.swing.JTextArea;
 import javax.swing.WindowConstants;
 
 /**
- * The New Problem Wizard Dialog.
+ * The Input Dialog.
  *
  * @author Alex Laird
  */
@@ -59,6 +59,7 @@ public class InputDialog extends EscapeDialog
 		super (viewPanel);
 
 		initComponents();
+		setIconImage(new ImageIcon (getClass ().getResource ("/marla/ide/images/logo.png")).getImage ());
 	}
 
 	private void initComponents()

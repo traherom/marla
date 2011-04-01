@@ -20,6 +20,7 @@
 
 package marla.ide.gui;
 
+import java.awt.Cursor;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
@@ -36,9 +37,11 @@ import java.awt.dnd.DropTargetEvent;
 import java.awt.dnd.DropTargetListener;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import marla.ide.problem.MarlaException;
 import marla.ide.operation.Operation;
+import marla.ide.problem.DataSet;
 
 /**
  * The drag and drop class handles the construction and destruction of drag/drop
@@ -179,20 +182,37 @@ public class DragDrop implements DragGestureListener, DragSourceListener, DropTa
 		ev.acceptDrop (ev.getDropAction ());
 		try
 		{
-			Object source = ev.getTransferable ().getTransferData (supportedFlavors[0]);
-			Operation operation = (Operation) ((DragSourceContext) source).getComponent ();
-
-			viewPanel.domain.problem.markUnsaved ();
-
-			try
+			DragSourceContext source = (DragSourceContext) ev.getTransferable ().getTransferData (supportedFlavors[0]);
+			if (source.getComponent().getParent() == viewPanel.dataSetContentPanel)
 			{
-				viewPanel.drop (operation, true, ev.getLocation ());
+				viewPanel.setCursor(Cursor.getDefaultCursor());
+				JLabel label = (JLabel) source.getComponent();
+				label.setForeground(DataSet.getDefaultColor());
+				DataSet dataSet = viewPanel.domain.problem.getData(label.getText());
+				if (dataSet.getParent() == viewPanel.workspacePanel)
+				{
+					JOptionPane.showMessageDialog(viewPanel, "This data set already exists in the workspace, so it\ncannot be added again.", "Data Set Exits", JOptionPane.INFORMATION_MESSAGE);
+				}
+				else
+				{
+					// TODO make the data set viewable in the data set again
+				}
 			}
-			catch (MarlaException ex)
+			else
 			{
-				JOptionPane.showMessageDialog (viewPanel.domain.getTopWindow(), "Unable to load the requested operation", "Missing Operation", JOptionPane.WARNING_MESSAGE);
-			}
+				Operation operation = (Operation) source.getComponent ();
 
+				viewPanel.domain.problem.markUnsaved ();
+
+				try
+				{
+					viewPanel.drop (operation, true, ev.getLocation ());
+				}
+				catch (MarlaException ex)
+				{
+					JOptionPane.showMessageDialog (viewPanel.domain.getTopWindow(), "Unable to load the requested operation", "Missing Operation", JOptionPane.WARNING_MESSAGE);
+				}
+			}
 		}
 		catch (UnsupportedFlavorException ex)
 		{
