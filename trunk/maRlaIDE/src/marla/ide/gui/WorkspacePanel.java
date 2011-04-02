@@ -88,7 +88,7 @@ public class WorkspacePanel extends JPanel
 
 	/**
 	 * Sets the spacing between lines on the workspace
-	 * @param newMin Size in pixels between the lines. Must be 0 or greater
+	 * @param newSpace Size in pixels between the lines. Must be 0 or greater
 	 * @return Previously set line spacing
 	 */
 	public static int setLineSpacing(int newSpace) 

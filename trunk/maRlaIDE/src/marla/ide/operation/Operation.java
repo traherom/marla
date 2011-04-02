@@ -32,7 +32,6 @@ import marla.ide.problem.DataSet;
 import marla.ide.problem.DataSource;
 import marla.ide.problem.DuplicateNameException;
 import marla.ide.problem.InternalMarlaException;
-import marla.ide.problem.MarlaException;
 import marla.ide.problem.Problem;
 import marla.ide.problem.SubProblem;
 import marla.ide.r.RProcessor;
@@ -1038,14 +1037,10 @@ public abstract class Operation extends DataSource implements Changeable
 	@Override
 	public final String toHTML()
 	{
-		// We only output ourselves as a DataSet if we don't have a plot
-		if(hasPlot())
-			throw new InternalMarlaException("This operation generates a plot, it must be displayed with getPlot()");
-
 		checkCache();
 
 		// Just display the results as a normal DataSet
-		return DataSet.toHTML(this);
+		return super.toHTML();
 	}
 
 	/**
@@ -1055,20 +1050,22 @@ public abstract class Operation extends DataSource implements Changeable
 	@Override
 	public final String toString()
 	{
-		try
+		checkCache();
+
+		if(!hasPlot())
 		{
-			// We only output ourselves as a DataSet if we don't have a plot
-			if(hasPlot())
-				throw new InternalMarlaException("This operation generates a plot, it must be displayed with getPlot()");
-
-			checkCache();
-
 			// Just display the results as a normal DataSet
-			return DataSet.toString(this);
+			return super.toString();
 		}
-		catch(MarlaException ex)
+		else
 		{
-			throw new InternalMarlaException("Unable to do toString() because the values could not be computed.", ex);
+			// We make a plot, tell them
+			StringBuilder sb = new StringBuilder();
+			sb.append("Operation ");
+			sb.append(getName());
+			sb.append(":  plot at ");
+			sb.append(getPlot());
+			return sb.toString();
 		}
 	}
 

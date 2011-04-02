@@ -2226,8 +2226,8 @@ public class NewProblemWizardDialog extends EscapeDialog
 
 	/**
 	 * Check if the given column name exists (ignoring the current index, which is itself).
-	 *
-	 * @param index The current index to be ignored.
+	 * @param model Table model to check names against.
+	 * @param curIndex The current index to be ignored.
 	 * @param name The name to check for.
 	 * @return True if the column name already exists, false otherwise.
 	 */
@@ -2250,7 +2250,6 @@ public class NewProblemWizardDialog extends EscapeDialog
 	/**
 	 * Ensure the new value for the table change event is valid, otherwise revert it.
 	 *
-	 * @param problem The problem this change occurs on.
 	 * @param model The model for the data set.
 	 * @param evt The table change event.
 	 */
@@ -2561,7 +2560,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 	/**
 	 * Check if the given data set name exists (ignoring the current index, which is itself).
 	 *
-	 * @param index The current index to be ignored.
+	 * @param curIndex The current index to be ignored.
 	 * @param name The name to check for.
 	 * @return True if the data set name already exists, false otherwise.
 	 */

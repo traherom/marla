@@ -36,17 +36,21 @@ public class OperationInfoString extends OperationInformation
 	private String answer = null;
 
 	/**
-	 * Constructs a new combo select prompt with the given options.
+	 * Constructs a new free-input string prompt with the given options.
 	 * @param name Unique reference name for this prompt
 	 * @param prompt User-visible prompt
-	 * @param options Options to display to the user, will be presented in the
-	 *	order given, not sorted in any way.
 	 */
 	public OperationInfoString(Operation op, String name, String prompt)
 	{
 		this(op, name, prompt, ".*");
 	}
 
+	/**
+	 * Constructs a new checked string input prompt with the given options.
+	 * @param name Unique reference name for this prompt
+	 * @param prompt User-visible prompt
+	 * @param mustMatch Regular expression that the user-entered value must match
+	 */
 	public OperationInfoString(Operation op, String name, String prompt, String mustMatch)
 	{
 		super(op, name, prompt, PromptType.STRING);

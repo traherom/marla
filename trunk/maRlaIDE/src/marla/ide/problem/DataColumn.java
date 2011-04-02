@@ -352,12 +352,17 @@ public class DataColumn implements List<Object>
 	 * Converts the given object to the correct type for the mode the DataColumn
 	 * is in.
 	 * @param val Object (Double or String preferably) to save to the column
-	 * @return 
+	 * @return Object cast to the correct type
 	 */
 	private Object castToMode(Object val)
 	{
 		if(mode == DataMode.NUMERIC)
-			return Double.valueOf(val.toString());
+		{
+			if(val instanceof Double)
+				return val;
+			else
+				return Double.valueOf(val.toString());
+		}
 		else
 			return val.toString();
 	}

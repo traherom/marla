@@ -31,11 +31,10 @@ public class OperationInfoCheckbox extends OperationInformation
 	private Boolean answer = null;
 
 	/**
-	 * Constructs a new combo select prompt with the given options.
+	 * Constructs a new checkbox prompt.
+	 * @param op Operation that this question applies to
 	 * @param name Unique reference name for this prompt
 	 * @param prompt User-visible prompt
-	 * @param options Options to display to the user, will be presented in the
-	 *	order given, not sorted in any way.
 	 */
 	public OperationInfoCheckbox(Operation op, String name, String prompt)
 	{

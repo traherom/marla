@@ -26,10 +26,10 @@ public abstract class OperationInfoCombo extends OperationInformation
 {
 	/**
 	 * Constructs a new combo select prompt with the given options.
+	 * @param op Operation that this question applies to
 	 * @param name Unique reference name for this prompt
 	 * @param prompt User-visible prompt
-	 * @param options Options to display to the user, will be presented in the
-	 *	order given, not sorted in any way.
+	 * @param type Lower-level type of combo box this is
 	 */
 	protected OperationInfoCombo(Operation op, String name, String prompt, PromptType type)
 	{

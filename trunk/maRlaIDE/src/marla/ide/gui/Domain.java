@@ -590,7 +590,7 @@ public class Domain
 			Throwable ex = logger.get(i);
 
 			if(toConsole)
-				ex.printStackTrace(System.err);
+				ex.printStackTrace(System.out);
 
 			if(out != null)
 				ex.printStackTrace(out);
