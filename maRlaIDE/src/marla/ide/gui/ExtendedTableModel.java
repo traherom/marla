@@ -236,7 +236,7 @@ public class ExtendedTableModel extends AbstractTableModel
 	/**
 	 * Retrieves the array of objects in the given row.
 	 *
-	 * @param row The row to retrieve the data for.
+	 * @param rowIndex The row to retrieve the data for.
 	 * @return The row data.
 	 */
 	public Object[] getRowAt(int rowIndex)

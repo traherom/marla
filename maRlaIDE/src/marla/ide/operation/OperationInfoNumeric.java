@@ -41,11 +41,10 @@ public class OperationInfoNumeric extends OperationInformation
 	private Double answer = null;
 
 	/**
-	 * Constructs a new combo select prompt with the given options.
+	 * Constructs a new numeric input with the given options.
+	 * @param op Operation that this question applies to
 	 * @param name Unique reference name for this prompt
 	 * @param prompt User-visible prompt
-	 * @param options Options to display to the user, will be presented in the
-	 *	order given, not sorted in any way.
 	 */
 	public OperationInfoNumeric(Operation op, String name, String prompt)
 	{
@@ -54,6 +53,14 @@ public class OperationInfoNumeric extends OperationInformation
 		this.max = Double.MAX_VALUE;
 	}
 
+	/**
+	 * Constructs a new numeric input with the given options.
+	 * @param op Operation that this question applies to
+	 * @param name Unique reference name for this prompt
+	 * @param prompt User-visible prompt
+	 * @param min Minimum (inclusive) value which the user may enter for this value
+	 * @param max Maximum (inclusive) value which the user may enter for this value
+	 */
 	public OperationInfoNumeric(Operation op, String name, String prompt, double min, double max)
 	{
 		super(op, name, prompt, PromptType.NUMERIC);

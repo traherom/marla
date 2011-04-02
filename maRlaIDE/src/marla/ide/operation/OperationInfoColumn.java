@@ -43,9 +43,9 @@ public class OperationInfoColumn extends OperationInfoCombo
 	/**
 	 * Constructs a new column select prompt with all the columns in the given
 	 * DataSource as options
+	 * @param op Operation that this question applies to
 	 * @param name Unique reference name for this prompt
 	 * @param prompt User-visible prompt
-	 * @param ds DataSource from which to pull column information
 	 */
 	public OperationInfoColumn(Operation op, String name, String prompt) 
 	{
@@ -53,11 +53,11 @@ public class OperationInfoColumn extends OperationInfoCombo
 	}
 
 	/**
-	 * Constructs a new combo select prompt with the columns of the given type
+	 * Constructs a new column select prompt with the columns of the given type
 	 * in the DataSource as options
+	 * @param op Operation that this question applies to
 	 * @param name Unique reference name for this prompt
 	 * @param prompt User-visible prompt
-	 * @param ds DataSource from which to pull column information
 	 * @param columnType Type of column to include in the list
 	 */
 	public OperationInfoColumn(Operation op, String name, String prompt, DataMode columnType)

@@ -152,7 +152,7 @@ public class Configuration
 	 * Loads configuration from all possible sources. Processing order is:
 	 *		Command Line->XML file->Search->Defaults
 	 * Items fulfilled at higher levels are skipped later
-	 * @param Command line options to be parsed
+	 * @param args Command line options to be parsed
 	 * @return List of the config types that failed to be configured
 	 */
 	public List<ConfigType> configureAll(String[] args)

@@ -40,9 +40,10 @@ public abstract class OperationInformation
 
 	/**
 	 * Creates a new piece of operation information with the basic data set
-	 * @param op
-	 * @param name
-	 * @param prompt
+	 * @param op Operation that this question applies to
+	 * @param name "Key" of the question. Must be unique within an operation
+	 * @param prompt User-visible prompt
+	 * @param type Type of question we are
 	 */
 	protected OperationInformation(Operation op, String name, String prompt, PromptType type)
 	{
@@ -151,8 +152,8 @@ public abstract class OperationInformation
 	/**
 	 * Runs through the questions from XML and passes them on the the loaded questions
 	 * in the given Operation
-	 * @param questionEls XML to read questions from
-	 * @param Operation Operation to fill in answers for
+	 * @param questionEl XML to read questions from
+	 * @param op Operation to fill in answers for
 	 */
 	public static void fromXml(Element questionEl, Operation op)
 	{

@@ -1949,7 +1949,7 @@ public class ViewPanel extends JPanel
 	 * @param centerX x coordinate to center on
 	 * @param shouldResize If true, sets the label of the operation and resizes it. However,
 	 *		it will not attempt to center the labels in any way
-	 * @return
+	 * @return Width of the column, based on the widest operation in it
 	 */
 	protected int rebuildOperationColumn(Operation op, int centerX, boolean shouldResize)
 	{
@@ -2259,11 +2259,12 @@ public class ViewPanel extends JPanel
 	}
 
 	/**
-	 * 
-	 * @param prompts
-	 * @param valueComponents
-	 * @param showDialog
-	 * @return
+	 * Save the user-entered options into the given prompts
+	 * @param prompts Prompts to fill with answers
+	 * @param valueComponents Elements which contain the user answers. Must be in the same
+	 *		order as the prompts.
+	 * @param showDialog If true, warns the user on invalid input
+	 * @return true if all entered values successfully validated
 	 */
 	public static boolean requirementsButtonClick(List<OperationInformation> prompts, List<Object> valueComponents, boolean showDialog)
 	{

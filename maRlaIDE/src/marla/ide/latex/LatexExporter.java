@@ -300,7 +300,7 @@ public class LatexExporter
 	 * Moves the temporary export files to the actual location
 	 * @param fromPath File to move
 	 * @param toPath Path to move the file to
-	 * @returns New path of the moved file
+	 * @return New path of the moved file
 	 */
 	private String moveFile(String fromPath, String toPath)
 	{

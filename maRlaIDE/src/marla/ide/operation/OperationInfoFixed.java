@@ -31,11 +31,11 @@ public class OperationInfoFixed extends OperationInformation
 	private final Object answer;
 
 	/**
-	 * Constructs a new combo select prompt with the given options.
+	 * Constructs a new fixed "prompt" with the given value. Fixed information
+	 * is intended to let the user know parameters that are being used.
+	 * @param op Operation that this question applies to
 	 * @param name Unique reference name for this prompt
 	 * @param prompt User-visible prompt
-	 * @param options Options to display to the user, will be presented in the
-	 *	order given, not sorted in any way.
 	 * @param newAnswer Answer to assign to this question.
 	 */
 	public OperationInfoFixed(Operation op, String name, String prompt, Object newAnswer)

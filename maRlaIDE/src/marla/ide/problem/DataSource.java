@@ -25,6 +25,7 @@ import marla.ide.operation.Operation;
 import java.util.List;
 import java.util.Random;
 import javax.swing.JLabel;
+import marla.ide.problem.DataColumn.DataMode;
 import org.jdom.Element;
 
 /**
@@ -188,8 +189,9 @@ public abstract class DataSource extends JLabel implements Loadable
 	public abstract String[] getColumnNames();
 
 	/**
-	 * Returns the DataSource data as a two-dimensional array
-	 * @return
+	 * Returns the DataSource data as a two-dimensional array. Data is returned
+	 * col x row. That is, [1][2] would access element 2 of column 1.
+	 * @return Data in the source in col-row format.
 	 */
 	public final Object[][] toArray()
 	{
@@ -382,12 +384,6 @@ public abstract class DataSource extends JLabel implements Loadable
 	 * @return R variable the data frame is in
 	 */
 	public abstract String toRFrame();
-
-	/**
-	 * Outputs this DataSource as an HTML table with the contained data
-	 * @return String of the HTML table representing this DataSource
-	 */
-	public abstract String toHTML();
 
 	/**
 	 * Returns a JDOM Element that encapsulates this DataSet's
@@ -591,5 +587,159 @@ public abstract class DataSource extends JLabel implements Loadable
 			return false;
 
 		return true;
+	}
+
+	/**
+	 * Represents the given DataSet as an HTML table
+	 * @return String of the data inside the given DataSource
+	 */
+	public String toHTML()
+	{
+		StringBuilder sb = new StringBuilder();
+		sb.append("<table>\n");
+
+		// DataSource name
+		sb.append("\t<tr><td style='text-align: center' colspan='");
+		sb.append(getColumnCount() + 1);
+		sb.append("'>");
+		sb.append(getName());
+		sb.append("</td></tr>\n");
+
+		// Column names
+		sb.append("\t<tr><td></td>");
+		for(int i = 0; i < getColumnCount(); i++)
+		{
+			sb.append("<td>");
+			sb.append(getColumn(i).getName());
+			sb.append("</td>");
+		}
+		sb.append("</tr>\n");
+
+		// Data. Truncate if needed
+		int len = getColumnLength();
+		if(len > 50)
+			len = 50;
+
+		for(int i = 0; i < len; i++)
+		{
+			sb.append("\t<tr><td>");
+			sb.append(i + 1);
+			sb.append("</td>");
+			for(int j = 0; j < getColumnCount(); j++)
+			{
+				sb.append("<td style='text-align: center'>");
+				// Ensure this column extends this far
+				DataColumn dc = getColumn(j);
+				if(dc.size() > i)
+					sb.append(dc.get(i));
+				else
+					sb.append("&nbsp;");
+				sb.append("</td>");
+			}
+			sb.append("</tr>\n");
+		}
+
+		// If we truncated tell the user
+		if(len < getColumnLength())
+		{
+			sb.append("<tr><td colspan='");
+			sb.append(getColumnCount() + 1);
+			sb.append("' style='text-align: center'>-First ");
+			sb.append(len);
+			sb.append(" rows shown-</td></tr>");
+		}
+
+		sb.append("</table>");
+		return sb.toString();
+	}
+
+	/**
+	 * Represents the given DataSet as an easily readable string
+	 * @return String of the data inside the given DataSource
+	 */
+	@Override
+	public String toString()
+	{
+		StringBuilder sb = new StringBuilder();
+
+		// Only actually do this if we have columns
+		if(getColumnCount() > 0)
+		{
+			// Make a table of all the strings, then use
+			// that to determine the correct width for each column
+			int colCount = 1 + getColumnCount();
+			int rowCount = 1 + getColumnLength();
+			String[][] table = new String[rowCount][];
+			int[] colWidth = new int[colCount];
+
+			// Header row
+			table[0] = new String[colCount];
+			table[0][0] = "";
+			for(int col = 1; col < colCount; col++)
+			{
+				table[0][col] = getColumn(col - 1).getName();
+
+				// Change width if needed
+				if(colWidth[col] < table[0][col].length())
+					colWidth[col] = table[0][col].length();
+			}
+
+			// Value rows
+			for(int row = 1; row < rowCount; row++)
+			{
+				// Assign index column and change width if needed
+				table[row] = new String[colCount];
+				table[row][0] = "[" + row + "]";
+				if(colWidth[0] < table[row][0].length())
+					colWidth[0] = table[row][0].length();
+
+				for(int col = 1; col < colCount; col++)
+				{
+					try
+					{
+						DataColumn dc = getColumn(col - 1);
+
+						if(dc.getMode() == DataMode.NUMERIC)
+							table[row][col] = dc.get(row - 1).toString();
+						else
+							table[row][col] = '"' + dc.get(row - 1).toString() + '"';
+
+						// Change column width if needed
+						if(colWidth[col] < table[row][col].length())
+							colWidth[col] = table[row][col].length();
+					}
+					catch(IndexOutOfBoundsException ex)
+					{
+						table[row][col] = "";
+					}
+				}
+			}
+
+			// Output DataSet name
+			sb.append("Dataset ");
+			sb.append(getName());
+			sb.append(":\n");
+
+			// Print each row in the table
+			for(int row = 0; row < table.length; row++)
+			{
+				for(int col = 0; col < table[row].length; col++)
+				{
+					sb.append(String.format("%-" + colWidth[col] + "s  ", table[row][col]));
+				}
+
+				// Done with the row
+				sb.append('\n');
+			}
+		}
+		else
+		{
+			// Output DataSet name
+			sb.append(getName());
+			sb.append('\n');
+			sb.append("Empty\n");
+		}
+		
+		return sb.toString();
 	}
 }
