@@ -30,7 +30,7 @@
   <Layout>
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
-          <EmptySpace min="0" pref="771" max="32767" attributes="0"/>
+          <EmptySpace min="0" pref="783" max="32767" attributes="0"/>
           <Group type="103" rootIndex="1" groupAlignment="0" attributes="0">
               <Group type="102" attributes="0">
                   <EmptySpace min="-2" pref="0" max="-2" attributes="0"/>
@@ -59,7 +59,7 @@
       <Layout>
         <DimensionLayout dim="0">
           <Group type="103" groupAlignment="0" attributes="0">
-              <EmptySpace min="0" pref="771" max="32767" attributes="0"/>
+              <EmptySpace min="0" pref="783" max="32767" attributes="0"/>
               <Group type="103" rootIndex="1" groupAlignment="0" attributes="0">
                   <Group type="102" alignment="0" attributes="0">
                       <EmptySpace min="-2" max="-2" attributes="0"/>
@@ -67,7 +67,7 @@
                           <Group type="102" alignment="0" attributes="0">
                               <Component id="stepsPanel" min="-2" pref="193" max="-2" attributes="1"/>
                               <EmptySpace max="-2" attributes="0"/>
-                              <Component id="wizardCardPanel" pref="548" max="32767" attributes="0"/>
+                              <Component id="wizardCardPanel" pref="564" max="32767" attributes="0"/>
                           </Group>
                           <Component id="wizardControlPanel" alignment="0" max="32767" attributes="2"/>
                       </Group>
@@ -83,8 +83,8 @@
                   <Group type="102" alignment="0" attributes="0">
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="wizardCardPanel" pref="397" max="32767" attributes="1"/>
-                          <Component id="stepsPanel" pref="397" max="32767" attributes="1"/>
+                          <Component id="wizardCardPanel" pref="404" max="32767" attributes="1"/>
+                          <Component id="stepsPanel" pref="404" max="32767" attributes="1"/>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="wizardControlPanel" min="-2" max="-2" attributes="0"/>
@@ -183,12 +183,12 @@
                 </Constraint>
               </Constraints>
             </Component>
-            <Component class="javax.swing.JLabel" name="valuesLabel">
+            <Component class="javax.swing.JLabel" name="dataSetsLabel">
               <Properties>
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Verdana" size="12" style="0"/>
                 </Property>
-                <Property name="text" type="java.lang.String" value="5. Values"/>
+                <Property name="text" type="java.lang.String" value="5. Data Sets"/>
               </Properties>
               <Events>
                 <EventHandler event="mouseEntered" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="mouseEntered"/>
@@ -325,7 +325,7 @@
                           <Group type="102" alignment="0" attributes="0">
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="welcomeTextLabel" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace pref="247" max="32767" attributes="0"/>
+                              <EmptySpace pref="249" max="32767" attributes="0"/>
                           </Group>
                       </Group>
                     </DimensionLayout>
@@ -334,7 +334,7 @@
                           <Group type="102" alignment="0" attributes="0">
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="welcomeTextLabel" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace pref="292" max="32767" attributes="0"/>
+                              <EmptySpace pref="293" max="32767" attributes="0"/>
                           </Group>
                       </Group>
                     </DimensionLayout>
@@ -411,12 +411,12 @@
                                   <Group type="102" alignment="0" attributes="0">
                                       <Component id="problemNameLabel" min="-2" max="-2" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
-                                      <Component id="problemNameTextField" pref="328" max="32767" attributes="0"/>
+                                      <Component id="problemNameTextField" pref="340" max="32767" attributes="0"/>
                                   </Group>
                                   <Group type="102" alignment="0" attributes="0">
                                       <Component id="problemLocationLabel" min="-2" max="-2" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
-                                      <Component id="problemLocationTextField" pref="311" max="32767" attributes="0"/>
+                                      <Component id="problemLocationTextField" pref="323" max="32767" attributes="0"/>
                                   </Group>
                                   <Component id="browseButton" alignment="1" min="-2" max="-2" attributes="0"/>
                               </Group>
@@ -439,7 +439,7 @@
                               </Group>
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="browseButton" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace pref="204" max="32767" attributes="0"/>
+                              <EmptySpace pref="216" max="32767" attributes="0"/>
                           </Group>
                       </Group>
                     </DimensionLayout>
@@ -545,7 +545,7 @@
                           <Group type="102" alignment="0" attributes="0">
                               <EmptySpace max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="0" attributes="0">
-                                  <Component id="descroptionScollPane" alignment="0" pref="436" max="32767" attributes="0"/>
+                                  <Component id="descroptionScollPane" alignment="0" pref="440" max="32767" attributes="0"/>
                                   <Component id="problemDescriptionLabel" alignment="0" min="-2" max="-2" attributes="0"/>
                               </Group>
                               <EmptySpace max="-2" attributes="0"/>
@@ -558,7 +558,7 @@
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="problemDescriptionLabel" min="-2" max="-2" attributes="0"/>
                               <EmptySpace type="separate" max="-2" attributes="0"/>
-                              <Component id="descroptionScollPane" pref="262" max="32767" attributes="0"/>
+                              <Component id="descroptionScollPane" pref="264" max="32767" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                           </Group>
                       </Group>
@@ -649,7 +649,7 @@
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Group type="102" alignment="0" attributes="0">
                               <EmptySpace max="-2" attributes="0"/>
-                              <Component id="subProblemsScrollPane" pref="449" max="32767" attributes="0"/>
+                              <Component id="subProblemsScrollPane" pref="451" max="32767" attributes="0"/>
                           </Group>
                       </Group>
                     </DimensionLayout>
@@ -717,7 +717,7 @@
                 </Component>
               </SubComponents>
             </Container>
-            <Container class="javax.swing.JPanel" name="valuesCardPanel">
+            <Container class="javax.swing.JPanel" name="dataSetsCardPanel">
               <AuxValues>
                 <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="4"/>
               </AuxValues>
@@ -920,7 +920,7 @@
                     <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                       <Font name="Verdana" size="12" style="0"/>
                     </Property>
-                    <Property name="text" type="java.lang.String" value="Problem Number:"/>
+                    <Property name="text" type="java.lang.String" value="Problem number:"/>
                   </Properties>
                   <Constraints>
                     <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout" value="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout$AbsoluteConstraintsDescription">
@@ -1031,7 +1031,7 @@
                     <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                       <Font name="Verdana" size="12" style="0"/>
                     </Property>
-                    <Property name="text" type="java.lang.String" value="Problem Conclusion:"/>
+                    <Property name="text" type="java.lang.String" value="Problem conclusion:"/>
                   </Properties>
                   <Constraints>
                     <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout" value="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout$AbsoluteConstraintsDescription">
