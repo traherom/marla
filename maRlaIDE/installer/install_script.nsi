@@ -412,11 +412,19 @@ Section "Uninstall"
 
 	; Ensure it's not running
 	System::Call 'kernel32::OpenMutex(i 0x100000, b 0, t "themarlaproject") i .R0'
-	IntCmp $R0 0 notRunning
+	IntCmp $R0 0 notRunning1
 		System::Call 'kernel32::CloseHandle(i $R0)'
-		MessageBox MB_OK|MB_ICONEXCLAMATION "The maRla Project is running. Please close it first" /SD IDOK
+		MessageBox MB_OK|MB_ICONEXCLAMATION "The maRla Project IDE is running. Please close it first" /SD IDOK
 		Abort
-	notRunning:
+		
+	notRunning1:
+	System::Call 'kernel32::OpenMutex(i 0x100000, b 0, t "themarlaprojectopeditor") i .R0'
+	IntCmp $R0 0 notRunning2
+		System::Call 'kernel32::CloseHandle(i $R0)'
+		MessageBox MB_OK|MB_ICONEXCLAMATION "The maRla Project Operation Editor is running. Please close it first" /SD IDOK
+		Abort
+		
+	notRunning2:
 
 	Delete "$INSTDIR\Uninstall.exe"
 	Delete "$INSTDIR\export_template.xml"
