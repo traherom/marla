@@ -216,10 +216,6 @@ public class MainFrame extends JFrame
 						}
 					}
 				}
-				else
-				{
-					viewPanel.workspaceSplitPane.setDividerLocation(viewPanel.getHeight() - 150);
-				}
 			}
 		}).start();
 

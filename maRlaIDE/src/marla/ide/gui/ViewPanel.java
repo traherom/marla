@@ -728,7 +728,7 @@ public class ViewPanel extends JPanel
         jSeparator4.setEnabled(false);
         toolBar.add(jSeparator4);
 
-        addDataButton.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        addDataButton.setFont(new java.awt.Font("Verdana", 0, 12));
         addDataButton.setToolTipText("Add Data Set");
         addDataButton.setEnabled(false);
         addDataButton.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -845,7 +845,7 @@ public class ViewPanel extends JPanel
 
         preWorkspacePanel.setBackground(new java.awt.Color(204, 204, 204));
 
-        preWorkspaceLabel.setFont(new java.awt.Font("Verdana", 1, 14));
+        preWorkspaceLabel.setFont(new java.awt.Font("Verdana", 1, 14)); // NOI18N
         preWorkspaceLabel.setForeground(new java.awt.Color(102, 102, 102));
         preWorkspaceLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         preWorkspaceLabel.setText("<html><div align=\"center\">To get started, load a previous problem or use the<br /><em>New Problem Wizard</em> (File --> New Problem...) to<br />create a new problem</div></html>");
@@ -918,7 +918,7 @@ public class ViewPanel extends JPanel
 
         debugTextArea.setColumns(20);
         debugTextArea.setEditable(false);
-        debugTextArea.setFont(new java.awt.Font("Cordia New", 0, 12));
+        debugTextArea.setFont(new java.awt.Font("Courier New", 0, 12)); // NOI18N
         debugTextArea.setLineWrap(true);
         debugTextArea.setRows(5);
         debugTextArea.setWrapStyleWord(true);

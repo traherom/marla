@@ -42,8 +42,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
@@ -76,7 +74,7 @@ public class Domain
 	/** The name of the application.*/
 	public static final String NAME = "The maRla Project";
 	/** The version number of the application.*/
-	public static final String VERSION = "0.5";
+	public static final String VERSION = "0.6";
 	/** The pre-release version name of the application.*/
 	public static final String PRE_RELEASE = "Beta";
 	/** The location of the application as it runs.*/
@@ -272,7 +270,6 @@ public class Domain
 				final PipedOutputStream pos = new PipedOutputStream();
 				final PrintStream paneStream = new PrintStream(pos);
 				System.setOut(paneStream);
-				System.out.println("Sending debug output to GUI");
 
 				// Watch input stream (what the console was told to do) and write it to the textpane
 				final BufferedReader br = new BufferedReader(new InputStreamReader(new PipedInputStream(pos)));
@@ -315,6 +312,12 @@ public class Domain
 						}
 					}
 				}).start();
+
+				System.out.println("Sending debug output to interface");
+
+				// Build info message
+				System.out.println(Domain.NAME + " " + Domain.VERSION + " " + Domain.PRE_RELEASE);
+				System.out.println("Revision " + BuildInfo.revisionNumber + ", built " + BuildInfo.timeStamp + "\n");
 			}
 			catch(IOException ex)
 			{
