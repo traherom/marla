@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="maRla" default="default" basedir=".">
+    <description>Meta-build script for maRla</description>
+
+	<property name="dist.javadoc.dir" value="docs" />
+
+	<target name="default" depends="create-installer" />
+
+    <target name="package-for-store">
+    	<subant target="package-for-store">
+    		<fileset dir="${basedir}" includes="maRlaIDE/build.xml" />
+    	</subant>
+    </target>
+
+	<target name="create-installer">
+    	<subant target="create-installer">
+    		<fileset dir="${basedir}" includes="maRlaIDE/build.xml" />
+    	</subant>
+	</target>
+
+	<target name="javadoc">
+        <mkdir dir="${dist.javadoc.dir}"/>
+        
+        <javadoc author="The maRla Project" charset="UTF-8" destdir="${dist.javadoc.dir}" docencoding="UTF-8" failonerror="true" source="${ant.build.javac.source}" windowtitle="The maRla Project Javadoc">
+            <classpath>
+                <path path="${javac.classpath}"/>
+            </classpath>
+            <fileset dir="maRlaIDE/src">
+                <filename name="**/*.java"/>
+            </fileset>
+            <fileset dir="maRlaOperationEditor/src">
+                <filename name="**/*.java"/>
+            </fileset>
+        </javadoc>
+	</target>
+</project>
