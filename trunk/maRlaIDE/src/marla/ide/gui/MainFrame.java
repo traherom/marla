@@ -499,7 +499,7 @@ public class MainFrame extends JFrame
         problemMenu.add(editSubProblemsMenuItem);
 
         editConclusionMenuItem.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
-        editConclusionMenuItem.setText("Edit Conclusion(s)...");
+        editConclusionMenuItem.setText("Edit Conclusion...");
         editConclusionMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 editConclusionMenuItemActionPerformed(evt);
@@ -509,7 +509,7 @@ public class MainFrame extends JFrame
         problemMenu.add(problemSeparator1);
 
         newDataSetMenuItem.setFont(new java.awt.Font("Verdana", 0, 12));
-        newDataSetMenuItem.setText("New Data Set...");
+        newDataSetMenuItem.setText("Add Data Set...");
         newDataSetMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 newDataSetMenuItemActionPerformed(evt);

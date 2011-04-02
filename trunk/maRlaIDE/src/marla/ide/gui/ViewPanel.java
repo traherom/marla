@@ -524,7 +524,7 @@ public class ViewPanel extends JPanel
         openButton = new ToolbarButton (new ImageIcon (getClass ().getResource ("/marla/ide/images/open_button.png")));
         saveButton = new ToolbarButton (new ImageIcon (getClass ().getResource ("/marla/ide/images/save_button.png")));
         jSeparator4 = new javax.swing.JToolBar.Separator();
-        newDataButton = new ToolbarButton (new ImageIcon (getClass ().getResource ("/marla/ide/images/add_data_button.png")));
+        addDataButton = new ToolbarButton (new ImageIcon (getClass ().getResource ("/marla/ide/images/add_data_button.png")));
         jSeparator1 = new javax.swing.JToolBar.Separator();
         fontSizeLabel = new javax.swing.JLabel();
         plusFontButton = new ToolbarButton (new ImageIcon (getClass ().getResource ("/marla/ide/images/plus_button.png")));
@@ -728,10 +728,10 @@ public class ViewPanel extends JPanel
         jSeparator4.setEnabled(false);
         toolBar.add(jSeparator4);
 
-        newDataButton.setFont(new java.awt.Font("Verdana", 0, 12));
-        newDataButton.setToolTipText("New Data Set");
-        newDataButton.setEnabled(false);
-        newDataButton.addMouseListener(new java.awt.event.MouseAdapter() {
+        addDataButton.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        addDataButton.setToolTipText("Add Data Set");
+        addDataButton.setEnabled(false);
+        addDataButton.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 buttonMouseEntered(evt);
             }
@@ -745,7 +745,7 @@ public class ViewPanel extends JPanel
                 buttonMouseReleased(evt);
             }
         });
-        toolBar.add(newDataButton);
+        toolBar.add(addDataButton);
 
         jSeparator1.setEnabled(false);
         toolBar.add(jSeparator1);
@@ -845,7 +845,7 @@ public class ViewPanel extends JPanel
 
         preWorkspacePanel.setBackground(new java.awt.Color(204, 204, 204));
 
-        preWorkspaceLabel.setFont(new java.awt.Font("Verdana", 1, 14)); // NOI18N
+        preWorkspaceLabel.setFont(new java.awt.Font("Verdana", 1, 14));
         preWorkspaceLabel.setForeground(new java.awt.Color(102, 102, 102));
         preWorkspaceLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         preWorkspaceLabel.setText("<html><div align=\"center\">To get started, load a previous problem or use the<br /><em>New Problem Wizard</em> (File --> New Problem...) to<br />create a new problem</div></html>");
@@ -918,7 +918,7 @@ public class ViewPanel extends JPanel
 
         debugTextArea.setColumns(20);
         debugTextArea.setEditable(false);
-        debugTextArea.setFont(new java.awt.Font("Cordia New", 0, 12)); // NOI18N
+        debugTextArea.setFont(new java.awt.Font("Cordia New", 0, 12));
         debugTextArea.setLineWrap(true);
         debugTextArea.setRows(5);
         debugTextArea.setWrapStyleWord(true);
@@ -941,11 +941,11 @@ public class ViewPanel extends JPanel
         emptyPalettePanel.setLayout(emptyPalettePanelLayout);
         emptyPalettePanelLayout.setHorizontalGroup(
             emptyPalettePanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(0, 204, Short.MAX_VALUE)
+            .add(0, 208, Short.MAX_VALUE)
         );
         emptyPalettePanelLayout.setVerticalGroup(
             emptyPalettePanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(0, 569, Short.MAX_VALUE)
+            .add(0, 578, Short.MAX_VALUE)
         );
 
         paletteCardPanel.add(emptyPalettePanel, "card3");
@@ -1395,6 +1395,7 @@ public class ViewPanel extends JPanel
 					}
 				}
 			}
+			workspacePanel.repaint();
 		}
 	}//GEN-LAST:event_tieSubProblemSubMenuMenuSelected
 
@@ -1428,6 +1429,7 @@ public class ViewPanel extends JPanel
 					}
 				}
 			}
+			workspacePanel.repaint();
 		}
 	}//GEN-LAST:event_tieSubProblemSubMenuMenuDeselected
 
@@ -1549,7 +1551,7 @@ public class ViewPanel extends JPanel
 			settingsDialog.initSettingsDialog();
 			settingsDialog.launchSettingsDialog();
 		}
-		else if (button.isEnabled() && button == newDataButton)
+		else if (button.isEnabled() && button == addDataButton)
 		{
 			newProblemWizardDialog.addNewDataSet();
 		}
@@ -1625,7 +1627,7 @@ public class ViewPanel extends JPanel
 		if(rightClickedComponent != null && untieSubProblemSubMenu.isEnabled())
 		{
 			rightClickedComponent.setBackground(NO_BACKGROUND_WORKSPACE);
-			rightClickedComponent.setSize(rightClickedComponent.getPreferredSize());
+			workspacePanel.repaint();
 		}
 	}//GEN-LAST:event_untieSubProblemSubMenuMenuDeselected
 
@@ -1634,6 +1636,7 @@ public class ViewPanel extends JPanel
 		if(rightClickedComponent != null && untieSubProblemSubMenu.isEnabled())
 		{
 			rightClickedComponent.setBackground(HOVER_BACKGROUND_COLOR);
+			workspacePanel.repaint();
 		}
 	}//GEN-LAST:event_untieSubProblemSubMenuMenuSelected
 
@@ -2005,9 +2008,8 @@ public class ViewPanel extends JPanel
 	 */
 	protected void drop(Operation operation, boolean duplicate, Point location) throws OperationException, RProcessorException, MarlaException
 	{
-		JComponent component = (JComponent) workspacePanel.getComponentAt(location);
+		JComponent component = (JComponent) ((WorkspacePanel) workspacePanel).getComponentAt(location.x, location.y, operation);
 		if(component != null
-		   && component != workspacePanel
 		   && component != trashCan
 		   && component != firstRunLabel
 		   && (component instanceof DataSet || component instanceof Operation))
@@ -2141,6 +2143,7 @@ public class ViewPanel extends JPanel
 
 		dialog.setTitle(newOperation.getName() + ": Information Required");
 		dialog.setModal(true);
+		dialog.setResizable(false);
 		dialog.add(panel);
 
 		// This array will contain references to objects that will hold the values
@@ -2333,7 +2336,7 @@ public class ViewPanel extends JPanel
 			{
 				saveButton.setEnabled(false);
 			}
-			newDataButton.setEnabled(true);
+			addDataButton.setEnabled(true);
 			plusFontButton.setEnabled(true);
 			minusFontButton.setEnabled(true);
 			abbreviateButton.setEnabled(true);
@@ -2600,7 +2603,7 @@ public class ViewPanel extends JPanel
 		{
 			saveButton.setEnabled(false);
 		}
-		newDataButton.setEnabled(false);
+		addDataButton.setEnabled(false);
 		plusFontButton.setEnabled(false);
 		minusFontButton.setEnabled(false);
 		abbreviateButton.setEnabled(false);
@@ -2717,6 +2720,7 @@ public class ViewPanel extends JPanel
 	}
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel abbreviateButton;
+    protected javax.swing.JLabel addDataButton;
     private javax.swing.JMenuItem addDataSetMenuItem;
     protected javax.swing.JDialog answerDialog;
     private javax.swing.JPanel answerPanel;
@@ -2742,7 +2746,6 @@ public class ViewPanel extends JPanel
     private javax.swing.JPopupMenu.Separator menuSeparator3;
     private javax.swing.JLabel minusFontButton;
     protected javax.swing.JLabel newButton;
-    protected javax.swing.JLabel newDataButton;
     protected javax.swing.JLabel openButton;
     protected javax.swing.JFileChooser openChooserDialog;
     private javax.swing.JPanel paletteCardPanel;
