@@ -197,7 +197,7 @@ public class MainFrame extends JFrame
 				if(isUpdate)
 				{
 					int res = JOptionPane.showConfirmDialog(viewPanel.domain.getTopWindow(),
-							"An update for maRla is avaible.\nWould you like to go to the download page?",
+							"An update for maRla is available.\nWould you like to go to the download page?",
 							"Update Available",
 							JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
 					if(res == JOptionPane.YES_OPTION)

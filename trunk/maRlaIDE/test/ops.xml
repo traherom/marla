@@ -547,7 +547,7 @@
   </operation>
   <operation name="Binomial Test" category="Statistical Test">
     <query type="string" name="saveTo" prompt="New Column Name:" />
-    <query type="numeric" name="successes" prompt="Sucess count:" />
+    <query type="numeric" name="successes" prompt="Success count:" />
     <query type="numeric" name="trials" prompt="Trial count:" />
     <query type="numeric" name="alpha" prompt="Alpha:" min="0" max="1" />
     <displayname>

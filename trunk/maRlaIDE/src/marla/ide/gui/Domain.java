@@ -264,7 +264,7 @@ public class Domain
 			{
 				if(debugPane.getParent() != split)
 					split.add(debugPane);
-				split.setDividerLocation(100);
+				split.setDividerLocation(split.getHeight() - 100);
 
 				try
 				{
@@ -282,16 +282,23 @@ public class Domain
 						{
 							try
 							{
-								while(Domain.isDebugMode())
+								synchronized(br)
 								{
-									try
+									while(Domain.isDebugMode())
 									{
-										debugText.append(br.readLine() + "\n");
-										debugText.setCaretPosition(debugText.getDocument().getLength());
-									}
-									catch(IOException ex)
-									{
-										Thread.sleep(10);
+										try
+										{
+											// Get line
+											debugText.append(br.readLine() + "\n");
+
+											// Scroll to end of text
+											debugText.setCaretPosition(debugText.getDocument().getLength());
+										}
+										catch(IOException ex)
+										{
+											// Wait for more data
+											br.wait(1000);
+										}
 									}
 								}
 							}
