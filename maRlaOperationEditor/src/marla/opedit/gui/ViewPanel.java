@@ -149,6 +149,9 @@ public class ViewPanel extends JPanel
 		outputTable.getTableHeader ().setFont (FONT_PLAIN_12);
 
 		xmlStatusLabel.setText ("");
+
+		// Find the "Cancel" button and change the tooltip
+		marla.ide.gui.ViewPanel.setToolTipForButton(fileChooser, "Cancel", "Cancel file selection");
 	}
 
 	/**

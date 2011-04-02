@@ -108,14 +108,15 @@ public class MainFrame extends JFrame
 					boolean fixed = false;
 					try
 					{
-						viewPanel.openChooserDialog.setDialogTitle(Configuration.getName(curr));
-						viewPanel.openChooserDialog.resetChoosableFileFilters();
-						viewPanel.openChooserDialog.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+						viewPanel.fileChooserDialog.setDialogTitle(Configuration.getName(curr));
+						viewPanel.fileChooserDialog.setDialogType(JFileChooser.OPEN_DIALOG);
+						viewPanel.fileChooserDialog.resetChoosableFileFilters();
+						viewPanel.fileChooserDialog.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
 						// Display the chooser and retrieve the selected file
-						int response = viewPanel.openChooserDialog.showOpenDialog(progressFrame);
+						int response = viewPanel.fileChooserDialog.showOpenDialog(progressFrame);
 						if(response == JFileChooser.APPROVE_OPTION)
 						{
-							conf.set(curr, viewPanel.openChooserDialog.getSelectedFile().getPath());
+							conf.set(curr, viewPanel.fileChooserDialog.getSelectedFile().getPath());
 							fixed = true;
 						}
 						else
@@ -201,18 +202,14 @@ public class MainFrame extends JFrame
 							JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
 					if(res == JOptionPane.YES_OPTION)
 					{
-						try
+						if (viewPanel.domain.desktop != null)
 						{
-							if(viewPanel.domain.desktop != null)
-								viewPanel.domain.desktop.browse(new URI("https://code.google.com/p/marla/downloads/list"));
-						}
-						catch(IOException ex)
-						{
-							Domain.logger.add(ex);
-						}
-						catch(URISyntaxException ex)
-						{
-							Domain.logger.add(ex);
+							try
+							{
+								viewPanel.domain.desktop.browse(new URI("http://code.google.com/p/marla/w/list"));
+							}
+							catch(IOException ex) {}
+							catch(URISyntaxException ex) {}
 						}
 					}
 				}
@@ -489,7 +486,7 @@ public class MainFrame extends JFrame
         });
         problemMenu.add(editSubProblemsMenuItem);
 
-        editConclusionMenuItem.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        editConclusionMenuItem.setFont(new java.awt.Font("Verdana", 0, 12));
         editConclusionMenuItem.setText("Edit Conclusion...");
         editConclusionMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -541,6 +538,7 @@ public class MainFrame extends JFrame
         toolsMenu.add(reloadOperationgsMenuItem);
         toolsMenu.add(jSeparator1);
 
+        settingsMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_COMMA, java.awt.event.InputEvent.CTRL_MASK));
         settingsMenuItem.setFont(new java.awt.Font("Verdana", 0, 12));
         settingsMenuItem.setText("Settings");
         settingsMenuItem.addActionListener(new java.awt.event.ActionListener() {
@@ -564,7 +562,8 @@ public class MainFrame extends JFrame
             }
         });
 
-        helpContentsMenuItem.setFont(new java.awt.Font("Verdana", 0, 12));
+        helpContentsMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F1, 0));
+        helpContentsMenuItem.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
         helpContentsMenuItem.setText("Help Contents");
         helpContentsMenuItem.setEnabled(false);
         helpContentsMenuItem.addActionListener(new java.awt.event.ActionListener() {
@@ -724,7 +723,7 @@ public class MainFrame extends JFrame
 	}//GEN-LAST:event_editProblemMenuItemActionPerformed
 
 	private void newDataSetMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newDataSetMenuItemActionPerformed
-		viewPanel.newProblemWizardDialog.addNewDataSet();
+		viewPanel.newProblemWizardDialog.addDataSet();
 	}//GEN-LAST:event_newDataSetMenuItemActionPerformed
 
 	private void reloadOperationgsMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_reloadOperationgsMenuItemActionPerformed

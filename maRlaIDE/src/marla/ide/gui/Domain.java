@@ -792,28 +792,29 @@ public class Domain
 		if (problem != null)
 		{
 			// Construct the file-based open chooser dialog
-			viewPanel.saveChooserDialog.setDialogTitle ("Save Problem As");
-			viewPanel.saveChooserDialog.resetChoosableFileFilters ();
-			viewPanel.saveChooserDialog.setFileFilter (viewPanel.marlaFilter);
-			viewPanel.saveChooserDialog.setFileSelectionMode (JFileChooser.FILES_ONLY);
-			viewPanel.saveChooserDialog.setCurrentDirectory (new File (problem.getFileName ()));
-			viewPanel.saveChooserDialog.setSelectedFile (new File (problem.getFileName ()));
+			viewPanel.fileChooserDialog.setDialogTitle ("Save Problem As");
+			viewPanel.fileChooserDialog.setDialogType(JFileChooser.SAVE_DIALOG);
+			viewPanel.fileChooserDialog.resetChoosableFileFilters ();
+			viewPanel.fileChooserDialog.setFileFilter (viewPanel.marlaFilter);
+			viewPanel.fileChooserDialog.setFileSelectionMode (JFileChooser.FILES_ONLY);
+			viewPanel.fileChooserDialog.setCurrentDirectory (new File (problem.getFileName ()));
+			viewPanel.fileChooserDialog.setSelectedFile (new File (problem.getFileName ()));
 			// Display the chooser and retrieve the selected file
-			int response = viewPanel.saveChooserDialog.showSaveDialog (viewPanel);
+			int response = viewPanel.fileChooserDialog.showSaveDialog (viewPanel);
 			while (response == JFileChooser.APPROVE_OPTION)
 			{
-				File file = viewPanel.saveChooserDialog.getSelectedFile ();
+				File file = viewPanel.fileChooserDialog.getSelectedFile ();
 				// ensure an extension is on the file
 				if (file.getName ().indexOf (".") == -1)
 				{
-					file = new File (viewPanel.saveChooserDialog.getSelectedFile ().toString () + ".marla");
+					file = new File (viewPanel.fileChooserDialog.getSelectedFile ().toString () + ".marla");
 				}
 				// ensure the file is a valid backup file
 				if (!file.toString ().endsWith (".marla"))
 				{
 					JOptionPane.showMessageDialog (getTopWindow(), "The extension for the file must be .marla.", "Invalid Extension", JOptionPane.WARNING_MESSAGE);
-					viewPanel.saveChooserDialog.setSelectedFile (new File (viewPanel.saveChooserDialog.getSelectedFile ().toString ().substring (0, viewPanel.saveChooserDialog.getSelectedFile ().toString ().lastIndexOf (".")) + ".marla"));
-					response = viewPanel.saveChooserDialog.showSaveDialog (viewPanel);
+					viewPanel.fileChooserDialog.setSelectedFile (new File (viewPanel.fileChooserDialog.getSelectedFile ().toString ().substring (0, viewPanel.fileChooserDialog.getSelectedFile ().toString ().lastIndexOf (".")) + ".marla"));
+					response = viewPanel.fileChooserDialog.showSaveDialog (viewPanel);
 					continue;
 				}
 				// Ensure the problem name given does not match an already existing file
@@ -853,29 +854,30 @@ public class Domain
 		if (problem != null)
 		{
 			// Construct the file-based open chooser dialog
-			viewPanel.saveChooserDialog.setDialogTitle ("Export to PDF");
-			viewPanel.saveChooserDialog.resetChoosableFileFilters ();
-			viewPanel.saveChooserDialog.setFileFilter (viewPanel.pdfFilter);
-			viewPanel.saveChooserDialog.setFileSelectionMode (JFileChooser.FILES_ONLY);
-			viewPanel.saveChooserDialog.setCurrentDirectory (new File (problem.getFileName ().substring (0, problem.getFileName ().lastIndexOf (".")) + ".pdf"));
-			viewPanel.saveChooserDialog.setSelectedFile (new File (problem.getFileName ().substring (0, problem.getFileName ().lastIndexOf (".")) + ".pdf"));
+			viewPanel.fileChooserDialog.setDialogTitle ("Export to PDF");
+			viewPanel.fileChooserDialog.setDialogType(JFileChooser.SAVE_DIALOG);
+			viewPanel.fileChooserDialog.resetChoosableFileFilters ();
+			viewPanel.fileChooserDialog.setFileFilter (viewPanel.pdfFilter);
+			viewPanel.fileChooserDialog.setFileSelectionMode (JFileChooser.FILES_ONLY);
+			viewPanel.fileChooserDialog.setCurrentDirectory (new File (problem.getFileName ().substring (0, problem.getFileName ().lastIndexOf (".")) + ".pdf"));
+			viewPanel.fileChooserDialog.setSelectedFile (new File (problem.getFileName ().substring (0, problem.getFileName ().lastIndexOf (".")) + ".pdf"));
 			// Display the chooser and retrieve the selected file
-			int response = viewPanel.saveChooserDialog.showSaveDialog (viewPanel);
+			int response = viewPanel.fileChooserDialog.showSaveDialog (viewPanel);
 			while (response == JFileChooser.APPROVE_OPTION)
 			{
-				File file = viewPanel.saveChooserDialog.getSelectedFile ();
+				File file = viewPanel.fileChooserDialog.getSelectedFile ();
 				// ensure an extension is on the file
 				if (file.getName ().indexOf (".") == -1)
 				{
-					file = new File (viewPanel.saveChooserDialog.getSelectedFile ().toString () + ".pdf");
+					file = new File (viewPanel.fileChooserDialog.getSelectedFile ().toString () + ".pdf");
 				}
 				final File finalFile = file;
 				// ensure the file is a valid backup file
 				if (!finalFile.toString ().endsWith (".pdf"))
 				{
 					JOptionPane.showMessageDialog (viewPanel, "The extension for the file must be .pdf.", "Invalid Extension", JOptionPane.WARNING_MESSAGE);
-					viewPanel.saveChooserDialog.setSelectedFile (new File (viewPanel.saveChooserDialog.getSelectedFile ().toString ().substring (0, viewPanel.saveChooserDialog.getSelectedFile ().toString ().lastIndexOf (".")) + ".pdf"));
-					response = viewPanel.saveChooserDialog.showSaveDialog (viewPanel);
+					viewPanel.fileChooserDialog.setSelectedFile (new File (viewPanel.fileChooserDialog.getSelectedFile ().toString ().substring (0, viewPanel.fileChooserDialog.getSelectedFile ().toString ().lastIndexOf (".")) + ".pdf"));
+					response = viewPanel.fileChooserDialog.showSaveDialog (viewPanel);
 					continue;
 				}
 				// Ensure the problem name given does not match an already existing file
@@ -976,29 +978,30 @@ public class Domain
 		if (problem != null)
 		{
 			// Construct the file-based open chooser dialog
-			viewPanel.saveChooserDialog.setDialogTitle ("Export for LaTeX");
-			viewPanel.saveChooserDialog.resetChoosableFileFilters ();
-			viewPanel.saveChooserDialog.setFileFilter (viewPanel.latexFilter);
-			viewPanel.saveChooserDialog.setFileSelectionMode (JFileChooser.FILES_ONLY);
-			viewPanel.saveChooserDialog.setCurrentDirectory (new File (problem.getFileName ().substring (0, problem.getFileName ().lastIndexOf (".")) + ".rnw"));
-			viewPanel.saveChooserDialog.setSelectedFile (new File (problem.getFileName ().substring (0, problem.getFileName ().lastIndexOf (".")) + ".rnw"));
+			viewPanel.fileChooserDialog.setDialogTitle ("Export for LaTeX");
+			viewPanel.fileChooserDialog.setDialogType(JFileChooser.SAVE_DIALOG);
+			viewPanel.fileChooserDialog.resetChoosableFileFilters ();
+			viewPanel.fileChooserDialog.setFileFilter (viewPanel.latexFilter);
+			viewPanel.fileChooserDialog.setFileSelectionMode (JFileChooser.FILES_ONLY);
+			viewPanel.fileChooserDialog.setCurrentDirectory (new File (problem.getFileName ().substring (0, problem.getFileName ().lastIndexOf (".")) + ".rnw"));
+			viewPanel.fileChooserDialog.setSelectedFile (new File (problem.getFileName ().substring (0, problem.getFileName ().lastIndexOf (".")) + ".rnw"));
 			// Display the chooser and retrieve the selected file
-			int response = viewPanel.saveChooserDialog.showSaveDialog (viewPanel);
+			int response = viewPanel.fileChooserDialog.showSaveDialog (viewPanel);
 			while (response == JFileChooser.APPROVE_OPTION)
 			{
-				File file = viewPanel.saveChooserDialog.getSelectedFile ();
+				File file = viewPanel.fileChooserDialog.getSelectedFile ();
 				// ensure an extension is on the file
 				if (file.getName ().indexOf (".") == -1)
 				{
-					file = new File (viewPanel.saveChooserDialog.getSelectedFile ().toString () + ".rnw");
+					file = new File (viewPanel.fileChooserDialog.getSelectedFile ().toString () + ".rnw");
 				}
 				final File finalFile = file;
 				// ensure the file is a valid backup file
 				if (!finalFile.toString ().endsWith (".rnw"))
 				{
 					JOptionPane.showMessageDialog (getTopWindow(), "The extension for the file must be .rnw.", "Invalid Extension", JOptionPane.WARNING_MESSAGE);
-					viewPanel.saveChooserDialog.setSelectedFile (new File (viewPanel.saveChooserDialog.getSelectedFile ().toString ().substring (0, viewPanel.saveChooserDialog.getSelectedFile ().toString ().lastIndexOf (".")) + ".tex"));
-					response = viewPanel.saveChooserDialog.showSaveDialog (viewPanel);
+					viewPanel.fileChooserDialog.setSelectedFile (new File (viewPanel.fileChooserDialog.getSelectedFile ().toString ().substring (0, viewPanel.fileChooserDialog.getSelectedFile ().toString ().lastIndexOf (".")) + ".tex"));
+					response = viewPanel.fileChooserDialog.showSaveDialog (viewPanel);
 					continue;
 				}
 				// Ensure the problem name given does not match an already existing file
@@ -1101,31 +1104,33 @@ public class Domain
 		try
 		{
 			// Construct the file-based open chooser dialog
-			viewPanel.openChooserDialog.resetChoosableFileFilters ();
-			viewPanel.openChooserDialog.setFileFilter (viewPanel.marlaFilter);
-			viewPanel.openChooserDialog.setFileSelectionMode (JFileChooser.FILES_ONLY);
+			viewPanel.fileChooserDialog.setDialogTitle("Browse Problem Location");
+			viewPanel.fileChooserDialog.setDialogType(JFileChooser.OPEN_DIALOG);
+			viewPanel.fileChooserDialog.resetChoosableFileFilters ();
+			viewPanel.fileChooserDialog.setFileFilter (viewPanel.marlaFilter);
+			viewPanel.fileChooserDialog.setFileSelectionMode (JFileChooser.FILES_ONLY);
 			String curDir = lastGoodDir;
 			if (problem != null)
 			{
 				curDir = problem.getFileName ();
 			}
-			viewPanel.openChooserDialog.setSelectedFile (new File (""));
-			viewPanel.openChooserDialog.setCurrentDirectory (new File (curDir));
+			viewPanel.fileChooserDialog.setSelectedFile (new File (""));
+			viewPanel.fileChooserDialog.setCurrentDirectory (new File (curDir));
 			// Display the chooser and retrieve the selected file
-			int response = viewPanel.openChooserDialog.showOpenDialog (viewPanel);
+			int response = viewPanel.fileChooserDialog.showOpenDialog (viewPanel);
 			while (response == JFileChooser.APPROVE_OPTION)
 			{
-				File file = viewPanel.openChooserDialog.getSelectedFile ();
+				File file = viewPanel.fileChooserDialog.getSelectedFile ();
 				if (!file.isFile () || !file.toString ().endsWith (".marla"))
 				{
 					JOptionPane.showMessageDialog (getTopWindow(), "The specified file does not exist.", "Does Not Exist", JOptionPane.WARNING_MESSAGE);
-					int lastIndex = viewPanel.openChooserDialog.getSelectedFile ().toString ().lastIndexOf (".");
+					int lastIndex = viewPanel.fileChooserDialog.getSelectedFile ().toString ().lastIndexOf (".");
 					if (lastIndex == -1)
 					{
-						lastIndex = viewPanel.openChooserDialog.getSelectedFile ().toString ().length ();
+						lastIndex = viewPanel.fileChooserDialog.getSelectedFile ().toString ().length ();
 					}
-					viewPanel.openChooserDialog.setSelectedFile (new File (viewPanel.openChooserDialog.getSelectedFile ().toString ().substring (0, lastIndex) + ".marla"));
-					response = viewPanel.openChooserDialog.showOpenDialog (viewPanel);
+					viewPanel.fileChooserDialog.setSelectedFile (new File (viewPanel.fileChooserDialog.getSelectedFile ().toString ().substring (0, lastIndex) + ".marla"));
+					response = viewPanel.fileChooserDialog.showOpenDialog (viewPanel);
 					continue;
 				}
 

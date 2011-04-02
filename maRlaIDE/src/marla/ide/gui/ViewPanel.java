@@ -86,20 +86,23 @@ import marla.ide.resource.Updater;
 public class ViewPanel extends JPanel
 {
 	/** The default text for the New Problem Wizard.*/
-	public static final String welcomeNewText = "<html>The New Problem Wizard will walk you through the setup of a new "
-												+ "problem as it appears in your textbook.<br /><br />You will first be asked where you would like to save "
-												+ "problem to.  Then, you will be able to give the problem a description and add sub problems (for "
-												+ "instance, parts a., b., and c.).<br /><br />The New Problem Wizard also allows you to enter data set values "
-												+ "manually or import the values from a CSV file.<br /><br />These values are not final; if you need to edit "
-												+ "the problem or any of the data sets at any point in the future, you can by selecting \"Edit Problem\", "
-												+ "\"New Data Set\", or \"Edit Data Set\" from the \"Problem\" menu.</html>";
+	public static final String welcomeNewText = "<html>The New Problem Wizard will walk you through the setup of a new statistical problem.<br /><br />"
+												+ "Be as detailed as possible when filling in the problem description and adding sub problems (for "
+												+ "instance, part a., b., etc.). Specifically, sub problems can be colored, which will make identifying "
+												+ "these parts of the problem in the workspace much easier.<br /><br />You can import data values for "
+												+ "your problem from a standard library (for instance, Devore7), or a CSV file. You can also enter data "
+												+ "values manually.<br /><br />User and problem-specific information can be set on the last page of the "
+												+ "wizard. This information is particularly useful when exporting the problem for LaTeX or as a PDF. "
+												+ "Some of the values can be permanently set from \"Settings\".<br /><br />If you need to edit the problem "
+												+ "or any of its data in the future, you can by selecting items from the \"Problem\" menu.</html>";
 	/** The default text for the New Problem Wizard when it is in edit mode.*/
-	public static final String welcomeEditText = "<html>From here you can edit the details of your already existing problem."
-												 + "<br /><br />Changing the problem's name or location will create a separate copy of your problem, similar to "
-												 + "a \"Save As ...\"<br /><br />You will be able to change the problem's description and add "
-												 + "more or remove current sub problems.<br /><br />Values given for the data sets can be changed.  If these "
-												 + "values are already interacting with statistical interactions in the workspace, the results will be updated with "
-												 + "new values when this dialog is closed.  More data sets can be added or current data sets may be removed.</html>";
+	public static final String welcomeEditText = "<html>When editing a problem, you cannot change the problem name or location. To rename the saved "
+												 + "file, select \"Save As...\" from the \"File\" menu. To more quickly navigate to a page in "
+												 + "the wizard, click on the name of the page to the left.<br /><br />The most common reason to edit a "
+												 + "problem is to add conclusions. A conclusion can be added for each of the sub problems (from the \"Sub "
+												 + "Problems\" page) as well as for the problem as a whole (from the \"Information\" page).<br /><br />"
+												 + "Sub problems and data sets can be edited, added, or removed at any time. Data sets from a library can "
+												 + "also be imported.</html";
 	public static final String FIRST_TIP = "- Click the plus (+) symbols in the Palette to the right to expand the categories";
 	public static final String SECOND_TIP = "- Drag operations from the Palette into the workspace";
 	public static final String THIRD_TIP = "- Drag operations over data sets or other operations to connect them";
@@ -220,7 +223,7 @@ public class ViewPanel extends JPanel
 	/** The point in the view where the answer dialog shall appear.*/
 	private Point answerDialogLocation = null;
 	/** True if operation and column names are abbreviated, false otherwise.*/
-	private boolean abbreviated = false;
+	protected boolean abbreviated = false;
 	/** 0 when no button is pressed, otherwise the number of the button pressed.*/
 	private int buttonPressed = 0;
 	/** The label that presents helpful hints on first run.*/
@@ -291,11 +294,10 @@ public class ViewPanel extends JPanel
 		componentsScrollPane.getViewport().setOpaque(false);
 
 		// Retrieve the default file filter from the JFileChooser before it is ever changed
-		defaultFilter = openChooserDialog.getFileFilter();
+		defaultFilter = fileChooserDialog.getFileFilter();
 
 		// Find the "Cancel" button and change the tooltip
-		setToolTipForButton(openChooserDialog, "Cancel", "Cancel file selection");
-		setToolTipForButton(saveChooserDialog, "Cancel", "Cancel file selection");
+		ViewPanel.setToolTipForButton(fileChooserDialog, "Cancel", "Cancel file selection");
 	}
 
 	/**
@@ -306,7 +308,7 @@ public class ViewPanel extends JPanel
 	 * @param string The string to search for in a JButton.
 	 * @param toolTip The tooltip to set for the JButton.
 	 */
-	private void setToolTipForButton(JComponent comp, String string, String toolTip)
+	public static void setToolTipForButton(JComponent comp, String string, String toolTip)
 	{
 		if (comp instanceof JButton &&
 				((JButton) comp).getText() != null &&
@@ -503,8 +505,7 @@ public class ViewPanel extends JPanel
     private void initComponents() {
         java.awt.GridBagConstraints gridBagConstraints;
 
-        openChooserDialog = new javax.swing.JFileChooser();
-        saveChooserDialog = new javax.swing.JFileChooser();
+        fileChooserDialog = new javax.swing.JFileChooser();
         answerDialog = new javax.swing.JDialog();
         answerPanel = new javax.swing.JPanel();
         rightClickMenu = new javax.swing.JPopupMenu();
@@ -552,13 +553,9 @@ public class ViewPanel extends JPanel
         legendPanel = new javax.swing.JPanel();
         legendContentPanel = new javax.swing.JPanel();
 
-        openChooserDialog.setApproveButtonToolTipText("Open selection");
-        openChooserDialog.setDialogTitle("Browse Problem Location");
-        openChooserDialog.setFileSelectionMode(javax.swing.JFileChooser.DIRECTORIES_ONLY);
-
-        saveChooserDialog.setApproveButtonToolTipText("Save to selection");
-        saveChooserDialog.setDialogTitle("Save As Problem Location");
-        saveChooserDialog.setDialogType(javax.swing.JFileChooser.SAVE_DIALOG);
+        fileChooserDialog.setApproveButtonToolTipText("Open selection");
+        fileChooserDialog.setDialogTitle("Browse Problem Location");
+        fileChooserDialog.setFileSelectionMode(javax.swing.JFileChooser.DIRECTORIES_ONLY);
 
         answerDialog.setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         answerDialog.setTitle("Solution to Point");
@@ -918,7 +915,7 @@ public class ViewPanel extends JPanel
 
         debugTextArea.setColumns(20);
         debugTextArea.setEditable(false);
-        debugTextArea.setFont(new java.awt.Font("Courier New", 0, 12)); // NOI18N
+        debugTextArea.setFont(new java.awt.Font("Courier New", 0, 12));
         debugTextArea.setLineWrap(true);
         debugTextArea.setRows(5);
         debugTextArea.setWrapStyleWord(true);
@@ -1170,9 +1167,9 @@ public class ViewPanel extends JPanel
 		}
 		else if(buttonPressed == MouseEvent.BUTTON3)
 		{
-			if (showFourth)
+			if (showFifth)
 			{
-				showFourth = false;
+				showFifth = false;
 				refreshTip();
 			}
 
@@ -1553,7 +1550,7 @@ public class ViewPanel extends JPanel
 		}
 		else if (button.isEnabled() && button == addDataButton)
 		{
-			newProblemWizardDialog.addNewDataSet();
+			newProblemWizardDialog.addDataSet();
 		}
 	}//GEN-LAST:event_buttonMouseReleased
 
@@ -1699,7 +1696,7 @@ public class ViewPanel extends JPanel
 	}//GEN-LAST:event_workspacePanelMouseMoved
 
 	private void addDataSetMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addDataSetMenuItemActionPerformed
-		newProblemWizardDialog.addNewDataSet();
+		newProblemWizardDialog.addDataSet();
 	}//GEN-LAST:event_addDataSetMenuItemActionPerformed
 
 	/**
@@ -1749,7 +1746,7 @@ public class ViewPanel extends JPanel
 	/**
 	 * Ensure all data sets are within the bounds of the workspace.
 	 */
-	private void ensureComponentsVisible()
+	protected void ensureComponentsVisible()
 	{
 		// Ensure all datasets are within our new bounds
 		if(domain.problem != null)
@@ -2008,6 +2005,13 @@ public class ViewPanel extends JPanel
 	 */
 	protected void drop(Operation operation, boolean duplicate, Point location) throws OperationException, RProcessorException, MarlaException
 	{
+		if (operation != null)
+		{
+			operation.setDefaultColor();
+			operation.setBackground(NO_BACKGROUND_WORKSPACE);
+			componentsScrollablePanel.repaint();
+		}
+		
 		JComponent component = (JComponent) ((WorkspacePanel) workspacePanel).getComponentAt(location.x, location.y, operation);
 		if(component != null
 		   && component != trashCan
@@ -2018,7 +2022,6 @@ public class ViewPanel extends JPanel
 			if(duplicate)
 			{
 				setCursor(Cursor.getDefaultCursor());
-				operation.setDefaultColor();
 
 				newOperation = Operation.createOperation(operation.getName());
 				newOperation.setFont(ViewPanel.workspaceFontBold);
@@ -2088,7 +2091,6 @@ public class ViewPanel extends JPanel
 			if(duplicate)
 			{
 				setCursor(Cursor.getDefaultCursor());
-				operation.setDefaultColor();
 				
 				newOperation = Operation.createOperation(operation.getName());
 				newOperation.setFont(ViewPanel.workspaceFontBold);
@@ -2734,6 +2736,7 @@ public class ViewPanel extends JPanel
     protected javax.swing.JTextArea debugTextArea;
     private javax.swing.JMenuItem editDataSetMenuItem;
     protected javax.swing.JPanel emptyPalettePanel;
+    protected javax.swing.JFileChooser fileChooserDialog;
     private javax.swing.JLabel fontSizeLabel;
     private javax.swing.JToolBar.Separator jSeparator1;
     private javax.swing.JToolBar.Separator jSeparator2;
@@ -2747,7 +2750,6 @@ public class ViewPanel extends JPanel
     private javax.swing.JLabel minusFontButton;
     protected javax.swing.JLabel newButton;
     protected javax.swing.JLabel openButton;
-    protected javax.swing.JFileChooser openChooserDialog;
     private javax.swing.JPanel paletteCardPanel;
     private javax.swing.JLabel plusFontButton;
     private javax.swing.JLabel preWorkspaceLabel;
@@ -2757,7 +2759,6 @@ public class ViewPanel extends JPanel
     private javax.swing.JPopupMenu rightClickMenu;
     private javax.swing.JPanel rightSidePanel;
     protected javax.swing.JLabel saveButton;
-    protected javax.swing.JFileChooser saveChooserDialog;
     protected javax.swing.JLabel settingsButton;
     private javax.swing.JMenuItem solutionMenuItem;
     private javax.swing.JMenu tieSubProblemSubMenu;

@@ -2,21 +2,11 @@
 
 <Form version="1.5" maxVersion="1.7" type="org.netbeans.modules.form.forminfo.JPanelFormInfo">
   <NonVisualComponents>
-    <Component class="javax.swing.JFileChooser" name="openChooserDialog">
+    <Component class="javax.swing.JFileChooser" name="fileChooserDialog">
       <Properties>
         <Property name="approveButtonToolTipText" type="java.lang.String" value="Open selection"/>
         <Property name="dialogTitle" type="java.lang.String" value="Browse Problem Location"/>
         <Property name="fileSelectionMode" type="int" value="1"/>
-      </Properties>
-      <AuxValues>
-        <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="4"/>
-      </AuxValues>
-    </Component>
-    <Component class="javax.swing.JFileChooser" name="saveChooserDialog">
-      <Properties>
-        <Property name="approveButtonToolTipText" type="java.lang.String" value="Save to selection"/>
-        <Property name="dialogTitle" type="java.lang.String" value="Save As Problem Location"/>
-        <Property name="dialogType" type="int" value="1"/>
       </Properties>
       <AuxValues>
         <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="4"/>
