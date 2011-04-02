@@ -255,84 +255,87 @@ public class Domain
 		boolean old = debug;
 		debug = newMode;
 
-		JScrollPane debugPane = getInstance().viewPanel.debugScrollPane;
-		JSplitPane split = getInstance().viewPanel.workspaceSplitPane;
-
-		if(debug)
+		if (getInstance() != null)
 		{
-			if(debugPane.getParent() != split)
-				split.add(debugPane);
-			split.setDividerLocation(100);
+			JScrollPane debugPane = getInstance().viewPanel.debugScrollPane;
+			JSplitPane split = getInstance().viewPanel.workspaceSplitPane;
 
-			try
+			if(debug)
 			{
-				// Redirect System.out/err to a stream that goes to the pane
-				final PipedOutputStream pos = new PipedOutputStream();
-				final PrintStream paneStream = new PrintStream(pos);
-				System.setOut(paneStream);
+				if(debugPane.getParent() != split)
+					split.add(debugPane);
+				split.setDividerLocation(100);
 
-				// Watch input stream (what the console was told to do) and write it to the textpane
-				final BufferedReader br = new BufferedReader(new InputStreamReader(new PipedInputStream(pos)));
-				final JTextArea debugText = getInstance().viewPanel.debugTextArea;
-				(new Thread(){
-					@Override
-					public void run()
-					{
-						try
-						{
-							while(Domain.isDebugMode())
-							{
-								try
-								{
-									debugText.append(br.readLine() + "\n");
-									debugText.setCaretPosition(debugText.getDocument().getLength());
-								}
-								catch(IOException ex)
-								{
-									Thread.sleep(10);
-								}
-							}
-						}
-						catch(InterruptedException ex)
-						{
-							Domain.logger.add(ex);
-						}
-						finally
+				try
+				{
+					// Redirect System.out/err to a stream that goes to the pane
+					final PipedOutputStream pos = new PipedOutputStream();
+					final PrintStream paneStream = new PrintStream(pos);
+					System.setOut(paneStream);
+
+					// Watch input stream (what the console was told to do) and write it to the textpane
+					final BufferedReader br = new BufferedReader(new InputStreamReader(new PipedInputStream(pos)));
+					final JTextArea debugText = getInstance().viewPanel.debugTextArea;
+					(new Thread(){
+						@Override
+						public void run()
 						{
 							try
 							{
-								br.close();
-								paneStream.close();
-								pos.close();
+								while(Domain.isDebugMode())
+								{
+									try
+									{
+										debugText.append(br.readLine() + "\n");
+										debugText.setCaretPosition(debugText.getDocument().getLength());
+									}
+									catch(IOException ex)
+									{
+										Thread.sleep(10);
+									}
+								}
 							}
-							catch(IOException ex)
+							catch(InterruptedException ex)
 							{
 								Domain.logger.add(ex);
 							}
+							finally
+							{
+								try
+								{
+									br.close();
+									paneStream.close();
+									pos.close();
+								}
+								catch(IOException ex)
+								{
+									Domain.logger.add(ex);
+								}
+							}
 						}
-					}
-				}).start();
+					}).start();
 
-				System.out.println("Sending debug output to interface");
+					System.out.println("Sending debug output to interface");
 
-				// Build info message
-				System.out.println(Domain.NAME + " " + Domain.VERSION + " " + Domain.PRE_RELEASE);
-				System.out.println("Revision " + BuildInfo.revisionNumber + ", built " + BuildInfo.timeStamp + "\n");
+					// Build info message
+					System.out.println(Domain.NAME + " " + Domain.VERSION + " " + Domain.PRE_RELEASE);
+					System.out.println("Revision " + BuildInfo.revisionNumber + ", built " + BuildInfo.timeStamp + "\n");
+				}
+				catch(IOException ex)
+				{
+					Domain.logger.add(ex);
+				}
 			}
-			catch(IOException ex)
+			else
 			{
-				Domain.logger.add(ex);
-			}
-		}
-		else
-		{
-			if(debugPane.getParent() == split)
-				split.remove(debugPane);
-			split.setDividerLocation(-1);
+				if(debugPane.getParent() == split)
+					split.remove(debugPane);
+				split.setDividerLocation(-1);
 
-			// Send console output to the normal...console
-			System.setOut(stdOut);
-			System.out.println("Sending debug output to console");
+				// Send console output to the normal...console
+				System.setOut(stdOut);
+				System.out.println("Sending debug output to console");
+			}
 		}
 
 		return old;

@@ -51,7 +51,6 @@ import marla.opedit.operation.OperationEditorException;
 import marla.opedit.operation.OperationFile;
 import marla.opedit.operation.OperationXMLEditable;
 import marla.opedit.resource.LoadSaveThread;
-import sun.security.krb5.Config;
 
 /**
  * The view of the application, which contains all user interactive components.
@@ -1107,7 +1106,10 @@ public class ViewPanel extends JPanel
 	{
 		if (currentOperation != null)
 		{
-			currentOperation.setInnerXML(operationTextPane.getText());
+			if (!currentOperation.getInnerXML().equals(operationTextPane.getText()))
+			{
+				currentOperation.setInnerXML(operationTextPane.getText());
+			}
 		}
 	}
 
