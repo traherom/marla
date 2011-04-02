@@ -216,11 +216,6 @@ public class MainFrame extends JFrame
 						}
 					}
 				}
-
-				if (!Boolean.valueOf(Configuration.getInstance().get(Configuration.ConfigType.DebugMode).toString()))
-				{
-					viewPanel.workspaceSplitPane.remove(viewPanel.debugScrollPane);
-				}
 				else
 				{
 					viewPanel.workspaceSplitPane.setDividerLocation(viewPanel.getHeight() - 150);

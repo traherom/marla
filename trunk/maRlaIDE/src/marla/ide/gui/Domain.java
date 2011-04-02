@@ -28,6 +28,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.io.PipedInputStream;
+import java.io.PipedOutputStream;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.net.HttpURLConnection;
@@ -40,8 +42,13 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
+import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
+import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
 import marla.ide.latex.LatexExporter;
 import marla.ide.problem.MarlaException;
@@ -88,6 +95,8 @@ public class Domain
 	public static boolean firstRun = false;
 	/** Domain object currently created. Only one allowed, ever */
 	public static Domain currDomain = null;
+	/** Saves the standard out stream */
+	public static final PrintStream stdOut = System.out;
 	/**
 	 * Server to send maRla exceptions to
 	 */
@@ -247,6 +256,82 @@ public class Domain
 	{
 		boolean old = debug;
 		debug = newMode;
+
+		JScrollPane debugPane = getInstance().viewPanel.debugScrollPane;
+		JSplitPane split = getInstance().viewPanel.workspaceSplitPane;
+
+		if(debug)
+		{
+			if(debugPane.getParent() != split)
+				split.add(debugPane);
+			split.setDividerLocation(100);
+
+			try
+			{
+				// Redirect System.out/err to a stream that goes to the pane
+				final PipedOutputStream pos = new PipedOutputStream();
+				final PrintStream paneStream = new PrintStream(pos);
+				System.setOut(paneStream);
+				System.out.println("Sending debug output to GUI");
+
+				// Watch input stream (what the console was told to do) and write it to the textpane
+				final BufferedReader br = new BufferedReader(new InputStreamReader(new PipedInputStream(pos)));
+				final JTextArea debugText = getInstance().viewPanel.debugTextArea;
+				(new Thread(){
+					@Override
+					public void run()
+					{
+						try
+						{
+							while(Domain.isDebugMode())
+							{
+								try
+								{
+									debugText.append(br.readLine() + "\n");
+									debugText.setCaretPosition(debugText.getDocument().getLength());
+								}
+								catch(IOException ex)
+								{
+									Thread.sleep(10);
+								}
+							}
+						}
+						catch(InterruptedException ex)
+						{
+							Domain.logger.add(ex);
+						}
+						finally
+						{
+							try
+							{
+								br.close();
+								paneStream.close();
+								pos.close();
+							}
+							catch(IOException ex)
+							{
+								Domain.logger.add(ex);
+							}
+						}
+					}
+				}).start();
+			}
+			catch(IOException ex)
+			{
+				Domain.logger.add(ex);
+			}
+		}
+		else
+		{
+			if(debugPane.getParent() == split)
+				split.remove(debugPane);
+			split.setDividerLocation(-1);
+
+			// Send console output to the normal...console
+			System.setOut(stdOut);
+			System.out.println("Sending debug output to console");
+		}
+
 		return old;
 	}
 
