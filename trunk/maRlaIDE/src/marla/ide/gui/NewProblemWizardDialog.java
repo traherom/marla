@@ -216,7 +216,7 @@ public class NewProblemWizardDialog extends EscapeDialog
         removeSubProblemButton = new javax.swing.JButton();
         dataSetsCardPanel = new javax.swing.JPanel();
         wizardLineCard4 = new javax.swing.JLabel();
-        valuesWizardLabel = new javax.swing.JLabel();
+        dataSetsWizardLabel = new javax.swing.JLabel();
         dataSetTabbedPane = new javax.swing.JTabbedPane();
         addDataSetButton = new javax.swing.JButton();
         removeDataSetButton = new javax.swing.JButton();
@@ -580,15 +580,15 @@ public class NewProblemWizardDialog extends EscapeDialog
 
         dataSetsCardPanel.setLayout(null);
 
-        wizardLineCard4.setFont(new java.awt.Font("Verdana", 0, 12));
+        wizardLineCard4.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
         wizardLineCard4.setText("______________________________________________________");
         dataSetsCardPanel.add(wizardLineCard4);
         wizardLineCard4.setBounds(10, 10, 440, 20);
 
-        valuesWizardLabel.setFont(new java.awt.Font("Verdana", 1, 12));
-        valuesWizardLabel.setText("Values");
-        dataSetsCardPanel.add(valuesWizardLabel);
-        valuesWizardLabel.setBounds(10, 10, 50, 16);
+        dataSetsWizardLabel.setFont(new java.awt.Font("Verdana", 1, 12)); // NOI18N
+        dataSetsWizardLabel.setText("Data Sets");
+        dataSetsCardPanel.add(dataSetsWizardLabel);
+        dataSetsWizardLabel.setBounds(10, 10, 160, 16);
 
         dataSetTabbedPane.setFont(new java.awt.Font("Verdana", 0, 12));
         dataSetsCardPanel.add(dataSetTabbedPane);
@@ -660,7 +660,7 @@ public class NewProblemWizardDialog extends EscapeDialog
         informationCardPanel.add(sectionLabel);
         sectionLabel.setBounds(10, 210, 51, 20);
 
-        problemNumberLabel.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        problemNumberLabel.setFont(new java.awt.Font("Verdana", 0, 12));
         problemNumberLabel.setText("Problem number:");
         informationCardPanel.add(problemNumberLabel);
         problemNumberLabel.setBounds(10, 250, 108, 20);
@@ -699,7 +699,7 @@ public class NewProblemWizardDialog extends EscapeDialog
         informationCardPanel.add(informationWizardLabel);
         informationWizardLabel.setBounds(10, 10, 180, 16);
 
-        problemConclusionLabel.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        problemConclusionLabel.setFont(new java.awt.Font("Verdana", 0, 12));
         problemConclusionLabel.setText("Problem conclusion:");
         informationCardPanel.add(problemConclusionLabel);
         problemConclusionLabel.setBounds(10, 290, 130, 20);
@@ -1713,6 +1713,7 @@ public class NewProblemWizardDialog extends EscapeDialog
     protected javax.swing.JTabbedPane dataSetTabbedPane;
     protected javax.swing.JPanel dataSetsCardPanel;
     protected javax.swing.JLabel dataSetsLabel;
+    private javax.swing.JLabel dataSetsWizardLabel;
     protected javax.swing.JPanel descriptionCardPanel;
     protected javax.swing.JLabel descriptionLabel;
     private javax.swing.JPanel descriptionPanel;
@@ -1755,7 +1756,6 @@ public class NewProblemWizardDialog extends EscapeDialog
     protected javax.swing.JPanel subProblemsScrollablePanel;
     private javax.swing.JLabel subProblemsWizardLabel;
     private javax.swing.JLabel tipTextLabel;
-    private javax.swing.JLabel valuesWizardLabel;
     protected javax.swing.JPanel welcomeCardPanel;
     protected javax.swing.JLabel welcomeLabel;
     private javax.swing.JPanel welcomePanel;

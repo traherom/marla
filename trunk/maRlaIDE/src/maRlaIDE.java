@@ -124,10 +124,6 @@ public class maRlaIDE
 		progressFrame.progressBar.setString("0%");
 		progressFrame.statusLabel.setText("Loading framework ...");
 
-		// Build info message
-		System.out.println("Starting " + Domain.NAME + " " + Domain.VERSION + " " + Domain.PRE_RELEASE);
-		System.out.println("Revision " + BuildInfo.revisionNumber + ", built " + BuildInfo.timeStamp);
-
 		progressFrame.progressBar.setValue(3);
 		progressFrame.progressBar.setString("3%");
 
