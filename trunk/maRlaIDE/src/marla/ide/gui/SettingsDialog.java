@@ -460,22 +460,23 @@ public class SettingsDialog extends EscapeDialog
 
 	private void rPathButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_rPathButtonActionPerformed
 	{//GEN-HEADEREND:event_rPathButtonActionPerformed
-		viewPanel.openChooserDialog.setDialogTitle(Configuration.getName(Configuration.ConfigType.R));
-		viewPanel.openChooserDialog.resetChoosableFileFilters();
-		viewPanel.openChooserDialog.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+		viewPanel.fileChooserDialog.setDialogTitle(Configuration.getName(Configuration.ConfigType.R));
+		viewPanel.fileChooserDialog.setDialogType(JFileChooser.OPEN_DIALOG);
+		viewPanel.fileChooserDialog.resetChoosableFileFilters();
+		viewPanel.fileChooserDialog.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
 		try
 		{
-			viewPanel.openChooserDialog.setSelectedFile(new File(Configuration.getInstance().get(Configuration.ConfigType.R).toString()));
+			viewPanel.fileChooserDialog.setSelectedFile(new File(Configuration.getInstance().get(Configuration.ConfigType.R).toString()));
 		}
 		catch (MarlaException ex) {}
 		// Display the chooser and retrieve the selected file
-		int response = viewPanel.openChooserDialog.showOpenDialog(this);
+		int response = viewPanel.fileChooserDialog.showOpenDialog(this);
 		if(response == JFileChooser.APPROVE_OPTION)
 		{
 			try
 			{
-				Configuration.getInstance().set(Configuration.ConfigType.R, viewPanel.openChooserDialog.getSelectedFile().getPath());
-				rPathTextField.setText(viewPanel.openChooserDialog.getSelectedFile().getPath());
+				Configuration.getInstance().set(Configuration.ConfigType.R, viewPanel.fileChooserDialog.getSelectedFile().getPath());
+				rPathTextField.setText(viewPanel.fileChooserDialog.getSelectedFile().getPath());
 			}
 			catch (MarlaException ex)
 			{
@@ -487,22 +488,23 @@ public class SettingsDialog extends EscapeDialog
 
 	private void latexPathButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_latexPathButtonActionPerformed
 	{//GEN-HEADEREND:event_latexPathButtonActionPerformed
-		viewPanel.openChooserDialog.setDialogTitle(Configuration.getName(Configuration.ConfigType.PdfTex));
-		viewPanel.openChooserDialog.resetChoosableFileFilters();
-		viewPanel.openChooserDialog.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+		viewPanel.fileChooserDialog.setDialogTitle(Configuration.getName(Configuration.ConfigType.PdfTex));
+		viewPanel.fileChooserDialog.setDialogType(JFileChooser.OPEN_DIALOG);
+		viewPanel.fileChooserDialog.resetChoosableFileFilters();
+		viewPanel.fileChooserDialog.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
 		try
 		{
-			viewPanel.openChooserDialog.setSelectedFile(new File(Configuration.getInstance().get(Configuration.ConfigType.PdfTex).toString()));
+			viewPanel.fileChooserDialog.setSelectedFile(new File(Configuration.getInstance().get(Configuration.ConfigType.PdfTex).toString()));
 		}
 		catch (MarlaException ex) {}
 		// Display the chooser and retrieve the selected file
-		int response = viewPanel.openChooserDialog.showOpenDialog(this);
+		int response = viewPanel.fileChooserDialog.showOpenDialog(this);
 		if(response == JFileChooser.APPROVE_OPTION)
 		{
 			try
 			{
-				Configuration.getInstance().set(Configuration.ConfigType.PdfTex, viewPanel.openChooserDialog.getSelectedFile().getPath());
-				rPathTextField.setText(viewPanel.openChooserDialog.getSelectedFile().getPath());
+				Configuration.getInstance().set(Configuration.ConfigType.PdfTex, viewPanel.fileChooserDialog.getSelectedFile().getPath());
+				rPathTextField.setText(viewPanel.fileChooserDialog.getSelectedFile().getPath());
 			}
 			catch (MarlaException ex)
 			{
@@ -514,22 +516,23 @@ public class SettingsDialog extends EscapeDialog
 
 	private void latexTemplateButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_latexTemplateButtonActionPerformed
 	{//GEN-HEADEREND:event_latexTemplateButtonActionPerformed
-		viewPanel.openChooserDialog.setDialogTitle(Configuration.getName(Configuration.ConfigType.TexTemplate));
-		viewPanel.openChooserDialog.resetChoosableFileFilters();
-		viewPanel.openChooserDialog.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+		viewPanel.fileChooserDialog.setDialogTitle(Configuration.getName(Configuration.ConfigType.TexTemplate));
+		viewPanel.fileChooserDialog.setDialogType(JFileChooser.OPEN_DIALOG);
+		viewPanel.fileChooserDialog.resetChoosableFileFilters();
+		viewPanel.fileChooserDialog.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
 		try
 		{
-			viewPanel.openChooserDialog.setSelectedFile(new File(Configuration.getInstance().get(Configuration.ConfigType.TexTemplate).toString()));
+			viewPanel.fileChooserDialog.setSelectedFile(new File(Configuration.getInstance().get(Configuration.ConfigType.TexTemplate).toString()));
 		}
 		catch (MarlaException ex) {}
 		// Display the chooser and retrieve the selected file
-		int response = viewPanel.openChooserDialog.showOpenDialog(this);
+		int response = viewPanel.fileChooserDialog.showOpenDialog(this);
 		if(response == JFileChooser.APPROVE_OPTION)
 		{
 			try
 			{
-				Configuration.getInstance().set(Configuration.ConfigType.TexTemplate, viewPanel.openChooserDialog.getSelectedFile().getPath());
-				rPathTextField.setText(viewPanel.openChooserDialog.getSelectedFile().getPath());
+				Configuration.getInstance().set(Configuration.ConfigType.TexTemplate, viewPanel.fileChooserDialog.getSelectedFile().getPath());
+				rPathTextField.setText(viewPanel.fileChooserDialog.getSelectedFile().getPath());
 			}
 			catch (MarlaException ex)
 			{
@@ -541,22 +544,23 @@ public class SettingsDialog extends EscapeDialog
 
 	private void operationsButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_operationsButtonActionPerformed
 	{//GEN-HEADEREND:event_operationsButtonActionPerformed
-		viewPanel.openChooserDialog.setDialogTitle(Configuration.getName(Configuration.ConfigType.PrimaryOpsXML));
-		viewPanel.openChooserDialog.resetChoosableFileFilters();
-		viewPanel.openChooserDialog.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+		viewPanel.fileChooserDialog.setDialogTitle(Configuration.getName(Configuration.ConfigType.PrimaryOpsXML));
+		viewPanel.fileChooserDialog.setDialogType(JFileChooser.OPEN_DIALOG);
+		viewPanel.fileChooserDialog.resetChoosableFileFilters();
+		viewPanel.fileChooserDialog.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
 		try
 		{
-			viewPanel.openChooserDialog.setSelectedFile(new File(Configuration.getInstance().get(Configuration.ConfigType.PrimaryOpsXML).toString()));
+			viewPanel.fileChooserDialog.setSelectedFile(new File(Configuration.getInstance().get(Configuration.ConfigType.PrimaryOpsXML).toString()));
 		}
 		catch (MarlaException ex) {}
 		// Display the chooser and retrieve the selected file
-		int response = viewPanel.openChooserDialog.showOpenDialog(this);
+		int response = viewPanel.fileChooserDialog.showOpenDialog(this);
 		if(response == JFileChooser.APPROVE_OPTION)
 		{
 			try
 			{
-				Configuration.getInstance().set(Configuration.ConfigType.PrimaryOpsXML, viewPanel.openChooserDialog.getSelectedFile().getPath());
-				rPathTextField.setText(viewPanel.openChooserDialog.getSelectedFile().getPath());
+				Configuration.getInstance().set(Configuration.ConfigType.PrimaryOpsXML, viewPanel.fileChooserDialog.getSelectedFile().getPath());
+				rPathTextField.setText(viewPanel.fileChooserDialog.getSelectedFile().getPath());
 				viewPanel.reloadOperations();
 			}
 			catch (MarlaException ex)
@@ -628,9 +632,10 @@ public class SettingsDialog extends EscapeDialog
 	}//GEN-LAST:event_lineWidthSpinnerStateChanged
 
 	private void customOpsBrowseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_customOpsBrowseActionPerformed
-		viewPanel.openChooserDialog.setDialogTitle(Configuration.getName(Configuration.ConfigType.UserOpsXML));
-		viewPanel.openChooserDialog.resetChoosableFileFilters();
-		viewPanel.openChooserDialog.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+		viewPanel.fileChooserDialog.setDialogTitle(Configuration.getName(Configuration.ConfigType.UserOpsXML));
+		viewPanel.fileChooserDialog.setDialogType(JFileChooser.OPEN_DIALOG);
+		viewPanel.fileChooserDialog.resetChoosableFileFilters();
+		viewPanel.fileChooserDialog.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
 		String path = customOpsTextField.getText();
 		if (!path.equals (""))
 		{
@@ -643,21 +648,21 @@ public class SettingsDialog extends EscapeDialog
 				int lastIndex = path.lastIndexOf("|");
 				path = path.substring(lastIndex + 1, path.length());
 			}
-			viewPanel.openChooserDialog.setSelectedFile(new File(path));
+			viewPanel.fileChooserDialog.setSelectedFile(new File(path));
 		}
 		else
 		{
-			viewPanel.openChooserDialog.setSelectedFile(new File(""));
-			viewPanel.openChooserDialog.setCurrentDirectory(new File(Domain.HOME_DIR));
+			viewPanel.fileChooserDialog.setSelectedFile(new File(""));
+			viewPanel.fileChooserDialog.setCurrentDirectory(new File(Domain.HOME_DIR));
 		}
 		// Display the chooser and retrieve the selected file
-		int response = viewPanel.openChooserDialog.showOpenDialog(this);
+		int response = viewPanel.fileChooserDialog.showOpenDialog(this);
 		if(response == JFileChooser.APPROVE_OPTION)
 		{
 			try
 			{
 				String userOpsText = customOpsTextField.getText();
-				String newPath = viewPanel.openChooserDialog.getSelectedFile().getPath();
+				String newPath = viewPanel.fileChooserDialog.getSelectedFile().getPath();
 
 				boolean append = false;
 				if (userOpsText.endsWith ("|"))

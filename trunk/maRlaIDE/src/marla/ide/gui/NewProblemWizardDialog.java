@@ -33,6 +33,8 @@ import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.BorderFactory;
@@ -580,17 +582,17 @@ public class NewProblemWizardDialog extends EscapeDialog
 
         dataSetsCardPanel.setLayout(null);
 
-        wizardLineCard4.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        wizardLineCard4.setFont(new java.awt.Font("Verdana", 0, 12));
         wizardLineCard4.setText("______________________________________________________");
         dataSetsCardPanel.add(wizardLineCard4);
         wizardLineCard4.setBounds(10, 10, 440, 20);
 
-        dataSetsWizardLabel.setFont(new java.awt.Font("Verdana", 1, 12)); // NOI18N
+        dataSetsWizardLabel.setFont(new java.awt.Font("Verdana", 1, 12));
         dataSetsWizardLabel.setText("Data Sets");
         dataSetsCardPanel.add(dataSetsWizardLabel);
         dataSetsWizardLabel.setBounds(10, 10, 160, 16);
 
-        dataSetTabbedPane.setFont(new java.awt.Font("Verdana", 0, 12));
+        dataSetTabbedPane.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
         dataSetsCardPanel.add(dataSetTabbedPane);
         dataSetTabbedPane.setBounds(0, 30, 460, 299);
 
@@ -605,7 +607,7 @@ public class NewProblemWizardDialog extends EscapeDialog
         dataSetsCardPanel.add(addDataSetButton);
         addDataSetButton.setBounds(285, 330, 70, 25);
 
-        removeDataSetButton.setFont(new java.awt.Font("Verdana", 0, 12));
+        removeDataSetButton.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
         removeDataSetButton.setText("Remove");
         removeDataSetButton.setToolTipText("Remove the last data set");
         removeDataSetButton.addActionListener(new java.awt.event.ActionListener() {
@@ -821,18 +823,20 @@ public class NewProblemWizardDialog extends EscapeDialog
 
 	private void browseButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_browseButtonActionPerformed
 		// Construct the folder-based open chooser dialog
-		viewPanel.openChooserDialog.setFileFilter(viewPanel.defaultFilter);
-		viewPanel.openChooserDialog.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-		viewPanel.openChooserDialog.setSelectedFile(new File(""));
-		viewPanel.openChooserDialog.setCurrentDirectory(new File(Domain.lastGoodDir));
+		viewPanel.fileChooserDialog.setDialogTitle("Browse Problem Location");
+		viewPanel.fileChooserDialog.setDialogType(JFileChooser.OPEN_DIALOG);
+		viewPanel.fileChooserDialog.setFileFilter(viewPanel.defaultFilter);
+		viewPanel.fileChooserDialog.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+		viewPanel.fileChooserDialog.setSelectedFile(new File(""));
+		viewPanel.fileChooserDialog.setCurrentDirectory(new File(Domain.lastGoodDir));
 		// Display the chooser and retrieve the selected folder
-		int response = viewPanel.openChooserDialog.showOpenDialog(this);
+		int response = viewPanel.fileChooserDialog.showOpenDialog(this);
 		if(response == JFileChooser.APPROVE_OPTION)
 		{
 			// If the user selected a folder that exists, point the problem's location to the newly selected location
-			if(viewPanel.openChooserDialog.getSelectedFile().exists())
+			if(viewPanel.fileChooserDialog.getSelectedFile().exists())
 			{
-				File file = viewPanel.openChooserDialog.getSelectedFile();
+				File file = viewPanel.fileChooserDialog.getSelectedFile();
 				if(file.isDirectory())
 				{
 					Domain.lastGoodDir = file.toString();
@@ -1048,83 +1052,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 			Domain.logger.add(ex);
 		}
 
-		if(newProblem != null)
-		{
-			repositionDataSets(problem);
-		}
-		else
-		{
-			// Set the label
-			dataSet.setFont(ViewPanel.workspaceFontBold);
-			dataSet.setText("<html>" + dataSet.getDisplayString(false) + "</html>");
-			dataSet.setSize(dataSet.getPreferredSize());
-
-			// Find somewhere it doesn't intersect with any other DataSource
-			int x = viewPanel.workspacePanel.getWidth() / 2 - dataSet.getWidth() / 2;
-			int y = viewPanel.workspacePanel.getHeight() / 3;
-
-			Component compL = viewPanel.workspacePanel.getComponentAt(x, y);
-			Component compR = viewPanel.workspacePanel.getComponentAt(x + dataSet.getWidth(), y);
-			while(compL != viewPanel.workspacePanel || compR != viewPanel.workspacePanel)
-			{
-				y += dataSet.getHeight() + 20;
-
-				compL = viewPanel.workspacePanel.getComponentAt(x, y);
-				compR = viewPanel.workspacePanel.getComponentAt(x + dataSet.getWidth(), y);
-	
-				// catch if we went all the way off the panel
-				if(compL == null || compR == null)
-					x += 30;
-			}
-
-			// Move it
-			dataSet.setLocation(x, y);
-		}
-
-		JPanel panel = createValuesTabbedPanel(dataSet);
-		dataSetTabbedPane.add(dataSet.getName(), panel);
-		dataSetTabbedPane.setSelectedIndex(dataSetTabbedPane.getTabCount() - 1);
-		int columns = dataSet.getColumnCount();
-		int rows = dataSet.getColumnLength();
-
-		// Add minimum columns to the table model
-		JTable table = ((JTable) ((JViewport) ((JScrollPane) panel.getComponent(0)).getComponent(0)).getComponent(0));
-		final ExtendedTableModel newModel = new ExtendedTableModel(dataSet);
-		newModel.addTableModelListener(new TableModelListener()
-		{
-			@Override
-			public void tableChanged(TableModelEvent evt)
-			{
-				fireTableChanged(newModel, evt);
-			}
-		});
-
-		DefaultTableColumnModel newColumnModel = new DefaultTableColumnModel();
-		for(int i = 0; i < columns; ++i)
-		{
-			newColumnModel.addColumn(new TableColumn());
-			newColumnModel.getColumn(i).setHeaderValue(dataSet.getColumn(i).getName());
-		}
-		table.setColumnModel(newColumnModel);
-
-		table.setModel(newModel);
-		table.invalidate();
-		table.getTableHeader().resizeAndRepaint();
-
-		// Wait to change the spinners until after the model is set or they will
-		// try to do stuff to the columns (they see an increase from 0 to 5)
-		((JSpinner) panel.getComponent(2)).setValue(columns);
-		((JSpinner) panel.getComponent(4)).setValue(rows);
-
-		if(dataSetTabbedPane.getTabCount() == 1)
-		{
-			removeDataSetButton.setEnabled(true);
-		}
-
-		if (editing)
-		{
-			addToRightPanel();
-		}
+		addDataSet(problem, dataSet);
 
 		addingDataSet = false;
 }//GEN-LAST:event_addDataSetButtonActionPerformed
@@ -1148,20 +1076,19 @@ public class NewProblemWizardDialog extends EscapeDialog
 				}
 				viewPanel.workspacePanel.remove(op);
 			}
+			repositionDataSets(domain.problem);
 		}
 
-		viewPanel.workspacePanel.remove(removedData);
-		viewPanel.workspacePanel.repaint();
+		if (editing)
+		{
+			viewPanel.workspacePanel.remove(removedData);
+			removeFromRightPanel();
+		}
 
 		dataSetTabbedPane.remove(dataSetTabbedPane.getSelectedIndex());
 		if(dataSetTabbedPane.getTabCount() == 0)
 		{
 			removeDataSetButton.setEnabled(false);
-		}
-
-		if (editing)
-		{
-			removeFromRightPanel();
 		}
 }//GEN-LAST:event_removeDataSetButtonActionPerformed
 
@@ -1207,194 +1134,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 }//GEN-LAST:event_closeWizardButtonActionPerformed
 
 	private void nextWizardButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nextWizardButtonActionPerformed
-		if(welcomeCardPanel.isVisible())
-		{
-			// Move to the next panel in the cards
-			nameAndLocationCardPanel.setVisible(true);
-			welcomeCardPanel.setVisible(false);
-
-			// Shift the boldness in the Steps panel to the next card
-			welcomeLabel.setFont(ViewPanel.FONT_PLAIN_12);
-			nameAndLocationLabel.setFont(ViewPanel.FONT_BOLD_12);
-
-			// Set the focus properly for the new card
-			problemNameTextField.requestFocus();
-			problemNameTextField.selectAll();
-
-			backWizardButton.setEnabled(true);
-		}
-		else if(nameAndLocationCardPanel.isVisible())
-		{
-			boolean continueAllowed = true;
-			String fileName = problemNameTextField.getText();
-			// Assuming the user didn't specify our file type, append the type
-			if(!fileName.endsWith(".marla"))
-			{
-				fileName += ".marla";
-			}
-			// Before advancing to the next card, ensure a name is given for the new problem
-			if(problemNameTextField.getText().replaceAll(" ", "").equals(""))
-			{
-				problemNameTextField.setText("New Problem");
-			}
-			File file = new File(problemLocationTextField.getText(), fileName);
-			if(!file.exists())
-			{
-				// Ensure the problem name given is a valid filename
-				try
-				{
-					FileWriter write = new FileWriter(file);
-					write.close();
-					file.delete();
-				}
-				catch(IOException ex)
-				{
-					JOptionPane.showMessageDialog(viewPanel.domain.getTopWindow(), "The problem name you have given contains characters that are\n"
-														+ "not legal in a filename. Please rename your file and avoid\n"
-														+ "using special characters.",
-												  "Invalid Filename",
-												  JOptionPane.WARNING_MESSAGE);
-
-					continueAllowed = false;
-				}
-			}
-			// Ensure the problem name given does not match an already existing file
-			if(continueAllowed && file.exists() && !newProblemOverwrite && newProblem != null)
-			{
-				int response = JOptionPane.showConfirmDialog(viewPanel.domain.getTopWindow(), "The given problem name already exists as a file\n"
-																   + "at the specified location. If you would not like to overwrite the\n"
-																   + "existing file, change the problem name or the problem location.\n"
-																   + "Would you like to overwrite the existing file?",
-															 "Overwrite Existing File",
-															 JOptionPane.YES_NO_OPTION,
-															 JOptionPane.QUESTION_MESSAGE);
-				if(response == JOptionPane.YES_OPTION)
-				{
-					newProblemOverwrite = true;
-				}
-				else
-				{
-					continueAllowed = false;
-				}
-			}
-
-			if(continueAllowed)
-			{
-				if(newProblem != null)
-				{
-					try
-					{
-						if(!file.getCanonicalPath().equals(newProblem.getFileName()))
-						{
-							newProblem.setFileName(file.getCanonicalPath());
-						}
-					}
-					catch(IOException ex)
-					{
-						Domain.logger.add(ex);
-					}
-				}
-
-				// Move to the next panel in the cards
-				descriptionCardPanel.setVisible(true);
-				nameAndLocationCardPanel.setVisible(false);
-
-				// Shift the boldness in the Steps panel to the next card
-				nameAndLocationLabel.setFont(ViewPanel.FONT_PLAIN_12);
-				descriptionLabel.setFont(ViewPanel.FONT_BOLD_12);
-
-				// Set the focus properly for the new card
-				descriptionTextArea.requestFocus();
-				descriptionTextArea.selectAll();
-			}
-			else
-			{
-				// Since continuation wasn't allowed, the user needs to correct the problem name
-				problemNameTextField.requestFocus();
-				problemNameTextField.selectAll();
-			}
-		}
-		else if(descriptionCardPanel.isVisible())
-		{
-			Problem problem = domain.problem;
-			if(newProblem != null)
-			{
-				problem = newProblem;
-			}
-			verifyDescriptionPanel(problem);
-
-			// Move to the next panel in the cards
-			subProblemsCardPanel.setVisible(true);
-			descriptionCardPanel.setVisible(false);
-
-			// Shift the boldness in the Steps panel to the next card
-			descriptionLabel.setFont(ViewPanel.FONT_PLAIN_12);
-			subProblemsLabel.setFont(ViewPanel.FONT_BOLD_12);
-
-			// Set the focus properly for the new card
-			try
-			{
-				((JTextArea) ((JViewport) ((JScrollPane) ((JPanel) subProblemPanels.get(subProblemPanels.size() - 1)).getComponent(1)).getComponent(0)).getComponent(0)).requestFocus();
-				((JTextArea) ((JViewport) ((JScrollPane) ((JPanel) subProblemPanels.get(subProblemPanels.size() - 1)).getComponent(1)).getComponent(0)).getComponent(0)).selectAll();
-				subProblemsScrollablePanel.scrollRectToVisible(new Rectangle(0, subProblemsScrollablePanel.getHeight() + 150, 1, 1));
-			}
-			catch(ArrayIndexOutOfBoundsException ex)
-			{
-			}
-		}
-		else if(subProblemsCardPanel.isVisible())
-		{
-			Problem problem = domain.problem;
-			if(newProblem != null)
-			{
-				problem = newProblem;
-			}
-			verifySubProblemsPanel(problem);
-
-			// Move to the next panel in the cards
-			dataSetsCardPanel.setVisible(true);
-			subProblemsCardPanel.setVisible(false);
-
-			tipTextLabel.setText(VALUES_TIP_TEXT);
-
-			// Shift the boldness in the Steps panel to the next card
-			subProblemsLabel.setFont(ViewPanel.FONT_PLAIN_12);
-			dataSetsLabel.setFont(ViewPanel.FONT_BOLD_12);
-		}
-		else if(dataSetsCardPanel.isVisible())
-		{
-			// Move to the next panel in the cards
-			informationCardPanel.setVisible(true);
-			dataSetsCardPanel.setVisible(false);
-
-			tipTextLabel.setText("");
-
-			// Shift the boldness in the Steps panel to the next card
-			dataSetsLabel.setFont(ViewPanel.FONT_PLAIN_12);
-			informationLabel.setFont(ViewPanel.FONT_BOLD_12);
-
-			// Set the focus properly for the new card
-			studentNameTextField.requestFocus();
-			studentNameTextField.selectAll();
-
-			nextWizardButton.setText("Finish");
-		}
-		else
-		{
-			Problem problem = domain.problem;
-			if(newProblem != null)
-			{
-				problem = newProblem;
-			}
-			verifyInfoPanel(problem);
-
-			boolean localEditing = false;
-			if(newProblem == null)
-			{
-				localEditing = true;
-			}
-			finishNewProblemWizard(localEditing);
-		}
+		goNext();
 }//GEN-LAST:event_nextWizardButtonActionPerformed
 
 	private void backWizardButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_backWizardButtonActionPerformed
@@ -1558,38 +1298,102 @@ public class NewProblemWizardDialog extends EscapeDialog
 		}
 		else if(label.isEnabled() && label == nameAndLocationLabel)
 		{
-			nextWizardButtonActionPerformed(null);
+			goNext();
 		}
 		else if(label.isEnabled() && label == descriptionLabel)
 		{
-			nextWizardButtonActionPerformed(null);
-			nextWizardButtonActionPerformed(null);
+			boolean continueAllowed = goNext();
+			if (continueAllowed)
+			{
+				continueAllowed = goNext();
+			}
 		}
 		else if(label.isEnabled() && label == subProblemsLabel)
 		{
-			nextWizardButtonActionPerformed(null);
-			nextWizardButtonActionPerformed(null);
-			nextWizardButtonActionPerformed(null);
+			boolean continueAllowed = goNext();
+			if (continueAllowed)
+			{
+				continueAllowed = goNext();
+			}
+			if (continueAllowed)
+			{
+				continueAllowed = goNext();
+			}
 		}
 		else if(label.isEnabled() && label == dataSetsLabel)
 		{
-			nextWizardButtonActionPerformed(null);
-			nextWizardButtonActionPerformed(null);
-			nextWizardButtonActionPerformed(null);
-			nextWizardButtonActionPerformed(null);
+			boolean continueAllowed = goNext();
+			if (continueAllowed)
+			{
+				continueAllowed = goNext();
+			}
+			if (continueAllowed)
+			{
+				continueAllowed = goNext();
+			}
+			if (continueAllowed)
+			{
+				continueAllowed = goNext();
+			}
 		}
 		else if(label.isEnabled() && label == informationLabel)
 		{
-			nextWizardButtonActionPerformed(null);
-			nextWizardButtonActionPerformed(null);
-			nextWizardButtonActionPerformed(null);
-			nextWizardButtonActionPerformed(null);
-			nextWizardButtonActionPerformed(null);
+			boolean continueAllowed = goNext();
+			if (continueAllowed)
+			{
+				continueAllowed = goNext();
+			}
+			if (continueAllowed)
+			{
+				continueAllowed = goNext();
+			}
+			if (continueAllowed)
+			{
+				continueAllowed = goNext();
+			}
+			if (continueAllowed)
+			{
+				continueAllowed = goNext();
+			}
 		}
 	}//GEN-LAST:event_mouseReleased
 
 	private void importDevoreButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_importDevoreButtonActionPerformed
-		Object response = JOptionPane.showInputDialog(this, "Enter the name of the Devore7 library you'd like to import:", "Devore7 Library", JOptionPane.QUESTION_MESSAGE);
+		final JPanel optionPanel = new JPanel(new GridLayout(2, 1));
+		JLabel label1 = new JLabel("Enter the name of the Devore7 library you'd like to import.");
+		JLabel label2 = new JLabel("<html><u>Click here to view Devore7 documentation.</u></html>");
+		label2.setForeground(Color.BLUE);
+		label2.addMouseListener(new MouseAdapter()
+		{
+			@Override
+			public void mouseEntered(MouseEvent evt)
+			{
+				optionPanel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+			}
+
+			@Override
+			public void mouseExited(MouseEvent evt)
+			{
+				optionPanel.setCursor(Cursor.getDefaultCursor());
+			}
+
+			@Override
+			public void mouseReleased(MouseEvent evt)
+			{
+				if (viewPanel.domain.desktop != null)
+				{
+					try
+					{
+						viewPanel.domain.desktop.browse(new URI("http://cran.fyxm.net/web/packages/Devore7/Devore7.pdf"));
+					}
+					catch(IOException ex) {}
+					catch(URISyntaxException ex) {}
+				}
+			}
+		});
+		optionPanel.add(label1);
+		optionPanel.add(label2);
+		Object response = JOptionPane.showInputDialog(this, optionPanel, "Devore7 Library", JOptionPane.QUESTION_MESSAGE);
 		if (response != null)
 		{
 			try
@@ -1607,83 +1411,8 @@ public class NewProblemWizardDialog extends EscapeDialog
 					problem = domain.problem;
 				}
 
-				if(newProblem != null)
-				{
-					repositionDataSets(problem);
-				}
-				else
-				{
-					// Set the label
-					dataSet.setFont(ViewPanel.workspaceFontBold);
-					dataSet.setText("<html>" + dataSet.getDisplayString(false) + "</html>");
-					dataSet.setSize(dataSet.getPreferredSize());
-
-					// Find somewhere it doesn't intersect with any other DataSource
-					int x = viewPanel.workspacePanel.getWidth() / 2 - dataSet.getWidth() / 2;
-					int y = viewPanel.workspacePanel.getHeight() / 3;
-
-					Component compL = viewPanel.workspacePanel.getComponentAt(x, y);
-					Component compR = viewPanel.workspacePanel.getComponentAt(x + dataSet.getWidth(), y);
-					while(compL != viewPanel.workspacePanel || compR != viewPanel.workspacePanel)
-					{
-						y += dataSet.getHeight() + 20;
-
-						compL = viewPanel.workspacePanel.getComponentAt(x, y);
-						compR = viewPanel.workspacePanel.getComponentAt(x + dataSet.getWidth(), y);
-
-						// catch if we went all the way off the panel
-						if(compL == null || compR == null)
-							x += 30;
-					}
-
-					// Move it
-					dataSet.setLocation(x, y);
-				}
-
-				JPanel panel = createValuesTabbedPanel(dataSet);
-				dataSetTabbedPane.add(dataSet.getName(), panel);
-				dataSetTabbedPane.setSelectedIndex(dataSetTabbedPane.getTabCount() - 1);
-				int columns = dataSet.getColumnCount();
-				int rows = dataSet.getColumnLength();
-
-				// Add minimum columns to the table model
-				JTable table = ((JTable) ((JViewport) ((JScrollPane) panel.getComponent(0)).getComponent(0)).getComponent(0));
-				final ExtendedTableModel newModel = new ExtendedTableModel(dataSet);
-				newModel.addTableModelListener(new TableModelListener()
-				{
-					@Override
-					public void tableChanged(TableModelEvent evt)
-					{
-						fireTableChanged(newModel, evt);
-					}
-				});
-
-				DefaultTableColumnModel newColumnModel = new DefaultTableColumnModel();
-				for(int i = 0; i < columns; ++i)
-				{
-					newColumnModel.addColumn(new TableColumn());
-					newColumnModel.getColumn(i).setHeaderValue(dataSet.getColumn(i).getName());
-				}
-				table.setColumnModel(newColumnModel);
-
-				table.setModel(newModel);
-				table.invalidate();
-				table.getTableHeader().resizeAndRepaint();
-
-				// Wait to change the spinners until after the model is set or they will
-				// try to do stuff to the columns (they see an increase from 0 to 5)
-				((JSpinner) panel.getComponent(2)).setValue(columns);
-				((JSpinner) panel.getComponent(4)).setValue(rows);
-
-				if(dataSetTabbedPane.getTabCount() == 1)
-				{
-					removeDataSetButton.setEnabled(true);
-				}
-
-				if (editing)
-				{
-					addToRightPanel();
-				}
+				problem.addData(dataSet);
+				addDataSet(problem, dataSet);
 
 				addingDataSet = false;
 			}
@@ -1770,6 +1499,268 @@ public class NewProblemWizardDialog extends EscapeDialog
     private javax.swing.JLabel wizardLineCard5;
     private javax.swing.JLabel wizardLineCard6;
     // End of variables declaration//GEN-END:variables
+
+	/**
+	 * 
+	 * @param problem
+	 * @param dataSet
+	 */
+	private void addDataSet(Problem problem, DataSet dataSet)
+	{
+		viewPanel.ensureComponentsVisible();
+		repositionDataSets(problem);
+		viewPanel.workspacePanel.repaint();
+
+		JPanel panel = createValuesTabbedPanel(dataSet);
+		dataSetTabbedPane.add(dataSet.getName(), panel);
+		dataSetTabbedPane.setSelectedIndex(dataSetTabbedPane.getTabCount() - 1);
+		int columns = dataSet.getColumnCount();
+		int rows = dataSet.getColumnLength();
+
+		// Add minimum columns to the table model
+		JTable table = ((JTable) ((JViewport) ((JScrollPane) panel.getComponent(0)).getComponent(0)).getComponent(0));
+		final ExtendedTableModel newModel = new ExtendedTableModel(dataSet);
+		newModel.addTableModelListener(new TableModelListener()
+		{
+			@Override
+			public void tableChanged(TableModelEvent evt)
+			{
+				fireTableChanged(newModel, evt);
+			}
+		});
+
+		DefaultTableColumnModel newColumnModel = new DefaultTableColumnModel();
+		for(int i = 0; i < columns; ++i)
+		{
+			newColumnModel.addColumn(new TableColumn());
+			newColumnModel.getColumn(i).setHeaderValue(dataSet.getColumn(i).getName());
+		}
+		table.setColumnModel(newColumnModel);
+
+		table.setModel(newModel);
+		table.invalidate();
+		table.getTableHeader().resizeAndRepaint();
+
+		// Wait to change the spinners until after the model is set or they will
+		// try to do stuff to the columns (they see an increase from 0 to 5)
+		((JSpinner) panel.getComponent(2)).setValue(columns);
+		((JSpinner) panel.getComponent(4)).setValue(rows);
+
+		if(dataSetTabbedPane.getTabCount() == 1)
+		{
+			removeDataSetButton.setEnabled(true);
+		}
+
+		if (editing)
+		{
+			addToRightPanel();
+		}
+	}
+
+	/**
+	 * Go to the next card panel in the wizard.
+	 */
+	protected boolean goNext()
+	{
+		if(welcomeCardPanel.isVisible())
+		{
+			// Move to the next panel in the cards
+			nameAndLocationCardPanel.setVisible(true);
+			welcomeCardPanel.setVisible(false);
+
+			// Shift the boldness in the Steps panel to the next card
+			welcomeLabel.setFont(ViewPanel.FONT_PLAIN_12);
+			nameAndLocationLabel.setFont(ViewPanel.FONT_BOLD_12);
+
+			// Set the focus properly for the new card
+			problemNameTextField.requestFocus();
+			problemNameTextField.selectAll();
+
+			backWizardButton.setEnabled(true);
+
+			return true;
+		}
+		else if(nameAndLocationCardPanel.isVisible())
+		{
+			boolean continueAllowed = true;
+			String fileName = problemNameTextField.getText();
+			// Assuming the user didn't specify our file type, append the type
+			if(!fileName.endsWith(".marla"))
+			{
+				fileName += ".marla";
+			}
+			// Before advancing to the next card, ensure a name is given for the new problem
+			if(problemNameTextField.getText().replaceAll(" ", "").equals(""))
+			{
+				problemNameTextField.setText("New Problem");
+			}
+			File file = new File(problemLocationTextField.getText(), fileName);
+			if(!file.exists())
+			{
+				// Ensure the problem name given is a valid filename
+				try
+				{
+					FileWriter write = new FileWriter(file);
+					write.close();
+					file.delete();
+				}
+				catch(IOException ex)
+				{
+					JOptionPane.showMessageDialog(viewPanel.domain.getTopWindow(), "The problem name you have given contains characters that are\n"
+														+ "not legal in a filename. Please rename your file and avoid\n"
+														+ "using special characters.",
+												  "Invalid Filename",
+												  JOptionPane.WARNING_MESSAGE);
+
+					continueAllowed = false;
+				}
+			}
+			// Ensure the problem name given does not match an already existing file
+			if(continueAllowed && file.exists() && !newProblemOverwrite && newProblem != null)
+			{
+				int response = JOptionPane.showConfirmDialog(viewPanel.domain.getTopWindow(), "The given problem name already exists as a file\n"
+																   + "at the specified location.\nWould you like to overwrite the existing file?",
+															 "Overwrite Existing File",
+															 JOptionPane.YES_NO_OPTION,
+															 JOptionPane.QUESTION_MESSAGE);
+				if(response == JOptionPane.YES_OPTION)
+				{
+					newProblemOverwrite = true;
+				}
+				else
+				{
+					continueAllowed = false;
+				}
+			}
+
+			if(continueAllowed)
+			{
+				if(newProblem != null)
+				{
+					try
+					{
+						if(!file.getCanonicalPath().equals(newProblem.getFileName()))
+						{
+							newProblem.setFileName(file.getCanonicalPath());
+						}
+					}
+					catch(IOException ex)
+					{
+						Domain.logger.add(ex);
+					}
+				}
+
+				// Move to the next panel in the cards
+				descriptionCardPanel.setVisible(true);
+				nameAndLocationCardPanel.setVisible(false);
+
+				// Shift the boldness in the Steps panel to the next card
+				nameAndLocationLabel.setFont(ViewPanel.FONT_PLAIN_12);
+				descriptionLabel.setFont(ViewPanel.FONT_BOLD_12);
+
+				// Set the focus properly for the new card
+				descriptionTextArea.requestFocus();
+				descriptionTextArea.selectAll();
+			}
+			else
+			{
+				// Since continuation wasn't allowed, the user needs to correct the problem name
+				problemNameTextField.requestFocus();
+				problemNameTextField.selectAll();
+			}
+
+			return continueAllowed;
+		}
+		else if(descriptionCardPanel.isVisible())
+		{
+			Problem problem = domain.problem;
+			if(newProblem != null)
+			{
+				problem = newProblem;
+			}
+			verifyDescriptionPanel(problem);
+
+			// Move to the next panel in the cards
+			subProblemsCardPanel.setVisible(true);
+			descriptionCardPanel.setVisible(false);
+
+			// Shift the boldness in the Steps panel to the next card
+			descriptionLabel.setFont(ViewPanel.FONT_PLAIN_12);
+			subProblemsLabel.setFont(ViewPanel.FONT_BOLD_12);
+
+			// Set the focus properly for the new card
+			try
+			{
+				((JTextArea) ((JViewport) ((JScrollPane) ((JPanel) subProblemPanels.get(subProblemPanels.size() - 1)).getComponent(1)).getComponent(0)).getComponent(0)).requestFocus();
+				((JTextArea) ((JViewport) ((JScrollPane) ((JPanel) subProblemPanels.get(subProblemPanels.size() - 1)).getComponent(1)).getComponent(0)).getComponent(0)).selectAll();
+				subProblemsScrollablePanel.scrollRectToVisible(new Rectangle(0, subProblemsScrollablePanel.getHeight() + 150, 1, 1));
+			}
+			catch(ArrayIndexOutOfBoundsException ex)
+			{
+			}
+
+			return true;
+		}
+		else if(subProblemsCardPanel.isVisible())
+		{
+			Problem problem = domain.problem;
+			if(newProblem != null)
+			{
+				problem = newProblem;
+			}
+			verifySubProblemsPanel(problem);
+
+			// Move to the next panel in the cards
+			dataSetsCardPanel.setVisible(true);
+			subProblemsCardPanel.setVisible(false);
+
+			tipTextLabel.setText(VALUES_TIP_TEXT);
+
+			// Shift the boldness in the Steps panel to the next card
+			subProblemsLabel.setFont(ViewPanel.FONT_PLAIN_12);
+			dataSetsLabel.setFont(ViewPanel.FONT_BOLD_12);
+
+			return true;
+		}
+		else if(dataSetsCardPanel.isVisible())
+		{
+			// Move to the next panel in the cards
+			informationCardPanel.setVisible(true);
+			dataSetsCardPanel.setVisible(false);
+
+			tipTextLabel.setText("");
+
+			// Shift the boldness in the Steps panel to the next card
+			dataSetsLabel.setFont(ViewPanel.FONT_PLAIN_12);
+			informationLabel.setFont(ViewPanel.FONT_BOLD_12);
+
+			// Set the focus properly for the new card
+			studentNameTextField.requestFocus();
+			studentNameTextField.selectAll();
+
+			nextWizardButton.setText("Finish");
+
+			return true;
+		}
+		else
+		{
+			Problem problem = domain.problem;
+			if(newProblem != null)
+			{
+				problem = newProblem;
+			}
+			verifyInfoPanel(problem);
+
+			boolean localEditing = false;
+			if(newProblem == null)
+			{
+				localEditing = true;
+			}
+			finishNewProblemWizard(localEditing);
+
+			return true;
+		}
+	}
 
 	/**
 	 * Adds the new data set to the right panel.
@@ -2135,29 +2126,31 @@ public class NewProblemWizardDialog extends EscapeDialog
 			public void actionPerformed(ActionEvent evt)
 			{
 				// Construct the folder-based open chooser dialog
-				viewPanel.openChooserDialog.setFileFilter(viewPanel.csvFilter);
-				viewPanel.openChooserDialog.setFileSelectionMode(JFileChooser.FILES_ONLY);
-				viewPanel.openChooserDialog.setCurrentDirectory(new File(Domain.lastGoodDir));
+				viewPanel.fileChooserDialog.setDialogTitle("Import CSV File");
+				viewPanel.fileChooserDialog.setDialogType(JFileChooser.OPEN_DIALOG);
+				viewPanel.fileChooserDialog.setFileFilter(viewPanel.csvFilter);
+				viewPanel.fileChooserDialog.setFileSelectionMode(JFileChooser.FILES_ONLY);
+				viewPanel.fileChooserDialog.setCurrentDirectory(new File(Domain.lastGoodDir));
 				if(new File(Domain.lastGoodDir).isFile())
 				{
-					viewPanel.openChooserDialog.setSelectedFile(new File(Domain.lastGoodDir));
+					viewPanel.fileChooserDialog.setSelectedFile(new File(Domain.lastGoodDir));
 				}
 				else
 				{
-					viewPanel.openChooserDialog.setSelectedFile(new File(""));
+					viewPanel.fileChooserDialog.setSelectedFile(new File(""));
 				}
 				// Display the chooser and retrieve the selected folder
-				int response = viewPanel.openChooserDialog.showOpenDialog(finalThis);
+				int response = viewPanel.fileChooserDialog.showOpenDialog(finalThis);
 				if(response == JFileChooser.APPROVE_OPTION)
 				{
 					// If the user selected a file that exists, point the problem's location to the newly selected location
-					if(viewPanel.openChooserDialog.getSelectedFile().exists())
+					if(viewPanel.fileChooserDialog.getSelectedFile().exists())
 					{
-						Domain.lastGoodDir = viewPanel.openChooserDialog.getSelectedFile().getParent();
+						Domain.lastGoodDir = viewPanel.fileChooserDialog.getSelectedFile().getParent();
 						try
 						{
 							ignoreDataChanging = true;
-							DataSet importedDataSet = DataSet.importFile(viewPanel.openChooserDialog.getSelectedFile().toString());
+							DataSet importedDataSet = DataSet.importFile(viewPanel.fileChooserDialog.getSelectedFile().toString());
 
 							// Clear existing data
 							for(int i = dataSet.getColumnCount() - 1; 0 <= i; i--)
@@ -2548,6 +2541,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 		// Use values from the New Problem Wizard to construct a new problem
 		if(newProblem != null)
 		{
+			repositionDataSets(newProblem);
 			domain.problem = newProblem;
 			newProblem = null;
 		}
@@ -2596,9 +2590,15 @@ public class NewProblemWizardDialog extends EscapeDialog
 		initializeNewProblemWizard(true);
 
 		// Transition to the values card panel
-		nextWizardButtonActionPerformed(null);
-		nextWizardButtonActionPerformed(null);
-		nextWizardButtonActionPerformed(null);
+		boolean continueAllowed = goNext();
+		if (continueAllowed)
+		{
+			continueAllowed = goNext();
+		}
+		if (continueAllowed)
+		{
+			continueAllowed = goNext();
+		}
 
 		launchNewProblemWizard();
 	}
@@ -2611,8 +2611,11 @@ public class NewProblemWizardDialog extends EscapeDialog
 		initializeNewProblemWizard(true);
 
 		// Transition to the values card panel
-		nextWizardButtonActionPerformed(null);
-		nextWizardButtonActionPerformed(null);
+		boolean continueAllowed = goNext();
+		if (continueAllowed)
+		{
+			continueAllowed = goNext();
+		}
 
 		launchNewProblemWizard();
 	}
@@ -2621,17 +2624,26 @@ public class NewProblemWizardDialog extends EscapeDialog
 	 * Assuming the New Problem Wizard is already launched, this function will
 	 * move to add a new data set in the New Problem Wizard.
 	 */
-	protected void addNewDataSet()
+	protected void addDataSet()
 	{
 		initializeNewProblemWizard(true);
 
 		// Transition to the values card panel
-		nextWizardButtonActionPerformed(null);
-		nextWizardButtonActionPerformed(null);
-		nextWizardButtonActionPerformed(null);
-		nextWizardButtonActionPerformed(null);
+		boolean continueAllowed = goNext();
+		if (continueAllowed)
+		{
+			continueAllowed = goNext();
+		}
+		if (continueAllowed)
+		{
+			continueAllowed = goNext();
+		}
+		if (continueAllowed)
+		{
+			continueAllowed = goNext();
+		}
 
-		// Add the new data set
+		// Add a new data set
 		addDataSetButtonActionPerformed(null);
 
 		launchNewProblemWizard();
@@ -2648,10 +2660,19 @@ public class NewProblemWizardDialog extends EscapeDialog
 		initializeNewProblemWizard(true);
 
 		// Transition to the values card panel
-		nextWizardButtonActionPerformed(null);
-		nextWizardButtonActionPerformed(null);
-		nextWizardButtonActionPerformed(null);
-		nextWizardButtonActionPerformed(null);
+		boolean continueAllowed = goNext();
+		if (continueAllowed)
+		{
+			continueAllowed = goNext();
+		}
+		if (continueAllowed)
+		{
+			continueAllowed = goNext();
+		}
+		if (continueAllowed)
+		{
+			continueAllowed = goNext();
+		}
 
 		if(dataSet != null)
 		{
@@ -2678,11 +2699,23 @@ public class NewProblemWizardDialog extends EscapeDialog
 		initializeNewProblemWizard(true);
 		
 		// Transition to the values card panel
-		nextWizardButtonActionPerformed(null);
-		nextWizardButtonActionPerformed(null);
-		nextWizardButtonActionPerformed(null);
-		nextWizardButtonActionPerformed(null);
-		nextWizardButtonActionPerformed(null);
+		boolean continueAllowed = goNext();
+		if (continueAllowed)
+		{
+			continueAllowed = goNext();
+		}
+		if (continueAllowed)
+		{
+			continueAllowed = goNext();
+		}
+		if (continueAllowed)
+		{
+			continueAllowed = goNext();
+		}
+		if (continueAllowed)
+		{
+			continueAllowed = goNext();
+		}
 
 		// Select the conclusion text area
 		problemConclusionTextArea.requestFocus();
@@ -2708,7 +2741,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 
 			// Set the label for the data source and get its width
 			ds.setFont(ViewPanel.workspaceFontBold);
-			ds.setText("<html>" + ds.getDisplayString(false) + "</html>");
+			ds.setText("<html>" + ds.getDisplayString(viewPanel.abbreviated) + "</html>");
 			ds.setSize(ds.getPreferredSize());
 
 			widths[i] = ds.getWidth();
