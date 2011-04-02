@@ -20,7 +20,6 @@ package marla.opedit.gui;
 
 import java.awt.Desktop;
 import java.io.File;
-import java.text.SimpleDateFormat;
 import java.util.List;
 import marla.ide.resource.Configuration;
 import marla.opedit.operation.OperationFile;
@@ -35,9 +34,9 @@ public class Domain
     /** The name of the application.*/
     public static final String NAME = "The maRla Project - Operation Editor";
     /** The version number of the application.*/
-    public static final String VERSION = "0.01";
+    public static final String VERSION = "0.1";
     /** The pre-release version name of the application.*/
-    public static final String PRE_RELEASE = "Alpha";
+    public static final String PRE_RELEASE = "Beta";
     /** The location of the application as it runs.*/
     public static final String CWD = System.getProperty("user.dir");
     /** The name of the operating system being used.*/

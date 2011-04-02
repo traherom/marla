@@ -67,7 +67,7 @@
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="editingLabel" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
-                      <Component id="editingTextField" pref="361" max="32767" attributes="0"/>
+                      <Component id="editingTextField" pref="372" max="32767" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="browseEditingButton" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
@@ -88,12 +88,12 @@
                           <Group type="102" alignment="0" attributes="0">
                               <Component id="categoryLabel" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
-                              <Component id="categoryTextField" pref="396" max="32767" attributes="0"/>
+                              <Component id="categoryTextField" pref="404" max="32767" attributes="0"/>
                           </Group>
                           <Group type="102" alignment="0" attributes="0">
                               <Component id="opsNameLabel" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
-                              <Component id="operationsNameTextField" pref="352" max="32767" attributes="0"/>
+                              <Component id="operationsNameTextField" pref="360" max="32767" attributes="0"/>
                           </Group>
                           <Group type="102" alignment="1" attributes="0">
                               <Component id="innerXmlLinkLabel" min="-2" max="-2" attributes="0"/>
@@ -128,7 +128,7 @@
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Group type="102" attributes="0">
-                              <Component id="operationsScrollPane" pref="419" max="32767" attributes="0"/>
+                              <Component id="operationsScrollPane" pref="424" max="32767" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="3" attributes="0">
                                   <Component id="addButton" alignment="3" min="-2" max="-2" attributes="0"/>
@@ -188,14 +188,14 @@
                       <Group type="102" alignment="0" attributes="0">
                           <Component id="dataCsvLabel" min="-2" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
-                          <Component id="browseDataTextField" pref="143" max="32767" attributes="0"/>
+                          <Component id="browseDataTextField" pref="153" max="32767" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="browseDataButton" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <Group type="102" alignment="0" attributes="0">
                           <Component id="displayNameLabel" min="-2" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
-                          <Component id="displayNameScrollPane" pref="215" max="32767" attributes="0"/>
+                          <Component id="displayNameScrollPane" pref="223" max="32767" attributes="0"/>
                       </Group>
                   </Group>
                   <EmptySpace max="-2" attributes="0"/>
@@ -219,7 +219,7 @@
                       <Component id="displayNameScrollPane" alignment="0" min="-2" pref="25" max="-2" attributes="1"/>
                   </Group>
                   <EmptySpace max="-2" attributes="0"/>
-                  <Component id="outputScrollPane" pref="360" max="32767" attributes="0"/>
+                  <Component id="outputScrollPane" pref="363" max="32767" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
               </Group>
           </Group>

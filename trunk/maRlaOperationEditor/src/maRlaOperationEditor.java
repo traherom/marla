@@ -49,10 +49,25 @@ public class maRlaOperationEditor
 	 */
 	public static void main(final String args[])
 	{
-		// Define UI characteristics before the applicaiton is instantiated
+		Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
+			@Override
+			public void uncaughtException(Thread t, Throwable e)
+			{
+				Domain.logger.add(e);
+			}
+		});
+		
+		// Define UI characteristics before the application is instantiated
 		try
 		{
-			UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
+			if (System.getProperty ("os.name").toLowerCase().contains ("windows"))
+			{
+				UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+			}
+			else
+			{
+				UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
+			}
 		}
 		catch(ClassNotFoundException ex)
 		{
@@ -72,7 +87,7 @@ public class maRlaOperationEditor
 		}
 
 		// Build info message
-		System.out.println("Starting " + Domain.NAME + " " + Domain.VERSION + " " + Domain.PRE_RELEASE);
+		System.out.println(Domain.NAME + " " + Domain.VERSION + " " + Domain.PRE_RELEASE);
 		System.out.println("Revision " + BuildInfo.revisionNumber + ", built " + BuildInfo.timeStamp);
 
 		Configuration.getInstance().configureAll(args);

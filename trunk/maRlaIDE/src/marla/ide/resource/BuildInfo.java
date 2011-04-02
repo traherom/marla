@@ -5,7 +5,7 @@
 			 */
 			package marla.ide.resource;
 			public class BuildInfo {
-				public static final String revisionNumber="553";
-				public static final String timeStamp="Fri, 1-April-2011 20:28:58 EDT";
+				public static final String revisionNumber="554";
+				public static final String timeStamp="Fri, 1-April-2011 20:47:43 EDT";
 			}
 		
