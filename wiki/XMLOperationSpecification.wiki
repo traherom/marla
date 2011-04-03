@@ -1,5 +1,5 @@
 #summary Covers the XML file that specifies operations for maRla
-#labels Featured
+#labels Phase-Deploy
 <wiki:toc max_depth="4" />
 Operations in maRla may be specified using an XML format. In the discussion below, attributes
 given in bold are required. A full example implementing a t-test is listed at the bottom.
