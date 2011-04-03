@@ -5,4 +5,4 @@
 
 This is to test image embedding
 
-[http://marla.googlecode.com/svn/screenshots/main_workspace.png]
+http://marla.googlecode.com/svn/wiki/screenshots/main_workspace.png
