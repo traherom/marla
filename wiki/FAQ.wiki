@@ -65,9 +65,7 @@ Common ones are the following
 Because we're awesome like that.
 
 =I want to see details as maRla works/I want want to debug an issue myself!=
-First, be sure to use the cross-platform maRlaIDE.jar file rather than the maRlaIDE.exe file.
-The executable wrapper unfortunately eats all command line output. Then run navigate 
-to wherever the `.jar` file is and run `java -jar maRlaIDE.jar --DebugMode=true`.
+Go into maRla's preferences and check the "Debug Mode" checkbox. A console with data should appear at the bottom of the window.
 
 You'll probably have more fun actually debugging it in NetBeans though. Follow the instructions
 on setup your [Building build environment]
