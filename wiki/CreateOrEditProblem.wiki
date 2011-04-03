@@ -14,7 +14,7 @@ This is what your main window should look like.
 
 ==Start the New Problem Wizard==
 
-To do this, click on the blue folder icon with the plus symbol in the top left of the main window. Alternatively, click on the File menu option just above it and select the "create new problem" option. The dialog that comes up will allow you to create a new problem.
+To do this, click on the blue folder icon with the plus symbol in the top left of the main window. Alternatively, click on the File menu option just above it and select the "New Problem..." option. The dialog that comes up will allow you to create a new problem.
 
 [http://marla.googlecode.com/svn/wiki/screenshots/new_problem_1.png]
 
@@ -58,5 +58,6 @@ These details are for the pdfLaTeX exporter, in order that your homework may be 
 
 [http://marla.googlecode.com/svn/wiki/screenshots/new_problem_8.png]
 
-
 =Editing an Existing Problem=
+
+You may edit an existing problem several ways. In the main window,to the right of the save icon, there is a button that will allow you to add a dataset. If you would like to do more, you may click on "Problem" option  in the menu list for another set of problem editing features. Don't forget to save when you are done manipulating your problem.
