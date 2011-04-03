@@ -1,5 +1,5 @@
 #summary Covers the export template XML
-#labels Featured
+#labels Phase-Deploy
 <wiki:toc max_depth="4" />
 
 = Introduction =
