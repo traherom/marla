@@ -18,16 +18,28 @@
 package marla.ide.operation;
 
 import org.jdom.Element;
-import marla.ide.problem.MarlaException;
 
 /**
+ * Base class for information requests from the user
  * @author Ryan Morehart
  */
 public abstract class OperationInformation
 {
+	/**
+	 * User-friendly prompt for this information
+	 */
 	private final String prompt;
+	/**
+	 * Key for the information, intended for internal reference
+	 */
 	private final String name;
+	/**
+	 * Parent operation that requires this operation
+	 */
 	private final Operation op;
+	/**
+	 * Type of information being asked for
+	 */
 	private final PromptType type;
 
 	/**
@@ -160,7 +172,7 @@ public abstract class OperationInformation
 		op.getQuestion(questionEl.getAttributeValue("name")).fromXmlAnswer(questionEl);
 	}
 
-	/*
+	/**
 	 * Restores the answer from the given XML element
 	 */
 	protected abstract void fromXmlAnswer(Element answerEl);

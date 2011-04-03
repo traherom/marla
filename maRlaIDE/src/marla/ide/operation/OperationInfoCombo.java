@@ -20,6 +20,7 @@ package marla.ide.operation;
 import java.util.List;
 
 /**
+ * Information with multiple options
  * @author Ryan Morehart
  */
 public abstract class OperationInfoCombo extends OperationInformation

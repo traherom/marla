@@ -44,12 +44,12 @@ import marla.ide.problem.DataColumn;
 import marla.ide.problem.DataSource;
 import marla.ide.problem.SubProblem;
 import marla.ide.r.RProcessor;
-import marla.ide.r.RProcessor.RecordMode;
 import marla.ide.r.RProcessorException;
 import marla.ide.resource.Configuration.ConfigType;
 import marla.ide.resource.ConfigurationException;
 
 /**
+ * Allows exporting of a maRla problem via an export template
  * @author Ryan Morehart
  */
 public class LatexExporter
@@ -84,14 +84,24 @@ public class LatexExporter
 	 */
 	private SubProblem currentSub = null;
 	/**
-	 * Pattern to find a single slash in latex code. Here just it's precompiled
-	 * An export will use this and the other replacement patterns a lot
+	 * Pattern to find latex special symbols and replace them. Object array
+	 * with the first element being a pattern to search for and
+	 * the second being a string to replace them with
 	 */
 	private static List<Object[]> latexReplacements = fillEscapeMap();
 	
+	/**
+	 * Generates a list of latex special symbol-regular expressions and
+	 * escape sequences to replace them with.
+	 * @return Object array with the first element being a pattern to search for
+	 *		and the second being a string to replace them with
+	 */
 	private static List<Object[]> fillEscapeMap()
 	{
 		List<Object[]> l = new ArrayList<Object[]>();
+		
+		// Must be first or it will replace the slashes
+		// introduced by later patterns
 		l.add(new Object[]{Pattern.compile("\\\\"), "\\\\backslash"});
 		l.add(new Object[]{Pattern.compile("\\$"), "\\\\$"});
 		l.add(new Object[]{Pattern.compile("%"), "\\\\%"});
@@ -364,6 +374,12 @@ public class LatexExporter
 		}
 	}
 
+	/**
+	 * Main sequence processor for export. Looks at each element in template and
+	 * passes it off to the appropriate subprocessor.
+	 * @param el XML element with sequences of commands for export
+	 * @param out Stream to write latex to. Passed on to children
+	 */
 	private void processSequenceClean(Element el, Writer out)
 	{
 		// And start looking through the template
@@ -464,6 +480,12 @@ public class LatexExporter
 		}
 	}
 
+	/**
+	 * Handles loop processing for export template, setting each in a row as current
+	 * and then passing the internal sequences off to the main sequence parser
+	 * @param el XML element containing loop settings.
+	 * @param out Stream to write latex to. Passed on to children
+	 */
 	private void processLoopClean(Element el, Writer out)
 	{
 		// Double loops not allowed.
@@ -480,6 +502,11 @@ public class LatexExporter
 		currentSub = null;
 	}
 
+	/**
+	 * Outputs the problem's designated class name.
+	 * @param el XML element containing settings
+	 * @param out Stream to write latex to. Passed on to children
+	 */
 	private void processClassClean(Element el, Writer out)
 	{
 		try
@@ -505,6 +532,12 @@ public class LatexExporter
 		}
 	}
 
+	/**
+	 * Handles starting statement output for export template. Pulls statement
+	 * from current problem or subproblem.
+	 * @param el XML element for statement. Currently not really used
+	 * @param out Stream to write latex to. Passed on to children
+	 */
 	private void processStatementClean(Element el, Writer out)
 	{
 		// Are we in a loop?
@@ -531,6 +564,13 @@ public class LatexExporter
 		}
 	}
 
+	/**
+	 * Handles solution output for export template. Determines all operations
+	 * that are part of the current subproblem or problem and outputs their summary,
+	 * in order.
+	 * @param el XML element containing any settings regarding solution
+	 * @param out Stream to write latex to. Passed on to children
+	 */
 	private void processSolutionClean(Element el, Writer out)
 	{
 		// Are we supposed to show the raw R code?
@@ -745,6 +785,12 @@ public class LatexExporter
 		return sb.toString();
 	}
 
+	/**
+	 * Handles conclusion output for export template. Outputs the current problem
+	 * or subproblem, if we're in a loop.
+	 * @param el XML element for conclusion. Currently ignored
+	 * @param out Stream to write latex to. Passed on to children
+	 */
 	private void processConclusionClean(Element el, Writer out)
 	{
 		StringBuilder sb = new StringBuilder();
@@ -765,6 +811,12 @@ public class LatexExporter
 		}
 	}
 
+	/**
+	 * Handles data output for export template, determining all of the 
+	 * starting/ending data associated with the current problem or subproblem
+	 * @param el XML element containing the information for what data to output
+	 * @param out Stream to write latex to. Passed on to children
+	 */
 	private void processDataClean(Element el, Writer out)
 	{
 		// Are we showing start or end data?
@@ -832,9 +884,9 @@ public class LatexExporter
 			}
 
 			if(isStartDS)
-				sb.append(dataToLatex("Starting Data : " + ds.getName(), ds.getColumnLength(), ds.getColumns()));
+				sb.append(dataToLatex("Starting Data : " + ds.getName(), ds.getColumns()));
 			else
-				sb.append(dataToLatex("Final Data : " + ds.getName(), ds.getColumnLength(), ds.getColumns()));
+				sb.append(dataToLatex("Final Data : " + ds.getName(), ds.getColumns()));
 		}
 
 		if(insideCenter)
@@ -852,12 +904,13 @@ public class LatexExporter
 		}
 	}
 
-	private String dataToLatex(DataSource ds)
-	{
-		return dataToLatex(ds.getName(), ds.getColumnLength(), ds.getColumns());
-	}
-
-	private String dataToLatex(String dsName, int maxLen, List<DataColumn> columns)
+	/**
+	 * Takes the given information and produces a longtable with the data. 
+	 * @param dsName Label for the table. Typically something like the data sets name
+	 * @param columns Columns of data to place into table
+	 * @return Valid latex string for a longtable holding the given data
+	 */
+	private String dataToLatex(String dsName, List<DataColumn> columns)
 	{
 		if(columns.isEmpty())
 			return "";
@@ -918,6 +971,14 @@ public class LatexExporter
 		}
 		sb.append("\\\\ \\hline \\endhead\n");
 
+		// Find the longest of the given columns
+		int maxLen = 0;
+		for(DataColumn dc : columns)
+		{
+			if(maxLen < dc.size())
+				maxLen = dc.size();
+		}
+		
 		// Data
 		for(int i = 0; i < maxLen; i++)
 		{
@@ -945,6 +1006,12 @@ public class LatexExporter
 		return sb.toString();
 	}
 
+	/**
+	 * Handles conditionals in export template. Does not actually output data
+	 * itself, merely passes the then/else block on for additional processing
+	 * @param ifEl XML element containing the information for the conditional
+	 * @param out Stream to write latex to. Passed on to children
+	 */
 	private void processIfClean(Element ifEl, Writer out)
 	{
 		// Process if questions and determine the truthiness of the statement

@@ -43,6 +43,7 @@ import marla.ide.resource.Configuration.ConfigType;
 import marla.ide.resource.ConfigurationException;
 
 /**
+ * Performs statistical operations though R as directed by an XML template
  * @author Ryan Morehart
  */
 public class OperationXML extends Operation
@@ -613,6 +614,12 @@ public class OperationXML extends Operation
 		}
 	}
 
+	/**
+	 * Main processor for a sequence of XML commands. Analyzes each in turn and
+	 * passes them off to the appropriate parser
+	 * @param proc R process to work through, passes it to children
+	 * @param compEl Element with commands to run through
+	 */
 	private void processSequence(RProcessor proc, Element compEl)
 	{
 		// Walk through each command/control structure sequentially
@@ -642,6 +649,11 @@ public class OperationXML extends Operation
 		}
 	}
 
+	/**
+	 * Passes a single R command off to the processor. 
+	 * @param proc R process to work through
+	 * @param cmdEl Element containing the R command to run
+	 */
 	private void processCmd(RProcessor proc, Element cmdEl)
 	{
 		try
@@ -659,6 +671,11 @@ public class OperationXML extends Operation
 		}
 	}
 
+	/**
+	 * Sets an R variable with the user's answer to a given prompt
+	 * @param proc R process to set variable to
+	 * @param setEl Element containing the information about set
+	 */
 	private void processSet(RProcessor proc, Element setEl)
 	{
 		// What answer are we looking for here?
@@ -714,6 +731,12 @@ public class OperationXML extends Operation
 		proc.setRecorderMode(RecordMode.DISABLED);
 	}
 
+	/**
+	 * Saves a given R variable to a column. Intended for saving the results of
+	 * a calculations
+	 * @param proc R process to pull data from
+	 * @param cmdEl Element containing the information about save
+	 */
 	private void processSave(RProcessor proc, Element cmdEl)
 	{
 		// Get the command we will execute for the value
@@ -778,6 +801,12 @@ public class OperationXML extends Operation
 		proc.setRecorderMode(RecordMode.DISABLED);
 	}
 
+	/**
+	 * Processes the same sequence of commands repeatedly, setting the given R
+	 * variables with the current state of the loop
+	 * @param proc R process to work with
+	 * @param loopEl Element containing loop information
+	 */
 	private void processLoop(RProcessor proc, Element loopEl)
 	{
 		// Make up the loop we're going to work over and pass iteration back to processSequence()
@@ -849,6 +878,12 @@ public class OperationXML extends Operation
 			throw new OperationXMLException("Loop type '" + loopType + "' not recognized.");
 	}
 
+	/**
+	 * Conditional. Based on the given expression (various kinds available),
+	 * executes either its then or else block.
+	 * @param proc R process to perform checks through
+	 * @param ifEl Element containing conditional specification
+	 */
 	private void processIf(RProcessor proc, Element ifEl)
 	{
 		// Figure out what type of if it is and check if it's true or false
@@ -915,6 +950,13 @@ public class OperationXML extends Operation
 		}
 	}
 
+	/**
+	 * Starts a plot with R and processes the sequence of commands inside. At
+	 * the end of the sequence, the plot is finished and the results saved 
+	 * as the plot for the operation. May only be executed once in an operation
+	 * @param proc R process to work get plot from
+	 * @param cmdEl Element containing plot commands
+	 */
 	private void processPlot(RProcessor proc, Element cmdEl)
 	{
 		// An operation may only have one plot in it
@@ -927,6 +969,12 @@ public class OperationXML extends Operation
 		proc.stopGraphicOutput();
 	}
 
+	/**
+	 * Terminates the operation processing, sending the given message as
+	 * an exception, likely to be shown to the user.
+	 * @param proc R process to work with if needed
+	 * @param errorEl Element containing message to pass to user
+	 */
 	private void processError(RProcessor proc, Element errorEl)
 	{
 		// The operation wants us to throw an error to the user
@@ -937,6 +985,12 @@ public class OperationXML extends Operation
 			throw new OperationXMLException("No message supplied for error");
 	}
 
+	/**
+	 * Loads a library into R. If it is not installed, it attempts to install
+	 * it automatically.
+	 * @param proc R process to load library into
+	 * @param loadEl Element containing library to load
+	 */
 	private void processLoad(RProcessor proc, Element loadEl)
 	{
 		// Find what library the operation wants to load
