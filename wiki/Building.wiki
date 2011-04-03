@@ -9,7 +9,7 @@ The following environments are recommended for building maRla. Most development 
 
 ==Windows==
   # *[http://www.oracle.com/technetwork/java/javase/downloads/index.html Java Development Kit]* v1.6+
-  # [http://netbeans.org/downloads/index.html NetBeans] v6.9.1+
+  # [http://netbeans.org/downloads/index.html NetBeans] v7.0+
   # [http://launch4j.sourceforge.net/ launch4j] v3.0.2
     * Must be installed to `C:\Program Files\launch4j`
     * If moved, modifications to [http://code.google.com/p/marla/source/browse/trunk/maRlaIDE/build.xml build.xml] will be needed. See the launch4j task definition in that file
@@ -20,7 +20,7 @@ The following environments are recommended for building maRla. Most development 
 ==Linux==
 Your distribution may have packages for many of these items:
   # *[http://www.oracle.com/technetwork/java/javase/downloads/index.html Java Development Kit]* v1.6+
-  # [http://netbeans.org/downloads/index.html NetBeans] v6.9.1+
+  # [http://netbeans.org/downloads/index.html NetBeans] v7.0+
   # [http://launch4j.sourceforge.net/ launch4j] v3.0.2
     * Must be installed to `/opt/launch4j/`
     * If moved, modifications to [http://code.google.com/p/marla/source/browse/trunk/maRlaIDE/build.xml build.xml] will be needed. See the launch4j task definition in that file
@@ -28,7 +28,7 @@ Your distribution may have packages for many of these items:
     * After install, ensure the directory with `makensis` on the `PATH`
 
 ==Mac OSX==
-TBD
+TBD. Largely similar to Linux though.
 
 =Getting the source=
 Instructions for getting the maRla source code are available under the [http://code.google.com/p/marla/source/checkout Source] tab.
