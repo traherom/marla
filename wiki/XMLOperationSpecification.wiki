@@ -1,7 +1,8 @@
 #summary Covers the XML file that specifies operations for maRla
 #labels Featured
 <wiki:toc max_depth="4" />
-Operations in maRla may be specified using an XML format. In the discussion below, attributes given in bold are required. A full example implementing a t-test is listed at the bottom.
+Operations in maRla may be specified using an XML format. In the discussion below, attributes
+given in bold are required. A full example implementing a t-test is listed at the bottom.
 
 = Operation =
 {{{
@@ -9,7 +10,8 @@ Operations in maRla may be specified using an XML format. In the discussion belo
 }}}
 Each `<operation />` takes a name that will be displayed to the user and can be used to
 create that operation. It must be unique. If multiple with the same name exist an
-exception will be thrown. If an operation is going to output a plot, it must have `plot="true"` set as well. If an operation should not appear on the side panel, set `list="false"`.
+exception will be thrown. If an operation is going to output a plot, it must
+have `plot="true"` set as well. If an operation should not appear on the side panel, set `list="false"`.
 
 Attributes supported:
   * *`name`* - Arbitary name of the operation. Must be unique within the XML file
@@ -17,7 +19,7 @@ Attributes supported:
   * `category` - Specifies the category this operation falls under. Arbitrary string.
   * `list` - Specifies if this operation is listed under normal displays. Maybe to set to `true` or `false`. Default is `true`.
 
-== Queries ==
+== Information Prompts ==
 {{{
 <query type="column|checkbox|string|numeric|combo" [column_type="all|numeric|string"] name="internal name" prompt="User prompt" />
 }}}
@@ -29,15 +31,19 @@ Attributes supported:
   * *`name`* - A unique name to identify the query by, may not be used by any other `query` in the operation.
   * *`prompt`* - Any arbitrary string to display to the user.
   * *`type`* - One of the following:
-    * `column` - Presents the user with a list of the parent columns. `column_type` must be given to specify which columns to display.
     * `checkbox` - Simple checkbox that the user may select
+    * `combo` - Operation-specified selectable list. See [XMLOperationSpecification#Combo] for detailed information
+    * `column` - Presents the user with a list of the parent columns. `column_type` must be given to specify which columns to display.
+	* `fixed` - Query with a single answer. Intened for user informational purposes (IE, so they know a parameter you will be using). Must specify a `value`
+    * `numeric` - Arbitrary user-entered number. May specify a minimum or maximum through `min` and `max`, both of which are optional
     * `string` - Arbitrary user-entered string
-    * `numeric` - Arbitrary user-entered number
-    * `combo` - Operation-specified selectable list. See [XMLOperationSpecification#Combo]
   * `column_type` - One of the following:
     * `all` - All parent columns will be selectable
     * `numeric` - All numeric parent columns
     * `string` - All string parent columns
+  * `min` - Minimum value for a numeric prompt
+  * `max` - Maximum value for a numeric prompt
+  * `value` - Required by `fixed` query types, specifies the answer
 
 === Combo ===
 A column type allows the selection of one of the columns in the parent data set and/or
@@ -53,11 +59,11 @@ The user's response will be returned back and saved under the name given.
 
 == Dynamic Name ==
 {{{
-<longname>Specification</longname>
+<displayname>Specification</displayname>
 }}}
 Operations may have a name which changes based on what it is actually doing. For example, an operation which adds a user-specified value to a given column might be called "Add" but be displayed as "ColName + 5." This behavior is specified by the `<longname />` element.
 
-The main `longname` element takes no attributes. Inside it may have verbatim text--which will be copied as-is--or `<response />` elements. These may be intermixed freely as desired.
+The main `displayname` element takes no attributes. Inside it may have verbatim text--which will be copied as-is--or `<response />` elements. These may be intermixed freely as desired.
 
 An example of the add operation discussed above:
 {{{
@@ -65,7 +71,7 @@ An example of the add operation discussed above:
   <query type="column" name="col" prompt="Column?" />
   <query type="numeric" name="val" prompt="Add" />
 
-  <longname><response name="col" default="Col" /> + <response name="val" default="X" /></longname>
+  <displayname><response name="col" default="Column" /> + <response name="val" default="x" /></displayname>
 
   <computation>
     <!-- ...operations to perform addition... -->
@@ -90,7 +96,6 @@ Supported attributes:
   <if />
   <loop />
   <set />
-  <copy />
   <error />
   <save />
   <plot />
@@ -106,7 +111,7 @@ The simplest computation element is the command. A `<cmd />` takes a single R co
 it. An exception will be thrown if more than one command is placed here. If a newline is needed
 in a string then use `\n`, not a hard line break.
 
-=== Set ===
+=== Setting Variables From User Answers ===
 {{{
 <set rvar="R variable name" name="query name" [use="name|values"] />
 }}}
@@ -132,7 +137,7 @@ For example, to ask a user to select a column and then save the values for use:
 
 === Loops ===
 {{{
-<loop type="parent|numeric|string" [index_var="R variable name"] [key_var="R variable name"]    [value_var="R variable name"] [loop_var="R expression"]>
+<loop type="parent|numeric|string" [index_var="R variable name"] [key_var="R variable name"] [value_var="R variable name"] [loop_var="R expression"]>
   ...
 </loop>
 }}}
@@ -143,14 +148,14 @@ Attributes supported:
     * `parent` - Loop over every column in the parent data
     * `numeric` - Iterate over every element of the vector given by `loop_var`, processing them as numeric values
     * `string` - Iterate over every element of the vector given by `loopVar`, processing them as string values
-  * `loop_var` - If using one of the array loop types, this specifies an R statement that generates the vector to loop over
+  * `loop_var` - If using `numeric` or `string` loop types, this specifies an R statement that generates the vector to loop over
   * `index_var` - Loop number the loop is on (1 based)
-  * `key_var` - For parent loops, gives the name of the current column. For array loops it is the same as indexVar
-  * `value_var` - For parent loops, gives the values in the current column. For array loops it gives the current value in the array
+  * `key_var` - For `parent` loops, gives the name of the current column. For array loops it is the same as indexVar
+  * `value_var` - For `parent` loops, gives the values in the current column. For array loops it gives the current value in the array
 
 === Conditionals ===
 {{{
-<if [expr="<R expression>"] [vartype="<type>"] [rvar="<R variable>"] [colexists="<column name>"]>
+<if [expr="R expression"] [vartype="type"] [rvar="R variable"] [colexists="column name"]>
   <then>...</then>
   <else>...</else>
 </if>
@@ -164,17 +169,6 @@ Supported attributes:
   * `rvar` - Gives the R variable which should have its type examined
   * `expr` - R expression to evaluate. Must evaluate to a single TRUE or FALSE value and be only a single statement. If more complexity is needed, save the result to a variable and give that as the expression.
   * `colexists` - Evaluates to true if a column with the given name exists
-
-=== Copy ===
-{{{
-<copy [all="true|false"] [column="column name"] [r_column="R expression"] />
-}}}
-Copies the give column from the parent into the result for the operation. If `all="true"` is specified, copies all columns from the parent. The copied column will use the same name as the parent. A column with the same name must not already exist, although once the copy is done other elements may modify it.
-
-Supported attributes:
-  * *`column`* - Specifies a static name for the column to copy
-  * *`r_column`* - Specifies an R expression which returns a string to use as the column to copy
-  * `all` - Boolean value which specifies if all parent columns should be copied. Must be `true` or `false`. Defaults to `false`. If given, `column`/`r_column` are ignored.
 
 === Error Messages ===
 {{{
@@ -205,7 +199,7 @@ Example:
 
 === Library Loading ===
 {{{
-<load [library="<library>"] [r_library="<R variable>"] />
+<load [library="library"] [r_library="R variable"] />
 }}}
 Loads the given library into R. If the library is not installed an attempt is made to install it. This should be used in
 preference to something like `<cmd>library(<lib>)</cmd>`.
@@ -216,7 +210,7 @@ Attributes supported:
 
 === Saving Results ===
 {{{
-<save [type="numeric|string|auto"] [column="<Column name>"] [r_column="<R command>"]>R command</save>
+<save [type="numeric|string|auto"] [column="Column name"] [r_column="R command"]>R command</save>
 }}}
 To save the final values for the computation, `<save />` elements may be specified. The value saved is given by the single R command inside the save element.
 
@@ -243,127 +237,4 @@ For example:
 A single `<plot />` element is allowed in an operation. A plot creates a new device and commands may be placed inside may draw onto it. Commands should not manually change the device or close it, that will be taken care of by the plot. A plot takes no attributes but allows any of the other elements to be place inside it, just as with the main computation section.
 
 = Example =
-Below is an example of implementing a t-test:
-{{{
-<?xml version="1.0" encoding="UTF-8" ?>
-<operations>
-  <operation name="t-test">
-    <query type="checkbox" prompt="Is your data normal?" name="normal" />
-  
-    <computation>
-      <!-- Run t test on each column and save, plus prepare the top row -->
-      <cmd>t = list()</cmd>
-      <loop type="parent" valueVar="col" nameVar="colName" indexVar="i">
-        <if type="vartype" rvar="col" expected="numeric">
-          <then>
-            <cmd>t[[i]] = t.test(col)</cmd>
-            <save type="string" column="Column">colName</save>
-          </then>
-        </if>
-      </loop>
-
-      <!-- Save each t.test result -->
-      <loop type="numeric_array" loopVar="1:length(t)" indexVar="i">
-        <save type="numeric" column="t">t[[i]]$statistic</save>
-        <save type="numeric" column="DF">t[[i]]$parameter</save>
-        <save type="numeric" column="P-Value">t[[i]]$p.value</save>
-        <save type="numeric" column="Mean">t[[i]]$estimate</save>
-        <save type="numeric" column="Lower CI">t[[i]]$conf.int[1]</save>
-        <save type="numeric" column="Upper CI">t[[i]]$conf.int[2]</save>
-        <save type="numeric" column="alpha">attr(t[[i]]$conf.int, 'conf.level')</save>
-      </loop>
-    </computation>
-  </operation>
-</operations>
-}}}
-
-If we have the dataset:
-|| "Import.me" || "Column." || "Hello" ||
-|| 10 || 20 || 30 ||
-|| 11 || 21 || 31 ||
-|| 12 || 22 || 32 ||
-|| 13 || 23 || 33 ||
-
-The resultant operation does the following internally:
-{{{
-run:
-> t = list()
-> colName="Import.me"
-> i=1.0
-> col = c(10.0, 11.0, 12.0, 13.0 )
-> t[[i]] = t.test(col)
-> colName
-[1] "Import.me"
-> colName="Column."
-> i=2.0
-> col = c(20.0, 21.0, 22.0, 23.0 )
-> t[[i]] = t.test(col)
-> colName
-[1] "Column."
-> colName="Hello"
-> i=3.0
-> col = c(30.0, 31.0, 32.0, 33.0 )
-> t[[i]] = t.test(col)
-> colName
-[1] "Hello"
-> i=1.0
-> t[[i]]$statistic
-       t 
-17.81572 
-> t[[i]]$parameter
-df 
- 3 
-> t[[i]]$p.value
-[1] 0.0003856172
-> t[[i]]$estimate
-mean of x 
-     11.5 
-> t[[i]]$conf.int[1]
-[1] 9.44574
-> t[[i]]$conf.int[2]
-[1] 13.55426
-> attr(t[[i]]$conf.int, 'conf.level')
-[1] 0.95
-> i=2.0
-> t[[i]]$statistic
-       t 
-33.30766 
-> t[[i]]$parameter
-df 
- 3 
-> t[[i]]$p.value
-[1] 5.948823e-05
-> t[[i]]$estimate
-mean of x 
-     21.5 
-> t[[i]]$conf.int[1]
-[1] 19.44574
-> t[[i]]$conf.int[2]
-[1] 23.55426
-> attr(t[[i]]$conf.int, 'conf.level')
-[1] 0.95
-> i=3.0
-> t[[i]]$statistic
-       t 
-48.79959 
-> t[[i]]$parameter
-df 
- 3 
-> t[[i]]$p.value
-[1] 1.894812e-05
-> t[[i]]$estimate
-mean of x 
-     31.5 
-> t[[i]]$conf.int[1]
-[1] 29.44574
-> t[[i]]$conf.int[2]
-[1] 33.55426
-> attr(t[[i]]$conf.int, 'conf.level')
-[1] 0.95
-}}}
-
-And the final result is:
-|| Column || t || DF || P-Value || Mean || Lower CI || Upper CI || alpha ||
-|| "Import.me" || 17.81572 || 3.0 || 3.856172E-4 || 11.5 || 9.44574 || 13.55426 || 0.95 ||
-|| "Column." || 33.30766 || 3.0 || 5.948823E-5 || 21.5 || 19.44574 || 23.55426 || 0.95 ||
-|| "Hello" || 48.79959 || 3.0 || 1.894812E-5 || 31.5 || 29.44574 || 33.55426 || 0.95 ||
+Good, working examples of operations are available at [http://code.google.com/p/marla/source/browse/trunk/maRlaIDE/test/ops.xml opx.xml] in the repository.

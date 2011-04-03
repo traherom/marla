@@ -8,13 +8,13 @@ The LaTeX export template format is essentially a LaTeX document with markers sp
 The root element is a `<template />` that takes no attributes. From there any of the following elements may be included:
 
 = Elements =
-== Name ==
+== Creator Name ==
 {{{
 <name />
 }}}
 Name of the creator of the document.
 
-== Class ==
+== Class Name ==
 {{{
 <class type="short|long" />
 }}}
@@ -23,35 +23,30 @@ Name of the class this problem is for. Classes may be given either short names (
 Supported attributes:
   * *`type`* - Specifies the type of class name to substitute in. May be `short` or `long`
 
-== Chapter ==
+== Book Information ==
+=== Chapter ===
 {{{
 <chapter />
 }}}
 Chapter this problem comes from.
 
-== Section ==
+=== Section ===
 {{{
 <section />
 }}}
 Chapter section this problem comes from.
 
-== Problem Number ==
+=== Problem Number ===
 {{{
 <probnum />
 }}}
 This problem's problem number in the section/chapter. 
 
-== Statement ==
+== Problem Statement ==
 {{{
 <statement />
 }}}
 Description of the problem from the book, as entered in the problem wizard. If done outside a loop (see [ExportTemplateXML#Loop]), this gives the main problem statement. If done inside a loop, returns the current subproblem's problem statement.
-
-== Solution ==
-{{{
-<solution />
-}}}
-R code to solve the problem. If done outside a loop (see [ExportTemplateXML#Loop]), this creates Sweave blocks for every operation in the problem. If done inside a loop, creates a Sweave block for the current subproblem's designated solution.
 
 == Data ==
 {{{
@@ -62,15 +57,30 @@ Outputs the specified data as a formatted LaTeX table. If done outside a loop, t
 Supported attributes:
   * *`type`* - Whether to show the starting or ending data. May be `start` or `end`
 
-== Loop ==
+== Solution Steps ==
+{{{
+<solution />
+}}}
+R code to solve the problem. If done outside a loop (see [ExportTemplateXML#Loop]), this summarizes every operation in the problem. If done inside a loop, summarizes only those operations denoted as in the "solution" to the current subproblem. Between each operation any associated remarks are interleaved.
+
+== Problem Conclusions ==
+{{{
+<conclusion />
+}}}
+Outputs the user-entered conclusion to a sequence of solution steps. If done outside a loop, this will display the problem conclusion. If done in a loop, the conclusion for the current subproblem is output.
+
+Supported attributes:
+  * *`type`* - Whether to show the starting or ending data. May be `start` or `end`
+  
+== Loops ==
 {{{
 <loop type="subproblem">...</loop>
 }}}
 Loops over each of the subproblems. Allows their individual statements and solutions to be examined. See [ExportTemplateXML#Statement] and [ExportTemplateXML#Solution].
 
-== Conditional ==
+== Conditionals ==
 {{{
-<if has_subproblems="true|false">
+<if [has_subproblems="true|false"] [has_conclsion="true|false"]>
   <then>...</then>
   <else>...</else>
 </if>
@@ -79,7 +89,8 @@ Loops over each of the subproblems. Allows their individual statements and solut
 Allows parts of the template to be used only conditionally. If the expression in the `<if>` is true, then the LaTeX template within the `<then>` block is processed. If it is false, then the `<else>` block is used. Either block may be left off if not needed.
 
 Attributes supported:
-  * *`has_subproblems`* - Checks if the problem being exported contains subproblems. May be `true` or `false`
+  * `has_subproblems` - Checks if the problem being exported contains subproblems. May be `true` or `false`
+  * `has_conclusion` - Checks if the problem or current subproblem (depending on if in a loop or not) contains a conclusion. May be `true` or `false`
 
 = Example = 
 A complete, working example may be viewed at [http://code.google.com/p/marla/source/browse/trunk/maRlaIDE/test/export_template.xml export_template.xml]
