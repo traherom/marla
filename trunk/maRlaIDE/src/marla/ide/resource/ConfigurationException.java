@@ -41,13 +41,21 @@ public class ConfigurationException extends MarlaException
 		this.type = type;
 	}
 
+	/**
+	 * Returns a "friendly" string for the configuration setting
+	 * @return String intended for display to user
+	 */
 	public String getName()
 	{
 		return Configuration.getName(type);
 	}
 
-	public void setOption(String newPath)
+	/**
+	 * Sets the configuration option to the given value 
+	 * @param newVal New value for the configuration option
+	 */
+	public void setOption(String newVal)
 	{
-		Configuration.getInstance().set(type, newPath);
+		Configuration.getInstance().set(type, newVal);
 	}
 }

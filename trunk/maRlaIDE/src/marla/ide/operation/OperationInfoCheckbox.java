@@ -21,6 +21,7 @@ import org.jdom.Element;
 import marla.ide.problem.InternalMarlaException;
 
 /**
+ * Binary selection information 
  * @author Ryan Morehart
  */
 public class OperationInfoCheckbox extends OperationInformation

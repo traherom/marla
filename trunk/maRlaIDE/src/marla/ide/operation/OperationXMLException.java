@@ -17,8 +17,6 @@
  */
 package marla.ide.operation;
 
-import marla.ide.operation.OperationException;
-
 /**
  * Thrown when an error occurs within XML operations, often due to improper XML
  * specification.

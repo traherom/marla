@@ -21,6 +21,7 @@ import org.jdom.Element;
 import marla.ide.problem.InternalMarlaException;
 
 /**
+ * Single-answer, non-changeable prompt
  * @author Ryan Morehart
  */
 public class OperationInfoFixed extends OperationInformation

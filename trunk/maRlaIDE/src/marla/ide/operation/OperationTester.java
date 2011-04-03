@@ -28,6 +28,8 @@ import marla.ide.r.RProcessor.RecordMode;
 import marla.ide.resource.Configuration;
 
 /**
+ * Quick command-line interface for testing operations. Largely supplanted by
+ * GUI operation editor, but required info filler is useful
  * @author Ryan Morehart
  */
 public class OperationTester
@@ -46,12 +48,12 @@ public class OperationTester
 
 			// Create test dataset from a CSV
 			DataSet testData = null;
-			RecordMode prevMode = proc.setDebugMode(RecordMode.DISABLED);
+			RecordMode prevMode = RProcessor.setDebugMode(RecordMode.DISABLED);
 			if(args.length < 2)
 				testData = DataSet.importFile("test.csv");
 			else
 				testData = DataSet.importFile(args[1]);
-			proc.setDebugMode(prevMode);
+			RProcessor.setDebugMode(prevMode);
 
 			// Choose operation
 			Operation op = null;
@@ -84,11 +86,11 @@ public class OperationTester
 				fillRequiredInfo(op);
 
 			// Fix cache (force so that we can show the full R log
-			proc.setDebugMode(RecordMode.FULL);
+			RProcessor.setDebugMode(RecordMode.FULL);
 			System.out.println("------- Debug Log --------");
 			op.checkCache();
 			System.out.println("--------------------------\n");
-			proc.setDebugMode(RecordMode.DISABLED);
+			RProcessor.setDebugMode(RecordMode.DISABLED);
 			
 			// Run against it
 			System.out.println("------- R commands -------");

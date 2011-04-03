@@ -22,6 +22,8 @@ import org.jdom.Element;
 import marla.ide.problem.InternalMarlaException;
 
 /**
+ * String prompt for the user. Freely entered, although may be check by a 
+ * regular expression
  * @author Ryan Morehart
  */
 public class OperationInfoString extends OperationInformation

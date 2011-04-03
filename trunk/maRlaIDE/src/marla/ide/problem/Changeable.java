@@ -18,6 +18,7 @@
 package marla.ide.problem;
 
 /**
+ * Denotes an object which can be marked as "unsaved"
  * @author Ryan Morehart
  */
 public interface Changeable

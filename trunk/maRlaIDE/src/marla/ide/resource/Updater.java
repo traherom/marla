@@ -28,6 +28,7 @@ import org.apache.commons.io.IOUtils;
 import marla.ide.problem.MarlaException;
 
 /**
+ * Checks if maRla should be updated
  * @author Ryan Morehart
  */
 public class Updater implements Runnable
@@ -41,6 +42,10 @@ public class Updater implements Runnable
 	 */
 	private static boolean hasExited = false;
 
+	/**
+	 * Creates a new updater pointed at the given update server 
+	 * @param updateLocation URL which contains the current revision number
+	 */
 	private Updater(String updateLocation)
 	{
 		updateURL = updateLocation;
@@ -117,6 +122,9 @@ public class Updater implements Runnable
 		}
 	}
 
+	/**
+	 * Downloads update file and runs it once maRla exits
+	 */
 	@Override
 	public void run()
 	{

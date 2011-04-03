@@ -17,12 +17,11 @@
  */
 package marla.ide.operation;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.jdom.Element;
 import marla.ide.problem.InternalMarlaException;
 
 /**
+ * Numeric information prompt
  * @author Ryan Morehart
  */
 public class OperationInfoNumeric extends OperationInformation
@@ -145,11 +144,21 @@ public class OperationInfoNumeric extends OperationInformation
 			return false;
 	}
 
+	/**
+	 * Returns the minimum value this prompt will accept. If there is none, returns
+	 * Double.MIN_VALUE
+	 * @return Minimum value for user answer
+	 */
 	public double getMin()
 	{
 		return min;
 	}
 
+	/**
+	 * Returns the maximum value this prompt will accept. If there is none, returns
+	 * Double.MAX_VALUE
+	 * @return Maximum value for user answer
+	 */
 	public double getMax()
 	{
 		return max;

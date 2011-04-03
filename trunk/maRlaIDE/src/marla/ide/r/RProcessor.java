@@ -31,6 +31,7 @@ import marla.ide.resource.Configuration.ConfigType;
 import marla.ide.resource.ConfigurationException;
 
 /**
+ * Interfaces with R through the command line interface
  * @author Ryan Morehart
  */
 public final class RProcessor

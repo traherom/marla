@@ -23,11 +23,19 @@ import org.jdom.Element;
 import marla.ide.problem.InternalMarlaException;
 
 /**
+ * Combo selection that is a fixed set of options (vs dynamically found
+ * from the parent column or such).
  * @author Ryan Morehart
  */
 public class OperationInfoFixedOptionCombo extends OperationInfoCombo
 {
+	/**
+	 * Options that are allowed for this combo information
+	 */
 	private final List<String> options;
+	/**
+	 * Selected answer
+	 */
 	private String answer = null;
 
 	/**

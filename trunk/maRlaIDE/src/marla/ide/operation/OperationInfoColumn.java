@@ -27,6 +27,8 @@ import marla.ide.problem.InternalMarlaException;
 import marla.ide.problem.MarlaException;
 
 /**
+ * Gathers a column name from the user, presenting only columns that match the
+ * operation-specified parameters
  * @author Ryan Morehart
  */
 public class OperationInfoColumn extends OperationInfoCombo

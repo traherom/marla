@@ -55,6 +55,8 @@ import marla.ide.r.RProcessor.RecordMode;
 import marla.ide.r.RProcessorException;
 
 /**
+ * Configures most aspects of maRla by calling out to the appropriate settings
+ * methods in other classes
  * @author Ryan Morehart
  */
 public class Configuration
@@ -848,6 +850,11 @@ public class Configuration
 		return false;
 	}
 
+	/**
+	 * Looks for R in typical binary locations on Windows, Linux, and OSX. Once
+	 * located, it sets the correct values
+	 * @return true if R is found, false otherwise
+	 */
 	private static boolean findAndSetR()
 	{
 		List<String> possibilities = findFile("R(\\.exe)?", "R.*|bin|usr|local|lib|Program Files.*|x64|i386|Library|Frameworks", null);
@@ -879,6 +886,12 @@ public class Configuration
 		return false;
 	}
 
+	/**
+	 * Looks for primary operation XML file in typical install locations
+	 * on Windows, Linux, and OSX, as well as close to the run directory. Once
+	 * located, it sets the correct values
+	 * @return true if ops XML is found, false otherwise
+	 */
 	private static boolean findAndSetOpsXML()
 	{
 		List<String> possibilities = findFile("ops\\.xml", "config|xml|test|etc|ma[rR]la|Program Files.*", null);
@@ -911,6 +924,12 @@ public class Configuration
 		return false;
 	}
 
+	/**
+	 * Looks for Latex template in typical install locations on Windows,
+	 * Linux, and OSX, as well as close to the working directory. Once
+	 * located, it sets the correct values
+	 * @return true if template is found, false otherwise
+	 */
 	private static boolean findAndSetLatexTemplate()
 	{
 		List<String> possibilities = findFile("export_template\\.xml", "config|xml|test|etc|ma[rR]la|Program Files.*", null);
@@ -937,6 +956,11 @@ public class Configuration
 		return false;
 	}
 
+	/**
+	 * Looks for pdfTeX in typical binary locations on Windows, Linux, and OSX. Once
+	 * located, it sets the correct values
+	 * @return true if pdfTeX is found, false otherwise
+	 */
 	private static boolean findAndSetPdfTex()
 	{
 		List<String> possibilities = findFile("pdf(la)?tex(\\.exe)?", "bin|usr|Program Files.*|.*[Tt][Ee][Xx].*|local|20[0-9]{2}|.*darwin|Contents|Resources|Portable.*", null);
@@ -1069,6 +1093,10 @@ public class Configuration
 		}
 	}
 
+	/**
+	 * Gets the current error server report URL from the settings page. 
+	 * @return true if server is found, false otherwise
+	 */
 	private static boolean retreiveAndSetErrorServer()
 	{
 		try
