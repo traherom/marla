@@ -237,4 +237,4 @@ For example:
 A single `<plot />` element is allowed in an operation. A plot creates a new device and commands may be placed inside may draw onto it. Commands should not manually change the device or close it, that will be taken care of by the plot. A plot takes no attributes but allows any of the other elements to be place inside it, just as with the main computation section.
 
 = Example =
-Good, working examples of operations are available at [http://code.google.com/p/marla/source/browse/trunk/maRlaIDE/test/ops.xml opx.xml] in the repository.
+Good, working examples of operations are available at [http://code.google.com/p/marla/source/browse/trunk/maRlaIDE/test/ops.xml ops.xml] in the repository.
