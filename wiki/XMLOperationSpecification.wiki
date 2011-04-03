@@ -14,7 +14,7 @@ exception will be thrown. If an operation is going to output a plot, it must
 have `plot="true"` set as well. If an operation should not appear on the side panel, set `list="false"`.
 
 Attributes supported:
-  * *`name`* - Arbitary name of the operation. Must be unique within the XML file
+  * *`name`* - Arbitrary name of the operation. Must be unique within the XML file
   * `plot` - Specifies if the operation will produce a plot. May be set to `true` or `false`. Default is `false`.
   * `category` - Specifies the category this operation falls under. Arbitrary string.
   * `list` - Specifies if this operation is listed under normal displays. Maybe to set to `true` or `false`. Default is `true`.
@@ -86,7 +86,7 @@ An example of the add operation discussed above:
 The query referenced by `name` will be copied into the location of this element. If the user has not yet provided an answer to the query, the value given in `default` will be used instead.
 
 Supported attributes:
-  * *`name`* - Name used for a query (see [XMLOperationSpecification#Queries]). The text to this answer will be copied into the place of this element
+  * *`name`* - Name used for a query (see [XMLOperationSpecification#Information_Prompts]). The text to this answer will be copied into the place of this element
   * *`default`* - Default text to use if the query has not been answered yet.
 
 == Computation ==
@@ -120,7 +120,7 @@ query values.
 
 Attributes supported:
   * *`rvar`* - Specifies the R variable name to set
-  * *`name`* - Name specified for the desired query element (see [XMLOperationSpecification#Queries].
+  * *`name`* - Name specified for the desired query element (see [XMLOperationSpecification#Information_Prompts].
   * `use` - For `column` queries, the R variable may be set with either the string name of the column selected or the actual values in that column. This attribute specifies which processing method to use.
     * `name` - Use the column name
     * `values` - Use the column values
