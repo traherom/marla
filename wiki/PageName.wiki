@@ -5,12 +5,4 @@
 
 This is to test image embedding
 
-
-= Details =
-
-[marla_main_start.png]
-
-Add your content here.  Format your content with:
-  * Text in *bold* or _italic_
-  * Headings, paragraphs, and lists
-  * Automatic links to other wiki pages
+[http://marla.googlecode.com/svn/screenshots/main_workspace.png]
