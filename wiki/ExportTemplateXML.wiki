@@ -46,7 +46,7 @@ This problem's problem number in the section/chapter.
 {{{
 <statement />
 }}}
-Description of the problem from the book, as entered in the problem wizard. If done outside a loop (see [ExportTemplateXML#Loop]), this gives the main problem statement. If done inside a loop, returns the current subproblem's problem statement.
+Description of the problem from the book, as entered in the problem wizard. If done outside a loop (see [ExportTemplateXML#Loops]), this gives the main problem statement. If done inside a loop, returns the current subproblem's problem statement.
 
 == Data ==
 {{{
@@ -61,7 +61,7 @@ Supported attributes:
 {{{
 <solution />
 }}}
-R code to solve the problem. If done outside a loop (see [ExportTemplateXML#Loop]), this summarizes every operation in the problem. If done inside a loop, summarizes only those operations denoted as in the "solution" to the current subproblem. Between each operation any associated remarks are interleaved.
+R code to solve the problem. If done outside a loop (see [ExportTemplateXML#Loops]), this summarizes every operation in the problem. If done inside a loop, summarizes only those operations denoted as in the "solution" to the current subproblem. Between each operation any associated remarks are interleaved.
 
 == Problem Conclusions ==
 {{{
@@ -76,7 +76,7 @@ Supported attributes:
 {{{
 <loop type="subproblem">...</loop>
 }}}
-Loops over each of the subproblems. Allows their individual statements and solutions to be examined. See [ExportTemplateXML#Statement] and [ExportTemplateXML#Solution].
+Loops over each of the subproblems. Allows their individual statements and solutions to be examined. See [ExportTemplateXML#Problem_Statement] and [ExportTemplateXML#Solution_Steps].
 
 == Conditionals ==
 {{{
