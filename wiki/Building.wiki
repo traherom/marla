@@ -1,5 +1,5 @@
 #summary Instructions for building maRla
-#labels Phase-Implementation,Featured
+#labels Phase-Implementation
 
 =Quick Start=
 maRla builds through an ant script and will build at a basic level in any JDK environment. To fully use the package-for-store and create-installer build targets (producing the Windows installer, most notably), [http://nsis.sourceforge.net/ NSIS] and [http://launch4j.sourceforge.net/ launch4j] need to be installed and on the path.
