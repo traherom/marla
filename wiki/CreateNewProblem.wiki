@@ -1,0 +1,62 @@
+#summary Help for creating new problem.
+#labels Phase-Support,Featured
+
+= Introduction =
+
+MaRla is designed to aid you in  your homework (or other work, if you feel so compelled) cycle.creating, manipulating, and printing problems with R and LaTeX has never been easier! This guide will show you how to create a problem in maRla so you can enjoy the full use of this program.
+
+= Creating a New Problem =
+
+==First, open maRla==
+
+This is what your main window should look like. 
+[http://marla.googlecode.com/svn/wiki/screenshots/main_start.png]
+
+==Start the New Problem Wizard==
+
+To do this, click on the blue folder icon with the plus symbol in the top left of the main window. Alternatively, click on the File menu option just above it and select the "create new problem" option. The dialog that comes up will allow you to create a new problem.
+
+[http://marla.googlecode.com/svn/wiki/screenshots/new_problem_1.png]
+
+==Name and Place Your Created Project==
+
+After clicking next, this dialog will come up. Name your project in the text box, and select the browse button in order to place the location of your marla homework file.
+
+[http://marla.googlecode.com/svn/wiki/screenshots/new_problem_2.png]
+
+==Write Out Your Problem==
+This text field will allow you to input your main question or problem, to be output upon printing your work out to a PDF file. Do not worry, if you have multiple parts, you will see how to do that next.
+
+[http://marla.googlecode.com/svn/wiki/screenshots/new_problem_3.png]
+
+==Create Your Sub-problems==
+You may choose whether or not to enter sub-problems. Sub-problems are useful ways to easily view individual pieces of a problem both inside maRla, and in PDF form. You may add or remove any number of sub-problems.
+
+[http://marla.googlecode.com/svn/wiki/screenshots/new_problem_4.png]
+
+===Sub-problem Specifics===
+
+  * The text field allows you to enter your sub-problem (e.g., How many peppers did peter piper pick?). 
+  * Conclusion - this field can be edited later, when you have reached one. Or, if your mental powers so enable you, you may do so now.
+  * Color - see next
+
+[http://marla.googlecode.com/svn/wiki/screenshots/new_problem_5.png]
+
+===Color Picker===
+Colors allow you to easily visualize what part of your problem belongs to which subproblem when you get to the maRla workspace. Pick a color that will be easily visible and distinct from other sub-problem colors.
+
+[http://marla.googlecode.com/svn/wiki/screenshots/new_problem_6.png]
+
+==Data Set Editor==
+Data can be entered in several ways. You can import a CSV, by clicking the relevant button you see here. Otherwise, you can input it manually. More than one data set is possible. To add a set, click "add"; to remove, click "remove". Adding or removing columns and rows is as simple as adding to or subtracting from the small boxes associated with said labels. You may rename data sets by double clicking on the tab where the name of the set is contained.
+
+[http://marla.googlecode.com/svn/wiki/screenshots/new_problem_7.png]
+
+==Final Details==
+
+These details are for the pdfLaTeX exporter, in order that your homework may be completed in the most effective and detailed manner possible upon printout.
+
+[http://marla.googlecode.com/svn/wiki/screenshots/new_problem_8.png]
+
+
+If you enjoyed this article, you may enjoy ~~Editing an Existing Problem~~
