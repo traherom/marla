@@ -64,7 +64,21 @@ public abstract class OperationInformation
 		this.prompt = prompt;
 		this.type = type;
 	}
-
+	
+	/**
+	 * Copy constructor, helper for children to perform copies
+	 * @param parent Operation this information belongs to. Does not actually
+	 *		place the information in that operation!
+	 * @param org Information to copy
+	 */
+	protected OperationInformation(Operation parent, OperationInformation org)
+	{
+		op = parent;
+		type = org.type;
+		name = org.name;
+		prompt = org.prompt;
+	}
+	
 	/**
 	 * Returns the operation associated with this prompt
 	 * @return Operation that created this OperationInformation
@@ -177,6 +191,14 @@ public abstract class OperationInformation
 	 */
 	protected abstract void fromXmlAnswer(Element answerEl);
 
+	/**
+	 * Require all questions have a way to copy their values
+	 * Intentionally package private
+	 * @parent Operation to set as parent. THIS DOES NOT ACTUALLY ADD THE OPERATION
+	 *	TO THE OPERATION.
+	 */
+	abstract OperationInformation clone(Operation parent);
+	
 	@Override
 	public boolean equals(Object other)
 	{

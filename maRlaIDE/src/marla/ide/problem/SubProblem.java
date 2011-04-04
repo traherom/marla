@@ -32,7 +32,7 @@ import org.jdom.Element;
  *
  * @author Ryan Morehart
  */
-public class SubProblem implements ProblemPart, Comparable
+public class SubProblem implements ProblemPart, Comparable<SubProblem>
 {
 	/**
 	 * Denotes if we are in the middle of a load from XML
@@ -81,6 +81,44 @@ public class SubProblem implements ProblemPart, Comparable
 		// Random color
 		Random r = new Random();
 		highlightColor = new Color(r.nextInt(255), r.nextInt(255), r.nextInt(255));
+	}
+	
+	/**
+	 * Copy constructor, copies all attributes of original and attaches 
+	 * to steps in given parent
+	 * @param parent Problem to look for data to reattach to
+	 * @param org Original subproblems to copy
+	 */
+	public SubProblem(Problem parent, SubProblem org)
+	{
+		isLoading = true;
+		
+		// Easy stuff
+		this.parent = parent;
+		conclusion = org.conclusion;
+		id = org.id;
+		highlightColor = new Color(org.highlightColor.getRGB());
+		partDesc = org.partDesc;
+		
+		// Attach to steps
+ 		List<DataSource> allData = parent.getAllData();
+		for(DataSource searchDS : org.solutionSteps)
+		{
+			// Get the ID of the original's step
+			Integer searchID = searchDS.getUniqueID();
+
+			// Find it in our new parent
+			for(DataSource ds : allData)
+			{
+				if(searchID.equals(ds.getUniqueID()))
+				{
+					addStep(ds);
+					break;
+				}
+			}
+		}
+		
+		isLoading = false;
 	}
 
 	/**
@@ -159,7 +197,7 @@ public class SubProblem implements ProblemPart, Comparable
 	 * Adds the given DataSource as part of the solution to this SubProblem
 	 * @param ds DataSource to add
 	 */
-	public void addStep(DataSource ds)
+	public final void addStep(DataSource ds)
 	{
 		// Don't add again
 		if(solutionSteps.contains(ds))
@@ -566,12 +604,12 @@ public class SubProblem implements ProblemPart, Comparable
 
 	/**
 	 * Sorts SubProblems solely on their part ID, according to ASCII ordering
-	 * @param t Other SubProblem to compare against
+	 * @param other Other SubProblem to compare against
 	 * @return -1 if less, 0 if equal, 1 if greater
 	 */
 	@Override
-	public int compareTo(Object t)
+	public int compareTo(SubProblem other)
 	{
-		return id.compareTo(((SubProblem)t).id);
+		return id.compareTo(other.id);
 	}
 }

@@ -30,7 +30,6 @@ import marla.ide.problem.DataColumn;
 import marla.ide.problem.DataNotFoundException;
 import marla.ide.problem.DataSet;
 import marla.ide.problem.DataSource;
-import marla.ide.problem.DuplicateNameException;
 import marla.ide.problem.InternalMarlaException;
 import marla.ide.problem.Problem;
 import marla.ide.problem.SubProblem;
@@ -43,7 +42,7 @@ import marla.ide.r.RProcessor;
  *
  * @author Ryan Morehart
  */
-public abstract class Operation extends DataSource implements Changeable
+public abstract class Operation extends DataSource implements Changeable, Cloneable
 {
 	/**
 	 * Denotes when this operation is in the middle of loading from XML,
@@ -113,7 +112,7 @@ public abstract class Operation extends DataSource implements Changeable
 		javaOps = new HashMap<String, String>();
 		javaOpCategories = new HashMap<String, List<String>>();
 	}
-
+	
 	/**
 	 * Returns a list of all the operations available, both from XML and Java. This is a
 	 * hard coded list for now and eases adding new operations to the GUI (no need to edit the
@@ -248,14 +247,30 @@ public abstract class Operation extends DataSource implements Changeable
 		setOperationName(newName);
 		setDefaultColor();
 
-		try
-		{
-			data = new DataSet(this, "internal");
-		}
-		catch(DuplicateNameException ex)
-		{
-			throw new InternalMarlaException("DataSet reported it had a duplicate name when it shouldn't. Report to developers.", ex);
-		}
+		data = new DataSet(this, "internal");
+	}
+	
+	/**
+	 * Copy constructor for operations
+	 * @param org Operation copy
+	 */
+	protected Operation(Operation org)
+	{
+		super(org);
+		
+		isLoading = true;
+		
+		data = new DataSet(this, "internal");
+			
+		// Easy stuff
+		remark = org.remark;
+		
+		// Questions
+		Set<String> keys = org.questions.keySet();
+		for(String key : keys)
+			addQuestion(org.questions.get(key).clone(this));
+		
+		isLoading = false;
 	}
 
 	@Override
@@ -892,6 +907,16 @@ public abstract class Operation extends DataSource implements Changeable
 		return null;
 	}
 
+	/**
+	 * Our children must provide a way to clone themselves, for copy
+	 * constructors sake. This allows an Operation to just have clone()
+	 * called, rather than having to determine what type it is to call
+	 * the right copy constructor
+	 * @return New copy of operation
+	 */
+	@Override
+	public abstract Operation clone();
+	
 	/**
 	 * An Operation is equal all the operations tied to it are the same
 	 * @param other Object to compare against

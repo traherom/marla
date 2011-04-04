@@ -66,17 +66,16 @@ public class DataColumn implements List<Object>
 
 	/**
 	 * Creates a deep copy of the current data column pointing to the same parent.
-	 * @param col Column to copy values from
 	 * @param parent DataSource the copy should belong to
+	 * @param org Column to copy values from
 	 */
-	public DataColumn(DataColumn col, DataSet parent)
+	public DataColumn(DataSet parent, DataColumn org)
 	{
 		this.parent = parent;
-		name = col.name;
-		for(Object v : col.values)
-		{
+		name = org.name;
+		
+		for(Object v : org.values)
 			values.add(v);
-		}
 	}
 
 	/**

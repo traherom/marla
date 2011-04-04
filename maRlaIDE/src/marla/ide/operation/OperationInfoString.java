@@ -59,6 +59,19 @@ public class OperationInfoString extends OperationInformation
 		this.mustMatchPatt = Pattern.compile(mustMatch);
 	}
 
+	/**
+	 * Copy constructor
+	 * @param parent Operation this information belongs to. Does not actually
+	 *		place the information in that operation!
+	 * @param org Information to copy
+	 */
+	protected OperationInfoString(Operation parent, OperationInfoString org)
+	{
+		super(parent, org);
+		answer = org.answer;
+		mustMatchPatt = org.mustMatchPatt;
+	}
+	
 	@Override
 	public String getAnswer()
 	{
@@ -133,5 +146,11 @@ public class OperationInfoString extends OperationInformation
 	public boolean autoAnswer()
 	{
 		return false;
+	}
+
+	@Override
+	OperationInformation clone(Operation parent)
+	{
+		return new OperationInfoString(parent, this);
 	}
 }

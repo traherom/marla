@@ -315,7 +315,7 @@ public final class RProcessor
 	/**
 	 * Passes the given string onto R just as if you typed it at the command line. Only a single
 	 * command may be executed by this command. If the user wants to run multiple commands as a
-	 * group, use execute(ArrayList<String>).
+	 * group, use execute(ArrayList<String>). Throws all errors/warnings as exceptions
 	 * @param cmd R command to execute
 	 * @return String output from R. Use one of the parse functions to processor further
 	 */
@@ -795,6 +795,19 @@ public final class RProcessor
 	}
 
 	/**
+	 * Returns a list of the names of libraries currently installed in the 
+	 * user's R installation
+	 * @return List of library names, suitable for passing to loadLibrary
+	 */
+	public List<String> getLibraryList()
+	{
+		List<String> libs = new ArrayList<String>();
+		
+		String list = execute("library()");
+		throw new RProcessorException("Not yet implemented");
+	}
+	
+	/**
 	 * Loads the given library into R. If it is not installed, attempts to 
 	 * automatically install it
 	 * @param lib Name of the library to load
@@ -802,7 +815,6 @@ public final class RProcessor
 	 */
 	public boolean loadLibrary(String lib)
 	{
-
 		Boolean loaded = false;
 		try
 		{

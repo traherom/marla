@@ -104,6 +104,14 @@ public class ProblemTest
 	}
 
 	@Test
+	public void testClone() throws Exception
+	{
+		Problem prob1 = createProblem(2, 2, 3, 10);
+		Problem prob2 = new Problem(prob1);
+		assertEquals(prob1, prob2);
+	}
+	
+	@Test
 	public void testStatement()
 	{
 		Problem prob = new Problem("Test statement");

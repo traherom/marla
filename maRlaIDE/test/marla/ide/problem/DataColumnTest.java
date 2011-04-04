@@ -181,7 +181,7 @@ public class DataColumnTest
 	public void testCopy()
 	{
 		DataColumn testDC1 = createDataColumn(50);
-		DataColumn testDC2 = new DataColumn(testDC1, null);
+		DataColumn testDC2 = new DataColumn(null, testDC1);
 		assertEquals(testDC1, testDC2);
 	}
 }

@@ -68,6 +68,19 @@ public class OperationInfoColumn extends OperationInfoCombo
 		this.columnType = columnType;
 	}
 
+	/**
+	 * Copy constructor
+	 * @param parent Operation this information belongs to. Does not actually
+	 *		place the information in that operation!
+	 * @param org Information to copy
+	 */
+	protected OperationInfoColumn(Operation parent, OperationInfoColumn org)
+	{
+		super(parent, org);
+		answer = org.answer;
+		columnType = org.columnType;
+	}
+	
 	@Override
 	public String setAnswer(Object newAnswer)
 	{
@@ -217,5 +230,11 @@ public class OperationInfoColumn extends OperationInfoCombo
 	protected void fromXmlAnswer(Element answerEl)
 	{
 		answer = answerEl.getAttributeValue("answer");
+	}
+
+	@Override
+	OperationInformation clone(Operation parent)
+	{
+		return new OperationInfoColumn(parent, this);
 	}
 }

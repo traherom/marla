@@ -42,6 +42,18 @@ public class OperationInfoCheckbox extends OperationInformation
 		super(op, name, prompt, PromptType.CHECKBOX);
 	}
 
+	/**
+	 * Copy constructor
+	 * @param parent Operation this information belongs to. Does not actually
+	 *		place the information in that operation!
+	 * @param org Information to copy
+	 */
+	protected OperationInfoCheckbox(Operation parent, OperationInfoCheckbox org)
+	{
+		super(parent, org);
+		answer = org.answer;
+	}
+	
 	@Override
 	public Boolean getAnswer()
 	{
@@ -96,5 +108,11 @@ public class OperationInfoCheckbox extends OperationInformation
 		String answerStr = answerEl.getAttributeValue("answer");
 		if(answerStr != null)
 			setAnswer(answerStr);
+	}
+
+	@Override
+	OperationInformation clone(Operation parent)
+	{
+		return new OperationInfoCheckbox(parent, this);
 	}
 }
