@@ -55,6 +55,19 @@ public class OperationInfoFixedOptionCombo extends OperationInfoCombo
 			answer = options.get(0);
 	}
 
+	/**
+	 * Copy constructor
+	 * @param parent Operation this information belongs to. Does not actually
+	 *		place the information in that operation!
+	 * @param org Information to copy
+	 */
+	protected OperationInfoFixedOptionCombo(Operation parent, OperationInfoFixedOptionCombo org)
+	{
+		super(parent, org);
+		answer = org.answer;
+		options = org.options;
+	}
+	
 	@Override
 	public String getAnswer()
 	{
@@ -141,5 +154,11 @@ public class OperationInfoFixedOptionCombo extends OperationInfoCombo
 	protected void fromXmlAnswer(Element answerEl)
 	{
 		answer = answerEl.getAttributeValue("answer");
+	}
+
+	@Override
+	OperationInformation clone(Operation parent)
+	{
+		return new OperationInfoFixedOptionCombo(parent, this);
 	}
 }

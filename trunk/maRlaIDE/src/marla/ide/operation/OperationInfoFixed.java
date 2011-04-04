@@ -79,6 +79,18 @@ public class OperationInfoFixed extends OperationInformation
 		answer = finalAnswer;
 	}
 
+	/**
+	 * Copy constructor
+	 * @param parent Operation this information belongs to. Does not actually
+	 *		place the information in that operation!
+	 * @param org Information to copy
+	 */
+	protected OperationInfoFixed(Operation parent, OperationInfoFixed org)
+	{
+		super(parent, org);
+		answer = org.answer;
+	}
+	
 	@Override
 	public Object getAnswer()
 	{
@@ -116,5 +128,11 @@ public class OperationInfoFixed extends OperationInformation
 	protected void fromXmlAnswer(Element answerEl)
 	{
 		// Never load it
+	}
+
+	@Override
+	OperationInformation clone(Operation parent)
+	{
+		return new OperationInfoFixed(parent, getName(), getPrompt(), answer);
 	}
 }

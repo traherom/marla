@@ -56,10 +56,34 @@ public abstract class DataSource extends JLabel implements Loadable
 	 */
 	private boolean isHidden = false;
 
+	/**
+	 * Sets basic options for DataSource display
+	 */
 	public DataSource()
 	{
 		setOpaque(true);
 		setBackground(new Color(255, 255, 255, 0));
+	}
+	
+	/**
+	 * Copy constructor for part of a DataSource
+	 * @param org Original DataSource to copy
+	 */
+	public DataSource(DataSource org)
+	{
+		this();
+		
+		// Easy stuff
+		name = org.name;
+		isHidden = org.isHidden;
+		internalID = new Integer(org.internalID);
+		
+		// Our children
+		for(Operation orgOp : org.solutionOps)
+			addOperation(orgOp.clone());
+		
+		// We don't worry about subproblems attached to us, our cloner can
+		// if they wish
 	}
 
 	/**

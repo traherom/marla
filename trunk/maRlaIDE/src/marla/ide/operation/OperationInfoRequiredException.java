@@ -25,6 +25,7 @@ import marla.ide.problem.MarlaException;
  * that needs information.
  * @author Ryan Morehart
  */
+@SuppressWarnings("serial")
 public class OperationInfoRequiredException extends MarlaException
 {
 	private final Operation op;

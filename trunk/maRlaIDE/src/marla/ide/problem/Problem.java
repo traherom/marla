@@ -40,7 +40,7 @@ import org.jdom.output.XMLOutputter;
  *
  * @author Ryan Morehart
  */
-public class Problem implements ProblemPart
+public final class Problem implements ProblemPart
 {
 	/**
 	 * Domain that this Problem is working with
@@ -144,7 +144,43 @@ public class Problem implements ProblemPart
 		longCourseName = defaultCourseLong;
 		personName = defaultPersonName;
 	}
-
+	
+	/**
+	 * Copy constructor for problems
+	 * @param org Problem to copy
+	 */
+	public Problem(Problem org)
+	{
+		isLoading = true;
+		
+		// Get all the easy stuff
+		statement = org.statement;
+		conclusion = org.conclusion;
+		personName = org.personName;
+		shortCourseName = org.shortCourseName;
+		longCourseName = org.longCourseName;
+		probChapter = org.probChapter;
+		probSection = org.probSection;
+		probNum = org.probNum;
+		fileName = org.fileName;
+		
+		// Copy lists of things
+		for(DataSet orgDS : org.datasets)
+			addData(new DataSet(orgDS));
+		
+		for(Operation orgOp : org.unusedOperations)
+			addUnusedOperation(orgOp.clone());
+		
+		for(SubProblem orgSub : org.subProblems)
+			addSubProblem(new SubProblem(this, orgSub));
+		
+		// Restore saved setting now, as adding the stuff above probably marked us
+		// unsaved no matter what
+		isSaved = org.isSaved;
+		
+		isLoading = false;
+	}
+ 
 	/**
 	 * Sets all Problems to work with a new Domain
 	 * @return Previous Domain. Null if there was none
@@ -962,6 +998,7 @@ public class Problem implements ProblemPart
 		newProb.setSection(rootEl.getAttributeValue("section"));
 		newProb.setProblemNumber(rootEl.getAttributeValue("probnum"));
 
+		// Main data
 		for(Object dataEl : rootEl.getChildren("data"))
 		{
 			newProb.addData(DataSet.fromXml((Element) dataEl));
@@ -977,6 +1014,7 @@ public class Problem implements ProblemPart
 			}
 		}
 
+		// SubProblems
 		for(Object partEl : rootEl.getChildren("part"))
 		{
 			newProb.addSubProblem(SubProblem.fromXml((Element) partEl, newProb));

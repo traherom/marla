@@ -41,6 +41,7 @@ import marla.ide.r.RProcessorParseException;
  *
  * @author Ryan Morehart
  */
+@SuppressWarnings("serial")
 public final class DataSet extends DataSource implements Changeable
 {
 	/**
@@ -79,6 +80,26 @@ public final class DataSet extends DataSource implements Changeable
 		setDataName(name);
 	}
 
+	/**
+	 * Copy constructor for DataSet. Parent is set to null
+	 * @param org Original dataset to copy
+	 */
+	public DataSet(DataSet org)
+	{
+		super(org);
+		
+		isLoading = true;
+		
+		// Not the same parent, they'll add us where they want
+		parent = null;
+		
+		// Copy all our columns
+		for(DataColumn orgDC : org.columns)
+			columns.add(new DataColumn(this, orgDC));
+		
+		isLoading = false;
+	}
+	
 	public static Color getDefaultColor()
 	{
 		return new Color(143, 10, 43);

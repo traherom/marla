@@ -38,6 +38,17 @@ public abstract class OperationInfoCombo extends OperationInformation
 	}
 
 	/**
+	 * Copy constructor
+	 * @param parent Operation this information belongs to. Does not actually
+	 *		place the information in that operation!
+	 * @param org Information to copy
+	 */
+	protected OperationInfoCombo(Operation parent, OperationInfoCombo org)
+	{
+		super(parent, org);
+	}
+	
+	/**
 	 * Returns the possible options for this combo. List is unmodifiable
 	 * @return List of options
 	 */

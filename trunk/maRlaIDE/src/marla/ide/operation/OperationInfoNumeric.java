@@ -71,6 +71,20 @@ public class OperationInfoNumeric extends OperationInformation
 			throw new OperationException("Minimum for query is greater than the maximum");
 	}
 
+	/**
+	 * Copy constructor
+	 * @param parent Operation this information belongs to. Does not actually
+	 *		place the information in that operation!
+	 * @param org Information to copy
+	 */
+	protected OperationInfoNumeric(Operation parent, OperationInfoNumeric org)
+	{
+		super(parent, org);
+		answer = org.answer;
+		min = org.min;
+		max = org.max;
+	}
+	
 	@Override
 	public Double getAnswer()
 	{
@@ -185,5 +199,11 @@ public class OperationInfoNumeric extends OperationInformation
 			// Make them re-answer
 			clearAnswer();
 		}
+	}
+
+	@Override
+	OperationInformation clone(Operation parent)
+	{
+		return new OperationInfoNumeric(parent, this);
 	}
 }

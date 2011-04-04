@@ -46,6 +46,7 @@ import marla.ide.resource.ConfigurationException;
  * Performs statistical operations though R as directed by an XML template
  * @author Ryan Morehart
  */
+@SuppressWarnings("serial")
 public class OperationXML extends Operation
 {
 	/**
@@ -441,6 +442,29 @@ public class OperationXML extends Operation
 	public OperationXML()
 	{
 		super("Unconfigured");
+	}
+
+	/**
+	 * Copy constructor, copies as much as possible. However, not able to get
+	 * everything
+	 */
+	private OperationXML(OperationXML org)
+	{
+		super(org);
+		
+		// TODO decide if clone is actually needed. For our undo/redo purposes,
+		// probably not. I mean, it doesn't change ever. However, that's not
+		// expected copy constructor behavior
+		opConfig = (Element)org.opConfig.clone();
+		if(org.displayNameEl != null)
+			
+		
+		// TODO decide if clone is actually needed. For our undo/redo purposes,
+		// probably not. I mean, it doesn't change ever. However, that's not
+		// expected clone() behavior
+		opConfig = (Element) opConfig.clone();
+		if(displayNameEl != null)
+			displayNameEl = (Element) displayNameEl.clone();
 	}
 
 	/**
@@ -1127,6 +1151,12 @@ public class OperationXML extends Operation
 		return plotPath;
 	}
 
+	@Override
+	public OperationXML clone()
+	{
+		return new OperationXML(this);
+	}
+	
 	@Override
 	public boolean equals(Object other)
 	{
