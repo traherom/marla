@@ -57,7 +57,7 @@ public final class RProcessor
 	/**
 	 * Pattern used to recognize strings in R output, mainly for use with vectors
 	 */
-	private final Pattern stringPatt = Pattern.compile("\"(([^\\n]|\\\")+?)\"");
+	private final Pattern stringPatt = Pattern.compile("\"(([^\\n]|\\\")*?)\"");
 	/**
 	 * Pattern used to recognize booleans in R output, mainly for use with vectors
 	 */
