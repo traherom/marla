@@ -32,7 +32,7 @@ public class UndoRedo<T>
 	private final List<T> states = new ArrayList<T>();
 	/**
 	 * Current point in the state list. This is one past the most recently 
-	 * added step. If an undo were performed, it woudl get the step before
+	 * added step. If an undo were performed, it would get the step before
 	 * this one. A redo returns the step we're actually on
 	 */
 	private int currentState = 0;
@@ -40,16 +40,19 @@ public class UndoRedo<T>
 	 * Maximum undo/redo steps to hold. If list exceeds this, older steps are 
 	 * removed when new ones are added
 	 */
-	private int maxStates = -1;
+	private final int maxStates;
 	
 	/**
 	 * Creates a new undo/redo stack with the given limit
 	 * @param maxSteps Maximum steps to hold, applies to both forward and back. If
-	 *		-1, no history is ever removed
+	 *		less than 1, no history is ever removed
 	 */
 	public UndoRedo(int maxSteps)
 	{
-		maxStates = maxSteps;
+		if(maxSteps > 0)
+			maxStates = maxSteps;
+		else
+			maxStates = 0;
 	}
 	
 	/**
@@ -57,7 +60,7 @@ public class UndoRedo<T>
 	 */
 	public UndoRedo()
 	{
-		this(-1);
+		this(0);
 	}
 	
 	/**
@@ -74,7 +77,14 @@ public class UndoRedo<T>
 		while(hasRedo())
 			states.remove(currentState);
 		
-		// TODO check if we're over size limit for stack
+		// Do we have too much history?
+		while(states.size() > maxStates)
+		{
+			states.remove(0);
+			
+			// Keep pointer in sync with list
+			currentState--;
+		}
 	}
 	
 	/**
