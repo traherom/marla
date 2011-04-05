@@ -32,7 +32,7 @@ import org.jdom.Element;
  * Tie for any source of that contains columns
  * @author Ryan Morehart
  */
-public abstract class DataSource extends JLabel implements Loadable
+public abstract class DataSource extends JLabel implements Loadable, Changeable
 {
 	/**
 	 * DataSource name.

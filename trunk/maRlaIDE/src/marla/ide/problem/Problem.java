@@ -784,10 +784,19 @@ public final class Problem implements ProblemPart, Cloneable
 	public void markUnsaved()
 	{
 		isSaved = false;
+		changeBeginning();
 
 		Domain d = getDomain();
 		if(d != null)
 			d.markUnsaved();
+	}
+
+	@Override
+	public void changeBeginning()
+	{
+		Domain d = getDomain();
+		if(d != null)
+			d.changeBeginning();
 	}
 
 	/**

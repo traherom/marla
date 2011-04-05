@@ -185,6 +185,13 @@ public class SubProblem implements ProblemPart, Comparable<SubProblem>
 	}
 
 	@Override
+	public void changeBeginning()
+	{
+		if(parent != null)
+			parent.changeBeginning();
+	}
+
+	@Override
 	public boolean isChanged()
 	{
 		if(parent != null)
