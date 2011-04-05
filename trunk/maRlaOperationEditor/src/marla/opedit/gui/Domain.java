@@ -34,7 +34,7 @@ public class Domain
     /** The name of the application.*/
     public static final String NAME = "The maRla Project - Operation Editor";
     /** The version number of the application.*/
-    public static final String VERSION = "0.1";
+    public static final String VERSION = "0.2";
     /** The pre-release version name of the application.*/
     public static final String PRE_RELEASE = "Beta";
     /** The location of the application as it runs.*/
@@ -45,6 +45,8 @@ public class Domain
     public static final String HOME_DIR = System.getProperty("user.home");
     /** The logger holds all caught exceptions for recording in the log file.*/
     public static final List<Throwable> logger = marla.ide.gui.Domain.logger;
+	/** If launched with a file to open, this will be the file set.*/
+	public static File passedInFile = null;
 
     /** The load/save thread that is continually running unless explicitly paused or stopped.*/
     protected LoadSaveThread loadSaveThread;

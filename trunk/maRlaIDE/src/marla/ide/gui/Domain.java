@@ -773,6 +773,14 @@ public class Domain
 	}
 
 	/**
+	 * Marks that a change is beginning, so the step should be saved in undo/redo.
+	 */
+	public void changeBeginning()
+	{
+		viewPanel.undoRedo.addStep (problem.clone());
+	}
+
+	/**
 	 * Mark the View as unsaved.
 	 */
 	public void markUnsaved()

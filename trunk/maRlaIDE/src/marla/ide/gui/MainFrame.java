@@ -326,6 +326,7 @@ public class MainFrame extends JFrame
         newDataSetMenuItem = new javax.swing.JMenuItem();
         editDataSetsMenuItem = new javax.swing.JMenuItem();
         toolsMenu = new javax.swing.JMenu();
+        operationEditorMenuItem = new javax.swing.JMenuItem();
         reloadOperationgsMenuItem = new javax.swing.JMenuItem();
         jSeparator1 = new javax.swing.JPopupMenu.Separator();
         settingsMenuItem = new javax.swing.JMenuItem();
@@ -432,8 +433,7 @@ public class MainFrame extends JFrame
         menuBar.add(fileMenu);
 
         editMenu.setText("Edit");
-        editMenu.setEnabled(false);
-        editMenu.setFont(new java.awt.Font("Verdana", 0, 12));
+        editMenu.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
         editMenu.addMenuListener(new javax.swing.event.MenuListener() {
             public void menuCanceled(javax.swing.event.MenuEvent evt) {
             }
@@ -445,13 +445,25 @@ public class MainFrame extends JFrame
         });
 
         undoMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_Z, java.awt.event.InputEvent.CTRL_MASK));
-        undoMenuItem.setFont(new java.awt.Font("Verdana", 0, 12));
+        undoMenuItem.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
         undoMenuItem.setText("Undo");
+        undoMenuItem.setEnabled(false);
+        undoMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                undoMenuItemActionPerformed(evt);
+            }
+        });
         editMenu.add(undoMenuItem);
 
         redoMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_Y, java.awt.event.InputEvent.CTRL_MASK));
-        redoMenuItem.setFont(new java.awt.Font("Verdana", 0, 12));
+        redoMenuItem.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
         redoMenuItem.setText("Redo");
+        redoMenuItem.setEnabled(false);
+        redoMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                redoMenuItemActionPerformed(evt);
+            }
+        });
         editMenu.add(redoMenuItem);
 
         menuBar.add(editMenu);
@@ -528,6 +540,17 @@ public class MainFrame extends JFrame
             }
         });
 
+        operationEditorMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F2, 0));
+        operationEditorMenuItem.setFont(new java.awt.Font("Verdana", 0, 12));
+        operationEditorMenuItem.setText("Launch Operation Editor");
+        operationEditorMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                operationEditorMenuItemActionPerformed(evt);
+            }
+        });
+        toolsMenu.add(operationEditorMenuItem);
+
+        reloadOperationgsMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_R, java.awt.event.InputEvent.CTRL_MASK));
         reloadOperationgsMenuItem.setFont(new java.awt.Font("Verdana", 0, 12));
         reloadOperationgsMenuItem.setText("Reload Operations");
         reloadOperationgsMenuItem.addActionListener(new java.awt.event.ActionListener() {
@@ -563,7 +586,7 @@ public class MainFrame extends JFrame
         });
 
         helpContentsMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F1, 0));
-        helpContentsMenuItem.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        helpContentsMenuItem.setFont(new java.awt.Font("Verdana", 0, 12));
         helpContentsMenuItem.setText("Help Contents");
         helpContentsMenuItem.setEnabled(false);
         helpContentsMenuItem.addActionListener(new java.awt.event.ActionListener() {
@@ -653,8 +676,22 @@ public class MainFrame extends JFrame
 		{
 			if(viewPanel.domain.problem != null)
 			{
-				undoMenuItem.setEnabled(true);
-				redoMenuItem.setEnabled(true);
+				if (viewPanel.undoRedo.hasUndo())
+				{
+					undoMenuItem.setEnabled(true);
+				}
+				else
+				{
+					undoMenuItem.setEnabled(false);
+				}
+				if (viewPanel.undoRedo.hasRedo())
+				{
+					redoMenuItem.setEnabled(true);
+				}
+				else
+				{
+					redoMenuItem.setEnabled(false);
+				}
 			}
 			else
 			{
@@ -789,6 +826,18 @@ public class MainFrame extends JFrame
 		}
 	}//GEN-LAST:event_helpContentsMenuItemActionPerformed
 
+	private void operationEditorMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_operationEditorMenuItemActionPerformed
+		viewPanel.launchOperationEditor();
+	}//GEN-LAST:event_operationEditorMenuItemActionPerformed
+
+	private void undoMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_undoMenuItemActionPerformed
+		viewPanel.undo();
+	}//GEN-LAST:event_undoMenuItemActionPerformed
+
+	private void redoMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_redoMenuItemActionPerformed
+		viewPanel.redo();
+	}//GEN-LAST:event_redoMenuItemActionPerformed
+
 	/**
 	 * Retrieves the default title, which is the program name with it's version number.
 	 *
@@ -803,6 +852,7 @@ public class MainFrame extends JFrame
 		}
 		return title;
 	}
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenuItem closeProblemMenuItem;
     private javax.swing.JMenuItem editConclusionMenuItem;
@@ -823,14 +873,15 @@ public class MainFrame extends JFrame
     private javax.swing.JMenuItem newDataSetMenuItem;
     private javax.swing.JMenuItem newProblemMenuItem;
     private javax.swing.JMenuItem openProblemMenuItem;
+    private javax.swing.JMenuItem operationEditorMenuItem;
     private javax.swing.JMenu problemMenu;
     private javax.swing.JPopupMenu.Separator problemSeparator1;
-    private javax.swing.JMenuItem redoMenuItem;
+    protected javax.swing.JMenuItem redoMenuItem;
     private javax.swing.JMenuItem reloadOperationgsMenuItem;
     private javax.swing.JMenuItem saveAsMenuItem;
     private javax.swing.JMenuItem saveMenuItem;
     private javax.swing.JMenuItem settingsMenuItem;
     private javax.swing.JMenu toolsMenu;
-    private javax.swing.JMenuItem undoMenuItem;
+    protected javax.swing.JMenuItem undoMenuItem;
     // End of variables declaration//GEN-END:variables
 }

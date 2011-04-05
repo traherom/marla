@@ -7,7 +7,7 @@
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  * 
- * This program is distributed in the hope that it will be useful,
+ * This program is distributed in the hope that it will be useful,Processor
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
@@ -39,6 +39,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -74,6 +75,7 @@ import marla.ide.problem.SubProblem;
 import marla.ide.r.RProcessorException;
 import marla.ide.resource.Configuration;
 import marla.ide.resource.LoadSaveThread;
+import marla.ide.resource.UndoRedo;
 import marla.ide.resource.Updater;
 
 /**
@@ -230,11 +232,18 @@ public class ViewPanel extends JPanel
 	JLabel firstRunLabel = new JLabel();
 	/** The tip to display in the workspace when problem is being edited.*/
 	protected String tipRemainder = FIRST_TIP + "<br />" + SECOND_TIP + "<br />" + THIRD_TIP + "<br />" + FOURTH_TIP + "<br />" + FIFTH_TIP;
+	/** True if the first tip should be shown.*/
 	protected boolean showFirst = true;
+	/** True if the second tip should be shown.*/
 	protected boolean showSecond = true;
+	/** True if the third tip should be shown.*/
 	protected boolean showThird = true;
+	/** True if the fourth tip should be shown.*/
 	protected boolean showFourth = true;
+	/** True if the fifth tip should be shown.*/
 	protected boolean showFifth = true;
+	/** True if the fifth tip should be shown.*/
+	protected UndoRedo<Problem> undoRedo = new UndoRedo<Problem>();
 
 	/**
 	 * Creates new form MainFrame for a stand-alone application.
@@ -310,17 +319,17 @@ public class ViewPanel extends JPanel
 	 */
 	public static void setToolTipForButton(JComponent comp, String string, String toolTip)
 	{
-		if (comp instanceof JButton &&
-				((JButton) comp).getText() != null &&
-				((JButton) comp).getText().equals(string))
+		if(comp instanceof JButton
+		   && ((JButton) comp).getText() != null
+		   && ((JButton) comp).getText().equals(string))
 		{
 			((JButton) comp).setToolTipText(toolTip);
 		}
-		for (int i = 0; i < comp.getComponentCount(); ++i)
+		for(int i = 0; i < comp.getComponentCount(); ++i)
 		{
-			if (comp.getComponent (i) instanceof JComponent)
+			if(comp.getComponent(i) instanceof JComponent)
 			{
-				setToolTipForButton ((JComponent) comp.getComponent (i), string, toolTip);
+				setToolTipForButton((JComponent) comp.getComponent(i), string, toolTip);
 			}
 		}
 	}
@@ -332,7 +341,7 @@ public class ViewPanel extends JPanel
 	 */
 	public static ViewPanel getInstance()
 	{
-		if (viewPanel != null)
+		if(viewPanel != null)
 		{
 			return viewPanel;
 		}
@@ -352,7 +361,7 @@ public class ViewPanel extends JPanel
 			// Force operations to be reloadedEnhancement summary
 			OperationXML.clearXMLOps();
 			OperationXML.loadXML();
-			
+
 			// Reload operations in the interface
 			loadOperations();
 		}
@@ -368,7 +377,7 @@ public class ViewPanel extends JPanel
 	 *
 	 * @throws MarlaException Throws any Marla exceptions to the calling function.
 	 */
-	protected void loadOperations() 
+	protected void loadOperations()
 	{
 		Map<String, List<String>> ops = Operation.getAvailableOperationsCategorized();
 		Set<String> categories = ops.keySet();
@@ -410,11 +419,11 @@ public class ViewPanel extends JPanel
 				});
 			}
 			// Images are missing; should never happen
-			catch (IOException ex)
+			catch(IOException ex)
 			{
 				Domain.logger.add(ex);
 			}
-			catContentPanel.setLayout (new GridBagLayout());
+			catContentPanel.setLayout(new GridBagLayout());
 			GridBagConstraints catConstraints = new GridBagConstraints();
 			catConstraints.fill = GridBagConstraints.VERTICAL;
 			catConstraints.weighty = 0;
@@ -471,15 +480,15 @@ public class ViewPanel extends JPanel
 				}
 			}
 			// Add final JLabel for pad filling
-			catContentPanel.add (new JLabel (""), catConstraints);
+			catContentPanel.add(new JLabel(""), catConstraints);
 
 			JPanel wrapperPanel = new JPanel();
-			wrapperPanel.setLayout (new BoxLayout(wrapperPanel, BoxLayout.PAGE_AXIS));
-			wrapperPanel.add (catHandlePanel);
-			wrapperPanel.add (catContentPanel);
+			wrapperPanel.setLayout(new BoxLayout(wrapperPanel, BoxLayout.PAGE_AXIS));
+			wrapperPanel.add(catHandlePanel);
+			wrapperPanel.add(catContentPanel);
 			catContentPanel.setVisible(false);
-			catHandlePanel.setPreferredSize (new Dimension (200, 20));
-			catContentPanel.setPreferredSize (new Dimension (200, catContentPanel.getPreferredSize().height));
+			catHandlePanel.setPreferredSize(new Dimension(200, 20));
+			catContentPanel.setPreferredSize(new Dimension(200, catContentPanel.getPreferredSize().height));
 
 			compConstraints.gridy = catCount;
 			compConstraints.weighty = 0;
@@ -490,7 +499,7 @@ public class ViewPanel extends JPanel
 		// Add final component to offset weight
 		compConstraints.gridy = catCount;
 		compConstraints.weighty = 1;
-		componentsScrollablePanel.add(new JLabel (""), compConstraints);
+		componentsScrollablePanel.add(new JLabel(""), compConstraints);
 
 		componentsScrollablePanel.invalidate();
 		componentsScrollablePanel.revalidate();
@@ -1003,12 +1012,12 @@ public class ViewPanel extends JPanel
     }// </editor-fold>//GEN-END:initComponents
 
 	private void workspacePanelMouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_workspacePanelMouseDragged
-		if (Math.abs (startX - evt.getX()) > MIN_DRAG_DIST || Math.abs (startY - evt.getY()) > MIN_DRAG_DIST)
+		if(Math.abs(startX - evt.getX()) > MIN_DRAG_DIST || Math.abs(startY - evt.getY()) > MIN_DRAG_DIST)
 		{
 			broken = true;
 		}
 
-		if (broken)
+		if(broken)
 		{
 			if(componentUnderMouse != null && draggingComponent == null)
 			{
@@ -1016,9 +1025,9 @@ public class ViewPanel extends JPanel
 				if(buttonPressed == MouseEvent.BUTTON1)
 				{
 					Point point;
-					if (startX != -1 && startY != -1)
+					if(startX != -1 && startY != -1)
 					{
-						point = new Point (startX, startY);
+						point = new Point(startX, startY);
 					}
 					else
 					{
@@ -1044,10 +1053,10 @@ public class ViewPanel extends JPanel
 								if(parent != null)
 								{
 									int oldIndex = parent.getOperationIndex((Operation) draggingComponent);
-									
+
 									parent.removeOperation((Operation) draggingComponent);
 									domain.problem.addUnusedOperation(parent.removeOperation((Operation) draggingComponent));
-									
+
 									if(childOperation != null)
 									{
 										parent.addOperation(oldIndex, childOperation);
@@ -1071,7 +1080,7 @@ public class ViewPanel extends JPanel
 							yDragOffset = (int) point.getY() - draggingComponent.getY();
 						}
 						workspacePanel.setComponentZOrder(trashCan, workspacePanel.getComponentCount() - 1);
-						if (firstRunLabel.getParent() == workspacePanel)
+						if(firstRunLabel.getParent() == workspacePanel)
 						{
 							workspacePanel.setComponentZOrder(firstRunLabel, workspacePanel.getComponentCount() - 1);
 						}
@@ -1088,15 +1097,15 @@ public class ViewPanel extends JPanel
 
 	private void workspacePanelMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_workspacePanelMouseReleased
 		// If we were hovering, clear any of those elements
-		if (hoverComponent != null)
+		if(hoverComponent != null)
 		{
-			if (hoverComponent != null)
+			if(hoverComponent != null)
 			{
 				((DataSource) hoverComponent).setDefaultColor();
 				hoverComponent = null;
 			}
 		}
-		
+
 		if(buttonPressed == MouseEvent.BUTTON1)
 		{
 			if(draggingComponent != null)
@@ -1107,7 +1116,7 @@ public class ViewPanel extends JPanel
 					if(draggingComponent instanceof DataSet)
 					{
 						response = JOptionPane.showConfirmDialog(this, "You are about to remove this data set from the workspace.\nThe data set can be readded to the workspace anytime by dragging\nit back from the list of data sets to the right.\nAre you sure you want to remove this data set?", "Remove Data Set", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
-						if (response == JOptionPane.YES_OPTION)
+						if(response == JOptionPane.YES_OPTION)
 						{
 							DataSet dataSet = (DataSet) draggingComponent;
 							for(int i = 0; i < dataSet.getOperationCount(); ++i)
@@ -1127,15 +1136,15 @@ public class ViewPanel extends JPanel
 					}
 					else
 					{
-						domain.problem.removeUnusedOperation((Operation)draggingComponent);
+						domain.problem.removeUnusedOperation((Operation) draggingComponent);
 					}
 
-					if (response == JOptionPane.YES_OPTION)
+					if(response == JOptionPane.YES_OPTION)
 					{
 						workspacePanel.remove(draggingComponent);
 						rebuildWorkspace();
 
-						if (showFourth)
+						if(showFourth)
 						{
 							showFourth = false;
 							refreshTip();
@@ -1169,7 +1178,7 @@ public class ViewPanel extends JPanel
 		}
 		else if(buttonPressed == MouseEvent.BUTTON3)
 		{
-			if (showFifth)
+			if(showFifth)
 			{
 				showFifth = false;
 				refreshTip();
@@ -1200,7 +1209,7 @@ public class ViewPanel extends JPanel
 					if(subProblem.isDataSourceInSolution((DataSource) rightClickedComponent))
 					{
 						JMenuItem item = new JMenuItem(name);
-						item.setFont (FONT_PLAIN_11);
+						item.setFont(FONT_PLAIN_11);
 						item.addActionListener(new ActionListener()
 						{
 							@Override
@@ -1219,7 +1228,7 @@ public class ViewPanel extends JPanel
 					else
 					{
 						JMenuItem item = new JMenuItem(name);
-						item.setFont (FONT_PLAIN_11);
+						item.setFont(FONT_PLAIN_11);
 						item.addActionListener(new ActionListener()
 						{
 							@Override
@@ -1300,7 +1309,6 @@ public class ViewPanel extends JPanel
 		}
 		else
 		{
-
 		}
 
 		setCursor(Cursor.getDefaultCursor());
@@ -1442,7 +1450,7 @@ public class ViewPanel extends JPanel
 	private void workspacePanelComponentAdded(java.awt.event.ContainerEvent evt)//GEN-FIRST:event_workspacePanelComponentAdded
 	{//GEN-HEADEREND:event_workspacePanelComponentAdded
 		workspacePanel.setComponentZOrder(trashCan, workspacePanel.getComponentCount() - 1);
-		if (firstRunLabel.getParent() == workspacePanel)
+		if(firstRunLabel.getParent() == workspacePanel)
 		{
 			workspacePanel.setComponentZOrder(firstRunLabel, workspacePanel.getComponentCount() - 1);
 		}
@@ -1497,7 +1505,7 @@ public class ViewPanel extends JPanel
 		}
 		else if(button.isEnabled() && button == plusFontButton)
 		{
-			if (fontSize + 1 < MAXIMUM_FONT_SIZE)
+			if(fontSize + 1 < MAXIMUM_FONT_SIZE)
 			{
 				++fontSize;
 				spaceWidth += 6;
@@ -1511,7 +1519,7 @@ public class ViewPanel extends JPanel
 		}
 		else if(button.isEnabled() && button == minusFontButton)
 		{
-			if (fontSize - 1 > MINIMUM_FONT_SIZE)
+			if(fontSize - 1 > MINIMUM_FONT_SIZE)
 			{
 				--fontSize;
 				spaceWidth -= 6;
@@ -1550,7 +1558,7 @@ public class ViewPanel extends JPanel
 			settingsDialog.initSettingsDialog();
 			settingsDialog.launchSettingsDialog();
 		}
-		else if (button.isEnabled() && button == addDataButton)
+		else if(button.isEnabled() && button == addDataButton)
 		{
 			newProblemWizardDialog.addDataSet();
 		}
@@ -1614,7 +1622,7 @@ public class ViewPanel extends JPanel
 		if(rightClickedComponent != null && rightClickedComponent instanceof Operation)
 		{
 			String newRemark = inputDialog.launchInputDialog(this, "Operation Remark", "Give a remark for this operation:", ((Operation) rightClickedComponent).getRemark());
-			if (!newRemark.equals (((Operation) rightClickedComponent).getRemark()))
+			if(!newRemark.equals(((Operation) rightClickedComponent).getRemark()))
 			{
 				((Operation) rightClickedComponent).setRemark(newRemark);
 			}
@@ -1643,10 +1651,10 @@ public class ViewPanel extends JPanel
 	{//GEN-HEADEREND:event_workspacePanelMousePressed
 		buttonPressed = evt.getButton();
 		Component comp = workspacePanel.getComponentAt(evt.getPoint());
-		if (comp != null)
+		if(comp != null)
 		{
 			componentUnderMouse = (JComponent) comp;
-			if (comp instanceof Operation)
+			if(comp instanceof Operation)
 			{
 				startX = evt.getX();
 				startY = evt.getY();
@@ -1663,7 +1671,7 @@ public class ViewPanel extends JPanel
 
 	private void workspacePanelMouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_workspacePanelMouseMoved
 		// We only care if the mouse has moved when we're NOT dragging
-		if (buttonPressed == 0)
+		if(buttonPressed == 0)
 		{
 			JComponent component = (JComponent) workspacePanel.getComponentAt(evt.getPoint());
 			if(component != null
@@ -1671,24 +1679,24 @@ public class ViewPanel extends JPanel
 			   && component != trashCan
 			   && component != firstRunLabel)
 			{
-				if (component != hoverComponent)
+				if(component != hoverComponent)
 				{
 					setCursor(Cursor.getDefaultCursor());
-					if (hoverComponent != null)
+					if(hoverComponent != null)
 					{
 						((DataSource) hoverComponent).setDefaultColor();
 						hoverComponent = null;
 					}
 				}
 
-				if (component instanceof DataSource)
+				if(component instanceof DataSource)
 				{
 					hoverComponent = component;
 					setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 					hoverComponent.setForeground(Color.GRAY);
 				}
 			}
-			else if (hoverComponent != null)
+			else if(hoverComponent != null)
 			{
 				setCursor(Cursor.getDefaultCursor());
 				((DataSource) hoverComponent).setDefaultColor();
@@ -1702,44 +1710,66 @@ public class ViewPanel extends JPanel
 	}//GEN-LAST:event_addDataSetMenuItemActionPerformed
 
 	/**
+	 * Undo the last operation.
+	 */
+	protected void undo()
+	{
+		Problem problem = undoRedo.undo();
+		closeProblem(true);
+		domain.problem = problem;
+		openProblem(true);
+	}
+
+	/**
+	 * Redo the last "undo" operation.
+	 */
+	protected void redo()
+	{
+		Problem problem = undoRedo.redo();
+		closeProblem(true);
+		domain.problem = problem;
+		openProblem(true);
+	}
+
+	/**
 	 * Refresh the text displayed for the tip.
 	 */
 	protected void refreshTip()
 	{
 		tipRemainder = "";
-		
-		if (showFirst)
+
+		if(showFirst)
 		{
 			tipRemainder += FIRST_TIP;
 		}
-		if (showSecond)
+		if(showSecond)
 		{
 			tipRemainder += ("<br />" + SECOND_TIP);
 		}
-		if (showThird)
+		if(showThird)
 		{
 			tipRemainder += ("<br />" + THIRD_TIP);
 		}
-		if (showFourth)
+		if(showFourth)
 		{
 			tipRemainder += ("<br />" + FOURTH_TIP);
 		}
-		if (showFifth)
+		if(showFifth)
 		{
 			tipRemainder += ("<br />" + FIFTH_TIP);
 		}
 
-		if (tipRemainder.startsWith("<br />"))
+		if(tipRemainder.startsWith("<br />"))
 		{
 			tipRemainder = tipRemainder.substring(6, tipRemainder.length());
 		}
-		if (!tipRemainder.equals(""))
+		if(!tipRemainder.equals(""))
 		{
 			firstRunLabel.setText("<html><div align=\"center\">" + tipRemainder + "</div></html>");
 			firstRunLabel.setSize(firstRunLabel.getPreferredSize());
 			firstRunLabel.setLocation((workspacePanel.getWidth() - firstRunLabel.getWidth()) / 2, (workspacePanel.getHeight() - firstRunLabel.getHeight()) / 2);
 		}
-		else if (firstRunLabel.getParent() == workspacePanel)
+		else if(firstRunLabel.getParent() == workspacePanel)
 		{
 			workspacePanel.remove(firstRunLabel);
 		}
@@ -1771,7 +1801,7 @@ public class ViewPanel extends JPanel
 					y = workspacePanel.getHeight() - ds.getHeight();
 
 				// Add to workspace and move
-				ds.setLocation (x, y);
+				ds.setLocation(x, y);
 				workspacePanel.add(ds);
 			}
 
@@ -1789,7 +1819,7 @@ public class ViewPanel extends JPanel
 		if((dragFromPalette || draggingComponent != null) && buttonPressed == MouseEvent.BUTTON1)
 		{
 			setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-			
+
 			if(hoverInDragComponent != null)
 			{
 				hoverInDragComponent.setBackground(NO_BACKGROUND_WORKSPACE);
@@ -1842,7 +1872,7 @@ public class ViewPanel extends JPanel
 	protected void rebuildWorkspace()
 	{
 		Problem problem;
-		if (newProblemWizardDialog.newProblem != null)
+		if(newProblemWizardDialog.newProblem != null)
 		{
 			problem = newProblemWizardDialog.newProblem;
 		}
@@ -1850,7 +1880,7 @@ public class ViewPanel extends JPanel
 		{
 			problem = domain.problem;
 		}
-		if (problem != null)
+		if(problem != null)
 		{
 			for(DataSet ds : problem.getVisibleDataSets())
 			{
@@ -1906,7 +1936,9 @@ public class ViewPanel extends JPanel
 			{
 				// Even number of columns, balance them below dataset
 				for(int i = 0; i < opCount / 2; i++)
+				{
 					halfWidth += widths[i] + spaceWidth;
+				}
 
 				// Eliminate half of the middle spacing
 				halfWidth -= spaceWidth / 2;
@@ -1916,7 +1948,9 @@ public class ViewPanel extends JPanel
 				// Odd number of columns, center the middle one under the
 				// dataset
 				for(int i = 0; i < opCount / 2; i++)
+				{
 					halfWidth += widths[i] + spaceWidth;
+				}
 
 				// And add enough to move through half the middle column
 				halfWidth += widths[opCount / 2] / 2;
@@ -2008,13 +2042,13 @@ public class ViewPanel extends JPanel
 	 */
 	protected void drop(Operation operation, boolean duplicate, Point location) throws OperationException, RProcessorException, MarlaException
 	{
-		if (operation != null)
+		if(operation != null)
 		{
 			operation.setDefaultColor();
 			operation.setBackground(NO_BACKGROUND_WORKSPACE);
 			componentsScrollablePanel.repaint();
 		}
-		
+
 		JComponent component = (JComponent) ((WorkspacePanel) workspacePanel).getComponentAt(location.x, location.y, operation);
 		if(component != null
 		   && component != trashCan
@@ -2031,7 +2065,7 @@ public class ViewPanel extends JPanel
 				newOperation.setText("<html>" + newOperation.getDisplayString(abbreviated) + "</html>");
 				newOperation.setSize(newOperation.getPreferredSize());
 
-				if (showSecond)
+				if(showSecond)
 				{
 					showSecond = false;
 					refreshTip();
@@ -2063,7 +2097,7 @@ public class ViewPanel extends JPanel
 					}
 				}
 
-				if (showThird)
+				if(showThird)
 				{
 					showThird = false;
 					refreshTip();
@@ -2071,7 +2105,7 @@ public class ViewPanel extends JPanel
 			}
 			else
 			{
-				if (component instanceof DataSet)
+				if(component instanceof DataSet)
 				{
 					// Add as child and ensure we're not listed as unused
 					DataSet dataSet = (DataSet) component;
@@ -2079,7 +2113,7 @@ public class ViewPanel extends JPanel
 					dataSet.addOperation(newOperation);
 				}
 
-				if (showThird)
+				if(showThird)
 				{
 					showThird = false;
 					refreshTip();
@@ -2094,7 +2128,7 @@ public class ViewPanel extends JPanel
 			if(duplicate)
 			{
 				setCursor(Cursor.getDefaultCursor());
-				
+
 				newOperation = Operation.createOperation(operation.getName());
 				newOperation.setFont(ViewPanel.workspaceFontBold);
 				newOperation.setText("<html>" + newOperation.getDisplayString(abbreviated) + "</html>");
@@ -2102,7 +2136,7 @@ public class ViewPanel extends JPanel
 
 				domain.problem.addUnusedOperation(newOperation);
 
-				if (showSecond)
+				if(showSecond)
 				{
 					showSecond = false;
 					refreshTip();
@@ -2231,7 +2265,7 @@ public class ViewPanel extends JPanel
 			@Override
 			public void actionPerformed(ActionEvent evt)
 			{
-				if (requirementsButtonClick(prompts, valueComponents, showDialog))
+				if(requirementsButtonClick(prompts, valueComponents, showDialog))
 				{
 					dialog.setVisible(false);
 				}
@@ -2250,7 +2284,7 @@ public class ViewPanel extends JPanel
 		buttonPanel.add(cancelButton);
 		panel.add(buttonPanel);
 
-		if (showDialog)
+		if(showDialog)
 		{
 			// Display dialog
 			dialog.pack();
@@ -2258,7 +2292,10 @@ public class ViewPanel extends JPanel
 			dialog.setVisible(true);
 		}
 
-		return new Object[] {panel, valueComponents};
+		return new Object[]
+				{
+					panel, valueComponents
+				};
 	}
 
 	/**
@@ -2300,7 +2337,7 @@ public class ViewPanel extends JPanel
 				// If the users input was not valid, the form is not accepted and the dialog will not close
 				((JTextField) valueComponents.get(i)).requestFocus();
 				((JTextField) valueComponents.get(i)).selectAll();
-				if (showDialog)
+				if(showDialog)
 				{
 					JOptionPane.showMessageDialog(ViewPanel.getInstance().domain.getTopWindow(), ex.getMessage(), "Invalid Input", JOptionPane.ERROR_MESSAGE);
 				}
@@ -2324,12 +2361,12 @@ public class ViewPanel extends JPanel
 	{
 		if(domain.problem != null)
 		{
-			if (Domain.isFirstRun())
+			if(Domain.isFirstRun())
 			{
 				firstRunLabel.setFont(FONT_BOLD_14);
 				firstRunLabel.setForeground(Color.LIGHT_GRAY);
 				refreshTip();
-				workspacePanel.add (firstRunLabel);
+				workspacePanel.add(firstRunLabel);
 			}
 			componentsPanel.setVisible(true);
 			emptyPalettePanel.setVisible(false);
@@ -2356,29 +2393,29 @@ public class ViewPanel extends JPanel
 			legendContentPanel.removeAll();
 			((GridLayout) legendContentPanel.getLayout()).setRows(0);
 			firstCounter = 3;
-			for (int i = 0; i < domain.problem.getSubProblemCount(); ++i)
+			for(int i = 0; i < domain.problem.getSubProblemCount(); ++i)
 			{
 				// Add sub problem to legend
 				JLabel label;
-				if (firstCounter == 1)
+				if(firstCounter == 1)
 				{
 					label = second;
 				}
-				else if (firstCounter == 2)
+				else if(firstCounter == 2)
 				{
 					label = third;
 				}
 				else
 				{
-					label = new JLabel ("");
-					second = new JLabel ("");
-					third = new JLabel ("");
+					label = new JLabel("");
+					second = new JLabel("");
+					third = new JLabel("");
 				}
 				label.setFont(FONT_PLAIN_12);
 				label.setText(domain.problem.getSubProblem(i).getSubproblemID());
 				label.setForeground(domain.problem.getSubProblem(i).getColor());
 
-				if (firstCounter == 3)
+				if(firstCounter == 3)
 				{
 					firstCounter = 0;
 
@@ -2394,19 +2431,19 @@ public class ViewPanel extends JPanel
 				++firstCounter;
 			}
 
-			if (dataSetContentPanel.getComponentCount() == 0)
+			if(dataSetContentPanel.getComponentCount() == 0)
 			{
 				((GridLayout) dataSetContentPanel.getLayout()).setColumns(1);
-				JLabel noneLabel = new JLabel ("-No Data Sets-");
+				JLabel noneLabel = new JLabel("-No Data Sets-");
 				noneLabel.setFont(FONT_BOLD_12);
-				dataSetContentPanel.add (noneLabel);
+				dataSetContentPanel.add(noneLabel);
 			}
-			if (legendContentPanel.getComponentCount() == 0)
+			if(legendContentPanel.getComponentCount() == 0)
 			{
 				((GridLayout) legendContentPanel.getLayout()).setColumns(1);
-				JLabel noneLabel = new JLabel ("-No Sub Problems-");
+				JLabel noneLabel = new JLabel("-No Sub Problems-");
 				noneLabel.setFont(FONT_BOLD_12);
-				legendContentPanel.add (noneLabel);
+				legendContentPanel.add(noneLabel);
 			}
 			dataSetContentPanel.invalidate();
 			legendContentPanel.invalidate();
@@ -2425,15 +2462,15 @@ public class ViewPanel extends JPanel
 		dataSetContentPanel.removeAll();
 		((GridLayout) dataSetContentPanel.getLayout()).setRows(0);
 		firstDataCounter = 3;
-		for (int i = 0; i < domain.problem.getDataCount(); ++i)
+		for(int i = 0; i < domain.problem.getDataCount(); ++i)
 		{
 			// Add sub problem to legend
 			JLabel label;
-			if (firstDataCounter == 1)
+			if(firstDataCounter == 1)
 			{
 				label = secondData;
 			}
-			else if (firstDataCounter == 2)
+			else if(firstDataCounter == 2)
 			{
 				label = thirdData;
 			}
@@ -2466,7 +2503,7 @@ public class ViewPanel extends JPanel
 						yDragOffset = (int) evt.getLocationOnScreen().getY() - (int) thisLabel.getLocationOnScreen().getY();
 					}
 				});
-				secondData = new JLabel ("");
+				secondData = new JLabel("");
 				DRAG_SOURCE.createDefaultDragGestureRecognizer(secondData, DnDConstants.ACTION_MOVE, DND_LISTENER);
 				final JLabel finalSecondLabel = secondData;
 				secondData.addMouseListener(new MouseAdapter()
@@ -2493,7 +2530,7 @@ public class ViewPanel extends JPanel
 						yDragOffset = (int) evt.getLocationOnScreen().getY() - (int) finalSecondLabel.getLocationOnScreen().getY();
 					}
 				});
-				thirdData = new JLabel ("");
+				thirdData = new JLabel("");
 				DRAG_SOURCE.createDefaultDragGestureRecognizer(thirdData, DnDConstants.ACTION_MOVE, DND_LISTENER);
 				final JLabel finalThirdLabel = thirdData;
 				thirdData.addMouseListener(new MouseAdapter()
@@ -2525,7 +2562,7 @@ public class ViewPanel extends JPanel
 			label.setText(domain.problem.getData(i).getName());
 			label.setForeground(DataSet.getDefaultColor());
 
-			if (firstDataCounter == 3)
+			if(firstDataCounter == 3)
 			{
 				firstDataCounter = 0;
 
@@ -2550,6 +2587,14 @@ public class ViewPanel extends JPanel
 	 */
 	protected boolean closeProblem(boolean editing)
 	{
+		// clear the undo/redo states if we are closing the problem
+		if(!editing)
+		{
+			undoRedo.clearSteps();
+			mainFrame.undoMenuItem.setEnabled(false);
+			mainFrame.redoMenuItem.setEnabled(false);
+		}
+
 		if(domain.problem != null)
 		{
 			// Check to save changes before closing the program
@@ -2672,6 +2717,61 @@ public class ViewPanel extends JPanel
 	}
 
 	/**
+	 * If it can be found, launch the Operation Editor.
+	 */
+	protected void launchOperationEditor()
+	{
+		File operationEditorExe = new File(Domain.CWD, "maRla Operation Editor.exe");
+		File operationEditorJar = new File(Domain.CWD, "maRla Operation Editor.jar");
+		boolean found = false;
+
+		try
+		{
+			if(operationEditorExe.exists())
+			{
+				Process proc = Runtime.getRuntime().exec(new String[]
+						{
+							operationEditorExe.getCanonicalPath(), Configuration.getInstance().get(Configuration.ConfigType.PrimaryOpsXML).toString()
+						}, null, null);
+				try
+				{
+					proc.wait(1000);
+					if(proc.exitValue() == 0)
+					{
+						found = true;
+					}
+				}
+				catch(InterruptedException ex) {}
+			}
+
+			if(!found && operationEditorJar.exists())
+			{
+				Process proc = Runtime.getRuntime().exec(new String[]
+						{
+							"java", "-jar", operationEditorJar.getCanonicalPath()
+						}, null, null);
+				try
+				{
+					proc.wait(1000);
+					if(proc.exitValue() == 0)
+					{
+						found = true;
+					}
+				}
+				catch(InterruptedException innerEx) {}
+			}
+		}
+		catch(IOException ex)
+		{
+		}
+
+		if(!found)
+		{
+			JOptionPane.showMessageDialog(this, "The maRla Operation Editor could not be found.", "Operation Editor Not Found", JOptionPane.INFORMATION_MESSAGE);
+		}
+	}
+
+	/**
 	 * Ensures all processes are terminated and that all ways of exiting the
 	 * application result in the same closing process.
 	 *
@@ -2680,7 +2780,7 @@ public class ViewPanel extends JPanel
 	 */
 	protected void quit(boolean forceQuit)
 	{
-		if (closeProblem(false))
+		if(closeProblem(false))
 		{
 			// Hide the main window to give the appearance of better responsiveness
 			mainFrame.setVisible(false);

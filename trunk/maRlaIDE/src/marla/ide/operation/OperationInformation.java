@@ -194,7 +194,7 @@ public abstract class OperationInformation
 	/**
 	 * Require all questions have a way to copy their values
 	 * Intentionally package private
-	 * @parent Operation to set as parent. THIS DOES NOT ACTUALLY ADD THE OPERATION
+	 * @param parent Operation to set as parent. THIS DOES NOT ACTUALLY ADD THE OPERATION
 	 *	TO THE OPERATION.
 	 */
 	abstract OperationInformation clone(Operation parent);
