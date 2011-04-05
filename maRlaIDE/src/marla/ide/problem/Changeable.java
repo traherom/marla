@@ -24,4 +24,9 @@ package marla.ide.problem;
 public interface Changeable
 {
 	public void markUnsaved();
+	
+	/**
+	 * Called when a change is about to happen
+	 */
+	public void changeBeginning();
 }

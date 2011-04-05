@@ -42,7 +42,7 @@ import marla.ide.r.RProcessor;
  *
  * @author Ryan Morehart
  */
-public abstract class Operation extends DataSource implements Changeable, Cloneable
+public abstract class Operation extends DataSource implements Cloneable
 {
 	/**
 	 * Denotes when this operation is in the middle of loading from XML,
@@ -1034,6 +1034,13 @@ public abstract class Operation extends DataSource implements Changeable, Clonea
 	{
 		if(parent != null)
 			parent.markUnsaved();
+	}
+
+	@Override
+	public void changeBeginning()
+	{
+		if(parent != null)
+			parent.changeBeginning();
 	}
 
 	@Override

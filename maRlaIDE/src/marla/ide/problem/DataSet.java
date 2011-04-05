@@ -42,7 +42,7 @@ import marla.ide.r.RProcessorParseException;
  * @author Ryan Morehart
  */
 @SuppressWarnings("serial")
-public final class DataSet extends DataSource implements Changeable
+public final class DataSet extends DataSource
 {
 	/**
 	 * Denotes if this class is loading from XML
@@ -618,6 +618,13 @@ public final class DataSet extends DataSource implements Changeable
 	{
 		if(parent instanceof Problem)
 			((ProblemPart)parent).markUnsaved();
+	}
+
+	@Override
+	public void changeBeginning()
+	{
+		if(parent instanceof Problem)
+			((ProblemPart)parent).changeBeginning();
 	}
 
 	@Override

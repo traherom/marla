@@ -70,8 +70,7 @@ public class UndoRedo<T>
 	 */
 	public void addStep(T step)
 	{
-		//states.add(currentState, step);
-		states.add(step);
+		states.add(currentState, step);
 		currentState++;
 		
 		// Blow away any redo steps we had
@@ -83,12 +82,10 @@ public class UndoRedo<T>
 			return;
 		
 		while(states.size() > maxStates)
-		{
 			states.remove(0);
-			
-			// Keep pointer in sync with list
-			currentState--;
-		}
+
+		// Keep pointer in sync with list
+		currentState = states.size();
 	}
 	
 	/**
