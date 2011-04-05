@@ -242,7 +242,7 @@ public class ViewPanel extends JPanel
 	protected boolean showFourth = true;
 	/** True if the fifth tip should be shown.*/
 	protected boolean showFifth = true;
-	/** True if the fifth tip should be shown.*/
+	/** The undo/redo object.*/
 	protected UndoRedo<Problem> undoRedo = new UndoRedo<Problem>();
 
 	/**
@@ -1714,10 +1714,18 @@ public class ViewPanel extends JPanel
 	 */
 	protected void undo()
 	{
-		Problem problem = undoRedo.undo();
-		closeProblem(true);
-		domain.problem = problem;
-		openProblem(true);
+		if (undoRedo.hasUndo())
+		{
+			Problem problem = undoRedo.undo();
+			closeProblem(true);
+			domain.problem = problem;
+			openProblem(true);
+
+			if (!undoRedo.hasUndo())
+			{
+				mainFrame.undoMenuItem.setEnabled (false);
+			}
+		}
 	}
 
 	/**
@@ -1725,10 +1733,18 @@ public class ViewPanel extends JPanel
 	 */
 	protected void redo()
 	{
-		Problem problem = undoRedo.redo();
-		closeProblem(true);
-		domain.problem = problem;
-		openProblem(true);
+		if (undoRedo.hasRedo())
+		{
+			Problem problem = undoRedo.redo();
+			closeProblem(true);
+			domain.problem = problem;
+			openProblem(true);
+
+			if (!undoRedo.hasRedo())
+			{
+				mainFrame.redoMenuItem.setEnabled (false);
+			}
+		}
 	}
 
 	/**
