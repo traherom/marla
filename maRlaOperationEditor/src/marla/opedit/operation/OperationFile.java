@@ -85,7 +85,7 @@ public final class OperationFile
 	public OperationFile(String savePath)
 	{
 		xmlPath = savePath;
-
+		
 		if(savePath != null)
 			loadOperations();
 	}

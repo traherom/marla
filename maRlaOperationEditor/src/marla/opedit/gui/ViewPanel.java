@@ -41,6 +41,7 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableColumnModel;
 import javax.swing.table.TableColumn;
 import marla.ide.gui.ExtensionFileFilter;
+import marla.ide.operation.OperationXML;
 import marla.ide.operation.OperationXMLException;
 import marla.ide.problem.DataSet;
 import marla.ide.problem.DuplicateNameException;
@@ -639,6 +640,14 @@ public class ViewPanel extends JPanel
 				else
 				{
 					marla.ide.gui.Domain.lastGoodDir = file.toString().substring(0, file.toString().lastIndexOf(File.separatorChar));
+				}
+
+				// Warn if it's the primary xml
+				if(file.equals(new File(OperationXML.getPrimaryXMLPath())))
+				{
+					int ret = JOptionPane.showConfirmDialog(this, "This file is the primary XML file. It may be overwritten without warning if maRla is updated.\nInstead, create a new file and set it as maRla's user operations XML file.\nDo you still want to edit this file?", "Editing Not Recommended", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+					if(ret == JOptionPane.NO_OPTION)
+						return;
 				}
 
 				try
