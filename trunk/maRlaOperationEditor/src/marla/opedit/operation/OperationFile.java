@@ -34,7 +34,7 @@ import org.jdom.output.XMLOutputter;
 /**
  * @author Ryan Morehart
  */
-public class OperationFile
+public final class OperationFile
 {
 	/**
 	 * Location to save operation XML to
@@ -88,6 +88,19 @@ public class OperationFile
 
 		if(savePath != null)
 			loadOperations();
+	}
+	
+	/**
+	 * Copy constructor
+	 * @param org File to copy
+	 */
+	public OperationFile(OperationFile org)
+	{
+		xmlPath = org.xmlPath;
+		isChanged = org.isChanged;
+		
+		for(OperationXMLEditable op : org.ops)
+			addOperation(op.clone());
 	}
 
 	/**
@@ -193,6 +206,25 @@ public class OperationFile
 
 		markUnsaved();
 		return newOp;
+	}
+	
+	/**
+	 * Adds an exsting operation to this file
+	 * @param op Operation to add
+	 * @return Newly added operation
+	 */
+	public OperationXMLEditable addOperation(OperationXMLEditable op)
+	{
+		// Ensure it's a unique name
+		if(getOperationNames().contains(op.getName()))
+			throw new OperationEditorException("Duplicate operation name '" + op.getName() + "' not allowed");
+
+		op.setParentFile(this);
+		ops.add(op);
+		
+		markUnsaved();
+		
+		return op;
 	}
 
 	/**

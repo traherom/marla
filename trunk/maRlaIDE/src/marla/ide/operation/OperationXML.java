@@ -445,8 +445,8 @@ public class OperationXML extends Operation
 	}
 
 	/**
-	 * Copy constructor, copies as much as possible. However, not able to get
-	 * everything
+	 * Copy constructor
+	 * @param org Original operation to copy
 	 */
 	private OperationXML(OperationXML org)
 	{
