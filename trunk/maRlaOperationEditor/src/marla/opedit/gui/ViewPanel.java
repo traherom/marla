@@ -47,6 +47,7 @@ import marla.ide.problem.DataSet;
 import marla.ide.problem.DuplicateNameException;
 import marla.ide.problem.MarlaException;
 import marla.ide.resource.Configuration;
+import marla.ide.resource.UndoRedo;
 import marla.opedit.gui.xmlpane.XmlTextPane;
 import marla.opedit.operation.OperationEditorException;
 import marla.opedit.operation.OperationFile;
@@ -104,6 +105,8 @@ public class ViewPanel extends JPanel
 	private boolean ignoreChanges = true;
 	/** Ignore the second table change event when an operation is invalid.*/
 	private boolean ignoreSecond = false;
+	/** The undo/redo object.*/
+	protected UndoRedo<OperationXMLEditable> undoRedo = new UndoRedo<OperationXMLEditable>();
 
 	/**
 	 * Creates new form MainFrame for a stand-alone application.
@@ -1001,7 +1004,20 @@ public class ViewPanel extends JPanel
 	 */
 	protected void undo()
 	{
+		if (undoRedo.hasUndo())
+		{
+			OperationXMLEditable opXml = undoRedo.undo();
+			currentOperation = opXml;
+			operationsNameTextField.setText(currentOperation.getName());
+			categoryTextField.setText(currentOperation.getCategory());
+			hasPlotCheckBox.setSelected(currentOperation.hasPlot());
+			operationTextPane.setText(currentOperation.getInnerXML());
 
+			if (!undoRedo.hasUndo())
+			{
+				mainFrame.undoMenuItem.setEnabled (false);
+			}
+		}
 	}
 
 	/**
@@ -1009,7 +1025,20 @@ public class ViewPanel extends JPanel
 	 */
 	protected void redo()
 	{
+		if (undoRedo.hasRedo())
+		{
+			OperationXMLEditable opXml = undoRedo.redo();
+			currentOperation = opXml;
+			operationsNameTextField.setText(currentOperation.getName());
+			categoryTextField.setText(currentOperation.getCategory());
+			hasPlotCheckBox.setSelected(currentOperation.hasPlot());
+			operationTextPane.setText(currentOperation.getInnerXML());
 
+			if (!undoRedo.hasRedo())
+			{
+				mainFrame.redoMenuItem.setEnabled (false);
+			}
+		}
 	}
 
 	/**
@@ -1174,6 +1203,10 @@ public class ViewPanel extends JPanel
 	private void operationsTableRowSelected(ListSelectionEvent evt)
 	{
 		ignoreChanges = true;
+		undoRedo.clearSteps();
+		mainFrame.undoMenuItem.setEnabled(false);
+		mainFrame.redoMenuItem.setEnabled(false);
+		
 		if (operationsTable.getSelectedRow() != -1)
 		{
 			try
