@@ -59,6 +59,16 @@ public class OperationXMLEditable extends OperationXML
 	}
 
 	/**
+	 * Copy constructor
+	 * @param org Original operation to copy
+	 */
+	public OperationXMLEditable(OperationXMLEditable org)
+	{
+		lastError = org.lastError;
+		opEl = (Element)org.opEl.clone();
+	}
+	
+	/**
 	 * Denotes that this operation has changed in some way
 	 */
 	@Override
@@ -208,6 +218,16 @@ public class OperationXMLEditable extends OperationXML
 	}
 
 	/**
+	 * Sets the parent for this operation. Does not actually add it to the file,
+	 * only changes the parent pointer!
+	 * @param newParent OperationFile to use as parent
+	 */
+	public void setParentFile(OperationFile newParent)
+	{
+		parent = newParent;
+	}
+	
+	/**
 	 * Changes the XML that the operation contains internally.
 	 * @param newXMLStr New XML to parse and use for operation guts
 	 * @return Previously set XML
@@ -282,5 +302,11 @@ public class OperationXMLEditable extends OperationXML
 	public static List<String> getAvailableOperations()
 	{
 		throw new UnsupportedOperationException("Blocked");
+	}
+	
+	@Override
+	public OperationXMLEditable clone()
+	{
+		return new OperationXMLEditable(this);
 	}
 }
