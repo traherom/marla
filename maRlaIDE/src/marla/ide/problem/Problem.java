@@ -40,7 +40,7 @@ import org.jdom.output.XMLOutputter;
  *
  * @author Ryan Morehart
  */
-public final class Problem implements ProblemPart
+public final class Problem implements ProblemPart, Cloneable
 {
 	/**
 	 * Domain that this Problem is working with
@@ -1027,5 +1027,11 @@ public final class Problem implements ProblemPart
 			domain.rebuildWorkspace();
 
 		return newProb;
+	}
+	
+	@Override
+	public Problem clone()
+	{
+		return new Problem(this);
 	}
 }
