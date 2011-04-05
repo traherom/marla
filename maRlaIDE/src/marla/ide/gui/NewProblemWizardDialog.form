@@ -820,20 +820,20 @@
                     </Constraint>
                   </Constraints>
                 </Component>
-                <Component class="javax.swing.JButton" name="importDevoreButton">
+                <Component class="javax.swing.JButton" name="addFromRLibButton">
                   <Properties>
                     <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                       <Font name="Verdana" size="12" style="0"/>
                     </Property>
-                    <Property name="text" type="java.lang.String" value="Import from Devore7"/>
+                    <Property name="text" type="java.lang.String" value="Add from R Library"/>
                     <Property name="toolTipText" type="java.lang.String" value="Import a data set from the Devore7 library"/>
                   </Properties>
                   <Events>
-                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="importDevoreButtonActionPerformed"/>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="addFromRLibButtonActionPerformed"/>
                   </Events>
                   <Constraints>
                     <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout" value="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout$AbsoluteConstraintsDescription">
-                      <AbsoluteConstraints x="0" y="330" width="180" height="-1"/>
+                      <AbsoluteConstraints x="0" y="330" width="150" height="-1"/>
                     </Constraint>
                   </Constraints>
                 </Component>

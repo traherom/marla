@@ -216,7 +216,7 @@ public class ViewPanel extends JPanel
 				"PDF"
 			});
 	/** The extensions file filter for LaTeX files.*/
-	protected ExtensionFileFilter latexFilter = new ExtensionFileFilter("LaTeX Sweave Files (.rnw)", new String[]
+	protected ExtensionFileFilter latexFilter = new ExtensionFileFilter("LaTeX Sweave Files (.Rnw)", new String[]
 			{
 				"RNW"
 			});
@@ -493,6 +493,8 @@ public class ViewPanel extends JPanel
 		componentsScrollablePanel.add(new JLabel (""), compConstraints);
 
 		componentsScrollablePanel.invalidate();
+		componentsScrollablePanel.revalidate();
+		componentsScrollablePanel.repaint();
 	}
 
 	/** This method is called from within the constructor to
@@ -1741,6 +1743,7 @@ public class ViewPanel extends JPanel
 		{
 			workspacePanel.remove(firstRunLabel);
 		}
+		workspacePanel.repaint();
 	}
 
 	/**

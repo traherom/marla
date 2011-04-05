@@ -990,8 +990,8 @@ public class Domain
 			viewPanel.fileChooserDialog.resetChoosableFileFilters ();
 			viewPanel.fileChooserDialog.setFileFilter (viewPanel.latexFilter);
 			viewPanel.fileChooserDialog.setFileSelectionMode (JFileChooser.FILES_ONLY);
-			viewPanel.fileChooserDialog.setCurrentDirectory (new File (problem.getFileName ().substring (0, problem.getFileName ().lastIndexOf (".")) + ".rnw"));
-			viewPanel.fileChooserDialog.setSelectedFile (new File (problem.getFileName ().substring (0, problem.getFileName ().lastIndexOf (".")) + ".rnw"));
+			viewPanel.fileChooserDialog.setCurrentDirectory (new File (problem.getFileName ().substring (0, problem.getFileName ().lastIndexOf (".")) + ".Rnw"));
+			viewPanel.fileChooserDialog.setSelectedFile (new File (problem.getFileName ().substring (0, problem.getFileName ().lastIndexOf (".")) + ".Rnw"));
 			// Display the chooser and retrieve the selected file
 			int response = viewPanel.fileChooserDialog.showSaveDialog (viewPanel);
 			while (response == JFileChooser.APPROVE_OPTION)
@@ -1000,13 +1000,13 @@ public class Domain
 				// ensure an extension is on the file
 				if (file.getName ().indexOf (".") == -1)
 				{
-					file = new File (viewPanel.fileChooserDialog.getSelectedFile ().toString () + ".rnw");
+					file = new File (viewPanel.fileChooserDialog.getSelectedFile ().toString () + ".Rnw");
 				}
 				final File finalFile = file;
 				// ensure the file is a valid backup file
-				if (!finalFile.toString ().endsWith (".rnw"))
+				if (!finalFile.toString ().toLowerCase().endsWith (".rnw"))
 				{
-					JOptionPane.showMessageDialog (getTopWindow(), "The extension for the file must be .rnw.", "Invalid Extension", JOptionPane.WARNING_MESSAGE);
+					JOptionPane.showMessageDialog (getTopWindow(), "The extension for the file must be .Rnw.", "Invalid Extension", JOptionPane.WARNING_MESSAGE);
 					viewPanel.fileChooserDialog.setSelectedFile (new File (viewPanel.fileChooserDialog.getSelectedFile ().toString ().substring (0, viewPanel.fileChooserDialog.getSelectedFile ().toString ().lastIndexOf (".")) + ".tex"));
 					response = viewPanel.fileChooserDialog.showSaveDialog (viewPanel);
 					continue;

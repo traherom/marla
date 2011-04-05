@@ -736,10 +736,14 @@ public class SettingsDialog extends EscapeDialog
 			{
 				try
 				{
+					JOptionPane.showMessageDialog(this, ex.getMessage(), "Can't Change Path", JOptionPane.WARNING_MESSAGE);
 					rPathTextField.setText((String) Configuration.getInstance().get(Configuration.ConfigType.R));
 				}
 				// Exception won't happen
-				catch(MarlaException innerEx) {}
+				catch(MarlaException innerEx)
+				{
+					Domain.logger.add(ex);
+				}
 			}
 		}
 	}//GEN-LAST:event_rPathTextFieldActionPerformed
@@ -755,10 +759,14 @@ public class SettingsDialog extends EscapeDialog
 			{
 				try
 				{
+					JOptionPane.showMessageDialog(this, ex.getMessage(), "Can't Change Path", JOptionPane.WARNING_MESSAGE);
 					latexPathTextField.setText((String) Configuration.getInstance().get(Configuration.ConfigType.PdfTex));
 				}
 				// Exception won't happen
-				catch(MarlaException innerEx) {}
+				catch(MarlaException innerEx)
+				{
+					Domain.logger.add(ex);
+				}
 			}
 		}
 	}//GEN-LAST:event_latexPathTextFieldActionPerformed
@@ -778,10 +786,14 @@ public class SettingsDialog extends EscapeDialog
 			{
 				try
 				{
+					JOptionPane.showMessageDialog(this, ex.getMessage(), "Can't Change Path", JOptionPane.WARNING_MESSAGE);
 					latexTemplateTextField.setText((String) Configuration.getInstance().get(Configuration.ConfigType.TexTemplate));
 				}
 				// Exception won't happen
-				catch(MarlaException innerEx) {}
+				catch(MarlaException innerEx)
+				{
+					Domain.logger.add(ex);
+				}
 			}
 		}
 	}//GEN-LAST:event_latexTemplateTextFieldActionPerformed
@@ -801,10 +813,14 @@ public class SettingsDialog extends EscapeDialog
 			{
 				try
 				{
+					JOptionPane.showMessageDialog(this, ex.getMessage(), "Can't Change Path", JOptionPane.WARNING_MESSAGE);
 					operationsTextField.setText((String) Configuration.getInstance().get(Configuration.ConfigType.PrimaryOpsXML));
 				}
 				// Exception won't happen
-				catch(MarlaException innerEx) {}
+				catch(MarlaException innerEx)
+				{
+					Domain.logger.add(ex);
+				}
 			}
 		}
 	}//GEN-LAST:event_operationsTextFieldActionPerformed
