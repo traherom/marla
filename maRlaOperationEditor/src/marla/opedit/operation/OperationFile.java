@@ -358,4 +358,10 @@ public final class OperationFile
 	{
 		return xmlPath;
 	}
+	
+	@Override
+	public OperationFile clone()
+	{
+		return new OperationFile(this);
+	}
 }
