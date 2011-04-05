@@ -356,7 +356,7 @@ public class LatexExporter
 		try
 		{
 			// Write to a temporary file
-			File tempFile = File.createTempFile("marla", ".rnw");
+			File tempFile = File.createTempFile("marla", ".Rnw");
 			tempFile.deleteOnExit();
 			BufferedWriter writer = new BufferedWriter(new FileWriter(tempFile));
 
@@ -1104,7 +1104,7 @@ public class LatexExporter
 
 		// Create the rnw
 		String rnwPath = cleanTempExport();
-		String baseFileName = new File(rnwPath).getName().replace(".rnw", "");
+		String baseFileName = new File(rnwPath).getName().replace(".Rnw", "");
 
 		Domain.setProgressStatus("Sweaving LaTeX file...");
 

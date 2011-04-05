@@ -217,6 +217,7 @@ public class ViewPanel extends JPanel
         operationScrollPane = new javax.swing.JScrollPane();
         operationTextPane = new XmlTextPane();
         hasPlotCheckBox = new javax.swing.JCheckBox();
+        saveAsButton = new javax.swing.JButton();
 
         fileChooser.setApproveButtonToolTipText("Choose selected file");
         fileChooser.setDialogTitle("Browse Operation File");
@@ -302,7 +303,7 @@ public class ViewPanel extends JPanel
                     .add(displayNameLabel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .add(displayNameScrollPane, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 25, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(outputScrollPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 355, Short.MAX_VALUE)
+                .add(outputScrollPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 363, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -403,9 +404,9 @@ public class ViewPanel extends JPanel
         operationsTable.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         operationsScrollPane.setViewportView(operationsTable);
 
-        innerXmlLinkLabel.setFont(new java.awt.Font("Verdana", 0, 12));
+        innerXmlLinkLabel.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
         innerXmlLinkLabel.setForeground(java.awt.Color.blue);
-        innerXmlLinkLabel.setText("<html><u>View documentation for XML</u></html>");
+        innerXmlLinkLabel.setText("<html><u>View documentation for Operation XML</u></html>");
         innerXmlLinkLabel.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 innerXmlLinkLabelMouseEntered(evt);
@@ -435,6 +436,15 @@ public class ViewPanel extends JPanel
             }
         });
 
+        saveAsButton.setFont(new java.awt.Font("Verdana", 0, 12));
+        saveAsButton.setText("Save As");
+        saveAsButton.setEnabled(false);
+        saveAsButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                saveAsButtonActionPerformed(evt);
+            }
+        });
+
         org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -447,11 +457,13 @@ public class ViewPanel extends JPanel
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                         .add(editingLabel)
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(editingTextField, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 361, Short.MAX_VALUE)
+                        .add(editingTextField, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 293, Short.MAX_VALUE)
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                         .add(browseEditingButton)
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(saveButton))
+                        .add(saveButton)
+                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                        .add(saveAsButton))
                     .add(org.jdesktop.layout.GroupLayout.LEADING, layout.createSequentialGroup()
                         .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                             .add(layout.createSequentialGroup()
@@ -465,17 +477,17 @@ public class ViewPanel extends JPanel
                             .add(layout.createSequentialGroup()
                                 .add(categoryLabel)
                                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                                .add(categoryTextField, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 393, Short.MAX_VALUE))
+                                .add(categoryTextField, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 412, Short.MAX_VALUE))
                             .add(layout.createSequentialGroup()
                                 .add(opsNameLabel)
                                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                                .add(operationsNameTextField, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 349, Short.MAX_VALUE))
+                                .add(operationsNameTextField, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 368, Short.MAX_VALUE))
                             .add(org.jdesktop.layout.GroupLayout.TRAILING, layout.createSequentialGroup()
                                 .add(innerXmlLinkLabel, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                                 .add(updateTestButton))
-                            .add(operationScrollPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 460, Short.MAX_VALUE)
-                            .add(xmlStatusLabel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 460, Short.MAX_VALUE))))
+                            .add(operationScrollPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 479, Short.MAX_VALUE)
+                            .add(xmlStatusLabel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 479, Short.MAX_VALUE))))
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(testingPanel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
@@ -491,12 +503,13 @@ public class ViewPanel extends JPanel
                             .add(editingTextField, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                             .add(newButton)
                             .add(editingLabel)
-                            .add(browseEditingButton)
-                            .add(saveButton))
+                            .add(saveAsButton)
+                            .add(saveButton)
+                            .add(browseEditingButton))
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                         .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                             .add(layout.createSequentialGroup()
-                                .add(operationsScrollPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 419, Short.MAX_VALUE)
+                                .add(operationsScrollPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 427, Short.MAX_VALUE)
                                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                                     .add(addButton)
@@ -514,7 +527,7 @@ public class ViewPanel extends JPanel
                                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                                 .add(xmlStatusLabel, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                                .add(operationScrollPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 318, Short.MAX_VALUE)
+                                .add(operationScrollPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 326, Short.MAX_VALUE)
                                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                                     .add(updateTestButton)
@@ -635,7 +648,7 @@ public class ViewPanel extends JPanel
 				}
 				catch(OperationEditorException ex)
 				{
-					JOptionPane.showMessageDialog(this, ex.getMessage(), "Unable to open", JOptionPane.WARNING_MESSAGE);
+					JOptionPane.showMessageDialog(this, ex.getMessage(), "Unable to Open", JOptionPane.WARNING_MESSAGE);
 				}
 
 
@@ -772,7 +785,8 @@ public class ViewPanel extends JPanel
 			}
 			catch(OperationEditorException ex)
 			{
-				Domain.logger.add (ex);
+				JOptionPane.showMessageDialog(this, "You do not have permission to write to the file at its current location.\nYou will need to save the file to a new location to save your changes.", "Access Denied", JOptionPane.WARNING_MESSAGE);
+				saveAsButtonActionPerformed(null);
 			}
 		}
 	}//GEN-LAST:event_saveButtonActionPerformed
@@ -901,6 +915,64 @@ public class ViewPanel extends JPanel
 			currentOperation.setHasPlot(hasPlotCheckBox.isSelected());
 		}
 	}//GEN-LAST:event_hasPlotCheckBoxActionPerformed
+
+	private void saveAsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveAsButtonActionPerformed
+		try
+		{
+			// Construct the file-based open chooser dialog
+			fileChooser.resetChoosableFileFilters();
+			fileChooser.setFileFilter(xmlFilter);
+			fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+			fileChooser.setDialogType(JFileChooser.SAVE_DIALOG);
+			fileChooser.setDialogTitle("Save As Operation File");
+			fileChooser.setCurrentDirectory(new File(marla.ide.gui.Domain.lastGoodDir));
+			// Display the chooser and retrieve the selected file
+			int response = fileChooser.showOpenDialog(this);
+			while(response == JFileChooser.APPROVE_OPTION)
+			{
+				int lastIndex = fileChooser.getSelectedFile().toString().lastIndexOf(".");
+				if(lastIndex == -1)
+				{
+					lastIndex = fileChooser.getSelectedFile().toString().length();
+					fileChooser.setSelectedFile(new File(fileChooser.getSelectedFile().toString().substring(0, lastIndex) + ".xml"));
+				}
+				File file = fileChooser.getSelectedFile();
+				if(!file.toString().endsWith(".xml"))
+				{
+					JOptionPane.showMessageDialog(this, "The file must have a valid XML extension.", "Does Not Exist", JOptionPane.WARNING_MESSAGE);
+					response = fileChooser.showOpenDialog(this);
+					continue;
+				}
+				else if (file.exists())
+				{
+					response = JOptionPane.showOptionDialog(this, "The specified file already exists.  Overwrite?", "Overwrite File", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null);
+					if(response != JOptionPane.YES_OPTION)
+					{
+						response = fileChooser.showOpenDialog(this);
+						continue;
+					}
+				}
+
+				currentFile = new OperationFile(currentFile);
+				currentFile.setFilePath(file.toString());
+				if(file.isDirectory())
+				{
+					marla.ide.gui.Domain.lastGoodDir = file.toString();
+				}
+				else
+				{
+					marla.ide.gui.Domain.lastGoodDir = file.toString().substring(0, file.toString().lastIndexOf(File.separatorChar));
+				}
+
+				openFile();
+				break;
+			}
+		}
+		catch(OperationEditorException ex)
+		{
+			Domain.logger.add(ex);
+		}
+	}//GEN-LAST:event_saveAsButtonActionPerformed
 
 	/**
 	 * Update the test in the right panel.
@@ -1126,6 +1198,7 @@ public class ViewPanel extends JPanel
 			// Set UI states now that a file is open
 			editingTextField.setText(currentFile.toString());
 			addButton.setEnabled(true);
+			saveAsButton.setEnabled(true);
 
 			operationsModel.removeAllRows();
 			for (String item : currentFile.getOperationNames())
@@ -1159,7 +1232,15 @@ public class ViewPanel extends JPanel
 														 JOptionPane.QUESTION_MESSAGE);
 				if(response == JOptionPane.YES_OPTION)
 				{
-					currentFile.save();
+					try
+					{
+						currentFile.save();
+					}
+					catch (OperationEditorException ex)
+					{
+						JOptionPane.showMessageDialog(this, "You do not have permission to write to the file at its current location.\nYou will need to save the file to a new location to save your changes.", "Access Denied", JOptionPane.WARNING_MESSAGE);
+						saveAsButtonActionPerformed(null);
+					}
 				}
 				else if(response == -1 || response == JOptionPane.CANCEL_OPTION)
 				{
@@ -1292,6 +1373,7 @@ public class ViewPanel extends JPanel
     private javax.swing.JTable outputTable;
     private javax.swing.JPanel questionPanel;
     private javax.swing.JButton removeButton;
+    protected javax.swing.JButton saveAsButton;
     protected javax.swing.JButton saveButton;
     private javax.swing.JPanel testingPanel;
     private javax.swing.JButton updateTestButton;

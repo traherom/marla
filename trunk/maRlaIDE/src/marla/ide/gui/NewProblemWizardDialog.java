@@ -18,6 +18,7 @@
 
 package marla.ide.gui;
 
+import java.awt.event.KeyEvent;
 import marla.ide.gui.colorpicker.ColorPicker;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -28,6 +29,7 @@ import java.awt.GridLayout;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
@@ -48,6 +50,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
+import javax.swing.JTextField;
 import javax.swing.JViewport;
 import javax.swing.border.BevelBorder;
 import javax.swing.event.ChangeEvent;
@@ -223,7 +226,7 @@ public class NewProblemWizardDialog extends EscapeDialog
         addDataSetButton = new javax.swing.JButton();
         removeDataSetButton = new javax.swing.JButton();
         tipTextLabel = new javax.swing.JLabel();
-        importDevoreButton = new javax.swing.JButton();
+        addFromRLibButton = new javax.swing.JButton();
         informationCardPanel = new javax.swing.JPanel();
         studentNameLabel = new javax.swing.JLabel();
         courseShortNameLabel = new javax.swing.JLabel();
@@ -368,7 +371,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 
         welcomeCardPanel.setLayout(null);
 
-        welcomeWizardLabel.setFont(new java.awt.Font("Verdana", 1, 12));
+        welcomeWizardLabel.setFont(new java.awt.Font("Verdana", 1, 12)); // NOI18N
         welcomeWizardLabel.setText("Welcome");
         welcomeCardPanel.add(welcomeWizardLabel);
         welcomeWizardLabel.setBounds(10, 10, 430, 16);
@@ -592,7 +595,7 @@ public class NewProblemWizardDialog extends EscapeDialog
         dataSetsCardPanel.add(dataSetsWizardLabel);
         dataSetsWizardLabel.setBounds(10, 10, 160, 16);
 
-        dataSetTabbedPane.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        dataSetTabbedPane.setFont(new java.awt.Font("Verdana", 0, 12));
         dataSetsCardPanel.add(dataSetTabbedPane);
         dataSetTabbedPane.setBounds(0, 30, 460, 299);
 
@@ -607,7 +610,7 @@ public class NewProblemWizardDialog extends EscapeDialog
         dataSetsCardPanel.add(addDataSetButton);
         addDataSetButton.setBounds(285, 330, 70, 25);
 
-        removeDataSetButton.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        removeDataSetButton.setFont(new java.awt.Font("Verdana", 0, 12));
         removeDataSetButton.setText("Remove");
         removeDataSetButton.setToolTipText("Remove the last data set");
         removeDataSetButton.addActionListener(new java.awt.event.ActionListener() {
@@ -622,16 +625,16 @@ public class NewProblemWizardDialog extends EscapeDialog
         dataSetsCardPanel.add(tipTextLabel);
         tipTextLabel.setBounds(10, 360, 460, 30);
 
-        importDevoreButton.setFont(new java.awt.Font("Verdana", 0, 12));
-        importDevoreButton.setText("Import from Devore7");
-        importDevoreButton.setToolTipText("Import a data set from the Devore7 library");
-        importDevoreButton.addActionListener(new java.awt.event.ActionListener() {
+        addFromRLibButton.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        addFromRLibButton.setText("Add from R Library");
+        addFromRLibButton.setToolTipText("Import a data set from the Devore7 library");
+        addFromRLibButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                importDevoreButtonActionPerformed(evt);
+                addFromRLibButtonActionPerformed(evt);
             }
         });
-        dataSetsCardPanel.add(importDevoreButton);
-        importDevoreButton.setBounds(0, 330, 180, 25);
+        dataSetsCardPanel.add(addFromRLibButton);
+        addFromRLibButton.setBounds(0, 330, 150, 25);
 
         wizardCardPanel.add(dataSetsCardPanel, "card2");
 
@@ -1358,12 +1361,15 @@ public class NewProblemWizardDialog extends EscapeDialog
 		}
 	}//GEN-LAST:event_mouseReleased
 
-	private void importDevoreButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_importDevoreButtonActionPerformed
-		final JPanel optionPanel = new JPanel(new GridLayout(2, 1));
-		JLabel label1 = new JLabel("Enter the name of the Devore7 library you'd like to import.");
-		JLabel label2 = new JLabel("<html><u>Click here to view Devore7 documentation.</u></html>");
-		label2.setForeground(Color.BLUE);
-		label2.addMouseListener(new MouseAdapter()
+	private void addFromRLibButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addFromRLibButtonActionPerformed
+		final JPanel optionPanel = new JPanel(new GridLayout(3, 1));
+		JPanel libPanel = new JPanel(new BorderLayout());
+		JLabel libLabel = new JLabel("Library: ");
+		final JLabel docLabel = new JLabel("<html><u>Click here to view Devore7 documentation.</u></html>");
+		docLabel.setForeground(Color.BLUE);
+		JLabel label2 = new JLabel("Enter the name of the data set you'd like to add from the library.");
+		
+		docLabel.addMouseListener(new MouseAdapter()
 		{
 			@Override
 			public void mouseEntered(MouseEvent evt)
@@ -1391,9 +1397,29 @@ public class NewProblemWizardDialog extends EscapeDialog
 				}
 			}
 		});
-		optionPanel.add(label1);
+
+		final JTextField libTextField = new JTextField("Devore7");
+		libTextField.addKeyListener(new KeyAdapter()
+		{
+			@Override
+			public void keyTyped(KeyEvent evt)
+			{
+				String charAdd = "";
+				if (evt.getKeyChar() != '\b')
+				{
+					charAdd = evt.getKeyChar() + "";
+				}
+				checkLibTextField(libTextField.getText() + charAdd, docLabel);
+			}
+		});
+		
+		libPanel.add(libLabel, BorderLayout.WEST);
+		libPanel.add(libTextField, BorderLayout.CENTER);
+		
+		optionPanel.add(libPanel);
+		optionPanel.add(docLabel);
 		optionPanel.add(label2);
-		Object response = JOptionPane.showInputDialog(this, optionPanel, "Devore7 Library", JOptionPane.QUESTION_MESSAGE);
+		Object response = JOptionPane.showInputDialog(this, optionPanel, "Data Set from R Library", JOptionPane.QUESTION_MESSAGE);
 		if (response != null)
 		{
 			try
@@ -1425,10 +1451,11 @@ public class NewProblemWizardDialog extends EscapeDialog
 				JOptionPane.showMessageDialog(this, ex.getMessage(), "Data Set Not Loadable", JOptionPane.WARNING_MESSAGE);
 			}
 		}
-	}//GEN-LAST:event_importDevoreButtonActionPerformed
+	}//GEN-LAST:event_addFromRLibButtonActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton addDataSetButton;
+    private javax.swing.JButton addFromRLibButton;
     private javax.swing.JButton addSubProblemButton;
     protected javax.swing.JButton backWizardButton;
     private javax.swing.JButton browseButton;
@@ -1449,7 +1476,6 @@ public class NewProblemWizardDialog extends EscapeDialog
     private javax.swing.JTextArea descriptionTextArea;
     private javax.swing.JLabel descriptionWizardLabel;
     private javax.swing.JScrollPane descroptionScollPane;
-    private javax.swing.JButton importDevoreButton;
     private javax.swing.JPanel informationCardPanel;
     protected javax.swing.JLabel informationLabel;
     private javax.swing.JLabel informationWizardLabel;
@@ -1499,6 +1525,24 @@ public class NewProblemWizardDialog extends EscapeDialog
     private javax.swing.JLabel wizardLineCard5;
     private javax.swing.JLabel wizardLineCard6;
     // End of variables declaration//GEN-END:variables
+
+	/**
+	 * 
+	 * @param libTextField
+	 * @param docLabel
+	 */
+	private void checkLibTextField(String text, JLabel docLabel)
+	{
+		if (text.equals ("Devore7"))
+		{
+			docLabel.setText("<html><u>Click here to view Devore7 documentation.</u></html>");
+			docLabel.setVisible(true);
+		}
+		else
+		{
+			docLabel.setVisible(false);
+		}
+	}
 
 	/**
 	 * 
