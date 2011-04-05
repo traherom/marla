@@ -71,7 +71,8 @@ public class UndoRedo<T>
 	 */
 	public void addStep(T step)
 	{
-		states.add(maxStates, step);
+		//states.add(currentState, step);
+		states.add(step);
 		currentState++;
 		
 		// Blow away any redo steps we had
@@ -79,6 +80,9 @@ public class UndoRedo<T>
 			states.remove(currentState);
 		
 		// Do we have too much history?
+		if(maxStates < 1)
+			return;
+		
 		while(states.size() > maxStates)
 		{
 			states.remove(0);
@@ -86,6 +90,15 @@ public class UndoRedo<T>
 			// Keep pointer in sync with list
 			currentState--;
 		}
+	}
+	
+	/**
+	 * Removed all existing steps
+	 */
+	public void clearSteps()
+	{
+		states.clear();
+		currentState = 0;
 	}
 	
 	/**
@@ -131,11 +144,5 @@ public class UndoRedo<T>
 	public boolean hasUndo()
 	{
 		return 0 < currentState;
-	}
-	
-	public static void main(String[] args)
-	{
-		UndoRedo<Problem> ur = new UndoRedo<Problem>();
-		
 	}
 }

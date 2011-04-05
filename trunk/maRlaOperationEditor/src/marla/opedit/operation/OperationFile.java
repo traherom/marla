@@ -157,7 +157,7 @@ public final class OperationFile
 		}
 		catch(JDOMException ex)
 		{
-			throw new OperationEditorException("Operation XML file '" +xmlPath + "' is invalid XML. Edit it manually before loading.", ex);
+			throw new OperationEditorException("Operation XML file '" + xmlPath + "' is invalid XML. Edit it manually before loading.", ex);
 		}
 		catch(IOException ex)
 		{
