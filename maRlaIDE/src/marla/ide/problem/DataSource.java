@@ -76,7 +76,8 @@ public abstract class DataSource extends JLabel implements Loadable
 		// Easy stuff
 		name = org.name;
 		isHidden = org.isHidden;
-		internalID = new Integer(org.internalID);
+		if(org.internalID != null)
+			internalID = new Integer(org.internalID);
 		
 		// Our children
 		for(Operation orgOp : org.solutionOps)

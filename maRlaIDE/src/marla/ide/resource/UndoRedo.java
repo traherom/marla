@@ -19,6 +19,7 @@ package marla.ide.resource;
 
 import java.util.ArrayList;
 import java.util.List;
+import marla.ide.problem.Problem;
 
 /**
  * Stores undo/redo steps and offers a quick interface for looping through them
@@ -130,5 +131,11 @@ public class UndoRedo<T>
 	public boolean hasUndo()
 	{
 		return 0 < currentState;
+	}
+	
+	public static void main(String[] args)
+	{
+		UndoRedo<Problem> ur = new UndoRedo<Problem>();
+		
 	}
 }
