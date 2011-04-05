@@ -39,7 +39,7 @@ public final class OperationFile
 	/**
 	 * Location to save operation XML to
 	 */
-	private final String xmlPath;
+	private String xmlPath;
 	/**
 	 * Operations in this file
 	 */
@@ -103,6 +103,18 @@ public final class OperationFile
 			addOperation(op.clone());
 	}
 
+	/**
+	 * Sets the path to save file to
+	 * @param newPath New path to save to
+	 * @return Previously set path
+	 */
+	public String setFilePath(String newPath)
+	{
+		String old = xmlPath;
+		xmlPath = newPath;
+		return old;
+	}
+	
 	/**
 	 * (Re)loads the current XML file operations
 	 */
