@@ -62,8 +62,10 @@ public class OperationXMLEditable extends OperationXML
 	 * Copy constructor
 	 * @param org Original operation to copy
 	 */
-	public OperationXMLEditable(OperationXMLEditable org)
+	protected OperationXMLEditable(OperationXMLEditable org)
 	{
+		super(org);
+		
 		lastError = org.lastError;
 		opEl = (Element)org.opEl.clone();
 	}
@@ -264,6 +266,12 @@ public class OperationXMLEditable extends OperationXML
 		return oldXML;
 	}
 
+	@Override
+	public OperationXMLEditable clone()
+	{
+		return new OperationXMLEditable(this);
+	}
+	
 	/**
 	 * Override things we don't want to have available. Hackish, I know
 	 */
@@ -302,11 +310,5 @@ public class OperationXMLEditable extends OperationXML
 	public static List<String> getAvailableOperations()
 	{
 		throw new UnsupportedOperationException("Blocked");
-	}
-	
-	@Override
-	public OperationXMLEditable clone()
-	{
-		return new OperationXMLEditable(this);
 	}
 }

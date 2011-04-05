@@ -448,7 +448,7 @@ public class OperationXML extends Operation
 	 * Copy constructor
 	 * @param org Original operation to copy
 	 */
-	private OperationXML(OperationXML org)
+	protected OperationXML(OperationXML org)
 	{
 		super(org);
 		
