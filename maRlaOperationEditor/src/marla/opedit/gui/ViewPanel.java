@@ -234,6 +234,16 @@ public class ViewPanel extends JPanel
         answerPanel.setLayout(new javax.swing.BoxLayout(answerPanel, javax.swing.BoxLayout.PAGE_AXIS));
         answerDialog.getContentPane().add(answerPanel);
 
+        addAncestorListener(new javax.swing.event.AncestorListener() {
+            public void ancestorMoved(javax.swing.event.AncestorEvent evt) {
+            }
+            public void ancestorAdded(javax.swing.event.AncestorEvent evt) {
+                formAncestorAdded(evt);
+            }
+            public void ancestorRemoved(javax.swing.event.AncestorEvent evt) {
+            }
+        });
+
         testingPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Testing", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Verdana", 0, 12))); // NOI18N
 
         dataCsvLabel.setFont(new java.awt.Font("Verdana", 0, 12));
@@ -405,7 +415,7 @@ public class ViewPanel extends JPanel
         operationsTable.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         operationsScrollPane.setViewportView(operationsTable);
 
-        innerXmlLinkLabel.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        innerXmlLinkLabel.setFont(new java.awt.Font("Verdana", 0, 12));
         innerXmlLinkLabel.setForeground(java.awt.Color.blue);
         innerXmlLinkLabel.setText("<html><u>View documentation for Operation XML</u></html>");
         innerXmlLinkLabel.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -420,7 +430,7 @@ public class ViewPanel extends JPanel
             }
         });
 
-        operationTextPane.setFont(new java.awt.Font("Courier New", 0, 12));
+        operationTextPane.setFont(new java.awt.Font("Courier New", 0, 12)); // NOI18N
         operationTextPane.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusLost(java.awt.event.FocusEvent evt) {
                 operationTextPaneFocusLost(evt);
@@ -478,17 +488,17 @@ public class ViewPanel extends JPanel
                             .add(layout.createSequentialGroup()
                                 .add(categoryLabel)
                                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                                .add(categoryTextField, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 412, Short.MAX_VALUE))
+                                .add(categoryTextField, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 413, Short.MAX_VALUE))
                             .add(layout.createSequentialGroup()
                                 .add(opsNameLabel)
                                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                                .add(operationsNameTextField, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 368, Short.MAX_VALUE))
+                                .add(operationsNameTextField, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 369, Short.MAX_VALUE))
                             .add(org.jdesktop.layout.GroupLayout.TRAILING, layout.createSequentialGroup()
                                 .add(innerXmlLinkLabel, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                                 .add(updateTestButton))
-                            .add(operationScrollPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 479, Short.MAX_VALUE)
-                            .add(xmlStatusLabel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 479, Short.MAX_VALUE))))
+                            .add(operationScrollPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 480, Short.MAX_VALUE)
+                            .add(xmlStatusLabel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 480, Short.MAX_VALUE))))
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(testingPanel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
@@ -628,10 +638,7 @@ public class ViewPanel extends JPanel
 					continue;
 				}
 
-				if(currentFile != null)
-				{
-					currentFile.save();
-				}
+				save();
 
 				if(file.isDirectory())
 				{
@@ -788,15 +795,7 @@ public class ViewPanel extends JPanel
 	private void saveButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveButtonActionPerformed
 		if(currentFile != null)
 		{
-			try
-			{
-				currentFile.save();
-			}
-			catch(OperationEditorException ex)
-			{
-				JOptionPane.showMessageDialog(this, "You do not have permission to write to the file at its current location.\nYou will need to save the file to a new location to save your changes.", "Access Denied", JOptionPane.WARNING_MESSAGE);
-				saveAsButtonActionPerformed(null);
-			}
+			save();
 		}
 	}//GEN-LAST:event_saveButtonActionPerformed
 
@@ -811,7 +810,7 @@ public class ViewPanel extends JPanel
 			fileChooser.setDialogTitle("New Operation File");
 			fileChooser.setCurrentDirectory(new File(marla.ide.gui.Domain.lastGoodDir));
 			// Display the chooser and retrieve the selected file
-			int response = fileChooser.showOpenDialog(this);
+			int response = fileChooser.showSaveDialog(this);
 			while(response == JFileChooser.APPROVE_OPTION)
 			{
 				int lastIndex = fileChooser.getSelectedFile().toString().lastIndexOf(".");
@@ -832,15 +831,12 @@ public class ViewPanel extends JPanel
 					response = JOptionPane.showOptionDialog(this, "The specified file already exists.  Overwrite?", "Overwrite File", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null);
 					if(response != JOptionPane.YES_OPTION)
 					{
-						response = fileChooser.showOpenDialog(this);
+						response = fileChooser.showSaveDialog(this);
 						continue;
 					}
 				}
 
-				if(currentFile != null)
-				{
-					currentFile.save();
-				}
+				save();
 
 				currentFile = OperationFile.createNew(file.toString());
 				if(file.isDirectory())
@@ -901,7 +897,7 @@ public class ViewPanel extends JPanel
 	}//GEN-LAST:event_innerXmlLinkLabelMouseReleased
 
 	private void operationTextPaneFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_operationTextPaneFocusLost
-		if (!ignoreChanges && !operationTextPane.getText().equals(currentOperation.getInnerXML()))
+		if (!ignoreChanges && !operationTextPane.getText().replaceAll("\\r\\n", "\\\n").equals(currentOperation.getInnerXML().replaceAll("\\r\\n", "\\\n")))
 		{
 			try
 			{
@@ -936,7 +932,7 @@ public class ViewPanel extends JPanel
 			fileChooser.setDialogTitle("Save As Operation File");
 			fileChooser.setCurrentDirectory(new File(marla.ide.gui.Domain.lastGoodDir));
 			// Display the chooser and retrieve the selected file
-			int response = fileChooser.showOpenDialog(this);
+			int response = fileChooser.showSaveDialog(this);
 			while(response == JFileChooser.APPROVE_OPTION)
 			{
 				int lastIndex = fileChooser.getSelectedFile().toString().lastIndexOf(".");
@@ -949,7 +945,7 @@ public class ViewPanel extends JPanel
 				if(!file.toString().endsWith(".xml"))
 				{
 					JOptionPane.showMessageDialog(this, "The file must have a valid XML extension.", "Does Not Exist", JOptionPane.WARNING_MESSAGE);
-					response = fileChooser.showOpenDialog(this);
+					response = fileChooser.showSaveDialog(this);
 					continue;
 				}
 				else if (file.exists())
@@ -964,6 +960,8 @@ public class ViewPanel extends JPanel
 
 				currentFile = new OperationFile(currentFile);
 				currentFile.setFilePath(file.toString());
+				save();
+
 				if(file.isDirectory())
 				{
 					marla.ide.gui.Domain.lastGoodDir = file.toString();
@@ -982,6 +980,56 @@ public class ViewPanel extends JPanel
 			Domain.logger.add(ex);
 		}
 	}//GEN-LAST:event_saveAsButtonActionPerformed
+
+	private void formAncestorAdded(javax.swing.event.AncestorEvent evt) {//GEN-FIRST:event_formAncestorAdded
+		if (Domain.passedInFile != null)
+		{
+			try
+			{
+				currentFile = new OperationFile(Domain.passedInFile.getCanonicalPath());
+				openFile();
+			}
+			catch (IOException ex)
+			{
+				Domain.passedInFile = null;
+			}
+		}
+	}//GEN-LAST:event_formAncestorAdded
+
+	/**
+	 * Undo the last operation.
+	 */
+	protected void undo()
+	{
+
+	}
+
+	/**
+	 * Redo the last "undo" operation.
+	 */
+	protected void redo()
+	{
+
+	}
+
+	/**
+	 * Save any changes to the current file.
+	 */
+	private void save()
+	{
+		if (currentFile != null)
+		{
+			try
+			{
+				currentFile.save();
+			}
+			catch(OperationEditorException ex)
+			{
+				JOptionPane.showMessageDialog(this, "You do not have permission to write to the file at its current location.\nYou will need to save the file to a new location to save your changes.", "Access Denied", JOptionPane.WARNING_MESSAGE);
+				saveAsButtonActionPerformed(null);
+			}
+		}
+	}
 
 	/**
 	 * Update the test in the right panel.
@@ -1190,7 +1238,7 @@ public class ViewPanel extends JPanel
 	{
 		if (currentOperation != null)
 		{
-			if (!currentOperation.getInnerXML().equals(operationTextPane.getText()))
+			if (!currentOperation.getInnerXML().replaceAll("\\r\\n", "\\\n").equals(operationTextPane.getText().replaceAll("\\r\\n", "\\\n")))
 			{
 				currentOperation.setInnerXML(operationTextPane.getText());
 			}
@@ -1241,15 +1289,7 @@ public class ViewPanel extends JPanel
 														 JOptionPane.QUESTION_MESSAGE);
 				if(response == JOptionPane.YES_OPTION)
 				{
-					try
-					{
-						currentFile.save();
-					}
-					catch (OperationEditorException ex)
-					{
-						JOptionPane.showMessageDialog(this, "You do not have permission to write to the file at its current location.\nYou will need to save the file to a new location to save your changes.", "Access Denied", JOptionPane.WARNING_MESSAGE);
-						saveAsButtonActionPerformed(null);
-					}
+					save();
 				}
 				else if(response == -1 || response == JOptionPane.CANCEL_OPTION)
 				{
@@ -1319,6 +1359,11 @@ public class ViewPanel extends JPanel
 		
 		if (closeFile ())
 		{
+			if (Domain.passedInFile != null)
+			{
+				JOptionPane.showMessageDialog(this, "It looks like you may have launched the Operation Editor from within maRla IDE.\nIf this is the case and you've made changes to the operations file, you'll want\nto restart maRla IDE or select \"Reload Operations\" from the Tools menu.", "Reload Operations", JOptionPane.INFORMATION_MESSAGE);
+			}
+			
 			// Hide the main window to give the appearance of better responsiveness
 			mainFrame.setVisible(false);
 
@@ -1328,6 +1373,16 @@ public class ViewPanel extends JPanel
 			// We do this now, then write the configuration because, if the loadsavethread
 			// is already writing, then we'll give it a bit of extra time
 			domain.flushLog();
+
+			// Save the maRla configuration
+			try
+			{
+				Configuration.getInstance().save();
+			}
+			catch(MarlaException ex)
+			{
+				Domain.logger.add(ex);
+			}
 
 			// Tell thread to stop
 			domain.loadSaveThread.stopRunning();

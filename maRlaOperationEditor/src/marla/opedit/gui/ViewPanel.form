@@ -44,6 +44,9 @@
       </SubComponents>
     </Container>
   </NonVisualComponents>
+  <Events>
+    <EventHandler event="ancestorAdded" listener="javax.swing.event.AncestorListener" parameters="javax.swing.event.AncestorEvent" handler="formAncestorAdded"/>
+  </Events>
   <AuxValues>
     <AuxValue name="FormSettings_autoResourcing" type="java.lang.Integer" value="0"/>
     <AuxValue name="FormSettings_autoSetComponentName" type="java.lang.Boolean" value="false"/>
@@ -90,20 +93,20 @@
                           <Group type="102" alignment="0" attributes="0">
                               <Component id="categoryLabel" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
-                              <Component id="categoryTextField" pref="412" max="32767" attributes="0"/>
+                              <Component id="categoryTextField" pref="413" max="32767" attributes="0"/>
                           </Group>
                           <Group type="102" alignment="0" attributes="0">
                               <Component id="opsNameLabel" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
-                              <Component id="operationsNameTextField" pref="368" max="32767" attributes="0"/>
+                              <Component id="operationsNameTextField" pref="369" max="32767" attributes="0"/>
                           </Group>
                           <Group type="102" alignment="1" attributes="0">
                               <Component id="innerXmlLinkLabel" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="updateTestButton" min="-2" max="-2" attributes="0"/>
                           </Group>
-                          <Component id="operationScrollPane" alignment="0" pref="479" max="32767" attributes="0"/>
-                          <Component id="xmlStatusLabel" alignment="0" pref="479" max="32767" attributes="0"/>
+                          <Component id="operationScrollPane" alignment="0" pref="480" max="32767" attributes="0"/>
+                          <Component id="xmlStatusLabel" alignment="0" pref="480" max="32767" attributes="0"/>
                       </Group>
                   </Group>
               </Group>

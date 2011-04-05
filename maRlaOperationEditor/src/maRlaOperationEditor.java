@@ -24,6 +24,7 @@ import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
@@ -56,6 +57,15 @@ public class maRlaOperationEditor
 				Domain.logger.add(e);
 			}
 		});
+
+		if (args.length > 0)
+		{
+			File file = new File(args[0]);
+			if (file.exists())
+			{
+				Domain.passedInFile = file;
+			}
+		}
 		
 		// Define UI characteristics before the application is instantiated
 		try

@@ -1527,9 +1527,11 @@ public class NewProblemWizardDialog extends EscapeDialog
     // End of variables declaration//GEN-END:variables
 
 	/**
-	 * 
-	 * @param libTextField
-	 * @param docLabel
+	 * Check the text field and display the proper documentation, if any is
+	 * available.
+	 *
+	 * @param text The text to check for documentation.
+	 * @param docLabel The label to set with the documentation.
 	 */
 	private void checkLibTextField(String text, JLabel docLabel)
 	{
