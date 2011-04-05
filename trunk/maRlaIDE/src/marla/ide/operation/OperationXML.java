@@ -766,7 +766,7 @@ public class OperationXML extends Operation
 		// Get the command we will execute for the value
 		String cmd = cmdEl.getTextTrim();
 
-		// Get Column, create if needed
+		// Determine the name of the column to save to
 		String colName = cmdEl.getAttributeValue("column");
 		if(colName == null)
 		{
@@ -778,6 +778,7 @@ public class OperationXML extends Operation
 			colName = proc.executeString(dynamicColumnCmd);
 		}
 
+		// Get/create column as needed
 		DataColumn col = null;
 		try
 		{
@@ -838,7 +839,11 @@ public class OperationXML extends Operation
 		String keyVar = loopEl.getAttributeValue("key_var");
 		String valueVar = loopEl.getAttributeValue("value_var");
 
-		String loopType = loopEl.getAttributeValue("type", "numeric");
+		// Process according to loop type
+		String loopType = loopEl.getAttributeValue("type");
+		if(loopType == null)
+			throw new OperationXMLException("No loop type specified");
+			
 		if(loopType.equals("parent"))
 		{
 			// Loop over every column in parent
