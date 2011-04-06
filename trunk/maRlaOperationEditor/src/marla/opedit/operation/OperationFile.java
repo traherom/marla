@@ -240,6 +240,20 @@ public final class OperationFile
 	}
 
 	/**
+	 * Replaces the operation with the given name with the new operation
+	 * @param oldName Name of operation to replace 
+	 * @param newOp Operation to replace the named operation with
+	 * @return Operation that was removed
+	 */
+	public OperationXMLEditable replaceOperation(String oldName, OperationXMLEditable newOp)
+	{
+		int index = getOperationIndex(oldName);
+		OperationXMLEditable oldOp = ops.get(index);
+		ops.set(index, newOp);
+		return oldOp;
+	}
+	
+	/**
 	 * Removes the given operation via name
 	 * @param name Name of the operation to remove
 	 * @return Removed operation
@@ -268,13 +282,27 @@ public final class OperationFile
 	 */
 	public OperationXMLEditable getOperation(String name)
 	{
-		for(OperationXMLEditable op : ops)
+		int index = getOperationIndex(name);
+		if(index != -1)
+			return ops.get(index);
+		else	
+			return null;
+	}
+	
+	/**
+	 * Returns the operation with the given name
+	 * @param name Operation name to search for
+	 * @return index of the operation with the given name
+	 */
+	public int getOperationIndex(String name)
+	{
+		for(int i = 0; i < ops.size(); i++)
 		{
-			if(op.getName().equals(name))
-				return op;
+			if(ops.get(i).getName().equals(name))
+				return i;
 		}
 
-		return null;
+		return -1;
 	}
 
 	/**
