@@ -97,7 +97,7 @@ public class SubProblem implements ProblemPart, Comparable<SubProblem>
 		this.parent = parent;
 		conclusion = org.conclusion;
 		id = org.id;
-		highlightColor = new Color(org.highlightColor.getRGB());
+		highlightColor = org.highlightColor;
 		partDesc = org.partDesc;
 		
 		// Attach to steps

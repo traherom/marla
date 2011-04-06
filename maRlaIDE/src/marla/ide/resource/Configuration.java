@@ -225,7 +225,6 @@ public class Configuration
 			}
 		}
 
-
 		// Return the failures
 		return requiredAndMissing;
 	}

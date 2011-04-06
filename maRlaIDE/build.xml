@@ -118,8 +118,6 @@
              <property name="store.jar.name" value="MyJarName"/>
         -->
         <property name="store.jar.name" value="maRlaIDE"/>
-
-        <!-- don't edit below this line -->
         <property name="store.jar" value="${store.dir}/${store.jar.name}.jar"/>
 
         <echo message="Packaging ${application.title} into a single JAR at ${store.jar}"/>
