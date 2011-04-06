@@ -17,47 +17,78 @@ public class UndoRedoTest
 	@Test
 	public void fullTest()
 	{
-		UndoRedo<String> testStack = new UndoRedo<String>(10);
+		UndoRedo<String> testStack = new UndoRedo<String>(5);
+		assertFalse(testStack.hasUndo());
+		assertFalse(testStack.hasRedo());
 		
-		testStack.addUndoStep("test1");
-		testStack.addUndoStep("test2");
-		testStack.addUndoStep("test3");
-		testStack.addUndoStep("test4");
-		
-		String s1 = testStack.undo("test5");
-		assertEquals("test4", s1);
-		
-		String s2 = testStack.undo(s1);
-		assertEquals("test3", s2);
-		
-		String s3 = testStack.redo(s2);
-		assertEquals(s1, s3);
-		
-		String s4 = testStack.redo(s3);
-		assertEquals("test5", s4);
-		
-		String s5 = testStack.redo("test6");
-		assertEquals(s5, null);
-	}
-	
-	@Test
-	public void testAddUndoStep()
-	{
-	}
+		int curr = 0;
+		String[] toPush = new String[]{"1", "2", "3", "4", "5", "6", "7", "8"};
 
-	@Test
-	public void testClearHistory()
-	{
-	}
+		// Push on 3
+		for( ; curr < 3; curr++)
+			testStack.addUndoStep(toPush[curr]);
 
-	@Test
-	public void testUndo()
-	{
-	}
+		assertTrue(testStack.hasUndo());
+		assertFalse(testStack.hasRedo());
 
-	@Test
-	public void testRedo()
-	{
+		// Undo 2
+		for( ; curr > 1; curr--)
+		{
+			String removed = testStack.undo(toPush[curr]);
+			assertEquals(toPush[curr-1], removed);
+		}
+
+		assertTrue(testStack.hasUndo());
+		assertTrue(testStack.hasRedo());
+
+		// Undo remainder
+		for( ; curr > 0; curr--)
+		{
+			String removed = testStack.undo(toPush[curr]);
+			assertEquals(toPush[curr-1], removed);
+		}
+
+		assertFalse(testStack.hasUndo());
+		assertTrue(testStack.hasRedo());
+
+		// Redo 2
+		for( ; curr < 2; curr++)
+		{
+			String removed = testStack.redo(toPush[curr]);
+			assertEquals(toPush[curr+1], removed);
+		}
+
+		assertTrue(testStack.hasUndo());
+		assertTrue(testStack.hasRedo());
+
+		// Redo remainder
+		for( ; curr < 3; curr++)
+		{
+			String removed = testStack.redo(toPush[curr]);
+			assertEquals(toPush[curr+1], removed);
+		}
+
+		assertTrue(testStack.hasUndo());
+		assertFalse(testStack.hasRedo());
+
+		// Push a ton on
+		for( ; curr < toPush.length - 1; curr++)
+			testStack.addUndoStep(toPush[curr]);
+		
+		assertTrue(testStack.hasUndo());
+		assertFalse(testStack.hasRedo());
+
+		// Undo everything
+		while(testStack.hasUndo())
+		{
+			String removed = testStack.undo(toPush[curr]);
+			assertEquals(toPush[curr-1], removed);
+			curr--;
+		}
+
+		assertEquals("Max size violated", 5, toPush.length - 1 - curr);
+		assertFalse(testStack.hasUndo());
+		assertTrue(testStack.hasRedo());
 	}
 
 	@Test

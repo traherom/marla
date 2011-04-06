@@ -2750,7 +2750,6 @@ public class ViewPanel extends JPanel
 	{
 		File operationEditorExe = new File(Domain.CWD, "maRla Operation Editor.exe");
 		File operationEditorJar = new File(Domain.CWD, "maRla Operation Editor.jar");
-		boolean found = false;
 
 		try
 		{
@@ -2760,42 +2759,24 @@ public class ViewPanel extends JPanel
 						{
 							operationEditorExe.getCanonicalPath(), Configuration.getInstance().get(Configuration.ConfigType.PrimaryOpsXML).toString()
 						}, null, null);
-				try
-				{
-					proc.wait(1000);
-					if(proc.exitValue() == 0)
-					{
-						found = true;
-					}
-				}
-				catch(InterruptedException ex) {}
 			}
-
-			if(!found && operationEditorJar.exists())
+			else if(operationEditorJar.exists())
 			{
 				Process proc = Runtime.getRuntime().exec(new String[]
 						{
 							"java", "-jar", operationEditorJar.getCanonicalPath()
 						}, null, null);
-				try
-				{
-					proc.wait(1000);
-					if(proc.exitValue() == 0)
-					{
-						found = true;
-					}
-				}
-				catch(InterruptedException innerEx) {}
+			}
+			else
+			{
+				JOptionPane.showMessageDialog(this, "The maRla Operation Editor could not be found.", "Operation Editor Not Found", JOptionPane.INFORMATION_MESSAGE);
 			}
 		}
 		catch(IOException ex)
 		{
+			Domain.logger.add(ex);
 		}
 
-		if(!found)
-		{
-			JOptionPane.showMessageDialog(this, "The maRla Operation Editor could not be found.", "Operation Editor Not Found", JOptionPane.INFORMATION_MESSAGE);
-		}
 	}
 
 	/**
