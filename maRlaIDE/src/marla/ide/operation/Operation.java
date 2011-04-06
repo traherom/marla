@@ -258,6 +258,7 @@ public abstract class Operation extends DataSource implements Cloneable
 		isLoading = true;
 		
 		// Easy stuff
+		setDefaultColor();
 		remark = org.remark;
 		
 		// Questions
@@ -265,6 +266,9 @@ public abstract class Operation extends DataSource implements Cloneable
 		for(String key : keys)
 			addQuestion(org.questions.get(key).clone(this));
 		
+		// Child operations
+		for(int i = 0; i < org.getOperationCount(); i++)
+			addOperation(org.getOperation(i).clone());
 		
 		isLoading = false;
 	}
@@ -444,8 +448,9 @@ public abstract class Operation extends DataSource implements Cloneable
 		}
 
 		// Fill our questions from the new parent if possible
-		for(OperationInformation q : getRequiredInfoPrompt())
-			q.autoAnswer();
+		// TODO get to work with undo/redo
+		//for(OperationInformation q : getRequiredInfoPrompt())
+		//	q.autoAnswer();
 
 		markDirty();
 		markUnsaved();
@@ -860,9 +865,7 @@ public abstract class Operation extends DataSource implements Cloneable
 		// Clear all the question answers
 		Set<String> names = questions.keySet();
 		for(String key : names)
-		{
 			questions.get(key).clearAnswer();
-		}
 	}
 
 	@Override

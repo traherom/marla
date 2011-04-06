@@ -90,12 +90,18 @@ public final class DataSet extends DataSource
 		
 		isLoading = true;
 		
+		setDefaultColor();
+		
 		// Not the same parent, they'll add us where they want
 		parent = null;
 		
 		// Copy all our columns
 		for(DataColumn orgDC : org.columns)
 			columns.add(new DataColumn(this, orgDC));
+		
+		// Child operations
+		for(int i = 0; i < org.getOperationCount(); i++)
+			addOperation(org.getOperation(i).clone());
 		
 		isLoading = false;
 	}
