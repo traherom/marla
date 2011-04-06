@@ -1203,7 +1203,7 @@ public class ViewPanel extends JPanel
 	private void operationsTableRowSelected(ListSelectionEvent evt)
 	{
 		ignoreChanges = true;
-		undoRedo.clearSteps();
+		undoRedo.clearHistory();
 		mainFrame.undoMenuItem.setEnabled(false);
 		mainFrame.redoMenuItem.setEnabled(false);
 		

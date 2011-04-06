@@ -17,7 +17,9 @@
  */
 package marla.ide.resource;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.List;
 
 /**
@@ -27,15 +29,13 @@ import java.util.List;
 public class UndoRedo<T>
 {
 	/**
-	 * Undo/redo steps that have been pushed unto our list
+	 * Undo steps that have been pushed unto our list
 	 */
-	private final List<T> states = new ArrayList<T>();
+	private final Deque<T> undoStack = new ArrayDeque<T>();
 	/**
-	 * Current point in the state list. This is one past the most recently 
-	 * added step. If an undo were performed, it would get the step before
-	 * this one. A redo returns the step we're actually on
+	 * Redo steps that have been pushed unto our list
 	 */
-	private int currentState = 0;
+	private final Deque<T> redoStack = new ArrayDeque<T>();
 	/**
 	 * Maximum undo/redo steps to hold. If list exceeds this, older steps are 
 	 * removed when new ones are added
@@ -68,59 +68,61 @@ public class UndoRedo<T>
 	 * added step.
 	 * @param step New step to add to stack
 	 */
-	public void addStep(T step)
+	public void addUndoStep(T step)
 	{
-		states.add(currentState, step);
-		currentState++;
+		undoStack.addLast(step);
 		
 		// Blow away any redo steps we had
-		while(hasRedo())
-			states.remove(currentState);
+		redoStack.clear();
 		
 		// Do we have too much history?
 		if(maxStates < 1)
 			return;
 		
-		while(states.size() > maxStates)
-			states.remove(0);
-
-		// Keep pointer in sync with list
-		currentState = states.size();
+		while(undoStack.size() > maxStates)
+			undoStack.pollFirst();
 	}
 	
 	/**
 	 * Removed all existing steps
 	 */
-	public void clearSteps()
+	public void clearHistory()
 	{
-		states.clear();
-		currentState = 0;
+		undoStack.clear();
+		redoStack.clear();
 	}
-	
+		
 	/**
 	 * Undoes one step, returning the state at that point
+	 * @param redoStep Step that will be inserted as the next redo. Tyically the
+	 *		current state of whatever is being undone
 	 * @return State at the previous point
 	 */
-	public T undo()
+	public T undo(T redoStep)
 	{
 		if(!hasUndo())
 			return null;
 		
-		currentState--;
-		return states.get(currentState);
+		redoStack.addLast(redoStep);
+		
+		T step = undoStack.pollLast();
+		return step;
 	}
 	
 	/**
 	 * Redoes one step, returning the state at that point
+	 * @param undoStep Step that will be inserted as the next undo. Tyically the
+	 *		current state of whatever is being unredone
 	 * @return State at the next history point
 	 */
-	public T redo()
+	public T redo(T undoStep)
 	{
 		if(!hasRedo())
 			return null;
 		
-		T step = states.get(currentState);
-		currentState++;
+		undoStack.addLast(undoStep);
+		
+		T step = redoStack.pollLast();
 		return step;
 	}
 
@@ -130,7 +132,7 @@ public class UndoRedo<T>
 	 */
 	public boolean hasRedo()
 	{
-		return currentState < states.size();
+		return !redoStack.isEmpty();
 	}
 
 	/**
@@ -139,6 +141,6 @@ public class UndoRedo<T>
 	 */
 	public boolean hasUndo()
 	{
-		return 0 < currentState;
+		return !undoStack.isEmpty();
 	}
 }

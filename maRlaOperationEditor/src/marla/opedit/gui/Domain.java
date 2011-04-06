@@ -97,7 +97,7 @@ public class Domain
 		ViewPanel viewPanel = ViewPanel.getInstance();
 		if (viewPanel != null && viewPanel.currentOperation != null)
 		{
-			ViewPanel.getInstance().undoRedo.addStep (ViewPanel.getInstance().currentOperation.clone());
+			ViewPanel.getInstance().undoRedo.addUndoStep (ViewPanel.getInstance().currentOperation.clone());
 		}
 	}
 
