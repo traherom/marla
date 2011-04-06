@@ -786,6 +786,10 @@ public final class Problem implements ProblemPart, Cloneable
 		isSaved = false;
 		changeBeginning();
 
+		// Don't bother if we're loading
+		if(isLoading)
+			return;
+		
 		Domain d = getDomain();
 		if(d != null)
 			d.markUnsaved();
@@ -794,6 +798,10 @@ public final class Problem implements ProblemPart, Cloneable
 	@Override
 	public void changeBeginning()
 	{
+		// Don't bother if we're loading
+		if(isLoading)
+			return;
+		
 		Domain d = getDomain();
 		if(d != null)
 			d.changeBeginning();
