@@ -69,22 +69,25 @@ public abstract class DataSource extends JLabel implements Loadable, Changeable
 	 * Copy constructor for part of a DataSource
 	 * @param org Original DataSource to copy
 	 */
-	public DataSource(DataSource org)
+	protected DataSource(DataSource org)
 	{
 		this();
 		
 		// Easy stuff
 		name = org.name;
 		isHidden = org.isHidden;
-		if(org.internalID != null)
-			internalID = new Integer(org.internalID);
+		internalID = org.internalID;
+		
+		setForeground(org.getForeground());
+		setBackground(org.getBackground());
+		setBounds(org.getBounds());
 		
 		// Our children
 		for(Operation orgOp : org.solutionOps)
 			addOperation(orgOp.clone());
 		
 		// We don't worry about subproblems attached to us, our cloner can
-		// if they wish
+		// reattech them if they wish
 	}
 
 	/**
@@ -154,6 +157,7 @@ public abstract class DataSource extends JLabel implements Loadable, Changeable
 	@Override
 	public final void setName(String newName)
 	{
+		changeBeginning();
 		name = newName;
 		checkDisplayName();
 		markUnsaved();
@@ -273,6 +277,8 @@ public abstract class DataSource extends JLabel implements Loadable, Changeable
 
 		if(!solutionOps.contains(op))
 		{
+			changeBeginning();
+		
 			// They weren't already assigned to us, so stick them on our list
 			solutionOps.add(index, op);
 
@@ -293,14 +299,14 @@ public abstract class DataSource extends JLabel implements Loadable, Changeable
 	 */
 	public final Operation removeOperation(Operation op)
 	{
+		changeBeginning();
+		
 		// Tell operation to we're not its parent any more
 		op.setParentData(null);
 
 		// Remove them from our list if still needed
 		if(solutionOps.remove(op))
-		{
 			markUnsaved();
-		}
 
 		return op;
 	}
@@ -540,6 +546,8 @@ public abstract class DataSource extends JLabel implements Loadable, Changeable
 		if(subProblems.contains(sub))
 			return;
 
+		changeBeginning();
+		
 		// We'll need a unique ID
 		getUniqueID();
 
@@ -577,6 +585,7 @@ public abstract class DataSource extends JLabel implements Loadable, Changeable
 		if(!subProblems.contains(sub))
 			return;
 
+		changeBeginning();
 		subProblems.remove(sub);
 		sub.removeStep(this);
 		markUnsaved();

@@ -88,7 +88,9 @@ public class OperationInfoColumn extends OperationInfoCombo
 
 		if(newAnswer == null)
 			throw new InternalMarlaException("Info may only be cleared by calling clearAnswer()");
-
+		
+		changeBeginning();
+		
 		if(!getOperation().isLoading())
 		{
 			DataColumn dc = null;
@@ -113,7 +115,7 @@ public class OperationInfoColumn extends OperationInfoCombo
 
 		getOperation().checkDisplayName();
 		getOperation().markDirty();
-		getOperation().markUnsaved();
+		markUnsaved();
 
 		return oldAnswer;
 	}
@@ -164,7 +166,17 @@ public class OperationInfoColumn extends OperationInfoCombo
 	@Override
 	public boolean autoAnswer()
 	{
-		List<String> options = getOptions();
+		List<String> options = null;
+		try
+		{
+			options = getOptions();
+		}
+		catch(NullPointerException ex)
+		{
+			// Likely the special case of undo cloning
+			return false;
+		}
+		
 		if(options.size() == 1)
 		{
 			try
@@ -212,6 +224,8 @@ public class OperationInfoColumn extends OperationInfoCombo
 	@Override
 	public void clearAnswer()
 	{
+		getOperation().changeBeginning();
+		
 		answer = null;
 
 		getOperation().checkDisplayName();

@@ -99,6 +99,8 @@ public class OperationInfoNumeric extends OperationInformation
 		if(newAnswer == null)
 			throw new InternalMarlaException("Info may only be cleared by calling clearAnswer()");
 
+		changeBeginning();
+		
 		// Ensure it matches requirements
 		Double a;
 		if(newAnswer instanceof Double)
@@ -125,7 +127,7 @@ public class OperationInfoNumeric extends OperationInformation
 		
 		getOperation().checkDisplayName();
 		getOperation().markDirty();
-		getOperation().markUnsaved();
+		markUnsaved();
 
 		return oldAnswer;
 	}
@@ -133,6 +135,7 @@ public class OperationInfoNumeric extends OperationInformation
 	@Override
 	public void clearAnswer()
 	{
+		changeBeginning();
 		answer = null;
 		getOperation().checkDisplayName();
 		getOperation().markDirty();

@@ -129,6 +129,8 @@ public class SubProblem implements ProblemPart, Comparable<SubProblem>
 	 */
 	public Color setColor(Color newColor)
 	{
+		changeBeginning();
+		
 		Color oldColor = highlightColor;
 		highlightColor = newColor;
 
@@ -155,6 +157,8 @@ public class SubProblem implements ProblemPart, Comparable<SubProblem>
 	@Override
 	public void setStatement(String newStatement)
 	{
+		changeBeginning();
+		
 		partDesc = newStatement;
 		
 		markUnsaved();
@@ -169,6 +173,8 @@ public class SubProblem implements ProblemPart, Comparable<SubProblem>
 	@Override
 	public String setConclusion(String newConclusion)
 	{
+		changeBeginning();
+		
 		String oldConc = conclusion;
 		conclusion = newConclusion;
 
@@ -232,6 +238,7 @@ public class SubProblem implements ProblemPart, Comparable<SubProblem>
 		}
 
 		// And add
+		changeBeginning();
 		solutionSteps.add(placement, ds);
 		ds.addSubProblem(this);
 		markUnsaved();
@@ -259,6 +266,7 @@ public class SubProblem implements ProblemPart, Comparable<SubProblem>
 	 */
 	public DataSource removeStep(int i)
 	{
+		changeBeginning();
 		DataSource old = solutionSteps.remove(i);
 		markUnsaved();
 		old.removeSubProblem(this);

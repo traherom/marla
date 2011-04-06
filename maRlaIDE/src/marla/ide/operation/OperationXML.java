@@ -454,17 +454,12 @@ public class OperationXML extends Operation
 		
 		// TODO decide if clone is actually needed. For our undo/redo purposes,
 		// probably not. I mean, it doesn't change ever. However, that's not
-		// expected copy constructor behavior
+		// expected clone() behavior
 		opConfig = (Element)org.opConfig.clone();
 		if(org.displayNameEl != null)
-			
+			displayNameEl = (Element)org.displayNameEl.clone();
 		
-		// TODO decide if clone is actually needed. For our undo/redo purposes,
-		// probably not. I mean, it doesn't change ever. However, that's not
-		// expected clone() behavior
-		opConfig = (Element) opConfig.clone();
-		if(displayNameEl != null)
-			displayNameEl = (Element) displayNameEl.clone();
+		checkDisplayName();
 	}
 
 	/**
@@ -491,7 +486,7 @@ public class OperationXML extends Operation
 		// Obviously we'll need to update
 		markDirty();
 
-		setOperationName(opConfig.getAttributeValue("name"));
+		setName(opConfig.getAttributeValue("name"));
 
 		// Parse all the questions
 		clearQuestions();
@@ -590,7 +585,7 @@ public class OperationXML extends Operation
 	}
 
 	@Override
-	public void checkDisplayName()
+	public final void checkDisplayName()
 	{
 		if(updateDynamicName() && !isLoading())
 		{

@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.jdom.Element;
-import marla.ide.problem.Changeable;
 import marla.ide.problem.DataColumn;
 import marla.ide.problem.DataNotFoundException;
 import marla.ide.problem.DataSet;
@@ -60,7 +59,7 @@ public abstract class Operation extends DataSource implements Cloneable
 	/**
 	 * Actual values from computation
 	 */
-	private final DataSet data;
+ 	private final DataSet data = new DataSet(this, "internal");
 	/**
 	 * Parent data that this operation works on
 	 */
@@ -244,10 +243,8 @@ public abstract class Operation extends DataSource implements Cloneable
 	 */
 	protected Operation(String newName)
 	{
-		setOperationName(newName);
+		setName(newName);
 		setDefaultColor();
-
-		data = new DataSet(this, "internal");
 	}
 	
 	/**
@@ -260,8 +257,6 @@ public abstract class Operation extends DataSource implements Cloneable
 		
 		isLoading = true;
 		
-		data = new DataSet(this, "internal");
-			
 		// Easy stuff
 		remark = org.remark;
 		
@@ -269,6 +264,7 @@ public abstract class Operation extends DataSource implements Cloneable
 		Set<String> keys = org.questions.keySet();
 		for(String key : keys)
 			addQuestion(org.questions.get(key).clone(this));
+		
 		
 		isLoading = false;
 	}
@@ -280,16 +276,6 @@ public abstract class Operation extends DataSource implements Cloneable
 	}
 
 	/**
-	 * Sets the name of the operation, only used internally
-	 * @param newName New name for the operation
-	 */
-	protected final void setOperationName(String newName)
-	{
-		// And save the op name
-		setName(newName);
-	}
-
-	/**
 	 * Sets the remark for this Operation. Arbitrary, intended to be used
 	 * as an analysis comment
 	 * @param newRemark Remark to save for Operation
@@ -297,6 +283,8 @@ public abstract class Operation extends DataSource implements Cloneable
 	 */
 	public final String setRemark(String newRemark)
 	{
+		changeBeginning();
+		
 		String oldRemark = remark;
 		remark = newRemark;
 
@@ -425,6 +413,8 @@ public abstract class Operation extends DataSource implements Cloneable
 		if(parent == newParent || newParent == this)
 			return;
 
+		changeBeginning();
+		
 		// Tell our old parent we're removing ourselves
 		if(parent != null)
 		{
@@ -776,6 +766,7 @@ public abstract class Operation extends DataSource implements Cloneable
 	 */
 	protected final void clearQuestions()
 	{
+		changeBeginning();
 		questions.clear();
 		markUnsaved();
 	}
@@ -791,6 +782,7 @@ public abstract class Operation extends DataSource implements Cloneable
 		if(info.getOperation() != this)
 			throw new InternalMarlaException("Attempt to add information that did not point to same operation");
 
+		changeBeginning();
 		questions.put(info.getName(), info);
 		markUnsaved();
 	}

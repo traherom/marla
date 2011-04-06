@@ -262,7 +262,7 @@ public class Domain
 
 			if(debug)
 			{
-				if(debugPane.getParent() != split)
+				/*if(debugPane.getParent() != split)
 					split.add(debugPane);
 				split.setDividerLocation(split.getHeight() - 100);
 
@@ -332,6 +332,7 @@ public class Domain
 				{
 					Domain.logger.add(ex);
 				}
+				 */
 			}
 			else
 			{

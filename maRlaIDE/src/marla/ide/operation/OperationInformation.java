@@ -153,6 +153,16 @@ public abstract class OperationInformation
 		return type;
 	}
 
+	public final void markUnsaved()
+	{
+		op.markUnsaved();
+	}
+	
+	public final void changeBeginning()
+	{
+		op.changeBeginning();
+	}
+	
 	/**
 	 * Returns this OperationInformation object as an XML element
 	 * @return New XML holding all relevant information 

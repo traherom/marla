@@ -86,6 +86,8 @@ public class OperationInfoString extends OperationInformation
 		if(newAnswer == null)
 			throw new InternalMarlaException("Info may only be cleared by calling clearAnswer()");
 
+		changeBeginning();
+		
 		// Ensure it matches the pattern
 		String a = newAnswer.toString();
 		if(!mustMatchPatt.matcher(a).matches())
@@ -96,7 +98,7 @@ public class OperationInfoString extends OperationInformation
 		
 		getOperation().checkDisplayName();
 		getOperation().markDirty();
-		getOperation().markUnsaved();
+		markUnsaved();
 
 		return oldAnswer;
 	}
@@ -104,10 +106,11 @@ public class OperationInfoString extends OperationInformation
 	@Override
 	public void clearAnswer()
 	{
+		changeBeginning();
 		answer = null;
 		getOperation().checkDisplayName();
 		getOperation().markDirty();
-		getOperation().markUnsaved();
+		markUnsaved();
 	}
 
 	/**
