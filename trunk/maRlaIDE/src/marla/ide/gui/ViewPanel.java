@@ -300,7 +300,7 @@ public class ViewPanel extends JPanel
 		emptyPalettePanel.setVisible(true);
 		componentsPanel.setVisible(false);
 		preWorkspacePanel.setVisible(true);
-		workspaceSplitPane.setVisible(false);
+		workspacePanel.setVisible(false);
 
 		componentsScrollPane.getViewport().setOpaque(false);
 
@@ -547,10 +547,10 @@ public class ViewPanel extends JPanel
         abbreviateButton = new ToolbarButton (new ImageIcon (getClass ().getResource ("/marla/ide/images/unchecked_button.png")));
         jSeparator2 = new javax.swing.JToolBar.Separator();
         settingsButton = new ToolbarButton (new ImageIcon (getClass ().getResource ("/marla/ide/images/settings_button.png")));
+        workspaceSplitPane = new javax.swing.JSplitPane();
         workspaceCardPanel = new javax.swing.JPanel();
         preWorkspacePanel = new javax.swing.JPanel();
         preWorkspaceLabel = new javax.swing.JLabel();
-        workspaceSplitPane = new javax.swing.JSplitPane();
         workspacePanel = new WorkspacePanel (this);
         trashCan = new javax.swing.JLabel();
         debugScrollPane = new javax.swing.JScrollPane();
@@ -850,6 +850,9 @@ public class ViewPanel extends JPanel
 
         add(toolBar, java.awt.BorderLayout.NORTH);
 
+        workspaceSplitPane.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
+        workspaceSplitPane.setResizeWeight(1.0);
+
         workspaceCardPanel.setBorder(javax.swing.BorderFactory.createEtchedBorder());
         workspaceCardPanel.setLayout(new java.awt.CardLayout());
 
@@ -866,22 +869,18 @@ public class ViewPanel extends JPanel
             preWorkspacePanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(preWorkspacePanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .add(preWorkspaceLabel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 756, Short.MAX_VALUE)
+                .add(preWorkspaceLabel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 87, Short.MAX_VALUE)
                 .addContainerGap())
         );
         preWorkspacePanelLayout.setVerticalGroup(
             preWorkspacePanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(preWorkspacePanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .add(preWorkspaceLabel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 639, Short.MAX_VALUE)
+                .add(preWorkspaceLabel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 54, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
         workspaceCardPanel.add(preWorkspacePanel, "card3");
-
-        workspaceSplitPane.setDividerLocation(700);
-        workspaceSplitPane.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
-        workspaceSplitPane.setResizeWeight(1.0);
 
         workspacePanel.setBackground(new java.awt.Color(255, 255, 255));
         workspacePanel.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -924,7 +923,9 @@ public class ViewPanel extends JPanel
         workspacePanel.add(trashCan);
         trashCan.setBounds(730, 610, 26, 40);
 
-        workspaceSplitPane.setTopComponent(workspacePanel);
+        workspaceCardPanel.add(workspacePanel, "card4");
+
+        workspaceSplitPane.setTopComponent(workspaceCardPanel);
 
         debugTextArea.setColumns(20);
         debugTextArea.setEditable(false);
@@ -936,9 +937,7 @@ public class ViewPanel extends JPanel
 
         workspaceSplitPane.setBottomComponent(debugScrollPane);
 
-        workspaceCardPanel.add(workspaceSplitPane, "card4");
-
-        add(workspaceCardPanel, java.awt.BorderLayout.CENTER);
+        add(workspaceSplitPane, java.awt.BorderLayout.CENTER);
 
         rightSidePanel.setMaximumSize(new java.awt.Dimension(220, 2147483647));
         rightSidePanel.setPreferredSize(new java.awt.Dimension(220, 592));
@@ -951,11 +950,11 @@ public class ViewPanel extends JPanel
         emptyPalettePanel.setLayout(emptyPalettePanelLayout);
         emptyPalettePanelLayout.setHorizontalGroup(
             emptyPalettePanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(0, 208, Short.MAX_VALUE)
+            .add(0, 204, Short.MAX_VALUE)
         );
         emptyPalettePanelLayout.setVerticalGroup(
             emptyPalettePanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(0, 578, Short.MAX_VALUE)
+            .add(0, 569, Short.MAX_VALUE)
         );
 
         paletteCardPanel.add(emptyPalettePanel, "card3");
@@ -2397,7 +2396,7 @@ public class ViewPanel extends JPanel
 			}
 			componentsPanel.setVisible(true);
 			emptyPalettePanel.setVisible(false);
-			workspaceSplitPane.setVisible(true);
+			workspacePanel.setVisible(true);
 			preWorkspacePanel.setVisible(false);
 
 			mainFrame.setTitle(mainFrame.getDefaultTitle() + " - " + domain.problem.getFileName().substring(domain.problem.getFileName().lastIndexOf(System.getProperty("file.separator")) + 1, domain.problem.getFileName().lastIndexOf(".")));
@@ -2667,7 +2666,7 @@ public class ViewPanel extends JPanel
 				emptyPalettePanel.setVisible(true);
 				componentsPanel.setVisible(false);
 				preWorkspacePanel.setVisible(true);
-				workspaceSplitPane.setVisible(false);
+				workspacePanel.setVisible(false);
 
 				dataSetContentPanel.removeAll();
 				((GridLayout) dataSetContentPanel.getLayout()).setRows(0);
