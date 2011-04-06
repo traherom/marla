@@ -457,9 +457,9 @@ public class OperationXML extends Operation
 		// TODO decide if clone is actually needed. For our undo/redo purposes,
 		// probably not. I mean, it doesn't change ever. However, that's not
 		// expected clone() behavior
-		opConfig = (Element)org.opConfig;
+		opConfig = org.opConfig;
 		if(org.displayNameEl != null)
-			displayNameEl = (Element)org.displayNameEl;
+			displayNameEl = org.displayNameEl;
 		
 		// Just copy over dynamic names, rather than re-compute them
 		dynamicNameLong = org.dynamicNameLong;

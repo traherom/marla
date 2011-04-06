@@ -34,6 +34,7 @@ import org.jdom.output.XMLOutputter;
 /**
  * @author Ryan Morehart
  */
+@SuppressWarnings("serial")
 public class OperationXMLEditable extends OperationXML
 {
 	/**
@@ -89,7 +90,7 @@ public class OperationXMLEditable extends OperationXML
 
 			if(parent != null)
 				parent.markUnsaved();
-
+			
 			super.setConfiguration((Element)newConfig.clone());
 
 			lastError = null;
@@ -159,6 +160,9 @@ public class OperationXMLEditable extends OperationXML
 	{
 		String old = opEl.getAttributeValue("category");
 
+		if(parent != null)
+			parent.changeBeginning();
+			
 		if(newCat != null && !newCat.isEmpty())
 			opEl.setAttribute("category", newCat);
 		else
@@ -178,6 +182,9 @@ public class OperationXMLEditable extends OperationXML
 	{
 		String old = opEl.getAttributeValue("name");
 
+		if(parent != null)
+			parent.changeBeginning();
+			
 		if(newName != null && !newName.isEmpty())
 			opEl.setAttribute("name", newName);
 		else
@@ -197,6 +204,9 @@ public class OperationXMLEditable extends OperationXML
 	{
 		boolean old = hasPlot();
 
+		if(parent != null)
+			parent.changeBeginning();
+		
 		if(newVal)
 			opEl.setAttribute("plot", "true");
 		else
@@ -246,6 +256,9 @@ public class OperationXMLEditable extends OperationXML
 			SAXBuilder parser = new SAXBuilder();
 			Document doc = parser.build(sr);
 
+			if(parent != null)
+				parent.changeBeginning();
+		
 			// Stick parsed version into opEl
 			opEl.removeContent();
 			opEl.addContent(doc.getRootElement().cloneContent());
