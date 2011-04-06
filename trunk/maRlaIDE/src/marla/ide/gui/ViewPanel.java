@@ -1726,7 +1726,7 @@ public class ViewPanel extends JPanel
 	{
 		if (undoRedo.hasUndo())
 		{
-			Problem problem = undoRedo.undo();
+			Problem problem = undoRedo.undo(domain.problem);
 			closeProblem(false, true);
 			domain.problem = problem;
 			openProblem(false, true);
@@ -1745,7 +1745,7 @@ public class ViewPanel extends JPanel
 	{
 		if (undoRedo.hasRedo())
 		{
-			Problem problem = undoRedo.redo();
+			Problem problem = undoRedo.redo(domain.problem);
 			closeProblem(false, true);
 			domain.problem = problem;
 			openProblem(false, true);
@@ -2621,7 +2621,7 @@ public class ViewPanel extends JPanel
 		// clear the undo/redo states if we are closing the problem
 		if(!editing && !isUndoRedo)
 		{
-			undoRedo.clearSteps();
+			undoRedo.clearHistory();
 			mainFrame.undoMenuItem.setEnabled(false);
 			mainFrame.redoMenuItem.setEnabled(false);
 		}

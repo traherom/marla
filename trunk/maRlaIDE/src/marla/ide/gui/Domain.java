@@ -784,7 +784,7 @@ public class Domain
 	public void changeBeginning()
 	{
 		if(viewPanel.newProblemWizardDialog.newProblem == null && problem != null)
-			viewPanel.undoRedo.addStep (problem.clone());
+			viewPanel.undoRedo.addUndoStep (problem.clone());
 	}
 
 	/**
@@ -1159,7 +1159,7 @@ public class Domain
 				if (problem != null)
 				{
 					viewPanel.closeProblem (false, false);
-					viewPanel.undoRedo.clearSteps();
+					viewPanel.undoRedo.clearHistory();
 				}
 
 				if (file.isDirectory ())
