@@ -449,7 +449,6 @@ public final class Problem implements ProblemPart, Cloneable
 			throw new ProblemException("Operation was not detached before being marked as unused");
 
 		// Add to our list
-		changeBeginning();
 		if(unusedOperations.add(op))
 			markUnsaved();
 		
@@ -463,7 +462,6 @@ public final class Problem implements ProblemPart, Cloneable
 	 */
 	public final Operation removeUnusedOperation(Operation op)
 	{
-		changeBeginning();
 		if(unusedOperations.remove(op))
 			markUnsaved();
 

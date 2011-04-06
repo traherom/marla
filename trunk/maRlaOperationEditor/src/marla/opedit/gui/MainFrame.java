@@ -137,7 +137,7 @@ public class MainFrame extends JFrame
     private void initComponents() {
 
         jMenuBar1 = new javax.swing.JMenuBar();
-        jMenu2 = new javax.swing.JMenu();
+        editMenuItem = new javax.swing.JMenu();
         undoMenuItem = new javax.swing.JMenuItem();
         redoMenuItem = new javax.swing.JMenuItem();
 
@@ -145,11 +145,11 @@ public class MainFrame extends JFrame
         setIconImage(new ImageIcon (getClass ().getResource ("/marla/ide/images/logo.png")).getImage ());
         getContentPane().setLayout(new java.awt.GridLayout(1, 1));
 
-        jMenu2.setText("Edit");
-        jMenu2.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        editMenuItem.setText("Edit");
+        editMenuItem.setFont(new java.awt.Font("Verdana", 0, 12));
 
         undoMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_Z, java.awt.event.InputEvent.CTRL_MASK));
-        undoMenuItem.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        undoMenuItem.setFont(new java.awt.Font("Verdana", 0, 12));
         undoMenuItem.setText("Undo");
         undoMenuItem.setEnabled(false);
         undoMenuItem.addActionListener(new java.awt.event.ActionListener() {
@@ -157,10 +157,10 @@ public class MainFrame extends JFrame
                 undoMenuItemActionPerformed(evt);
             }
         });
-        jMenu2.add(undoMenuItem);
+        editMenuItem.add(undoMenuItem);
 
         redoMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_Y, java.awt.event.InputEvent.CTRL_MASK));
-        redoMenuItem.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        redoMenuItem.setFont(new java.awt.Font("Verdana", 0, 12));
         redoMenuItem.setText("Redo");
         redoMenuItem.setEnabled(false);
         redoMenuItem.addActionListener(new java.awt.event.ActionListener() {
@@ -168,9 +168,9 @@ public class MainFrame extends JFrame
                 redoMenuItemActionPerformed(evt);
             }
         });
-        jMenu2.add(redoMenuItem);
+        editMenuItem.add(redoMenuItem);
 
-        jMenuBar1.add(jMenu2);
+        jMenuBar1.add(editMenuItem);
 
         setJMenuBar(jMenuBar1);
 
@@ -186,7 +186,7 @@ public class MainFrame extends JFrame
 	}//GEN-LAST:event_redoMenuItemActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JMenu jMenu2;
+    private javax.swing.JMenu editMenuItem;
     private javax.swing.JMenuBar jMenuBar1;
     protected javax.swing.JMenuItem redoMenuItem;
     protected javax.swing.JMenuItem undoMenuItem;

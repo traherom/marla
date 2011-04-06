@@ -70,7 +70,7 @@ public class Domain
     {
 		Configuration conf = Configuration.getInstance();
 		conf.configureFromSearch(Configuration.ConfigType.ErrorServer);
-		System.out.println("Error server found at " + marla.ide.gui.Domain.getErrorServer());
+		System.out.println("Server for error reporting: " + marla.ide.gui.Domain.getErrorServer());
 
 		// If the Desktop object is supported, get the reference
 		if (Desktop.isDesktopSupported ())
@@ -90,6 +90,31 @@ public class Domain
     }
 
 	/**
+	 * Validates the undo/redo menu items in MainFrame to see if they should be
+	 * enabled or disabled.
+	 */
+	public void validateUndoRedoMenuItems()
+	{
+		ViewPanel viewPanel = ViewPanel.getInstance();
+		if (viewPanel.undoRedo.hasUndo())
+		{
+			viewPanel.mainFrame.undoMenuItem.setEnabled(true);
+		}
+		else
+		{
+			viewPanel.mainFrame.undoMenuItem.setEnabled(false);
+		}
+		if (viewPanel.undoRedo.hasRedo())
+		{
+			viewPanel.mainFrame.redoMenuItem.setEnabled(true);
+		}
+		else
+		{
+			viewPanel.mainFrame.redoMenuItem.setEnabled(false);
+		}
+	}
+
+	/**
 	 * Marks that a change is beginning, so the step should be saved in undo/redo.
 	 */
 	public static void changeBeginning()
@@ -99,6 +124,8 @@ public class Domain
 		{
 			ViewPanel.getInstance().undoRedo.addUndoStep (ViewPanel.getInstance().currentOperation.clone());
 		}
+
+		viewPanel.domain.validateUndoRedoMenuItems();
 	}
 
 	/**

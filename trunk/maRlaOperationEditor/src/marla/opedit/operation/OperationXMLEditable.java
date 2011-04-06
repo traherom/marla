@@ -249,15 +249,12 @@ public class OperationXMLEditable extends OperationXML
 		String oldXML = getInnerXML();
 
 		try
-		{
+		{			
 			// Load file into JDOM
 			String wrappedStr = "<wrapper>" + newXMLStr + "</wrapper>";
 			StringReader sr = new StringReader(wrappedStr);
 			SAXBuilder parser = new SAXBuilder();
 			Document doc = parser.build(sr);
-
-			if(parent != null)
-				parent.changeBeginning();
 		
 			// Stick parsed version into opEl
 			opEl.removeContent();

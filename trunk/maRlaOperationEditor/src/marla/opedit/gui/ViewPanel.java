@@ -36,6 +36,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableColumnModel;
@@ -107,6 +108,8 @@ public class ViewPanel extends JPanel
 	private boolean ignoreSecond = false;
 	/** The undo/redo object.*/
 	protected UndoRedo<OperationXMLEditable> undoRedo = new UndoRedo<OperationXMLEditable>();
+	/** True when an undo/redo is requested, false otherwise.*/
+	private boolean isUndoRedo = false;
 
 	/**
 	 * Creates new form MainFrame for a stand-alone application.
@@ -433,10 +436,15 @@ public class ViewPanel extends JPanel
             }
         });
 
-        operationTextPane.setFont(new java.awt.Font("Courier New", 0, 12)); // NOI18N
+        operationTextPane.setFont(new java.awt.Font("Courier New", 0, 12));
         operationTextPane.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusLost(java.awt.event.FocusEvent evt) {
                 operationTextPaneFocusLost(evt);
+            }
+        });
+        operationTextPane.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                operationTextPaneKeyTyped(evt);
             }
         });
         operationScrollPane.setViewportView(operationTextPane);
@@ -682,7 +690,7 @@ public class ViewPanel extends JPanel
 
 	private void operationsNameTextFieldActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_operationsNameTextFieldActionPerformed
 	{//GEN-HEADEREND:event_operationsNameTextFieldActionPerformed
-		if (!ignoreChanges && !operationsNameTextField.getText().equals(currentOperation.getName()))
+		if (isUndoRedo || (!ignoreChanges && !operationsNameTextField.getText().equals(currentOperation.getName())))
 		{
 			String newName = operationsNameTextField.getText();
 
@@ -708,9 +716,9 @@ public class ViewPanel extends JPanel
 
 	private void categoryTextFieldActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_categoryTextFieldActionPerformed
 	{//GEN-HEADEREND:event_categoryTextFieldActionPerformed
-		if (!ignoreChanges && !categoryTextField.getText().equals(currentOperation.getCategory()))
+		if (isUndoRedo || (!ignoreChanges && !categoryTextField.getText().equals(currentOperation.getCategory())))
 		{
-			String newCat = operationsNameTextField.getText();
+			String newCat = categoryTextField.getText();
 
 			try
 			{
@@ -900,7 +908,7 @@ public class ViewPanel extends JPanel
 	}//GEN-LAST:event_innerXmlLinkLabelMouseReleased
 
 	private void operationTextPaneFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_operationTextPaneFocusLost
-		if (!ignoreChanges && !operationTextPane.getText().replaceAll("\\r\\n", "\\\n").equals(currentOperation.getInnerXML().replaceAll("\\r\\n", "\\\n")))
+		if (isUndoRedo || (!ignoreChanges && !operationTextPane.getText().replaceAll("\\r\\n", "\\\n").equals(currentOperation.getInnerXML().replaceAll("\\r\\n", "\\\n"))))
 		{
 			try
 			{
@@ -918,7 +926,7 @@ public class ViewPanel extends JPanel
 
 	private void hasPlotCheckBoxActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_hasPlotCheckBoxActionPerformed
 	{//GEN-HEADEREND:event_hasPlotCheckBoxActionPerformed
-		if (currentOperation != null)
+		if (isUndoRedo || (!ignoreChanges && currentOperation != null))
 		{
 			currentOperation.setHasPlot(hasPlotCheckBox.isSelected());
 		}
@@ -999,6 +1007,18 @@ public class ViewPanel extends JPanel
 		}
 	}//GEN-LAST:event_formAncestorAdded
 
+	private void operationTextPaneKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_operationTextPaneKeyTyped
+		SwingUtilities.invokeLater(new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				operationTextPaneFocusLost(null);
+				Domain.changeBeginning();
+			}
+		});
+	}//GEN-LAST:event_operationTextPaneKeyTyped
+
 	/**
 	 * Undo the last operation.
 	 */
@@ -1006,17 +1026,21 @@ public class ViewPanel extends JPanel
 	{
 		if (undoRedo.hasUndo())
 		{
+			isUndoRedo = true;
 			OperationXMLEditable opXml = undoRedo.undo(currentOperation);
 			currentOperation = opXml;
-			operationsNameTextField.setText(currentOperation.getName());
-			categoryTextField.setText(currentOperation.getCategory());
-			hasPlotCheckBox.setSelected(currentOperation.hasPlot());
-			operationTextPane.setText(currentOperation.getInnerXML());
 
-			if (!undoRedo.hasUndo())
-			{
-				mainFrame.undoMenuItem.setEnabled (false);
-			}
+			operationsNameTextField.setText(currentOperation.getName());
+			operationsNameTextFieldActionPerformed(null);
+			categoryTextField.setText(currentOperation.getCategory());
+			categoryTextFieldActionPerformed(null);
+			hasPlotCheckBox.setSelected(currentOperation.hasPlot());
+			hasPlotCheckBoxActionPerformed(null);
+			operationTextPane.setText(currentOperation.getInnerXML());
+			operationTextPaneFocusLost(null);
+
+			domain.validateUndoRedoMenuItems();
+			isUndoRedo = false;
 		}
 	}
 
@@ -1027,17 +1051,21 @@ public class ViewPanel extends JPanel
 	{
 		if (undoRedo.hasRedo())
 		{
+			isUndoRedo = true;
 			OperationXMLEditable opXml = undoRedo.redo(currentOperation);
 			currentOperation = opXml;
-			operationsNameTextField.setText(currentOperation.getName());
-			categoryTextField.setText(currentOperation.getCategory());
-			hasPlotCheckBox.setSelected(currentOperation.hasPlot());
-			operationTextPane.setText(currentOperation.getInnerXML());
 
-			if (!undoRedo.hasRedo())
-			{
-				mainFrame.redoMenuItem.setEnabled (false);
-			}
+			operationsNameTextField.setText(currentOperation.getName());
+			operationsNameTextFieldActionPerformed(null);
+			categoryTextField.setText(currentOperation.getCategory());
+			categoryTextFieldActionPerformed(null);
+			hasPlotCheckBox.setSelected(currentOperation.hasPlot());
+			hasPlotCheckBoxActionPerformed(null);
+			operationTextPane.setText(currentOperation.getInnerXML());
+			operationTextPaneFocusLost(null);
+
+			domain.validateUndoRedoMenuItems();
+			isUndoRedo = false;
 		}
 	}
 

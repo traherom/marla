@@ -1730,10 +1730,7 @@ public class ViewPanel extends JPanel
 			domain.problem = problem;
 			openProblem(false, true);
 
-			if (!undoRedo.hasUndo())
-			{
-				mainFrame.undoMenuItem.setEnabled (false);
-			}
+			domain.validateUndoRedoMenuItems();
 		}
 	}
 
@@ -1749,10 +1746,7 @@ public class ViewPanel extends JPanel
 			domain.problem = problem;
 			openProblem(false, true);
 
-			if (!undoRedo.hasRedo())
-			{
-				mainFrame.redoMenuItem.setEnabled (false);
-			}
+			domain.validateUndoRedoMenuItems();
 		}
 	}
 
