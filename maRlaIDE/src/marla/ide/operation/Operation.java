@@ -416,8 +416,6 @@ public abstract class Operation extends DataSource implements Cloneable
 		// If we're already a part of this parent or its ourselves, ignore request
 		if(parent == newParent || newParent == this)
 			return;
-
-		changeBeginning();
 		
 		// Tell our old parent we're removing ourselves
 		if(parent != null)

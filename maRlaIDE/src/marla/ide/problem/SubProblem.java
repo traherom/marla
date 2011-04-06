@@ -238,7 +238,6 @@ public class SubProblem implements ProblemPart, Comparable<SubProblem>
 		}
 
 		// And add
-		changeBeginning();
 		solutionSteps.add(placement, ds);
 		ds.addSubProblem(this);
 		markUnsaved();

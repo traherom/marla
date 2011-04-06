@@ -272,8 +272,6 @@ public abstract class DataSource extends JLabel implements Loadable, Changeable
 
 		if(!solutionOps.contains(op))
 		{
-			changeBeginning();
-		
 			// They weren't already assigned to us, so stick them on our list
 			solutionOps.add(index, op);
 
@@ -491,6 +489,7 @@ public abstract class DataSource extends JLabel implements Loadable, Changeable
 	/**
 	 * Tell the DataSource that some aspect of it has changed
 	 */
+	@Override
 	public abstract void markUnsaved();
 
 	/**
@@ -540,8 +539,6 @@ public abstract class DataSource extends JLabel implements Loadable, Changeable
 		// Don't bother if they're already part of us
 		if(subProblems.contains(sub))
 			return;
-
-		changeBeginning();
 		
 		// We'll need a unique ID
 		getUniqueID();
