@@ -1158,7 +1158,7 @@ public class Domain
 
 				if (problem != null)
 				{
-					viewPanel.closeProblem (false);
+					viewPanel.closeProblem (false, false);
 					viewPanel.undoRedo.clearSteps();
 				}
 
@@ -1172,7 +1172,7 @@ public class Domain
 				}
 				problem = Problem.load (file.toString ());
 
-				viewPanel.openProblem (false);
+				viewPanel.openProblem (false, false);
 				break;
 			}
 		}

@@ -242,6 +242,8 @@ public class ViewPanel extends JPanel
 	protected boolean showFourth = true;
 	/** True if the fifth tip should be shown.*/
 	protected boolean showFifth = true;
+	/** True if the changeBeginning call needs to be made, false otherwise.*/
+	private boolean markChangeBeginning = true;
 	/** The undo/redo object.*/
 	protected UndoRedo<Problem> undoRedo = new UndoRedo<Problem>();
 
@@ -1039,6 +1041,12 @@ public class ViewPanel extends JPanel
 					   && component != trashCan
 					   && component != firstRunLabel)
 					{
+						if (markChangeBeginning)
+						{
+							markChangeBeginning = false;
+							domain.changeBeginning();
+						}
+
 						draggingComponent = component;
 						if(draggingComponent instanceof Operation)
 						{
@@ -1096,6 +1104,8 @@ public class ViewPanel extends JPanel
 	}//GEN-LAST:event_workspacePanelMouseDragged
 
 	private void workspacePanelMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_workspacePanelMouseReleased
+		markChangeBeginning = true;
+
 		// If we were hovering, clear any of those elements
 		if(hoverComponent != null)
 		{
@@ -1717,9 +1727,9 @@ public class ViewPanel extends JPanel
 		if (undoRedo.hasUndo())
 		{
 			Problem problem = undoRedo.undo();
-			closeProblem(true);
+			closeProblem(false, true);
 			domain.problem = problem;
-			openProblem(true);
+			openProblem(false, true);
 
 			if (!undoRedo.hasUndo())
 			{
@@ -1736,9 +1746,9 @@ public class ViewPanel extends JPanel
 		if (undoRedo.hasRedo())
 		{
 			Problem problem = undoRedo.redo();
-			closeProblem(true);
+			closeProblem(false, true);
 			domain.problem = problem;
-			openProblem(true);
+			openProblem(false, true);
 
 			if (!undoRedo.hasRedo())
 			{
@@ -2372,12 +2382,13 @@ public class ViewPanel extends JPanel
 	 * Open the problem currently stored in the problem variable.
 	 *
 	 * @param editing True when editing a problem, false when creating a new one.
+	 * @param isUndoRedo True if this close is a an undo/redo reload, false otherwise.
 	 */
-	protected void openProblem(boolean editing)
+	protected void openProblem(boolean editing, boolean isUndoRedo)
 	{
 		if(domain.problem != null)
 		{
-			if(Domain.isFirstRun())
+			if(Domain.isFirstRun() && !isUndoRedo)
 			{
 				firstRunLabel.setFont(FONT_BOLD_14);
 				firstRunLabel.setForeground(Color.LIGHT_GRAY);
@@ -2391,14 +2402,17 @@ public class ViewPanel extends JPanel
 
 			mainFrame.setTitle(mainFrame.getDefaultTitle() + " - " + domain.problem.getFileName().substring(domain.problem.getFileName().lastIndexOf(System.getProperty("file.separator")) + 1, domain.problem.getFileName().lastIndexOf(".")));
 
-			if(!editing)
+			if (!isUndoRedo)
 			{
-				saveButton.setEnabled(false);
+				if(!editing)
+				{
+					saveButton.setEnabled(false);
+				}
+				addDataButton.setEnabled(true);
+				plusFontButton.setEnabled(true);
+				minusFontButton.setEnabled(true);
+				abbreviateButton.setEnabled(true);
 			}
-			addDataButton.setEnabled(true);
-			plusFontButton.setEnabled(true);
-			minusFontButton.setEnabled(true);
-			abbreviateButton.setEnabled(true);
 
 			// Move trees around if our workspace is smaller than the saving one
 			ensureComponentsVisible();
@@ -2599,12 +2613,13 @@ public class ViewPanel extends JPanel
 	 * Close the currently open problem in the workspace.
 	 *
 	 * @param editing True when editing a problem, false when creating a new one.
+	 * @param isUndoRedo True if this close is a an undo/redo reload, false otherwise.
 	 * @return If the closing of the problem should be canceled, returns false, otherwise returns true.
 	 */
-	protected boolean closeProblem(boolean editing)
+	protected boolean closeProblem(boolean editing, boolean isUndoRedo)
 	{
 		// clear the undo/redo states if we are closing the problem
-		if(!editing)
+		if(!editing && !isUndoRedo)
 		{
 			undoRedo.clearSteps();
 			mainFrame.undoMenuItem.setEnabled(false);
@@ -2617,7 +2632,7 @@ public class ViewPanel extends JPanel
 			if(domain.problem.isChanged())
 			{
 				int response = JOptionPane.YES_OPTION;
-				if(!editing)
+				if(!editing && !isUndoRedo)
 				{
 					response = JOptionPane.showConfirmDialog(domain.getTopWindow(),
 															 "Would you like to save changes to the currently open problem?",
@@ -2625,7 +2640,7 @@ public class ViewPanel extends JPanel
 															 JOptionPane.YES_NO_CANCEL_OPTION,
 															 JOptionPane.QUESTION_MESSAGE);
 				}
-				if(!editing && response == JOptionPane.YES_OPTION)
+				if(!editing && !isUndoRedo && response == JOptionPane.YES_OPTION)
 				{
 					try
 					{
@@ -2638,7 +2653,7 @@ public class ViewPanel extends JPanel
 						return false;
 					}
 				}
-				else if(response == -1 || response == JOptionPane.CANCEL_OPTION)
+				else if(!isUndoRedo && (response == -1 || response == JOptionPane.CANCEL_OPTION))
 				{
 					return false;
 				}
@@ -2666,14 +2681,17 @@ public class ViewPanel extends JPanel
 		}
 		workspacePanel.repaint();
 
-		if(!editing)
+		if (!isUndoRedo)
 		{
-			saveButton.setEnabled(false);
+			if(!editing)
+			{
+				saveButton.setEnabled(false);
+			}
+			addDataButton.setEnabled(false);
+			plusFontButton.setEnabled(false);
+			minusFontButton.setEnabled(false);
+			abbreviateButton.setEnabled(false);
 		}
-		addDataButton.setEnabled(false);
-		plusFontButton.setEnabled(false);
-		minusFontButton.setEnabled(false);
-		abbreviateButton.setEnabled(false);
 
 		return true;
 	}
@@ -2796,7 +2814,7 @@ public class ViewPanel extends JPanel
 	 */
 	protected void quit(boolean forceQuit)
 	{
-		if(closeProblem(false))
+		if(closeProblem(false, false))
 		{
 			// Hide the main window to give the appearance of better responsiveness
 			mainFrame.setVisible(false);
