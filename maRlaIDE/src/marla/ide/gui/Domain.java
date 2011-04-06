@@ -779,12 +779,38 @@ public class Domain
 	}
 
 	/**
+	 * Validates the undo/redo menu items in MainFrame to see if they should be
+	 * enabled or disabled.
+	 */
+	public void validateUndoRedoMenuItems()
+	{
+		if (viewPanel.undoRedo.hasUndo())
+		{
+			viewPanel.mainFrame.undoMenuItem.setEnabled(true);
+		}
+		else
+		{
+			viewPanel.mainFrame.undoMenuItem.setEnabled(false);
+		}
+		if (viewPanel.undoRedo.hasRedo())
+		{
+			viewPanel.mainFrame.redoMenuItem.setEnabled(true);
+		}
+		else
+		{
+			viewPanel.mainFrame.redoMenuItem.setEnabled(false);
+		}
+	}
+
+	/**
 	 * Marks that a change is beginning, so the step should be saved in undo/redo.
 	 */
 	public void changeBeginning()
 	{
 		if(viewPanel.newProblemWizardDialog.newProblem == null && problem != null)
 			viewPanel.undoRedo.addUndoStep (problem.clone());
+
+		validateUndoRedoMenuItems();
 	}
 
 	/**

@@ -441,16 +441,7 @@ public class MainFrame extends JFrame
         menuBar.add(fileMenu);
 
         editMenu.setText("Edit");
-        editMenu.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
-        editMenu.addMenuListener(new javax.swing.event.MenuListener() {
-            public void menuCanceled(javax.swing.event.MenuEvent evt) {
-            }
-            public void menuDeselected(javax.swing.event.MenuEvent evt) {
-            }
-            public void menuSelected(javax.swing.event.MenuEvent evt) {
-                editMenuMenuSelected(evt);
-            }
-        });
+        editMenu.setFont(new java.awt.Font("Verdana", 0, 12));
 
         undoMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_Z, java.awt.event.InputEvent.CTRL_MASK));
         undoMenuItem.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
@@ -464,7 +455,7 @@ public class MainFrame extends JFrame
         editMenu.add(undoMenuItem);
 
         redoMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_Y, java.awt.event.InputEvent.CTRL_MASK));
-        redoMenuItem.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        redoMenuItem.setFont(new java.awt.Font("Verdana", 0, 12));
         redoMenuItem.setText("Redo");
         redoMenuItem.setEnabled(false);
         redoMenuItem.addActionListener(new java.awt.event.ActionListener() {
@@ -671,43 +662,6 @@ public class MainFrame extends JFrame
 			}
 		}
 	}//GEN-LAST:event_fileMenuMenuSelected
-
-	private void editMenuMenuSelected(javax.swing.event.MenuEvent evt) {//GEN-FIRST:event_editMenuMenuSelected
-		if(viewPanel.initLoading)
-		{
-			for(int i = 0; i < editMenu.getMenuComponentCount(); ++i)
-			{
-				editMenu.getMenuComponent(i).setEnabled(false);
-			}
-		}
-		else
-		{
-			if(viewPanel.domain.problem != null)
-			{
-				if (viewPanel.undoRedo.hasUndo())
-				{
-					undoMenuItem.setEnabled(true);
-				}
-				else
-				{
-					undoMenuItem.setEnabled(false);
-				}
-				if (viewPanel.undoRedo.hasRedo())
-				{
-					redoMenuItem.setEnabled(true);
-				}
-				else
-				{
-					redoMenuItem.setEnabled(false);
-				}
-			}
-			else
-			{
-				undoMenuItem.setEnabled(false);
-				redoMenuItem.setEnabled(false);
-			}
-		}
-	}//GEN-LAST:event_editMenuMenuSelected
 
 	private void problemMenuMenuSelected(javax.swing.event.MenuEvent evt) {//GEN-FIRST:event_problemMenuMenuSelected
 		if(viewPanel.initLoading)

@@ -291,9 +291,7 @@ public abstract class DataSource extends JLabel implements Loadable, Changeable
 	 * @return The removed Operation
 	 */
 	public final Operation removeOperation(Operation op)
-	{
-		changeBeginning();
-		
+	{	
 		// Tell operation to we're not its parent any more
 		op.setParentData(null);
 
