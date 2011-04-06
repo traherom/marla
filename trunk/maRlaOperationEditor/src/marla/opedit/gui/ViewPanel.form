@@ -2,7 +2,7 @@
 
 <Form version="1.6" maxVersion="1.7" type="org.netbeans.modules.form.forminfo.JPanelFormInfo">
   <NonVisualComponents>
-    <Component class="javax.swing.JFileChooser" name="fileChooser">
+    <Component class="javax.swing.JFileChooser" name="fileChooserDialog">
       <Properties>
         <Property name="approveButtonToolTipText" type="java.lang.String" value="Choose selected file"/>
         <Property name="dialogTitle" type="java.lang.String" value="Browse Operation File"/>
@@ -70,7 +70,7 @@
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="editingLabel" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
-                      <Component id="editingTextField" pref="293" max="32767" attributes="0"/>
+                      <Component id="editingTextField" pref="372" max="32767" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="browseEditingButton" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
@@ -105,8 +105,8 @@
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="updateTestButton" min="-2" max="-2" attributes="0"/>
                           </Group>
-                          <Component id="operationScrollPane" alignment="0" pref="480" max="32767" attributes="0"/>
-                          <Component id="xmlStatusLabel" alignment="0" pref="480" max="32767" attributes="0"/>
+                          <Component id="operationScrollPane" alignment="0" pref="488" max="32767" attributes="0"/>
+                          <Component id="xmlStatusLabel" alignment="0" pref="488" max="32767" attributes="0"/>
                       </Group>
                   </Group>
               </Group>
@@ -134,7 +134,7 @@
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Group type="102" attributes="0">
-                              <Component id="operationsScrollPane" pref="427" max="32767" attributes="0"/>
+                              <Component id="operationsScrollPane" pref="442" max="32767" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="3" attributes="0">
                                   <Component id="addButton" alignment="3" min="-2" max="-2" attributes="0"/>
@@ -189,12 +189,12 @@
               <Group type="102" alignment="1" attributes="0">
                   <EmptySpace max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="1" attributes="0">
-                      <Component id="outputScrollPane" alignment="0" pref="306" max="32767" attributes="2"/>
-                      <Component id="questionPanel" alignment="0" pref="306" max="32767" attributes="2"/>
+                      <Component id="outputScrollPane" alignment="0" pref="314" max="32767" attributes="2"/>
+                      <Component id="questionPanel" alignment="0" pref="314" max="32767" attributes="2"/>
                       <Group type="102" alignment="0" attributes="0">
                           <Component id="dataCsvLabel" min="-2" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
-                          <Component id="browseDataTextField" pref="143" max="32767" attributes="0"/>
+                          <Component id="browseDataTextField" pref="163" max="32767" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="browseDataButton" min="-2" max="-2" attributes="0"/>
                       </Group>
@@ -225,7 +225,7 @@
                       <Component id="displayNameScrollPane" alignment="0" min="-2" pref="25" max="-2" attributes="1"/>
                   </Group>
                   <EmptySpace max="-2" attributes="0"/>
-                  <Component id="outputScrollPane" pref="363" max="32767" attributes="0"/>
+                  <Component id="outputScrollPane" pref="383" max="32767" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
               </Group>
           </Group>

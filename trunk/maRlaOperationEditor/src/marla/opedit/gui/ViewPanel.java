@@ -158,7 +158,7 @@ public class ViewPanel extends JPanel
 		xmlStatusLabel.setText ("");
 
 		// Find the "Cancel" button and change the tooltip
-		marla.ide.gui.ViewPanel.setToolTipForButton(fileChooser, "Cancel", "Cancel file selection");
+		marla.ide.gui.ViewPanel.setToolTipForButton(fileChooserDialog, "Cancel", "Cancel file selection");
 	}
 
 	/**
@@ -185,7 +185,7 @@ public class ViewPanel extends JPanel
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        fileChooser = new javax.swing.JFileChooser();
+        fileChooserDialog = new javax.swing.JFileChooser();
         answerDialog = new javax.swing.JDialog();
         answerPanel = new javax.swing.JPanel();
         testingPanel = new javax.swing.JPanel();
@@ -226,9 +226,9 @@ public class ViewPanel extends JPanel
         hasPlotCheckBox = new javax.swing.JCheckBox();
         saveAsButton = new javax.swing.JButton();
 
-        fileChooser.setApproveButtonToolTipText("Choose selected file");
-        fileChooser.setDialogTitle("Browse Operation File");
-        fileChooser.setFileSelectionMode(javax.swing.JFileChooser.FILES_AND_DIRECTORIES);
+        fileChooserDialog.setApproveButtonToolTipText("Choose selected file");
+        fileChooserDialog.setDialogTitle("Browse Operation File");
+        fileChooserDialog.setFileSelectionMode(javax.swing.JFileChooser.FILES_AND_DIRECTORIES);
 
         answerDialog.setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         answerDialog.setTitle("Solution to Point");
@@ -291,12 +291,12 @@ public class ViewPanel extends JPanel
             .add(org.jdesktop.layout.GroupLayout.TRAILING, testingPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .add(testingPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
-                    .add(org.jdesktop.layout.GroupLayout.LEADING, outputScrollPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 306, Short.MAX_VALUE)
-                    .add(org.jdesktop.layout.GroupLayout.LEADING, questionPanel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 306, Short.MAX_VALUE)
+                    .add(org.jdesktop.layout.GroupLayout.LEADING, outputScrollPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 314, Short.MAX_VALUE)
+                    .add(org.jdesktop.layout.GroupLayout.LEADING, questionPanel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 314, Short.MAX_VALUE)
                     .add(org.jdesktop.layout.GroupLayout.LEADING, testingPanelLayout.createSequentialGroup()
                         .add(dataCsvLabel)
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(browseDataTextField, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 143, Short.MAX_VALUE)
+                        .add(browseDataTextField, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 163, Short.MAX_VALUE)
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                         .add(browseDataButton))
                     .add(org.jdesktop.layout.GroupLayout.LEADING, testingPanelLayout.createSequentialGroup()
@@ -320,7 +320,7 @@ public class ViewPanel extends JPanel
                     .add(displayNameLabel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .add(displayNameScrollPane, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 25, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(outputScrollPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 363, Short.MAX_VALUE)
+                .add(outputScrollPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 383, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -417,7 +417,7 @@ public class ViewPanel extends JPanel
         xmlStatusLabel.setFont(new java.awt.Font("Verdana", 0, 12));
         xmlStatusLabel.setText("<html><b>XML status:</b> valid</html>");
 
-        operationsTable.setFont(new java.awt.Font("Verdana", 0, 12));
+        operationsTable.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
         operationsTable.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         operationsScrollPane.setViewportView(operationsTable);
 
@@ -479,7 +479,7 @@ public class ViewPanel extends JPanel
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                         .add(editingLabel)
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(editingTextField, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 293, Short.MAX_VALUE)
+                        .add(editingTextField, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 372, Short.MAX_VALUE)
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                         .add(browseEditingButton)
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
@@ -508,8 +508,8 @@ public class ViewPanel extends JPanel
                                 .add(innerXmlLinkLabel, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                                 .add(updateTestButton))
-                            .add(operationScrollPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 480, Short.MAX_VALUE)
-                            .add(xmlStatusLabel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 480, Short.MAX_VALUE))))
+                            .add(operationScrollPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 488, Short.MAX_VALUE)
+                            .add(xmlStatusLabel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 488, Short.MAX_VALUE))))
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(testingPanel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
@@ -531,7 +531,7 @@ public class ViewPanel extends JPanel
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                         .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                             .add(layout.createSequentialGroup()
-                                .add(operationsScrollPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 427, Short.MAX_VALUE)
+                                .add(operationsScrollPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 442, Short.MAX_VALUE)
                                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                                     .add(addButton)
@@ -625,27 +625,28 @@ public class ViewPanel extends JPanel
 		try
 		{
 			// Construct the file-based open chooser dialog
-			fileChooser.resetChoosableFileFilters();
-			fileChooser.setFileFilter(xmlFilter);
-			fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-			fileChooser.setDialogType(JFileChooser.OPEN_DIALOG);
-			fileChooser.setDialogTitle("Browse Operation File");
-			fileChooser.setCurrentDirectory(new File(marla.ide.gui.Domain.lastGoodDir));
+			fileChooserDialog.resetChoosableFileFilters();
+			fileChooserDialog.setFileFilter(xmlFilter);
+			fileChooserDialog.setFileSelectionMode(JFileChooser.FILES_ONLY);
+			fileChooserDialog.setDialogType(JFileChooser.OPEN_DIALOG);
+			fileChooserDialog.setDialogTitle("Browse Operation File");
+			fileChooserDialog.setSelectedFile(new File(""));
+			fileChooserDialog.setCurrentDirectory(new File(marla.ide.gui.Domain.lastGoodDir));
 			// Display the chooser and retrieve the selected file
-			int response = fileChooser.showOpenDialog(this);
+			int response = fileChooserDialog.showOpenDialog(this);
 			while(response == JFileChooser.APPROVE_OPTION)
 			{
-				File file = fileChooser.getSelectedFile();
+				File file = fileChooserDialog.getSelectedFile();
 				if(!file.isFile() || !file.toString().endsWith(".xml"))
 				{
 					JOptionPane.showMessageDialog(this, "The specified file does not exist.", "Does Not Exist", JOptionPane.WARNING_MESSAGE);
-					int lastIndex = fileChooser.getSelectedFile().toString().lastIndexOf(".");
+					int lastIndex = fileChooserDialog.getSelectedFile().toString().lastIndexOf(".");
 					if(lastIndex == -1)
 					{
-						lastIndex = fileChooser.getSelectedFile().toString().length();
+						lastIndex = fileChooserDialog.getSelectedFile().toString().length();
 					}
-					fileChooser.setSelectedFile(new File(fileChooser.getSelectedFile().toString().substring(0, lastIndex) + ".xml"));
-					response = fileChooser.showOpenDialog(this);
+					fileChooserDialog.setSelectedFile(new File(fileChooserDialog.getSelectedFile().toString().substring(0, lastIndex) + ".xml"));
+					response = fileChooserDialog.showOpenDialog(this);
 					continue;
 				}
 
@@ -736,27 +737,28 @@ public class ViewPanel extends JPanel
 		try
 		{
 			// Construct the file-based open chooser dialog
-			fileChooser.resetChoosableFileFilters();
-			fileChooser.setFileFilter(csvFilter);
-			fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-			fileChooser.setDialogType(JFileChooser.OPEN_DIALOG);
-			fileChooser.setDialogTitle("Browse Data File");
-			fileChooser.setCurrentDirectory(new File(marla.ide.gui.Domain.lastGoodDir));
+			fileChooserDialog.resetChoosableFileFilters();
+			fileChooserDialog.setFileFilter(csvFilter);
+			fileChooserDialog.setFileSelectionMode(JFileChooser.FILES_ONLY);
+			fileChooserDialog.setDialogType(JFileChooser.OPEN_DIALOG);
+			fileChooserDialog.setDialogTitle("Browse Data File");
+			fileChooserDialog.setSelectedFile(new File(""));
+			fileChooserDialog.setCurrentDirectory(new File(marla.ide.gui.Domain.lastGoodDir));
 			// Display the chooser and retrieve the selected file
-			int response = fileChooser.showOpenDialog(this);
+			int response = fileChooserDialog.showOpenDialog(this);
 			while(response == JFileChooser.APPROVE_OPTION)
 			{
-				File file = fileChooser.getSelectedFile();
+				File file = fileChooserDialog.getSelectedFile();
 				if(!file.isFile() || !file.toString().endsWith(".csv"))
 				{
 					JOptionPane.showMessageDialog(this, "The specified file does not exist.", "Does Not Exist", JOptionPane.WARNING_MESSAGE);
-					int lastIndex = fileChooser.getSelectedFile().toString().lastIndexOf(".");
+					int lastIndex = fileChooserDialog.getSelectedFile().toString().lastIndexOf(".");
 					if(lastIndex == -1)
 					{
-						lastIndex = fileChooser.getSelectedFile().toString().length();
+						lastIndex = fileChooserDialog.getSelectedFile().toString().length();
 					}
-					fileChooser.setSelectedFile(new File(fileChooser.getSelectedFile().toString().substring(0, lastIndex) + ".csv"));
-					response = fileChooser.showOpenDialog(this);
+					fileChooserDialog.setSelectedFile(new File(fileChooserDialog.getSelectedFile().toString().substring(0, lastIndex) + ".csv"));
+					response = fileChooserDialog.showOpenDialog(this);
 					continue;
 				}
 
@@ -814,27 +816,28 @@ public class ViewPanel extends JPanel
 		try
 		{
 			// Construct the file-based open chooser dialog
-			fileChooser.resetChoosableFileFilters();
-			fileChooser.setFileFilter(xmlFilter);
-			fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-			fileChooser.setDialogType(JFileChooser.SAVE_DIALOG);
-			fileChooser.setDialogTitle("New Operation File");
-			fileChooser.setCurrentDirectory(new File(marla.ide.gui.Domain.lastGoodDir));
+			fileChooserDialog.resetChoosableFileFilters();
+			fileChooserDialog.setFileFilter(xmlFilter);
+			fileChooserDialog.setFileSelectionMode(JFileChooser.FILES_ONLY);
+			fileChooserDialog.setDialogType(JFileChooser.SAVE_DIALOG);
+			fileChooserDialog.setDialogTitle("New Operation File");
+			fileChooserDialog.setSelectedFile(new File(""));
+			fileChooserDialog.setCurrentDirectory(new File(marla.ide.gui.Domain.lastGoodDir));
 			// Display the chooser and retrieve the selected file
-			int response = fileChooser.showSaveDialog(this);
+			int response = fileChooserDialog.showSaveDialog(this);
 			while(response == JFileChooser.APPROVE_OPTION)
 			{
-				int lastIndex = fileChooser.getSelectedFile().toString().lastIndexOf(".");
+				int lastIndex = fileChooserDialog.getSelectedFile().toString().lastIndexOf(".");
 				if(lastIndex == -1)
 				{
-					lastIndex = fileChooser.getSelectedFile().toString().length();
-					fileChooser.setSelectedFile(new File(fileChooser.getSelectedFile().toString().substring(0, lastIndex) + ".xml"));
+					lastIndex = fileChooserDialog.getSelectedFile().toString().length();
+					fileChooserDialog.setSelectedFile(new File(fileChooserDialog.getSelectedFile().toString().substring(0, lastIndex) + ".xml"));
 				}
-				File file = fileChooser.getSelectedFile();
+				File file = fileChooserDialog.getSelectedFile();
 				if(!file.toString().endsWith(".xml"))
 				{
 					JOptionPane.showMessageDialog(this, "The file must have a valid XML extension.", "Does Not Exist", JOptionPane.WARNING_MESSAGE);
-					response = fileChooser.showOpenDialog(this);
+					response = fileChooserDialog.showOpenDialog(this);
 					continue;
 				}
 				else if (file.exists())
@@ -842,7 +845,7 @@ public class ViewPanel extends JPanel
 					response = JOptionPane.showOptionDialog(this, "The specified file already exists.  Overwrite?", "Overwrite File", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null);
 					if(response != JOptionPane.YES_OPTION)
 					{
-						response = fileChooser.showSaveDialog(this);
+						response = fileChooserDialog.showSaveDialog(this);
 						continue;
 					}
 				}
@@ -936,27 +939,28 @@ public class ViewPanel extends JPanel
 		try
 		{
 			// Construct the file-based open chooser dialog
-			fileChooser.resetChoosableFileFilters();
-			fileChooser.setFileFilter(xmlFilter);
-			fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-			fileChooser.setDialogType(JFileChooser.SAVE_DIALOG);
-			fileChooser.setDialogTitle("Save As Operation File");
-			fileChooser.setCurrentDirectory(new File(marla.ide.gui.Domain.lastGoodDir));
+			fileChooserDialog.resetChoosableFileFilters();
+			fileChooserDialog.setFileFilter(xmlFilter);
+			fileChooserDialog.setFileSelectionMode(JFileChooser.FILES_ONLY);
+			fileChooserDialog.setDialogType(JFileChooser.SAVE_DIALOG);
+			fileChooserDialog.setDialogTitle("Save As Operation File");
+			fileChooserDialog.setSelectedFile (new File(""));
+			fileChooserDialog.setCurrentDirectory(new File(marla.ide.gui.Domain.lastGoodDir));
 			// Display the chooser and retrieve the selected file
-			int response = fileChooser.showSaveDialog(this);
+			int response = fileChooserDialog.showSaveDialog(this);
 			while(response == JFileChooser.APPROVE_OPTION)
 			{
-				int lastIndex = fileChooser.getSelectedFile().toString().lastIndexOf(".");
+				int lastIndex = fileChooserDialog.getSelectedFile().toString().lastIndexOf(".");
 				if(lastIndex == -1)
 				{
-					lastIndex = fileChooser.getSelectedFile().toString().length();
-					fileChooser.setSelectedFile(new File(fileChooser.getSelectedFile().toString().substring(0, lastIndex) + ".xml"));
+					lastIndex = fileChooserDialog.getSelectedFile().toString().length();
+					fileChooserDialog.setSelectedFile(new File(fileChooserDialog.getSelectedFile().toString().substring(0, lastIndex) + ".xml"));
 				}
-				File file = fileChooser.getSelectedFile();
+				File file = fileChooserDialog.getSelectedFile();
 				if(!file.toString().endsWith(".xml"))
 				{
 					JOptionPane.showMessageDialog(this, "The file must have a valid XML extension.", "Does Not Exist", JOptionPane.WARNING_MESSAGE);
-					response = fileChooser.showSaveDialog(this);
+					response = fileChooserDialog.showSaveDialog(this);
 					continue;
 				}
 				else if (file.exists())
@@ -964,7 +968,7 @@ public class ViewPanel extends JPanel
 					response = JOptionPane.showOptionDialog(this, "The specified file already exists.  Overwrite?", "Overwrite File", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null);
 					if(response != JOptionPane.YES_OPTION)
 					{
-						response = fileChooser.showOpenDialog(this);
+						response = fileChooserDialog.showOpenDialog(this);
 						continue;
 					}
 				}
@@ -1008,15 +1012,19 @@ public class ViewPanel extends JPanel
 	}//GEN-LAST:event_formAncestorAdded
 
 	private void operationTextPaneKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_operationTextPaneKeyTyped
-		SwingUtilities.invokeLater(new Runnable()
+		// We want to ignore any options when control is held
+		if (!evt.isControlDown())
 		{
-			@Override
-			public void run()
+			SwingUtilities.invokeLater(new Runnable()
 			{
-				operationTextPaneFocusLost(null);
-				Domain.changeBeginning();
-			}
-		});
+				@Override
+				public void run()
+				{
+					Domain.changeBeginning();
+					operationTextPaneFocusLost(null);
+				}
+			});
+		}
 	}//GEN-LAST:event_operationTextPaneKeyTyped
 
 	/**
@@ -1028,6 +1036,7 @@ public class ViewPanel extends JPanel
 		{
 			isUndoRedo = true;
 			OperationXMLEditable opXml = undoRedo.undo(currentOperation);
+			currentFile.replaceOperation(currentOperation.getName(), opXml);
 			currentOperation = opXml;
 
 			operationsNameTextField.setText(currentOperation.getName());
@@ -1036,7 +1045,7 @@ public class ViewPanel extends JPanel
 			categoryTextFieldActionPerformed(null);
 			hasPlotCheckBox.setSelected(currentOperation.hasPlot());
 			hasPlotCheckBoxActionPerformed(null);
-			operationTextPane.setText(currentOperation.getInnerXML());
+			operationTextPane.setText(currentOperation.getInnerXML().replaceAll("\\r\\n", "\\\n"));
 			operationTextPaneFocusLost(null);
 
 			domain.validateUndoRedoMenuItems();
@@ -1053,6 +1062,7 @@ public class ViewPanel extends JPanel
 		{
 			isUndoRedo = true;
 			OperationXMLEditable opXml = undoRedo.redo(currentOperation);
+			currentFile.replaceOperation(currentOperation.getName(), opXml);
 			currentOperation = opXml;
 
 			operationsNameTextField.setText(currentOperation.getName());
@@ -1061,7 +1071,7 @@ public class ViewPanel extends JPanel
 			categoryTextFieldActionPerformed(null);
 			hasPlotCheckBox.setSelected(currentOperation.hasPlot());
 			hasPlotCheckBoxActionPerformed(null);
-			operationTextPane.setText(currentOperation.getInnerXML());
+			operationTextPane.setText(currentOperation.getInnerXML().replaceAll("\\r\\n", "\\\n"));
 			operationTextPaneFocusLost(null);
 
 			domain.validateUndoRedoMenuItems();
@@ -1251,7 +1261,7 @@ public class ViewPanel extends JPanel
 				operationsNameTextField.setText(currentOperation.getName());
 				categoryTextField.setText(currentOperation.getCategory());
 				hasPlotCheckBox.setSelected(currentOperation.hasPlot());
-				operationTextPane.setText(currentOperation.getInnerXML());
+				operationTextPane.setText(currentOperation.getInnerXML().replaceAll("\\r\\n", "\\\n"));
 				xmlStatusLabel.setForeground(Color.BLACK);
 				xmlStatusLabel.setText("<html><b>XML status:</b> " + VALID_XML_STRING + "</html>");
 			}
@@ -1484,7 +1494,7 @@ public class ViewPanel extends JPanel
     private javax.swing.JTextPane displayNameTextPane;
     private javax.swing.JLabel editingLabel;
     private javax.swing.JTextField editingTextField;
-    protected javax.swing.JFileChooser fileChooser;
+    protected javax.swing.JFileChooser fileChooserDialog;
     private javax.swing.JCheckBox hasPlotCheckBox;
     private javax.swing.JLabel innerXmlLinkLabel;
     private javax.swing.JButton newButton;
