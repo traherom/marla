@@ -452,6 +452,8 @@ public class OperationXML extends Operation
 	{
 		super(org);
 		
+		isLoading(true);
+		
 		// TODO decide if clone is actually needed. For our undo/redo purposes,
 		// probably not. I mean, it doesn't change ever. However, that's not
 		// expected clone() behavior
@@ -460,6 +462,8 @@ public class OperationXML extends Operation
 			displayNameEl = (Element)org.displayNameEl.clone();
 		
 		checkDisplayName();
+		
+		isLoading(false);
 	}
 
 	/**

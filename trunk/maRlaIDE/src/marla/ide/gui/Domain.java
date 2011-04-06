@@ -262,7 +262,7 @@ public class Domain
 
 			if(debug)
 			{
-				/*if(debugPane.getParent() != split)
+				if(debugPane.getParent() != split)
 					split.add(debugPane);
 				split.setDividerLocation(split.getHeight() - 100);
 
@@ -332,7 +332,6 @@ public class Domain
 				{
 					Domain.logger.add(ex);
 				}
-				 */
 			}
 			else
 			{
@@ -591,8 +590,14 @@ public class Domain
 			Throwable ex = logger.get(i);
 
 			if(toConsole)
+			{
+				// Will get grabbed to go to debug console
 				ex.printStackTrace(System.out);
-
+				
+				// Always goes to actual console
+				ex.printStackTrace(System.err);
+			}
+			
 			if(out != null)
 				ex.printStackTrace(out);
 
