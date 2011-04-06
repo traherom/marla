@@ -777,7 +777,8 @@ public class Domain
 	 */
 	public void changeBeginning()
 	{
-		viewPanel.undoRedo.addStep (problem.clone());
+		if(problem != null)
+			viewPanel.undoRedo.addStep (problem.clone());
 	}
 
 	/**
@@ -1152,6 +1153,7 @@ public class Domain
 				if (problem != null)
 				{
 					viewPanel.closeProblem (false);
+					viewPanel.undoRedo.clearSteps();
 				}
 
 				if (file.isDirectory ())
