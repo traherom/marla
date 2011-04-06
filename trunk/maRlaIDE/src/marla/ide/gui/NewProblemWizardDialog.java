@@ -156,7 +156,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 									{
 										updateLabelInRightPanel(oldName, name.toString());
 									}
-									viewPanel.workspacePanel.invalidate();
+									viewPanel.workspacePanel.repaint();
 								}
 								else
 								{
@@ -854,6 +854,8 @@ public class NewProblemWizardDialog extends EscapeDialog
 }//GEN-LAST:event_browseButtonActionPerformed
 
 	private void addSubProblemButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addSubProblemButtonActionPerformed
+		domain.changeBeginning();
+
 		SubProblem subProblem;
 		if(newProblem != null)
 		{
@@ -2581,7 +2583,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 	private void finishNewProblemWizard(boolean editing)
 	{
 		// Close the current or old problem, if one is open
-		viewPanel.closeProblem(editing);
+		viewPanel.closeProblem(editing, false);
 
 		// Use values from the New Problem Wizard to construct a new problem
 		if(newProblem != null)
@@ -2592,7 +2594,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 		}
 
 		// Open data stored in the problem currently
-		viewPanel.openProblem(editing);
+		viewPanel.openProblem(editing, false);
 
 		// Save the problem immedietly
 		if(!editing)

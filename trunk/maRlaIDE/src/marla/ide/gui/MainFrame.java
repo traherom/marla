@@ -31,6 +31,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import marla.ide.problem.MarlaException;
 import marla.ide.problem.Problem;
@@ -159,21 +160,6 @@ public class MainFrame extends JFrame
 					JOptionPane.showMessageDialog(viewPanel.domain.getTopWindow(), ex.getMessage(), "Load Error", JOptionPane.WARNING_MESSAGE);
 				}
 
-				// If the final argument is a save file, open it right now
-				if(args.length != 0 && args[args.length - 1].endsWith(".marla"))
-				{
-					try
-					{
-						viewPanel.domain.problem = Problem.load(args[args.length - 1]);
-						viewPanel.openProblem(false);
-					}
-					catch(Exception ex)
-					{
-						System.out.println("Unable to load file from command line: " + ex.getMessage());
-						System.out.println("Load through the GUI for more information.");
-					}
-				}
-
 				viewPanel.initLoading = false;
 				viewPanel.newButton.setEnabled(true);
 				viewPanel.openButton.setEnabled(true);
@@ -213,6 +199,28 @@ public class MainFrame extends JFrame
 						}
 					}
 				}
+
+				SwingUtilities.invokeLater(new Runnable()
+				{
+					@Override
+					public void run()
+					{
+						// If the final argument is a save file, open it right now
+						if(args.length != 0 && args[args.length - 1].endsWith(".marla"))
+						{
+							try
+							{
+								viewPanel.domain.problem = Problem.load(args[args.length - 1]);
+								viewPanel.openProblem(false, false);
+							}
+							catch(Exception ex)
+							{
+								System.out.println("Unable to load file from command line: " + ex.getMessage());
+								System.out.println("Load through the GUI for more information.");
+							}
+						}
+					}
+				});
 			}
 		}).start();
 
@@ -752,7 +760,7 @@ public class MainFrame extends JFrame
 	}//GEN-LAST:event_toolsMenuMenuSelected
 
 	private void closeProblemMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_closeProblemMenuItemActionPerformed
-		viewPanel.closeProblem(false);
+		viewPanel.closeProblem(false, false);
 	}//GEN-LAST:event_closeProblemMenuItemActionPerformed
 
 	private void editProblemMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editProblemMenuItemActionPerformed
