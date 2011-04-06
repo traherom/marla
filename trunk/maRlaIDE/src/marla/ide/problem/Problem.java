@@ -817,9 +817,9 @@ public final class Problem implements ProblemPart, Cloneable
 		if(isLoading)
 			return;
 		
-		Domain d = getDomain();
-		if(d != null)
-			d.changeBeginning();
+		//Domain d = getDomain();
+		//if(d != null)
+		//	d.changeBeginning();
 	}
 
 	/**
