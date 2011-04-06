@@ -26,7 +26,6 @@ import java.awt.EventQueue;
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
-import marla.ide.resource.BuildInfo;
 import marla.ide.resource.Configuration;
 import marla.ide.resource.Configuration.ConfigType;
 
@@ -37,9 +36,6 @@ import marla.ide.resource.Configuration.ConfigType;
  */
 public class maRlaIDE
 {
-	/** The progress frame to be built.*/
-	private static ProgressFrame progressFrame;
-
 	/**
 	 * The method responsible for constructing the visual frame and maintaining
 	 * the thread as long as the frame is open.
@@ -85,7 +81,7 @@ public class maRlaIDE
 			Domain.logger.add(ex);
 		}
 
-		progressFrame = new ProgressFrame();
+		final ProgressFrame progressFrame = new ProgressFrame();
 
 		// Rather than having to call in to Configuration directly, if
 		// configure_only comes in as our first parameter we call it and then
