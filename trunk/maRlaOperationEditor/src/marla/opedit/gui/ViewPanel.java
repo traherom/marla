@@ -1006,7 +1006,7 @@ public class ViewPanel extends JPanel
 	{
 		if (undoRedo.hasUndo())
 		{
-			OperationXMLEditable opXml = undoRedo.undo();
+			OperationXMLEditable opXml = undoRedo.undo(currentOperation);
 			currentOperation = opXml;
 			operationsNameTextField.setText(currentOperation.getName());
 			categoryTextField.setText(currentOperation.getCategory());
@@ -1027,7 +1027,7 @@ public class ViewPanel extends JPanel
 	{
 		if (undoRedo.hasRedo())
 		{
-			OperationXMLEditable opXml = undoRedo.redo();
+			OperationXMLEditable opXml = undoRedo.redo(currentOperation);
 			currentOperation = opXml;
 			operationsNameTextField.setText(currentOperation.getName());
 			categoryTextField.setText(currentOperation.getCategory());
