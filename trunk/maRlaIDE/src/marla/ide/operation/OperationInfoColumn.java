@@ -166,17 +166,7 @@ public class OperationInfoColumn extends OperationInfoCombo
 	@Override
 	public boolean autoAnswer()
 	{
-		List<String> options = null;
-		try
-		{
-			options = getOptions();
-		}
-		catch(NullPointerException ex)
-		{
-			// Likely the special case of undo cloning
-			return false;
-		}
-		
+		List<String> options = getOptions();
 		if(options.size() == 1)
 		{
 			try
@@ -224,13 +214,13 @@ public class OperationInfoColumn extends OperationInfoCombo
 	@Override
 	public void clearAnswer()
 	{
-		getOperation().changeBeginning();
+		changeBeginning();
 		
 		answer = null;
 
 		getOperation().checkDisplayName();
 		getOperation().markDirty();
-		getOperation().markUnsaved();
+		markUnsaved();
 	}
 
 	@Override

@@ -66,7 +66,8 @@ public abstract class DataSource extends JLabel implements Loadable, Changeable
 	}
 	
 	/**
-	 * Copy constructor for part of a DataSource
+	 * Copy constructor for part of a DataSource. Our child ops need to be
+	 * copied over by callers!
 	 * @param org Original DataSource to copy
 	 */
 	protected DataSource(DataSource org)
@@ -78,13 +79,7 @@ public abstract class DataSource extends JLabel implements Loadable, Changeable
 		isHidden = org.isHidden;
 		internalID = org.internalID;
 		
-		setForeground(org.getForeground());
-		setBackground(org.getBackground());
 		setBounds(org.getBounds());
-		
-		// Our children
-		for(Operation orgOp : org.solutionOps)
-			addOperation(orgOp.clone());
 		
 		// We don't worry about subproblems attached to us, our cloner can
 		// reattech them if they wish
