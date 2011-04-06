@@ -286,6 +286,7 @@ public final class Problem implements ProblemPart, Cloneable
 	@Override
 	public void setStatement(String newStatement)
 	{
+		changeBeginning();
 		this.statement = newStatement;
 		markUnsaved();
 	}
@@ -306,6 +307,7 @@ public final class Problem implements ProblemPart, Cloneable
 	 */
 	public String setPersonName(String newName)
 	{
+		changeBeginning();
 		String oldName = personName;
 		personName = newName;
 		markUnsaved();
@@ -329,6 +331,7 @@ public final class Problem implements ProblemPart, Cloneable
 	 */
 	public String setShortCourse(String newCourse)
 	{
+		changeBeginning();
 		String oldCourse = shortCourseName;
 		shortCourseName = newCourse;
 		markUnsaved();
@@ -352,6 +355,7 @@ public final class Problem implements ProblemPart, Cloneable
 	 */
 	public String setLongCourse(String newCourse)
 	{
+		changeBeginning();
 		String oldCourse = longCourseName;
 		longCourseName = newCourse;
 		markUnsaved();
@@ -374,6 +378,7 @@ public final class Problem implements ProblemPart, Cloneable
 	 */
 	public String setChapter(String newChapter)
 	{
+		changeBeginning();
 		String oldChapter = probChapter;
 		probChapter = newChapter;
 		markUnsaved();
@@ -397,6 +402,7 @@ public final class Problem implements ProblemPart, Cloneable
 	 */
 	public String setSection(String newSection)
 	{
+		changeBeginning();
 		String oldSection = probSection;
 		probSection = newSection;
 		markUnsaved();
@@ -419,6 +425,7 @@ public final class Problem implements ProblemPart, Cloneable
 	 */
 	public String setProblemNumber(String newNum)
 	{
+		changeBeginning();
 		String oldNum = probNum;
 		probNum = newNum;
 		markUnsaved();
@@ -442,6 +449,7 @@ public final class Problem implements ProblemPart, Cloneable
 			throw new ProblemException("Operation was not detached before being marked as unused");
 
 		// Add to our list
+		changeBeginning();
 		if(unusedOperations.add(op))
 			markUnsaved();
 		
@@ -455,6 +463,7 @@ public final class Problem implements ProblemPart, Cloneable
 	 */
 	public final Operation removeUnusedOperation(Operation op)
 	{
+		changeBeginning();
 		if(unusedOperations.remove(op))
 			markUnsaved();
 
@@ -491,6 +500,8 @@ public final class Problem implements ProblemPart, Cloneable
 				return data;
 		}
 
+		changeBeginning();
+		
 		// Remove from the old problem if needed
 		Problem oldParent = data.getParentProblem();
 		if(oldParent != null)
@@ -517,7 +528,9 @@ public final class Problem implements ProblemPart, Cloneable
 	{
 		DataSet d = datasets.get(index);
 
-		// Ensure the SubProblems that are used 
+		changeBeginning();
+		
+		// Ensure the SubProblems that are used don't contain it any more
 		for(SubProblem sub : d.getSubProblems())
 			sub.removeStep(d);
 
@@ -696,8 +709,9 @@ public final class Problem implements ProblemPart, Cloneable
 	 */
 	private SubProblem addSubProblem(SubProblem sub)
 	{
-		markUnsaved();
+		changeBeginning();
 		subProblems.add(sub);
+		markUnsaved();
 		return sub;
 	}
 
@@ -708,6 +722,8 @@ public final class Problem implements ProblemPart, Cloneable
 	 */
 	public SubProblem removeSubProblem(SubProblem sub)
 	{
+		changeBeginning();
+		
 		// Tell any datasource that pointed to here to no longer do so
 		for(int i = 0; i < sub.getStepCount(); i++)
 			sub.removeStep(i);
@@ -784,7 +800,6 @@ public final class Problem implements ProblemPart, Cloneable
 	public void markUnsaved()
 	{
 		isSaved = false;
-		changeBeginning();
 
 		// Don't bother if we're loading
 		if(isLoading)

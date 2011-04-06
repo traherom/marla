@@ -414,8 +414,6 @@ public final class DataSet extends DataSource
 
 		// And update the name
 		setName(newName);
-
-		markUnsaved();
 	}
 
 	@Override
@@ -462,6 +460,7 @@ public final class DataSet extends DataSource
 		}
 
 		// Create
+		changeBeginning();
 		DataColumn newColumn = new DataColumn(this, colName);
 		columns.add(index, newColumn);
 		markUnsaved();
@@ -501,6 +500,7 @@ public final class DataSet extends DataSource
 	 */
 	public void clearColumns()
 	{
+		changeBeginning();
 		columns.clear();
 		markUnsaved();
 	}
@@ -512,11 +512,11 @@ public final class DataSet extends DataSource
 	 */
 	public DataColumn removeColumn(DataColumn column)
 	{
+		changeBeginning();
+		
 		// Remove them from our list
 		if(columns.remove(column))
-		{
 			markUnsaved();
-		}
 
 		return column;
 	}
@@ -529,6 +529,7 @@ public final class DataSet extends DataSource
 	 */
 	public DataColumn removeColumn(int index)
 	{
+		changeBeginning();
 		DataColumn removedCol = columns.remove(index);
 		markUnsaved();
 		return removedCol;

@@ -68,6 +68,8 @@ public class OperationInfoCheckbox extends OperationInformation
 		if(newAnswer == null)
 			throw new InternalMarlaException("Info may only be cleared by calling clearAnswer()");
 		
+		changeBeginning();
+		
 		if(newAnswer instanceof Boolean)
 			answer = (Boolean)newAnswer;
 		else
@@ -75,7 +77,7 @@ public class OperationInfoCheckbox extends OperationInformation
 
 		getOperation().checkDisplayName();
 		getOperation().markDirty();
-		getOperation().markUnsaved();
+		markUnsaved();
 
 		return oldAnswer;
 	}
@@ -83,10 +85,13 @@ public class OperationInfoCheckbox extends OperationInformation
 	@Override
 	public void clearAnswer()
 	{
+		changeBeginning();
+		
 		answer = null;
+		
 		getOperation().checkDisplayName();
 		getOperation().markDirty();
-		getOperation().markUnsaved();
+		markUnsaved();
 	}
 
 	@Override
