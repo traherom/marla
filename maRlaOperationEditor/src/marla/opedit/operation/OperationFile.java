@@ -340,6 +340,14 @@ public final class OperationFile
 	}
 
 	/**
+	 * Denotes that something within the operation file needs saving
+	 */
+	public void changeBeginning()
+	{
+		Domain.changeBeginning();
+	}
+	
+	/**
 	 * Indicates if this operation file has unsaved changes
 	 * @return true if there are unsaved changes, false otherwise
 	 */
