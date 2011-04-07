@@ -159,7 +159,7 @@ public class ViewPanel extends JPanel
 	/** The width between two operations/data sets.*/
 	private int spaceWidth = 20;
 	/** The height between two operations/data sets.*/
-	private int spaceHeight = 30;
+	private int spaceHeight = 10;
 	/** The size of fonts.*/
 	public static int fontSize = 12;
 	/** Font size and style for workspace plain.*/
@@ -1062,15 +1062,8 @@ public class ViewPanel extends JPanel
 							// If we have a parent, remove from the parent, get our child, and set our child as our parent's new child
 							if(parent != null)
 							{
-								int oldIndex = parent.getOperationIndex((Operation) draggingComponent);
-
 								parent.removeOperation((Operation) draggingComponent);
 								domain.problem.addUnusedOperation(parent.removeOperation((Operation) draggingComponent));
-
-								if(childOperation != null)
-								{
-									parent.addOperation(oldIndex, childOperation);
-								}
 							}
 						}
 						catch(MarlaException ex)
@@ -2021,142 +2014,132 @@ public class ViewPanel extends JPanel
 	}
 
 	/**
+	 * Rebuild the tree in the interface for the given data set. Assumes
+	 * that the given DataSource is the top of the tree and works with 
+	 * everything below it to center it
+	 *
+	 * @param ds The data set to rebuild in the interface.
+	 * @return width of the tree
+	 */
+	protected int rebuildTree(DataSource ds)
+	{
+		DataSource topDS = ds.getRootDataSource();
+		topDS.setFont(workspaceFontBold);
+		topDS.setText("<html>" + topDS.getDisplayString(abbreviated) + "</html>");
+		topDS.setSize(topDS.getPreferredSize());
+		
+		int width = rebuildTree(topDS, topDS.getX() + topDS.getWidth() / 2, topDS.getY(), true);
+		
+		// Redraw everything
+		workspacePanel.repaint();
+		
+		return width;
+	}
+	
+	/**
 	 * Rebuild the tree in the interface for the given data set.
 	 *
 	 * @param ds The data set to rebuild in the interface.
+	 * @param centerX X coordinate around which to center tree
+	 * @param topY Y coordinate to start the tree at
+	 * @param shouldMove true if the DataSources should be move, false if only the width is needed
+	 * @return width of the tree
 	 */
-	protected void rebuildTree(DataSource ds)
+	protected int rebuildTree(DataSource ds, int centerX, int topY, boolean shouldMove)
 	{
 		// Don't bother listening yet if the problem is still loading
 		Problem prob = ds.getParentProblem();
 		if(prob != null && prob.isLoading())
-			return;
+			return -1;
 
 		// Set the label for the data source itself
 		ds.setFont(workspaceFontBold);
 		ds.setText("<html>" + ds.getDisplayString(abbreviated) + "</html>");
 		ds.setSize(ds.getPreferredSize());
 
+		// Move and, if we're the bottom of the tree, just return our width
 		int opCount = ds.getOperationCount();
-		if(opCount > 0)
+		int dsWidth = ds.getWidth();
+		if(shouldMove)
+			ds.setLocation(centerX - dsWidth / 2, topY);
+		if(opCount == 0)
+			return dsWidth;
+		
+		// Find widths of all our children's trees
+		int totalWidth = 0;
+		int[] widths = new int[opCount];
+		for(int i = 0; i < opCount; ++i)
 		{
-			// Find widths of all our columns
-			int[] widths = new int[opCount];
-			for(int i = 0; i < opCount; ++i)
-			{
-				// Run down this operation chain in order to find the widest one
-				widths[i] = rebuildOperationColumn(ds.getOperation(i), 0, true);
-			}
+			// Run down this operation chain in order to find the widest one
+			widths[i] = rebuildTree(ds.getOperation(i), 0, 0, false);
+			totalWidth += widths[i];
+		}
 
-			// Figure out where the columns should start based on our center
-			int dsWidth = ds.getWidth();
-			int dsCenterX = ds.getX() + dsWidth / 2;
-
-			// Find the median value
-			int halfWidth = 0;
-			if(opCount == 1)
-			{
-				halfWidth = widths[0] / 2;
-			}
-			else if(opCount % 2 == 0)
-			{
-				// Even number of columns, balance them below dataset
-				for(int i = 0; i < opCount / 2; i++)
-				{
-					halfWidth += widths[i] + spaceWidth;
-				}
-
-				// Eliminate half of the middle spacing
-				halfWidth -= spaceWidth / 2;
-			}
+		// Was that all we needed?
+		if(!shouldMove)
+		{
+			// Are we wider than our children?
+			if(dsWidth < totalWidth)
+				return totalWidth;
 			else
-			{
-				// Odd number of columns, center the middle one under the
-				// dataset
-				for(int i = 0; i < opCount / 2; i++)
-				{
-					halfWidth += widths[i] + spaceWidth;
-				}
-
-				// And add enough to move through half the middle column
-				halfWidth += widths[opCount / 2] / 2;
-			}
-
-			int farLeftX = dsCenterX - halfWidth;
-
-			int previousLeftX = farLeftX;
-			int[] centerXs = new int[opCount];
-			for(int i = 0; i < opCount; i++)
-			{
-				centerXs[i] = previousLeftX + widths[i] / 2;
-				previousLeftX += widths[i] + spaceWidth;
-			}
-
-			// Now rebuild each operation column, this time actually centering them
-			// based on the dataset
-			for(int i = 0; i < opCount; i++)
-			{
-				rebuildOperationColumn(ds.getOperation(i), centerXs[i], false);
-			}
+				return dsWidth;
 		}
 
-		// Redraw everything
-		workspacePanel.repaint();
-	}
-
-	/**
-	 * Recursive portion of rebuildTree() that walks down the line of operations
-	 * and centers them all on the widest one. This function assumes a single
-	 * operation extends from each op, not a wide tree as is internally supported
-	 * @param op Start of operation chain we're checking
-	 * @param centerX x coordinate to center on
-	 * @param shouldResize If true, sets the label of the operation and resizes it. However,
-	 *		it will not attempt to center the labels in any way
-	 * @return Width of the column, based on the widest operation in it
-	 */
-	protected int rebuildOperationColumn(Operation op, int centerX, boolean shouldResize)
-	{
-		Operation currOp = op;
-		int widest = 0;
-
-		boolean moreOps = true;
-		while(moreOps)
+		// Find the spacing we need for the left half of our tree
+		int leftHalfWidth = totalWidth / 2;
+		/*
+		if(opCount == 1)
 		{
-			// Stop after this loop?
-			if(currOp.getOperationCount() == 0)
+			leftHalfWidth = widths[0] / 2;
+		}
+		else if(opCount % 2 == 0)
+		{
+			// Even number of columns, balance them below dataset
+			for(int i = 0; i < opCount / 2; i++)
 			{
-				moreOps = false;
+				leftHalfWidth += widths[i] + spaceWidth;
 			}
 
-			if(shouldResize)
+			// Eliminate half of the middle spacing
+			leftHalfWidth -= spaceWidth / 2;
+		}
+		else
+		{
+			// Odd number of columns, center the middle one under the
+			// dataset
+			for(int i = 0; i < opCount / 2; i++)
 			{
-				// Update label
-				currOp.setFont(workspaceFontBold);
-				currOp.setText("<html>" + currOp.getDisplayString(abbreviated) + "</html>");
-				currOp.setSize(currOp.getPreferredSize());
+				leftHalfWidth += widths[i] + spaceWidth;
 			}
 
-			// Get width
-			int width = currOp.getWidth();
-			if(width > widest)
-				widest = width;
+			// And add enough to move through half the middle column
+			leftHalfWidth += widths[opCount / 2] / 2;
+		}*/
 
-			if(!shouldResize)
-			{
-				// Center off the given center x
-				int x = centerX - width / 2;
-				int y = ((JComponent) currOp.getParentData()).getY() + spaceHeight;
-				currOp.setLocation(x, y);
-			}
+		int farLeftX = centerX - leftHalfWidth;
 
-			// Next op
-			if(moreOps)
-			{
-				currOp = currOp.getOperation(0);
-			}
+		// Find where each of our child trees should center themselves
+		int previousLeftX = farLeftX;
+		int[] centerXs = new int[opCount];
+		for(int i = 0; i < opCount; i++)
+		{
+			centerXs[i] = previousLeftX + widths[i] / 2;
+			previousLeftX += widths[i] + spaceWidth;
 		}
 
-		return widest;
+		// Now rebuild each operation column, this time actually centering them
+		// based on their parent and one level done
+		int childTopY = topY + ds.getHeight() + spaceHeight;
+		for(int i = 0; i < opCount; i++)
+		{
+			rebuildTree(ds.getOperation(i), centerXs[i], childTopY, true);
+		}
+		
+		// Are we wider than our children?
+		if(dsWidth < totalWidth)
+			return totalWidth;
+		else
+			return dsWidth;
 	}
 
 	/**
@@ -2212,22 +2195,8 @@ public class ViewPanel extends JPanel
 				Operation dropOperation = (Operation) component;
 				if(dropOperation != newOperation)
 				{
-					// We're dropping into the middle of an operation chain, so perform an insert
-					if(dropOperation.getOperationCount() > 0)
-					{
-						// Add as child and ensure we're not listed as unused
-						domain.problem.removeUnusedOperation(newOperation);
-						dropOperation.addOperation(newOperation);
-
-						Operation childOperation = dropOperation.getOperation(0);
-						childOperation.setParentData(newOperation);
-					}
-					// Drop right onto the end of the operation chain
-					else
-					{
-						domain.problem.removeUnusedOperation(newOperation);
-						dropOperation.addOperation(newOperation);
-					}
+					domain.problem.removeUnusedOperation(newOperation);
+					dropOperation.addOperation(newOperation);
 				}
 
 				operation.setDefaultColor();
