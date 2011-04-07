@@ -2,7 +2,7 @@
 <problem person="Test student" course_long="Long name" course_short="Short name" chapter="Chapter" section="Section" probnum="Number">
   <statement>Problem description ...</statement>
   <conclusion>Conclusion</conclusion>
-  <data name="Doink" id="2064948438" x="435" y="167" height="16" width="38" hidden="false">
+  <data name="Doink" id="2064948438" x="368" y="59" height="16" width="38" hidden="false">
     <column name="Column 1" mode="NUMERIC">
       <value>0.0</value>
       <value>1.0</value>
@@ -263,9 +263,9 @@
       <value>48.0</value>
       <value>49.0</value>
     </column>
-    <operation type="marla.ide.operation.OperationXML" name="cos()" id="-1613836180" x="148" y="197" height="16" width="106" hidden="false">
+    <operation type="marla.ide.operation.OperationXML" name="cos()" id="-1613836180" x="81" y="89" height="16" width="106" hidden="false">
       <remark />
-      <operation type="marla.ide.operation.OperationXML" name="Barplot" id="-1259616404" x="136" y="227" height="16" width="131" hidden="false">
+      <operation type="marla.ide.operation.OperationXML" name="Barplot" id="-1259616404" x="69" y="119" height="16" width="131" hidden="false">
         <remark />
         <question name="col" answer="Column 1" />
         <extra name="Barplot" />
@@ -273,16 +273,28 @@
       <question name="col" answer="Column 1" />
       <extra name="cos()" />
     </operation>
-    <operation type="marla.ide.operation.OperationXML" name="Mean" id="1915277269" x="305" y="197" height="16" width="120" hidden="false">
+    <operation type="marla.ide.operation.OperationXML" name="Mean" id="1915277269" x="238" y="89" height="16" width="120" hidden="false">
       <remark />
-      <operation type="marla.ide.operation.OperationXML" name="Boxplot" id="1217894410" x="299" y="227" height="16" width="133" hidden="false">
+      <operation type="marla.ide.operation.OperationXML" name="Boxplot" id="1217894410" x="232" y="119" height="16" width="133" hidden="false">
         <remark />
-        <operation type="marla.ide.operation.OperationXML" name="Absolute Value" id="740021789" x="287" y="257" height="16" width="157" hidden="false">
+        <operation type="marla.ide.operation.OperationXML" name="Absolute Value" id="740021789" x="220" y="149" height="16" width="157" hidden="false">
           <remark />
-          <operation type="marla.ide.operation.OperationXML" name="Barplot" id="816441112" x="300" y="287" height="16" width="131" hidden="false">
+          <operation type="marla.ide.operation.OperationXML" name="Barplot" id="816441112" x="233" y="179" height="16" width="131" hidden="false">
             <remark />
-            <operation type="marla.ide.operation.OperationXML" name="Strip Chart" id="1160382790" x="291" y="317" height="16" width="148" hidden="false">
+            <operation type="marla.ide.operation.OperationXML" name="Strip Chart" id="1160382790" x="224" y="209" height="16" width="148" hidden="false">
               <remark />
+              <operation type="marla.ide.operation.OperationXML" name="Q-Q Norm" id="1294875668" x="258" y="239" height="16" width="80" hidden="false">
+                <remark />
+                <operation type="marla.ide.operation.OperationXML" name="Sequence" id="76675605" x="248" y="269" height="16" width="101" hidden="false">
+                  <remark />
+                  <question name="start" />
+                  <question name="colName" />
+                  <question name="end" />
+                  <extra name="Sequence" />
+                </operation>
+                <question name="col" answer="Column 1" />
+                <extra name="Q-Q Norm" />
+              </operation>
               <question name="col" answer="Column 1" />
               <extra name="Strip Chart" />
             </operation>
@@ -298,14 +310,21 @@
       <question name="col" answer="Column 1" />
       <extra name="Mean" />
     </operation>
-    <operation type="marla.ide.operation.OperationXML" name="Q-Q Line" id="1725846927" x="464" y="197" height="16" width="124" hidden="false">
+    <operation type="marla.ide.operation.OperationXML" name="Q-Q Line" id="1725846927" x="397" y="89" height="16" width="124" hidden="false">
       <remark />
-      <operation type="marla.ide.operation.OperationXML" name="Single Var Plot" id="-1023348318" x="472" y="227" height="16" width="109" hidden="false">
+      <operation type="marla.ide.operation.OperationXML" name="Single Var Plot" id="-1023348318" x="405" y="119" height="16" width="109" hidden="false">
         <remark />
-        <operation type="marla.ide.operation.OperationXML" name="Histogram" id="-1765807963" x="472" y="257" height="16" width="108" hidden="false">
+        <operation type="marla.ide.operation.OperationXML" name="Histogram" id="-1765807963" x="405" y="149" height="16" width="108" hidden="false">
           <remark />
-          <operation type="marla.ide.operation.OperationXML" name="Q-Q Line" id="-1568116244" x="464" y="287" height="16" width="124" hidden="false">
+          <operation type="marla.ide.operation.OperationXML" name="Q-Q Line" id="-1568116244" x="397" y="179" height="16" width="124" hidden="false">
             <remark />
+            <operation type="marla.ide.operation.OperationXML" name="Sequence" id="1813521085" x="409" y="209" height="16" width="101" hidden="false">
+              <remark />
+              <question name="start" />
+              <question name="colName" />
+              <question name="end" />
+              <extra name="Sequence" />
+            </operation>
             <question name="col" answer="Column 1" />
             <extra name="Q-Q Line" />
           </operation>
@@ -318,11 +337,11 @@
       <question name="col" answer="Column 1" />
       <extra name="Q-Q Line" />
     </operation>
-    <operation type="marla.ide.operation.OperationXML" name="Add" id="-832983159" x="608" y="197" height="16" width="111" hidden="false">
+    <operation type="marla.ide.operation.OperationXML" name="Add" id="-832983159" x="541" y="89" height="16" width="111" hidden="false">
       <remark />
-      <operation type="marla.ide.operation.OperationXML" name="Exponential" id="1539550896" x="630" y="227" height="21" width="66" hidden="false">
+      <operation type="marla.ide.operation.OperationXML" name="Exponential" id="1539550896" x="563" y="119" height="21" width="66" hidden="false">
         <remark />
-        <operation type="marla.ide.operation.OperationXML" name="Log base X" id="1460852593" x="643" y="257" height="22" width="41" hidden="false">
+        <operation type="marla.ide.operation.OperationXML" name="Log base X" id="1460852593" x="576" y="149" height="22" width="41" hidden="false">
           <remark />
           <question name="col" />
           <question name="base" />
@@ -377,39 +396,35 @@
       <extra name="Absolute Value" />
     </operation>
   </data>
-  <unused>
-    <operation type="marla.ide.operation.OperationXML" name="Q-Q Norm" id="1294875668" x="325" y="401" height="16" width="134" hidden="false">
-      <remark />
-      <question name="col" answer="Column 1" />
-      <extra name="Q-Q Norm" />
-    </operation>
-  </unused>
+  <unused />
   <part id="a." color="-4100327">
-    <step id="-1613836180" />
-    <step id="-1259616404" />
-    <step id="1915277269" />
-    <step id="1217894410" />
     <step id="1725846927" />
     <step id="-1023348318" />
     <step id="-1765807963" />
+    <step id="1915277269" />
+    <step id="1217894410" />
+    <step id="-1613836180" />
+    <step id="-1259616404" />
     <statement>This is a sub problem ...</statement>
     <conclusion>This is a conclusion ...</conclusion>
   </part>
   <part id="b." color="-16519193">
+    <step id="1915277269" />
     <step id="-1613836180" />
     <step id="-1259616404" />
-    <step id="1915277269" />
     <statement>This is a sub problem ...</statement>
     <conclusion>This is a conclusion ...</conclusion>
   </part>
   <part id="c." color="-10017304">
+    <step id="-1023348318" />
+    <step id="-1765807963" />
     <step id="1915277269" />
     <step id="1217894410" />
     <step id="740021789" />
     <step id="816441112" />
     <step id="1160382790" />
-    <step id="-1023348318" />
-    <step id="-1765807963" />
+    <step id="1294875668" />
+    <step id="76675605" />
     <statement>This is a sub problem ...</statement>
     <conclusion>This is a conclusion ...</conclusion>
   </part>

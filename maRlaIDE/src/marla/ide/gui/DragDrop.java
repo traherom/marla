@@ -21,6 +21,7 @@
 package marla.ide.gui;
 
 import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
@@ -42,6 +43,7 @@ import javax.swing.JOptionPane;
 import marla.ide.problem.MarlaException;
 import marla.ide.operation.Operation;
 import marla.ide.problem.DataSet;
+import marla.ide.problem.DataSource;
 
 /**
  * The drag and drop class handles the construction and destruction of drag/drop
@@ -183,14 +185,15 @@ public class DragDrop implements DragGestureListener, DragSourceListener, DropTa
 		ev.acceptDrop (ev.getDropAction ());
 		try
 		{
-			// Indicate that a change is beginning that an undo can be done on
-			viewPanel.domain.changeBeginning(null);
-
-			DragSourceContext source = (DragSourceContext) ev.getTransferable ().getTransferData (supportedFlavors[0]);
-			if (!viewPanel.trashCan.contains(ev.getLocation()))
+			final DragSourceContext source = (DragSourceContext) ev.getTransferable ().getTransferData (supportedFlavors[0]);
+			if (!viewPanel.trashCan.getBounds().contains(ev.getLocation()))
 			{
+				// Indicate that a change is beginning that an undo can be done on
+				viewPanel.domain.changeBeginning(null);
+			
 				if (source.getComponent().getParent() == viewPanel.dataSetContentPanel)
 				{
+					// If we're dragging in a data set, ensure it isn't already in the workspace--if it is, we can't add it again
 					JLabel label = (JLabel) source.getComponent();
 					label.setForeground(DataSet.getDefaultColor());
 					DataSet dataSet = viewPanel.domain.problem.getData(label.getText());
@@ -201,6 +204,7 @@ public class DragDrop implements DragGestureListener, DragSourceListener, DropTa
 					}
 					else
 					{
+						// The data set didn't exist, so add it to the workspace
 						dataSet.isHidden(false);
 						dataSet.setLocation((int) ev.getLocation().getX() - viewPanel.xDragOffset, (int) ev.getLocation().getY() - viewPanel.yDragOffset);
 						viewPanel.workspacePanel.add(dataSet);
@@ -215,11 +219,13 @@ public class DragDrop implements DragGestureListener, DragSourceListener, DropTa
 						}
 						viewPanel.rebuildWorkspace();
 					}
+					
+					endDrop(source);
 				}
 				else
 				{
+					// We're dragging an operation from the palette, so drop it into the workspace
 					Operation operation = (Operation) source.getComponent ();
-
 					viewPanel.domain.problem.markUnsaved ();
 
 					try
@@ -232,6 +238,11 @@ public class DragDrop implements DragGestureListener, DragSourceListener, DropTa
 					}
 				}
 			}
+			// If we dropped on the trash can, just revert all dragging variables and ignore
+			else
+			{
+				endDrop(source);
+			}
 		}
 		catch (UnsupportedFlavorException ex)
 		{
@@ -242,5 +253,39 @@ public class DragDrop implements DragGestureListener, DragSourceListener, DropTa
 
 		ev.dropComplete (true);
 		viewPanel.dragFromPalette = false;
+	}
+	
+	/**
+	 * End the current drop sessions by reverting all variables used in a drag.
+	 * 
+	 * @param source The source of the drag.
+	 */
+	protected void endDrop(DragSourceContext source)
+	{
+		viewPanel.setCursor(Cursor.getDefaultCursor());
+		if (source != null)
+		{
+			JLabel label = (JLabel) source.getComponent();
+			if (label instanceof Operation)
+			{
+				((Operation) label).setDefaultColor();
+			}
+			else
+			{
+				label.setForeground(DataSet.getDefaultColor());
+			}
+			viewPanel.componentsScrollablePanel.repaint();
+		}
+
+		viewPanel.draggingComponent = null;
+		viewPanel.hoverInDragComponent = null;
+		viewPanel.componentUnderMouse = null;
+		if (viewPanel.rightClickedComponent != null)
+		{
+			((DataSource) viewPanel.rightClickedComponent).setDefaultColor();
+			viewPanel.rightClickedComponent = null;
+		}
+		viewPanel.hoverComponent = null;
+		viewPanel.buttonPressed = 0;
 	}
 }

@@ -167,15 +167,15 @@ public class ViewPanel extends JPanel
 	/** Font size and style for workspace bold.*/
 	public static Font workspaceFontBold = new Font("Verdana", Font.BOLD, ViewPanel.fontSize);
 	/** The component under the mouse when it is pressed.*/
-	private JComponent componentUnderMouse = null;
+	protected JComponent componentUnderMouse = null;
 	/** The data set being dragged.*/
 	protected JComponent draggingComponent = null;
 	/** The component currently being hovered over during a drag.*/
-	private JComponent hoverInDragComponent = null;
+	protected JComponent hoverInDragComponent = null;
 	/** The component currently being hovered over in the workspace (not during a drag).*/
-	private JComponent hoverComponent = null;
+	protected JComponent hoverComponent = null;
 	/** The component that has been right-clicked on.*/
-	private JComponent rightClickedComponent = null;
+	protected JComponent rightClickedComponent = null;
 	/** The x-offset for dragging an item*/
 	protected int xDragOffset = -1;
 	/** The y-offset for dragging an item*/
@@ -227,7 +227,7 @@ public class ViewPanel extends JPanel
 	/** True if operation and column names are abbreviated, false otherwise.*/
 	protected boolean abbreviated = false;
 	/** 0 when no button is pressed, otherwise the number of the button pressed.*/
-	private int buttonPressed = 0;
+	protected int buttonPressed = 0;
 	/** The label that presents helpful hints on first run.*/
 	JLabel firstRunLabel = new JLabel();
 	/** The tip to display in the workspace when problem is being edited.*/
@@ -916,7 +916,7 @@ public class ViewPanel extends JPanel
         workspacePanel.add(trashCan);
         trashCan.setBounds(730, 530, 26, 40);
 
-        statusLabel.setFont(new java.awt.Font("Verdana", 1, 12)); // NOI18N
+        statusLabel.setFont(new java.awt.Font("Verdana", 1, 12));
         statusLabel.setForeground(new java.awt.Color(153, 153, 153));
         statusLabel.setText("<<Status Label>>");
         workspacePanel.add(statusLabel);
@@ -949,11 +949,11 @@ public class ViewPanel extends JPanel
         emptyPalettePanel.setLayout(emptyPalettePanelLayout);
         emptyPalettePanelLayout.setHorizontalGroup(
             emptyPalettePanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(0, 204, Short.MAX_VALUE)
+            .add(0, 208, Short.MAX_VALUE)
         );
         emptyPalettePanelLayout.setVerticalGroup(
             emptyPalettePanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(0, 569, Short.MAX_VALUE)
+            .add(0, 578, Short.MAX_VALUE)
         );
 
         paletteCardPanel.add(emptyPalettePanel, "card3");
@@ -1328,7 +1328,19 @@ public class ViewPanel extends JPanel
 				editDataSetMenuItem.setEnabled(false);
 			}
 
+			setCursor(Cursor.getDefaultCursor());
 			rightClickMenu.show(workspacePanel, evt.getX(), evt.getY());
+		}
+		else if (rightClickedComponent != null)
+		{
+			JComponent component = (JComponent) workspacePanel.getComponentAt(evt.getPoint());
+			if (component != rightClickedComponent)
+			{
+				((DataSource) rightClickedComponent).setDefaultColor();
+				workspacePanel.repaint();
+			}
+			
+			rightClickedComponent = null;
 		}
 
 		buttonPressed = 0;
@@ -1387,6 +1399,8 @@ public class ViewPanel extends JPanel
 			{
 				startingAnswerPanelDisplay = false;
 			}
+			
+			DND_LISTENER.endDrop(null);
 		}
 	}//GEN-LAST:event_solutionMenuItemActionPerformed
 
@@ -1504,6 +1518,8 @@ public class ViewPanel extends JPanel
 			{
 				Domain.logger.add(ex);
 			}
+			
+			DND_LISTENER.endDrop(null);
 		}
 	}//GEN-LAST:event_rCodeMenuItemActionPerformed
 
@@ -1611,6 +1627,7 @@ public class ViewPanel extends JPanel
 	private void editDataSetMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editDataSetMenuItemActionPerformed
 		if(rightClickedComponent != null)
 		{
+			DND_LISTENER.endDrop(null);
 			newProblemWizardDialog.editDataSet((DataSet) rightClickedComponent);
 		}
 	}//GEN-LAST:event_editDataSetMenuItemActionPerformed
@@ -1630,6 +1647,7 @@ public class ViewPanel extends JPanel
 			{
 				Domain.logger.add(ex);
 			}
+			DND_LISTENER.endDrop(null);
 		}
 	}//GEN-LAST:event_changeInfoMenuItemActionPerformed
 
@@ -1637,6 +1655,7 @@ public class ViewPanel extends JPanel
 		if(!startingAnswerPanelDisplay)
 		{
 			answerDialog.dispose();
+			DND_LISTENER.endDrop(null);
 		}
 	}//GEN-LAST:event_answerDialogWindowLostFocus
 
@@ -1648,6 +1667,7 @@ public class ViewPanel extends JPanel
 			{
 				((Operation) rightClickedComponent).setRemark(newRemark);
 			}
+			DND_LISTENER.endDrop(null);
 		}
 	}//GEN-LAST:event_remarkMenuItemActionPerformed
 
@@ -1656,6 +1676,31 @@ public class ViewPanel extends JPanel
 		if(rightClickedComponent != null && untieSubProblemSubMenu.isEnabled())
 		{
 			rightClickedComponent.setBackground(NO_BACKGROUND_WORKSPACE);
+			if(rightClickedComponent instanceof Operation)
+			{
+				DataSource source = ((Operation) rightClickedComponent).getRootDataSource().getOperation(((Operation) rightClickedComponent).getIndexFromDataSet());
+				((JComponent) source).setBackground(NO_BACKGROUND_WORKSPACE);
+				List<Operation> tempOperations = source.getRootDataSource().getOperation(((Operation) source).getIndexFromDataSet()).getAllChildOperations();
+				for(int i = 0; i < tempOperations.size(); ++i)
+				{
+					tempOperations.get(i).setBackground(NO_BACKGROUND_WORKSPACE);
+				}
+			}
+			else
+			{
+				DataSet root = (DataSet) rightClickedComponent;
+				root.setBackground(NO_BACKGROUND_WORKSPACE);
+				for(int i = 0; i < root.getOperationCount(); ++i)
+				{
+					Operation operation = root.getOperation(i);
+					operation.setBackground(NO_BACKGROUND_WORKSPACE);
+					List<Operation> tempOperations = operation.getAllChildOperations();
+					for(int j = 0; j < tempOperations.size(); ++j)
+					{
+						tempOperations.get(j).setBackground(NO_BACKGROUND_WORKSPACE);
+					}
+				}
+			}
 			workspacePanel.repaint();
 		}
 	}//GEN-LAST:event_untieSubProblemSubMenuMenuDeselected
@@ -1665,6 +1710,31 @@ public class ViewPanel extends JPanel
 		if(rightClickedComponent != null && untieSubProblemSubMenu.isEnabled())
 		{
 			rightClickedComponent.setBackground(HOVER_BACKGROUND_COLOR);
+			if(rightClickedComponent instanceof Operation)
+			{
+				DataSource source = ((Operation) rightClickedComponent).getRootDataSource().getOperation(((Operation) rightClickedComponent).getIndexFromDataSet());
+				((JComponent) source).setBackground(HOVER_BACKGROUND_COLOR);
+				List<Operation> tempOperations = source.getRootDataSource().getOperation(((Operation) source).getIndexFromDataSet()).getAllChildOperations();
+				for(int i = 0; i < tempOperations.size(); ++i)
+				{
+					tempOperations.get(i).setBackground(HOVER_BACKGROUND_COLOR);
+				}
+			}
+			else
+			{
+				DataSet root = (DataSet) rightClickedComponent;
+				root.setBackground(HOVER_BACKGROUND_COLOR);
+				for(int i = 0; i < root.getOperationCount(); ++i)
+				{
+					Operation operation = root.getOperation(i);
+					operation.setBackground(HOVER_BACKGROUND_COLOR);
+					List<Operation> tempOperations = operation.getAllChildOperations();
+					for(int j = 0; j < tempOperations.size(); ++j)
+					{
+						tempOperations.get(j).setBackground(HOVER_BACKGROUND_COLOR);
+					}
+				}
+			}
 			workspacePanel.repaint();
 		}
 	}//GEN-LAST:event_untieSubProblemSubMenuMenuSelected
@@ -1681,7 +1751,7 @@ public class ViewPanel extends JPanel
 				comp != null)
 		{
 			componentUnderMouse = (JComponent) comp;
-			if(comp instanceof Operation)
+			if(comp instanceof Operation && ((Operation) comp).getParentData() != null)
 			{
 				startX = evt.getX();
 				startY = evt.getY();
@@ -1698,9 +1768,25 @@ public class ViewPanel extends JPanel
 
 	private void workspacePanelMouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_workspacePanelMouseMoved
 		// We only care if the mouse has moved when we're NOT dragging, and buttonPressed gets set on mousePressed
-		if(buttonPressed == 0)
+		if(buttonPressed == 0 && rightClickedComponent == null)
 		{
 			JComponent component = (JComponent) workspacePanel.getComponentAt(evt.getPoint());
+			
+			// This is from a previous movement--if we are no longer hovering over that component,
+			// revert our cursor and that component back to it's proper state
+			if (hoverComponent != null)
+			{
+				if (component != hoverComponent)
+				{
+					setCursor(Cursor.getDefaultCursor());
+				}
+				if (!rightClickMenu.isShowing())
+				{
+					((DataSource) hoverComponent).setDefaultColor();
+					hoverComponent = null;
+				}
+			}
+			
 			// Check that the component we're over is not any of the special components that we want to ignore
 			if(component != null
 			   && component != workspacePanel
@@ -1717,22 +1803,13 @@ public class ViewPanel extends JPanel
 					hoverComponent.setForeground(Color.GRAY);
 				}
 			}
-			else if(hoverComponent != null)
-			{
-				// This is from a previous movement--if we are no longer hovering over that component,
-				// revert our cursor and that component back to it's proper state
-				setCursor(Cursor.getDefaultCursor());
-				if (!rightClickMenu.isShowing())
-				{
-					((DataSource) hoverComponent).setDefaultColor();
-					hoverComponent = null;
-				}
-			}
+			
 			workspacePanel.repaint();
 		}
 	}//GEN-LAST:event_workspacePanelMouseMoved
 
 	private void addDataSetMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addDataSetMenuItemActionPerformed
+		DND_LISTENER.endDrop(null);
 		newProblemWizardDialog.addDataSet();
 	}//GEN-LAST:event_addDataSetMenuItemActionPerformed
 
@@ -1859,22 +1936,25 @@ public class ViewPanel extends JPanel
 	 */
 	protected void dragInWorkspace(MouseEvent evt)
 	{
+		// We only drag in the workspace if a dragging component is known (either within the workspace or from the palette) and the
+		// LEFT mouse button is being pressed
 		if((dragFromPalette || draggingComponent != null) && buttonPressed == MouseEvent.BUTTON1)
 		{
-			setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-
+			// From the last iteration of the drag call, if we were over a component then, clear the hover on that component
 			if(hoverInDragComponent != null)
 			{
 				hoverInDragComponent.setBackground(NO_BACKGROUND_WORKSPACE);
 				hoverInDragComponent = null;
 			}
 
+			// Identify a component, if any, that we are currently dragging over in the workspace
 			Component component = ((WorkspacePanel) workspacePanel).getComponentAt(evt.getPoint().x, evt.getPoint().y, draggingComponent);
 			if(component != null
 			   && component != trashCan
 			   && component != statusLabel
 			   && component != firstRunLabel)
 			{
+				// We are dragging over a valid component, so set the drag border back
 				if(component instanceof DataSource)
 				{
 					hoverInDragComponent = (JComponent) ((WorkspacePanel) workspacePanel).getComponentAt(evt.getPoint().x, evt.getPoint().y, draggingComponent);
@@ -1882,6 +1962,7 @@ public class ViewPanel extends JPanel
 				}
 			}
 
+			// If we are dragging within the workspace (not from the palette), adjust the x/y position as necessary
 			if(draggingComponent != null)
 			{
 				int x = evt.getX() - xDragOffset;
@@ -1899,11 +1980,12 @@ public class ViewPanel extends JPanel
 
 				draggingComponent.setLocation(x, y);
 
-				// Just rebuild the dragged component
+				// Reposition every sub component under the dragging component
 				rebuildTree((DataSource) draggingComponent);
 			}
 			else
 			{
+				// Repaint the workspace if we are dragging from the palette to ensure hover/unhover components are properly painted
 				workspacePanel.repaint();
 			}
 		}
@@ -2159,9 +2241,10 @@ public class ViewPanel extends JPanel
 			// We are dropping from the palette onto nothing
 			else if (component == null)
 			{
+				domain.problem.addUnusedOperation(newOperation);
 				newOperation.setLocation((int) location.getX() - xDragOffset, (int) location.getY() - yDragOffset);
 			}
-			// We're liking dropping onto a data set
+			// We're likely dropping onto a data set
 			else
 			{
 				if(component instanceof DataSet)
@@ -2855,7 +2938,7 @@ public class ViewPanel extends JPanel
     private javax.swing.JMenuItem changeInfoMenuItem;
     protected javax.swing.JPanel componentsPanel;
     private javax.swing.JScrollPane componentsScrollPane;
-    private javax.swing.JPanel componentsScrollablePanel;
+    protected javax.swing.JPanel componentsScrollablePanel;
     protected javax.swing.JPanel dataSetContentPanel;
     private javax.swing.JPanel dataSetsPanel;
     protected javax.swing.JScrollPane debugScrollPane;

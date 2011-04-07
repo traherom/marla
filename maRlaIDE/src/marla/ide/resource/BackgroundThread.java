@@ -44,7 +44,7 @@ public class BackgroundThread extends Thread
 	/** The number of logger delay iterations sat through.*/
 	private int loggerDelayIndex = 0;
 	/** Delay increments to leave a status message for in the workspace.*/
-	private final int STATUS_DELAY = 2;
+	private final int STATUS_DELAY = 3;
 	/** The number of display iterations already sat through.  -1 if not waiting for a display to finish.*/
 	private int statusDelayIndex = -1;
 	/** The list of status messages that have not yet been displayed.*/

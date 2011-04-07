@@ -18,6 +18,7 @@
 
 package marla.ide.gui;
 
+import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -73,13 +74,9 @@ public class InputDialog extends EscapeDialog
 		cancelButton = new JButton("Cancel");
 
 		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-		setResizable(true);
+		setResizable(false);
 		setModal(true);
 
-		messageLabel.setFont(ViewPanel.FONT_BOLD_12);
-		inputTextArea.setFont(ViewPanel.FONT_PLAIN_12);
-		okButton.setFont(ViewPanel.FONT_PLAIN_12);
-		cancelButton.setFont(ViewPanel.FONT_PLAIN_12);
 		iconLabel.setIcon (new ImageIcon(getClass().getResource("/marla/ide/images/question.png")));
 		okButton.addActionListener (new ActionListener()
 		{
@@ -100,7 +97,7 @@ public class InputDialog extends EscapeDialog
 		});
 		inputTextArea.setLineWrap(true);
 		inputTextArea.setWrapStyleWord(true);
-		inputTextArea.setRows(3);
+		inputTextArea.setRows(2);
 		scrollPane = new JScrollPane ();
 		scrollPane.setViewportView (inputTextArea);
 
@@ -147,6 +144,7 @@ public class InputDialog extends EscapeDialog
 		add(confirmPanel, dbc);
 
 		pack();
+		setSize(new Dimension(400, getSize().height + 20));
 	}
 
 	/**
@@ -167,7 +165,6 @@ public class InputDialog extends EscapeDialog
 		returnValue = inputText;
 
 		// Pack and show the input dialog
-		pack();
 		setLocationRelativeTo(viewPanel);
 		inputTextArea.requestFocus();
 		inputTextArea.selectAll();
