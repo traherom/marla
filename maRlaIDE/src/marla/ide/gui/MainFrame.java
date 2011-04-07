@@ -88,7 +88,7 @@ public class MainFrame extends JFrame
 			{
 				Domain.setProgressString("10%");
 				Domain.setProgressValue(10);
-				Domain.setProgressStatus("Loading configuration ...");
+				Domain.setProgressStatus("Loading configuration...");
 				
 				// Configure
 				Configuration conf = Configuration.getInstance();
@@ -96,7 +96,7 @@ public class MainFrame extends JFrame
 
 				Domain.setProgressString("90%");
 				Domain.setProgressValue(90);
-				Domain.setProgressStatus("Validating configuration ...");
+				Domain.setProgressStatus("Validating configuration...");
 
 				int currIndex = 0;
 				while(currIndex < missed.size())
@@ -136,7 +136,7 @@ public class MainFrame extends JFrame
 
 				Domain.setProgressString("95%");
 				Domain.setProgressValue(95);
-				Domain.setProgressStatus("Initializating workspace ...");
+				Domain.setProgressStatus("Initializating workspace...");
 
 				try
 				{
@@ -172,7 +172,7 @@ public class MainFrame extends JFrame
 				// Done!
 				Domain.setProgressString("100%");
 				Domain.setProgressValue(100);
-				Domain.setProgressStatus("Complete ...");
+				Domain.setProgressStatus("Complete...");
 
 				progressFrame.setVisible(false);
 				setCursor(Cursor.getDefaultCursor());

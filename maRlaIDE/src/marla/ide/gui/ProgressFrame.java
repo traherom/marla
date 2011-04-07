@@ -63,8 +63,8 @@ public class ProgressFrame extends JFrame
         progressBar.setFont(new java.awt.Font("Verdana", 0, 12));
         progressBar.setStringPainted(true);
 
-        statusLabel.setFont(new java.awt.Font("Verdana", 0, 12));
-        statusLabel.setText("Loading framework ...");
+        statusLabel.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        statusLabel.setText("Loading framework...");
 
         javax.swing.GroupLayout progressPanelLayout = new javax.swing.GroupLayout(progressPanel);
         progressPanel.setLayout(progressPanelLayout);

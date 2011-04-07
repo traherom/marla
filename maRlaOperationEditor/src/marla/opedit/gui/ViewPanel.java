@@ -1410,7 +1410,7 @@ public class ViewPanel extends JPanel
 		{
 			if (Domain.passedInFile != null)
 			{
-				JOptionPane.showMessageDialog(this, "It looks like you may have launched the Operation Editor from within maRla IDE.\nIf this is the case and you've made changes to the operations file, you'll want\nto restart maRla IDE or select \"Reload Operations\" from the Tools menu.", "Reload Operations", JOptionPane.INFORMATION_MESSAGE);
+				JOptionPane.showMessageDialog(this, "It looks like you may have launched the maRla Operation Editor from within maRla IDE.\nIf this is the case and you've made changes to the operations file, you'll want\nto restart maRla IDE or select \"Reload Operations\" from the Tools menu.", "Reload Operations", JOptionPane.INFORMATION_MESSAGE);
 			}
 			
 			// Hide the main window to give the appearance of better responsiveness
