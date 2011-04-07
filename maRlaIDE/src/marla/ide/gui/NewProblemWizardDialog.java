@@ -854,7 +854,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 }//GEN-LAST:event_browseButtonActionPerformed
 
 	private void addSubProblemButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addSubProblemButtonActionPerformed
-		domain.changeBeginning();
+		domain.changeBeginning("adding subproblem");
 
 		SubProblem subProblem;
 		if(newProblem != null)
@@ -932,6 +932,8 @@ public class NewProblemWizardDialog extends EscapeDialog
 }//GEN-LAST:event_addSubProblemButtonActionPerformed
 
 	private void removeSubProblemButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeSubProblemButtonActionPerformed
+		domain.changeBeginning("removing subproblem");
+
 		// Remove the JPanel from the list of sub problems and from the New Problem Wizard
 		JPanel panel = subProblemPanels.remove(subProblemPanels.size() - 1);
 		if(newProblem != null)

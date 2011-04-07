@@ -287,7 +287,7 @@ public abstract class Operation extends DataSource implements Cloneable
 	 */
 	public final String setRemark(String newRemark)
 	{
-		changeBeginning();
+		changeBeginning("remark on operation " + getDisplayString(false));
 		
 		String oldRemark = remark;
 		remark = newRemark;
@@ -769,7 +769,7 @@ public abstract class Operation extends DataSource implements Cloneable
 	 */
 	protected final void clearQuestions()
 	{
-		changeBeginning();
+		changeBeginning(null);
 		questions.clear();
 		markUnsaved();
 	}
@@ -785,7 +785,7 @@ public abstract class Operation extends DataSource implements Cloneable
 		if(info.getOperation() != this)
 			throw new InternalMarlaException("Attempt to add information that did not point to same operation");
 
-		changeBeginning();
+		changeBeginning(null);
 		questions.put(info.getName(), info);
 		markUnsaved();
 	}
@@ -1030,10 +1030,10 @@ public abstract class Operation extends DataSource implements Cloneable
 	}
 
 	@Override
-	public void changeBeginning()
+	public void changeBeginning(String changeMsg)
 	{
 		if(parent != null)
-			parent.changeBeginning();
+			parent.changeBeginning(changeMsg);
 	}
 
 	@Override

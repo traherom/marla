@@ -23,10 +23,14 @@ package marla.ide.problem;
  */
 public interface Changeable
 {
+	/**
+	 * Marks the given object as unsaved/passes the information up the chain
+	 */
 	public void markUnsaved();
 	
 	/**
 	 * Called when a change is about to happen
+	 * @param changeMsg Message to describe the change that is about to happen
 	 */
-	public void changeBeginning();
+	public void changeBeginning(String changeMsg);
 }

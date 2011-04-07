@@ -68,7 +68,7 @@ public class OperationInfoCheckbox extends OperationInformation
 		if(newAnswer == null)
 			throw new InternalMarlaException("Info may only be cleared by calling clearAnswer()");
 		
-		changeBeginning();
+		changeBeginning("question " + getName() + " answer");
 		
 		if(newAnswer instanceof Boolean)
 			answer = (Boolean)newAnswer;
@@ -85,7 +85,7 @@ public class OperationInfoCheckbox extends OperationInformation
 	@Override
 	public void clearAnswer()
 	{
-		changeBeginning();
+		changeBeginning("clearing question " + getName() + " answer");
 		
 		answer = null;
 		

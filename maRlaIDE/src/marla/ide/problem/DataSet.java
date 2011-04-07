@@ -466,7 +466,7 @@ public final class DataSet extends DataSource
 		}
 
 		// Create
-		changeBeginning();
+		changeBeginning(null);
 		DataColumn newColumn = new DataColumn(this, colName);
 		columns.add(index, newColumn);
 		markUnsaved();
@@ -506,7 +506,7 @@ public final class DataSet extends DataSource
 	 */
 	public void clearColumns()
 	{
-		changeBeginning();
+		changeBeginning("column clear on dataset " + getName());
 		columns.clear();
 		markUnsaved();
 	}
@@ -518,7 +518,7 @@ public final class DataSet extends DataSource
 	 */
 	public DataColumn removeColumn(DataColumn column)
 	{
-		changeBeginning();
+		changeBeginning("removal of column " + column.getName() + " on dataset " + getName());
 		
 		// Remove them from our list
 		if(columns.remove(column))
@@ -535,8 +535,10 @@ public final class DataSet extends DataSource
 	 */
 	public DataColumn removeColumn(int index)
 	{
-		changeBeginning();
-		DataColumn removedCol = columns.remove(index);
+		DataColumn removedCol = columns.get(index);
+		changeBeginning("removal of column " + removedCol.getName() + " on dataset " + getName());
+		
+		columns.remove(index);
 		markUnsaved();
 		return removedCol;
 	}
@@ -628,10 +630,10 @@ public final class DataSet extends DataSource
 	}
 
 	@Override
-	public void changeBeginning()
+	public void changeBeginning(String changeMsg)
 	{
 		if(parent instanceof Problem)
-			((ProblemPart)parent).changeBeginning();
+			((ProblemPart)parent).changeBeginning(changeMsg);
 	}
 
 	@Override

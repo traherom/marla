@@ -51,7 +51,7 @@ public class SubProblem implements ProblemPart, Comparable<SubProblem>
 	 * Identifier for this part of the problem. For example, "part A,"
 	 * B, C, etc
 	 */
-	private String id;
+	private String name;
 	/**
 	 * List of DataSources that comprise the "solution" to this SubProblem
 	 */
@@ -76,7 +76,7 @@ public class SubProblem implements ProblemPart, Comparable<SubProblem>
 	{
 		this.parent = parent;
 		partDesc = desc;
-		this.id = id;
+		this.name = id;
 
 		// Random color
 		Random r = new Random();
@@ -96,7 +96,7 @@ public class SubProblem implements ProblemPart, Comparable<SubProblem>
 		// Easy stuff
 		this.parent = parent;
 		conclusion = org.conclusion;
-		id = org.id;
+		name = org.name;
 		highlightColor = org.highlightColor;
 		partDesc = org.partDesc;
 		
@@ -129,7 +129,7 @@ public class SubProblem implements ProblemPart, Comparable<SubProblem>
 	 */
 	public Color setColor(Color newColor)
 	{
-		changeBeginning();
+		changeBeginning("subproblem " + name + " color");
 		
 		Color oldColor = highlightColor;
 		highlightColor = newColor;
@@ -157,7 +157,7 @@ public class SubProblem implements ProblemPart, Comparable<SubProblem>
 	@Override
 	public void setStatement(String newStatement)
 	{
-		changeBeginning();
+		changeBeginning("subproblem " + name + " statement");
 		
 		partDesc = newStatement;
 		
@@ -173,7 +173,7 @@ public class SubProblem implements ProblemPart, Comparable<SubProblem>
 	@Override
 	public String setConclusion(String newConclusion)
 	{
-		changeBeginning();
+		changeBeginning("subproblem " + name + " conclusion");
 		
 		String oldConc = conclusion;
 		conclusion = newConclusion;
@@ -191,10 +191,10 @@ public class SubProblem implements ProblemPart, Comparable<SubProblem>
 	}
 
 	@Override
-	public void changeBeginning()
+	public void changeBeginning(String changeMsg)
 	{
 		if(parent != null)
-			parent.changeBeginning();
+			parent.changeBeginning(changeMsg);
 	}
 
 	@Override
@@ -265,7 +265,6 @@ public class SubProblem implements ProblemPart, Comparable<SubProblem>
 	 */
 	public DataSource removeStep(int i)
 	{
-		changeBeginning();
 		DataSource old = solutionSteps.remove(i);
 		markUnsaved();
 		old.removeSubProblem(this);
@@ -440,7 +439,7 @@ public class SubProblem implements ProblemPart, Comparable<SubProblem>
 	 */
 	public String getSubproblemID()
 	{
-		return id;
+		return name;
 	}
 
 	/**
@@ -449,7 +448,7 @@ public class SubProblem implements ProblemPart, Comparable<SubProblem>
 	 */
 	public void setSubproblemID(String newID)
 	{
-		id = newID;
+		name = newID;
 	}
 
 	/**
@@ -471,7 +470,7 @@ public class SubProblem implements ProblemPart, Comparable<SubProblem>
 		SubProblem otherP = (SubProblem) other;
 		if(!this.partDesc.equals(otherP.partDesc))
 			return false;
-		if(!this.id.equals(otherP.id))
+		if(!this.name.equals(otherP.name))
 			return false;
 
 		if(!this.solutionSteps.equals(otherP.solutionSteps))
@@ -485,7 +484,7 @@ public class SubProblem implements ProblemPart, Comparable<SubProblem>
 	{
 		int hash = 7;
 		hash = 29 * hash + (this.partDesc != null ? this.partDesc.hashCode() : 0);
-		hash = 29 * hash + (this.id != null ? this.id.hashCode() : 0);
+		hash = 29 * hash + (this.name != null ? this.name.hashCode() : 0);
 		hash = 29 * hash + (this.solutionSteps != null ? this.solutionSteps.hashCode() : 0);
 		return hash;
 	}
@@ -494,7 +493,7 @@ public class SubProblem implements ProblemPart, Comparable<SubProblem>
 	public Element toXml()
 	{
 		Element subEl = new Element("part");
-		subEl.setAttribute("id", id);
+		subEl.setAttribute("id", name);
 
 		subEl.setAttribute("color", String.valueOf(highlightColor.getRGB()));
 
@@ -624,6 +623,6 @@ public class SubProblem implements ProblemPart, Comparable<SubProblem>
 	@Override
 	public int compareTo(SubProblem other)
 	{
-		return id.compareTo(other.id);
+		return name.compareTo(other.name);
 	}
 }

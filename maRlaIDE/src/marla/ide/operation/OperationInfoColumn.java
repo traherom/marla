@@ -89,7 +89,7 @@ public class OperationInfoColumn extends OperationInfoCombo
 		if(newAnswer == null)
 			throw new InternalMarlaException("Info may only be cleared by calling clearAnswer()");
 		
-		changeBeginning();
+		changeBeginning("question " + getName() + " answer");
 		
 		if(!getOperation().isLoading())
 		{
@@ -214,7 +214,7 @@ public class OperationInfoColumn extends OperationInfoCombo
 	@Override
 	public void clearAnswer()
 	{
-		changeBeginning();
+		changeBeginning("clearing question " + getName() + " answer");
 		
 		answer = null;
 

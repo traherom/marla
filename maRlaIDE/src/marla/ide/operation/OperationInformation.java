@@ -158,9 +158,9 @@ public abstract class OperationInformation
 		op.markUnsaved();
 	}
 	
-	public final void changeBeginning()
+	public final void changeBeginning(String changeMsg)
 	{
-		op.changeBeginning();
+		op.changeBeginning(changeMsg);
 	}
 	
 	/**
