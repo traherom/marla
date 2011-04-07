@@ -1139,7 +1139,15 @@ public class ViewPanel extends JPanel
 					// We are dragging an operation, so remove it from the workspace without a prompt
 					else
 					{
-						domain.problem.removeUnusedOperation((Operation) draggingComponent);
+						// Remove the operation and all child components
+						Operation operation = (Operation) draggingComponent;
+						for(Operation childOp : operation.getAllChildOperations())
+						{
+							workspacePanel.remove(childOp);
+							Operation operation = dataSet.getOperation(i);
+						}
+						workspacePanel.remove(operation);
+						domain.problem.removeUnusedOperation(operation);
 					}
 
 					// If a component was removed, rebuild the workspace
