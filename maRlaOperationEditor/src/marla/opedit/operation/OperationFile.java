@@ -125,7 +125,8 @@ public final class OperationFile
 			// Make sure we know where we're looking
 			if(xmlPath == null)
 				throw new OperationEditorException("XML file for operations has not been specified");
-			
+
+			// Load file
 			SAXBuilder parser = new SAXBuilder();
 			Document doc = parser.build(xmlPath);
 			Element operationXML = doc.getRootElement();
