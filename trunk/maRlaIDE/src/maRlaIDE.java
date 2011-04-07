@@ -115,6 +115,7 @@ public class maRlaIDE
 		}
 
 		progressFrame.setLocationRelativeTo(null);
+		progressFrame.setTitle("Launching The maRla Project");
 		progressFrame.setVisible(true);
 		progressFrame.progressBar.setValue(0);
 		progressFrame.progressBar.setString("0%");

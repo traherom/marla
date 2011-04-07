@@ -107,7 +107,7 @@ public class ViewPanel extends JPanel
 	/** Ignore the second table change event when an operation is invalid.*/
 	private boolean ignoreSecond = false;
 	/** The undo/redo object.*/
-	protected UndoRedo<OperationXMLEditable> undoRedo = new UndoRedo<OperationXMLEditable>();
+	protected UndoRedo<OperationXMLEditable> undoRedo = new UndoRedo<OperationXMLEditable>(50);
 	/** True when an undo/redo is requested, false otherwise.*/
 	private boolean isUndoRedo = false;
 
@@ -240,16 +240,6 @@ public class ViewPanel extends JPanel
         answerPanel.setLayout(new javax.swing.BoxLayout(answerPanel, javax.swing.BoxLayout.PAGE_AXIS));
         answerDialog.getContentPane().add(answerPanel);
 
-        addAncestorListener(new javax.swing.event.AncestorListener() {
-            public void ancestorMoved(javax.swing.event.AncestorEvent evt) {
-            }
-            public void ancestorAdded(javax.swing.event.AncestorEvent evt) {
-                formAncestorAdded(evt);
-            }
-            public void ancestorRemoved(javax.swing.event.AncestorEvent evt) {
-            }
-        });
-
         testingPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Testing", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Verdana", 0, 12))); // NOI18N
 
         dataCsvLabel.setFont(new java.awt.Font("Verdana", 0, 12));
@@ -260,6 +250,7 @@ public class ViewPanel extends JPanel
 
         browseDataButton.setFont(new java.awt.Font("Verdana", 0, 12));
         browseDataButton.setText("Browse");
+        browseDataButton.setEnabled(false);
         browseDataButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 browseDataButtonActionPerformed(evt);
@@ -291,8 +282,8 @@ public class ViewPanel extends JPanel
             .add(org.jdesktop.layout.GroupLayout.TRAILING, testingPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .add(testingPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
-                    .add(org.jdesktop.layout.GroupLayout.LEADING, outputScrollPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 314, Short.MAX_VALUE)
-                    .add(org.jdesktop.layout.GroupLayout.LEADING, questionPanel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 314, Short.MAX_VALUE)
+                    .add(org.jdesktop.layout.GroupLayout.LEADING, outputScrollPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 326, Short.MAX_VALUE)
+                    .add(org.jdesktop.layout.GroupLayout.LEADING, questionPanel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 326, Short.MAX_VALUE)
                     .add(org.jdesktop.layout.GroupLayout.LEADING, testingPanelLayout.createSequentialGroup()
                         .add(dataCsvLabel)
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
@@ -302,7 +293,7 @@ public class ViewPanel extends JPanel
                     .add(org.jdesktop.layout.GroupLayout.LEADING, testingPanelLayout.createSequentialGroup()
                         .add(displayNameLabel)
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(displayNameScrollPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 213, Short.MAX_VALUE)))
+                        .add(displayNameScrollPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 233, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         testingPanelLayout.setVerticalGroup(
@@ -332,6 +323,7 @@ public class ViewPanel extends JPanel
 
         browseEditingButton.setFont(new java.awt.Font("Verdana", 0, 12));
         browseEditingButton.setText("Browse");
+        browseEditingButton.setEnabled(false);
         browseEditingButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 browseEditingButtonActionPerformed(evt);
@@ -408,6 +400,7 @@ public class ViewPanel extends JPanel
 
         newButton.setFont(new java.awt.Font("Verdana", 0, 12));
         newButton.setText("New");
+        newButton.setEnabled(false);
         newButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 newButtonActionPerformed(evt);
@@ -417,7 +410,7 @@ public class ViewPanel extends JPanel
         xmlStatusLabel.setFont(new java.awt.Font("Verdana", 0, 12));
         xmlStatusLabel.setText("<html><b>XML status:</b> valid</html>");
 
-        operationsTable.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        operationsTable.setFont(new java.awt.Font("Verdana", 0, 12));
         operationsTable.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         operationsScrollPane.setViewportView(operationsTable);
 
@@ -499,17 +492,17 @@ public class ViewPanel extends JPanel
                             .add(layout.createSequentialGroup()
                                 .add(categoryLabel)
                                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                                .add(categoryTextField, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 413, Short.MAX_VALUE))
+                                .add(categoryTextField, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 490, Short.MAX_VALUE))
                             .add(layout.createSequentialGroup()
                                 .add(opsNameLabel)
                                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                                .add(operationsNameTextField, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 369, Short.MAX_VALUE))
+                                .add(operationsNameTextField, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 446, Short.MAX_VALUE))
                             .add(org.jdesktop.layout.GroupLayout.TRAILING, layout.createSequentialGroup()
                                 .add(innerXmlLinkLabel, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                                 .add(updateTestButton))
-                            .add(operationScrollPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 488, Short.MAX_VALUE)
-                            .add(xmlStatusLabel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 488, Short.MAX_VALUE))))
+                            .add(operationScrollPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 557, Short.MAX_VALUE)
+                            .add(xmlStatusLabel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 557, Short.MAX_VALUE))))
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(testingPanel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
@@ -531,7 +524,7 @@ public class ViewPanel extends JPanel
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                         .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                             .add(layout.createSequentialGroup()
-                                .add(operationsScrollPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 442, Short.MAX_VALUE)
+                                .add(operationsScrollPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 447, Short.MAX_VALUE)
                                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                                     .add(addButton)
@@ -549,7 +542,7 @@ public class ViewPanel extends JPanel
                                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                                 .add(xmlStatusLabel, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                                .add(operationScrollPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 326, Short.MAX_VALUE)
+                                .add(operationScrollPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 346, Short.MAX_VALUE)
                                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                                     .add(updateTestButton)
@@ -995,21 +988,6 @@ public class ViewPanel extends JPanel
 			Domain.logger.add(ex);
 		}
 	}//GEN-LAST:event_saveAsButtonActionPerformed
-
-	private void formAncestorAdded(javax.swing.event.AncestorEvent evt) {//GEN-FIRST:event_formAncestorAdded
-		if (Domain.passedInFile != null)
-		{
-			try
-			{
-				currentFile = new OperationFile(Domain.passedInFile.getCanonicalPath());
-				openFile();
-			}
-			catch (IOException ex)
-			{
-				Domain.passedInFile = null;
-			}
-		}
-	}//GEN-LAST:event_formAncestorAdded
 
 	private void operationTextPaneKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_operationTextPaneKeyTyped
 		// We want to ignore any options when control is held
@@ -1483,9 +1461,9 @@ public class ViewPanel extends JPanel
     private javax.swing.JButton addButton;
     protected javax.swing.JDialog answerDialog;
     private javax.swing.JPanel answerPanel;
-    private javax.swing.JButton browseDataButton;
+    protected javax.swing.JButton browseDataButton;
     private javax.swing.JTextField browseDataTextField;
-    private javax.swing.JButton browseEditingButton;
+    protected javax.swing.JButton browseEditingButton;
     private javax.swing.JLabel categoryLabel;
     private javax.swing.JTextField categoryTextField;
     private javax.swing.JLabel dataCsvLabel;
@@ -1497,7 +1475,7 @@ public class ViewPanel extends JPanel
     protected javax.swing.JFileChooser fileChooserDialog;
     private javax.swing.JCheckBox hasPlotCheckBox;
     private javax.swing.JLabel innerXmlLinkLabel;
-    private javax.swing.JButton newButton;
+    protected javax.swing.JButton newButton;
     private javax.swing.JScrollPane operationScrollPane;
     private javax.swing.JTextPane operationTextPane;
     private javax.swing.JTextField operationsNameTextField;

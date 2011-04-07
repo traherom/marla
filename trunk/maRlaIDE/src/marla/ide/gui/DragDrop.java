@@ -20,7 +20,7 @@
 
 package marla.ide.gui;
 
-import java.awt.Cursor;
+import java.awt.Color;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
@@ -183,49 +183,53 @@ public class DragDrop implements DragGestureListener, DragSourceListener, DropTa
 		ev.acceptDrop (ev.getDropAction ());
 		try
 		{
+			// Indicate that a change is beginning that an undo can be done on
 			viewPanel.domain.changeBeginning(null);
 
 			DragSourceContext source = (DragSourceContext) ev.getTransferable ().getTransferData (supportedFlavors[0]);
-			if (source.getComponent().getParent() == viewPanel.dataSetContentPanel)
-			{	
-				viewPanel.setCursor(Cursor.getDefaultCursor());
-				JLabel label = (JLabel) source.getComponent();
-				label.setForeground(DataSet.getDefaultColor());
-				DataSet dataSet = viewPanel.domain.problem.getData(label.getText());
-				if (!dataSet.isHidden())
+			if (!viewPanel.trashCan.contains(ev.getLocation()))
+			{
+				if (source.getComponent().getParent() == viewPanel.dataSetContentPanel)
 				{
-					JOptionPane.showMessageDialog(viewPanel, "This data set already exists in the workspace, so it\ncannot be added again.", "Data Set Exits", JOptionPane.INFORMATION_MESSAGE);
+					JLabel label = (JLabel) source.getComponent();
+					label.setForeground(DataSet.getDefaultColor());
+					DataSet dataSet = viewPanel.domain.problem.getData(label.getText());
+					dataSet.setForeground(Color.GRAY);
+					if (!dataSet.isHidden())
+					{
+						JOptionPane.showMessageDialog(viewPanel, "This data set already exists in the workspace, so it\ncannot be added again.", "Data Set Exits", JOptionPane.INFORMATION_MESSAGE);
+					}
+					else
+					{
+						dataSet.isHidden(false);
+						dataSet.setLocation((int) ev.getLocation().getX() - viewPanel.xDragOffset, (int) ev.getLocation().getY() - viewPanel.yDragOffset);
+						viewPanel.workspacePanel.add(dataSet);
+						for (int i = 0; i < dataSet.getOperationCount(); ++i)
+						{
+							Operation op = dataSet.getOperation(i);
+							for (Operation childOp : op.getAllChildOperations())
+							{
+								viewPanel.workspacePanel.add(childOp);
+							}
+							viewPanel.workspacePanel.add(op);
+						}
+						viewPanel.rebuildWorkspace();
+					}
 				}
 				else
 				{
-					dataSet.isHidden(false);
-					dataSet.setLocation((int) ev.getLocation().getX() - viewPanel.xDragOffset, (int) ev.getLocation().getY() - viewPanel.yDragOffset);
-					viewPanel.workspacePanel.add(dataSet);
-					for (int i = 0; i < dataSet.getOperationCount(); ++i)
+					Operation operation = (Operation) source.getComponent ();
+
+					viewPanel.domain.problem.markUnsaved ();
+
+					try
 					{
-						Operation op = dataSet.getOperation(i);
-						for (Operation childOp : op.getAllChildOperations())
-						{
-							viewPanel.workspacePanel.add(childOp);
-						}
-						viewPanel.workspacePanel.add(op);
+						viewPanel.drop (operation, true, ev.getLocation ());
 					}
-					viewPanel.rebuildWorkspace();
-				}
-			}
-			else
-			{
-				Operation operation = (Operation) source.getComponent ();
-
-				viewPanel.domain.problem.markUnsaved ();
-
-				try
-				{
-					viewPanel.drop (operation, true, ev.getLocation ());
-				}
-				catch (MarlaException ex)
-				{
-					JOptionPane.showMessageDialog (viewPanel.domain.getTopWindow(), "Unable to load the requested operation", "Missing Operation", JOptionPane.WARNING_MESSAGE);
+					catch (MarlaException ex)
+					{
+						JOptionPane.showMessageDialog (viewPanel.domain.getTopWindow(), "Unable to load the requested operation", "Missing Operation", JOptionPane.WARNING_MESSAGE);
+					}
 				}
 			}
 		}

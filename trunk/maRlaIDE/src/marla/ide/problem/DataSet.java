@@ -133,7 +133,7 @@ public final class DataSet extends DataSource
 		if(proc.loadLibrary(library))
 			return fromRFrame(frame);
 		else
-			throw new MarlaException("The library '" + library + "' could not be loaded into R (or automatically installed)");
+			throw new MarlaException("The library '" + library + "' cannot be loaded into R.");
 	}
 
 	/**

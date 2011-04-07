@@ -18,9 +18,11 @@
 
 package marla.opedit.gui;
 
+import java.awt.Container;
 import java.awt.Desktop;
 import java.io.File;
 import java.util.List;
+import javax.swing.SwingUtilities;
 import marla.ide.resource.Configuration;
 import marla.opedit.operation.OperationFile;
 import marla.opedit.resource.LoadSaveThread;
@@ -32,7 +34,7 @@ import marla.opedit.resource.LoadSaveThread;
 public class Domain
 {
     /** The name of the application.*/
-    public static final String NAME = "The maRla Project - Operation Editor";
+    public static final String NAME = "maRla Operation Editor";
     /** The version number of the application.*/
     public static final String VERSION = "0.2";
     /** The pre-release version name of the application.*/
@@ -115,6 +117,27 @@ public class Domain
 	}
 
 	/**
+	 * Checks what window is the top-most being displayed right now and returns that.
+	 *
+	 * @return The top-most window displayed.
+	 */
+	public Container getTopWindow()
+	{
+		if (MainFrame.progressFrame.isVisible())
+		{
+			return MainFrame.progressFrame;
+		}
+		else if (ViewPanel.getInstance().answerDialog.isVisible())
+		{
+			return ViewPanel.getInstance().answerDialog;
+		}
+		else
+		{
+			return ViewPanel.getInstance();
+		}
+	}
+
+	/**
 	 * Marks that a change is beginning, so the step should be saved in undo/redo.
 	 */
 	public static void changeBeginning()
@@ -172,5 +195,118 @@ public class Domain
 	public OperationFile getOperationFile()
 	{
 		return operationFile;
+	}
+
+	/**
+	 * Show or hide the progress bar. Must be set to false if you wish
+	 * to set values manually.
+	 *
+	 * @param visible True for an indeterminate progress bar, false otherwise.
+	 */
+	public static void setProgressVisible(final boolean visible)
+	{
+		if(MainFrame.progressFrame != null)
+		{
+			MainFrame.progressFrame.setLocationRelativeTo(ViewPanel.getInstance().mainFrame);
+			MainFrame.progressFrame.setVisible(visible);
+		}
+	}
+
+	/**
+	 * Enable or disable the indeterminate state of the progress bar. Must be
+	 * set to false if you wish to set values manually.
+	 *
+	 * @param indeterminate True for an indeterminate progress bar, false otherwise.
+	 */
+	public static void setProgressIndeterminate(final boolean indeterminate)
+	{
+		if(MainFrame.progressFrame != null)
+		{
+			SwingUtilities.invokeLater(new Runnable()
+			{
+				@Override
+				public void run()
+				{
+					MainFrame.progressFrame.progressBar.setIndeterminate(indeterminate);
+				}
+			});
+		}
+	}
+
+	/**
+	 * Set the string shown within the progress bar.
+	 *
+	 * @param string The string shown within the progress bar.
+	 */
+	public static void setProgressString(final String string)
+	{
+		if(MainFrame.progressFrame != null)
+		{
+			SwingUtilities.invokeLater(new Runnable()
+			{
+				@Override
+				public void run()
+				{
+					MainFrame.progressFrame.progressBar.setString(string);
+				}
+			});
+		}
+	}
+
+	/**
+	 * Set the status label below the progress bar.
+	 *
+	 * @param status The status to be set.
+	 */
+	public static void setProgressStatus(String status)
+	{
+		if(MainFrame.progressFrame != null)
+			MainFrame.progressFrame.statusLabel.setText(status);
+	}
+
+	/**
+	 * The minimum value a progress can be.  Minimum has been set to 0 by default,
+	 * so only use this accessor if you want to change that value.
+	 *
+	 * @param minValue The minimum value of the progress bar.
+	 */
+	public static void setProgressMinValue(int minValue)
+	{
+		if(MainFrame.progressFrame != null)
+			MainFrame.progressFrame.progressBar.setMinimum(minValue);
+	}
+
+	/**
+	 * The maximum value a progress can be.  Maximum has been set to 100 by default,
+	 * so only use this accessor if you want to change that value.
+	 *
+	 * @param maxValue The maximum value of the progress bar.
+	 */
+	public static void setProgressMaxValue(int maxValue)
+	{
+		if(MainFrame.progressFrame != null)
+			MainFrame.progressFrame.progressBar.setMaximum(maxValue);
+	}
+
+	/**
+	 * The current value of the progress bar.  Make sure min and max values have
+	 * been set first so the progress bar scales properly.  To make use of the
+	 * scalable progress bar, ensure indeterminate is set to false.
+	 *
+	 * @param value The value of the progress bar.
+	 */
+	public static void setProgressValue(final int value)
+	{
+		if(MainFrame.progressFrame != null)
+		{
+			SwingUtilities.invokeLater(new Runnable()
+			{
+				@Override
+				public void run()
+				{
+					MainFrame.progressFrame.progressBar.setValue(value);
+				}
+			});
+		}
 	}
 }

@@ -59,7 +59,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.filechooser.FileFilter;
-import marla.ide.problem.DataSet;
 import marla.ide.problem.DataSource;
 import marla.ide.problem.MarlaException;
 import marla.ide.operation.Operation;
@@ -69,12 +68,13 @@ import marla.ide.operation.OperationInfoRequiredException;
 import marla.ide.operation.OperationInformation;
 import marla.ide.operation.OperationInformation.PromptType;
 import marla.ide.operation.OperationXML;
+import marla.ide.problem.DataSet;
 import marla.ide.problem.InternalMarlaException;
 import marla.ide.problem.Problem;
 import marla.ide.problem.SubProblem;
 import marla.ide.r.RProcessorException;
+import marla.ide.resource.BackgroundThread;
 import marla.ide.resource.Configuration;
-import marla.ide.resource.LoadSaveThread;
 import marla.ide.resource.UndoRedo;
 import marla.ide.resource.Updater;
 
@@ -242,10 +242,8 @@ public class ViewPanel extends JPanel
 	protected boolean showFourth = true;
 	/** True if the fifth tip should be shown.*/
 	protected boolean showFifth = true;
-	/** True if the changeBeginning call needs to be made, false otherwise.*/
-	private boolean markChangeBeginning = true;
 	/** The undo/redo object.*/
-	protected UndoRedo<Problem> undoRedo = new UndoRedo<Problem>();
+	protected UndoRedo<Problem> undoRedo = new UndoRedo<Problem>(50);
 
 	/**
 	 * Creates new form MainFrame for a stand-alone application.
@@ -291,7 +289,7 @@ public class ViewPanel extends JPanel
 
 		workspacePanel.setDropTarget(new DropTarget(workspacePanel, DnDConstants.ACTION_MOVE, DND_LISTENER));
 
-		domain.loadSaveThread = new LoadSaveThread(domain);
+		domain.loadSaveThread = new BackgroundThread(domain);
 		// Launch the save thread
 		domain.loadSaveThread.start();
 		domain.setLoadSaveThread(domain.loadSaveThread);
@@ -303,6 +301,8 @@ public class ViewPanel extends JPanel
 		workspacePanel.setVisible(false);
 
 		componentsScrollPane.getViewport().setOpaque(false);
+
+		statusLabel.setText ("");
 
 		// Retrieve the default file filter from the JFileChooser before it is ever changed
 		defaultFilter = fileChooserDialog.getFileFilter();
@@ -553,6 +553,7 @@ public class ViewPanel extends JPanel
         preWorkspaceLabel = new javax.swing.JLabel();
         workspacePanel = new WorkspacePanel (this);
         trashCan = new javax.swing.JLabel();
+        statusLabel = new javax.swing.JLabel();
         debugScrollPane = new javax.swing.JScrollPane();
         debugTextArea = new javax.swing.JTextArea();
         rightSidePanel = new javax.swing.JPanel();
@@ -858,7 +859,7 @@ public class ViewPanel extends JPanel
 
         preWorkspacePanel.setBackground(new java.awt.Color(204, 204, 204));
 
-        preWorkspaceLabel.setFont(new java.awt.Font("Verdana", 1, 14)); // NOI18N
+        preWorkspaceLabel.setFont(new java.awt.Font("Verdana", 1, 14));
         preWorkspaceLabel.setForeground(new java.awt.Color(102, 102, 102));
         preWorkspaceLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         preWorkspaceLabel.setText("<html><div align=\"center\">To get started, load a previous problem or use the<br /><em>New Problem Wizard</em> (File --> New Problem...) to<br />create a new problem</div></html>");
@@ -869,14 +870,14 @@ public class ViewPanel extends JPanel
             preWorkspacePanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(preWorkspacePanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .add(preWorkspaceLabel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 87, Short.MAX_VALUE)
+                .add(preWorkspaceLabel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 754, Short.MAX_VALUE)
                 .addContainerGap())
         );
         preWorkspacePanelLayout.setVerticalGroup(
             preWorkspacePanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(preWorkspacePanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .add(preWorkspaceLabel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 54, Short.MAX_VALUE)
+                .add(preWorkspaceLabel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 556, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -912,16 +913,14 @@ public class ViewPanel extends JPanel
         workspacePanel.setLayout(null);
 
         trashCan.setIcon(new javax.swing.ImageIcon(getClass().getResource("/marla/ide/images/trash_button.png"))); // NOI18N
-        trashCan.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                trashCanMouseExited(evt);
-            }
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                trashCanMouseEntered(evt);
-            }
-        });
         workspacePanel.add(trashCan);
-        trashCan.setBounds(730, 610, 26, 40);
+        trashCan.setBounds(730, 530, 26, 40);
+
+        statusLabel.setFont(new java.awt.Font("Verdana", 1, 12)); // NOI18N
+        statusLabel.setForeground(new java.awt.Color(153, 153, 153));
+        statusLabel.setText("<<Status Label>>");
+        workspacePanel.add(statusLabel);
+        statusLabel.setBounds(10, 550, 430, 14);
 
         workspaceCardPanel.add(workspacePanel, "card4");
 
@@ -1013,18 +1012,30 @@ public class ViewPanel extends JPanel
     }// </editor-fold>//GEN-END:initComponents
 
 	private void workspacePanelMouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_workspacePanelMouseDragged
+		// The mouse is being dragged, so when starX or startY escape their minimum drag bounds, set the
+		// break flag to true; this will allow that operation to be separated from the chain it is currently a part of
 		if(Math.abs(startX - evt.getX()) > MIN_DRAG_DIST || Math.abs(startY - evt.getY()) > MIN_DRAG_DIST)
 		{
 			broken = true;
 		}
 
+		// If the operation has been dragged far enough to break out of its chain, allow dragging
+		// The following code only pertains to dragging within the workspace (not from out of the palette)
 		if(broken)
 		{
+			// Everything within this condition only gets fired on the VERY FIRST pixel move of a drag;
+			// It is essentially the drag initialization step.  Every instance of the drag after this point
+			// will fail to meet this condition because componentUnderMouse is null and draggingComponent is
+			// the component being dragged
 			if(componentUnderMouse != null && draggingComponent == null)
 			{
-				componentUnderMouse = null;
+				// We only want to drag if the user is holding down the left button
 				if(buttonPressed == MouseEvent.BUTTON1)
 				{
+					// Change beginning to indicate a undo can be done after this drag completes
+					domain.changeBeginning(null);
+
+					// If we are dragging an operation that is connected, our starting point is already defined with startX and startY
 					Point point;
 					if(startX != -1 && startY != -1)
 					{
@@ -1034,99 +1045,88 @@ public class ViewPanel extends JPanel
 					{
 						point = evt.getPoint();
 					}
-					JComponent component = (JComponent) workspacePanel.getComponentAt(point);
-					if(component != null
-					   && component != workspacePanel
-					   && component != trashCan
-					   && component != firstRunLabel)
+
+					draggingComponent = componentUnderMouse;
+					componentUnderMouse = null;
+					// If we're dragging a operation, check if it needs to be broken out of a data set chain
+					if(draggingComponent instanceof Operation)
 					{
-						if (markChangeBeginning)
+						try
 						{
-							markChangeBeginning = false;
-							domain.changeBeginning(null);
-						}
-
-						draggingComponent = component;
-						if(draggingComponent instanceof Operation)
-						{
-							try
+							Operation childOperation = null;
+							if(((Operation) draggingComponent).getOperationCount() > 0)
 							{
-								Operation childOperation = null;
-								if(((Operation) draggingComponent).getOperationCount() > 0)
-								{
-									childOperation = ((Operation) draggingComponent).getOperation(0);
-								}
-								DataSource parent = ((Operation) draggingComponent).getParentData();
-								if(parent != null)
-								{
-									int oldIndex = parent.getOperationIndex((Operation) draggingComponent);
+								childOperation = ((Operation) draggingComponent).getOperation(0);
+							}
+							DataSource parent = ((Operation) draggingComponent).getParentData();
+							// If we have a parent, remove from the parent, get our child, and set our child as our parent's new child
+							if(parent != null)
+							{
+								int oldIndex = parent.getOperationIndex((Operation) draggingComponent);
 
-									parent.removeOperation((Operation) draggingComponent);
-									domain.problem.addUnusedOperation(parent.removeOperation((Operation) draggingComponent));
+								parent.removeOperation((Operation) draggingComponent);
+								domain.problem.addUnusedOperation(parent.removeOperation((Operation) draggingComponent));
 
-									if(childOperation != null)
-									{
-										parent.addOperation(oldIndex, childOperation);
-									}
+								if(childOperation != null)
+								{
+									parent.addOperation(oldIndex, childOperation);
 								}
 							}
-							catch(MarlaException ex)
-							{
-								Domain.logger.add(ex);
-							}
-							catch(NullPointerException ex)
-							{
-								Domain.logger.add(ex);
-							}
-							xDragOffset = (int) point.getX() - draggingComponent.getX();
-							yDragOffset = (int) point.getY() - draggingComponent.getY();
 						}
-						else
+						catch(MarlaException ex)
 						{
-							xDragOffset = (int) point.getX() - draggingComponent.getX();
-							yDragOffset = (int) point.getY() - draggingComponent.getY();
+							Domain.logger.add(ex);
 						}
-						workspacePanel.setComponentZOrder(trashCan, workspacePanel.getComponentCount() - 1);
-						if(firstRunLabel.getParent() == workspacePanel)
+						catch(NullPointerException ex)
 						{
-							workspacePanel.setComponentZOrder(firstRunLabel, workspacePanel.getComponentCount() - 1);
+							Domain.logger.add(ex);
 						}
-						workspacePanel.setComponentZOrder(draggingComponent, 0);
-
-						domain.problem.markUnsaved();
+						xDragOffset = (int) point.getX() - draggingComponent.getX();
+						yDragOffset = (int) point.getY() - draggingComponent.getY();
 					}
+					// We're dragging a data set, so just set the offsets
+					else
+					{
+						xDragOffset = (int) point.getX() - draggingComponent.getX();
+						yDragOffset = (int) point.getY() - draggingComponent.getY();
+					}
+					// Ensure the bottom-level  components and the dragging component is always on top
+					workspacePanel.setComponentZOrder(trashCan, workspacePanel.getComponentCount() - 1);
+					workspacePanel.setComponentZOrder(statusLabel, workspacePanel.getComponentCount() - 1);
+					if(firstRunLabel.getParent() == workspacePanel)
+					{
+						workspacePanel.setComponentZOrder(firstRunLabel, workspacePanel.getComponentCount() - 1);
+					}
+					workspacePanel.setComponentZOrder(draggingComponent, 0);
+
+					domain.problem.markUnsaved();
 				}
 			}
 
+			// We have been dragging a data source within the workspace, but now move to the common dragging
+			// code, which is shared with dragging out of the palette
 			dragInWorkspace(evt);
 		}
 	}//GEN-LAST:event_workspacePanelMouseDragged
 
 	private void workspacePanelMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_workspacePanelMouseReleased
-		markChangeBeginning = true;
-
-		// If we were hovering, clear any of those elements
-		if(hoverComponent != null)
-		{
-			if(hoverComponent != null)
-			{
-				((DataSource) hoverComponent).setDefaultColor();
-				hoverComponent = null;
-			}
-		}
-
+		// If the left mouse button was released
 		if(buttonPressed == MouseEvent.BUTTON1)
 		{
+			// We only care if we were dragging something
 			if(draggingComponent != null)
 			{
+				// If the component being dragged is touching the trash can, remove it from the workspace
 				if(trashCan.getBounds().intersects(draggingComponent.getBounds()))
 				{
 					int response = JOptionPane.YES_OPTION;
+					// If the component is a data set, prompt the user that it will remove the data set and all operations from the workspace
 					if(draggingComponent instanceof DataSet)
 					{
 						response = JOptionPane.showConfirmDialog(this, "You are about to remove this data set from the workspace.\nThe data set can be readded to the workspace anytime by dragging\nit back from the list of data sets to the right.\nAre you sure you want to remove this data set?", "Remove Data Set", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
 						if(response == JOptionPane.YES_OPTION)
 						{
+							// Remove the data set and all its operations from the workspace
 							DataSet dataSet = (DataSet) draggingComponent;
 							for(int i = 0; i < dataSet.getOperationCount(); ++i)
 							{
@@ -1138,16 +1138,18 @@ public class ViewPanel extends JPanel
 								}
 								workspacePanel.remove(operation);
 							}
+							// Since the data set is not being remove from the problem, only the interface, set the data set to
+							// "hidden" within the problem so it will no longer be painted
 							dataSet.isHidden(true);
-							workspacePanel.remove(dataSet);
-							workspacePanel.repaint();
 						}
 					}
+					// We are dragging an operation, so remove it from the workspace without a prompt
 					else
 					{
 						domain.problem.removeUnusedOperation((Operation) draggingComponent);
 					}
 
+					// If a component was removed, rebuild the workspace
 					if(response == JOptionPane.YES_OPTION)
 					{
 						workspacePanel.remove(draggingComponent);
@@ -1160,8 +1162,10 @@ public class ViewPanel extends JPanel
 						}
 					}
 				}
+				// We're not touching the trash can, so finish the drag
 				else
 				{
+					// If we're dragging a component, call the "drop" function to ensure a clean drop
 					if(draggingComponent instanceof Operation)
 					{
 						try
@@ -1174,17 +1178,20 @@ public class ViewPanel extends JPanel
 						}
 						draggingComponent.setBackground(NO_BACKGROUND_WORKSPACE);
 					}
+					// If we're dragging a data set, just drop it
 					else
 					{
 						draggingComponent.setBackground(NO_BACKGROUND_WORKSPACE);
 					}
 
+					// Since we're finishing up a drag, rebuild the workspace
 					rebuildTree((DataSource) draggingComponent);
 				}
 
 				draggingComponent = null;
 			}
 		}
+		// If the right mouse button was released, show the right-click menu
 		else if(buttonPressed == MouseEvent.BUTTON3)
 		{
 			if(showFifth)
@@ -1193,10 +1200,12 @@ public class ViewPanel extends JPanel
 				refreshTip();
 			}
 
+			// Check the component we're right-clicking on (if any), because what we show in the right-click menu is dependent on that
 			JComponent component = (JComponent) workspacePanel.getComponentAt(evt.getPoint());
 			if(component != null
 			   && component != workspacePanel
 			   && component != trashCan
+			   && component != statusLabel
 			   && component != firstRunLabel)
 			{
 				rightClickedComponent = component;
@@ -1211,6 +1220,8 @@ public class ViewPanel extends JPanel
 				editDataSetMenuItem.setEnabled(true);
 				tieSubProblemSubMenu.removeAll();
 				untieSubProblemSubMenu.removeAll();
+				// Iterate through all sub problems within this problem, checking if the current data source is contained
+				// within any of them--if it is, add that sub problem to the sub problem menu
 				for(int i = 0; i < domain.problem.getSubProblemCount(); ++i)
 				{
 					final SubProblem subProblem = domain.problem.getSubProblem(i);
@@ -1273,6 +1284,7 @@ public class ViewPanel extends JPanel
 					untieSubProblemSubMenu.setEnabled(true);
 				}
 
+				// Display the data set right-click menu
 				if(rightClickedComponent instanceof DataSet)
 				{
 					solutionMenuItem.setText("Summary");
@@ -1280,6 +1292,7 @@ public class ViewPanel extends JPanel
 					changeInfoMenuItem.setEnabled(false);
 					remarkMenuItem.setEnabled(false);
 				}
+				// Display the operation right-click menu
 				else
 				{
 					solutionMenuItem.setText("Solution");
@@ -1303,6 +1316,7 @@ public class ViewPanel extends JPanel
 					remarkMenuItem.setEnabled(true);
 				}
 			}
+			// We're not right-clicking on any components, so disable all except "Add Data Set..." operation on the menu
 			else
 			{
 				solutionMenuItem.setEnabled(false);
@@ -1316,11 +1330,6 @@ public class ViewPanel extends JPanel
 
 			rightClickMenu.show(workspacePanel, evt.getX(), evt.getY());
 		}
-		else
-		{
-		}
-
-		setCursor(Cursor.getDefaultCursor());
 
 		buttonPressed = 0;
 		startX = -1;
@@ -1452,13 +1461,21 @@ public class ViewPanel extends JPanel
 	private void workspacePanelComponentResized(java.awt.event.ComponentEvent evt)//GEN-FIRST:event_workspacePanelComponentResized
 	{//GEN-HEADEREND:event_workspacePanelComponentResized
 		firstRunLabel.setLocation((workspacePanel.getWidth() - firstRunLabel.getWidth()) / 2, (workspacePanel.getHeight() - firstRunLabel.getHeight()) / 2);
-		trashCan.setLocation(workspacePanel.getWidth() - 40, workspacePanel.getHeight() - 40);
+		trashCan.setLocation(workspacePanel.getWidth() - trashCan.getWidth() - 10, workspacePanel.getHeight() - trashCan.getHeight() - 10);
+		statusLabel.setLocation (10, workspacePanel.getHeight() - statusLabel.getHeight() - 10);
 		ensureComponentsVisible();
 	}//GEN-LAST:event_workspacePanelComponentResized
 
 	private void workspacePanelComponentAdded(java.awt.event.ContainerEvent evt)//GEN-FIRST:event_workspacePanelComponentAdded
 	{//GEN-HEADEREND:event_workspacePanelComponentAdded
-		workspacePanel.setComponentZOrder(trashCan, workspacePanel.getComponentCount() - 1);
+		if (statusLabel.getParent() == workspacePanel)
+		{
+			workspacePanel.setComponentZOrder(trashCan, workspacePanel.getComponentCount() - 1);
+		}
+		if (statusLabel.getParent() == workspacePanel)
+		{
+			workspacePanel.setComponentZOrder(statusLabel, workspacePanel.getComponentCount() - 1);
+		}
 		if(firstRunLabel.getParent() == workspacePanel)
 		{
 			workspacePanel.setComponentZOrder(firstRunLabel, workspacePanel.getComponentCount() - 1);
@@ -1574,26 +1591,22 @@ public class ViewPanel extends JPanel
 	}//GEN-LAST:event_buttonMouseReleased
 
 	private void buttonMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_buttonMouseEntered
-		if(((ToolbarButton) evt.getSource()).isEnabled() && !((ToolbarButton) evt.getSource()).isSelected() && !initLoading)
+		if(((ToolbarButton) evt.getSource()).isEnabled() &&
+				!((ToolbarButton) evt.getSource()).isSelected() &&
+				!initLoading)
 		{
 			((ToolbarButton) evt.getSource()).setHover(true);
 		}
 	}//GEN-LAST:event_buttonMouseEntered
 
 	private void buttonMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_buttonMouseExited
-		if(((ToolbarButton) evt.getSource()).isEnabled() && !((ToolbarButton) evt.getSource()).isSelected() && !initLoading)
+		if(((ToolbarButton) evt.getSource()).isEnabled() &&
+				!((ToolbarButton) evt.getSource()).isSelected() &&
+				!initLoading)
 		{
 			((ToolbarButton) evt.getSource()).setHover(false);
 		}
 	}//GEN-LAST:event_buttonMouseExited
-
-	private void trashCanMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_trashCanMouseEntered
-		trashCan.setIcon(new ImageIcon(getClass().getResource("/marla/ide/images/trash_button_hover.png")));
-	}//GEN-LAST:event_trashCanMouseEntered
-
-	private void trashCanMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_trashCanMouseExited
-		trashCan.setIcon(new ImageIcon(getClass().getResource("/marla/ide/images/trash_button.png")));
-	}//GEN-LAST:event_trashCanMouseExited
 
 	private void editDataSetMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editDataSetMenuItemActionPerformed
 		if(rightClickedComponent != null)
@@ -1658,9 +1671,14 @@ public class ViewPanel extends JPanel
 
 	private void workspacePanelMousePressed(java.awt.event.MouseEvent evt)//GEN-FIRST:event_workspacePanelMousePressed
 	{//GEN-HEADEREND:event_workspacePanelMousePressed
+		// Since a drag operation does not properly return the button pressed, save it at the press start
 		buttonPressed = evt.getButton();
 		Component comp = workspacePanel.getComponentAt(evt.getPoint());
-		if(comp != null)
+		// If we have pressed on a component, save the starting coordinates. If the component is an Operation that
+		// is connected to a data set, later we only want to break it out of that data set if the mouse is dragged
+		// a certain number of pixels out of the expected range
+		if(comp != workspacePanel &&
+				comp != null)
 		{
 			componentUnderMouse = (JComponent) comp;
 			if(comp instanceof Operation)
@@ -1679,25 +1697,19 @@ public class ViewPanel extends JPanel
 	}//GEN-LAST:event_workspacePanelMousePressed
 
 	private void workspacePanelMouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_workspacePanelMouseMoved
-		// We only care if the mouse has moved when we're NOT dragging
+		// We only care if the mouse has moved when we're NOT dragging, and buttonPressed gets set on mousePressed
 		if(buttonPressed == 0)
 		{
 			JComponent component = (JComponent) workspacePanel.getComponentAt(evt.getPoint());
+			// Check that the component we're over is not any of the special components that we want to ignore
 			if(component != null
 			   && component != workspacePanel
 			   && component != trashCan
+			   && component != statusLabel
 			   && component != firstRunLabel)
 			{
-				if(component != hoverComponent)
-				{
-					setCursor(Cursor.getDefaultCursor());
-					if(hoverComponent != null)
-					{
-						((DataSource) hoverComponent).setDefaultColor();
-						hoverComponent = null;
-					}
-				}
-
+				// If we are hovering over a a component that we care about, set the cursor accordingly
+				// and the component to a hovered state
 				if(component instanceof DataSource)
 				{
 					hoverComponent = component;
@@ -1707,8 +1719,14 @@ public class ViewPanel extends JPanel
 			}
 			else if(hoverComponent != null)
 			{
+				// This is from a previous movement--if we are no longer hovering over that component,
+				// revert our cursor and that component back to it's proper state
 				setCursor(Cursor.getDefaultCursor());
-				((DataSource) hoverComponent).setDefaultColor();
+				if (!rightClickMenu.isShowing())
+				{
+					((DataSource) hoverComponent).setDefaultColor();
+					hoverComponent = null;
+				}
 			}
 			workspacePanel.repaint();
 		}
@@ -1728,7 +1746,7 @@ public class ViewPanel extends JPanel
 			String msg = undoRedo.undoMessage();
 			Problem problem = undoRedo.undo(domain.problem);
 			if(msg != null)
-				System.out.println(msg); // TODO make text flash if not null
+				domain.loadSaveThread.addStatus (msg);
 			closeProblem(false, true);
 			domain.problem = problem;
 			openProblem(false, true);
@@ -1747,7 +1765,7 @@ public class ViewPanel extends JPanel
 			String msg = undoRedo.redoMessage();
 			Problem problem = undoRedo.redo(domain.problem);
 			if(msg != null)
-				System.out.println(msg); // TODO make text flash if not null
+				domain.loadSaveThread.addStatus (msg);
 			closeProblem(false, true);
 			domain.problem = problem;
 			openProblem(false, true);
@@ -1854,6 +1872,7 @@ public class ViewPanel extends JPanel
 			Component component = ((WorkspacePanel) workspacePanel).getComponentAt(evt.getPoint().x, evt.getPoint().y, draggingComponent);
 			if(component != null
 			   && component != trashCan
+			   && component != statusLabel
 			   && component != firstRunLabel)
 			{
 				if(component instanceof DataSource)
@@ -2067,20 +2086,23 @@ public class ViewPanel extends JPanel
 	 */
 	protected void drop(Operation operation, boolean duplicate, Point location) throws OperationException, RProcessorException, MarlaException
 	{
-		if(operation != null)
+		// If this operation was dragged from the palette, set its default colors back in the palette
+		if(duplicate)
 		{
 			operation.setDefaultColor();
 			operation.setBackground(NO_BACKGROUND_WORKSPACE);
 			componentsScrollablePanel.repaint();
 		}
 
+		// Get the component we're trying to drop onto, if it exists
 		JComponent component = (JComponent) ((WorkspacePanel) workspacePanel).getComponentAt(location.x, location.y, operation);
-		if(component != null
-		   && component != trashCan
+		if(component != trashCan
+		   && component != statusLabel
 		   && component != firstRunLabel
-		   && (component instanceof DataSet || component instanceof Operation))
+		   && (component == null || component instanceof DataSet || component instanceof Operation))
 		{
-			final Operation newOperation;
+			Operation newOperation;
+			// If we are dragging from the palette, we need to create a new instance of the palette's operation
 			if(duplicate)
 			{
 				setCursor(Cursor.getDefaultCursor());
@@ -2096,16 +2118,19 @@ public class ViewPanel extends JPanel
 					refreshTip();
 				}
 			}
+			// Otherwise use the object we've been dragging
 			else
 			{
 				newOperation = operation;
 			}
 
+			// We're dropping onto an operation, so insert as necessary
 			if(component instanceof Operation)
 			{
 				Operation dropOperation = (Operation) component;
 				if(dropOperation != newOperation)
 				{
+					// We're dropping into the middle of an operation chain, so perform an insert
 					if(dropOperation.getOperationCount() > 0)
 					{
 						// Add as child and ensure we're not listed as unused
@@ -2115,6 +2140,7 @@ public class ViewPanel extends JPanel
 						Operation childOperation = dropOperation.getOperation(0);
 						childOperation.setParentData(newOperation);
 					}
+					// Drop right onto the end of the operation chain
 					else
 					{
 						domain.problem.removeUnusedOperation(newOperation);
@@ -2122,12 +2148,20 @@ public class ViewPanel extends JPanel
 					}
 				}
 
+				operation.setDefaultColor();
+				operation.setBackground(NO_BACKGROUND_WORKSPACE);
 				if(showThird)
 				{
 					showThird = false;
 					refreshTip();
 				}
 			}
+			// We are dropping from the palette onto nothing
+			else if (component == null)
+			{
+				newOperation.setLocation((int) location.getX() - xDragOffset, (int) location.getY() - yDragOffset);
+			}
+			// We're liking dropping onto a data set
 			else
 			{
 				if(component instanceof DataSet)
@@ -2138,6 +2172,8 @@ public class ViewPanel extends JPanel
 					dataSet.addOperation(newOperation);
 				}
 
+				operation.setDefaultColor();
+				operation.setBackground(NO_BACKGROUND_WORKSPACE);
 				if(showThird)
 				{
 					showThird = false;
@@ -2147,37 +2183,7 @@ public class ViewPanel extends JPanel
 
 			workspacePanel.add(newOperation);
 		}
-		else if(component != trashCan)
-		{
-			final Operation newOperation;
-			if(duplicate)
-			{
-				setCursor(Cursor.getDefaultCursor());
-
-				newOperation = Operation.createOperation(operation.getName());
-				newOperation.setFont(ViewPanel.workspaceFontBold);
-				newOperation.setText("<html>" + newOperation.getDisplayString(abbreviated) + "</html>");
-				newOperation.setSize(newOperation.getPreferredSize());
-
-				domain.problem.addUnusedOperation(newOperation);
-
-				if(showSecond)
-				{
-					showSecond = false;
-					refreshTip();
-				}
-			}
-			else
-			{
-				newOperation = operation;
-			}
-
-			if(duplicate)
-			{
-				newOperation.setLocation((int) location.getX() - xDragOffset, (int) location.getY() - yDragOffset);
-				workspacePanel.add(newOperation);
-			}
-		}
+		
 		if(hoverInDragComponent != null)
 		{
 			hoverInDragComponent.setBackground(NO_BACKGROUND_WORKSPACE);
@@ -2186,6 +2192,7 @@ public class ViewPanel extends JPanel
 
 		rebuildWorkspace();
 
+		// The drag is complete, so revert the button pressed
 		buttonPressed = 0;
 	}
 
@@ -2662,6 +2669,7 @@ public class ViewPanel extends JPanel
 			{
 				workspacePanel.removeAll();
 				workspacePanel.add(trashCan);
+				workspacePanel.add(statusLabel);
 
 				emptyPalettePanel.setVisible(true);
 				componentsPanel.setVisible(false);
@@ -2879,9 +2887,10 @@ public class ViewPanel extends JPanel
     protected javax.swing.JLabel saveButton;
     protected javax.swing.JLabel settingsButton;
     private javax.swing.JMenuItem solutionMenuItem;
+    protected javax.swing.JLabel statusLabel;
     private javax.swing.JMenu tieSubProblemSubMenu;
     private javax.swing.JToolBar toolBar;
-    private javax.swing.JLabel trashCan;
+    protected javax.swing.JLabel trashCan;
     private javax.swing.JMenu untieSubProblemSubMenu;
     private javax.swing.JPanel workspaceCardPanel;
     protected javax.swing.JPanel workspacePanel;

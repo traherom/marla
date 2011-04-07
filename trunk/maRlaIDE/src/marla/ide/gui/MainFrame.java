@@ -32,7 +32,6 @@ import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
 import marla.ide.problem.MarlaException;
 import marla.ide.problem.Problem;
 import marla.ide.resource.BuildInfo;
@@ -63,8 +62,6 @@ public class MainFrame extends JFrame
 	{
 		setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 		MainFrame.progressFrame = progressFrame;
-
-		UIManager.put("FileChooser.directoryOpenButtonToolTipText", "Test");
 
 		// Construct the view panel
 		viewPanel = new ViewPanel(this);

@@ -18,12 +18,24 @@
 
 package marla.opedit.gui;
 
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
 import javax.swing.ImageIcon;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
+import marla.ide.gui.ProgressFrame;
+import marla.ide.problem.MarlaException;
+import marla.ide.resource.Configuration;
+import marla.ide.resource.Configuration.ConfigType;
+import marla.opedit.operation.OperationFile;
 
 /**
  * The main frame of the stand-alone application.
@@ -34,17 +46,23 @@ public class MainFrame extends JFrame
 {
 	/** The minimum size the window frame is allowed to be.*/
 	private final Dimension MINIMUM_WINDOW_SIZE = new Dimension(790, 400);
+	/** The progress frame.*/
+	public static ProgressFrame progressFrame;
 	/** The panel that is added to the frame.*/
 	private static ViewPanel viewPanel;
 
 	/**
 	 * Constructs the frame for the stand-alone application.
+	 *
+	 * @param progressFrame A reference to the progress frame.
 	 */
-	public MainFrame()
+	public MainFrame(ProgressFrame progressFrame)
 	{
+		setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+		MainFrame.progressFrame = progressFrame;
+
 		// Construct the view panel
 		viewPanel = new ViewPanel(this);
-
 		// Add the view to the frame
 		add(viewPanel);
 
@@ -136,7 +154,7 @@ public class MainFrame extends JFrame
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jMenuBar1 = new javax.swing.JMenuBar();
+        menuBar = new javax.swing.JMenuBar();
         editMenuItem = new javax.swing.JMenu();
         undoMenuItem = new javax.swing.JMenuItem();
         redoMenuItem = new javax.swing.JMenuItem();
@@ -170,9 +188,9 @@ public class MainFrame extends JFrame
         });
         editMenuItem.add(redoMenuItem);
 
-        jMenuBar1.add(editMenuItem);
+        menuBar.add(editMenuItem);
 
-        setJMenuBar(jMenuBar1);
+        setJMenuBar(menuBar);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -185,9 +203,131 @@ public class MainFrame extends JFrame
 		viewPanel.redo();
 	}//GEN-LAST:event_redoMenuItemActionPerformed
 
+	/**
+	 * Set the configuration arguments and the visible state of the MainFrame.
+	 *
+	 * @param args Arguments for configuration.
+	 * @param visible The visible state to set to.
+	 */
+	public void setVisible(final String[] args, boolean visible)
+	{
+		new Thread (new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				Domain.setProgressString("10%");
+				Domain.setProgressValue(10);
+				Domain.setProgressStatus("Loading configuration ...");
+
+				// Configure
+				Configuration conf = Configuration.getInstance();
+				List<ConfigType> missed = conf.configureAll(args);
+
+				Domain.setProgressString("90%");
+				Domain.setProgressValue(90);
+				Domain.setProgressStatus("Validating configuration ...");
+
+				int currIndex = 0;
+				while(currIndex < missed.size())
+				{
+					ConfigType curr = missed.get(currIndex);
+
+					boolean fixed = false;
+					try
+					{
+						viewPanel.fileChooserDialog.setDialogTitle(Configuration.getName(curr));
+						viewPanel.fileChooserDialog.setDialogType(JFileChooser.OPEN_DIALOG);
+						viewPanel.fileChooserDialog.resetChoosableFileFilters();
+						viewPanel.fileChooserDialog.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+						// Display the chooser and retrieve the selected file
+						int response = viewPanel.fileChooserDialog.showOpenDialog(progressFrame);
+						if(response == JFileChooser.APPROVE_OPTION)
+						{
+							conf.set(curr, viewPanel.fileChooserDialog.getSelectedFile().getPath());
+							fixed = true;
+						}
+						else
+						{
+							JOptionPane.showMessageDialog(viewPanel.domain.getTopWindow(), "The maRla Project cannot run without these resources.", "Fatal Error", JOptionPane.ERROR_MESSAGE);
+							System.exit(1);
+						}
+					}
+					catch(MarlaException ex)
+					{
+						System.out.println(ex.getMessage());
+						fixed = false;
+					}
+
+					// If we succeed, find the next thing
+					if(fixed)
+						currIndex++;
+				}
+
+				Domain.setProgressString("95%");
+				Domain.setProgressValue(95);
+				Domain.setProgressStatus("Initializating workspace ...");
+
+				try
+				{
+					// Preemptively save config file
+					conf.save();
+				}
+				catch(MarlaException ex)
+				{
+					System.out.println("Error saving configuration file: " + ex.getMessage());
+				}
+
+				viewPanel.initLoading = false;
+				viewPanel.newButton.setEnabled(true);
+				viewPanel.browseEditingButton.setEnabled(true);
+				viewPanel.browseDataButton.setEnabled(true);
+				progressFrame.setAlwaysOnTop(false);
+
+				// Done!
+				Domain.setProgressString("100%");
+				Domain.setProgressValue(100);
+				Domain.setProgressStatus("Complete ...");
+
+				progressFrame.setVisible(false);
+				setCursor(Cursor.getDefaultCursor());
+
+				SwingUtilities.invokeLater(new Runnable()
+				{
+					@Override
+					public void run()
+					{
+						// If the final argument is a save file, open it right now
+						if(args.length != 0 && args[args.length - 1].endsWith(".xml"))
+						{
+							try
+							{
+								Domain.passedInFile = new File (args[0]);
+								viewPanel.currentFile = new OperationFile(Domain.passedInFile.getCanonicalPath());
+								viewPanel.openFile();
+							}
+							catch (IOException ex)
+							{
+								System.out.println("Unable to load file from command line: " + ex.getMessage());
+								System.out.println("Load through the GUI for more information.");
+
+								Domain.passedInFile = null;
+							}
+						}
+					}
+				});
+			}
+		}).start();
+
+		progressFrame.setAlwaysOnTop(true);
+		super.setVisible(visible);
+		verifyBounds();
+		progressFrame.setLocationRelativeTo(this);
+	}
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenu editMenuItem;
-    private javax.swing.JMenuBar jMenuBar1;
+    private javax.swing.JMenuBar menuBar;
     protected javax.swing.JMenuItem redoMenuItem;
     protected javax.swing.JMenuItem undoMenuItem;
     // End of variables declaration//GEN-END:variables

@@ -18,15 +18,16 @@
 
 package marla.ide.resource;
 
+import java.util.ArrayList;
 import marla.ide.gui.Domain;
 
 /**
- * The thread which continually checks if changes have been made and need to be
- * saved.
+ * The thread which continually checks for background tasks that are in need
+ * of completion; for instance, a flush of the error log.
  * 
  * @author Alex Laird
  */
-public class LoadSaveThread extends Thread
+public class BackgroundThread extends Thread
 {
 	/** The domain for the main frame.*/
 	private Domain domain;
@@ -37,7 +38,17 @@ public class LoadSaveThread extends Thread
 	 * may not be called on it until the first finishes.*/
 	public boolean saving = false;
 	/** Delay before checking if a save and/or logger write is needed */
-	private final long delay = 5000;
+	private final long DELAY = 500;
+	/** The number of delay iterations to sit through before activating logger.*/
+	private final int LOGGER_DELAY = 20;
+	/** The number of logger delay iterations sat through.*/
+	private int loggerDelayIndex = 0;
+	/** Delay increments to leave a status message for in the workspace.*/
+	private final int STATUS_DELAY = 2;
+	/** The number of display iterations already sat through.  -1 if not waiting for a display to finish.*/
+	private int statusDelayIndex = -1;
+	/** The list of status messages that have not yet been displayed.*/
+	private ArrayList<String> statusMessages = new ArrayList<String>();
 	/** Check if the thread should quit.*/
 	private boolean wantToQuit;
 
@@ -47,19 +58,40 @@ public class LoadSaveThread extends Thread
 	 *
 	 * @param domain The domain for the main frame.
 	 */
-	public LoadSaveThread(Domain domain)
+	public BackgroundThread(Domain domain)
 	{
 		this.domain = domain;
 		wantToQuit = true;
 	}
 
 	/**
-	 * Returns the check delay time in milliseconds
-	 * @return Check delay 
+	 * Add a status to the queue to be displayed to the user.
+	 *
+	 * @param message The status message that will be displayed the user.
+	 */
+	public void addStatus(String message)
+	{
+		statusMessages.add(message);
+	}
+
+	/**
+	 * Clear the status messages queue.
+	 */
+	public void clearStatus()
+	{
+		statusMessages.clear();
+		domain.setWorkspaceStatus("");
+		statusDelayIndex = -1;
+	}
+
+	/**
+	 * Returns the check delay time in milliseconds.
+	 *
+	 * @return Check delay.
 	 */
 	public long getDelay()
 	{
-		return delay;
+		return DELAY;
 	}
 
 	/**
@@ -85,15 +117,42 @@ public class LoadSaveThread extends Thread
 		{
 			try
 			{
-				sleep (delay);
+				sleep (DELAY);
 			}
 			catch (InterruptedException ex)
 			{
 				Domain.logger.add (ex);
 			}
 
-			// Write log file occasionally
-			domain.flushLog();
+			if (statusDelayIndex == -1)
+			{
+				// Display status messages from an undo/redo
+				if (!statusMessages.isEmpty())
+				{
+					domain.setWorkspaceStatus(statusMessages.remove(statusMessages.size() - 1));
+					statusDelayIndex = 0;
+				}
+			}
+			else if (statusDelayIndex != STATUS_DELAY)
+			{
+				++statusDelayIndex;
+			}
+			else
+			{
+				domain.setWorkspaceStatus("");
+				statusDelayIndex = -1;
+			}
+
+			if (loggerDelayIndex == LOGGER_DELAY)
+			{
+				// Write log file
+				domain.flushLog();
+				loggerDelayIndex = 0;
+			}
+			else
+			{
+				++loggerDelayIndex;
+			}
 		}
 	}
 
