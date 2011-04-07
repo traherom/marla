@@ -52,6 +52,7 @@ import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.JViewport;
+import javax.swing.SwingUtilities;
 import javax.swing.border.BevelBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -1372,6 +1373,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 		final JLabel docLabel = new JLabel("<html><u>Click here to view Devore7 documentation.</u></html>");
 		docLabel.setForeground(Color.BLUE);
 		JLabel label2 = new JLabel("Enter the name of the data set you'd like to add from the library.");
+		final JTextField libTextField = new JTextField("Devore7");
 		
 		docLabel.addMouseListener(new MouseAdapter()
 		{
@@ -1394,7 +1396,26 @@ public class NewProblemWizardDialog extends EscapeDialog
 				{
 					try
 					{
-						viewPanel.domain.desktop.browse(new URI("http://cran.fyxm.net/web/packages/Devore7/Devore7.pdf"));
+						if(libTextField.getText().equals("Devore5"))
+						{
+							viewPanel.domain.desktop.browse(new URI("http://cran.fyxm.net/web/packages/Devore5/Devore5.pdf"));
+						}
+						else if(libTextField.getText().equals("Devore6"))
+						{
+							viewPanel.domain.desktop.browse(new URI("http://cran.fyxm.net/web/packages/Devore6/Devore6.pdf"));
+						}
+						else if(libTextField.getText().equals("Devore7"))
+						{
+							viewPanel.domain.desktop.browse(new URI("http://cran.fyxm.net/web/packages/Devore7/Devore7.pdf"));
+						}
+						else if (libTextField.getText().equals("cluster"))
+						{
+							viewPanel.domain.desktop.browse(new URI("http://stat.ethz.ch/R-manual/R-devel/library/cluster/html/00Index.html"));
+						}
+						else if (libTextField.getText().equals("datasets"))
+						{
+							viewPanel.domain.desktop.browse(new URI("http://stat.ethz.ch/R-manual/R-devel/library/datasets/html/00Index.html"));
+						}
 					}
 					catch(IOException ex) {}
 					catch(URISyntaxException ex) {}
@@ -1402,18 +1423,27 @@ public class NewProblemWizardDialog extends EscapeDialog
 			}
 		});
 
-		final JTextField libTextField = new JTextField("Devore7");
 		libTextField.addKeyListener(new KeyAdapter()
 		{
 			@Override
 			public void keyTyped(KeyEvent evt)
 			{
-				String charAdd = "";
-				if (evt.getKeyChar() != '\b')
+				SwingUtilities.invokeLater(new Runnable()
 				{
-					charAdd = evt.getKeyChar() + "";
-				}
-				checkLibTextField(libTextField.getText() + charAdd, docLabel);
+					@Override
+					public void run()
+					{
+						if (isAcceptedLibrary(libTextField.getText()))
+						{
+							docLabel.setText("<html><u>Click here to view " + libTextField.getText() + " documentation.</u></html>");
+							docLabel.setVisible(true);
+						}
+						else
+						{
+							docLabel.setVisible(false);
+						}
+					}
+				});
 			}
 		});
 		
@@ -1423,37 +1453,65 @@ public class NewProblemWizardDialog extends EscapeDialog
 		optionPanel.add(libPanel);
 		optionPanel.add(docLabel);
 		optionPanel.add(label2);
-		Object response = JOptionPane.showInputDialog(this, optionPanel, "Data Set from R Library", JOptionPane.QUESTION_MESSAGE);
+		final Object response = JOptionPane.showInputDialog(this, optionPanel, "Data Set from R Library", JOptionPane.QUESTION_MESSAGE);
 		if (response != null)
 		{
-			try
-			{
-				DataSet dataSet = DataSet.importFromR("Devore7", response.toString());
-				
-				addingDataSet = true;
-				Problem problem;
-				if (newProblem != null)
-				{
-					problem = newProblem;
-				}
-				else
-				{
-					problem = domain.problem;
-				}
+			Domain.setProgressTitle("Getting Library");
+			Domain.setProgressVisible(true);
+			Domain.setProgressIndeterminate(true);
+			Domain.setProgressString("");
+			Domain.setProgressStatus("Getting library from R...");
+			MainFrame.progressFrame.setAlwaysOnTop(true);
 
-				problem.addData(dataSet);
-				addDataSet(problem, dataSet);
+			final NewProblemWizardDialog newProblemWizardDialog = this;
+			setEnabled(false);
+			new Thread(new Runnable()
+			{
+				@Override
+				public void run()
+				{
+					try
+					{
+						DataSet dataSet = DataSet.importFromR(libTextField.getText(), response.toString());
 
-				addingDataSet = false;
-			}
-			catch(RProcessorException ex)
-			{
-				JOptionPane.showMessageDialog(this, "The dataset '" + response.toString() + "' could not be found in the Devore7 library.", "Data Set Not Loaded", JOptionPane.WARNING_MESSAGE);
-			}
-			catch (MarlaException ex)
-			{
-				JOptionPane.showMessageDialog(this, ex.getMessage(), "Data Set Not Loadable", JOptionPane.WARNING_MESSAGE);
-			}
+						addingDataSet = true;
+						Problem problem;
+						if (newProblem != null)
+						{
+							problem = newProblem;
+						}
+						else
+						{
+							problem = domain.problem;
+						}
+
+						problem.addData(dataSet);
+						addDataSet(problem, dataSet);
+
+						addingDataSet = false;
+
+						Domain.setProgressVisible(false);
+					}
+					catch(RProcessorException ex)
+					{
+						Domain.setProgressVisible(false);
+
+						JOptionPane.showMessageDialog(newProblemWizardDialog, "The data set '" + response.toString() + "' could not be found in the " + libTextField.getText() + " library.", "Data Set Not Loaded", JOptionPane.WARNING_MESSAGE);
+					}
+					catch (MarlaException ex)
+					{
+						Domain.setProgressVisible(false);
+
+						JOptionPane.showMessageDialog(newProblemWizardDialog, ex.getMessage(), "Data Set Not Loadable", JOptionPane.WARNING_MESSAGE);
+					}
+					finally
+					{
+						Domain.setProgressIndeterminate(false);
+						MainFrame.progressFrame.setAlwaysOnTop(false);
+						setEnabled(true);
+					}
+				}
+			}).start();
 		}
 	}//GEN-LAST:event_addFromRLibButtonActionPerformed
 
@@ -1531,29 +1589,31 @@ public class NewProblemWizardDialog extends EscapeDialog
     // End of variables declaration//GEN-END:variables
 
 	/**
-	 * Check the text field and display the proper documentation, if any is
-	 * available.
+	 * Checks if a given library has a known documentation set.
 	 *
-	 * @param text The text to check for documentation.
-	 * @param docLabel The label to set with the documentation.
+	 * @param library The library to check for.
+	 * @return True if the given library has known documentation, false otherwise.
 	 */
-	private void checkLibTextField(String text, JLabel docLabel)
+	private boolean isAcceptedLibrary(String library)
 	{
-		if (text.equals ("Devore7"))
+		if (library.equals ("Devore5") ||
+				library.equals ("Devore6") ||
+				library.equals ("Devore7") ||
+				library.equals ("datasets") ||
+				library.equals ("cluster"))
 		{
-			docLabel.setText("<html><u>Click here to view Devore7 documentation.</u></html>");
-			docLabel.setVisible(true);
+			return true;
 		}
-		else
-		{
-			docLabel.setVisible(false);
-		}
+
+		return false;
 	}
 
+
 	/**
-	 * 
-	 * @param problem
-	 * @param dataSet
+	 * Add the given data set to the given problem.
+	 *
+	 * @param problem The problem to add the data set to.
+	 * @param dataSet The data set to add.
 	 */
 	private void addDataSet(Problem problem, DataSet dataSet)
 	{

@@ -36,6 +36,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import marla.ide.gui.ViewPanel;
 import marla.ide.latex.LatexExporter;
 import marla.ide.operation.OperationXMLException;
 import org.apache.commons.io.FileUtils;
@@ -182,6 +183,7 @@ public class Configuration
 			}
 			
 			currProgress += incr;
+			
 			Domain.setProgressString(currProgress + "%");
 			Domain.setProgressValue(currProgress);
 		}

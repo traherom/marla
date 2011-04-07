@@ -61,7 +61,7 @@ import marla.ide.problem.Problem;
 import marla.ide.resource.BuildInfo;
 import marla.ide.resource.Configuration.ConfigType;
 import marla.ide.resource.ConfigurationException;
-import marla.ide.resource.LoadSaveThread;
+import marla.ide.resource.BackgroundThread;
 
 /**
  * Interactions that are related but not directly tied to the front-end of the
@@ -117,7 +117,7 @@ public class Domain
 	/** The desktop object for common desktop operations.*/
 	protected Desktop desktop;
 	/** The load/save thread that is continually running unless explicitly paused or stopped.*/
-	protected LoadSaveThread loadSaveThread;
+	protected BackgroundThread loadSaveThread;
 	/** The user can only have one problem open a time, so here is our problem object reference.*/
 	protected Problem problem = null;
 	/** The reference to the view of the application.*/
@@ -398,6 +398,19 @@ public class Domain
 	}
 
 	/**
+	 * Set the title of the progress frame.
+	 *
+	 * @param string The string to set the title with.
+	 */
+	public static void setProgressTitle(final String string)
+	{
+		if (MainFrame.progressFrame != null)
+		{
+			MainFrame.progressFrame.setTitle(string);
+		}
+	}
+
+	/**
 	 * Show or hide the progress bar. Must be set to false if you wish
 	 * to set values manually.
 	 *
@@ -407,7 +420,7 @@ public class Domain
 	{
 		if(MainFrame.progressFrame != null)
 		{
-			MainFrame.progressFrame.setLocationRelativeTo(currDomain.getMainFrame());
+			MainFrame.progressFrame.setLocationRelativeTo(Domain.getInstance().getTopWindow());
 			MainFrame.progressFrame.setVisible(visible);
 		}
 	}
@@ -508,6 +521,17 @@ public class Domain
 				}
 			});
 		}
+	}
+
+	/**
+	 * Update the status shown in the workspace panel.
+	 *
+	 * @param status The status to set in the workspace panel.
+	 */
+	public void setWorkspaceStatus(String status)
+	{
+		viewPanel.statusLabel.setText ("<html>" + status + "</html>");
+		viewPanel.statusLabel.setSize (viewPanel.statusLabel.getPreferredSize());
 	}
 
 	/**
@@ -709,7 +733,7 @@ public class Domain
 	 *
 	 * @param loadSaveThread The load/save thread to be used.
 	 */
-	public void setLoadSaveThread(LoadSaveThread loadSaveThread)
+	public void setLoadSaveThread(BackgroundThread loadSaveThread)
 	{
 		this.loadSaveThread = loadSaveThread;
 	}
@@ -946,6 +970,7 @@ public class Domain
 
 				if (continueAllowed)
 				{
+					Domain.setProgressTitle("Exporting");
 					Domain.setProgressVisible(true);
 					Domain.setProgressIndeterminate(true);
 					Domain.setProgressString("");
@@ -1070,6 +1095,7 @@ public class Domain
 
 				if (continueAllowed)
 				{
+					Domain.setProgressTitle("Exporting");
 					Domain.setProgressVisible(true);
 					Domain.setProgressIndeterminate(true);
 					Domain.setProgressString("");

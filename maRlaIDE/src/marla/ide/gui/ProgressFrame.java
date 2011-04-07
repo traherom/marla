@@ -34,7 +34,7 @@ public class ProgressFrame extends JFrame
 	 * Creates new form ProgressFrame
 	 */
 	public ProgressFrame()
-	{
+	{	
 		initComponents();
 	}
 

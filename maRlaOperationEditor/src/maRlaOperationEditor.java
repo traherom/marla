@@ -24,14 +24,11 @@ import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
-import marla.ide.resource.BuildInfo;
-import marla.ide.resource.Configuration;
 import marla.opedit.gui.Domain;
 import marla.opedit.gui.MainFrame;
 
@@ -57,15 +54,6 @@ public class maRlaOperationEditor
 				Domain.logger.add(e);
 			}
 		});
-
-		if (args.length > 0)
-		{
-			File file = new File(args[0]);
-			if (file.exists())
-			{
-				Domain.passedInFile = file;
-			}
-		}
 		
 		// Define UI characteristics before the application is instantiated
 		try
@@ -96,11 +84,17 @@ public class maRlaOperationEditor
 			Domain.logger.add(ex);
 		}
 
-		// Build info message
-		System.out.println(Domain.NAME + " " + Domain.VERSION + " " + Domain.PRE_RELEASE);
-		System.out.println("Revision " + BuildInfo.revisionNumber + ", built " + BuildInfo.timeStamp);
+		final marla.ide.gui.ProgressFrame progressFrame = new marla.ide.gui.ProgressFrame();
 
-		Configuration.getInstance().configureAll(args);
+		progressFrame.setLocationRelativeTo(null);
+		progressFrame.setTitle("Launching maRla Operation Editor");
+		progressFrame.setVisible(true);
+		progressFrame.progressBar.setValue(0);
+		progressFrame.progressBar.setString("0%");
+		progressFrame.statusLabel.setText("Loading framework ...");
+
+		progressFrame.progressBar.setValue(3);
+		progressFrame.progressBar.setString("3%");
 
 		EventQueue.invokeLater(new Runnable()
 		{
@@ -109,7 +103,7 @@ public class maRlaOperationEditor
 			{
 				try
 				{
-					new MainFrame().setVisible(true);
+					new MainFrame(progressFrame).setVisible(args, true);
 				}
 				catch(Exception ex)
 				{
@@ -154,5 +148,8 @@ public class maRlaOperationEditor
 				}
 			}
 		});
+
+		progressFrame.progressBar.setValue(5);
+		progressFrame.progressBar.setString("5%");
 	}
 }
