@@ -2785,7 +2785,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 
 		if(dataSet != null)
 		{
-			// Add the new data set
+			// Set to the editing the new data set
 			try
 			{
 				dataSetTabbedPane.setSelectedIndex(domain.problem.getDataIndex(dataSet.getName()));

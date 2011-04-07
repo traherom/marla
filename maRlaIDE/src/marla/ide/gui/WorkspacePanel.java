@@ -145,9 +145,9 @@ public class WorkspacePanel extends JPanel
     protected void paintComponent(Graphics g)
 	{
 		try
-		{
+		{	
 			super.paintComponent (g);
-
+			
 			Graphics2D g2 = (Graphics2D) g;
 			g2.setRenderingHint (RenderingHints.KEY_ANTIALIASING,
 								 RenderingHints.VALUE_ANTIALIAS_ON);
@@ -166,7 +166,23 @@ public class WorkspacePanel extends JPanel
 				drawConnection(g2, ds);
 			}
 
-			// Lines for center of workspace
+			// Always ensure low-level components are at the bottom of the workspace
+			if(viewPanel.trashCan.getParent() == this)
+			{
+				setComponentZOrder(viewPanel.trashCan, getComponentCount() - 1);
+			}
+			if(viewPanel.statusLabel.getParent() == this)
+			{
+				setComponentZOrder(viewPanel.statusLabel, getComponentCount() - 1);
+			}
+			if(viewPanel.firstRunLabel.getParent() == this)
+			{
+				setComponentZOrder(viewPanel.firstRunLabel, getComponentCount() - 1);
+			}
+			if(viewPanel.draggingComponent != null && viewPanel.draggingComponent.getParent() == this)
+			{
+				setComponentZOrder(viewPanel.draggingComponent, 0);
+			}
 		}
 		catch(Exception ex)
 		{
@@ -174,6 +190,12 @@ public class WorkspacePanel extends JPanel
 		}
 	}
 
+	/**
+	 * Draw a connection between the given data source and its parent.
+	 *
+	 * @param g2 The graphics reference.
+	 * @param ds The data source to draw a line to.
+	 */
 	private void drawConnection(Graphics2D g2, DataSource ds)
 	{		
 		// Stuff we'll need to reference a lot

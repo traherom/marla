@@ -126,6 +126,7 @@ public class DragDrop implements DragGestureListener, DragSourceListener, DropTa
 	@Override
 	public void dragDropEnd(DragSourceDropEvent ev)
 	{
+		endDrop((DragSourceContext) ev.getSource());
 	}
 
 	@Override
@@ -179,6 +180,16 @@ public class DragDrop implements DragGestureListener, DragSourceListener, DropTa
 		viewPanel.dragInWorkspace (new MouseEvent (viewPanel.workspacePanel, 0, System.currentTimeMillis (), 1, ev.getLocation ().x, ev.getLocation ().y, 1, false));
 	}
 
+	/**
+	 * Retrieve the drag source context.  Null if it does not exist.
+	 *
+	 * @return The drag source context.
+	 */
+	protected Object getDragSourceContext()
+	{
+		return object;
+	}
+
 	@Override
 	public void drop(DropTargetDropEvent ev)
 	{
@@ -193,6 +204,7 @@ public class DragDrop implements DragGestureListener, DragSourceListener, DropTa
 			
 				if (source.getComponent().getParent() == viewPanel.dataSetContentPanel)
 				{
+					viewPanel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 					// If we're dragging in a data set, ensure it isn't already in the workspace--if it is, we can't add it again
 					JLabel label = (JLabel) source.getComponent();
 					label.setForeground(DataSet.getDefaultColor());
@@ -219,8 +231,6 @@ public class DragDrop implements DragGestureListener, DragSourceListener, DropTa
 						}
 						viewPanel.rebuildWorkspace();
 					}
-					
-					endDrop(source);
 				}
 				else
 				{
@@ -237,11 +247,6 @@ public class DragDrop implements DragGestureListener, DragSourceListener, DropTa
 						JOptionPane.showMessageDialog (viewPanel.domain.getTopWindow(), "Unable to load the requested operation", "Missing Operation", JOptionPane.WARNING_MESSAGE);
 					}
 				}
-			}
-			// If we dropped on the trash can, just revert all dragging variables and ignore
-			else
-			{
-				endDrop(source);
 			}
 		}
 		catch (UnsupportedFlavorException ex)
@@ -262,7 +267,6 @@ public class DragDrop implements DragGestureListener, DragSourceListener, DropTa
 	 */
 	protected void endDrop(DragSourceContext source)
 	{
-		viewPanel.setCursor(Cursor.getDefaultCursor());
 		if (source != null)
 		{
 			JLabel label = (JLabel) source.getComponent();

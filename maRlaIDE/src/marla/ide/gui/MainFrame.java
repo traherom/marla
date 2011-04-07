@@ -441,7 +441,7 @@ public class MainFrame extends JFrame
         editMenu.setFont(new java.awt.Font("Verdana", 0, 12));
 
         undoMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_Z, java.awt.event.InputEvent.CTRL_MASK));
-        undoMenuItem.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        undoMenuItem.setFont(new java.awt.Font("Verdana", 0, 12));
         undoMenuItem.setText("Undo");
         undoMenuItem.setEnabled(false);
         undoMenuItem.addActionListener(new java.awt.event.ActionListener() {
@@ -465,7 +465,7 @@ public class MainFrame extends JFrame
         menuBar.add(editMenu);
 
         problemMenu.setText("Problem");
-        problemMenu.setFont(new java.awt.Font("Verdana", 0, 12));
+        problemMenu.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
         problemMenu.addMenuListener(new javax.swing.event.MenuListener() {
             public void menuCanceled(javax.swing.event.MenuEvent evt) {
             }
@@ -525,7 +525,7 @@ public class MainFrame extends JFrame
         menuBar.add(problemMenu);
 
         toolsMenu.setText("Tools");
-        toolsMenu.setFont(new java.awt.Font("Verdana", 0, 12));
+        toolsMenu.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
         toolsMenu.addMenuListener(new javax.swing.event.MenuListener() {
             public void menuCanceled(javax.swing.event.MenuEvent evt) {
             }
@@ -537,8 +537,8 @@ public class MainFrame extends JFrame
         });
 
         operationEditorMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F2, 0));
-        operationEditorMenuItem.setFont(new java.awt.Font("Verdana", 0, 12));
-        operationEditorMenuItem.setText("Launch Operation Editor");
+        operationEditorMenuItem.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        operationEditorMenuItem.setText("Launch maRla Operation Editor");
         operationEditorMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 operationEditorMenuItemActionPerformed(evt);
