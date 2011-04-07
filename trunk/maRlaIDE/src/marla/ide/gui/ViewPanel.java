@@ -1144,7 +1144,6 @@ public class ViewPanel extends JPanel
 						for(Operation childOp : operation.getAllChildOperations())
 						{
 							workspacePanel.remove(childOp);
-							Operation operation = dataSet.getOperation(i);
 						}
 						workspacePanel.remove(operation);
 						domain.problem.removeUnusedOperation(operation);
