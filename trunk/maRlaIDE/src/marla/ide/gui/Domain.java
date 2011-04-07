@@ -908,6 +908,7 @@ public class Domain
 				if (continueAllowed)
 				{
 					problem.setFileName (file.toString ());
+					viewPanel.mainFrame.setTitle(viewPanel.mainFrame.getDefaultTitle() + " - " + problem.getFileName().substring(problem.getFileName().lastIndexOf(System.getProperty("file.separator")) + 1, problem.getFileName().lastIndexOf(".")));
 					save ();
 					break;
 				}
@@ -1209,23 +1210,30 @@ public class Domain
 					continue;
 				}
 
+				boolean wantsClose = true;
 				if (problem != null)
 				{
-					viewPanel.closeProblem (false, false);
-					viewPanel.undoRedo.clearHistory();
+					wantsClose = viewPanel.closeProblem (false, false);
+					if (wantsClose)
+					{
+						viewPanel.undoRedo.clearHistory();
+					}
 				}
 
-				if (file.isDirectory ())
+				if(wantsClose)
 				{
-					lastGoodDir = file.toString ();
-				}
-				else
-				{
-					lastGoodDir = file.getParent();
-				}
-				problem = Problem.load (file.toString ());
+					if (file.isDirectory ())
+					{
+						lastGoodDir = file.toString ();
+					}
+					else
+					{
+						lastGoodDir = file.getParent();
+					}
+					problem = Problem.load (file.toString ());
 
-				viewPanel.openProblem (false, false);
+					viewPanel.openProblem (false, false);
+				}
 				break;
 			}
 		}
