@@ -62,7 +62,7 @@ import javax.swing.JPopupMenu;
  */
 public class ColorSwatch extends JPanel
 {
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 8L;
     JPopupMenu menu;
     JMenuItem copyItem;
     MouseListener mouseListener = new MouseAdapter ()

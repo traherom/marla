@@ -46,9 +46,12 @@ import marla.ide.resource.ConfigurationException;
  * Performs statistical operations though R as directed by an XML template
  * @author Ryan Morehart
  */
-@SuppressWarnings("serial")
 public class OperationXML extends Operation
 {
+	/**
+	 * STOP WHINING JAVA!
+	 */
+	private static final long serialVersionUID = -432343533907423L;
 	/**
 	 * Path to the XML file that specifies the maRla-supplied operations
 	 */

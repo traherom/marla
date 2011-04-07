@@ -34,9 +34,12 @@ import org.jdom.output.XMLOutputter;
 /**
  * @author Ryan Morehart
  */
-@SuppressWarnings("serial")
 public class OperationXMLEditable extends OperationXML
 {
+	/**
+	 * STOP WHINING JAVA!
+	 */
+	private static final long serialVersionUID = -432343533907498L;
 	/**
 	 * Parent file that we belong to
 	 */
