@@ -286,7 +286,7 @@ public final class Problem implements ProblemPart, Cloneable
 	@Override
 	public void setStatement(String newStatement)
 	{
-		changeBeginning();
+		changeBeginning("problem statement");
 		this.statement = newStatement;
 		markUnsaved();
 	}
@@ -307,7 +307,7 @@ public final class Problem implements ProblemPart, Cloneable
 	 */
 	public String setPersonName(String newName)
 	{
-		changeBeginning();
+		changeBeginning("person name");
 		String oldName = personName;
 		personName = newName;
 		markUnsaved();
@@ -331,7 +331,7 @@ public final class Problem implements ProblemPart, Cloneable
 	 */
 	public String setShortCourse(String newCourse)
 	{
-		changeBeginning();
+		changeBeginning("short course name");
 		String oldCourse = shortCourseName;
 		shortCourseName = newCourse;
 		markUnsaved();
@@ -355,7 +355,7 @@ public final class Problem implements ProblemPart, Cloneable
 	 */
 	public String setLongCourse(String newCourse)
 	{
-		changeBeginning();
+		changeBeginning("long course name");
 		String oldCourse = longCourseName;
 		longCourseName = newCourse;
 		markUnsaved();
@@ -378,7 +378,7 @@ public final class Problem implements ProblemPart, Cloneable
 	 */
 	public String setChapter(String newChapter)
 	{
-		changeBeginning();
+		changeBeginning("problem chapter");
 		String oldChapter = probChapter;
 		probChapter = newChapter;
 		markUnsaved();
@@ -402,7 +402,7 @@ public final class Problem implements ProblemPart, Cloneable
 	 */
 	public String setSection(String newSection)
 	{
-		changeBeginning();
+		changeBeginning("problem section");
 		String oldSection = probSection;
 		probSection = newSection;
 		markUnsaved();
@@ -425,7 +425,7 @@ public final class Problem implements ProblemPart, Cloneable
 	 */
 	public String setProblemNumber(String newNum)
 	{
-		changeBeginning();
+		changeBeginning("problem number");
 		String oldNum = probNum;
 		probNum = newNum;
 		markUnsaved();
@@ -498,7 +498,7 @@ public final class Problem implements ProblemPart, Cloneable
 				return data;
 		}
 
-		changeBeginning();
+		changeBeginning("adding dataset " + data.getName());
 		
 		// Remove from the old problem if needed
 		Problem oldParent = data.getParentProblem();
@@ -526,7 +526,7 @@ public final class Problem implements ProblemPart, Cloneable
 	{
 		DataSet d = datasets.get(index);
 
-		changeBeginning();
+		changeBeginning("removing dataset " + d.getName());
 		
 		// Ensure the SubProblems that are used don't contain it any more
 		for(SubProblem sub : d.getSubProblems())
@@ -579,10 +579,6 @@ public final class Problem implements ProblemPart, Cloneable
 		// And all our unsused stuff
 		for(Operation op : unusedOperations)
 		{
-			// TODO Safety checking, maybe remove in a few days
-			if(op.getParentData() != null)
-				throw new ProblemException("Operation was still part of unused operations of problem and yet has a parent");
-
 			myData.add(op);
 			myData.addAll(op.getAllChildOperations());
 		}
@@ -611,10 +607,6 @@ public final class Problem implements ProblemPart, Cloneable
 		// And all our unused stuff is visible
 		for(Operation op : unusedOperations)
 		{
-			// TODO Safety checking, maybe remove in a few days
-			if(op.getParentData() != null)
-				throw new ProblemException("Operation was still part of unused operations of problem and yet has a parent");
-
 			myData.add(op);
 			myData.addAll(op.getAllChildOperations());
 		}
@@ -707,7 +699,7 @@ public final class Problem implements ProblemPart, Cloneable
 	 */
 	private SubProblem addSubProblem(SubProblem sub)
 	{
-		changeBeginning();
+		changeBeginning("adding subproblem " + sub.getSubproblemID());
 		subProblems.add(sub);
 		markUnsaved();
 		return sub;
@@ -720,7 +712,7 @@ public final class Problem implements ProblemPart, Cloneable
 	 */
 	public SubProblem removeSubProblem(SubProblem sub)
 	{
-		changeBeginning();
+		changeBeginning("removing subproblem " + sub.getSubproblemID());
 		
 		// Tell any datasource that pointed to here to no longer do so
 		for(int i = 0; i < sub.getStepCount(); i++)
@@ -809,7 +801,7 @@ public final class Problem implements ProblemPart, Cloneable
 	}
 
 	@Override
-	public void changeBeginning()
+	public void changeBeginning(String changeMsg)
 	{
 		// Don't bother if we're loading
 		if(isLoading)
@@ -817,7 +809,7 @@ public final class Problem implements ProblemPart, Cloneable
 		
 		Domain d = getDomain();
 		if(d != null)
-			d.changeBeginning();
+			d.changeBeginning(changeMsg);
 	}
 
 	/**

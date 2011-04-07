@@ -183,7 +183,7 @@ public class DragDrop implements DragGestureListener, DragSourceListener, DropTa
 		ev.acceptDrop (ev.getDropAction ());
 		try
 		{
-			viewPanel.domain.changeBeginning();
+			viewPanel.domain.changeBeginning(null);
 
 			DragSourceContext source = (DragSourceContext) ev.getTransferable ().getTransferData (supportedFlavors[0]);
 			if (source.getComponent().getParent() == viewPanel.dataSetContentPanel)

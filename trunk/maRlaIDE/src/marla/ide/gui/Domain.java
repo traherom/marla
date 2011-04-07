@@ -804,11 +804,12 @@ public class Domain
 
 	/**
 	 * Marks that a change is beginning, so the step should be saved in undo/redo.
+	 * @param changeMsg Message describing the change
 	 */
-	public void changeBeginning()
+	public void changeBeginning(String changeMsg)
 	{
 		if(viewPanel.newProblemWizardDialog.newProblem == null && problem != null)
-			viewPanel.undoRedo.addUndoStep (problem.clone());
+			viewPanel.undoRedo.addUndoStep (problem.clone(), changeMsg);
 
 		validateUndoRedoMenuItems();
 	}

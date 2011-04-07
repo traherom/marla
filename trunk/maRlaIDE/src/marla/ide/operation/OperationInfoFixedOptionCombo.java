@@ -82,7 +82,7 @@ public class OperationInfoFixedOptionCombo extends OperationInfoCombo
 		if(newAnswer == null)
 			throw new InternalMarlaException("Info may only be cleared by calling clearAnswer()");
 
-		changeBeginning();
+		changeBeginning("question " + getName() + " answer");
 		
 		// Ensure it's within our options
 		if(!options.contains((String)newAnswer))
@@ -100,7 +100,7 @@ public class OperationInfoFixedOptionCombo extends OperationInfoCombo
 	@Override
 	public void clearAnswer()
 	{
-		changeBeginning();
+		changeBeginning("clearing question " + getName() + " answer");
 		answer = null;
 		getOperation().checkDisplayName();
 		getOperation().markDirty();

@@ -152,7 +152,7 @@ public abstract class DataSource extends JLabel implements Loadable, Changeable
 	@Override
 	public final void setName(String newName)
 	{
-		changeBeginning();
+		changeBeginning(null);
 		name = newName;
 		checkDisplayName();
 		markUnsaved();
@@ -575,7 +575,6 @@ public abstract class DataSource extends JLabel implements Loadable, Changeable
 		if(!subProblems.contains(sub))
 			return;
 
-		changeBeginning();
 		subProblems.remove(sub);
 		sub.removeStep(this);
 		markUnsaved();

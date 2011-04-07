@@ -1043,7 +1043,7 @@ public class ViewPanel extends JPanel
 						if (markChangeBeginning)
 						{
 							markChangeBeginning = false;
-							domain.changeBeginning();
+							domain.changeBeginning(null);
 						}
 
 						draggingComponent = component;
@@ -1725,7 +1725,10 @@ public class ViewPanel extends JPanel
 	{
 		if (undoRedo.hasUndo())
 		{
+			String msg = undoRedo.undoMessage();
 			Problem problem = undoRedo.undo(domain.problem);
+			if(msg != null)
+				System.out.println(msg); // TODO make text flash if not null
 			closeProblem(false, true);
 			domain.problem = problem;
 			openProblem(false, true);
@@ -1741,7 +1744,10 @@ public class ViewPanel extends JPanel
 	{
 		if (undoRedo.hasRedo())
 		{
+			String msg = undoRedo.redoMessage();
 			Problem problem = undoRedo.redo(domain.problem);
+			if(msg != null)
+				System.out.println(msg); // TODO make text flash if not null
 			closeProblem(false, true);
 			domain.problem = problem;
 			openProblem(false, true);

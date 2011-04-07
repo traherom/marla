@@ -35,7 +35,7 @@ public class UndoRedo<T>
 	 * Position of the message in the Object[] array stored in
 	 * undo/redo stacks
 	 */
-	private static final int MSG_LOC = 0;
+	private static final int MSG_LOC = 1;
 	/**
 	 * Undo steps that have been pushed unto our list. The object array contains:
 	 *   STEP_LOC - actual undo step, of type T
@@ -124,23 +124,17 @@ public class UndoRedo<T>
 	 */
 	public T undo(T redoStep)
 	{
-		return undo(redoStep, null);
-	}
-
-	/**
-	 * Undoes one step, returning the state at that point
-	 * @param redoStep Step that will be inserted as the next redo. Typically the
-	 *		current state of whatever is being undone
-	 * @param msg Message on what this change represents, usually what's different
-	 *		about it compared to the "current" T now
-	 * @return State at the previous point
-	 */
-	public T undo(T redoStep, String msg)
-	{
 		if(!hasUndo())
 			return null;
 
+		// Pull out the step we're undoing to
+		Object[] stepData = undoStack.pollLast();
+		String msg = (String)stepData[MSG_LOC];
+		@SuppressWarnings("unchecked")
+		T step = (T)stepData[STEP_LOC];
+
 		// Add to redo stack and ensure we don't violate set limits
+		// Use the same message as the corresponding undo step
 		redoStack.addLast(new Object[]{redoStep, msg});
 		if(maxStates > 0)
 		{
@@ -148,21 +142,7 @@ public class UndoRedo<T>
 				redoStack.pollFirst();
 		}
 		
-		T step = (T)undoStack.pollLast()[STEP_LOC];
 		return step;
-	}
-
-	/**
-	 * Redoes one step, returning the state at that point
-	 * @param undoStep Step that will be inserted as the next undo. Typically the
-	 *		current state of whatever is being unredone
-	 * @param msg Message on what this change represents, usually what's different
-	 *		about it compared to the "current" T now
-	 * @return State at the next history point
-	 */
-	public T redo(T undoStep)
-	{
-		return redo(undoStep, null);
 	}
 
 	/**
@@ -171,10 +151,16 @@ public class UndoRedo<T>
 	 *		current state of whatever is being unredone
 	 * @return State at the next history point
 	 */
-	public T redo(T undoStep, String msg)
+	public T redo(T undoStep)
 	{
 		if(!hasRedo())
 			return null;
+
+		// Pull out the step we're redoing to
+		Object[] stepData = redoStack.pollLast();
+		String msg = (String)stepData[MSG_LOC];
+		@SuppressWarnings("unchecked")
+		T step = (T)stepData[STEP_LOC];
 
 		// Add to undo stack and ensure we don't violate set limits
 		undoStack.addLast(new Object[]{undoStep, msg});
@@ -184,7 +170,6 @@ public class UndoRedo<T>
 				undoStack.pollFirst();
 		}
 
-		T step = (T)redoStack.pollLast()[STEP_LOC];
 		return step;
 	}
 

@@ -86,7 +86,7 @@ public class OperationInfoString extends OperationInformation
 		if(newAnswer == null)
 			throw new InternalMarlaException("Info may only be cleared by calling clearAnswer()");
 
-		changeBeginning();
+		changeBeginning("question " + getName() + " answer");
 		
 		// Ensure it matches the pattern
 		String a = newAnswer.toString();
@@ -106,7 +106,7 @@ public class OperationInfoString extends OperationInformation
 	@Override
 	public void clearAnswer()
 	{
-		changeBeginning();
+		changeBeginning("clearing question " + getName() + " answer");
 		answer = null;
 		getOperation().checkDisplayName();
 		getOperation().markDirty();
