@@ -49,6 +49,10 @@ public class OperationXMLEditable extends OperationXML
 	 */
 	private Element opEl = null;
 	/**
+	 * Inner XML we have
+	 */
+	private String innerXmlStr = null;
+	/**
 	 * Not null if an exception has been detected and the XML contains errors
 	 */
 	private OperationEditorException lastError = null;
@@ -71,17 +75,14 @@ public class OperationXMLEditable extends OperationXML
 		super(org);
 		
 		lastError = org.lastError;
+		innerXmlStr = org.innerXmlStr;
 		opEl = (Element)org.opEl.clone();
 	}
 	
-	/**
-	 * Denotes that this operation has changed in some way
-	 */
 	@Override
 	public void markUnsaved()
 	{
-		//super.markUnsaved();
-		// WE DON'T CARE!
+		// Ignore
 	}
 
 	@Override
@@ -90,11 +91,19 @@ public class OperationXMLEditable extends OperationXML
 		try
 		{
 			opEl = newConfig;
+			
+			super.setConfiguration((Element)newConfig.clone());
+
+			// Pull out string version of the inner xml if needed
+			if(innerXmlStr == null)
+			{
+				Format formatter = Format.getPrettyFormat();
+				XMLOutputter xml = new XMLOutputter(formatter);
+				innerXmlStr = xml.outputString(opEl.getContent());
+			}
 
 			if(parent != null)
 				parent.markUnsaved();
-			
-			super.setConfiguration((Element)newConfig.clone());
 
 			lastError = null;
 		}
@@ -226,10 +235,7 @@ public class OperationXMLEditable extends OperationXML
 	 */
 	public String getInnerXML() 
 	{
-		// Get previous XML
-		Format formatter = Format.getPrettyFormat();
-		XMLOutputter xml = new XMLOutputter(formatter);
-		return xml.outputString(opEl.getContent());
+		return innerXmlStr;
 	}
 
 	/**
@@ -249,22 +255,34 @@ public class OperationXMLEditable extends OperationXML
 	 */
 	public String setInnerXML(String newXMLStr) 
 	{
-		String oldXML = getInnerXML();
+		String oldXML = innerXmlStr;
+		innerXmlStr = newXMLStr;
 
+		// Stick parsed version into opEl
+		Element el = strToXml("<wrapper>" + innerXmlStr + "</wrapper>");
+		opEl.removeContent();
+		opEl.addContent(el.cloneContent());
+
+		// And use these settings
+		setConfiguration(opEl);
+
+		return oldXML;
+	}
+
+	@Override
+	public OperationXMLEditable clone()
+	{
+		return new OperationXMLEditable(this);
+	}
+
+	private Element strToXml(String xmlStr)
+	{
 		try
-		{			
-			// Load file into JDOM
-			String wrappedStr = "<wrapper>" + newXMLStr + "</wrapper>";
-			StringReader sr = new StringReader(wrappedStr);
+		{
+			StringReader sr = new StringReader(xmlStr);
 			SAXBuilder parser = new SAXBuilder();
 			Document doc = parser.build(sr);
-		
-			// Stick parsed version into opEl
-			opEl.removeContent();
-			opEl.addContent(doc.getRootElement().cloneContent());
-
-			// And use these settings
-			setConfiguration(opEl);
+			return doc.getRootElement();
 		}
 		catch(JDOMException ex)
 		{
@@ -275,14 +293,6 @@ public class OperationXMLEditable extends OperationXML
 			Domain.logger.add(ex);
 			throw new OperationEditorException("IO error setting, shouldn't happen: " + ex.getMessage(), ex);
 		}
-
-		return oldXML;
-	}
-
-	@Override
-	public OperationXMLEditable clone()
-	{
-		return new OperationXMLEditable(this);
 	}
 	
 	/**

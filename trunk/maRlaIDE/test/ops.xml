@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF8"?>
 <operations>
   <operation name="NOP" list="false">
     <!-- This operation is used for testing. It does nothing except print
