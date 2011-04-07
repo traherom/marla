@@ -826,7 +826,7 @@
                       <Font name="Verdana" size="12" style="0"/>
                     </Property>
                     <Property name="text" type="java.lang.String" value="Add from R Library"/>
-                    <Property name="toolTipText" type="java.lang.String" value="Import a data set from the Devore7 library"/>
+                    <Property name="toolTipText" type="java.lang.String" value="Add a data set from an R library"/>
                   </Properties>
                   <Events>
                     <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="addFromRLibButtonActionPerformed"/>

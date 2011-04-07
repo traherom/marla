@@ -119,7 +119,7 @@ public class maRlaIDE
 		progressFrame.setVisible(true);
 		progressFrame.progressBar.setValue(0);
 		progressFrame.progressBar.setString("0%");
-		progressFrame.statusLabel.setText("Loading framework ...");
+		progressFrame.statusLabel.setText("Loading framework...");
 
 		progressFrame.progressBar.setValue(3);
 		progressFrame.progressBar.setString("3%");

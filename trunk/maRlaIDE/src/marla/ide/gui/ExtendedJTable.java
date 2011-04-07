@@ -100,7 +100,7 @@ public class ExtendedJTable extends JTable
 		// paint background stripes
 		updateColors ();
 		final Insets insets = getInsets ();
-		final int w = getWidth () - insets.left - insets.right;
+		final int w = getWidth ();// - insets.left - insets.right;
 		final int h = getHeight () - insets.top - insets.bottom;
 		final int x = insets.left;
 		int y = insets.top;

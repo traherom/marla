@@ -122,6 +122,8 @@ public class Domain
 	protected Problem problem = null;
 	/** The reference to the view of the application.*/
 	private ViewPanel viewPanel;
+	/** Set to true when an export is cancelled, false otherwise.*/
+	protected static boolean cancelExport = false;
 
 	/**
 	 * Construct the domain with the view reference.
@@ -992,22 +994,33 @@ public class Domain
 									for (Operation op : ops)
 									{
 										ensureRequirementsMet (op);
+										if (Domain.cancelExport)
+										{
+											break;
+										}
 									}
 								}
 
-								LatexExporter exporter = new LatexExporter (problem);
-								File genFile = new File (exporter.exportPDF (finalFile.getPath ()));
-								filePath = genFile.getCanonicalPath();
-								if (desktop != null)
+								if (!Domain.cancelExport)
 								{
-									Domain.setProgressStatus("Opening PDF...");
-
-									desktop.open (genFile);
-									try
+									LatexExporter exporter = new LatexExporter (problem);
+									File genFile = new File (exporter.exportPDF (finalFile.getPath ()));
+									filePath = genFile.getCanonicalPath();
+									if (desktop != null)
 									{
-										Thread.sleep(3000);
+										Domain.setProgressStatus("Opening PDF...");
+
+										desktop.open (genFile);
+										try
+										{
+											Thread.sleep(3000);
+										}
+										catch (InterruptedException ex) {}
 									}
-									catch (InterruptedException ex) {}
+								}
+								else
+								{
+									Domain.cancelExport = false;
 								}
 							}
 							catch (IOException ex)
@@ -1264,6 +1277,10 @@ public class Domain
 			catch (OperationInfoRequiredException ex)
 			{
 				ViewPanel.getRequiredInfoDialog (ex.getOperation (), true);
+				if(Domain.cancelExport)
+				{
+					break;
+				}
 			}
 		}
 	}

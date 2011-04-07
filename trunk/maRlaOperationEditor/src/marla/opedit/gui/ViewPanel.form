@@ -90,20 +90,20 @@
                           <Group type="102" alignment="0" attributes="0">
                               <Component id="categoryLabel" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
-                              <Component id="categoryTextField" pref="490" max="32767" attributes="0"/>
+                              <Component id="categoryTextField" pref="491" max="32767" attributes="0"/>
                           </Group>
                           <Group type="102" alignment="0" attributes="0">
                               <Component id="opsNameLabel" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
-                              <Component id="operationsNameTextField" pref="446" max="32767" attributes="0"/>
+                              <Component id="operationsNameTextField" pref="447" max="32767" attributes="0"/>
                           </Group>
                           <Group type="102" alignment="1" attributes="0">
                               <Component id="innerXmlLinkLabel" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="updateTestButton" min="-2" max="-2" attributes="0"/>
                           </Group>
-                          <Component id="operationScrollPane" alignment="0" pref="557" max="32767" attributes="0"/>
-                          <Component id="xmlStatusLabel" alignment="0" pref="557" max="32767" attributes="0"/>
+                          <Component id="operationScrollPane" alignment="0" pref="558" max="32767" attributes="0"/>
+                          <Component id="xmlStatusLabel" alignment="0" pref="558" max="32767" attributes="0"/>
                       </Group>
                   </Group>
               </Group>

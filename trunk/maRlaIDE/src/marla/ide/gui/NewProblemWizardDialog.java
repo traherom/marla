@@ -372,7 +372,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 
         welcomeCardPanel.setLayout(null);
 
-        welcomeWizardLabel.setFont(new java.awt.Font("Verdana", 1, 12)); // NOI18N
+        welcomeWizardLabel.setFont(new java.awt.Font("Verdana", 1, 12));
         welcomeWizardLabel.setText("Welcome");
         welcomeCardPanel.add(welcomeWizardLabel);
         welcomeWizardLabel.setBounds(10, 10, 430, 16);
@@ -628,7 +628,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 
         addFromRLibButton.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
         addFromRLibButton.setText("Add from R Library");
-        addFromRLibButton.setToolTipText("Import a data set from the Devore7 library");
+        addFromRLibButton.setToolTipText("Add a data set from an R library");
         addFromRLibButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 addFromRLibButtonActionPerformed(evt);
@@ -1060,7 +1060,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 			Domain.logger.add(ex);
 		}
 
-		addDataSet(problem, dataSet);
+		addDataSet(dataSet);
 
 		addingDataSet = false;
 }//GEN-LAST:event_addDataSetButtonActionPerformed
@@ -1084,7 +1084,6 @@ public class NewProblemWizardDialog extends EscapeDialog
 				}
 				viewPanel.workspacePanel.remove(op);
 			}
-			repositionDataSets(domain.problem);
 		}
 
 		if (editing)
@@ -1486,7 +1485,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 						}
 
 						problem.addData(dataSet);
-						addDataSet(problem, dataSet);
+						addDataSet(dataSet);
 
 						addingDataSet = false;
 
@@ -1612,13 +1611,11 @@ public class NewProblemWizardDialog extends EscapeDialog
 	/**
 	 * Add the given data set to the given problem.
 	 *
-	 * @param problem The problem to add the data set to.
 	 * @param dataSet The data set to add.
 	 */
-	private void addDataSet(Problem problem, DataSet dataSet)
+	private void addDataSet(DataSet dataSet)
 	{
 		viewPanel.ensureComponentsVisible();
-		repositionDataSets(problem);
 		viewPanel.workspacePanel.repaint();
 
 		JPanel panel = createValuesTabbedPanel(dataSet);
@@ -1663,6 +1660,11 @@ public class NewProblemWizardDialog extends EscapeDialog
 
 		if (editing)
 		{
+			dataSet.setLocation((viewPanel.workspacePanel.getWidth() - dataSet.getWidth()) / 2, (viewPanel.workspacePanel.getHeight() - dataSet.getHeight()) / 2);
+			while (((WorkspacePanel) viewPanel.workspacePanel).getComponentAt(dataSet.getLocation().x + 10, dataSet.getLocation().y + 10, dataSet) != null)
+			{
+				dataSet.setLocation(dataSet.getLocation().x, dataSet.getLocation().y + 20);
+			}
 			addToRightPanel();
 		}
 	}
@@ -2102,6 +2104,9 @@ public class NewProblemWizardDialog extends EscapeDialog
 		final JScrollPane scrollPane = new JScrollPane();
 		final ExtendedTableModel model = new ExtendedTableModel(dataSet);
 		final ExtendedJTable table = new ExtendedJTable(model);
+		table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+		table.getColumnModel().setColumnSelectionAllowed(false);
+		table.getTableHeader().setReorderingAllowed(false);
 
 		table.getTableHeader().setFont(ViewPanel.FONT_PLAIN_12);
 		table.getTableHeader().addMouseListener(new MouseAdapter()
@@ -2109,24 +2114,27 @@ public class NewProblemWizardDialog extends EscapeDialog
 			@Override
 			public void mouseReleased(MouseEvent evt)
 			{
-				int index = table.getTableHeader().columnAtPoint(evt.getPoint());
-				String oldName = table.getColumnModel().getColumn(index).getHeaderValue().toString();
-				Object name = JOptionPane.showInputDialog(viewPanel.domain.getTopWindow(), "Give the column a new name:", "Column Name",
-														  JOptionPane.QUESTION_MESSAGE, null, null,
-														  oldName);
-				if(name != null)
+				if (table.getTableHeader().getCursor().getType() != Cursor.E_RESIZE_CURSOR)
 				{
-					if(!name.toString().equals(((ExtendedTableModel) table.getModel()).getColumnName(index)))
+					int index = table.getTableHeader().columnAtPoint(evt.getPoint());
+					String oldName = table.getColumnModel().getColumn(index).getHeaderValue().toString();
+					Object name = JOptionPane.showInputDialog(viewPanel.domain.getTopWindow(), "Give the column a new name:", "Column Name",
+															  JOptionPane.QUESTION_MESSAGE, null, null,
+															  oldName);
+					if(name != null)
 					{
-						if(!columnNameExists((ExtendedTableModel) table.getModel(), index, name.toString()))
+						if(!name.toString().equals(((ExtendedTableModel) table.getModel()).getColumnName(index)))
 						{
-							((ExtendedTableModel) table.getModel()).setColumn(name.toString(), index);
-							table.getColumnModel().getColumn(index).setHeaderValue(name);
-							table.getTableHeader().resizeAndRepaint();
-						}
-						else
-						{
-							JOptionPane.showMessageDialog(viewPanel.domain.getTopWindow(), "A column with that name already exists.", "Duplicate Column", JOptionPane.WARNING_MESSAGE);
+							if(!columnNameExists((ExtendedTableModel) table.getModel(), index, name.toString()))
+							{
+								((ExtendedTableModel) table.getModel()).setColumn(name.toString(), index);
+								table.getColumnModel().getColumn(index).setHeaderValue(name);
+								table.getTableHeader().resizeAndRepaint();
+							}
+							else
+							{
+								JOptionPane.showMessageDialog(viewPanel.domain.getTopWindow(), "A column with that name already exists.", "Duplicate Column", JOptionPane.WARNING_MESSAGE);
+							}
 						}
 					}
 				}
@@ -2257,58 +2265,81 @@ public class NewProblemWizardDialog extends EscapeDialog
 					if(viewPanel.fileChooserDialog.getSelectedFile().exists())
 					{
 						Domain.lastGoodDir = viewPanel.fileChooserDialog.getSelectedFile().getParent();
-						try
+						setEnabled(false);
+						new Thread(new Runnable()
 						{
-							ignoreDataChanging = true;
-							DataSet importedDataSet = DataSet.importFile(viewPanel.fileChooserDialog.getSelectedFile().toString());
-
-							// Clear existing data
-							for(int i = dataSet.getColumnCount() - 1; 0 <= i; i--)
+							@Override
+							public void run()
 							{
-								dataSet.removeColumn(i);
-							}
+								Domain.setProgressTitle("Importing");
+								Domain.setProgressVisible(true);
+								Domain.setProgressIndeterminate(true);
+								Domain.setProgressString("");
+								Domain.setProgressStatus("Importing from CSV file...");
+								MainFrame.progressFrame.setAlwaysOnTop(true);
 
-							// Copy new columns
-							for(int i = 0; i < importedDataSet.getColumnCount(); i++)
-							{
-								DataColumn importCol = importedDataSet.getColumn(i);
-								DataColumn newCol = dataSet.addColumn(importCol.getName());
-								newCol.setMode(importCol.getMode());
-								newCol.addAll(importCol);
-							}
-
-							// Change spinners to new size
-							columnsSpinner.setValue(dataSet.getColumnCount());
-							rowsSpinner.setValue(dataSet.getColumnLength());
-
-							// Change the model so that the old columns are no longer displayed
-							final ExtendedTableModel newModel = new ExtendedTableModel(dataSet);
-							table.setModel(newModel);
-							newModel.addTableModelListener(new TableModelListener()
-							{
-								@Override
-								public void tableChanged(TableModelEvent evt)
+								try
 								{
-									fireTableChanged(newModel, evt);
+									ignoreDataChanging = true;
+									DataSet importedDataSet = DataSet.importFile(viewPanel.fileChooserDialog.getSelectedFile().toString());
+
+									// Clear existing data
+									for(int i = dataSet.getColumnCount() - 1; 0 <= i; i--)
+									{
+										dataSet.removeColumn(i);
+									}
+
+									// Copy new columns
+									for(int i = 0; i < importedDataSet.getColumnCount(); i++)
+									{
+										DataColumn importCol = importedDataSet.getColumn(i);
+										DataColumn newCol = dataSet.addColumn(importCol.getName());
+										newCol.setMode(importCol.getMode());
+										newCol.addAll(importCol);
+									}
+
+									// Change spinners to new size
+									columnsSpinner.setValue(dataSet.getColumnCount());
+									rowsSpinner.setValue(dataSet.getColumnLength());
+
+									// Change the model so that the old columns are no longer displayed
+									final ExtendedTableModel newModel = new ExtendedTableModel(dataSet);
+									table.setModel(newModel);
+									newModel.addTableModelListener(new TableModelListener()
+									{
+										@Override
+										public void tableChanged(TableModelEvent evt)
+										{
+											fireTableChanged(newModel, evt);
+										}
+									});
+
+									// Set the column headers
+									for(int i = 0; i < dataSet.getColumnCount(); i++)
+									{
+										table.getColumnModel().getColumn(i).setHeaderValue(dataSet.getColumn(i).getName());
+									}
+
+									table.setModel(newModel);
+									table.invalidate();
+									table.getTableHeader().resizeAndRepaint();
+
+									ignoreDataChanging = false;
+									Domain.setProgressVisible(false);
 								}
-							});
-
-							// Set the column headers
-							for(int i = 0; i < dataSet.getColumnCount(); i++)
-							{
-								table.getColumnModel().getColumn(i).setHeaderValue(dataSet.getColumn(i).getName());
+								catch(MarlaException ex)
+								{
+									Domain.setProgressVisible(false);
+									JOptionPane.showMessageDialog(viewPanel.domain.getTopWindow(), ex.getMessage(), "Load Failed", JOptionPane.WARNING_MESSAGE);
+								}
+								finally
+								{
+									Domain.setProgressIndeterminate(false);
+									MainFrame.progressFrame.setAlwaysOnTop(false);
+									setEnabled(true);
+								}
 							}
-
-							table.setModel(newModel);
-							table.invalidate();
-							table.getTableHeader().resizeAndRepaint();
-
-							ignoreDataChanging = false;
-						}
-						catch(MarlaException ex)
-						{
-							JOptionPane.showMessageDialog(viewPanel.domain.getTopWindow(), ex.getMessage(), "Load failed", JOptionPane.WARNING_MESSAGE);
-						}
+						}).start();
 					}
 				}
 			}

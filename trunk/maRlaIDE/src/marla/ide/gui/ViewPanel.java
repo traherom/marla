@@ -623,17 +623,7 @@ public class ViewPanel extends JPanel
         rightClickMenu.add(tieSubProblemSubMenu);
 
         untieSubProblemSubMenu.setText("Untie from Sub Problem");
-        untieSubProblemSubMenu.setFont(new java.awt.Font("Verdana", 0, 11));
-        untieSubProblemSubMenu.addMenuListener(new javax.swing.event.MenuListener() {
-            public void menuCanceled(javax.swing.event.MenuEvent evt) {
-            }
-            public void menuDeselected(javax.swing.event.MenuEvent evt) {
-                untieSubProblemSubMenuMenuDeselected(evt);
-            }
-            public void menuSelected(javax.swing.event.MenuEvent evt) {
-                untieSubProblemSubMenuMenuSelected(evt);
-            }
-        });
+        untieSubProblemSubMenu.setFont(new java.awt.Font("Verdana", 0, 11)); // NOI18N
         rightClickMenu.add(untieSubProblemSubMenu);
 
         remarkMenuItem.setFont(new java.awt.Font("Verdana", 0, 11));
@@ -1226,7 +1216,44 @@ public class ViewPanel extends JPanel
 								rebuildWorkspace();
 							}
 						});
-						untieSubProblemSubMenu.add(item);
+						item.addMouseListener(new MouseAdapter()
+						{
+							@Override
+							public void mouseEntered(MouseEvent e)
+							{
+								if(rightClickedComponent != null)
+								{
+									rightClickedComponent.setBackground(HOVER_BACKGROUND_COLOR);
+									for(Operation op : ((Operation) rightClickedComponent).getAllChildOperations())
+									{
+										if(op.getSubProblems().contains(subProblem))
+										{
+											op.setBackground(HOVER_BACKGROUND_COLOR);
+										}
+									}
+									workspacePanel.repaint();
+								}
+							}
+
+							@Override
+							public void mouseExited(MouseEvent e)
+							{
+								if(rightClickedComponent != null)
+								{
+									rightClickedComponent.setBackground(NO_BACKGROUND_WORKSPACE);
+									for(Operation op : ((Operation) rightClickedComponent).getAllChildOperations())
+									{
+										if(op.getSubProblems().contains(subProblem))
+										{
+											op.setBackground(NO_BACKGROUND_WORKSPACE);
+										}
+									}
+									workspacePanel.repaint();
+								}
+							}
+						});
+						if(rightClickedComponent != null && untieSubProblemSubMenu.isEnabled())
+							untieSubProblemSubMenu.add(item);
 					}
 					else
 					{
@@ -1638,74 +1665,6 @@ public class ViewPanel extends JPanel
 		}
 	}//GEN-LAST:event_remarkMenuItemActionPerformed
 
-	private void untieSubProblemSubMenuMenuDeselected(javax.swing.event.MenuEvent evt)//GEN-FIRST:event_untieSubProblemSubMenuMenuDeselected
-	{//GEN-HEADEREND:event_untieSubProblemSubMenuMenuDeselected
-		if(rightClickedComponent != null && untieSubProblemSubMenu.isEnabled())
-		{
-			rightClickedComponent.setBackground(NO_BACKGROUND_WORKSPACE);
-			if(rightClickedComponent instanceof Operation)
-			{
-				DataSource source = ((Operation) rightClickedComponent).getRootDataSource().getOperation(((Operation) rightClickedComponent).getIndexFromDataSet());
-				((JComponent) source).setBackground(NO_BACKGROUND_WORKSPACE);
-				List<Operation> tempOperations = source.getRootDataSource().getOperation(((Operation) source).getIndexFromDataSet()).getAllChildOperations();
-				for(int i = 0; i < tempOperations.size(); ++i)
-				{
-					tempOperations.get(i).setBackground(NO_BACKGROUND_WORKSPACE);
-				}
-			}
-			else
-			{
-				DataSet root = (DataSet) rightClickedComponent;
-				root.setBackground(NO_BACKGROUND_WORKSPACE);
-				for(int i = 0; i < root.getOperationCount(); ++i)
-				{
-					Operation operation = root.getOperation(i);
-					operation.setBackground(NO_BACKGROUND_WORKSPACE);
-					List<Operation> tempOperations = operation.getAllChildOperations();
-					for(int j = 0; j < tempOperations.size(); ++j)
-					{
-						tempOperations.get(j).setBackground(NO_BACKGROUND_WORKSPACE);
-					}
-				}
-			}
-			workspacePanel.repaint();
-		}
-	}//GEN-LAST:event_untieSubProblemSubMenuMenuDeselected
-
-	private void untieSubProblemSubMenuMenuSelected(javax.swing.event.MenuEvent evt)//GEN-FIRST:event_untieSubProblemSubMenuMenuSelected
-	{//GEN-HEADEREND:event_untieSubProblemSubMenuMenuSelected
-		if(rightClickedComponent != null && untieSubProblemSubMenu.isEnabled())
-		{
-			rightClickedComponent.setBackground(HOVER_BACKGROUND_COLOR);
-			if(rightClickedComponent instanceof Operation)
-			{
-				DataSource source = ((Operation) rightClickedComponent).getRootDataSource().getOperation(((Operation) rightClickedComponent).getIndexFromDataSet());
-				((JComponent) source).setBackground(HOVER_BACKGROUND_COLOR);
-				List<Operation> tempOperations = source.getRootDataSource().getOperation(((Operation) source).getIndexFromDataSet()).getAllChildOperations();
-				for(int i = 0; i < tempOperations.size(); ++i)
-				{
-					tempOperations.get(i).setBackground(HOVER_BACKGROUND_COLOR);
-				}
-			}
-			else
-			{
-				DataSet root = (DataSet) rightClickedComponent;
-				root.setBackground(HOVER_BACKGROUND_COLOR);
-				for(int i = 0; i < root.getOperationCount(); ++i)
-				{
-					Operation operation = root.getOperation(i);
-					operation.setBackground(HOVER_BACKGROUND_COLOR);
-					List<Operation> tempOperations = operation.getAllChildOperations();
-					for(int j = 0; j < tempOperations.size(); ++j)
-					{
-						tempOperations.get(j).setBackground(HOVER_BACKGROUND_COLOR);
-					}
-				}
-			}
-			workspacePanel.repaint();
-		}
-	}//GEN-LAST:event_untieSubProblemSubMenuMenuSelected
-
 	private void workspacePanelMousePressed(java.awt.event.MouseEvent evt)//GEN-FIRST:event_workspacePanelMousePressed
 	{//GEN-HEADEREND:event_workspacePanelMousePressed
 		// Since a drag operation does not properly return the button pressed, save it at the press start
@@ -1919,7 +1878,7 @@ public class ViewPanel extends JPanel
 		// LEFT mouse button is being pressed
 		if((dragFromPalette || draggingComponent != null) && buttonPressed == MouseEvent.BUTTON1)
 		{
-			if (dragFromPalette)
+			if(dragFromPalette)
 			{
 				setCursor(((DragSourceContext) DND_LISTENER.getDragSourceContext()).getCursor());
 			}
@@ -2182,7 +2141,7 @@ public class ViewPanel extends JPanel
 			if(component instanceof Operation)
 			{
 				setCursor(Cursor.getDefaultCursor());
-				
+
 				Operation dropOperation = (Operation) component;
 				if(dropOperation != newOperation)
 				{
@@ -2210,7 +2169,7 @@ public class ViewPanel extends JPanel
 				if(component instanceof DataSet)
 				{
 					setCursor(Cursor.getDefaultCursor());
-					
+
 					// Add as child and ensure we're not listed as unused
 					DataSet dataSet = (DataSet) component;
 					domain.problem.removeUnusedOperation(newOperation);
@@ -2335,7 +2294,6 @@ public class ViewPanel extends JPanel
 
 		JButton doneButton = new JButton("Done");
 		JButton cancelButton = new JButton("Cancel");
-		final ViewPanel finalViewPanel = ViewPanel.getInstance();
 		// When the user is done with the assumptions, forms will be validated and their values stored into the operation before continuing
 		doneButton.addActionListener(new ActionListener()
 		{
@@ -2354,6 +2312,7 @@ public class ViewPanel extends JPanel
 			public void actionPerformed(ActionEvent evt)
 			{
 				dialog.setVisible(false);
+				Domain.cancelExport = true;
 			}
 		});
 		JPanel buttonPanel = new JPanel(new GridLayout(1, 2));
@@ -2365,7 +2324,7 @@ public class ViewPanel extends JPanel
 		{
 			// Display dialog
 			dialog.pack();
-			dialog.setLocationRelativeTo(viewPanel);
+			dialog.setLocationRelativeTo(Domain.getInstance().getTopWindow());
 			dialog.setVisible(true);
 		}
 
@@ -2842,18 +2801,22 @@ public class ViewPanel extends JPanel
 		{
 			if(operationEditorExe.exists())
 			{
-				Process proc = Runtime.getRuntime().exec(new String[]
-						{
-							operationEditorExe.getCanonicalPath(), Configuration.getInstance().get(Configuration.ConfigType.PrimaryOpsXML).toString()
-						}, null, null);
+				domain.desktop.open(operationEditorExe);
 				found = true;
 			}
 			else if(operationEditorJar.exists())
 			{
-				Process proc = Runtime.getRuntime().exec(new String[]
-						{
-							"java", "-jar", operationEditorJar.getCanonicalPath()
-						}, null, null);
+				if(Domain.OS_NAME.toLowerCase().contains("windows"))
+				{
+					domain.desktop.open(operationEditorJar);
+				}
+				else
+				{
+					Runtime.getRuntime().exec(new String[]
+							{
+								"java", "-jar", operationEditorJar.getCanonicalPath()
+							}, null, null);
+				}
 				found = true;
 			}
 		}
