@@ -26,6 +26,7 @@ import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.geom.Line2D;
 import java.util.List;
+import java.util.Random;
 import javax.swing.JPanel;
 import marla.ide.problem.DataSource;
 import marla.ide.problem.SubProblem;

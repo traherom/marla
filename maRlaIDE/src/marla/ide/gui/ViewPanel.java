@@ -160,7 +160,7 @@ public class ViewPanel extends JPanel
 	/** The width between two operations/data sets.*/
 	private int spaceWidth = 20;
 	/** The height between two operations/data sets.*/
-	private int spaceHeight = 10;
+	private int spaceHeight = 15;
 	/** The size of fonts.*/
 	public static int fontSize = 12;
 	/** Font size and style for workspace plain.*/
@@ -1969,129 +1969,169 @@ public class ViewPanel extends JPanel
 	 * everything below it to center it
 	 *
 	 * @param ds The data set to rebuild in the interface.
-	 * @return width of the tree
 	 */
-	protected int rebuildTree(DataSource ds)
-	{
-		DataSource topDS = ds.getRootDataSource();
-		topDS.setFont(workspaceFontBold);
-		topDS.setText("<html>" + topDS.getDisplayString(abbreviated) + "</html>");
-		topDS.setSize(topDS.getPreferredSize());
-
-		int width = rebuildTree(topDS, topDS.getX() + topDS.getWidth() / 2, topDS.getY(), true);
-
-		// Redraw everything
-		workspacePanel.repaint();
-
-		return width;
-	}
-
-	/**
-	 * Rebuild the tree in the interface for the given data set.
-	 *
-	 * @param ds The data set to rebuild in the interface.
-	 * @param centerX X coordinate around which to center tree
-	 * @param topY Y coordinate to start the tree at
-	 * @param shouldMove true if the DataSources should be move, false if only the width is needed
-	 * @return width of the tree
-	 */
-	protected int rebuildTree(DataSource ds, int centerX, int topY, boolean shouldMove)
+	protected void rebuildTree(DataSource ds)
 	{
 		// Don't bother listening yet if the problem is still loading
 		Problem prob = ds.getParentProblem();
 		if(prob != null && prob.isLoading())
-			return -1;
-
-		// Set the label for the data source itself
-		ds.setFont(workspaceFontBold);
-		ds.setText("<html>" + ds.getDisplayString(abbreviated) + "</html>");
-		ds.setSize(ds.getPreferredSize());
-
-		// Move and, if we're the bottom of the tree, just return our width
-		int opCount = ds.getOperationCount();
-		int dsWidth = ds.getWidth();
-		if(shouldMove)
-			ds.setLocation(centerX - dsWidth / 2, topY);
-		if(opCount == 0)
-			return dsWidth;
-
-		// Find widths of all our children's trees
-		int totalWidth = 0;
-		int[] widths = new int[opCount];
-		for(int i = 0; i < opCount; ++i)
+			return;
+		
+		// Actually work with the top of the tree
+		DataSource topDS = ds.getRootDataSource();
+		
+		// Set all the labels to be the right width
+		topDS.setFont(workspaceFontBold);
+		topDS.setText("<html>" + topDS.getDisplayString(abbreviated) + "</html>");
+		topDS.setSize(topDS.getPreferredSize());
+		
+		for(DataSource child : topDS.getAllChildOperations())
 		{
-			// Run down this operation chain in order to find the widest one
-			widths[i] = rebuildTree(ds.getOperation(i), 0, 0, false);
+			child.setFont(workspaceFontBold);
+			child.setText("<html>" + child.getDisplayString(abbreviated) + "</html>");
+			child.setSize(child.getPreferredSize());
+		}
+		
+		// Get width of each of our children so we can tell them each where to
+		// center themselves
+		int opCount = topDS.getOperationCount();
+		int totalWidth = (opCount - 1) * spaceWidth;
+		int[] widths = new int[opCount];
+		for(int i = 0; i < widths.length; i++)
+		{
+			widths[i] = getTreeWidth(topDS.getOperation(i));
 			totalWidth += widths[i];
 		}
-
-		// Was that all we needed?
-		if(!shouldMove)
+		
+		// Figure out the starting points
+		int half = getTreeHalfWidth(totalWidth, widths, 0);
+		int currX = topDS.getX() + topDS.getWidth() / 2 - half;
+		
+		// Tell each operation where to place themselves
+		int currY = topDS.getY() + topDS.getHeight() + spaceHeight;
+		for(int i = 0; i < widths.length; i++)
 		{
-			// Are we wider than our children?
-			if(dsWidth < totalWidth)
-				return totalWidth;
+			Operation op = topDS.getOperation(i);
+			rebuildTree(op, currX, currY);
+			currX += widths[i] + spaceWidth;
+		}
+		
+		// Redraw everything
+		workspacePanel.repaint();
+	}
+	
+	/**
+	 * Rebuild the tree in the interface for the given data set.
+	 *
+	 * @param ds The data set to rebuild in the interface.
+	 * @param leftX X coordinate around which to center tree
+	 * @param topY Y coordinate to start the tree at
+	 */
+	private void rebuildTree(DataSource ds, int leftX, int topY)
+	{
+		// Get width of each of our children so we can tell them each where to
+		// center themselves
+		int opCount = ds.getOperationCount();
+		int totalWidth = (opCount - 1) * spaceWidth;
+		int[] widths = new int[opCount];
+		for(int i = 0; i < opCount; i++)
+		{
+			widths[i] = getTreeWidth(ds.getOperation(i));
+			totalWidth += widths[i];
+		}
+		
+		// If we're wider than our child tree, then move them to be centered
+		// under us
+		int beginX = leftX;
+		if(totalWidth < ds.getWidth())
+			beginX = leftX + ds.getWidth() / 2 - totalWidth / 2;
+		
+		// Tell each where to place themselves
+		int currX = beginX;
+		int currY = topY + ds.getHeight() + spaceHeight;
+		for(int i = 0; i < opCount; i++)
+		{
+			Operation op = ds.getOperation(i);
+			rebuildTree(op, currX, currY);
+			currX += widths[i] + spaceWidth;
+		}
+		
+		// Move ourselves to halfway above our child data
+		if(opCount != 0)
+		{
+			if(ds.getWidth() < totalWidth)
+			{
+				int halfChild = getTreeHalfWidth(totalWidth, widths, 0);
+				ds.setLocation(leftX + halfChild - ds.getWidth() / 2, topY);
+			}
 			else
-				return dsWidth;
+			{
+				// We are longer than our child
+				ds.setLocation(beginX + totalWidth / 2 - ds.getWidth() / 2, topY);
+			}
 		}
-
-		// Find the spacing we need for the left half of our tree
-		int leftHalfWidth = totalWidth / 2;
-		/*
-		if(opCount == 1)
+		else
+			ds.setLocation(leftX, topY);
+	}
+	
+	/**
+	 * Helper function that determines the proper type of "half" to use
+	 * @param totalWidth Total width of all children, as given in widths. Requested
+	 *		for speed, as it usually could have already been calculated
+	 * @param widths Width of each child
+	 * @param defaultWidth Width to use if there are no columns and/or as a minimum
+	 * @return Half the width of the widths, centered above the middle one if there
+	 *		is an odd number
+	 */
+	protected int getTreeHalfWidth(int totalWidth, int widths[], int defaultWidth)
+	{
+		int halfWidth = 0;
+		if(widths.length == 0)
 		{
-		leftHalfWidth = widths[0] / 2;
+			// Nothing, use the default
+			halfWidth = defaultWidth;
 		}
-		else if(opCount % 2 == 0)
+		else if(widths.length % 2 == 0)
 		{
-		// Even number of columns, balance them below dataset
-		for(int i = 0; i < opCount / 2; i++)
-		{
-		leftHalfWidth += widths[i] + spaceWidth;
-		}
-
-		// Eliminate half of the middle spacing
-		leftHalfWidth -= spaceWidth / 2;
+			// Even number of columns, just drop us exactly half way
+			halfWidth = totalWidth / 2;
 		}
 		else
 		{
-		// Odd number of columns, center the middle one under the
-		// dataset
-		for(int i = 0; i < opCount / 2; i++)
-		{
-		leftHalfWidth += widths[i] + spaceWidth;
+			// Odd number of columns, need up through half of middle
+			int total = 0;
+			for(int i = 0; i < widths.length / 2; i++)
+				total += widths[i] + spaceWidth;
+
+			// And add enough to move through half the middle column
+			halfWidth = total + widths[widths.length / 2] / 2;
 		}
-
-		// And add enough to move through half the middle column
-		leftHalfWidth += widths[opCount / 2] / 2;
-		}*/
-
-		int farLeftX = centerX - leftHalfWidth;
-
-		// Find where each of our child trees should center themselves
-		int previousLeftX = farLeftX;
-		int[] centerXs = new int[opCount];
+		
+		if(defaultWidth < halfWidth)
+			return halfWidth;
+		else
+			return defaultWidth;
+	}
+	
+	/**
+	 * Gets the width of the given tree. Assumes labels has been properly set already
+	 * @param ds DataSource to get width of
+	 * @return Width, in pixels, of tree
+	 */
+	protected int getTreeWidth(DataSource ds)
+	{
+		int opCount = ds.getOperationCount();
+		int total = (opCount - 1) * spaceWidth;
 		for(int i = 0; i < opCount; i++)
-		{
-			centerXs[i] = previousLeftX + widths[i] / 2;
-			previousLeftX += widths[i] + spaceWidth;
-		}
-
-		// Now rebuild each operation column, this time actually centering them
-		// based on their parent and one level done
-		int childTopY = topY + ds.getHeight() + spaceHeight;
-		for(int i = 0; i < opCount; i++)
-		{
-			rebuildTree(ds.getOperation(i), centerXs[i], childTopY, true);
-		}
-
-		// Are we wider than our children?
-		if(dsWidth < totalWidth)
-			return totalWidth;
+			total += getTreeWidth(ds.getOperation(i));
+		
+		int dsWidth = ds.getWidth();
+		if(dsWidth < total)
+			return total;
 		else
 			return dsWidth;
 	}
-
+	
 	/**
 	 * Drop the given component at the current location that the mouse is hovering at in the Workspace Panel.
 	 *
