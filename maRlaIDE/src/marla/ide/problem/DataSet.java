@@ -41,9 +41,12 @@ import marla.ide.r.RProcessorParseException;
  *
  * @author Ryan Morehart
  */
-@SuppressWarnings("serial")
 public final class DataSet extends DataSource
 {
+	/**
+	 * STOP WHINING JAVA!
+	 */
+	private static final long serialVersionUID = -4323435339074L;
 	/**
 	 * Denotes if this class is loading from XML
 	 */

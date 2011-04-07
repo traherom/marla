@@ -99,6 +99,8 @@ public class DataColumn implements List<Object>
 					+ newName + "' already exists in data source '" + parent.getName() + "'");
 		}
 
+		changeBeginning("column " + getName() + " name change");
+
 		name = newName;
 		markChanged();
 	}
@@ -150,12 +152,15 @@ public class DataColumn implements List<Object>
 	public DataMode setMode(DataMode newMode)
 	{
 		DataMode oldMode = mode;
-		mode = newMode;
 
 		// Only changed if they actually switched modes
 		if(oldMode != newMode)
-			markChanged();
+			return oldMode;
 
+		changeBeginning("column " + getName() + " mode change");
+		mode = newMode;
+		markChanged();
+		
 		return oldMode;
 	}
 
@@ -170,6 +175,9 @@ public class DataColumn implements List<Object>
 		// Try to interpret everything as a number. If this fails then
 		// we switch to STRING
 		DataMode oldMode = mode;
+
+		changeBeginning("column " + getName() + " automode change");
+
 		mode = DataMode.NUMERIC;
 
 		// Try to cast everything as a number
@@ -183,7 +191,7 @@ public class DataColumn implements List<Object>
 			mode = DataMode.STRING;
 		}
 
-		// Only changed if we actually switched modes
+		// Only note change if we actually switched modes
 		if(oldMode != mode)
 			markChanged();
 
@@ -331,8 +339,9 @@ public class DataColumn implements List<Object>
 	{
 		if(!values.isEmpty())
 		{
-			markChanged();
+			changeBeginning("clearing values from column " + getName());
 			values.clear();
+			markChanged();
 		}
 	}
 
@@ -417,8 +426,8 @@ public class DataColumn implements List<Object>
 	@Override
 	public void add(int index, Object element)
 	{
-		markChanged();
 		values.add(index, element);
+		markChanged();
 	}
 
 	/**
@@ -553,5 +562,15 @@ public class DataColumn implements List<Object>
 			parent.markUnsaved();
 			parent.markDirty ();
 		}
+	}
+
+	/**
+	 * Denotes that a column is about change in some way
+	 * @param changeMsg Message describing the upcoming change
+	 */
+	public void changeBeginning(String changeMsg)
+	{
+		if(parent != null)
+			parent.changeBeginning(changeMsg);
 	}
 }

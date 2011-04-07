@@ -25,9 +25,15 @@ import marla.ide.problem.MarlaException;
  * that needs information.
  * @author Ryan Morehart
  */
-@SuppressWarnings("serial")
 public class OperationInfoRequiredException extends MarlaException
 {
+	/**
+	 * STOP WHINING JAVA!
+	 */
+	private static final long serialVersionUID = -4323435339074124L;
+	/**
+	 * Operation that is requesting more information
+	 */
 	private final Operation op;
 	
 	public OperationInfoRequiredException(String msg, Operation op)
@@ -42,6 +48,10 @@ public class OperationInfoRequiredException extends MarlaException
 		this.op = op;
 	}
 
+	/**
+	 * Operation that this information applies
+	 * @return Operation we reference
+	 */
 	public final Operation getOperation()
 	{
 		return op;

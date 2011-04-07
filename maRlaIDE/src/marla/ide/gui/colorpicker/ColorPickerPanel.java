@@ -86,7 +86,7 @@ import javax.swing.event.MouseInputListener;
  */
 public final class ColorPickerPanel extends JPanel
 {
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 5L;
     /** The maximum size the graphic will be.  No matter
      *  how big the panel becomes, the graphic will not exceed
      *  this length.
