@@ -61,55 +61,6 @@ public interface ProblemPart extends Changeable, Loadable
 	public boolean isChanged();
 
 	/**
-	 * Adds an existing dataset to the problem.
-	 * @param data Dataset to add.
-	 * @return Reference to newly added dataset.
-	 */
-	public DataSet addData(DataSet data);
-
-	/**
-	 * Remove a given dataset from this problem
-	 * @param data DataSet object to remove
-	 * @return DataSet that was removed
-	 */
-	public DataSet removeData(DataSet data);
-
-	/**
-	 * Remove the DataSet at the given index from the problem
-	 * @param index Index of DataSet to remove
-	 * @return DataSet being removed from the problem
-	 */
-	public DataSet removeData(int index);
-
-	/**
-	 * Returns the dataset with the given name.
-	 * @param name Dataset name
-	 * @return Dataset with matching name
-	 */
-	public DataSet getData(String name);
-
-	/**
-	 * Returns the DataSet at the given index
-	 * @param index Index of DataSet to retrieve
-	 * @return DataSet at given index
-	 */
-	public DataSet getData(int index);
-
-	/**
-	 * Returns the index of the DataSet with the given name. An exception is
-	 * thrown if a DataSet with the given name cannot be found.
-	 * @param name Dataset name
-	 * @return Dataset with matching name
-	 */
-	public int getDataIndex(String name);
-
-	/**
-	 * Returns the number of DataSets this Problem contains
-	 * @return Number of DataSets in this Problem
-	 */
-	public int getDataCount();
-
-	/**
 	 * Returns this problem part as a JDOM Element
 	 * @return JDOM element containing all information needed to rebuild
 	 *		this exact problem
