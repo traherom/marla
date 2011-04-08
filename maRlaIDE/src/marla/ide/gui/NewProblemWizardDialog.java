@@ -52,6 +52,7 @@ import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.JViewport;
+import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
 import javax.swing.border.BevelBorder;
 import javax.swing.event.ChangeEvent;
@@ -275,6 +276,9 @@ public class NewProblemWizardDialog extends EscapeDialog
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 NewProblemWizardDialog.this.mouseEntered(evt);
             }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                NewProblemWizardDialog.this.mouseExited(evt);
+            }
             public void mouseReleased(java.awt.event.MouseEvent evt) {
                 NewProblemWizardDialog.this.mouseReleased(evt);
             }
@@ -282,7 +286,7 @@ public class NewProblemWizardDialog extends EscapeDialog
         stepsPanel.add(welcomeLabel);
         welcomeLabel.setBounds(20, 40, 140, 16);
 
-        nameAndLocationLabel.setFont(new java.awt.Font("Verdana", 0, 12));
+        nameAndLocationLabel.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
         nameAndLocationLabel.setText("2. Name and Location");
         nameAndLocationLabel.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
@@ -626,7 +630,7 @@ public class NewProblemWizardDialog extends EscapeDialog
         dataSetsCardPanel.add(tipTextLabel);
         tipTextLabel.setBounds(10, 360, 460, 30);
 
-        addFromRLibButton.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        addFromRLibButton.setFont(new java.awt.Font("Verdana", 0, 12));
         addFromRLibButton.setText("Add from R Library");
         addFromRLibButton.setToolTipText("Add a data set from an R library");
         addFromRLibButton.addActionListener(new java.awt.event.ActionListener() {
@@ -1618,14 +1622,14 @@ public class NewProblemWizardDialog extends EscapeDialog
 		viewPanel.ensureComponentsVisible();
 		viewPanel.workspacePanel.repaint();
 
-		JPanel panel = createValuesTabbedPanel(dataSet);
+		JPanel panel = createDataSetTabbedPane(dataSet);
 		dataSetTabbedPane.add(dataSet.getName(), panel);
 		dataSetTabbedPane.setSelectedIndex(dataSetTabbedPane.getTabCount() - 1);
 		int columns = dataSet.getColumnCount();
 		int rows = dataSet.getColumnLength();
 
 		// Add minimum columns to the table model
-		JTable table = ((JTable) ((JViewport) ((JScrollPane) panel.getComponent(0)).getComponent(0)).getComponent(0));
+		ExtendedJTable table = (ExtendedJTable) ((JViewport) ((JScrollPane) panel.getComponent(0)).getComponent(2)).getComponent(0);
 		final ExtendedTableModel newModel = new ExtendedTableModel(dataSet);
 		newModel.addTableModelListener(new TableModelListener()
 		{
@@ -1645,8 +1649,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 		table.setColumnModel(newColumnModel);
 
 		table.setModel(newModel);
-		table.invalidate();
-		table.getTableHeader().resizeAndRepaint();
+		table.refreshTable();
 
 		// Wait to change the spinners until after the model is set or they will
 		// try to do stuff to the columns (they see an increase from 0 to 5)
@@ -1661,7 +1664,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 		if (editing)
 		{
 			dataSet.setLocation((viewPanel.workspacePanel.getWidth() - dataSet.getWidth()) / 2, (viewPanel.workspacePanel.getHeight() - dataSet.getHeight()) / 2);
-			while (((WorkspacePanel) viewPanel.workspacePanel).getComponentAt(dataSet.getLocation().x + 10, dataSet.getLocation().y + 10, dataSet) != null)
+			while (viewPanel.workspacePanel.getComponentAt(dataSet.getLocation().x + 10, dataSet.getLocation().y + 10, dataSet) != null)
 			{
 				dataSet.setLocation(dataSet.getLocation().x, dataSet.getLocation().y + 20);
 			}
@@ -2098,15 +2101,15 @@ public class NewProblemWizardDialog extends EscapeDialog
 	 *
 	 * @return The panel created to be stored in the values tabbed panel.
 	 */
-	private JPanel createValuesTabbedPanel(final DataSet dataSet)
+	private JPanel createDataSetTabbedPane(final DataSet dataSet)
 	{
 		final JPanel valuesPanel = new JPanel();
-		final JScrollPane scrollPane = new JScrollPane();
 		final ExtendedTableModel model = new ExtendedTableModel(dataSet);
 		final ExtendedJTable table = new ExtendedJTable(model);
+		final JScrollPane scrollPane = ExtendedJTable.createCorneredJScrollPane(table);
 		table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-		table.getColumnModel().setColumnSelectionAllowed(false);
 		table.getTableHeader().setReorderingAllowed(false);
+		table.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
 		table.getTableHeader().setFont(ViewPanel.FONT_PLAIN_12);
 		table.getTableHeader().addMouseListener(new MouseAdapter()
@@ -2117,23 +2120,26 @@ public class NewProblemWizardDialog extends EscapeDialog
 				if (table.getTableHeader().getCursor().getType() != Cursor.E_RESIZE_CURSOR)
 				{
 					int index = table.getTableHeader().columnAtPoint(evt.getPoint());
-					String oldName = table.getColumnModel().getColumn(index).getHeaderValue().toString();
-					Object name = JOptionPane.showInputDialog(viewPanel.domain.getTopWindow(), "Give the column a new name:", "Column Name",
-															  JOptionPane.QUESTION_MESSAGE, null, null,
-															  oldName);
-					if(name != null)
+					if (index != -1)
 					{
-						if(!name.toString().equals(((ExtendedTableModel) table.getModel()).getColumnName(index)))
+						String oldName = table.getColumnModel().getColumn(index).getHeaderValue().toString();
+						Object name = JOptionPane.showInputDialog(viewPanel.domain.getTopWindow(), "Give the column a new name:", "Column Name",
+																  JOptionPane.QUESTION_MESSAGE, null, null,
+																  oldName);
+						if(name != null)
 						{
-							if(!columnNameExists((ExtendedTableModel) table.getModel(), index, name.toString()))
+							if(!name.toString().equals(((ExtendedTableModel) table.getModel()).getColumnName(index)))
 							{
-								((ExtendedTableModel) table.getModel()).setColumn(name.toString(), index);
-								table.getColumnModel().getColumn(index).setHeaderValue(name);
-								table.getTableHeader().resizeAndRepaint();
-							}
-							else
-							{
-								JOptionPane.showMessageDialog(viewPanel.domain.getTopWindow(), "A column with that name already exists.", "Duplicate Column", JOptionPane.WARNING_MESSAGE);
+								if(!columnNameExists((ExtendedTableModel) table.getModel(), index, name.toString()))
+								{
+									((ExtendedTableModel) table.getModel()).setColumn(name.toString(), index);
+									table.getColumnModel().getColumn(index).setHeaderValue(name);
+									table.getTableHeader().resizeAndRepaint();
+								}
+								else
+								{
+									JOptionPane.showMessageDialog(viewPanel.domain.getTopWindow(), "A column with that name already exists.", "Duplicate Column", JOptionPane.WARNING_MESSAGE);
+								}
 							}
 						}
 					}
@@ -2194,8 +2200,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 						}
 					}
 
-					table.invalidate();
-					table.getTableHeader().resizeAndRepaint();
+					table.refreshTable();
 				}
 			}
 		});
@@ -2229,9 +2234,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 						model.addRow();
 					}
 
-					table.invalidate();
-					table.repaint();
-					table.getTableHeader().resizeAndRepaint();
+					table.refreshTable();
 				}
 			}
 		});
@@ -2321,8 +2324,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 									}
 
 									table.setModel(newModel);
-									table.invalidate();
-									table.getTableHeader().resizeAndRepaint();
+									table.refreshTable();
 
 									ignoreDataChanging = false;
 									Domain.setProgressVisible(false);
@@ -2537,12 +2539,12 @@ public class NewProblemWizardDialog extends EscapeDialog
 			problemNumberTextField.setText(newProblem.getProblemNumber());
 
 			// By default, new problems have three columns and five rows
-			dataSetTabbedPane.add(dataSet.getName(), createValuesTabbedPanel(dataSet));
+			dataSetTabbedPane.add(dataSet.getName(), createDataSetTabbedPane(dataSet));
 			int columns = dataSet.getColumnCount();
 			int rows = dataSet.getColumnLength();
 
 			// Add minimum columns to the table model
-			JTable table = ((JTable) ((JViewport) ((JScrollPane) ((JPanel) dataSetTabbedPane.getComponent(0)).getComponent(0)).getComponent(0)).getComponent(0));
+			ExtendedJTable table = (ExtendedJTable) ((JViewport) ((JScrollPane) ((JPanel) dataSetTabbedPane.getComponent(0)).getComponent(0)).getComponent(2)).getComponent(0);
 			final ExtendedTableModel newModel = new ExtendedTableModel(dataSet);
 			newModel.addTableModelListener(new TableModelListener()
 			{
@@ -2560,8 +2562,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 			table.setColumnModel(newColumnModel);
 
 			table.setModel(newModel);
-			table.invalidate();
-			table.getTableHeader().resizeAndRepaint();
+			table.refreshTable();
 
 			// Wait to change spinners _after_ the model is set or we'll double the rows
 			((JSpinner) ((JPanel) dataSetTabbedPane.getComponent(0)).getComponent(2)).setValue(columns);
@@ -2625,7 +2626,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 			for(int i = 0; i < domain.problem.getDataCount(); ++i)
 			{
 				DataSet dataSet = domain.problem.getData(i);
-				JPanel panel = createValuesTabbedPanel(dataSet);
+				JPanel panel = createDataSetTabbedPane(dataSet);
 				dataSetTabbedPane.add(dataSet.getName(), panel);
 				int columns = dataSet.getColumnCount();
 				int rows = dataSet.getColumnLength();
@@ -2633,7 +2634,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 				((JSpinner) panel.getComponent(4)).setValue(rows);
 
 				// Add minimum columns to the table model
-				JTable table = (JTable) ((JViewport) ((JScrollPane) panel.getComponent(0)).getComponent(0)).getComponent(0);
+				ExtendedJTable table = (ExtendedJTable) ((JViewport) ((JScrollPane) panel.getComponent(0)).getComponent(2)).getComponent(0);
 				final ExtendedTableModel newModel = new ExtendedTableModel(dataSet);
 				newModel.addTableModelListener(new TableModelListener()
 				{
@@ -2648,13 +2649,11 @@ public class NewProblemWizardDialog extends EscapeDialog
 				for(int j = 0; j < columns; ++j)
 				{
 					newColumnModel.addColumn(new TableColumn());
-					//newColumnModel.getColumn (newModel.getColumnCount () - 1).setHeaderValue (dataSet.getColumn (j).getName ());
 				}
 				table.setColumnModel(newColumnModel);
 
 				table.setModel(newModel);
-				table.invalidate();
-				table.getTableHeader().resizeAndRepaint();
+				table.refreshTable();
 			}
 			if(dataSetTabbedPane.getTabCount() > 0)
 			{

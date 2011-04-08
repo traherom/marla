@@ -504,7 +504,7 @@ public class SettingsDialog extends EscapeDialog
 			try
 			{
 				Configuration.getInstance().set(Configuration.ConfigType.PdfTex, viewPanel.fileChooserDialog.getSelectedFile().getPath());
-				rPathTextField.setText(viewPanel.fileChooserDialog.getSelectedFile().getPath());
+				latexPathTextField.setText(viewPanel.fileChooserDialog.getSelectedFile().getPath());
 			}
 			catch (MarlaException ex)
 			{
@@ -532,7 +532,7 @@ public class SettingsDialog extends EscapeDialog
 			try
 			{
 				Configuration.getInstance().set(Configuration.ConfigType.TexTemplate, viewPanel.fileChooserDialog.getSelectedFile().getPath());
-				rPathTextField.setText(viewPanel.fileChooserDialog.getSelectedFile().getPath());
+				latexTemplateTextField.setText(viewPanel.fileChooserDialog.getSelectedFile().getPath());
 			}
 			catch (MarlaException ex)
 			{
@@ -560,7 +560,7 @@ public class SettingsDialog extends EscapeDialog
 			try
 			{
 				Configuration.getInstance().set(Configuration.ConfigType.PrimaryOpsXML, viewPanel.fileChooserDialog.getSelectedFile().getPath());
-				rPathTextField.setText(viewPanel.fileChooserDialog.getSelectedFile().getPath());
+				operationsTextField.setText(viewPanel.fileChooserDialog.getSelectedFile().getPath());
 				viewPanel.reloadOperations();
 			}
 			catch (MarlaException ex)
