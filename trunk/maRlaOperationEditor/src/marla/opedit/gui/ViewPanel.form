@@ -82,7 +82,7 @@
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="removeButton" min="-2" pref="92" max="-2" attributes="0"/>
                           </Group>
-                          <Component id="operationsScrollPane" min="0" pref="0" max="32767" attributes="1"/>
+                          <Component id="operationsScrollPane" pref="167" max="32767" attributes="0"/>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
@@ -90,20 +90,20 @@
                           <Group type="102" alignment="0" attributes="0">
                               <Component id="categoryLabel" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
-                              <Component id="categoryTextField" pref="491" max="32767" attributes="0"/>
+                              <Component id="categoryTextField" pref="492" max="32767" attributes="0"/>
                           </Group>
                           <Group type="102" alignment="0" attributes="0">
                               <Component id="opsNameLabel" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
-                              <Component id="operationsNameTextField" pref="447" max="32767" attributes="0"/>
+                              <Component id="operationsNameTextField" pref="448" max="32767" attributes="0"/>
                           </Group>
                           <Group type="102" alignment="1" attributes="0">
                               <Component id="innerXmlLinkLabel" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="updateTestButton" min="-2" max="-2" attributes="0"/>
                           </Group>
-                          <Component id="operationScrollPane" alignment="0" pref="558" max="32767" attributes="0"/>
-                          <Component id="xmlStatusLabel" alignment="0" pref="558" max="32767" attributes="0"/>
+                          <Component id="operationScrollPane" alignment="0" pref="559" max="32767" attributes="0"/>
+                          <Component id="xmlStatusLabel" alignment="0" pref="559" max="32767" attributes="0"/>
                       </Group>
                   </Group>
               </Group>
@@ -131,14 +131,6 @@
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Group type="102" attributes="0">
-                              <Component id="operationsScrollPane" pref="447" max="32767" attributes="0"/>
-                              <EmptySpace max="-2" attributes="0"/>
-                              <Group type="103" groupAlignment="3" attributes="0">
-                                  <Component id="addButton" alignment="3" min="-2" max="-2" attributes="0"/>
-                                  <Component id="removeButton" alignment="3" min="-2" max="-2" attributes="0"/>
-                              </Group>
-                          </Group>
-                          <Group type="102" attributes="0">
                               <Group type="103" groupAlignment="3" attributes="0">
                                   <Component id="opsNameLabel" alignment="3" min="-2" max="-2" attributes="0"/>
                                   <Component id="operationsNameTextField" alignment="3" min="-2" max="-2" attributes="0"/>
@@ -158,6 +150,14 @@
                               <Group type="103" groupAlignment="3" attributes="0">
                                   <Component id="updateTestButton" alignment="3" min="-2" max="-2" attributes="0"/>
                                   <Component id="innerXmlLinkLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                              </Group>
+                          </Group>
+                          <Group type="102" attributes="0">
+                              <Component id="operationsScrollPane" pref="447" max="32767" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Group type="103" groupAlignment="3" attributes="0">
+                                  <Component id="addButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  <Component id="removeButton" alignment="3" min="-2" max="-2" attributes="0"/>
                               </Group>
                           </Group>
                       </Group>
@@ -186,7 +186,7 @@
               <Group type="102" alignment="1" attributes="0">
                   <EmptySpace max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="1" attributes="0">
-                      <Component id="outputScrollPane" alignment="0" pref="326" max="32767" attributes="2"/>
+                      <Component id="outputScrollPane" alignment="0" pref="326" max="32767" attributes="0"/>
                       <Component id="questionPanel" alignment="0" pref="326" max="32767" attributes="2"/>
                       <Group type="102" alignment="0" attributes="0">
                           <Component id="dataCsvLabel" min="-2" max="-2" attributes="0"/>
@@ -222,7 +222,7 @@
                       <Component id="displayNameScrollPane" alignment="0" min="-2" pref="25" max="-2" attributes="1"/>
                   </Group>
                   <EmptySpace max="-2" attributes="0"/>
-                  <Component id="outputScrollPane" pref="383" max="32767" attributes="0"/>
+                  <Component id="outputScrollPane" pref="386" max="32767" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
               </Group>
           </Group>
@@ -279,25 +279,6 @@
             <Property name="text" type="java.lang.String" value="Display name:"/>
           </Properties>
         </Component>
-        <Container class="javax.swing.JScrollPane" name="outputScrollPane">
-          <AuxValues>
-            <AuxValue name="autoScrollPane" type="java.lang.Boolean" value="true"/>
-          </AuxValues>
-
-          <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
-          <SubComponents>
-            <Component class="javax.swing.JTable" name="outputTable">
-              <Properties>
-                <Property name="selectionModel" type="javax.swing.ListSelectionModel" editor="org.netbeans.modules.form.editors2.JTableSelectionModelEditor">
-                  <JTableSelectionModel selectionMode="0"/>
-                </Property>
-              </Properties>
-              <AuxValues>
-                <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new marla.ide.gui.ExtendedJTable(outputModel)&#xa;{&#xa;    public boolean isCellEditable(int row, int column)&#xa;    {&#xa;        return false;&#xa;    }&#xa;}&#xa;"/>
-              </AuxValues>
-            </Component>
-          </SubComponents>
-        </Container>
         <Container class="javax.swing.JScrollPane" name="displayNameScrollPane">
           <Properties>
             <Property name="horizontalScrollBarPolicy" type="int" value="31"/>
@@ -320,6 +301,20 @@
               </Properties>
             </Component>
           </SubComponents>
+        </Container>
+        <Container class="javax.swing.JScrollPane" name="outputScrollPane">
+          <Properties>
+            <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+              <Border info="org.netbeans.modules.form.compat2.border.EtchedBorderInfo">
+                <EtchetBorder/>
+              </Border>
+            </Property>
+          </Properties>
+          <AuxValues>
+            <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="marla.ide.gui.ExtendedJTable.createCorneredJScrollPane(outputTable)"/>
+          </AuxValues>
+
+          <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
         </Container>
       </SubComponents>
     </Container>
@@ -468,28 +463,6 @@
         <Property name="text" type="java.lang.String" value="&lt;html&gt;&lt;b&gt;XML status:&lt;/b&gt; valid&lt;/html&gt;"/>
       </Properties>
     </Component>
-    <Container class="javax.swing.JScrollPane" name="operationsScrollPane">
-      <AuxValues>
-        <AuxValue name="autoScrollPane" type="java.lang.Boolean" value="true"/>
-      </AuxValues>
-
-      <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
-      <SubComponents>
-        <Component class="javax.swing.JTable" name="operationsTable">
-          <Properties>
-            <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-              <Font name="Verdana" size="12" style="0"/>
-            </Property>
-            <Property name="selectionModel" type="javax.swing.ListSelectionModel" editor="org.netbeans.modules.form.editors2.JTableSelectionModelEditor">
-              <JTableSelectionModel selectionMode="0"/>
-            </Property>
-          </Properties>
-          <AuxValues>
-            <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new ExtendedJTable(operationsModel)"/>
-          </AuxValues>
-        </Component>
-      </SubComponents>
-    </Container>
     <Component class="javax.swing.JLabel" name="innerXmlLinkLabel">
       <Properties>
         <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
@@ -556,5 +529,19 @@
         <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="4"/>
       </AuxValues>
     </Component>
+    <Container class="javax.swing.JScrollPane" name="operationsScrollPane">
+      <Properties>
+        <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+          <Border info="org.netbeans.modules.form.compat2.border.EtchedBorderInfo">
+            <EtchetBorder/>
+          </Border>
+        </Property>
+      </Properties>
+      <AuxValues>
+        <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="marla.ide.gui.ExtendedJTable.createCorneredJScrollPane(operationsTable)"/>
+      </AuxValues>
+
+      <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
+    </Container>
   </SubComponents>
 </Form>

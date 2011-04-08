@@ -38,6 +38,11 @@ public class ToolbarButton extends JLabel
 	private boolean isSelected = false;
 
 	/**
+	 * Empty constructor for Bean display.
+	 */
+	public ToolbarButton() {}
+	
+	/**
 	 * Constructs a new toolbar button with the give image icon as the default
 	 * image.
 	 *

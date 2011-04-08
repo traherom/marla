@@ -275,8 +275,11 @@ public class ExtendedTableModel extends AbstractTableModel
 	@Override
 	public void setValueAt(Object value, int row, int col)
 	{
-		data.getColumn(col).set(row, value);
-		fireTableCellUpdated(row, col);
+		if (!getValueAt(row, col).toString().equals (value.toString()))
+		{
+			data.getColumn(col).set(row, value);
+			fireTableCellUpdated(row, col);
+		}
 	}
 
 	/**

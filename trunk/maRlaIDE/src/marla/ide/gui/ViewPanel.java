@@ -1212,6 +1212,13 @@ public class ViewPanel extends JPanel
 
 								// Untie
 								subProblem.removeAllSubSteps(ds);
+								rightClickedComponent.setBackground(NO_BACKGROUND_WORKSPACE);
+								for(DataSource op : ((DataSource) rightClickedComponent).getAllChildOperations())
+								{
+									op.setBackground(NO_BACKGROUND_WORKSPACE);
+								}
+								workspacePanel.repaint();
+								DND_LISTENER.endDrop(null);
 
 								rebuildWorkspace();
 							}
@@ -1224,7 +1231,7 @@ public class ViewPanel extends JPanel
 								if(rightClickedComponent != null)
 								{
 									rightClickedComponent.setBackground(HOVER_BACKGROUND_COLOR);
-									for(Operation op : ((Operation) rightClickedComponent).getAllChildOperations())
+									for(DataSource op : ((DataSource) rightClickedComponent).getAllChildOperations())
 									{
 										if(op.getSubProblems().contains(subProblem))
 										{
@@ -1241,7 +1248,7 @@ public class ViewPanel extends JPanel
 								if(rightClickedComponent != null)
 								{
 									rightClickedComponent.setBackground(NO_BACKGROUND_WORKSPACE);
-									for(Operation op : ((Operation) rightClickedComponent).getAllChildOperations())
+									for(DataSource op : ((DataSource) rightClickedComponent).getAllChildOperations())
 									{
 										if(op.getSubProblems().contains(subProblem))
 										{
@@ -1268,6 +1275,8 @@ public class ViewPanel extends JPanel
 
 								// Tie
 								subProblem.addAllSubSteps(ds);
+								
+								DND_LISTENER.endDrop(null);
 
 								rebuildWorkspace();
 							}
@@ -1419,30 +1428,9 @@ public class ViewPanel extends JPanel
 		if(rightClickedComponent != null && tieSubProblemSubMenu.isEnabled())
 		{
 			rightClickedComponent.setBackground(HOVER_BACKGROUND_COLOR);
-			if(rightClickedComponent instanceof Operation)
+			for(DataSource op : ((DataSource) rightClickedComponent).getAllChildOperations())
 			{
-				DataSource source = ((Operation) rightClickedComponent).getRootDataSource().getOperation(((Operation) rightClickedComponent).getIndexFromDataSet());
-				((JComponent) source).setBackground(HOVER_BACKGROUND_COLOR);
-				List<Operation> tempOperations = source.getRootDataSource().getOperation(((Operation) source).getIndexFromDataSet()).getAllChildOperations();
-				for(int i = 0; i < tempOperations.size(); ++i)
-				{
-					tempOperations.get(i).setBackground(HOVER_BACKGROUND_COLOR);
-				}
-			}
-			else
-			{
-				DataSet root = (DataSet) rightClickedComponent;
-				root.setBackground(HOVER_BACKGROUND_COLOR);
-				for(int i = 0; i < root.getOperationCount(); ++i)
-				{
-					Operation operation = root.getOperation(i);
-					operation.setBackground(HOVER_BACKGROUND_COLOR);
-					List<Operation> tempOperations = operation.getAllChildOperations();
-					for(int j = 0; j < tempOperations.size(); ++j)
-					{
-						tempOperations.get(j).setBackground(HOVER_BACKGROUND_COLOR);
-					}
-				}
+				op.setBackground(HOVER_BACKGROUND_COLOR);
 			}
 			workspacePanel.repaint();
 		}
@@ -1453,30 +1441,9 @@ public class ViewPanel extends JPanel
 		if(rightClickedComponent != null && tieSubProblemSubMenu.isEnabled())
 		{
 			rightClickedComponent.setBackground(NO_BACKGROUND_WORKSPACE);
-			if(rightClickedComponent instanceof Operation)
+			for(DataSource op : ((DataSource) rightClickedComponent).getAllChildOperations())
 			{
-				DataSource source = ((Operation) rightClickedComponent).getRootDataSource().getOperation(((Operation) rightClickedComponent).getIndexFromDataSet());
-				((JComponent) source).setBackground(NO_BACKGROUND_WORKSPACE);
-				List<Operation> tempOperations = source.getRootDataSource().getOperation(((Operation) source).getIndexFromDataSet()).getAllChildOperations();
-				for(int i = 0; i < tempOperations.size(); ++i)
-				{
-					tempOperations.get(i).setBackground(NO_BACKGROUND_WORKSPACE);
-				}
-			}
-			else
-			{
-				DataSet root = (DataSet) rightClickedComponent;
-				root.setBackground(NO_BACKGROUND_WORKSPACE);
-				for(int i = 0; i < root.getOperationCount(); ++i)
-				{
-					Operation operation = root.getOperation(i);
-					operation.setBackground(NO_BACKGROUND_WORKSPACE);
-					List<Operation> tempOperations = operation.getAllChildOperations();
-					for(int j = 0; j < tempOperations.size(); ++j)
-					{
-						tempOperations.get(j).setBackground(NO_BACKGROUND_WORKSPACE);
-					}
-				}
+				op.setBackground(NO_BACKGROUND_WORKSPACE);
 			}
 			workspacePanel.repaint();
 		}
@@ -1573,14 +1540,14 @@ public class ViewPanel extends JPanel
 			{
 				ImageIcon newIcon = new ImageIcon(getClass().getResource("/marla/ide/images/unchecked_button.png"));
 				abbreviateButton.setIcon(newIcon);
-				((ToolbarButton) abbreviateButton).setIconStandards(newIcon);
+				abbreviateButton.setIconStandards(newIcon);
 				abbreviated = false;
 			}
 			else
 			{
 				ImageIcon newIcon = new ImageIcon(getClass().getResource("/marla/ide/images/checked_button.png"));
 				abbreviateButton.setIcon(newIcon);
-				((ToolbarButton) abbreviateButton).setIconStandards(newIcon);
+				abbreviateButton.setIconStandards(newIcon);
 				abbreviated = true;
 			}
 
@@ -1891,7 +1858,7 @@ public class ViewPanel extends JPanel
 			}
 
 			// Identify a component, if any, that we are currently dragging over in the workspace
-			Component component = ((WorkspacePanel) workspacePanel).getComponentAt(evt.getPoint().x, evt.getPoint().y, draggingComponent);
+			Component component = workspacePanel.getComponentAt(evt.getPoint().x, evt.getPoint().y, draggingComponent);
 			if(component != null
 			   && component != trashCan
 			   && component != statusLabel
@@ -1900,7 +1867,7 @@ public class ViewPanel extends JPanel
 				// We are dragging over a valid component, so set the drag border back
 				if(component instanceof DataSource && (draggingComponent == null || (draggingComponent != null && draggingComponent instanceof Operation)))
 				{
-					hoverInDragComponent = (JComponent) ((WorkspacePanel) workspacePanel).getComponentAt(evt.getPoint().x, evt.getPoint().y, draggingComponent);
+					hoverInDragComponent = (JComponent) workspacePanel.getComponentAt(evt.getPoint().x, evt.getPoint().y, draggingComponent);
 					hoverInDragComponent.setBackground(HOVER_BACKGROUND_COLOR);
 				}
 			}
@@ -2150,7 +2117,7 @@ public class ViewPanel extends JPanel
 		}
 
 		// Get the component we're trying to drop onto, if it exists
-		JComponent component = (JComponent) ((WorkspacePanel) workspacePanel).getComponentAt(location.x, location.y, operation);
+		JComponent component = (JComponent) workspacePanel.getComponentAt(location.x, location.y, operation);
 		if(component != trashCan
 		   && component != statusLabel
 		   && component != firstRunLabel
@@ -2925,8 +2892,8 @@ public class ViewPanel extends JPanel
 		}
 	}
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JLabel abbreviateButton;
-    protected javax.swing.JLabel addDataButton;
+    private marla.ide.gui.ToolbarButton abbreviateButton;
+    protected marla.ide.gui.ToolbarButton addDataButton;
     private javax.swing.JMenuItem addDataSetMenuItem;
     protected javax.swing.JDialog answerDialog;
     private javax.swing.JPanel answerPanel;
@@ -2951,19 +2918,19 @@ public class ViewPanel extends JPanel
     private javax.swing.JPopupMenu.Separator menuSeparator1;
     private javax.swing.JPopupMenu.Separator menuSeparator2;
     private javax.swing.JPopupMenu.Separator menuSeparator3;
-    private javax.swing.JLabel minusFontButton;
-    protected javax.swing.JLabel newButton;
-    protected javax.swing.JLabel openButton;
+    private marla.ide.gui.ToolbarButton minusFontButton;
+    protected marla.ide.gui.ToolbarButton newButton;
+    protected marla.ide.gui.ToolbarButton openButton;
     private javax.swing.JPanel paletteCardPanel;
-    private javax.swing.JLabel plusFontButton;
+    private marla.ide.gui.ToolbarButton plusFontButton;
     private javax.swing.JLabel preWorkspaceLabel;
     protected javax.swing.JPanel preWorkspacePanel;
     private javax.swing.JMenuItem rCodeMenuItem;
     private javax.swing.JMenuItem remarkMenuItem;
     private javax.swing.JPopupMenu rightClickMenu;
     private javax.swing.JPanel rightSidePanel;
-    protected javax.swing.JLabel saveButton;
-    protected javax.swing.JLabel settingsButton;
+    protected marla.ide.gui.ToolbarButton saveButton;
+    protected marla.ide.gui.ToolbarButton settingsButton;
     private javax.swing.JMenuItem solutionMenuItem;
     protected javax.swing.JLabel statusLabel;
     private javax.swing.JMenu tieSubProblemSubMenu;
@@ -2971,7 +2938,7 @@ public class ViewPanel extends JPanel
     protected javax.swing.JLabel trashCan;
     private javax.swing.JMenu untieSubProblemSubMenu;
     private javax.swing.JPanel workspaceCardPanel;
-    protected javax.swing.JPanel workspacePanel;
+    protected marla.ide.gui.WorkspacePanel workspacePanel;
     protected javax.swing.JSplitPane workspaceSplitPane;
     // End of variables declaration//GEN-END:variables
 }

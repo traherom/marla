@@ -26,7 +26,6 @@ import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.geom.Line2D;
 import java.util.List;
-import java.util.Random;
 import javax.swing.JPanel;
 import marla.ide.problem.DataSource;
 import marla.ide.problem.SubProblem;
@@ -52,6 +51,11 @@ public class WorkspacePanel extends JPanel
 	 */
 	private int lineInc = 0;
 
+	/**
+	 * Empty constructor for Bean display.
+	 */
+	public WorkspacePanel() {}
+	
 	/**
 	 * Construct the workspace panel with a reference to the view panel.
 	 *
