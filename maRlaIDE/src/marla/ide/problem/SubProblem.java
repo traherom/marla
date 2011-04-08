@@ -561,48 +561,6 @@ public class SubProblem implements ProblemPart, Comparable<SubProblem>
 			return false;
 	}
 
-	@Override
-	public DataSet addData(DataSet data)
-	{
-		return parent.addData(data);
-	}
-
-	@Override
-	public DataSet removeData(DataSet data)
-	{
-		return parent.removeData(data);
-	}
-
-	@Override
-	public DataSet removeData(int index)
-	{
-		return parent.removeData(index);
-	}
-
-	@Override
-	public DataSet getData(String name)
-	{
-		return parent.getData(name);
-	}
-
-	@Override
-	public DataSet getData(int index)
-	{
-		return parent.getData(index);
-	}
-
-	@Override
-	public int getDataIndex(String name)
-	{
-		return parent.getDataIndex(name);
-	}
-
-	@Override
-	public int getDataCount()
-	{
-		return parent.getDataCount();
-	}
-
 	/**
 	 * Checks if the given DataSource is somewhere in the chain of data
 	 * that is marked as the solution to this problem. Both start and end

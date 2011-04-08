@@ -487,7 +487,11 @@ public final class Problem implements ProblemPart, Cloneable
 		return unusedOperations.get(i);
 	}
 
-	@Override
+	/**
+	 * Adds an existing dataset to the problem.
+	 * @param data Dataset to add.
+	 * @return Reference to newly added dataset.
+	 */
 	public DataSet addData(DataSet data)
 	{
 		// Don't add the same data again. Do an actual object
@@ -515,13 +519,21 @@ public final class Problem implements ProblemPart, Cloneable
 		return data;
 	}
 
-	@Override
+	/**
+	 * Remove a given dataset from this problem
+	 * @param data DataSet object to remove
+	 * @return DataSet that was removed
+	 */
 	public DataSet removeData(DataSet data)
 	{
 		return removeData(datasets.indexOf(data));
 	}
 
-	@Override
+	/**
+	 * Remove the DataSet at the given index from the problem
+	 * @param index Index of DataSet to remove
+	 * @return DataSet being removed from the problem
+	 */
 	public DataSet removeData(int index)
 	{
 		DataSet d = datasets.get(index);
@@ -649,19 +661,32 @@ public final class Problem implements ProblemPart, Cloneable
 		return myData;
 	}
 
-	@Override
+	/**
+	 * Returns the dataset with the given name.
+	 * @param name Dataset name
+	 * @return Dataset with matching name
+	 */
 	public DataSet getData(String name) 
 	{
 		return getData(getDataIndex(name));
 	}
 
-	@Override
+	/**
+	 * Returns the DataSet at the given index
+	 * @param index Index of DataSet to retrieve
+	 * @return DataSet at given index
+	 */
 	public DataSet getData(int index)
 	{
 		return datasets.get(index);
 	}
 
-	@Override
+	/**
+	 * Returns the index of the DataSet with the given name. An exception is
+	 * thrown if a DataSet with the given name cannot be found.
+	 * @param name Dataset name
+	 * @return Dataset with matching name
+	 */
 	public int getDataIndex(String name)
 	{
 		for(int i = 0; i < datasets.size(); i++)
@@ -674,7 +699,10 @@ public final class Problem implements ProblemPart, Cloneable
 		throw new DataNotFoundException("Failed to find dataset with name '" + name + "'");
 	}
 
-	@Override
+	/**
+	 * Returns the number of DataSets this Problem contains
+	 * @return Number of DataSets in this Problem
+	 */
 	public int getDataCount()
 	{
 		return datasets.size();

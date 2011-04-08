@@ -132,6 +132,15 @@ public abstract class DataSource extends JLabel implements Loadable, Changeable
 	{
 		boolean old = isHidden;
 		isHidden = newHidden;
+		
+		// Remove all subproblems if we're hidden now
+		if(isHidden)
+		{
+			removeAllSubProblems();
+			for(Operation op : getAllChildOperations())
+				op.removeAllSubProblems();
+		}
+		
 		return old;
 	}
 
@@ -580,6 +589,20 @@ public abstract class DataSource extends JLabel implements Loadable, Changeable
 		markUnsaved();
 	}
 
+	/**
+	 * Disconnects this DataSource from every subproblem it is a part of
+	 */
+	public final void removeAllSubProblems()
+	{
+		for(int i = 0; i < subProblems.size(); i++)
+		{
+			SubProblem sub = subProblems.remove(i);
+			sub.removeStep(this);
+		}
+		
+		markUnsaved();
+	}
+	
 	@Override
 	public int hashCode()
 	{

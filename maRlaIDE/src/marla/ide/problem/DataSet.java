@@ -408,9 +408,9 @@ public final class DataSet extends DataSource
 	public final void setDataName(String newName)
 	{
 		// Make sure no other datasets have this name
-		if(parent != null && parent instanceof ProblemPart)
+		if(parent != null && parent instanceof Problem)
 		{
-			ProblemPart prob = (ProblemPart) parent;
+			Problem prob = (Problem) parent;
 
 			for(int i = 0; i < prob.getDataCount(); i++)
 			{
