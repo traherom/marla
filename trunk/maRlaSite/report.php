@@ -36,9 +36,14 @@ if(isset($_REQUEST['problem']))
 else
 	$prob = null;
 	
+if(isset($_REQUEST['config']))
+	$config = $_REQUEST['config'];
+else
+	$config = null;
+	
 // Stuff into database
-$stmt = $db->prepare("INSERT INTO errors (version, os, reporting_user, message, stacktrace, problem) VALUES (?, ?, ?, ?, ?, ?)");
-if($stmt->execute(array($version, $os, $user, $msg, $trace, $prob)))
+$stmt = $db->prepare("INSERT INTO errors (version, os, reporting_user, message, stacktrace, problem, config) VALUES (?, ?, ?, ?, ?, ?, ?)");
+if($stmt->execute(array($version, $os, $user, $msg, $trace, $prob, $config)))
 	print('success');
 else
 	print('failed');

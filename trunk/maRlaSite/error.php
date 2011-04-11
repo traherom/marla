@@ -21,16 +21,24 @@ if(isset($_REQUEST['resolve']))
 }
 
 // Get the error
-$stmt = $db->prepare('SELECT id, report_date, resolved, version, os, message, reporting_user, stacktrace, problem FROM errors WHERE id=?');
+$stmt = $db->prepare('SELECT id, report_date, resolved, version, os, message, reporting_user, stacktrace, problem, config FROM errors WHERE id=?');
 $stmt->execute(array($_REQUEST['id']));
 $error = $stmt->fetch(PDO::FETCH_ASSOC);
 
 // Download problem?
-if(isset($_REQUEST['download']))
+if(@$_REQUEST['download'] == 'prob')
 {
 	header('Content-type: application/octet-stream');
 	header('Content-disposition: attachment; filename=error.marla');
 	print(stripslashes($error['problem']));
+	die();
+}
+
+// Download config?
+if(@$_REQUEST['download'] == 'conf')
+{
+	header('Content-type: text/xml');
+	print(stripslashes($error['config']));
 	die();
 }
 ?>
@@ -79,13 +87,24 @@ if(isset($_REQUEST['download']))
 		<td style="white-space: pre;"><?=htmlentities($error['stacktrace']); ?></td>
 	</tr>
 	<tr>
+		<td>Config</td>
+		<td>
+			<?php
+			if($error['config'])
+				print('<a href="error.php?id=' . $error['id'] . '&amp;download=conf">View</a>');
+			else
+				print('No configuration uploaded');
+			?>
+		</td>
+	</tr>
+	<tr>
 		<td>Problem</td>
 		<td>
 			<?php
 			if($error['problem'])
-				print('<a href="error.php?id=' . $error['id'] . '&amp;download">Download</a>');
+				print('<a href="error.php?id=' . $error['id'] . '&amp;download=prob">Download</a>');
 			else
-				print('None uploaded');
+				print('No problem uploaded');
 			?>
 		</td>
 	</tr>
