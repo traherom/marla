@@ -62,6 +62,7 @@ import marla.ide.resource.BuildInfo;
 import marla.ide.resource.Configuration.ConfigType;
 import marla.ide.resource.ConfigurationException;
 import marla.ide.resource.BackgroundThread;
+import marla.ide.resource.Configuration;
 
 /**
  * Interactions that are related but not directly tied to the front-end of the
@@ -611,6 +612,32 @@ public class Domain
 			}
 		}
 
+		// Cache the two XML files, which may be expensive to create
+		String probCache = null;
+		String confCache = null;
+
+		try
+		{
+			Document doc = new Document(currProb.toXml());
+			Format formatter = Format.getPrettyFormat();
+			formatter.setEncoding("UTF-8");
+			XMLOutputter xml = new XMLOutputter(formatter);
+			probCache = xml.outputString(doc);
+		}
+		catch(MarlaException ex)
+		{
+			probCache = "Unable to get problem XML: " + ex.getMessage();
+		}
+
+		try
+		{
+			confCache = Configuration.getInstance().getConfigXML();
+		}
+		catch(MarlaException ex)
+		{
+			confCache = "Unable to get config XML: " + ex.getMessage();
+		}
+
 		for(int i = 0; i < logger.size(); ++i)
 		{
 			Throwable ex = logger.get(i);
@@ -628,7 +655,7 @@ public class Domain
 				ex.printStackTrace(out);
 
 			if(errorServer != null)
-				sendExceptionToServer(errorServer, ex, currProb);
+				sendExceptionToServer(errorServer, ex, confCache, probCache);
 		}
 
 		if(out != null)
@@ -641,7 +668,7 @@ public class Domain
 	/**
 	 * Sends the given exception to the error server
 	 */
-	private static void sendExceptionToServer(String server, Throwable ex, Problem prob)
+	private static void sendExceptionToServer(String server, Throwable ex, String config, String prob)
 	{
 		try
 		{
@@ -685,25 +712,22 @@ public class Domain
 			dataSB.append('=');
 			dataSB.append(URLEncoder.encode(trace.toString(), "UTF-8"));
 
+			// Config, if applicable
+			if(config != null)
+			{
+				dataSB.append('&');
+				dataSB.append(URLEncoder.encode("config", "UTF-8"));
+				dataSB.append('=');
+				dataSB.append(URLEncoder.encode(config, "UTF-8"));
+			}
+
 			// Problem, if applicable
 			if(prob != null)
 			{
 				dataSB.append('&');
 				dataSB.append(URLEncoder.encode("problem", "UTF-8"));
 				dataSB.append('=');
-
-				try
-				{
-					Document doc = new Document(prob.toXml());
-					Format formatter = Format.getPrettyFormat();
-					formatter.setEncoding("UTF-8");
-					XMLOutputter xml = new XMLOutputter(formatter);
-					dataSB.append(URLEncoder.encode(xml.outputString(doc), "UTF-8"));
-				}
-				catch(MarlaException ex2)
-				{
-					dataSB.append(URLEncoder.encode("Unable to get XML: " + ex2.toString(), "UTF-8"));
-				}
+				dataSB.append(URLEncoder.encode(prob, "UTF-8"));
 			}
 
 			// Send data
