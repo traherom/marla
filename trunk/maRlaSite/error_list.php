@@ -83,7 +83,9 @@ if(isset($_REQUEST['resolve_all']))
 	<tr>
 		<th>ID</th>
 		<th>Rev</th>
+		<th>OS</th>
 		<th>Date</th>
+		<th>User</th>
 		<th>Message</th>
 		<th>Trace</th>
 	</tr>
@@ -99,7 +101,9 @@ if(isset($_REQUEST['resolve_all']))
 		<tr>
 			<td><a href="error.php?id=<?=htmlentities($row['id'])?>"><?=htmlentities($row['id'])?></a></td>
 			<td><?=htmlentities($row['version']);?></td>
+			<td><?=htmlentities($row['os']);?></td>
 			<td><?=htmlentities($row['report_date']);?></td>
+			<td><?=htmlentities($row['reporting_user']);?></td>
 			<td><?=htmlentities($row['message']);?></td>
 			<td><?php print(str_replace("\n", "<br />\n", head($row['stacktrace'], 3))); ?></td>
 		</tr>

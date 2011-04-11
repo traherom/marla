@@ -16,6 +16,16 @@ if(isset($_REQUEST['version']))
 else
 	die('no version set');
 	
+if(isset($_REQUEST['os']))
+	$os = $_REQUEST['os'];
+else
+	$os = null;
+
+if(isset($_REQUEST['user']))
+	$user = $_REQUEST['user'];
+else
+	$user = null;
+	
 if(isset($_REQUEST['trace']))
 	$trace = $_REQUEST['trace'];
 else
@@ -27,8 +37,8 @@ else
 	$prob = null;
 	
 // Stuff into database
-$stmt = $db->prepare("INSERT INTO errors (version, message, stacktrace, problem) VALUES (?, ?, ?, ?)");
-if($stmt->execute(array($version, $msg, $trace, $prob)))
+$stmt = $db->prepare("INSERT INTO errors (version, os, reporting_user, message, stacktrace, problem) VALUES (?, ?, ?, ?, ?, ?)");
+if($stmt->execute(array($version, $os, $user, $msg, $trace, $prob)))
 	print('success');
 else
 	print('failed');
