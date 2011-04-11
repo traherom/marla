@@ -140,8 +140,9 @@ public abstract class DataSource extends JLabel implements Loadable, Changeable
 			for(Operation op : getAllChildOperations())
 				op.removeAllSubProblems();
 		}
-		
-		return old;
+
+		throw new InternalMarlaException("test");
+		//return old;
 	}
 
 	/**

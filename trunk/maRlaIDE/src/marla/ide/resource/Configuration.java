@@ -28,6 +28,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.io.StringWriter;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
@@ -790,6 +791,32 @@ public class Configuration
 	 */
 	public void save()
 	{
+		try
+		{
+			// Create directories to file if needed
+			System.out.println("Writing configuration to '" + configPath + "'");
+			FileUtils.forceMkdir(new File(configPath).getAbsoluteFile().getParentFile());
+
+			// Get config
+			String conf = getConfigXML();
+
+			// Output to file
+			BufferedWriter os = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(configPath)));
+			os.write(conf, 0, conf.length());
+			os.close();
+		}
+		catch(IOException ex)
+		{
+			throw new MarlaException("Problem occured writing to configuration file", ex);
+		}
+	}
+
+	/**
+	 * Retrieves all current settings and saves them to an XML string
+	 * @return XML for the current configuration
+	 */
+	public String getConfigXML()
+	{
 		// Build document
 		Element rootEl = new Element("marla");
 		Document doc = new Document(rootEl);
@@ -810,18 +837,14 @@ public class Configuration
 
 		try
 		{
-			// Create directories to file if needed
-			System.out.println("Writing configuration to '" + configPath + "'");
-			FileUtils.forceMkdir(new File(configPath).getAbsoluteFile().getParentFile());
-
-			// Output to file
-			OutputStreamWriter os = new OutputStreamWriter(new FileOutputStream(configPath));
-			BufferedWriter outputStream = new BufferedWriter(os);
+			// Output to string
+			StringWriter os = new StringWriter();
 
 			Format formatter = Format.getPrettyFormat();
-			formatter.setEncoding(os.getEncoding());
 			XMLOutputter xml = new XMLOutputter(formatter);
-			xml.output(doc, outputStream);
+			xml.output(doc, os);
+
+			return os.toString();
 		}
 		catch(IOException ex)
 		{
