@@ -21,7 +21,7 @@ if(isset($_REQUEST['resolve']))
 }
 
 // Get the error
-$stmt = $db->prepare('SELECT id, report_date, resolved, version, message, stacktrace, problem FROM errors WHERE id=?');
+$stmt = $db->prepare('SELECT id, report_date, resolved, version, os, message, reporting_user, stacktrace, problem FROM errors WHERE id=?');
 $stmt->execute(array($_REQUEST['id']));
 $error = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -59,8 +59,16 @@ if(isset($_REQUEST['download']))
 		<td><?=htmlentities($error['version']); ?></td>
 	</tr>
 	<tr>
+		<td>OS</td>
+		<td><?=htmlentities($error['os']); ?></td>
+	</tr>
+	<tr>
 		<td>Report Date</td>
 		<td><?=htmlentities($error['report_date']); ?></td>
+	</tr>
+	<tr>
+		<td>User Name</td>
+		<td><?=htmlentities($error['reporting_user']); ?></td>
 	</tr>
 	<tr>
 		<td>Message</td>

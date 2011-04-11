@@ -5,7 +5,7 @@ function fetchErrors($resolved, $dmin, $dmax, $rmin, $rmax, $contains, $limit=nu
 {
 	global $db;
 	
-	$query = "SELECT id, report_date, version, message, stacktrace
+	$query = "SELECT id, report_date, reporting_user, version, os, message, stacktrace
 					FROM errors
 					WHERE 1=1 ";
 
@@ -42,7 +42,6 @@ function resolveErrors($ids)
 		$stmt->execute(array($id));
 		$stmt->closeCursor();
 	}
-
 }
 
 function head($str, $lineCount)
