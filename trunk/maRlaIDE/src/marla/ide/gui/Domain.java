@@ -659,6 +659,18 @@ public class Domain
 			dataSB.append('=');
 			dataSB.append(URLEncoder.encode(BuildInfo.revisionNumber, "UTF-8"));
 
+			// Send OS
+			dataSB.append('&');
+			dataSB.append(URLEncoder.encode("os", "UTF-8"));
+			dataSB.append('=');
+			dataSB.append(URLEncoder.encode(System.getProperty("os.name") + " " + System.getProperty("os.version"), "UTF-8"));
+
+			// Send user name
+			dataSB.append('&');
+			dataSB.append(URLEncoder.encode("user", "UTF-8"));
+			dataSB.append('=');
+			dataSB.append(URLEncoder.encode(System.getProperty("user.name"), "UTF-8"));
+
 			// Exception message
 			dataSB.append('&');
 			dataSB.append(URLEncoder.encode("msg", "UTF-8"));
