@@ -286,8 +286,12 @@ public abstract class DataSource extends JLabel implements Loadable, Changeable
 
 			// Add all our current SubProblems to the new child
 			for(SubProblem sub : getSubProblems())
+			{
 				op.addSubProblem(sub);
-
+				for(Operation childOp : op.getAllChildOperations())
+					childOp.addSubProblem(sub);
+			}
+			
 			markUnsaved();
 		}
 
