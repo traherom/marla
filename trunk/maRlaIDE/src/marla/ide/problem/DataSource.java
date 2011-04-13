@@ -598,11 +598,8 @@ public abstract class DataSource extends JLabel implements Loadable, Changeable
 	 */
 	public final void removeAllSubProblems()
 	{
-		for(int i = 0; i < subProblems.size(); i++)
-		{
-			SubProblem sub = subProblems.remove(i);
-			sub.removeStep(this);
-		}
+		while(!subProblems.isEmpty())
+			removeSubProblem(subProblems.get(0));
 		
 		markUnsaved();
 	}

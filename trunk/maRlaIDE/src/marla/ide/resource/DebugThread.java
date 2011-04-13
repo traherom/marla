@@ -21,7 +21,6 @@ package marla.ide.resource;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 import java.io.PrintStream;
@@ -111,6 +110,8 @@ public class DebugThread extends Thread
 	{
 		try
 		{
+			wantToQuit = false;
+			
 			while (!wantToQuit)
 			{
 				try

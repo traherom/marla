@@ -126,61 +126,53 @@ public class BackgroundThread extends Thread
 	{
 		wantToQuit = false;
 
-		try
+		while (!wantToQuit)
 		{
-			while (!wantToQuit)
+			try
 			{
-				try
+				sleep(DELAY);
+			}
+			catch (InterruptedException ex)
+			{
+				Domain.logger.add (ex);
+			}
+
+			// Time, used to check each time to see if it is ready to update
+			long currTime = System.currentTimeMillis();
+
+			// Status messages to flash to user
+			if (nextStatusUpdate <= currTime)
+			{
+				// Hide current message?
+				if(statusIsVisible)
 				{
-					sleep(DELAY);
-				}
-				catch (InterruptedException ex)
-				{
-					Domain.logger.add (ex);
-				}
+					domain.setWorkspaceStatus("");
+					statusIsVisible = false;
 
-				// Time, used to check each time to see if it is ready to update
-				long currTime = System.currentTimeMillis();
-
-				// Status messages to flash to user
-				if (nextStatusUpdate <= currTime)
-				{
-					// Hide current message?
-					if(statusIsVisible)
-					{
-						domain.setWorkspaceStatus("");
-						statusIsVisible = false;
-
-						// Next time to update
-						nextStatusUpdate = currTime + 500;
-					}
-
-					// Display status messages from an undo/redo
-					if (!statusMessages.isEmpty())
-					{
-						domain.setWorkspaceStatus(statusMessages.remove());
-						statusIsVisible = true;
-
-						// Take longer to update. IE, leave message up longer
-						nextStatusUpdate = currTime + 1000;
-					}
+					// Next time to update
+					nextStatusUpdate = currTime + 500;
 				}
 
-				// Write log in a separate thread, only allow one writer at a time
-				if (nextLoggerUpdate <= currTime)
+				// Display status messages from an undo/redo
+				if (!statusMessages.isEmpty())
 				{
-					// Write log file
-					domain.flushLog();
+					domain.setWorkspaceStatus(statusMessages.remove());
+					statusIsVisible = true;
 
-					// Next time to check for a flush if needed
-					nextLoggerUpdate = currTime + 1000;
+					// Take longer to update. IE, leave message up longer
+					nextStatusUpdate = currTime + 1000;
 				}
 			}
-		}
-		catch(Exception ex)
-		{
-			Domain.logger.add(ex);
-			System.err.println("Background thread died unexectedly: " + ex.getMessage());
+
+			// Write log in a separate thread, only allow one writer at a time
+			if (nextLoggerUpdate <= currTime)
+			{
+				// Write log file
+				domain.flushLog();
+
+				// Next time to check for a flush if needed
+				nextLoggerUpdate = currTime + 1000;
+			}
 		}
 	}
 
