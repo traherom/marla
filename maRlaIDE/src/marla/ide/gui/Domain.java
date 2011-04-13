@@ -39,8 +39,8 @@ import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayDeque;
 import java.util.Date;
-import java.util.Deque;
 import java.util.List;
+import java.util.Queue;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
@@ -61,6 +61,7 @@ import marla.ide.resource.Configuration.ConfigType;
 import marla.ide.resource.ConfigurationException;
 import marla.ide.resource.BackgroundThread;
 import marla.ide.resource.Configuration;
+import marla.ide.resource.DebugThread;
 
 /**
  * Interactions that are related but not directly tied to the front-end of the
@@ -85,7 +86,7 @@ public class Domain
 	/** The full time format for debug output.*/
 	public static final SimpleDateFormat FULL_TIME_FORMAT = new SimpleDateFormat("MM/dd/yyyy h:mm:ss a");
 	/** The logger holds all caught exceptions for recording in the log file.*/
-	public static final Deque<Throwable> logger = new ArrayDeque<Throwable> (5);
+	public static final Queue<Throwable> logger = new ArrayDeque<Throwable> (5);
 	/** Debug mode */
 	public static boolean debug = false;
 	/** First run of maRla */
@@ -111,12 +112,12 @@ public class Domain
 	public static String lastGoodDir = HOME_DIR;
 	/** The error file that keeps track of all errors and their occurrences.*/
 	protected File logFile;
-	/** Denotes if the log is being written. Prevents double writing */
-	protected boolean isWritingLog = false;
 	/** The desktop object for common desktop operations.*/
 	protected Desktop desktop;
 	/** The load/save thread that is continually running unless explicitly paused or stopped.*/
 	protected BackgroundThread loadSaveThread;
+	/** The load/save thread that is continually running unless explicitly paused or stopped.*/
+	protected DebugThread redirThread;
 	/** The user can only have one problem open a time, so here is our problem object reference.*/
 	protected Problem problem = null;
 	/** Set to true when an export is cancelled, false otherwise.*/
@@ -265,7 +266,7 @@ public class Domain
 					split.add(debugPane);
 				split.setDividerLocation(split.getHeight() - 100);
 
-				getInstance().loadSaveThread.enableDebugRedirect();
+				getInstance().redirThread.enableDebugRedirect();
 
 				System.out.println("Sending debug output to interface");
 
@@ -279,7 +280,7 @@ public class Domain
 					split.remove(debugPane);
 				split.setDividerLocation(-1);
 
-				getInstance().loadSaveThread.disableDebugRedirect();
+				getInstance().redirThread.disableDebugRedirect();
 			}
 		}
 
@@ -502,19 +503,7 @@ public class Domain
 	 */
 	public void flushLog()
 	{
-		if(isWritingLog)
-			return;
-		
-		try
-		{
-			isWritingLog = true;
-			flushLog(logger, debug, logFile, errorServerURL, (includeProbInReport ? problem : null));
-			logger.clear();
-		}
-		finally
-		{
-			isWritingLog = false;
-		}
+		flushLog(logger, debug, logFile, errorServerURL, (includeProbInReport ? problem : null));
 	}
 
 	/**
@@ -525,81 +514,72 @@ public class Domain
 	 * @param errorServer if not null, sends trace to given error server
 	 * @param currProb if not null, sends given problem along with report to server
 	 */
-	public static void flushLog(Deque<Throwable> log, boolean toConsole, File logFile, String errorServer, Problem currProb)
+	public static synchronized void flushLog(Queue<Throwable> log, boolean toConsole, File logFile, String errorServer, Problem currProb)
 	{
-		synchronized(log)
+		if(log.isEmpty())
+			return;
+
+		PrintWriter out = null;
+		if(logFile != null)
 		{
-			if(log.isEmpty())
-				return;
-		
-			PrintWriter out = null;
-			if(logFile != null)
-			{
-				try
-				{
-					out = new PrintWriter(new BufferedWriter(new FileWriter(logFile, true)));
-
-					Date date = new Date();
-					out.write("Date: " + FULL_TIME_FORMAT.format(date) + "\n");
-				}
-				catch(IOException ex)
-				{
-					out = null;
-					System.err.println("Unable to write error log file: " + ex.getMessage());
-				}
-			}
-
-			// Cache the two XML files, which may be expensive to create
-			String probCache = null;
-			String confCache = null;
-
 			try
 			{
-				Document doc = new Document(currProb.toXml());
-				Format formatter = Format.getPrettyFormat();
-				formatter.setEncoding("UTF-8");
-				XMLOutputter xml = new XMLOutputter(formatter);
-				probCache = xml.outputString(doc);
+				out = new PrintWriter(new BufferedWriter(new FileWriter(logFile, true)));
+
+				Date date = new Date();
+				out.write("Date: " + FULL_TIME_FORMAT.format(date) + "\n");
 			}
-			catch(MarlaException ex)
+			catch(IOException ex)
 			{
-				probCache = "Unable to get problem XML: " + ex.getMessage();
+				out = null;
+				System.err.println("Unable to write error log file: " + ex.getMessage());
 			}
+		}
 
-			try
-			{
-				confCache = Configuration.getInstance().getConfigXML();
-			}
-			catch(MarlaException ex)
-			{
-				confCache = "Unable to get config XML: " + ex.getMessage();
-			}
+		// Cache the two XML files, which may be expensive to create
+		String probCache = null;
+		String confCache = null;
 
-			while(!log.isEmpty())
-			{
-				Throwable ex = log.removeFirst();
+		try
+		{
+			Document doc = new Document(currProb.toXml());
+			Format formatter = Format.getPrettyFormat();
+			formatter.setEncoding("UTF-8");
+			XMLOutputter xml = new XMLOutputter(formatter);
+			probCache = xml.outputString(doc);
+		}
+		catch(MarlaException ex)
+		{
+			probCache = "Unable to get problem XML: " + ex.getMessage();
+		}
 
-				if(toConsole)
-				{
-					// Will get grabbed to go to debug console
-					ex.printStackTrace(System.out);
+		try
+		{
+			confCache = Configuration.getInstance().getConfigXML();
+		}
+		catch(MarlaException ex)
+		{
+			confCache = "Unable to get config XML: " + ex.getMessage();
+		}
 
-					// Always goes to actual console
-					ex.printStackTrace(System.err);
-				}
+		while(!log.isEmpty())
+		{
+			Throwable ex = log.remove();
 
-				if(out != null)
-					ex.printStackTrace(out);
-
-				if(errorServer != null)
-					sendExceptionToServer(errorServer, ex, confCache, probCache);
-			}
+			if(toConsole)
+				ex.printStackTrace(System.out);
 
 			if(out != null)
-			{
-				out.flush();
-				out.close();
-			}
+				ex.printStackTrace(out);
+
+			if(errorServer != null)
+				sendExceptionToServer(errorServer, ex, confCache, probCache);
+		}
+
+		if(out != null)
+		{
+			out.flush();
+			out.close();
 		}
 	}
 
@@ -702,16 +682,6 @@ public class Domain
 			// Too bad, but ignore
 			System.out.println("Unable to send exception to development team: " + ex2.getMessage());
 		}
-	}
-
-	/**
-	 * Passes the reference to the load/save thread into this class.
-	 *
-	 * @param loadSaveThread The load/save thread to be used.
-	 */
-	public void setLoadSaveThread(BackgroundThread loadSaveThread)
-	{
-		this.loadSaveThread = loadSaveThread;
 	}
 	
 	/**
@@ -1226,7 +1196,7 @@ public class Domain
 		}
 		catch (MarlaException ex)
 		{
-			Domain.logger.addLast(ex);
+			Domain.logger.add(ex);
 			JOptionPane.showMessageDialog (getTopWindow(), ex.getMessage (), "Error Loading Save File", JOptionPane.WARNING_MESSAGE);
 		}
 	}

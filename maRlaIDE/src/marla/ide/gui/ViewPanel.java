@@ -77,6 +77,7 @@ import marla.ide.problem.SubProblem;
 import marla.ide.r.RProcessorException;
 import marla.ide.resource.BackgroundThread;
 import marla.ide.resource.Configuration;
+import marla.ide.resource.DebugThread;
 import marla.ide.resource.UndoRedo;
 import marla.ide.resource.Updater;
 
@@ -291,10 +292,12 @@ public class ViewPanel extends JPanel
 
 		workspacePanel.setDropTarget(new DropTarget(workspacePanel, DnDConstants.ACTION_MOVE, DND_LISTENER));
 
-		domain.loadSaveThread = new BackgroundThread(domain, debugTextArea);
-		// Launch the save thread
+		domain.loadSaveThread = new BackgroundThread(domain);
+		domain.redirThread = new DebugThread(debugTextArea);
+		
+		// Launch the threads
 		domain.loadSaveThread.start();
-		domain.setLoadSaveThread(domain.loadSaveThread);
+		domain.redirThread.start();
 
 		// Initially, simply display the welcome card until a problem is created new or loaded
 		emptyPalettePanel.setVisible(true);
@@ -371,7 +374,7 @@ public class ViewPanel extends JPanel
 		}
 		catch(MarlaException ex)
 		{
-			Domain.logger.addLast(ex);
+			Domain.logger.add(ex);
 			JOptionPane.showMessageDialog(domain.getTopWindow(), ex.getMessage(), "Reload Error", JOptionPane.WARNING_MESSAGE);
 		}
 	}
@@ -425,7 +428,7 @@ public class ViewPanel extends JPanel
 			// Images are missing; should never happen
 			catch(IOException ex)
 			{
-				Domain.logger.addLast(ex);
+				Domain.logger.add(ex);
 			}
 			catContentPanel.setLayout(new GridBagLayout());
 			GridBagConstraints catConstraints = new GridBagConstraints();
@@ -479,7 +482,7 @@ public class ViewPanel extends JPanel
 				catch(OperationException ex)
 				{
 					// Unable to load, not a real operation
-					Domain.logger.addLast(ex);
+					Domain.logger.add(ex);
 					System.err.println("Error loading operation '" + operations.get(i) + "'");
 				}
 			}
@@ -1050,11 +1053,11 @@ public class ViewPanel extends JPanel
 						}
 						catch(MarlaException ex)
 						{
-							Domain.logger.addLast(ex);
+							Domain.logger.add(ex);
 						}
 						catch(NullPointerException ex)
 						{
-							Domain.logger.addLast(ex);
+							Domain.logger.add(ex);
 						}
 						xDragOffset = (int) point.getX() - draggingComponent.getX();
 						yDragOffset = (int) point.getY() - draggingComponent.getY();
@@ -1148,7 +1151,7 @@ public class ViewPanel extends JPanel
 						}
 						catch(MarlaException ex)
 						{
-							Domain.logger.addLast(ex);
+							Domain.logger.add(ex);
 						}
 						draggingComponent.setBackground(NO_BACKGROUND_WORKSPACE);
 					}
@@ -1331,7 +1334,7 @@ public class ViewPanel extends JPanel
 					catch(MarlaException ex)
 					{
 						changeInfoMenuItem.setEnabled(false);
-						Domain.logger.addLast(ex);
+						Domain.logger.add(ex);
 					}
 					remarkMenuItem.setEnabled(true);
 				}
@@ -1388,10 +1391,9 @@ public class ViewPanel extends JPanel
 					label.setIcon(new ImageIcon(((Operation) rightClickedComponent).getPlot()));
 					answerPanel.add(label);
 				}
-				else
-				{
-					answerPanel.add(new JLabel("<html>" + ((DataSource) rightClickedComponent).toHTML() + "</html>"));
-				}
+
+				// Always show data, even for graphs
+				answerPanel.add(new JLabel("<html>" + ((DataSource) rightClickedComponent).toHTML() + "</html>"));
 
 				if(rightClickedComponent instanceof Operation)
 				{
@@ -1408,7 +1410,7 @@ public class ViewPanel extends JPanel
 			}
 			catch(OperationXMLException ex)
 			{
-				Domain.logger.addLast(ex);
+				Domain.logger.add(ex);
 				JOptionPane.showMessageDialog(domain.getTopWindow(), ex.getMessage(), "Operation Error", JOptionPane.ERROR_MESSAGE);
 			}
 			catch(OperationException ex)
@@ -1418,11 +1420,7 @@ public class ViewPanel extends JPanel
 			}
 			catch(MarlaException ex)
 			{
-				Domain.logger.addLast(ex);
-			}
-			catch(Throwable ex)
-			{
-				Domain.logger.addLast(ex);
+				Domain.logger.add(ex);
 			}
 			finally
 			{
@@ -1487,7 +1485,7 @@ public class ViewPanel extends JPanel
 			}
 			catch(MarlaException ex)
 			{
-				Domain.logger.addLast(ex);
+				Domain.logger.add(ex);
 			}
 
 			DND_LISTENER.endDrop(null);
@@ -1616,7 +1614,7 @@ public class ViewPanel extends JPanel
 			}
 			catch(MarlaException ex)
 			{
-				Domain.logger.addLast(ex);
+				Domain.logger.add(ex);
 			}
 			DND_LISTENER.endDrop(null);
 		}
@@ -2306,7 +2304,7 @@ public class ViewPanel extends JPanel
 				panel.add(tempPanel);
 			}
 			else
-				Domain.logger.addLast(new InternalMarlaException("Unhandled PromptType in question dialog"));
+				Domain.logger.add(new InternalMarlaException("Unhandled PromptType in question dialog"));
 		}
 
 		JButton doneButton = new JButton("Done");
@@ -2702,7 +2700,7 @@ public class ViewPanel extends JPanel
 					}
 					catch(MarlaException ex)
 					{
-						Domain.logger.addLast(ex);
+						Domain.logger.add(ex);
 						JOptionPane.showMessageDialog(domain.getTopWindow(), ex.getMessage(), "Save Failed", JOptionPane.ERROR_MESSAGE);
 						return false;
 					}
@@ -2839,7 +2837,7 @@ public class ViewPanel extends JPanel
 		}
 		catch(IOException ex)
 		{
-			Domain.logger.addLast(ex);
+			Domain.logger.add(ex);
 		}
 
 		if(!found)
@@ -2875,11 +2873,12 @@ public class ViewPanel extends JPanel
 			}
 			catch(MarlaException ex)
 			{
-				Domain.logger.addLast(ex);
+				Domain.logger.add(ex);
 			}
 
-			// Tell thread to stop
+			// Tell threads to stop
 			domain.loadSaveThread.stopRunning();
+			domain.redirThread.stopRunning();
 
 			try
 			{

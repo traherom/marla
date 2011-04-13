@@ -566,7 +566,7 @@ public class ViewPanel extends JPanel
 		}
 		catch(OperationEditorException ex)
 		{
-			Domain.logger.addLast(ex);
+			Domain.logger.add(ex);
 		}
 	}//GEN-LAST:event_addButtonActionPerformed
 
@@ -683,7 +683,7 @@ public class ViewPanel extends JPanel
 		}
 		catch(OperationEditorException ex)
 		{
-			Domain.logger.addLast(ex);
+			Domain.logger.add(ex);
 		}
 	}//GEN-LAST:event_browseEditingButtonActionPerformed
 
@@ -703,7 +703,7 @@ public class ViewPanel extends JPanel
 				}
 				catch(OperationEditorException ex)
 				{
-					Domain.logger.addLast(ex);
+					Domain.logger.add(ex);
 				}
 			}
 			else
@@ -725,7 +725,7 @@ public class ViewPanel extends JPanel
 			}
 			catch(OperationEditorException ex)
 			{
-				Domain.logger.addLast(ex);
+				Domain.logger.add(ex);
 			}
 		}
 	}//GEN-LAST:event_categoryTextFieldActionPerformed
@@ -785,11 +785,11 @@ public class ViewPanel extends JPanel
 		}
 		catch(DuplicateNameException ex)
 		{
-			Domain.logger.addLast(ex);
+			Domain.logger.add(ex);
 		}
 		catch(MarlaException ex)
 		{
-			Domain.logger.addLast(ex);
+			Domain.logger.add(ex);
 		}
 	}//GEN-LAST:event_browseDataButtonActionPerformed
 
@@ -870,7 +870,7 @@ public class ViewPanel extends JPanel
 		}
 		catch(OperationEditorException ex)
 		{
-			Domain.logger.addLast(ex);
+			Domain.logger.add(ex);
 		}
 	}//GEN-LAST:event_newButtonActionPerformed
 
@@ -994,7 +994,7 @@ public class ViewPanel extends JPanel
 		}
 		catch(OperationEditorException ex)
 		{
-			Domain.logger.addLast(ex);
+			Domain.logger.add(ex);
 		}
 	}//GEN-LAST:event_saveAsButtonActionPerformed
 
@@ -1160,7 +1160,7 @@ public class ViewPanel extends JPanel
 					clearTest = true;
 
 					JOptionPane.showMessageDialog(this, "The test panel could not be refresh.\n" + ex.getMessage(), "Error Testing", JOptionPane.ERROR_MESSAGE);
-					Domain.logger.addLast(ex);
+					Domain.logger.add(ex);
 				}
 			}
 			else
@@ -1441,7 +1441,7 @@ public class ViewPanel extends JPanel
 			}
 			catch(MarlaException ex)
 			{
-				Domain.logger.addLast(ex);
+				Domain.logger.add(ex);
 			}
 
 			// Tell thread to stop

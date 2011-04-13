@@ -92,6 +92,7 @@ public class SettingsDialog extends EscapeDialog
         courseLongNameTextField = new javax.swing.JTextField();
         lineLabel2 = new javax.swing.JLabel();
         studentInformationLabel = new javax.swing.JLabel();
+        jCheckBox1 = new javax.swing.JCheckBox();
         jPanel1 = new javax.swing.JPanel();
         closeButton = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
@@ -247,7 +248,7 @@ public class SettingsDialog extends EscapeDialog
         preferencesPanel.add(debugModeCheckBox);
         debugModeCheckBox.setBounds(10, 100, 140, 25);
 
-        sendErrorReportsCheckBox.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        sendErrorReportsCheckBox.setFont(new java.awt.Font("Verdana", 0, 12));
         sendErrorReportsCheckBox.setText("Send error reports");
         sendErrorReportsCheckBox.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -377,6 +378,16 @@ public class SettingsDialog extends EscapeDialog
         studentInformationLabel.setText("Student Information");
         studentInformationPanel.add(studentInformationLabel);
         studentInformationLabel.setBounds(10, 10, 250, 16);
+
+        jCheckBox1.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        jCheckBox1.setSelected(true);
+        jCheckBox1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jCheckBox1ActionPerformed(evt);
+            }
+        });
+        studentInformationPanel.add(jCheckBox1);
+        jCheckBox1.setBounds(10, 170, 130, 23);
 
         settingsTabbedPane.addTab("Student Information", studentInformationPanel);
 
@@ -578,7 +589,7 @@ public class SettingsDialog extends EscapeDialog
 		}
 		catch (MarlaException ex)
 		{
-			Domain.logger.addLast(ex);
+			Domain.logger.add(ex);
 		}
 	}//GEN-LAST:event_includeProblemCheckBoxActionPerformed
 
@@ -589,7 +600,7 @@ public class SettingsDialog extends EscapeDialog
 		}
 		catch (MarlaException ex)
 		{
-			Domain.logger.addLast(ex);
+			Domain.logger.add(ex);
 		}
 	}//GEN-LAST:event_debugModeCheckBoxActionPerformed
 
@@ -600,7 +611,7 @@ public class SettingsDialog extends EscapeDialog
 		}
 		catch (MarlaException ex)
 		{
-			Domain.logger.addLast(ex);
+			Domain.logger.add(ex);
 		}
 
 		includeProblemCheckBox.setEnabled(sendErrorReportsCheckBox.isSelected());
@@ -615,7 +626,7 @@ public class SettingsDialog extends EscapeDialog
 		}
 		catch (MarlaException ex)
 		{
-			Domain.logger.addLast(ex);
+			Domain.logger.add(ex);
 		}
 	}//GEN-LAST:event_lineSpaceSpinnerStateChanged
 
@@ -627,7 +638,7 @@ public class SettingsDialog extends EscapeDialog
 		}
 		catch (MarlaException ex)
 		{
-			Domain.logger.addLast(ex);
+			Domain.logger.add(ex);
 		}
 	}//GEN-LAST:event_lineWidthSpinnerStateChanged
 
@@ -711,7 +722,7 @@ public class SettingsDialog extends EscapeDialog
 				}
 				catch(MarlaException innerEx)
 				{
-					Domain.logger.addLast(innerEx);
+					Domain.logger.add(innerEx);
 				}
 			}
 		}
@@ -742,7 +753,7 @@ public class SettingsDialog extends EscapeDialog
 				// Exception won't happen
 				catch(MarlaException innerEx)
 				{
-					Domain.logger.addLast(ex);
+					Domain.logger.add(ex);
 				}
 			}
 		}
@@ -765,7 +776,7 @@ public class SettingsDialog extends EscapeDialog
 				// Exception won't happen
 				catch(MarlaException innerEx)
 				{
-					Domain.logger.addLast(ex);
+					Domain.logger.add(ex);
 				}
 			}
 		}
@@ -792,7 +803,7 @@ public class SettingsDialog extends EscapeDialog
 				// Exception won't happen
 				catch(MarlaException innerEx)
 				{
-					Domain.logger.addLast(ex);
+					Domain.logger.add(ex);
 				}
 			}
 		}
@@ -819,7 +830,7 @@ public class SettingsDialog extends EscapeDialog
 				// Exception won't happen
 				catch(MarlaException innerEx)
 				{
-					Domain.logger.addLast(ex);
+					Domain.logger.add(ex);
 				}
 			}
 		}
@@ -828,6 +839,13 @@ public class SettingsDialog extends EscapeDialog
 	private void operationsTextFieldFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_operationsTextFieldFocusLost
 		operationsTextFieldActionPerformed(null);
 	}//GEN-LAST:event_operationsTextFieldFocusLost
+
+	private void jCheckBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBox1ActionPerformed
+		// Compliments Drew
+		if(!jCheckBox1.isSelected())
+			JOptionPane.showMessageDialog(this, "You, dear student, are indeed a wizard.", "You are wrong!", JOptionPane.WARNING_MESSAGE);
+		jCheckBox1.setSelected(true);
+	}//GEN-LAST:event_jCheckBox1ActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton closeButton;
@@ -841,6 +859,7 @@ public class SettingsDialog extends EscapeDialog
     private javax.swing.JTextField customOpsTextField;
     private javax.swing.JCheckBox debugModeCheckBox;
     private javax.swing.JCheckBox includeProblemCheckBox;
+    private javax.swing.JCheckBox jCheckBox1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JSeparator jSeparator1;
@@ -934,7 +953,7 @@ public class SettingsDialog extends EscapeDialog
 		}
 		catch (MarlaException ex)
 		{
-			Domain.logger.addLast(ex);
+			Domain.logger.add(ex);
 		}
 	}
 
@@ -961,7 +980,7 @@ public class SettingsDialog extends EscapeDialog
 		}
 		catch (MarlaException ex)
 		{
-			Domain.logger.addLast(ex);
+			Domain.logger.add(ex);
 		}
 	}
 

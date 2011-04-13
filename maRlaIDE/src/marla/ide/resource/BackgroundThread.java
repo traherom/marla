@@ -25,10 +25,11 @@ import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 import java.io.PrintStream;
 import java.util.ArrayDeque;
-import java.util.Deque;
+import java.util.Queue;
+import java.util.concurrent.locks.ReentrantLock;
 import javax.swing.JTextArea;
 import marla.ide.gui.Domain;
-import marla.ide.problem.MarlaException;
+import org.apache.commons.io.output.TeeOutputStream;
 
 /**
  * The thread which continually checks for background tasks that are in need
@@ -38,8 +39,8 @@ import marla.ide.problem.MarlaException;
  */
 public class BackgroundThread extends Thread
 {
-	/** Saves the standard out stream */
-	public static final PrintStream stdOut = System.out;
+	/** Original standard output */
+	private static final PrintStream stdOut = System.out;
 	/** The domain for the main frame.*/
 	private Domain domain;
 	/** If the thread is already in a load operation, a second load operation
@@ -59,11 +60,7 @@ public class BackgroundThread extends Thread
 	/** True if a status is visible to the user */
 	private boolean statusIsVisible = false;
 	/** The list of status messages that have not yet been displayed.*/
-	private Deque<String> statusMessages = new ArrayDeque<String>(5);
-	/** Stream which will receive standard out */
-	private BufferedReader redirectedOutput = null;
-	/** Text area to redirect debug text to, if enabled */
-	private JTextArea debugTextArea = null;
+	private final Queue<String> statusMessages = new ArrayDeque<String>(5);
 	/** Check if the thread should quit.*/
 	private boolean wantToQuit;
 
@@ -74,10 +71,9 @@ public class BackgroundThread extends Thread
 	 * @param domain The domain for the main frame.
 	 * @param debugTextArea Text area to redirect debug text to, if enabled
 	 */
-	public BackgroundThread(Domain domain, JTextArea debugTextArea)
+	public BackgroundThread(Domain domain)
 	{
 		this.domain = domain;
-		this.debugTextArea = debugTextArea;
 		wantToQuit = true;
 	}
 
@@ -88,7 +84,7 @@ public class BackgroundThread extends Thread
 	 */
 	public void addStatus(String message)
 	{
-		statusMessages.addLast(message);
+		statusMessages.add(message);
 	}
 
 	/**
@@ -99,51 +95,6 @@ public class BackgroundThread extends Thread
 		statusMessages.clear();
 		domain.setWorkspaceStatus("");
 		statusIsVisible = false;
-	}
-
-	/**
-	 * Turns on redirecting System.out output to the debug console in maRla
-	 */
-	public void enableDebugRedirect()
-	{
-		try
-		{
-			// Redirect System.out/err to a stream that goes to the pane
-			PipedOutputStream pos = new PipedOutputStream();
-			PrintStream paneStream = new PrintStream(pos);
-			System.setOut(paneStream);
-
-			// Watch input stream (what the console was told to do) and write it to the textpane
-			redirectedOutput = new BufferedReader(new InputStreamReader(new PipedInputStream(pos)));
-		}
-		catch(IOException ex)
-		{
-			throw new MarlaException("Unable to enable output redirection", ex);
-		}
-	}
-
-	/**
-	 * Turns off redirecting System.out
-	 */
-	public void disableDebugRedirect()
-	{
-		// Send console output to the normal...console
-		System.setOut(stdOut);
-		System.out.println("Sending debug output to console");
-
-		if(redirectedOutput != null)
-		{
-			try
-			{
-				redirectedOutput.close();
-			}
-			catch(IOException ex)
-			{
-				Domain.logger.addLast(ex);
-			}
-
-			redirectedOutput = null;
-		}
 	}
 
 	/**
@@ -181,48 +132,13 @@ public class BackgroundThread extends Thread
 			{
 				try
 				{
-					if(redirectedOutput != null)
-					{
-						synchronized(redirectedOutput)
-						{
-							// Wait for more data/time to check for stuff to dump out
-							redirectedOutput.wait(DELAY);
-						}
-					}
-					else
-					{
-						// Not redirecting, do a normal sleep
-						sleep(DELAY);
-					}
+					sleep(DELAY);
 				}
 				catch (InterruptedException ex)
 				{
 					Domain.logger.add (ex);
 				}
 
-
-				// Redirect output to text area?
-				if(redirectedOutput != null)
-				{
-					try
-					{
-						// Get all available data from stream
-						while(redirectedOutput.ready())
-						{
-							String line = redirectedOutput.readLine();
-							debugTextArea.append(line + "\n");
-						}
-
-						// Scroll to end of text
-						debugTextArea.setCaretPosition(debugTextArea.getDocument().getLength());
-					}
-					catch(IOException ex)
-					{
-						// Nothing to write right now
-						Domain.logger.addLast(ex);
-					}
-				}
-				
 				// Time, used to check each time to see if it is ready to update
 				long currTime = System.currentTimeMillis();
 
@@ -242,7 +158,7 @@ public class BackgroundThread extends Thread
 					// Display status messages from an undo/redo
 					if (!statusMessages.isEmpty())
 					{
-						domain.setWorkspaceStatus(statusMessages.removeFirst());
+						domain.setWorkspaceStatus(statusMessages.remove());
 						statusIsVisible = true;
 
 						// Take longer to update. IE, leave message up longer
@@ -250,17 +166,11 @@ public class BackgroundThread extends Thread
 					}
 				}
 
-				// Write log?
+				// Write log in a separate thread, only allow one writer at a time
 				if (nextLoggerUpdate <= currTime)
 				{
-					// Write log file in separate thread
-					new Thread(new Runnable() {
-						@Override
-						public void run()
-						{
-							domain.flushLog();
-						}
-					}).start();
+					// Write log file
+					domain.flushLog();
 
 					// Next time to check for a flush if needed
 					nextLoggerUpdate = currTime + 1000;
@@ -269,12 +179,8 @@ public class BackgroundThread extends Thread
 		}
 		catch(Exception ex)
 		{
-			Domain.logger.addLast(ex);
+			Domain.logger.add(ex);
 			System.err.println("Background thread died unexectedly: " + ex.getMessage());
-		}
-		finally
-		{
-			disableDebugRedirect();
 		}
 	}
 
