@@ -21,11 +21,13 @@ SetCompressor /SOLID lzma
 !define JRE_VERSION "1.6"
 !define TDRIVE_TEX "T:\TEX\CTAN\basic-miktex.exe"
 !define TDRIVE_R "T:\TEX\CRAN\R-win.exe"
+!define TDRIVE_TEXMAKER "T:\TEX\CTAN\texmakerwin32_install.exe"
 
 Var /GLOBAL RETURN ; Used by functions for returning values
 Var /GLOBAL JavaInstaller
 Var /GLOBAL RInstaller
 Var /GLOBAL MikTexInstaller
+Var /GLOBAL TexmakerInstaller
 Var /GLOBAL JavaVer
 Var /GLOBAL JavaHome
 Var /GLOBAL RHome
@@ -123,7 +125,7 @@ SectionGroup "maRla Core"
 	Section "Install maRla" InstallMarla
 
 		AddSize 800
-		SectionIn 1 2 RO
+		SectionIn 1 2
 		
 		; Make sure the install directory is usable
 		SetOutPath "$INSTDIR"
@@ -174,7 +176,7 @@ SectionGroup "maRla Core"
 
 SectionGroupEnd
 
-Section "Include R-2.12" InstallR
+Section "Install R" InstallR
 	
 	AddSize 67891
 	SectionIn 1
@@ -345,6 +347,59 @@ SectionGroup "MiKTeX"
 
 SectionGroupEnd
 
+SectionGroup "Extra Software" 
+
+	Section "Texmaker" InstallTexmaker
+	
+		AddSize 53568
+		
+		; First check if we have a copy in the temp folder already 
+		StrCpy $TexmakerInstaller "$TEMP\texmaker_install.exe"
+		
+		${IfNot} ${FileExists} $TekmakerInstaller
+		
+			; Nope, is it on the T drive?
+			${IfNot} ${FileExists} ${TDRIVE_R}
+			
+				; Download
+				DetailPrint "Downloading Texmaker to $TexmakerInstaller"
+				NSISdl::download "http://www.xm1math.net/texmaker/texmakerwin32_install.exe" $TexmakerInstaller
+				Pop $0
+				DetailPrint "Download result: $0"
+				
+				${If} $0 != "success"
+					; Download failed
+					DetailPrint "Texmaker download failed"
+					MessageBox MB_OK|MB_ICONEXCLAMATION "Texmaker installer could not be downloaded.$\nTry again later or manually install."
+					Abort
+				${EndIf}
+				
+			${Else}
+				; Copy from T to temp for speed and to show progress
+				ClearErrors
+				CopyFiles ${TDRIVE_TEXMAKER} $TexmakerInstaller
+				
+				${If} ${Errors}
+					DetailPrint "Failed to copy Texmaker to temporary folder"
+					StrCpy $TexmakerInstaller ${TDRIVE_TEXMAKER}
+				${EndIf}
+			${EndIf}
+		${EndIf}
+
+		; Install!
+		DetailPrint "Installing Texmaker from '$TexmakerInstaller'"
+		ClearErrors
+		ExecWait "$TexmakerInstaller /S"
+		
+		${If} ${Errors}
+			MessageBox MB_OK|MB_ICONEXCLAMATION "Failed to install Texmaker correctly. Please install manually or retry later.$\nInstallation aborted."
+			Abort
+		${EndIf}
+	
+	SectionEnd
+
+SectionGroupEnd
+
 Section "-configure-marla" ConfigureMarla
 
 		SectionIn 1 2 RO
@@ -365,42 +420,50 @@ Section "-configure-marla" ConfigureMarla
 		
 SectionEnd
 
-Section "Start Menu Shortcuts" StartShortcuts
+SectionGroup "Shortcuts" CreateShortcuts
 
-	SectionIn 1 2
-	
-	CreateDirectory "$SMPROGRAMS\maRla"
-	CreateShortCut "$SMPROGRAMS\maRla\Uninstall maRla.lnk" "$INSTDIR\Uninstall.exe"
-	CreateShortCut "$SMPROGRAMS\maRla\maRla.lnk" "$INSTDIR\maRlaIDE.exe"
-	CreateShortCut "$SMPROGRAMS\maRla\maRla Operation Editor.lnk" "$INSTDIR\maRla Operation Editor.exe"
-	
-SectionEnd
+	Section "Start Menu" StartShortcuts
 
-Section "Desktop Shortcut" DesktopShortcut
+		SectionIn 1 2
+		
+		CreateDirectory "$SMPROGRAMS\maRla"
+		CreateShortCut "$SMPROGRAMS\maRla\Uninstall maRla.lnk" "$INSTDIR\Uninstall.exe"
+		CreateShortCut "$SMPROGRAMS\maRla\maRla.lnk" "$INSTDIR\maRlaIDE.exe"
+		CreateShortCut "$SMPROGRAMS\maRla\maRla Operation Editor.lnk" "$INSTDIR\maRla Operation Editor.exe"
+		
+	SectionEnd
 
-	SectionIn 1 2
+	Section "Desktop" DesktopShortcut
 
-	CreateShortCut "$DESKTOP\maRla.lnk" "$INSTDIR\maRlaIDE.exe"
-	
-SectionEnd
+		SectionIn 1 2
+
+		CreateShortCut "$DESKTOP\maRla.lnk" "$INSTDIR\maRlaIDE.exe"
+		
+	SectionEnd
+
+SectionGroupEnd
 
 ;--------------------------------
 ;Descriptions
 
-;Language strings
+; Language strings
 LangString DESC_InstallMarla ${LANG_ENGLISH} "Installs the core maRla framework."
-LangString DESC_InstallJava ${LANG_ENGLISH} "Installs Java Runtime Environment if needed. Will be skipped if already installed and new enough."
-LangString DESC_InstallR ${LANG_ENGLISH} "R must be installed for maRla to work properly. Unchecking requires R be installed manually."
-LangString DESC_InstallMiKTeX ${LANG_ENGLISH} "MiKTeX must be installed for maRla to work properly. Unchecking requires MiKTeX be installed and configured manually." 
+LangString DESC_InstallJava ${LANG_ENGLISH} "Installs Java Runtime Environment 1.6. Automatically unchecked if Java is already installed."
+LangString DESC_InstallR ${LANG_ENGLISH} "Installs the statistics engine R. Required for maRla to run."
+LangString DESC_InstallMiKTeX ${LANG_ENGLISH} "Installs MiKTeX. Required for maRla to run. " 
+LangString DESC_ConfigureMiKTeX ${LANG_ENGLISH} "Registers R with MiKTeX and changes other MiKTeX settings. Unchecking requires R be registered with MiKTeX manually or PDF exports will not work correctly." 
+LangString DESC_InstallTexmaker ${LANG_ENGLISH} "Editor for TeX files. Not required for maRla." 
 LangString DESC_StartShortcuts ${LANG_ENGLISH} "Create shortcuts on Start Menu."
 LangString DESC_DesktopShortcut ${LANG_ENGLISH} "Create shortcut on Desktop."
 
-;Assign language strings to sections
+; Assign language strings to sections
 !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
 	!insertmacro MUI_DESCRIPTION_TEXT ${InstallJava} $(DESC_InstallJava)
 	!insertmacro MUI_DESCRIPTION_TEXT ${InstallMarla} $(DESC_InstallMarla)
 	!insertmacro MUI_DESCRIPTION_TEXT ${InstallR} $(DESC_InstallR)
 	!insertmacro MUI_DESCRIPTION_TEXT ${InstallMiKTeX} $(DESC_InstallMiKTeX)
+	!insertmacro MUI_DESCRIPTION_TEXT ${ConfigureMiKTeX} $(DESC_ConfigureMiKTeX)
+	!insertmacro MUI_DESCRIPTION_TEXT ${InstallTexmaker} $(DESC_InstallTexmaker)
 	!insertmacro MUI_DESCRIPTION_TEXT ${StartShortcuts} $(DESC_StartShortcuts)
 	!insertmacro MUI_DESCRIPTION_TEXT ${DesktopShortcut} $(DESC_DesktopShortcut)
 !insertmacro MUI_FUNCTION_DESCRIPTION_END
@@ -426,20 +489,27 @@ Section "Uninstall"
 		
 	notRunning2:
 
+	; Program files
 	Delete "$INSTDIR\Uninstall.exe"
-	Delete "$INSTDIR\export_template.xml"
 	Delete "$INSTDIR\maRlaIDE.exe"
 	Delete "$INSTDIR\maRla Operation Editor.exe"
-	Delete "$INSTDIR\log.dat"
+	
+	Delete "$INSTDIR\export_template.xml"
 	Delete "$INSTDIR\ops.xml"
+	
+	Delete "$INSTDIR\log.dat"
+	
+	RMDir "$INSTDIR"
+	
+	; Shortcuts
 	Delete "$SMPROGRAMS\maRla\Uninstall.lnk"
 	Delete "$SMPROGRAMS\maRla\maRla.lnk"
 	Delete "$SMPROGRAMS\maRla\maRla Operation Editor.lnk"
-	Delete "$DESKTOP\maRla.lnk"
+	RMDir "$SMPROGRAMS\maRla\"
 	
-	RMDir "$SMPROGRAMS\maRla"
-	RMDir "$INSTDIR"
+	Delete "$DESKTOP\maRla.lnk"
 
+	; Registry info
 	DeleteRegKey /ifempty HKCU "Software\maRla"
 	${unregisterExtension} ".marla" "maRla File"
 
@@ -452,7 +522,7 @@ FunctionEnd
 
 Function .onSelChange
 
-	; Keey installing marla and configuring marla in sync
+	; Keep installing marla and configuring marla in sync
 	${If} ${SectionIsSelected} ${InstallMarla}
 		!insertmacro SelectSection ${ConfigureMarla}
 	${Else}
