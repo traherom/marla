@@ -101,6 +101,9 @@ public class BackgroundThread extends Thread
 		statusIsVisible = false;
 	}
 
+	/**
+	 * Turns on redirecting System.out output to the debug console in maRla
+	 */
 	public void enableDebugRedirect()
 	{
 		try
@@ -119,6 +122,9 @@ public class BackgroundThread extends Thread
 		}
 	}
 
+	/**
+	 * Turns off redirecting System.out
+	 */
 	public void disableDebugRedirect()
 	{
 		// Send console output to the normal...console
@@ -247,8 +253,14 @@ public class BackgroundThread extends Thread
 				// Write log?
 				if (nextLoggerUpdate <= currTime)
 				{
-					// Write log file
-					domain.flushLog();
+					// Write log file in separate thread
+					new Thread(new Runnable() {
+						@Override
+						public void run()
+						{
+							domain.flushLog();
+						}
+					}).start();
 
 					// Next time to check for a flush if needed
 					nextLoggerUpdate = currTime + 1000;
