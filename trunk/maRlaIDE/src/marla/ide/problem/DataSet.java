@@ -211,7 +211,7 @@ public final class DataSet extends DataSource
 			// Set the DataColumn modes as appropriate
 			for(int i = 0; i < ds.getColumnCount(); i++)
 			{
-				ds.getColumn(i).autodetectMode();
+				ds.getColumn(i).autoDetectMode();
 			}
 
 			return ds;

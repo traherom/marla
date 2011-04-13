@@ -43,7 +43,6 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableColumnModel;
 import javax.swing.table.TableColumn;
-import marla.ide.gui.ExtendedJTable;
 import marla.ide.gui.ExtensionFileFilter;
 import marla.ide.operation.OperationXML;
 import marla.ide.operation.OperationXMLException;
@@ -667,8 +666,11 @@ public class ViewPanel extends JPanel
 
 				try
 				{
-					currentFile = new OperationFile(file.toString());
-					openFile();
+					if (closeFile())
+					{
+						currentFile = new OperationFile(file.toString());
+						openFile();
+					}
 				}
 				catch(OperationEditorException ex)
 				{
@@ -848,7 +850,6 @@ public class ViewPanel extends JPanel
 
 				save();
 
-				currentFile = OperationFile.createNew(file.toString());
 				if(file.isDirectory())
 				{
 					marla.ide.gui.Domain.lastGoodDir = file.toString();
@@ -858,7 +859,12 @@ public class ViewPanel extends JPanel
 					marla.ide.gui.Domain.lastGoodDir = file.toString().substring(0, file.toString().lastIndexOf(File.separatorChar));
 				}
 
-				openFile();
+				if (closeFile())
+				{
+					currentFile = OperationFile.createNew(file.toString());
+					openFile();
+				}
+
 				break;
 			}
 		}
@@ -1143,9 +1149,9 @@ public class ViewPanel extends JPanel
 					testingPanel.repaint();
 					
 					DefaultTableColumnModel newColumnModel = new DefaultTableColumnModel();
-					((marla.ide.gui.ExtendedJTable) outputTable).setColumnModel(newColumnModel);
-					((marla.ide.gui.ExtendedTableModel) outputModel).setData (new DataSet("empty"));
-					((marla.ide.gui.ExtendedJTable) outputTable).refreshTable();
+					outputTable.setColumnModel(newColumnModel);
+					outputModel.setData (new DataSet("empty"));
+					outputTable.refreshTable();
 
 					displayNameTextPane.setText("<html><div style=\"font-family: Verdana, sans-serif;font-size: 10px;\">" + currentOperation.getDisplayString(false).trim() + "</div></html>");
 				}
@@ -1175,8 +1181,8 @@ public class ViewPanel extends JPanel
 			testingPanel.revalidate();
 			testingPanel.repaint();
 
-			((marla.ide.gui.ExtendedTableModel) outputModel).setData (new DataSet("empty"));
-			((marla.ide.gui.ExtendedJTable) outputTable).refreshTable();
+			outputModel.setData (new DataSet("empty"));
+			outputTable.refreshTable();
 		}
 	}
 
@@ -1194,9 +1200,9 @@ public class ViewPanel extends JPanel
 				column.setHeaderValue(currentOperation.getColumn(i).getName());
 				newColumnModel.addColumn(column);
 			}
-			((marla.ide.gui.ExtendedJTable) outputTable).setColumnModel(newColumnModel);
-			((marla.ide.gui.ExtendedTableModel) outputModel).setData (currentOperation);
-			((marla.ide.gui.ExtendedJTable) outputTable).refreshTable();
+			outputTable.setColumnModel(newColumnModel);
+			outputModel.setData (currentOperation);
+			outputTable.refreshTable();
 
 			if (currentOperation.hasPlot())
 			{
@@ -1251,7 +1257,7 @@ public class ViewPanel extends JPanel
 				xmlStatusLabel.setForeground(Color.RED);
 				xmlStatusLabel.setText("<html><b>XML status:</b> " + ex.getMessage() + "</html>");
 
-				((marla.ide.gui.ExtendedJTable) operationsTable).setSelectedRow (getOperationIndex(currentOperation.getName()));
+				operationsTable.setSelectedRow (getOperationIndex(currentOperation.getName()));
 
 				// Since the table change event will fire twice, ignore the second change back to the invalid operation
 				if(!ignoreSecond)
@@ -1270,8 +1276,8 @@ public class ViewPanel extends JPanel
 			operationsNameTextField.setEnabled (false);
 			operationsNameTextField.setText("");
 			categoryTextField.setEnabled(false);
-			hasPlotCheckBox.setEnabled(false);
 			categoryTextField.setText("");
+			hasPlotCheckBox.setEnabled(false);
 			operationTextPane.setEnabled(false);
 			operationTextPane.setText("");
 			updateTestButton.setEnabled(false);
@@ -1316,10 +1322,10 @@ public class ViewPanel extends JPanel
 			}
 			if (operationsModel.getRowCount() != 0)
 			{
-				((marla.ide.gui.ExtendedJTable) operationsTable).setSelectedRow(0);
+				operationsTable.setSelectedRow(0);
 				removeButton.setEnabled(true);
 			}
-			((marla.ide.gui.ExtendedJTable) operationsTable).refreshTable();
+			operationsTable.refreshTable();
 		}
 	}
 
@@ -1330,6 +1336,8 @@ public class ViewPanel extends JPanel
 	{
 		if(currentFile != null)
 		{
+			checkTextFieldChanges();
+			
 			// Check to save changes before closing the program
 			if(currentFile.isChanged())
 			{
@@ -1348,6 +1356,8 @@ public class ViewPanel extends JPanel
 					return false;
 				}
 			}
+
+			operationsTable.setSelectedRow(-1);
 		}
 		
 		return true;
@@ -1406,9 +1416,7 @@ public class ViewPanel extends JPanel
 	 * plans to terminate the application.
 	 */
 	protected void quit(boolean forceQuit)
-	{
-		checkTextFieldChanges();
-		
+	{		
 		if (closeFile ())
 		{
 			if (Domain.passedInFile != null)

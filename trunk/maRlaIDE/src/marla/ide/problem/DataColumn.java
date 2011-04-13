@@ -170,7 +170,7 @@ public class DataColumn implements List<Object>
 	 * numbers, it will be put into NUMERIC mode.
 	 * @return DataMode the DataColumn is now operating under
 	 */
-	public DataMode autodetectMode()
+	public DataMode autoDetectMode()
 	{
 		// Try to interpret everything as a number. If this fails then
 		// we switch to STRING

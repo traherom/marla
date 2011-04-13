@@ -1093,6 +1093,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 		if (editing)
 		{
 			viewPanel.workspacePanel.remove(removedData);
+			viewPanel.workspacePanel.repaint();
 			removeFromRightPanel();
 		}
 

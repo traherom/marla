@@ -278,6 +278,8 @@ public class ExtendedTableModel extends AbstractTableModel
 		if (!getValueAt(row, col).toString().equals (value.toString()))
 		{
 			data.getColumn(col).set(row, value);
+			data.getColumn(col).autoDetectMode();
+			
 			fireTableCellUpdated(row, col);
 		}
 	}

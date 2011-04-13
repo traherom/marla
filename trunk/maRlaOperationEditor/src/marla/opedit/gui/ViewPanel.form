@@ -145,7 +145,7 @@
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="xmlStatusLabel" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
-                              <Component id="operationScrollPane" pref="346" max="32767" attributes="0"/>
+                              <Component id="operationScrollPane" pref="349" max="32767" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="3" attributes="0">
                                   <Component id="updateTestButton" alignment="3" min="-2" max="-2" attributes="0"/>
@@ -153,7 +153,7 @@
                               </Group>
                           </Group>
                           <Group type="102" attributes="0">
-                              <Component id="operationsScrollPane" pref="447" max="32767" attributes="0"/>
+                              <Component id="operationsScrollPane" pref="450" max="32767" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="3" attributes="0">
                                   <Component id="addButton" alignment="3" min="-2" max="-2" attributes="0"/>
