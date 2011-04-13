@@ -525,6 +525,7 @@ public class ViewPanel extends JPanel
 
         fileChooserDialog = new javax.swing.JFileChooser();
         answerDialog = new javax.swing.JDialog();
+        answersScrollPane = new javax.swing.JScrollPane();
         answerPanel = new javax.swing.JPanel();
         rightClickMenu = new javax.swing.JPopupMenu();
         solutionMenuItem = new javax.swing.JMenuItem();
@@ -578,7 +579,6 @@ public class ViewPanel extends JPanel
 
         answerDialog.setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         answerDialog.setTitle("Solution to Point");
-        answerDialog.setAlwaysOnTop(true);
         answerDialog.setUndecorated(true);
         answerDialog.addWindowFocusListener(new java.awt.event.WindowFocusListener() {
             public void windowGainedFocus(java.awt.event.WindowEvent evt) {
@@ -589,9 +589,12 @@ public class ViewPanel extends JPanel
         });
         answerDialog.getContentPane().setLayout(new java.awt.GridLayout(1, 1));
 
-        answerPanel.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+        answersScrollPane.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+
         answerPanel.setLayout(new javax.swing.BoxLayout(answerPanel, javax.swing.BoxLayout.PAGE_AXIS));
-        answerDialog.getContentPane().add(answerPanel);
+        answersScrollPane.setViewportView(answerPanel);
+
+        answerDialog.getContentPane().add(answersScrollPane);
 
         solutionMenuItem.setFont(new java.awt.Font("Verdana", 0, 11));
         solutionMenuItem.setText("Solution");
@@ -627,7 +630,7 @@ public class ViewPanel extends JPanel
         rightClickMenu.add(tieSubProblemSubMenu);
 
         untieSubProblemSubMenu.setText("Untie from Sub Problem");
-        untieSubProblemSubMenu.setFont(new java.awt.Font("Verdana", 0, 11)); // NOI18N
+        untieSubProblemSubMenu.setFont(new java.awt.Font("Verdana", 0, 11));
         rightClickMenu.add(untieSubProblemSubMenu);
 
         remarkMenuItem.setFont(new java.awt.Font("Verdana", 0, 11));
@@ -1404,8 +1407,19 @@ public class ViewPanel extends JPanel
 					answerDialog.setTitle("Data Set Summary");
 				}
 
-				answerDialog.pack();
+				int width = mainFrame.getLocationOnScreen().x + mainFrame.getWidth() - answerDialogLocation.x;
+				if (width > answerPanel.getPreferredSize().width)
+				{
+					width = answerPanel.getPreferredSize().width + answersScrollPane.getVerticalScrollBar().getPreferredSize().width + (answersScrollPane.getBorder().getBorderInsets(answersScrollPane).left * 2);
+				}
+				int height = mainFrame.getLocationOnScreen().y + mainFrame.getHeight() - answerDialogLocation.y;
+				if (height > answerPanel.getPreferredSize().height)
+				{
+					height = answerPanel.getPreferredSize().height + answersScrollPane.getVerticalScrollBar().getPreferredSize().height + (answersScrollPane.getBorder().getBorderInsets(answersScrollPane).top * 2);
+				}
+				answerDialog.setSize(width, height);
 				answerDialog.setLocation(answerDialogLocation);
+				answerDialog.toFront();
 				answerDialog.setVisible(true);
 			}
 			catch(OperationXMLException ex)
@@ -2906,6 +2920,7 @@ public class ViewPanel extends JPanel
     private javax.swing.JMenuItem addDataSetMenuItem;
     protected javax.swing.JDialog answerDialog;
     private javax.swing.JPanel answerPanel;
+    private javax.swing.JScrollPane answersScrollPane;
     private javax.swing.JMenuItem changeInfoMenuItem;
     protected javax.swing.JPanel componentsPanel;
     private javax.swing.JScrollPane componentsScrollPane;

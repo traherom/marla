@@ -460,8 +460,10 @@
     <query type="checkbox" prompt="Assume data is normal" name="normal" />
     <displayname>
       t.test(
-      <response name="x" default="x" />,
-      y=<response name="y" default="y" />
+      <response name="x" default="x" />
+      ,
+      y=
+      <response name="y" default="y" />
       )
     </displayname>
     <computation>
@@ -469,7 +471,6 @@
       <set rvar="xVals" name="x" use="values" />
       <set rvar="yName" name="y" use="name" />
       <set rvar="yVals" name="y" use="values" />
-
       <cmd>t = t.test(xVals, y=yVals)</cmd>
       <cmd>newColName = paste('t-test(', xName, 'y=', yName, ')', sep='')</cmd>
       <!-- Create a "t-test vals" column, if it doesn't already exist -->
