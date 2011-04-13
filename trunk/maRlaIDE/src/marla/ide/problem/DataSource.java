@@ -701,9 +701,7 @@ public abstract class DataSource extends JLabel implements Loadable, Changeable
 
 		sb.append("</table>");
 
-		throw new InternalMarlaException("naj");
-
-		//return sb.toString();
+		return sb.toString();
 	}
 
 	/**
