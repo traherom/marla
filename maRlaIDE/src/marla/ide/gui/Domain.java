@@ -38,7 +38,6 @@ import java.net.URLEncoder;
 import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayDeque;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.Deque;
 import java.util.List;
@@ -528,76 +527,79 @@ public class Domain
 	 */
 	public static void flushLog(Deque<Throwable> log, boolean toConsole, File logFile, String errorServer, Problem currProb)
 	{
-		if(log.isEmpty())
-			return;
-
-		PrintWriter out = null;
-		if(logFile != null)
+		synchronized(log)
 		{
+			if(log.isEmpty())
+				return;
+		
+			PrintWriter out = null;
+			if(logFile != null)
+			{
+				try
+				{
+					out = new PrintWriter(new BufferedWriter(new FileWriter(logFile, true)));
+
+					Date date = new Date();
+					out.write("Date: " + FULL_TIME_FORMAT.format(date) + "\n");
+				}
+				catch(IOException ex)
+				{
+					out = null;
+					System.err.println("Unable to write error log file: " + ex.getMessage());
+				}
+			}
+
+			// Cache the two XML files, which may be expensive to create
+			String probCache = null;
+			String confCache = null;
+
 			try
 			{
-				out = new PrintWriter(new BufferedWriter(new FileWriter(logFile, true)));
-
-				Date date = new Date();
-				out.write("Date: " + FULL_TIME_FORMAT.format(date) + "\n");
+				Document doc = new Document(currProb.toXml());
+				Format formatter = Format.getPrettyFormat();
+				formatter.setEncoding("UTF-8");
+				XMLOutputter xml = new XMLOutputter(formatter);
+				probCache = xml.outputString(doc);
 			}
-			catch(IOException ex)
+			catch(MarlaException ex)
 			{
-				out = null;
-				System.err.println("Unable to write error log file: " + ex.getMessage());
+				probCache = "Unable to get problem XML: " + ex.getMessage();
 			}
-		}
 
-		// Cache the two XML files, which may be expensive to create
-		String probCache = null;
-		String confCache = null;
-
-		try
-		{
-			Document doc = new Document(currProb.toXml());
-			Format formatter = Format.getPrettyFormat();
-			formatter.setEncoding("UTF-8");
-			XMLOutputter xml = new XMLOutputter(formatter);
-			probCache = xml.outputString(doc);
-		}
-		catch(MarlaException ex)
-		{
-			probCache = "Unable to get problem XML: " + ex.getMessage();
-		}
-
-		try
-		{
-			confCache = Configuration.getInstance().getConfigXML();
-		}
-		catch(MarlaException ex)
-		{
-			confCache = "Unable to get config XML: " + ex.getMessage();
-		}
-
-		while(!logger.isEmpty())
-		{
-			Throwable ex = logger.removeFirst();
-
-			if(toConsole)
+			try
 			{
-				// Will get grabbed to go to debug console
-				ex.printStackTrace(System.out);
-				
-				// Always goes to actual console
-				ex.printStackTrace(System.err);
+				confCache = Configuration.getInstance().getConfigXML();
 			}
-			
+			catch(MarlaException ex)
+			{
+				confCache = "Unable to get config XML: " + ex.getMessage();
+			}
+
+			while(!log.isEmpty())
+			{
+				Throwable ex = log.removeFirst();
+
+				if(toConsole)
+				{
+					// Will get grabbed to go to debug console
+					ex.printStackTrace(System.out);
+
+					// Always goes to actual console
+					ex.printStackTrace(System.err);
+				}
+
+				if(out != null)
+					ex.printStackTrace(out);
+
+				if(errorServer != null)
+					sendExceptionToServer(errorServer, ex, confCache, probCache);
+			}
+
 			if(out != null)
-				ex.printStackTrace(out);
-
-			if(errorServer != null)
-				sendExceptionToServer(errorServer, ex, confCache, probCache);
-		}
-
-		if(out != null)
-		{
-			out.flush();
-			out.close();
+			{
+				out.flush();
+				out.close();
+			}
 		}
 	}
 
