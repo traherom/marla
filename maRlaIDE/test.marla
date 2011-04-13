@@ -2,7 +2,7 @@
 <problem person="Test student" course_long="Long name" course_short="Short name" chapter="Chapter" section="Section" probnum="Number">
   <statement>Problem description ...</statement>
   <conclusion>Conclusion</conclusion>
-  <data name="Doink" id="2064948438" x="578" y="78" height="16" width="38" hidden="false">
+  <data name="Doink" id="2064948438" x="283" y="55" height="16" width="38" hidden="false">
     <column name="Column 1" mode="NUMERIC">
       <value>0.0</value>
       <value>1.0</value>
@@ -263,9 +263,9 @@
       <value>48.0</value>
       <value>49.0</value>
     </column>
-    <operation type="marla.ide.operation.OperationXML" name="Q-Q Line" id="1725846927" x="535" y="109" height="16" width="124" hidden="false">
+    <operation type="marla.ide.operation.OperationXML" name="Q-Q Line" id="1725846927" x="74" y="86" height="16" width="124" hidden="false">
       <remark />
-      <operation type="marla.ide.operation.OperationXML" name="t-test" id="-454708163" x="579" y="140" height="16" width="36" hidden="false">
+      <operation type="marla.ide.operation.OperationXML" name="t-test" id="-454708163" x="77" y="117" height="16" width="118" hidden="false">
         <remark />
         <question name="col" answer="Column 1" />
         <question name="normal" answer="false" />
@@ -273,6 +273,51 @@
       </operation>
       <question name="col" answer="Column 1" />
       <extra name="Q-Q Line" />
+    </operation>
+    <operation type="marla.ide.operation.OperationXML" name="Exponential" id="-307854814" x="292" y="86" height="21" width="21" hidden="false">
+      <remark />
+      <operation type="marla.ide.operation.OperationXML" name="Log 10" id="1179160914" x="281" y="122" height="22" width="46" hidden="false">
+        <remark />
+        <operation type="marla.ide.operation.OperationXML" name="Log 10" id="843335334" x="218" y="159" height="22" width="46" hidden="false">
+          <remark />
+          <question name="col" />
+          <extra name="Log 10" />
+        </operation>
+        <operation type="marla.ide.operation.OperationXML" name="Log base X" id="341187373" x="284" y="159" height="22" width="41" hidden="false">
+          <remark />
+          <question name="col" />
+          <question name="base" />
+          <extra name="Log base X" />
+        </operation>
+        <operation type="marla.ide.operation.OperationXML" name="Log base X" id="-40437563" x="345" y="159" height="22" width="41" hidden="false">
+          <remark />
+          <question name="col" />
+          <question name="base" />
+          <extra name="Log base X" />
+        </operation>
+        <question name="col" />
+        <extra name="Log 10" />
+      </operation>
+      <question name="col" />
+      <extra name="Exponential" />
+    </operation>
+    <operation type="marla.ide.operation.OperationXML" name="Log base X" id="-54745968" x="469" y="86" height="22" width="41" hidden="false">
+      <remark />
+      <operation type="marla.ide.operation.OperationXML" name="Multiply" id="353430226" x="406" y="123" height="16" width="73" hidden="false">
+        <remark />
+        <question name="val" />
+        <question name="col" />
+        <extra name="Multiply" />
+      </operation>
+      <operation type="marla.ide.operation.OperationXML" name="Multiply" id="207271616" x="499" y="123" height="16" width="73" hidden="false">
+        <remark />
+        <question name="val" />
+        <question name="col" />
+        <extra name="Multiply" />
+      </operation>
+      <question name="col" />
+      <question name="base" />
+      <extra name="Log base X" />
     </operation>
   </data>
   <data name="Data Set 2" id="-337497176" x="714" y="318" height="16" width="70" hidden="true">
@@ -303,52 +348,28 @@
   </data>
   <unused />
   <part id="a." color="-4100327">
-    <step id="-1259616404" />
-    <step id="-1414670551" />
-    <step id="10268089" />
-    <step id="-924454097" />
-    <step id="-1651798371" />
-    <step id="-622548735" />
-    <step id="2084415187" />
-    <step id="1236644357" />
-    <step id="-110593302" />
-    <step id="1725846927" />
-    <step id="-1765807963" />
-    <step id="-832983159" />
-    <step id="1143706597" />
-    <step id="1460852593" />
-    <step id="1539550896" />
-    <step id="-454708163" />
-    <step id="-1192691438" />
-    <step id="344326009" />
-    <step id="199039912" />
-    <step id="-848634779" />
-    <step id="-1991929156" />
-    <step id="52652357" />
+    <step id="-54745968" />
+    <step id="207271616" />
+    <step id="353430226" />
+    <step id="-307854814" />
+    <step id="1179160914" />
+    <step id="-40437563" />
+    <step id="341187373" />
+    <step id="843335334" />
     <statement>This is a sub problem ...</statement>
     <conclusion>This is a conclusion ...</conclusion>
   </part>
   <part id="b." color="-16519193">
-    <step id="-1259616404" />
-    <step id="-1414670551" />
-    <step id="10268089" />
-    <step id="-924454097" />
-    <step id="-1651798371" />
-    <step id="-622548735" />
-    <step id="2084415187" />
-    <step id="1236644357" />
-    <step id="-110593302" />
-    <step id="-1991929156" />
-    <step id="52652357" />
+    <step id="-54745968" />
+    <step id="207271616" />
+    <step id="353430226" />
+    <step id="1725846927" />
+    <step id="-454708163" />
     <statement>This is a sub problem ...</statement>
     <conclusion>This is a conclusion ...</conclusion>
   </part>
   <part id="c." color="-10017304">
-    <step id="-1765807963" />
-    <step id="-832983159" />
-    <step id="1143706597" />
-    <step id="1460852593" />
-    <step id="1539550896" />
+    <step id="843335334" />
     <statement>This is a sub problem ...</statement>
     <conclusion>This is a conclusion ...</conclusion>
   </part>
