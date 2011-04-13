@@ -154,7 +154,7 @@ public class DataColumn implements List<Object>
 		DataMode oldMode = mode;
 
 		// Only changed if they actually switched modes
-		if(oldMode != newMode)
+		if(oldMode == newMode)
 			return oldMode;
 
 		changeBeginning("column " + getName() + " mode change");
@@ -359,7 +359,8 @@ public class DataColumn implements List<Object>
 	/**
 	 * Converts the given object to the correct type for the mode the DataColumn
 	 * is in.
-	 * @param val Object (Double or String preferably) to save to the column
+	 * @param val Object to save to the column. Will be converted to a Double
+	 *		or String, as appropriate
 	 * @return Object cast to the correct type
 	 */
 	private Object castToMode(Object val)

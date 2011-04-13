@@ -1061,7 +1061,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 		// This check has already occured, so this exception will never be thrown
 		catch(DuplicateNameException ex)
 		{
-			Domain.logger.add(ex);
+			Domain.logger.addLast(ex);
 		}
 
 		addDataSet(dataSet);
@@ -1163,7 +1163,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 				}
 				catch(IOException ex)
 				{
-					Domain.logger.add(ex);
+					Domain.logger.addLast(ex);
 				}
 			}
 
@@ -1761,7 +1761,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 					}
 					catch(IOException ex)
 					{
-						Domain.logger.add(ex);
+						Domain.logger.addLast(ex);
 					}
 				}
 
@@ -2521,7 +2521,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 			// Will never be thrown at this point
 			catch(DuplicateNameException ex)
 			{
-				Domain.logger.add(ex);
+				Domain.logger.addLast(ex);
 			}
 
 			// Set problem defaults for name and location
@@ -2822,7 +2822,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 			}
 			catch(DataNotFoundException ex)
 			{
-				Domain.logger.add(ex);
+				Domain.logger.addLast(ex);
 			}
 		}
 

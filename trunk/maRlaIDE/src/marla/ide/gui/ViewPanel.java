@@ -291,7 +291,7 @@ public class ViewPanel extends JPanel
 
 		workspacePanel.setDropTarget(new DropTarget(workspacePanel, DnDConstants.ACTION_MOVE, DND_LISTENER));
 
-		domain.loadSaveThread = new BackgroundThread(domain);
+		domain.loadSaveThread = new BackgroundThread(domain, debugTextArea);
 		// Launch the save thread
 		domain.loadSaveThread.start();
 		domain.setLoadSaveThread(domain.loadSaveThread);
@@ -371,7 +371,7 @@ public class ViewPanel extends JPanel
 		}
 		catch(MarlaException ex)
 		{
-			Domain.logger.add(ex);
+			Domain.logger.addLast(ex);
 			JOptionPane.showMessageDialog(domain.getTopWindow(), ex.getMessage(), "Reload Error", JOptionPane.WARNING_MESSAGE);
 		}
 	}
@@ -425,7 +425,7 @@ public class ViewPanel extends JPanel
 			// Images are missing; should never happen
 			catch(IOException ex)
 			{
-				Domain.logger.add(ex);
+				Domain.logger.addLast(ex);
 			}
 			catContentPanel.setLayout(new GridBagLayout());
 			GridBagConstraints catConstraints = new GridBagConstraints();
@@ -479,7 +479,7 @@ public class ViewPanel extends JPanel
 				catch(OperationException ex)
 				{
 					// Unable to load, not a real operation
-					Domain.logger.add(ex);
+					Domain.logger.addLast(ex);
 					System.err.println("Error loading operation '" + operations.get(i) + "'");
 				}
 			}
@@ -1050,11 +1050,11 @@ public class ViewPanel extends JPanel
 						}
 						catch(MarlaException ex)
 						{
-							Domain.logger.add(ex);
+							Domain.logger.addLast(ex);
 						}
 						catch(NullPointerException ex)
 						{
-							Domain.logger.add(ex);
+							Domain.logger.addLast(ex);
 						}
 						xDragOffset = (int) point.getX() - draggingComponent.getX();
 						yDragOffset = (int) point.getY() - draggingComponent.getY();
@@ -1148,7 +1148,7 @@ public class ViewPanel extends JPanel
 						}
 						catch(MarlaException ex)
 						{
-							Domain.logger.add(ex);
+							Domain.logger.addLast(ex);
 						}
 						draggingComponent.setBackground(NO_BACKGROUND_WORKSPACE);
 					}
@@ -1331,7 +1331,7 @@ public class ViewPanel extends JPanel
 					catch(MarlaException ex)
 					{
 						changeInfoMenuItem.setEnabled(false);
-						Domain.logger.add(ex);
+						Domain.logger.addLast(ex);
 					}
 					remarkMenuItem.setEnabled(true);
 				}
@@ -1408,7 +1408,7 @@ public class ViewPanel extends JPanel
 			}
 			catch(OperationXMLException ex)
 			{
-				Domain.logger.add(ex);
+				Domain.logger.addLast(ex);
 				JOptionPane.showMessageDialog(domain.getTopWindow(), ex.getMessage(), "Operation Error", JOptionPane.ERROR_MESSAGE);
 			}
 			catch(OperationException ex)
@@ -1418,7 +1418,11 @@ public class ViewPanel extends JPanel
 			}
 			catch(MarlaException ex)
 			{
-				Domain.logger.add(ex);
+				Domain.logger.addLast(ex);
+			}
+			catch(Throwable ex)
+			{
+				Domain.logger.addLast(ex);
 			}
 			finally
 			{
@@ -1483,7 +1487,7 @@ public class ViewPanel extends JPanel
 			}
 			catch(MarlaException ex)
 			{
-				Domain.logger.add(ex);
+				Domain.logger.addLast(ex);
 			}
 
 			DND_LISTENER.endDrop(null);
@@ -1612,7 +1616,7 @@ public class ViewPanel extends JPanel
 			}
 			catch(MarlaException ex)
 			{
-				Domain.logger.add(ex);
+				Domain.logger.addLast(ex);
 			}
 			DND_LISTENER.endDrop(null);
 		}
@@ -2302,7 +2306,7 @@ public class ViewPanel extends JPanel
 				panel.add(tempPanel);
 			}
 			else
-				Domain.logger.add(new InternalMarlaException("Unhandled PromptType in question dialog"));
+				Domain.logger.addLast(new InternalMarlaException("Unhandled PromptType in question dialog"));
 		}
 
 		JButton doneButton = new JButton("Done");
@@ -2698,7 +2702,7 @@ public class ViewPanel extends JPanel
 					}
 					catch(MarlaException ex)
 					{
-						Domain.logger.add(ex);
+						Domain.logger.addLast(ex);
 						JOptionPane.showMessageDialog(domain.getTopWindow(), ex.getMessage(), "Save Failed", JOptionPane.ERROR_MESSAGE);
 						return false;
 					}
@@ -2835,7 +2839,7 @@ public class ViewPanel extends JPanel
 		}
 		catch(IOException ex)
 		{
-			Domain.logger.add(ex);
+			Domain.logger.addLast(ex);
 		}
 
 		if(!found)
@@ -2871,7 +2875,7 @@ public class ViewPanel extends JPanel
 			}
 			catch(MarlaException ex)
 			{
-				Domain.logger.add(ex);
+				Domain.logger.addLast(ex);
 			}
 
 			// Tell thread to stop

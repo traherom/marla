@@ -28,8 +28,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-import java.io.PipedInputStream;
-import java.io.PipedOutputStream;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.net.HttpURLConnection;
@@ -39,14 +37,15 @@ import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Deque;
 import java.util.List;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
-import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
 import marla.ide.latex.LatexExporter;
 import marla.ide.problem.MarlaException;
@@ -87,15 +86,15 @@ public class Domain
 	/** The full time format for debug output.*/
 	public static final SimpleDateFormat FULL_TIME_FORMAT = new SimpleDateFormat("MM/dd/yyyy h:mm:ss a");
 	/** The logger holds all caught exceptions for recording in the log file.*/
-	public static final List<Throwable> logger = new ArrayList<Throwable> ();
+	public static final Deque<Throwable> logger = new ArrayDeque<Throwable> (5);
 	/** Debug mode */
 	public static boolean debug = false;
 	/** First run of maRla */
 	public static boolean firstRun = false;
 	/** Domain object currently created. Only one allowed, ever */
 	public static Domain currDomain = null;
-	/** Saves the standard out stream */
-	public static final PrintStream stdOut = System.out;
+	/** The reference to the view of the application.*/
+	public ViewPanel viewPanel;
 	/**
 	 * Server to send maRla exceptions to
 	 */
@@ -121,8 +120,6 @@ public class Domain
 	protected BackgroundThread loadSaveThread;
 	/** The user can only have one problem open a time, so here is our problem object reference.*/
 	protected Problem problem = null;
-	/** The reference to the view of the application.*/
-	private ViewPanel viewPanel;
 	/** Set to true when an export is cancelled, false otherwise.*/
 	protected static boolean cancelExport = false;
 
@@ -269,72 +266,13 @@ public class Domain
 					split.add(debugPane);
 				split.setDividerLocation(split.getHeight() - 100);
 
-				try
-				{
-					// Redirect System.out/err to a stream that goes to the pane
-					final PipedOutputStream pos = new PipedOutputStream();
-					final PrintStream paneStream = new PrintStream(pos);
-					System.setOut(paneStream);
+				getInstance().loadSaveThread.enableDebugRedirect();
 
-					// Watch input stream (what the console was told to do) and write it to the textpane
-					final BufferedReader br = new BufferedReader(new InputStreamReader(new PipedInputStream(pos)));
-					final JTextArea debugText = getInstance().viewPanel.debugTextArea;
-					(new Thread(){
-						@Override
-						public void run()
-						{
-							try
-							{
-								synchronized(br)
-								{
-									while(Domain.isDebugMode())
-									{
-										try
-										{
-											// Get line
-											debugText.append(br.readLine() + "\n");
+				System.out.println("Sending debug output to interface");
 
-											// Scroll to end of text
-											debugText.setCaretPosition(debugText.getDocument().getLength());
-										}
-										catch(IOException ex)
-										{
-											// Wait for more data
-											br.wait(1000);
-										}
-									}
-								}
-							}
-							catch(InterruptedException ex)
-							{
-								Domain.logger.add(ex);
-							}
-							finally
-							{
-								try
-								{
-									br.close();
-									paneStream.close();
-									pos.close();
-								}
-								catch(IOException ex)
-								{
-									Domain.logger.add(ex);
-								}
-							}
-						}
-					}).start();
-
-					System.out.println("Sending debug output to interface");
-
-					// Build info message
-					System.out.println(Domain.NAME + " " + Domain.VERSION + " " + Domain.PRE_RELEASE);
-					System.out.println("Revision " + BuildInfo.revisionNumber + ", built " + BuildInfo.timeStamp + "\n");
-				}
-				catch(IOException ex)
-				{
-					Domain.logger.add(ex);
-				}
+				// Build info message
+				System.out.println(Domain.NAME + " " + Domain.VERSION + " " + Domain.PRE_RELEASE);
+				System.out.println("Revision " + BuildInfo.revisionNumber + ", built " + BuildInfo.timeStamp + "\n");
 			}
 			else
 			{
@@ -342,9 +280,7 @@ public class Domain
 					split.remove(debugPane);
 				split.setDividerLocation(-1);
 
-				// Send console output to the normal...console
-				System.setOut(stdOut);
-				System.out.println("Sending debug output to console");
+				getInstance().loadSaveThread.disableDebugRedirect();
 			}
 		}
 
@@ -590,7 +526,7 @@ public class Domain
 	 * @param errorServer if not null, sends trace to given error server
 	 * @param currProb if not null, sends given problem along with report to server
 	 */
-	public static void flushLog(List<Throwable> log, boolean toConsole, File logFile, String errorServer, Problem currProb)
+	public static void flushLog(Deque<Throwable> log, boolean toConsole, File logFile, String errorServer, Problem currProb)
 	{
 		if(log.isEmpty())
 			return;
@@ -638,9 +574,9 @@ public class Domain
 			confCache = "Unable to get config XML: " + ex.getMessage();
 		}
 
-		for(int i = 0; i < logger.size(); ++i)
+		while(!logger.isEmpty())
 		{
-			Throwable ex = logger.get(i);
+			Throwable ex = logger.removeFirst();
 
 			if(toConsole)
 			{
@@ -1288,7 +1224,7 @@ public class Domain
 		}
 		catch (MarlaException ex)
 		{
-			Domain.logger.add(ex);
+			Domain.logger.addLast(ex);
 			JOptionPane.showMessageDialog (getTopWindow(), ex.getMessage (), "Error Loading Save File", JOptionPane.WARNING_MESSAGE);
 		}
 	}
