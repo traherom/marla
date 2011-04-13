@@ -21,7 +21,7 @@ package marla.opedit.gui;
 import java.awt.Container;
 import java.awt.Desktop;
 import java.io.File;
-import java.util.List;
+import java.util.Queue;
 import javax.swing.SwingUtilities;
 import marla.ide.resource.Configuration;
 import marla.opedit.operation.OperationFile;
@@ -46,7 +46,7 @@ public class Domain
     /** The home directory for the current user.*/
     public static final String HOME_DIR = System.getProperty("user.home");
     /** The logger holds all caught exceptions for recording in the log file.*/
-    public static final List<Throwable> logger = marla.ide.gui.Domain.logger;
+    public static final Queue<Throwable> logger = marla.ide.gui.Domain.logger;
 	/** If launched with a file to open, this will be the file set.*/
 	public static File passedInFile = null;
 

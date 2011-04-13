@@ -142,11 +142,11 @@ public class Updater implements Runnable
 		}
 		catch(MarlaException ex)
 		{
-			Domain.logger.addLast(ex);
+			Domain.logger.add(ex);
 		}
 		catch(InterruptedException ex)
 		{
-			Domain.logger.addLast(ex);
+			Domain.logger.add(ex);
 		}
 	}
 
@@ -170,7 +170,7 @@ public class Updater implements Runnable
 		}
 		catch(IOException ex)
 		{
-			Domain.logger.addLast(ex);
+			Domain.logger.add(ex);
 			ex.printStackTrace();
 		}
 	}

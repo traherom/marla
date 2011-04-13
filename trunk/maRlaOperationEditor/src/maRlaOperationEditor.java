@@ -51,7 +51,7 @@ public class maRlaOperationEditor
 			@Override
 			public void uncaughtException(Thread t, Throwable e)
 			{
-				Domain.logger.addLast(e);
+				Domain.logger.add(e);
 			}
 		});
 		
@@ -69,19 +69,19 @@ public class maRlaOperationEditor
 		}
 		catch(ClassNotFoundException ex)
 		{
-			Domain.logger.addLast(ex);
+			Domain.logger.add(ex);
 		}
 		catch(InstantiationException ex)
 		{
-			Domain.logger.addLast(ex);
+			Domain.logger.add(ex);
 		}
 		catch(IllegalAccessException ex)
 		{
-			Domain.logger.addLast(ex);
+			Domain.logger.add(ex);
 		}
 		catch(UnsupportedLookAndFeelException ex)
 		{
-			Domain.logger.addLast(ex);
+			Domain.logger.add(ex);
 		}
 
 		final marla.ide.gui.ProgressFrame progressFrame = new marla.ide.gui.ProgressFrame();

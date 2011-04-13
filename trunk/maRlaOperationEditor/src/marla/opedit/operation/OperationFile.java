@@ -214,7 +214,7 @@ public final class OperationFile
 		catch(OperationEditorException ex)
 		{
 			// This shouldn't happen, means our template is messed up
-			Domain.logger.addLast(ex);
+			Domain.logger.add(ex);
 		}
 
 		markUnsaved();
