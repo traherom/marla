@@ -431,7 +431,7 @@
     <query type="checkbox" prompt="Assume data is normal" name="normal" />
     <displayname>
       t.test(
-      <response name="x" default="x" />
+      <response name="col" default="x" />
       )
     </displayname>
     <computation>
@@ -439,6 +439,39 @@
       <set rvar="colVals" name="col" use="values" />
       <cmd>t = t.test(colVals)</cmd>
       <cmd>newColName = paste('t-test(', colName, ')', sep='')</cmd>
+      <!-- Create a "t-test vals" column, if it doesn't already exist -->
+      <if colexists="t-test">
+        <else>
+          <save type="string" column="t-test">c("estimate", "parameter", "P-Value", "Mean", "Lower CI", "Upper CI", "Alpha")</save>
+        </else>
+      </if>
+      <save type="numeric" r_column="newColName">t$statistic</save>
+      <save type="numeric" r_column="newColName">t$parameter</save>
+      <save type="numeric" r_column="newColName">t$p.value</save>
+      <save type="numeric" r_column="newColName">t$estimate</save>
+      <save type="numeric" r_column="newColName">t$conf.int[1]</save>
+      <save type="numeric" r_column="newColName">t$conf.int[2]</save>
+      <save type="numeric" r_column="newColName">attr(t$conf.int, 'conf.level')</save>
+    </computation>
+  </operation>
+  <operation name="Two-sample t-test" category="Statistical Test">
+    <query type="column" column_type="numeric" prompt="Column 1:" name="x" />
+    <query type="column" column_type="numeric" prompt="Column 2:" name="y" />
+    <query type="checkbox" prompt="Assume data is normal" name="normal" />
+    <displayname>
+      t.test(
+      <response name="x" default="x" />,
+      y=<response name="y" default="y" />
+      )
+    </displayname>
+    <computation>
+      <set rvar="xName" name="x" use="name" />
+      <set rvar="xVals" name="x" use="values" />
+      <set rvar="yName" name="y" use="name" />
+      <set rvar="yVals" name="y" use="values" />
+
+      <cmd>t = t.test(xVals, y=yVals)</cmd>
+      <cmd>newColName = paste('t-test(', xName, 'y=', yName, ')', sep='')</cmd>
       <!-- Create a "t-test vals" column, if it doesn't already exist -->
       <if colexists="t-test">
         <else>
@@ -828,39 +861,6 @@
     <computation>
       <set rvar="lib" name="lib" />
       <load r_library="lib" />
-    </computation>
-  </operation>
-  <operation name="2-sample t-test" category="Statistical test">
-    <query type="column" column_type="numeric" prompt="Column 1:" name="x" />
-    <query type="column" column_type="numeric" prompt="Column 2:" name="y" />
-    <query type="checkbox" prompt="Assume data is normal" name="normal" />
-    <displayname>
-      t.test(
-      <response name="x" default="x" />
-      , y=
-      <response name="y" default="y" />
-      )
-    </displayname>
-    <computation>
-      <set rvar="xName" name="col" use="name" />
-      <set rvar="xVals" name="col" use="values" />
-      <set rvar="yName" name="col" use="name" />
-      <set rvar="yVals" name="col" use="values" />
-      <cmd>t = t.test(xVals, y=yVals)</cmd>
-      <cmd>newColName = paste('t-test(', xName, ', y=', yName, ')', sep='')</cmd>
-      <!-- Create a "t-test vals" column, if it doesn't already exist -->
-      <if colexists="t-test">
-        <else>
-          <save type="string" column="t-test">c("estimate", "parameter", "P-Value", "Mean", "Lower CI", "Upper CI", "Alpha")</save>
-        </else>
-      </if>
-      <save type="numeric" r_column="newColName">t$statistic</save>
-      <save type="numeric" r_column="newColName">t$parameter</save>
-      <save type="numeric" r_column="newColName">t$p.value</save>
-      <save type="numeric" r_column="newColName">t$estimate</save>
-      <save type="numeric" r_column="newColName">t$conf.int[1]</save>
-      <save type="numeric" r_column="newColName">t$conf.int[2]</save>
-      <save type="numeric" r_column="newColName">attr(t$conf.int, 'conf.level')</save>
     </computation>
   </operation>
 </operations>

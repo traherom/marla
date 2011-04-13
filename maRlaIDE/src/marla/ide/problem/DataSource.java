@@ -141,8 +141,7 @@ public abstract class DataSource extends JLabel implements Loadable, Changeable
 				op.removeAllSubProblems();
 		}
 
-		throw new InternalMarlaException("test");
-		//return old;
+		return old;
 	}
 
 	/**

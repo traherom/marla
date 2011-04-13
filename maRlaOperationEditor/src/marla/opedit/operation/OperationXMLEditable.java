@@ -290,7 +290,7 @@ public class OperationXMLEditable extends OperationXML
 		}
 		catch(IOException ex)
 		{
-			Domain.logger.add(ex);
+			Domain.logger.addLast(ex);
 			throw new OperationEditorException("IO error setting, shouldn't happen: " + ex.getMessage(), ex);
 		}
 	}

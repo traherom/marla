@@ -191,7 +191,7 @@ public class WorkspacePanel extends JPanel
 		}
 		catch(Exception ex)
 		{
-			Domain.logger.add(ex);
+			Domain.logger.addLast(ex);
 		}
 	}
 

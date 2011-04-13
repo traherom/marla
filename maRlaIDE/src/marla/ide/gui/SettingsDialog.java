@@ -578,7 +578,7 @@ public class SettingsDialog extends EscapeDialog
 		}
 		catch (MarlaException ex)
 		{
-			Domain.logger.add(ex);
+			Domain.logger.addLast(ex);
 		}
 	}//GEN-LAST:event_includeProblemCheckBoxActionPerformed
 
@@ -589,7 +589,7 @@ public class SettingsDialog extends EscapeDialog
 		}
 		catch (MarlaException ex)
 		{
-			Domain.logger.add(ex);
+			Domain.logger.addLast(ex);
 		}
 	}//GEN-LAST:event_debugModeCheckBoxActionPerformed
 
@@ -600,7 +600,7 @@ public class SettingsDialog extends EscapeDialog
 		}
 		catch (MarlaException ex)
 		{
-			Domain.logger.add(ex);
+			Domain.logger.addLast(ex);
 		}
 
 		includeProblemCheckBox.setEnabled(sendErrorReportsCheckBox.isSelected());
@@ -615,7 +615,7 @@ public class SettingsDialog extends EscapeDialog
 		}
 		catch (MarlaException ex)
 		{
-			Domain.logger.add(ex);
+			Domain.logger.addLast(ex);
 		}
 	}//GEN-LAST:event_lineSpaceSpinnerStateChanged
 
@@ -627,7 +627,7 @@ public class SettingsDialog extends EscapeDialog
 		}
 		catch (MarlaException ex)
 		{
-			Domain.logger.add(ex);
+			Domain.logger.addLast(ex);
 		}
 	}//GEN-LAST:event_lineWidthSpinnerStateChanged
 
@@ -711,7 +711,7 @@ public class SettingsDialog extends EscapeDialog
 				}
 				catch(MarlaException innerEx)
 				{
-					Domain.logger.add(innerEx);
+					Domain.logger.addLast(innerEx);
 				}
 			}
 		}
@@ -742,7 +742,7 @@ public class SettingsDialog extends EscapeDialog
 				// Exception won't happen
 				catch(MarlaException innerEx)
 				{
-					Domain.logger.add(ex);
+					Domain.logger.addLast(ex);
 				}
 			}
 		}
@@ -765,7 +765,7 @@ public class SettingsDialog extends EscapeDialog
 				// Exception won't happen
 				catch(MarlaException innerEx)
 				{
-					Domain.logger.add(ex);
+					Domain.logger.addLast(ex);
 				}
 			}
 		}
@@ -792,7 +792,7 @@ public class SettingsDialog extends EscapeDialog
 				// Exception won't happen
 				catch(MarlaException innerEx)
 				{
-					Domain.logger.add(ex);
+					Domain.logger.addLast(ex);
 				}
 			}
 		}
@@ -819,7 +819,7 @@ public class SettingsDialog extends EscapeDialog
 				// Exception won't happen
 				catch(MarlaException innerEx)
 				{
-					Domain.logger.add(ex);
+					Domain.logger.addLast(ex);
 				}
 			}
 		}
@@ -934,7 +934,7 @@ public class SettingsDialog extends EscapeDialog
 		}
 		catch (MarlaException ex)
 		{
-			Domain.logger.add(ex);
+			Domain.logger.addLast(ex);
 		}
 	}
 
@@ -961,7 +961,7 @@ public class SettingsDialog extends EscapeDialog
 		}
 		catch (MarlaException ex)
 		{
-			Domain.logger.add(ex);
+			Domain.logger.addLast(ex);
 		}
 	}
 

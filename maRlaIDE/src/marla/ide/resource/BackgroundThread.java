@@ -18,8 +18,17 @@
 
 package marla.ide.resource;
 
-import java.util.ArrayList;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PipedInputStream;
+import java.io.PipedOutputStream;
+import java.io.PrintStream;
+import java.util.ArrayDeque;
+import java.util.Deque;
+import javax.swing.JTextArea;
 import marla.ide.gui.Domain;
+import marla.ide.problem.MarlaException;
 
 /**
  * The thread which continually checks for background tasks that are in need
@@ -29,6 +38,8 @@ import marla.ide.gui.Domain;
  */
 public class BackgroundThread extends Thread
 {
+	/** Saves the standard out stream */
+	public static final PrintStream stdOut = System.out;
 	/** The domain for the main frame.*/
 	private Domain domain;
 	/** If the thread is already in a load operation, a second load operation
@@ -39,16 +50,20 @@ public class BackgroundThread extends Thread
 	public boolean saving = false;
 	/** Delay before checking if a save and/or logger write is needed */
 	private final long DELAY = 500;
-	/** The number of delay iterations to sit through before activating logger.*/
-	private final int LOGGER_DELAY = 20;
+	/** The next time (system clock in ms) that the logger will be flushed */
+	private long nextLoggerUpdate = 0;
 	/** The number of logger delay iterations sat through.*/
 	private int loggerDelayIndex = 0;
-	/** Delay increments to leave a status message for in the workspace.*/
-	private final int STATUS_DELAY = 3;
-	/** The number of display iterations already sat through.  -1 if not waiting for a display to finish.*/
-	private int statusDelayIndex = -1;
+	/** The next time (system clock in ms) that statuses for the user will be updated */
+	private long nextStatusUpdate = 0;
+	/** True if a status is visible to the user */
+	private boolean statusIsVisible = false;
 	/** The list of status messages that have not yet been displayed.*/
-	private ArrayList<String> statusMessages = new ArrayList<String>();
+	private Deque<String> statusMessages = new ArrayDeque<String>(5);
+	/** Stream which will receive standard out */
+	private BufferedReader redirectedOutput = null;
+	/** Text area to redirect debug text to, if enabled */
+	private JTextArea debugTextArea = null;
 	/** Check if the thread should quit.*/
 	private boolean wantToQuit;
 
@@ -57,10 +72,12 @@ public class BackgroundThread extends Thread
 	 * a reference to the local utility object.
 	 *
 	 * @param domain The domain for the main frame.
+	 * @param debugTextArea Text area to redirect debug text to, if enabled
 	 */
-	public BackgroundThread(Domain domain)
+	public BackgroundThread(Domain domain, JTextArea debugTextArea)
 	{
 		this.domain = domain;
+		this.debugTextArea = debugTextArea;
 		wantToQuit = true;
 	}
 
@@ -71,7 +88,7 @@ public class BackgroundThread extends Thread
 	 */
 	public void addStatus(String message)
 	{
-		statusMessages.add(message);
+		statusMessages.addLast(message);
 	}
 
 	/**
@@ -81,7 +98,46 @@ public class BackgroundThread extends Thread
 	{
 		statusMessages.clear();
 		domain.setWorkspaceStatus("");
-		statusDelayIndex = -1;
+		statusIsVisible = false;
+	}
+
+	public void enableDebugRedirect()
+	{
+		try
+		{
+			// Redirect System.out/err to a stream that goes to the pane
+			PipedOutputStream pos = new PipedOutputStream();
+			PrintStream paneStream = new PrintStream(pos);
+			System.setOut(paneStream);
+
+			// Watch input stream (what the console was told to do) and write it to the textpane
+			redirectedOutput = new BufferedReader(new InputStreamReader(new PipedInputStream(pos)));
+		}
+		catch(IOException ex)
+		{
+			throw new MarlaException("Unable to enable output redirection", ex);
+		}
+	}
+
+	public void disableDebugRedirect()
+	{
+		// Send console output to the normal...console
+		System.setOut(stdOut);
+		System.out.println("Sending debug output to console");
+
+		if(redirectedOutput != null)
+		{
+			try
+			{
+				redirectedOutput.close();
+			}
+			catch(IOException ex)
+			{
+				Domain.logger.addLast(ex);
+			}
+
+			redirectedOutput = null;
+		}
 	}
 
 	/**
@@ -113,46 +169,100 @@ public class BackgroundThread extends Thread
 	{
 		wantToQuit = false;
 
-		while (!wantToQuit)
+		try
 		{
-			try
+			while (!wantToQuit)
 			{
-				sleep (DELAY);
-			}
-			catch (InterruptedException ex)
-			{
-				Domain.logger.add (ex);
-			}
-
-			if (statusDelayIndex == -1)
-			{
-				// Display status messages from an undo/redo
-				if (!statusMessages.isEmpty())
+				try
 				{
-					domain.setWorkspaceStatus(statusMessages.remove(statusMessages.size() - 1));
-					statusDelayIndex = 0;
+					if(redirectedOutput != null)
+					{
+						synchronized(redirectedOutput)
+						{
+							// Wait for more data/time to check for stuff to dump out
+							redirectedOutput.wait(DELAY);
+						}
+					}
+					else
+					{
+						// Not redirecting, do a normal sleep
+						sleep(DELAY);
+					}
+				}
+				catch (InterruptedException ex)
+				{
+					Domain.logger.add (ex);
+				}
+
+
+				// Redirect output to text area?
+				if(redirectedOutput != null)
+				{
+					try
+					{
+						// Get all available data from stream
+						while(redirectedOutput.ready())
+						{
+							String line = redirectedOutput.readLine();
+							debugTextArea.append(line + "\n");
+						}
+
+						// Scroll to end of text
+						debugTextArea.setCaretPosition(debugTextArea.getDocument().getLength());
+					}
+					catch(IOException ex)
+					{
+						// Nothing to write right now
+						Domain.logger.addLast(ex);
+					}
+				}
+				
+				// Time, used to check each time to see if it is ready to update
+				long currTime = System.currentTimeMillis();
+
+				// Status messages to flash to user
+				if (nextStatusUpdate <= currTime)
+				{
+					// Hide current message?
+					if(statusIsVisible)
+					{
+						domain.setWorkspaceStatus("");
+						statusIsVisible = false;
+
+						// Next time to update
+						nextStatusUpdate = currTime + 500;
+					}
+
+					// Display status messages from an undo/redo
+					if (!statusMessages.isEmpty())
+					{
+						domain.setWorkspaceStatus(statusMessages.removeFirst());
+						statusIsVisible = true;
+
+						// Take longer to update. IE, leave message up longer
+						nextStatusUpdate = currTime + 1000;
+					}
+				}
+
+				// Write log?
+				if (nextLoggerUpdate <= currTime)
+				{
+					// Write log file
+					domain.flushLog();
+
+					// Next time to check for a flush if needed
+					nextLoggerUpdate = currTime + 1000;
 				}
 			}
-			else if (statusDelayIndex != STATUS_DELAY)
-			{
-				++statusDelayIndex;
-			}
-			else
-			{
-				domain.setWorkspaceStatus("");
-				statusDelayIndex = -1;
-			}
-
-			if (loggerDelayIndex == LOGGER_DELAY)
-			{
-				// Write log file
-				domain.flushLog();
-				loggerDelayIndex = 0;
-			}
-			else
-			{
-				++loggerDelayIndex;
-			}
+		}
+		catch(Exception ex)
+		{
+			Domain.logger.addLast(ex);
+			System.err.println("Background thread died unexectedly: " + ex.getMessage());
+		}
+		finally
+		{
+			disableDebugRedirect();
 		}
 	}
 
