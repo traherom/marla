@@ -525,8 +525,22 @@ Function .onSelChange
 	; Keep installing marla and configuring marla in sync
 	${If} ${SectionIsSelected} ${InstallMarla}
 		!insertmacro SelectSection ${ConfigureMarla}
+		
+		; Install shortcuts by default
+		!insertmacro ClearSectionFlag ${StartShortcuts} ${SF_RO}
+		!insertmacro ClearSectionFlag ${DesktopShortcut} ${SF_RO}
+		!insertmacro SelectSection ${StartShortcuts}
+		!insertmacro SelectSection ${DesktopShortcut}
+		
 	${Else}
 		!insertmacro UnselectSection ${ConfigureMarla}
+		
+		; Don't install shortcuts and don't let them be added
+		!insertmacro SetSectionFlag ${StartShortcuts} ${SF_RO}
+		!insertmacro SetSectionFlag ${DesktopShortcut} ${SF_RO}
+		!insertmacro UnselectSection ${StartShortcuts}
+		!insertmacro UnselectSection ${DesktopShortcut}
+		
 	${EndIf}
 	
 	; Only enable miktex configuration if either we're installing it or we
