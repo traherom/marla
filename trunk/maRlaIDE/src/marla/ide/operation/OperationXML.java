@@ -78,7 +78,7 @@ public class OperationXML extends Operation
 	 */
 	private String dynamicNameLong = null;
 	/**
-	 * Cache for the abbrevitaded version of the dynamic name that we build for the user.
+	 * Cache for the abbreviated version of the dynamic name that we build for the user.
 	 */
 	private String dynamicNameShort = null;
 	/**
@@ -274,7 +274,7 @@ public class OperationXML extends Operation
 				}
 
 				// Now remove the duplicates/unnamed elements. Couldn't do it above because we
-				// were looping over the tree
+				// were looping over the tree (concurrent modification == bad)
 				for(Element opEl : toBeRemoved)
 					opEl.getParentElement().removeContent(opEl);
 
@@ -713,12 +713,16 @@ public class OperationXML extends Operation
 
 		// Read the answer
 		OperationInformation answer = getQuestion(promptKey);
+		if(answer == null)
+			throw new OperationXMLException("Attempt to set R variable based on prompt '" + promptKey + "', but there is no prompt with that name");
 
 		// Record the set calls
 		proc.setRecorderMode(intendedRecordMode);
 
 		// All of them will save to here
 		String rVar = setEl.getAttributeValue("rvar");
+		if(rVar == null)
+			throw new OperationXMLException("R variable not given to save answer to prompt '" + promptKey + "'");
 
 		// Find out what type of query it was so we know where setVar to call
 		PromptType promptType = answer.getType();
@@ -962,9 +966,7 @@ public class OperationXML extends Operation
 				ifExprResult = false;
 		}
 		else
-		{
 			throw new OperationXMLException("If type not recognized.");
-		}
 
 		// Run then then/else blocks as appropriate
 		if(ifExprResult)

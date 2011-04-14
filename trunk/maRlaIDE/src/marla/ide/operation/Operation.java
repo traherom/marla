@@ -23,7 +23,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import org.jdom.Element;
 import marla.ide.problem.DataColumn;
 import marla.ide.problem.DataNotFoundException;
@@ -67,7 +66,11 @@ public abstract class Operation extends DataSource implements Cloneable
 	/**
 	 * Saves the answer from the GUI to any questions we asked
 	 */
-	private final Map<String, OperationInformation> questions = new HashMap<String, OperationInformation>();
+	private final List<OperationInformation> prompts = new ArrayList<OperationInformation>();
+	/**
+	 * Rapid lookup table for prompts listed above, based on the prompt name
+	 */
+	private final Map<String, OperationInformation> promptLookup = new HashMap<String, OperationInformation>();
 	/**
 	 * A user-specified remark about this operation. Why it's here, whatever.
 	 * Intended to be used as a tool for analysis
@@ -262,9 +265,8 @@ public abstract class Operation extends DataSource implements Cloneable
 		remark = org.remark;
 		
 		// Questions
-		Set<String> keys = org.questions.keySet();
-		for(String key : keys)
-			addQuestion(org.questions.get(key).clone(this));
+		for(OperationInformation info : org.prompts)
+			addQuestion(info.clone(this));
 		
 		// Child operations
 		for(int i = 0; i < org.getOperationCount(); i++)
@@ -770,7 +772,8 @@ public abstract class Operation extends DataSource implements Cloneable
 	protected final void clearQuestions()
 	{
 		changeBeginning(null);
-		questions.clear();
+		prompts.clear();
+		promptLookup.clear();
 		markUnsaved();
 	}
 
@@ -783,20 +786,22 @@ public abstract class Operation extends DataSource implements Cloneable
 	{
 		// Ensure it's valid
 		if(info.getOperation() != this)
-			throw new InternalMarlaException("Attempt to add information that did not point to same operation");
+			throw new InternalMarlaException("Attempt to add information that did not point to current operation");
 
 		changeBeginning(null);
-		questions.put(info.getName(), info);
+		prompts.add(info);
+		promptLookup.put(info.getName(), info);
 		markUnsaved();
 	}
 
 	/**
 	 * Returns the information with the given name
-	 * @param name
+	 * @param name name of the information to retrieve
+	 * @return Operation to find or null if there is none with that name
 	 */
 	public final OperationInformation getQuestion(String name)
 	{
-		return questions.get(name);
+		return promptLookup.get(name);
 	}
 
 	/**
@@ -807,7 +812,7 @@ public abstract class Operation extends DataSource implements Cloneable
 	 */
 	public final boolean isInfoRequired()
 	{
-		return !questions.isEmpty();
+		return !prompts.isEmpty();
 	}
 
 	/**
@@ -817,14 +822,13 @@ public abstract class Operation extends DataSource implements Cloneable
 	 */
 	public final boolean isInfoUnanswered()
 	{
-		if(questions.isEmpty())
+		if(!isInfoRequired())
 			return false;
 
 		// Check if any are unanswered
-		Set<String> names = questions.keySet();
-		for(String key : names)
+		for(OperationInformation info : prompts)
 		{
-			if(!questions.get(key).isAnswered())
+			if(!info.isAnswered())
 				return true;
 		}
 
@@ -844,15 +848,7 @@ public abstract class Operation extends DataSource implements Cloneable
 	 */
 	public final List<OperationInformation> getRequiredInfoPrompt()
 	{
-		// Converts the hashmap to an immutable list
-		List<OperationInformation> info = new ArrayList<OperationInformation>(questions.size());
-		Set<String> names = questions.keySet();
-		for(String key : names)
-		{
-			info.add(questions.get(key));
-		}
-
-		return Collections.unmodifiableList(info);
+		return Collections.unmodifiableList(prompts);
 	}
 
 	/**
@@ -860,10 +856,8 @@ public abstract class Operation extends DataSource implements Cloneable
 	 */
 	public final void clearRequiredInfo()
 	{
-		// Clear all the question answers
-		Set<String> names = questions.keySet();
-		for(String key : names)
-			questions.get(key).clearAnswer();
+		for(OperationInformation info : prompts)
+			info.clearAnswer();
 	}
 
 	@Override
@@ -947,7 +941,7 @@ public abstract class Operation extends DataSource implements Cloneable
 			return false;
 
 		// Questions and answers different?
-		if(!questions.equals(otherOp.questions))
+		if(!prompts.equals(otherOp.prompts))
 			return false;
 
 		return true;
@@ -957,7 +951,7 @@ public abstract class Operation extends DataSource implements Cloneable
 	public int hashCode()
 	{
 		int hash = super.hashCode();
-		hash = 31 * hash + (this.questions != null ? this.questions.hashCode() : 0);
+		hash = 31 * hash + (this.prompts != null ? this.prompts.hashCode() : 0);
 		return hash;
 	}
 
@@ -983,9 +977,8 @@ public abstract class Operation extends DataSource implements Cloneable
 		super.toXml(opEl);
 
 		// Add question answers
-		Set<String> keys = questions.keySet();
-		for(String key : keys)
-			opEl.addContent(questions.get(key).toXml());
+		for(OperationInformation info : prompts)
+			opEl.addContent(info.toXml());
 
 		// Extra info?
 		Element extraEl = new Element("extra");
