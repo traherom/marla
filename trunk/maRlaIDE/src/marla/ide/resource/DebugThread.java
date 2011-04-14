@@ -36,6 +36,8 @@ public class DebugThread extends Thread
 {
 	/** Default console output location */
 	private static final PrintStream stdOut = System.out;
+	/** Delay before checking if the thread should quit */
+	private final long DELAY = 500;
 	/** Text area to redirect debug text to, if enabled */
 	private final JTextArea debugTextArea;
 	/** Denotes whether to send output to debug console (true) or standard out (false). */
@@ -43,7 +45,7 @@ public class DebugThread extends Thread
 	/** Stream which will receive standard out */
 	private final BufferedReader redirectedOutput;
 	/** Check if the thread should quit.*/
-	private boolean wantToQuit;
+	private boolean wantToQuit = true;
 
 	public DebugThread(JTextArea textArea)
 	{
@@ -87,6 +89,16 @@ public class DebugThread extends Thread
 	}
 
 	/**
+	 * Returns the check delay time in milliseconds.
+	 *
+	 * @return Check delay.
+	 */
+	public long getDelay()
+	{
+		return DELAY;
+	}
+	
+	/**
 	 * Turns on redirecting System.out output to the debug console in maRla
 	 */
 	public void enableDebugRedirect()
@@ -119,7 +131,7 @@ public class DebugThread extends Thread
 					synchronized(redirectedOutput)
 					{
 						// Wait for more data/time to check for stuff to dump out
-						redirectedOutput.wait(500);
+						redirectedOutput.wait(DELAY);
 
 						try
 						{

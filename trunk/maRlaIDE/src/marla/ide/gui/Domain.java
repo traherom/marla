@@ -540,19 +540,22 @@ public class Domain
 		String probCache = null;
 		String confCache = null;
 
-		try
+		if(currProb != null)
 		{
-			Document doc = new Document(currProb.toXml());
-			Format formatter = Format.getPrettyFormat();
-			formatter.setEncoding("UTF-8");
-			XMLOutputter xml = new XMLOutputter(formatter);
-			probCache = xml.outputString(doc);
+			try
+			{
+				Document doc = new Document(currProb.toXml());
+				Format formatter = Format.getPrettyFormat();
+				formatter.setEncoding("UTF-8");
+				XMLOutputter xml = new XMLOutputter(formatter);
+				probCache = xml.outputString(doc);
+			}
+			catch(MarlaException ex)
+			{
+				probCache = "Unable to get problem XML: " + ex.getMessage();
+			}
 		}
-		catch(MarlaException ex)
-		{
-			probCache = "Unable to get problem XML: " + ex.getMessage();
-		}
-
+		
 		try
 		{
 			confCache = Configuration.getInstance().getConfigXML();

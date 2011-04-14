@@ -417,11 +417,11 @@
     <query type="column" name="col" prompt="Column:" column_type="numeric" />
     <displayname>
       abs(
-      <response name="col" default="x" />
+      <response name="col2" default="x" />
       )
     </displayname>
     <computation>
-      <set name="col" rvar="colName" use="name" />
+      <set name="col2" rvar="colName" use="name" />
       <set name="col" rvar="colVals" use="values" />
       <save type="numeric" r_column="paste('abs(', colName, ')', sep='')">abs(colVals)</save>
     </computation>
