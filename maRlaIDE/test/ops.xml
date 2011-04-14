@@ -426,7 +426,7 @@
       <save type="numeric" r_column="paste('abs(', colName, ')', sep='')">abs(colVals)</save>
     </computation>
   </operation>
-  <operation name="t-test" category="Statistical Test">
+  <operation name="One-sample t-test" category="Statistical Test">
     <query type="column" column_type="numeric" prompt="Column:" name="col" />
     <query type="checkbox" prompt="Assume data is normal" name="normal" />
     <displayname>
@@ -476,7 +476,7 @@
       <!-- Create a "t-test vals" column, if it doesn't already exist -->
       <if colexists="t-test">
         <else>
-          <save type="string" column="t-test">c("estimate", "parameter", "P-Value", "Mean", "Lower CI", "Upper CI", "Alpha")</save>
+          <save type="string" column="t-test">c("T statistic", "df", "P-Value", "Mean of x", "Mean of y", "Lower CI", "Upper CI", "Alpha")</save>
         </else>
       </if>
       <save type="numeric" r_column="newColName">t$statistic</save>

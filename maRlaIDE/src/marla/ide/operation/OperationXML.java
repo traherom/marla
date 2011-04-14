@@ -738,8 +738,8 @@ public class OperationXML extends Operation
 
 			case COLUMN:
 				// Look for the modifier to only save the string
-				String useType = setEl.getAttributeValue("use");
-				if(useType == null || useType.equals("values"))
+				String useType = setEl.getAttributeValue("use", "values");
+				if(useType.equals("values"))
 				{
 					// Save all the values in the column
 					proc.setVariable(rVar, getParentData().getColumn((String)answer.getAnswer()));
@@ -750,9 +750,8 @@ public class OperationXML extends Operation
 					proc.setVariable(rVar, (String)answer.getAnswer());
 				}
 				else
-				{
 					throw new OperationXMLException("Invalid setting '" + useType + "' for use attribute");
-				}
+				
 				break;
 
 			default:
