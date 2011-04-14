@@ -1993,30 +1993,19 @@ public class ViewPanel extends JPanel
 			child.setSize(child.getPreferredSize());
 		}
 		
-		// Get width of each of our children so we can tell them each where to
-		// center themselves
-		int opCount = topDS.getOperationCount();
-		int totalWidth = (opCount - 1) * spaceWidth;
-		int[] widths = new int[opCount];
-		for(int i = 0; i < widths.length; i++)
-		{
-			widths[i] = getTreeWidth(topDS.getOperation(i));
-			totalWidth += widths[i];
-		}
+		// Rebuild ourselves just...somewhere
+		int realX = topDS.getX();
+		int realY = topDS.getY();
+		rebuildTree(topDS, 0, 0);
+
+		// Shift everything based on where we actually used to be
+		int shiftX = realX - topDS.getX();
+		int shiftY = realY - topDS.getY();
+		topDS.setLocation(realX, realY);
 		
-		// Figure out the starting points
-		int half = getTreeHalfWidth(totalWidth, widths, 0);
-		int currX = topDS.getX() + topDS.getWidth() / 2 - half;
-		
-		// Tell each operation where to place themselves
-		int currY = topDS.getY() + topDS.getHeight() + spaceHeight;
-		for(int i = 0; i < widths.length; i++)
-		{
-			Operation op = topDS.getOperation(i);
-			rebuildTree(op, currX, currY);
-			currX += widths[i] + spaceWidth;
-		}
-		
+		for(DataSource child : topDS.getAllChildOperations())
+			child.setLocation(child.getX() + shiftX, child.getY() + shiftY);
+
 		// Redraw everything
 		workspacePanel.repaint();
 	}
@@ -2025,54 +2014,62 @@ public class ViewPanel extends JPanel
 	 * Rebuild the tree in the interface for the given data set.
 	 *
 	 * @param ds The data set to rebuild in the interface.
-	 * @param leftX X coordinate around which to center tree
+	 * @param leftX X coordinate which the tree may start after
 	 * @param topY Y coordinate to start the tree at
+	 * @param Right-most pixel we extend to
 	 */
-	private void rebuildTree(DataSource ds, int leftX, int topY)
+	private int rebuildTree(DataSource ds, int leftX, int topY)
 	{
-		// Get width of each of our children so we can tell them each where to
-		// center themselves
+		// Tell each child to build themselves. They'll tell us where they end
+		// and we pass that off to the next child
 		int opCount = ds.getOperationCount();
+		
 		int totalWidth = (opCount - 1) * spaceWidth;
 		int[] widths = new int[opCount];
+
+		int currX = leftX;
+		int childY = topY + ds.getHeight() + spaceHeight;
+
 		for(int i = 0; i < opCount; i++)
 		{
-			widths[i] = getTreeWidth(ds.getOperation(i));
+			int childEndX = rebuildTree(ds.getOperation(i), currX, childY);
+
+			widths[i] = childEndX - currX;
 			totalWidth += widths[i];
+
+			currX = childEndX + spaceWidth;
 		}
-		
-		// If we're wider than our child tree, then move them to be centered
-		// under us
-		int beginX = leftX;
-		if(totalWidth < ds.getWidth())
-			beginX = leftX + ds.getWidth() / 2 - totalWidth / 2;
-		
-		// Tell each where to place themselves
-		int currX = beginX;
-		int currY = topY + ds.getHeight() + spaceHeight;
-		for(int i = 0; i < opCount; i++)
+
+		// Position ourselves over our middle child (if applicable)
+		if(opCount == 0)
 		{
-			Operation op = ds.getOperation(i);
-			rebuildTree(op, currX, currY);
-			currX += widths[i] + spaceWidth;
+			// Just place ourselves at the given left
+			ds.setLocation(leftX, topY);
 		}
-		
-		// Move ourselves to halfway above our child data
-		if(opCount != 0)
+		else if(opCount % 2 == 0)
 		{
-			if(ds.getWidth() < totalWidth)
-			{
-				int halfChild = getTreeHalfWidth(totalWidth, widths, 0);
-				ds.setLocation(leftX + halfChild - ds.getWidth() / 2, topY);
-			}
-			else
-			{
-				// We are longer than our child
-				ds.setLocation(beginX + totalWidth / 2 - ds.getWidth() / 2, topY);
-			}
+			// Center over middle two children
+			Operation centerChild1 = ds.getOperation(opCount / 2 - 1);
+			Operation centerChild2 = ds.getOperation(opCount / 2);
+			
+			int centerChildX = (centerChild1.getX() + centerChild1.getWidth() + centerChild2.getX()) / 2;
+
+			ds.setLocation(centerChildX - ds.getWidth() / 2, topY);
 		}
 		else
-			ds.setLocation(leftX, topY);
+		{
+			// Center over middle child
+			Operation centerChild = ds.getOperation(opCount / 2);
+			ds.setLocation(centerChild.getX() + centerChild.getWidth() / 2 - ds.getWidth() / 2, topY);
+		}
+
+		// Are we actually wider than our kiddies?
+		int ourWidth = ds.getWidth();
+		if(totalWidth < ourWidth)
+			totalWidth = ourWidth;
+
+		// Return the last location we placed stuff at
+		return leftX + totalWidth;
 	}
 	
 	/**
