@@ -189,7 +189,7 @@ public class MainFrame extends JFrame
 						{
 							try
 							{
-								viewPanel.domain.desktop.browse(new URI("http://code.google.com/p/marla/w/list"));
+								viewPanel.domain.desktop.browse(new URI("http://code.google.com/p/marla/downloads/list"));
 							}
 							catch(IOException ex) {}
 							catch(URISyntaxException ex) {}
