@@ -417,7 +417,7 @@
     <query type="column" name="col" prompt="Column:" column_type="numeric" />
     <displayname>
       abs(
-      <response name="col2" default="x" />
+      <response name="col" default="x" />
       )
     </displayname>
     <computation>
