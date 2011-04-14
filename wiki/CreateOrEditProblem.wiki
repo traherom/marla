@@ -34,21 +34,18 @@ You may choose whether or not to enter sub-problems. Sub-problems are useful way
 
 [http://marla.googlecode.com/svn/wiki/screenshots/new_problem_4.png]
 
-===Sub-problem Specifics===
-
-  * The text field allows you to enter your sub-problem (e.g., How many peppers did peter piper pick?). 
-  * Conclusion - this field can be edited later, when you have reached one. Or, if your mental powers so enable you, you may do so now.
-  * Color - see next
+===Color Picker===
+Colors allow you to easily visualize what part of your problem belongs to which subproblem when you get to the maRla workspace. Pick a color that will be easily visible and distinct from other sub-problem colors.
 
 [http://marla.googlecode.com/svn/wiki/screenshots/new_problem_5.png]
 
-===Color Picker===
-Colors allow you to easily visualize what part of your problem belongs to which subproblem when you get to the maRla workspace. Pick a color that will be easily visible and distinct from other sub-problem colors.
+==Import from R== 
+For students using the Devore book for homework, you may import a set from R, most likely the Devore7 library. Try ChickWeight, for example.
 
 [http://marla.googlecode.com/svn/wiki/screenshots/new_problem_6.png]
 
 ==Data Set Editor==
-Data can be entered in several ways. You can import a CSV, by clicking the relevant button you see here. Alternatively, for students using the Devore book for homework, you may import a set from the Devore7 library. Try ChickWeight, for example. Otherwise, you can input it manually. More than one data set is possible. To add a set, click "add"; to remove, click "remove". Adding or removing columns and rows is as simple as adding to or subtracting from the small boxes associated with said labels. You may rename data sets by double clicking on the tab where the name of the set is contained.
+Data can be entered in several ways. You can import a CSV, by clicking the relevant button you see here. Otherwise, you can input it manually. More than one data set is possible. To add a set, click "add"; to remove, click "remove". Adding or removing columns and rows is as simple as adding to or subtracting from the small boxes associated with said labels. You may rename data sets by double clicking on the tab where the name of the set is contained.
 
 [http://marla.googlecode.com/svn/wiki/screenshots/new_problem_7.png]
 
