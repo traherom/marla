@@ -355,7 +355,7 @@ SectionGroup "Extra Software"
 	
 	Section "Ghostscript" InstallGhostscript
 	
-		AddSize 53568
+		AddSize 12032
 		
 		; First check if we have a copy in the temp folder already 
 		StrCpy $GhostscriptInstaller "$TEMP\ghostscript_install.exe"
@@ -404,7 +404,7 @@ SectionGroup "Extra Software"
 	
 	Section "GSview" InstallGSview
 	
-		AddSize 53568
+		AddSize 1494
 		
 		; First check if we have a copy in the temp folder already 
 		StrCpy $GSviewInstaller "$TEMP\gsview_zip.exe"
@@ -555,6 +555,8 @@ LangString DESC_InstallR ${LANG_ENGLISH} "Installs the statistics engine R. Requ
 LangString DESC_InstallMiKTeX ${LANG_ENGLISH} "Installs MiKTeX. Required for maRla to run. " 
 LangString DESC_ConfigureMiKTeX ${LANG_ENGLISH} "Registers R with MiKTeX and changes other MiKTeX settings. Unchecking requires R be registered with MiKTeX manually or PDF exports will not work correctly." 
 LangString DESC_InstallTexmaker ${LANG_ENGLISH} "Editor for TeX files. Not required for maRla." 
+LangString DESC_InstallGhostscript ${LANG_ENGLISH} "Ghostscript support for LaTeX. Not required for maRla." 
+LangString DESC_InstallGSview ${LANG_ENGLISH} "Graphical interface for Ghostscript. Not required for maRla." 
 LangString DESC_StartShortcuts ${LANG_ENGLISH} "Create shortcuts on Start Menu."
 LangString DESC_DesktopShortcut ${LANG_ENGLISH} "Create shortcut on Desktop."
 

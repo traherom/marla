@@ -74,7 +74,7 @@ public class Domain
 	/** The name of the application.*/
 	public static final String NAME = "The maRla Project";
 	/** The version number of the application.*/
-	public static final String VERSION = "0.7";
+	public static final String VERSION = "0.8";
 	/** The pre-release version name of the application.*/
 	public static final String PRE_RELEASE = "Beta";
 	/** The location of the application as it runs.*/
