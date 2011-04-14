@@ -22,12 +22,16 @@ SetCompressor /SOLID lzma
 !define TDRIVE_TEX "T:\TEX\CTAN\basic-miktex.exe"
 !define TDRIVE_R "T:\TEX\CRAN\R-win.exe"
 !define TDRIVE_TEXMAKER "T:\TEX\CTAN\texmakerwin32_install.exe"
+!define TDRIVE_GHOSTSCRIPT "T:\TEX\CTAN\ghostcript_install.exe"
+!define TDRIVE_GSVIEW "T:\TEX\CTAN\gsview_install.exe"
 
 Var /GLOBAL RETURN ; Used by functions for returning values
 Var /GLOBAL JavaInstaller
 Var /GLOBAL RInstaller
 Var /GLOBAL MikTexInstaller
 Var /GLOBAL TexmakerInstaller
+Var /GLOBAL GhostscriptInstaller
+Var /GLOBAL GSviewInstaller
 Var /GLOBAL JavaVer
 Var /GLOBAL JavaHome
 Var /GLOBAL RHome
@@ -348,7 +352,105 @@ SectionGroup "MiKTeX"
 SectionGroupEnd
 
 SectionGroup "Extra Software" 
+	
+	Section "Ghostscript" InstallGhostscript
+	
+		AddSize 53568
+		
+		; First check if we have a copy in the temp folder already 
+		StrCpy $GhostscriptInstaller "$TEMP\ghostscript_install.exe"
+		
+		${IfNot} ${FileExists} $GhostscriptInstaller
+		
+			; Nope, is it on the T drive?
+			${IfNot} ${FileExists} ${TDRIVE_GHOSTSCRIPT}
+			
+				; Download
+				DetailPrint "Downloading Ghostscript to $GhostscriptInstaller"
+				NSISdl::download "http://mirror.cs.wisc.edu/pub/mirrors/ghost/GPL/gs902/gs902w32.exe" $GhostscriptInstaller
+				Pop $0
+				DetailPrint "Download result: $0"
+				
+				${If} $0 != "success"
+					; Download failed
+					DetailPrint "Ghostscript download failed"
+					MessageBox MB_OK|MB_ICONEXCLAMATION "Ghostscript installer could not be downloaded.$\nTry again later or manually install."
+					Abort
+				${EndIf}
+				
+			${Else}
+				; Copy from T to temp for speed and to show progress
+				ClearErrors
+				CopyFiles ${TDRIVE_GHOSTSCRIPT} $GhostscriptInstaller
+				
+				${If} ${Errors}
+					DetailPrint "Failed to copy Ghostscript to temporary folder"
+					StrCpy $GhostscriptInstaller ${TDRIVE_GHOSTSCRIPT}
+				${EndIf}
+			${EndIf}
+		${EndIf}
 
+		; Install!
+		DetailPrint "Installing Ghostscript from '$GhostscriptInstaller'"
+		ClearErrors
+		ExecWait "$GhostscriptInstaller /S"
+		
+		${If} ${Errors}
+			MessageBox MB_OK|MB_ICONEXCLAMATION "Failed to install Ghostscript correctly. Please install manually or retry later.$\nInstallation aborted."
+			Abort
+		${EndIf}
+	
+	SectionEnd
+	
+	Section "GSview" InstallGSview
+	
+		AddSize 53568
+		
+		; First check if we have a copy in the temp folder already 
+		StrCpy $GSviewInstaller "$TEMP\gsview_zip.exe"
+		
+		${IfNot} ${FileExists} $GSviewInstaller
+		
+			; Nope, is it on the T drive?
+			${IfNot} ${FileExists} ${TDRIVE_GSVIEW}
+			
+				; Download
+				DetailPrint "Downloading GSview to $GSviewInstaller"
+				NSISdl::download "http://mirror.cs.wisc.edu/pub/mirrors/ghost/ghostgum/gsv49w32.exe" $GSviewInstaller
+				Pop $0
+				DetailPrint "Download result: $0"
+				
+				${If} $0 != "success"
+					; Download failed
+					DetailPrint "GSview download failed"
+					MessageBox MB_OK|MB_ICONEXCLAMATION "GSview installer could not be downloaded.$\nTry again later or manually install."
+					Abort
+				${EndIf}
+				
+			${Else}
+				; Copy from T to temp for speed and to show progress
+				ClearErrors
+				CopyFiles ${TDRIVE_GSVIEW} $GSviewInstaller
+				
+				${If} ${Errors}
+					DetailPrint "Failed to copy GSview to temporary folder"
+					StrCpy $GSviewInstaller ${TDRIVE_GSVIEW}
+				${EndIf}
+			${EndIf}
+		${EndIf}
+
+		; Install!
+		DetailPrint "Installing GSview from '$GSviewInstaller'"
+		ClearErrors
+		ExecWait "$GSviewInstaller /auto $TEMP\gsview_install.exe"
+		
+		${If} ${Errors}
+			MessageBox MB_OK|MB_ICONEXCLAMATION "Failed to install GSview correctly. Please install manually or retry later.$\nInstallation aborted."
+			Abort
+		${EndIf}
+	
+	SectionEnd
+	
 	Section "Texmaker" InstallTexmaker
 	
 		AddSize 53568
@@ -356,10 +458,10 @@ SectionGroup "Extra Software"
 		; First check if we have a copy in the temp folder already 
 		StrCpy $TexmakerInstaller "$TEMP\texmaker_install.exe"
 		
-		${IfNot} ${FileExists} $TekmakerInstaller
+		${IfNot} ${FileExists} $TexmakerInstaller
 		
 			; Nope, is it on the T drive?
-			${IfNot} ${FileExists} ${TDRIVE_R}
+			${IfNot} ${FileExists} ${TDRIVE_TEXMAKER}
 			
 				; Download
 				DetailPrint "Downloading Texmaker to $TexmakerInstaller"
@@ -464,6 +566,8 @@ LangString DESC_DesktopShortcut ${LANG_ENGLISH} "Create shortcut on Desktop."
 	!insertmacro MUI_DESCRIPTION_TEXT ${InstallMiKTeX} $(DESC_InstallMiKTeX)
 	!insertmacro MUI_DESCRIPTION_TEXT ${ConfigureMiKTeX} $(DESC_ConfigureMiKTeX)
 	!insertmacro MUI_DESCRIPTION_TEXT ${InstallTexmaker} $(DESC_InstallTexmaker)
+	!insertmacro MUI_DESCRIPTION_TEXT ${InstallGhostscript} $(DESC_InstallGhostscript)
+	!insertmacro MUI_DESCRIPTION_TEXT ${InstallGSview} $(DESC_InstallGSview)
 	!insertmacro MUI_DESCRIPTION_TEXT ${StartShortcuts} $(DESC_StartShortcuts)
 	!insertmacro MUI_DESCRIPTION_TEXT ${DesktopShortcut} $(DESC_DesktopShortcut)
 !insertmacro MUI_FUNCTION_DESCRIPTION_END
