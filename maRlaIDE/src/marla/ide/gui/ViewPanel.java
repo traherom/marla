@@ -1999,12 +1999,7 @@ public class ViewPanel extends JPanel
 		rebuildTree(topDS, 0, 0);
 
 		// Shift everything based on where we actually used to be
-		int shiftX = realX - topDS.getX();
-		int shiftY = realY - topDS.getY();
-		topDS.setLocation(realX, realY);
-		
-		for(DataSource child : topDS.getAllChildOperations())
-			child.setLocation(child.getX() + shiftX, child.getY() + shiftY);
+		shiftPosition(topDS, realX - topDS.getX(), realY - topDS.getY());
 
 		// Redraw everything
 		workspacePanel.repaint();
@@ -2023,9 +2018,8 @@ public class ViewPanel extends JPanel
 		// Tell each child to build themselves. They'll tell us where they end
 		// and we pass that off to the next child
 		int opCount = ds.getOperationCount();
-		
+
 		int totalWidth = (opCount - 1) * spaceWidth;
-		int[] widths = new int[opCount];
 
 		int currX = leftX;
 		int childY = topY + ds.getHeight() + spaceHeight;
@@ -2034,9 +2028,9 @@ public class ViewPanel extends JPanel
 		{
 			int childEndX = rebuildTree(ds.getOperation(i), currX, childY);
 
-			widths[i] = childEndX - currX;
-			totalWidth += widths[i];
+			totalWidth += childEndX - currX;
 
+			// Shift next child to be beyond where this one ended
 			currX = childEndX + spaceWidth;
 		}
 
@@ -2063,73 +2057,28 @@ public class ViewPanel extends JPanel
 			ds.setLocation(centerChild.getX() + centerChild.getWidth() / 2 - ds.getWidth() / 2, topY);
 		}
 
-		// Are we actually wider than our kiddies?
+		// If our children are not wider than us, shift their left side
+		// We need to be the actual left side
 		int ourWidth = ds.getWidth();
 		if(totalWidth < ourWidth)
+		{
+			shiftPosition(ds, leftX - ds.getX(), 0);
+			
 			totalWidth = ourWidth;
+		}
 
 		// Return the last location we placed stuff at
 		return leftX + totalWidth;
 	}
-	
-	/**
-	 * Helper function that determines the proper type of "half" to use
-	 * @param totalWidth Total width of all children, as given in widths. Requested
-	 *		for speed, as it usually could have already been calculated
-	 * @param widths Width of each child
-	 * @param defaultWidth Width to use if there are no columns and/or as a minimum
-	 * @return Half the width of the widths, centered above the middle one if there
-	 *		is an odd number
-	 */
-	protected int getTreeHalfWidth(int totalWidth, int widths[], int defaultWidth)
-	{
-		int halfWidth = 0;
-		if(widths.length == 0)
-		{
-			// Nothing, use the default
-			halfWidth = defaultWidth;
-		}
-		else if(widths.length % 2 == 0)
-		{
-			// Even number of columns, just drop us exactly half way
-			halfWidth = totalWidth / 2;
-		}
-		else
-		{
-			// Odd number of columns, need up through half of middle
-			int total = 0;
-			for(int i = 0; i < widths.length / 2; i++)
-				total += widths[i] + spaceWidth;
 
-			// And add enough to move through half the middle column
-			halfWidth = total + widths[widths.length / 2] / 2;
-		}
-		
-		if(defaultWidth < halfWidth)
-			return halfWidth;
-		else
-			return defaultWidth;
-	}
-	
-	/**
-	 * Gets the width of the given tree. Assumes labels has been properly set already
-	 * @param ds DataSource to get width of
-	 * @return Width, in pixels, of tree
-	 */
-	protected int getTreeWidth(DataSource ds)
+	private void shiftPosition(DataSource ds, int shiftX, int shiftY)
 	{
-		int opCount = ds.getOperationCount();
-		int total = (opCount - 1) * spaceWidth;
-		for(int i = 0; i < opCount; i++)
-			total += getTreeWidth(ds.getOperation(i));
+		ds.setLocation(ds.getX() + shiftX, ds.getY() + shiftY);
 		
-		int dsWidth = ds.getWidth();
-		if(dsWidth < total)
-			return total;
-		else
-			return dsWidth;
+		for(DataSource child : ds.getAllChildOperations())
+			child.setLocation(child.getX() + shiftX, child.getY() + shiftY);
 	}
-	
+
 	/**
 	 * Drop the given component at the current location that the mouse is hovering at in the Workspace Panel.
 	 *
