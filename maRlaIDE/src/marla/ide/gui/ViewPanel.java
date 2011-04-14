@@ -2071,6 +2071,13 @@ public class ViewPanel extends JPanel
 		return leftX + totalWidth;
 	}
 
+	/**
+	 * Shifts, location-wise, the given DataSource and all its children by the
+	 * specified amount.
+	 * @param ds DataSource to shift
+	 * @param shiftX Number of pixels to move left (positive) or right
+	 * @param shiftY Number of pixels to move up (positive) or down
+	 */
 	private void shiftPosition(DataSource ds, int shiftX, int shiftY)
 	{
 		ds.setLocation(ds.getX() + shiftX, ds.getY() + shiftY);
