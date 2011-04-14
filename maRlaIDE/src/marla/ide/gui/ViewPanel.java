@@ -2886,11 +2886,15 @@ public class ViewPanel extends JPanel
 			// Hide the main window to give the appearance of better responsiveness
 			mainFrame.setVisible(false);
 
+			// Tell threads to stop
+			domain.loadSaveThread.stopRunning();
+			domain.redirThread.stopRunning();
+			
 			// Write out any final errors we encountered and didn't hit yet
 			// We do this now, then write the configuration because, if the loadsavethread
 			// is already writing, then we'll give it a bit of extra time
 			domain.flushLog();
-
+			
 			// Save the maRla configuration
 			try
 			{
@@ -2902,16 +2906,11 @@ public class ViewPanel extends JPanel
 				Domain.logger.add(ex);
 			}
 
-			// Tell threads to stop
-			domain.loadSaveThread.stopRunning();
-			domain.redirThread.stopRunning();
-
+			// Ensure both threads finished
 			try
 			{
-				// Wait for an extra couple seconds beyond the longest it'll take
-				// the load save thread to get around to checking if it's closing again
-				// The extra time lets it write if needed
 				domain.loadSaveThread.join(domain.loadSaveThread.getDelay() + 3000);
+				domain.redirThread.join(domain.redirThread.getDelay() + 3000);
 			}
 			catch(InterruptedException ex)
 			{

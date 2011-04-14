@@ -18,18 +18,10 @@
 
 package marla.ide.resource;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PipedInputStream;
-import java.io.PipedOutputStream;
 import java.io.PrintStream;
 import java.util.ArrayDeque;
 import java.util.Queue;
-import java.util.concurrent.locks.ReentrantLock;
-import javax.swing.JTextArea;
 import marla.ide.gui.Domain;
-import org.apache.commons.io.output.TeeOutputStream;
 
 /**
  * The thread which continually checks for background tasks that are in need
