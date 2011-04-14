@@ -1493,8 +1493,20 @@ public class ViewPanel extends JPanel
 				answerPanel.add(new JLabel("<html>" + ((DataSource) rightClickedComponent).getRCommands().replaceAll("\n", "<br />") + "</html>"));
 
 				answerDialog.setTitle("R Code");
-				answerDialog.pack();
+
+				int width = mainFrame.getLocationOnScreen().x + mainFrame.getWidth() - answerDialogLocation.x;
+				if (width > answerPanel.getPreferredSize().width)
+				{
+					width = answerPanel.getPreferredSize().width + answersScrollPane.getVerticalScrollBar().getPreferredSize().width + (answersScrollPane.getBorder().getBorderInsets(answersScrollPane).left * 2);
+				}
+				int height = mainFrame.getLocationOnScreen().y + mainFrame.getHeight() - answerDialogLocation.y;
+				if (height > answerPanel.getPreferredSize().height)
+				{
+					height = answerPanel.getPreferredSize().height + answersScrollPane.getVerticalScrollBar().getPreferredSize().height + (answersScrollPane.getBorder().getBorderInsets(answersScrollPane).top * 2);
+				}
+				answerDialog.setSize(width, height);
 				answerDialog.setLocation(answerDialogLocation);
+				answerDialog.toFront();
 				answerDialog.setVisible(true);
 			}
 			catch(MarlaException ex)
