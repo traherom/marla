@@ -699,13 +699,9 @@ public class MainFrame extends JFrame
 		}
 		else
 		{
-			if(viewPanel.domain.problem != null)
+			for(int i = 0; i < toolsMenu.getMenuComponentCount(); ++i)
 			{
-				reloadOperationgsMenuItem.setEnabled(true);
-			}
-			else
-			{
-				reloadOperationgsMenuItem.setEnabled(false);
+				toolsMenu.getMenuComponent(i).setEnabled(true);
 			}
 		}
 	}//GEN-LAST:event_toolsMenuMenuSelected

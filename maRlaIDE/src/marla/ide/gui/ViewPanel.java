@@ -1382,45 +1382,49 @@ public class ViewPanel extends JPanel
 			{
 				startingAnswerPanelDisplay = true;
 
+				boolean goodReq = true;
 				if(rightClickedComponent instanceof Operation)
 				{
-					domain.ensureRequirementsMet((Operation) rightClickedComponent);
+					goodReq = domain.ensureRequirementsMet((Operation) rightClickedComponent);
 				}
 
-				answerPanel.removeAll();
-				if(rightClickedComponent instanceof Operation && ((Operation) rightClickedComponent).hasPlot())
+				if (goodReq)
 				{
-					JLabel label = new JLabel("");
-					label.setIcon(new ImageIcon(((Operation) rightClickedComponent).getPlot()));
-					answerPanel.add(label);
-				}
+					answerPanel.removeAll();
+					if(rightClickedComponent instanceof Operation && ((Operation) rightClickedComponent).hasPlot())
+					{
+						JLabel label = new JLabel("");
+						label.setIcon(new ImageIcon(((Operation) rightClickedComponent).getPlot()));
+						answerPanel.add(label);
+					}
 
-				// Always show data, even for graphs
-				answerPanel.add(new JLabel("<html>" + ((DataSource) rightClickedComponent).toHTML() + "</html>"));
+					// Always show data, even for graphs
+					answerPanel.add(new JLabel("<html>" + ((DataSource) rightClickedComponent).toHTML() + "</html>"));
 
-				if(rightClickedComponent instanceof Operation)
-				{
-					answerDialog.setTitle("Solution to Point");
-				}
-				else if(rightClickedComponent instanceof DataSet)
-				{
-					answerDialog.setTitle("Data Set Summary");
-				}
+					if(rightClickedComponent instanceof Operation)
+					{
+						answerDialog.setTitle("Solution to Point");
+					}
+					else if(rightClickedComponent instanceof DataSet)
+					{
+						answerDialog.setTitle("Data Set Summary");
+					}
 
-				int width = mainFrame.getLocationOnScreen().x + mainFrame.getWidth() - answerDialogLocation.x;
-				if (width > answerPanel.getPreferredSize().width)
-				{
-					width = answerPanel.getPreferredSize().width + answersScrollPane.getVerticalScrollBar().getPreferredSize().width + (answersScrollPane.getBorder().getBorderInsets(answersScrollPane).left * 2);
+					int width = mainFrame.getLocationOnScreen().x + mainFrame.getWidth() - answerDialogLocation.x;
+					if (width > answerPanel.getPreferredSize().width)
+					{
+						width = answerPanel.getPreferredSize().width + answersScrollPane.getVerticalScrollBar().getPreferredSize().width + (answersScrollPane.getBorder().getBorderInsets(answersScrollPane).left * 2);
+					}
+					int height = mainFrame.getLocationOnScreen().y + mainFrame.getHeight() - answerDialogLocation.y;
+					if (height > answerPanel.getPreferredSize().height)
+					{
+						height = answerPanel.getPreferredSize().height + answersScrollPane.getVerticalScrollBar().getPreferredSize().height + (answersScrollPane.getBorder().getBorderInsets(answersScrollPane).top * 2);
+					}
+					answerDialog.setSize(width, height);
+					answerDialog.setLocation(answerDialogLocation);
+					answerDialog.toFront();
+					answerDialog.setVisible(true);
 				}
-				int height = mainFrame.getLocationOnScreen().y + mainFrame.getHeight() - answerDialogLocation.y;
-				if (height > answerPanel.getPreferredSize().height)
-				{
-					height = answerPanel.getPreferredSize().height + answersScrollPane.getVerticalScrollBar().getPreferredSize().height + (answersScrollPane.getBorder().getBorderInsets(answersScrollPane).top * 2);
-				}
-				answerDialog.setSize(width, height);
-				answerDialog.setLocation(answerDialogLocation);
-				answerDialog.toFront();
-				answerDialog.setVisible(true);
 			}
 			catch(OperationXMLException ex)
 			{
@@ -1633,7 +1637,17 @@ public class ViewPanel extends JPanel
 		{
 			try
 			{
-				if(((Operation) rightClickedComponent).isInfoRequired())
+				DataSource parentData = ((Operation) rightClickedComponent).getParentData();
+				boolean allow = true;
+				if (parentData instanceof Operation)
+				{
+					if (((Operation) parentData).isInfoUnanswered())
+					{
+						JOptionPane.showMessageDialog(domain.getTopWindow(), "The parent of this operation has unmet requirements. Set the parameters of all\nparent operations first, then you can set the parameters of this operation.", "Child Operation", JOptionPane.INFORMATION_MESSAGE);
+						allow = false;
+					}
+				}
+				if(allow && ((Operation) rightClickedComponent).isInfoRequired())
 				{
 					ViewPanel.getRequiredInfoDialog((Operation) rightClickedComponent, true);
 				}
