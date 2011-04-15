@@ -134,6 +134,9 @@ SectionGroup "maRla Core"
 		; Make sure the install directory is usable
 		SetOutPath "$INSTDIR"
 		
+		; Ensure maRla isn't running
+		Call EnsureMarlaClosed
+		
 		ClearErrors
 		Push $0
 		Push $1
@@ -397,7 +400,6 @@ SectionGroup "Extra Software"
 		
 		${If} ${Errors}
 			MessageBox MB_OK|MB_ICONEXCLAMATION "Failed to install Ghostscript correctly. Please install manually or retry later.$\nInstallation aborted."
-			Abort
 		${EndIf}
 	
 	SectionEnd
@@ -446,7 +448,6 @@ SectionGroup "Extra Software"
 		
 		${If} ${Errors}
 			MessageBox MB_OK|MB_ICONEXCLAMATION "Failed to install GSview correctly. Please install manually or retry later.$\nInstallation aborted."
-			Abort
 		${EndIf}
 	
 	SectionEnd
@@ -495,7 +496,6 @@ SectionGroup "Extra Software"
 		
 		${If} ${Errors}
 			MessageBox MB_OK|MB_ICONEXCLAMATION "Failed to install Texmaker correctly. Please install manually or retry later.$\nInstallation aborted."
-			Abort
 		${EndIf}
 	
 	SectionEnd
@@ -579,21 +579,7 @@ LangString DESC_DesktopShortcut ${LANG_ENGLISH} "Create shortcut on Desktop."
 
 Section "Uninstall"
 
-	; Ensure it's not running
-	System::Call 'kernel32::OpenMutex(i 0x100000, b 0, t "themarlaproject") i .R0'
-	IntCmp $R0 0 notRunning1
-		System::Call 'kernel32::CloseHandle(i $R0)'
-		MessageBox MB_OK|MB_ICONEXCLAMATION "The maRla Project IDE is running. Please close it first" /SD IDOK
-		Abort
-		
-	notRunning1:
-	System::Call 'kernel32::OpenMutex(i 0x100000, b 0, t "themarlaprojectopeditor") i .R0'
-	IntCmp $R0 0 notRunning2
-		System::Call 'kernel32::CloseHandle(i $R0)'
-		MessageBox MB_OK|MB_ICONEXCLAMATION "The maRla Project Operation Editor is running. Please close it first" /SD IDOK
-		Abort
-		
-	notRunning2:
+	Call un.EnsureMarlaClosed
 
 	; Program files
 	Delete "$INSTDIR\Uninstall.exe"
@@ -817,3 +803,31 @@ Function CheckInstalledMikTex
 	${EndIf}
 
 FunctionEnd
+
+; Let this "closed" function be used in both installer and uninstaller
+!macro EnsureMarlaClosed un
+Function ${un}EnsureMarlaClosed
+	
+	; Keep looping until both are dead and/or the user says to cancel
+	check:
+
+	System::Call 'kernel32::OpenMutex(i 0x100000, b 0, t "themarlaproject") i .R0'
+	
+	${If} $R0 != 0 
+		System::Call 'kernel32::CloseHandle(i $R0)'
+		MessageBox MB_RETRYCANCEL|MB_ICONEXCLAMATION "The maRla Project IDE is running. Please close it first" /SD IDRETRY IDRETRY check
+		Abort
+	${EndIf}
+		
+	System::Call 'kernel32::OpenMutex(i 0x100000, b 0, t "themarlaprojectopeditor") i .R0'
+	
+	${If} $R0 != 0
+		System::Call 'kernel32::CloseHandle(i $R0)'
+		MessageBox MB_RETRYCANCEL|MB_ICONEXCLAMATION "The maRla Project Operation Editor is running. Please close it first" /SD IDRETRY IDRETRY check
+		Abort
+	${EndIf}
+	
+FunctionEnd
+!macroend
+!insertmacro EnsureMarlaClosed ""
+!insertmacro EnsureMarlaClosed "un."
