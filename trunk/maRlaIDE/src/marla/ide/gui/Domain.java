@@ -1208,12 +1208,14 @@ public class Domain
 	 * Ensure the requirements are met for the given operation.
 	 *
 	 * @param op The operation to check for.
+	 * @return True if requirements were met and should continue, false otherwise.
 	 */
-	public void ensureRequirementsMet(Operation op)
+	public boolean ensureRequirementsMet(Operation op)
 	{
 		// Iteratively attempts to tell operation to recompute itself until
 		// no operation that it depends on has missing requirements
 		boolean isSolved = false;
+		boolean allSolved = true;
 		while (!isSolved)
 		{
 			try
@@ -1226,10 +1228,12 @@ public class Domain
 				ViewPanel.getRequiredInfoDialog (ex.getOperation (), true);
 				if(Domain.cancelExport)
 				{
+					allSolved = false;
 					break;
 				}
 			}
 		}
+		return allSolved;
 	}
 
 	/**

@@ -81,11 +81,25 @@ public class ViewPanel extends JPanel
 	/** The model for the operations list.*/
 	protected ExtendedTableModel operationsModel = new ExtendedTableModel();
 	/** The operations table.*/
-	protected marla.ide.gui.ExtendedJTable operationsTable = new marla.ide.gui.ExtendedJTable(operationsModel); 
+	protected marla.ide.gui.ExtendedJTable operationsTable = new marla.ide.gui.ExtendedJTable(operationsModel)
+	{
+		@Override
+		public boolean isCellEditable(int row, int col)
+		{
+			return false;
+		}
+	};
 	/** The model for the output table.*/
 	protected marla.ide.gui.ExtendedTableModel outputModel = new  marla.ide.gui.ExtendedTableModel(new DataSet ("empty"));
 	/** The output table.*/
-	protected marla.ide.gui.ExtendedJTable outputTable = new marla.ide.gui.ExtendedJTable(outputModel); 
+	protected marla.ide.gui.ExtendedJTable outputTable = new marla.ide.gui.ExtendedJTable(outputModel)
+	{
+		@Override
+		public boolean isCellEditable(int row, int col)
+		{
+			return false;
+		}
+	};
 	/** The domain object reference performs generic actions specific to the GUI.*/
 	protected Domain domain = new Domain(this);
 	/** True while the interface is loading, false otherwise.*/
@@ -163,7 +177,8 @@ public class ViewPanel extends JPanel
 		operationsModel.addColumn(column.getHeaderValue().toString());
 		operationsTable.getTableHeader().setReorderingAllowed(false);
 		operationsTable.getTableHeader().getColumnModel().getColumn(0).setHeaderValue("Operations");
-		
+
+		outputTable.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		outputTable.getTableHeader().setReorderingAllowed(false);
 		outputTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 		outputTable.getTableHeader ().setFont (FONT_PLAIN_12);
