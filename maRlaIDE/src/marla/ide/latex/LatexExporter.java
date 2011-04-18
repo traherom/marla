@@ -134,6 +134,8 @@ public class LatexExporter
 		// introduced by later patterns
 		l.add(new Object[]{Pattern.compile("<sup>(.*?)</sup>", Pattern.CASE_INSENSITIVE | Pattern.DOTALL), "\\\\superscript{$1}"});
 		l.add(new Object[]{Pattern.compile("<sub>(.*?)</sub>", Pattern.CASE_INSENSITIVE | Pattern.DOTALL), "\\\\subscript{$1}"});
+		l.add(new Object[]{Pattern.compile("<(b|strong)>(.*?)</\\1>", Pattern.CASE_INSENSITIVE | Pattern.DOTALL), "\\\\textbf{ $2}"});
+		l.add(new Object[]{Pattern.compile("<(i|em)>(.*?)</\\1>", Pattern.CASE_INSENSITIVE | Pattern.DOTALL), "\\\\textit{$2}"});
 		
 		return l;
 	}

@@ -18,9 +18,6 @@
 package marla.ide.operation;
 
 import marla.ide.resource.Configuration;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 import org.jdom.Element;
 import org.junit.*;
 import marla.ide.problem.DataSet;
@@ -55,47 +52,13 @@ public class OperationTest
 	public void setUp() throws Exception
 	{
 		// Ensure everything shows
-		RProcessor.getInstance().setDebugMode(RProcessor.RecordMode.FULL);
+		RProcessor.setDebugMode(RProcessor.RecordMode.FULL);
 
 		// Create fake dataset to work with
 		ds1 = DataSetTest.createDataSet(4, 10, 0);
 		op1 = Operation.createOperation(opName);
 		op1.setRemark("FAKE REMARK");
 		ds1.addOperation(op1);
-	}
-
-	@Test
-	public void testAvailableOps() throws Exception
-	{
-		Map<String, List<String>> opCats = Operation.getAvailableOperationsCategorized();
-		List<String> opList = Operation.getAvailableOperationsList();
-
-		// Should have the same number of operations and nothing different in either one
-		int totalOpsInList = opList.size();
-		int totalOpsInCats = 0;
-		for(String cat : opCats.keySet())
-		{
-			List<String> catList = opCats.get(cat);
-			totalOpsInCats += catList.size();
-
-			// Remove matching operations from the category and the list.
-			// eventually both should be totally empty
-			List<String> dupCatList = new ArrayList<String>(catList);
-			catList.removeAll(opList);
-			opList.removeAll(dupCatList);
-		}
-
-		// Same number of ops?
-		assertEquals("List and category returns of available operations differed in size", totalOpsInList, totalOpsInCats);
-
-		// If all ops were categorized, then there shouldn't be stuff left in the opList
-		assertTrue("Categorized map of ops had more than list", opList.isEmpty());
-
-		// If all ops were listed, then none of the categories should have stuff in them
-		for(String cat : opCats.keySet())
-		{
-			assertTrue("List of ops had more than categorized map", opCats.get(cat).isEmpty());
-		}
 	}
 
 	@Test

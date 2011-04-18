@@ -150,6 +150,10 @@ public class OperationTester
 					question.setAnswer(((OperationInfoCombo)question).getOptions().get(0));
 					break;
 
+				case FIXED:
+					// Ignore, no need to fill
+					break;
+				
 				default:
 					throw new MarlaException("Question type '" + questionType + "' not supported for filling yet");
 			}
