@@ -263,26 +263,10 @@
       <value>48.0</value>
       <value>49.0</value>
     </column>
-    <operation type="marla.ide.operation.OperationXML" name="Absolute Value" id="1206643614" x="283" y="120" height="16" width="64" hidden="false">
+    <operation type="marla.ide.operation.OperationXML" name="Exponential" id="1338553161" x="282" y="120" height="21" width="66" hidden="false">
       <remark />
-      <operation type="marla.ide.operation.OperationXML" name="Add" id="-556132089" x="223" y="151" height="16" width="57" hidden="false">
-        <remark />
-        <question name="col" />
-        <question name="val" />
-        <extra name="Add" />
-      </operation>
-      <operation type="marla.ide.operation.OperationXML" name="Exponential" id="1338553161" x="300" y="151" height="21" width="30" hidden="false">
-        <remark />
-        <question name="col" />
-        <extra name="Exponential" />
-      </operation>
-      <operation type="marla.ide.operation.OperationXML" name="Exponential" id="2134811529" x="350" y="151" height="21" width="30" hidden="false">
-        <remark />
-        <question name="col" />
-        <extra name="Exponential" />
-      </operation>
-      <question name="col" />
-      <extra name="Absolute Value" />
+      <question name="col" answer="Column 1" />
+      <extra name="Exponential" />
     </operation>
   </data>
   <unused />

@@ -89,6 +89,12 @@ public class LatexExporter
 	 * the second being a string to replace them with
 	 */
 	private static List<Object[]> latexReplacements = fillEscapeMap();
+	/**
+	 * Pattern to find HTML tags and replace them with corresponding latex.
+	 * Object array with the first element being a pattern to search for and
+	 * the second being a string to replace them with
+	 */
+	private static List<Object[]> htmlToLatexReplacements = fillHTMLMap();
 	
 	/**
 	 * Generates a list of latex special symbol-regular expressions and
@@ -112,6 +118,23 @@ public class LatexExporter
 		l.add(new Object[]{Pattern.compile("#"), "\\\\#"});
 		l.add(new Object[]{Pattern.compile("_"), "\\\\_"});
 		l.add(new Object[]{Pattern.compile("-"), "\\\\--"});
+		return l;
+	}
+	
+	/**
+	 * Generates a list of HTML tags to find and replace with the given latex
+	 * @return Object array with the first element being a pattern to search for
+	 *		and the second being a string to replace them with
+	 */
+	private static List<Object[]> fillHTMLMap()
+	{
+		List<Object[]> l = new ArrayList<Object[]>();
+		
+		// Must be first or it will replace the slashes
+		// introduced by later patterns
+		l.add(new Object[]{Pattern.compile("<sup>(.*?)</sup>", Pattern.CASE_INSENSITIVE | Pattern.DOTALL), "\\\\superscript{$1}"});
+		l.add(new Object[]{Pattern.compile("<sub>(.*?)</sub>", Pattern.CASE_INSENSITIVE | Pattern.DOTALL), "\\\\subscript{$1}"});
+		
 		return l;
 	}
 
@@ -411,7 +434,7 @@ public class LatexExporter
 					try
 					{
 						if(prob.getPersonName() != null)
-							out.write(escapeLatex(prob.getPersonName()));
+							out.write(htmlToLatex(prob.getPersonName()));
 					}
 					catch(IOException ex)
 					{
@@ -425,7 +448,7 @@ public class LatexExporter
 					try
 					{
 						if(prob.getChapter() != null)
-							out.write(escapeLatex(prob.getChapter()));
+							out.write(htmlToLatex(prob.getChapter()));
 					}
 					catch(IOException ex)
 					{
@@ -437,7 +460,7 @@ public class LatexExporter
 					try
 					{
 						if(prob.getSection() != null)
-							out.write(escapeLatex(prob.getSection()));
+							out.write(htmlToLatex(prob.getSection()));
 					}
 					catch(IOException ex)
 					{
@@ -449,7 +472,7 @@ public class LatexExporter
 					try
 					{
 						if(prob.getProblemNumber() != null)
-							out.write(escapeLatex(prob.getProblemNumber()));
+							out.write(htmlToLatex(prob.getProblemNumber()));
 					}
 					catch(IOException ex)
 					{
@@ -516,12 +539,12 @@ public class LatexExporter
 			if(courseNameType.equals("short"))
 			{
 				if(prob.getShortCourse() != null)
-					out.write(escapeLatex(prob.getShortCourse()));
+					out.write(htmlToLatex(prob.getShortCourse()));
 			}
 			else if(courseNameType.equals("long"))
 			{
 				if(prob.getLongCourse() != null)
-					out.write(escapeLatex(prob.getLongCourse()));
+					out.write(htmlToLatex(prob.getLongCourse()));
 			}
 			else
 				throw new LatexException("Course name type '" + courseNameType + "' is not supported");
@@ -545,12 +568,12 @@ public class LatexExporter
 		if(currentSub == null)
 		{
 			// Get statement from the main problem
-			statement = escapeLatex(prob.getStatement());
+			statement = htmlToLatex(prob.getStatement());
 		}
 		else
 		{
 			// Get statement from the subproblem we are on
-			statement = escapeLatex(currentSub.getStatement());
+			statement = htmlToLatex(currentSub.getStatement());
 		}
 
 		try
@@ -608,7 +631,7 @@ public class LatexExporter
 				if(op.hasRemark())
 				{
 					solutionBlock.append("\n\n\\par ");
-					solutionBlock.append(escapeLatex(op.getRemark()));
+					solutionBlock.append(htmlToLatex(op.getRemark()));
 				}
 
 				solutionBlock.append("\n\\par ");
@@ -662,7 +685,7 @@ public class LatexExporter
 
 		// Operation name
 		sb.append("\\multicolumn{1}{l||}{{\\bf ");
-		sb.append(escapeLatex(op.getName()));
+		sb.append(htmlToLatex(op.getName()));
 		sb.append("}} & ");
 
 		// Parameters
@@ -685,9 +708,9 @@ public class LatexExporter
 				OperationInformation param = params.get(i);
 
 				sb.append("{\\it ");
-				sb.append(escapeLatex(param.getPrompt()));
+				sb.append(htmlToLatex(param.getPrompt()));
 				sb.append(":} ");
-				sb.append(escapeLatex(param.getAnswer()));
+				sb.append(htmlToLatex(param.getAnswer()));
 
 				if(i != params.size() - 1)
 					sb.append(" & ");
@@ -703,7 +726,7 @@ public class LatexExporter
 		List<DataColumn> newCols = op.getNewColumns();
 		for(DataColumn dc : newCols)
 		{
-			sb.append(escapeLatex(dc.getName()));
+			sb.append(htmlToLatex(dc.getName()));
 			sb.append(" & ");
 
 			// Show everything or abbreviate?
@@ -724,7 +747,7 @@ public class LatexExporter
 				// Beginning elements
 				for(int i = 0; i < halfSize; i++)
 				{
-					sb.append(escapeLatex(dc.get(i)));
+					sb.append(htmlToLatex(dc.get(i)));
 					sb.append(" & ");
 				}
 
@@ -734,7 +757,7 @@ public class LatexExporter
 				// Ending elements
 				for(int i = dc.size() - halfSize; i < dc.size(); i++)
 				{
-					sb.append(escapeLatex(dc.get(i)));
+					sb.append(htmlToLatex(dc.get(i)));
 
 					if(i != dc.size() - 1)
 						sb.append(" & ");
@@ -795,9 +818,9 @@ public class LatexExporter
 	{
 		StringBuilder sb = new StringBuilder();
 		if(currentSub == null)
-			sb.append(escapeLatex(prob.getConclusion()));
+			sb.append(htmlToLatex(prob.getConclusion()));
 		else
-			sb.append(escapeLatex(currentSub.getConclusion()));
+			sb.append(htmlToLatex(currentSub.getConclusion()));
 
 		try
 		{
@@ -929,7 +952,7 @@ public class LatexExporter
 			sb.append("\\multicolumn{");
 			sb.append(columns.size() + 1);
 			sb.append("}{c}{\\bf ");
-			sb.append(escapeLatex(dsName));
+			sb.append(htmlToLatex(dsName));
 			sb.append("} \\\\\n \\cline{2-");
 			sb.append(columns.size() + 1);
 			sb.append("}\n");
@@ -939,7 +962,7 @@ public class LatexExporter
 		sb.append("   & ");
 		for(int i = 0; i < columns.size(); i++)
 		{
-			sb.append(escapeLatex(columns.get(i).getName()));
+			sb.append(htmlToLatex(columns.get(i).getName()));
 
 			// Don't end the row with the cell separator
 			if(i + 1 < columns.size())
@@ -953,7 +976,7 @@ public class LatexExporter
 			sb.append("\\multicolumn{");
 			sb.append(columns.size() + 1);
 			sb.append("}{c}{{\\bf ");
-			sb.append(escapeLatex(dsName));
+			sb.append(htmlToLatex(dsName));
 			sb.append("} (cont.)} \\\\\n \\cline{2-");
 			sb.append(columns.size() + 1);
 			sb.append("}\n");
@@ -963,7 +986,7 @@ public class LatexExporter
 		sb.append("   & ");
 		for(int i = 0; i < columns.size(); i++)
 		{
-			sb.append(escapeLatex(columns.get(i).getName()));
+			sb.append(htmlToLatex(columns.get(i).getName()));
 
 			// Don't end the row with the cell separator
 			if(i + 1 < columns.size())
@@ -991,7 +1014,7 @@ public class LatexExporter
 				// Ensure this column extends this far
 				DataColumn dc = columns.get(j);
 				if(dc.size() > i)
-					sb.append(escapeLatex(dc.get(i)));
+					sb.append(htmlToLatex(dc.get(i)));
 
 				// Don't end the row with the cell separator
 				if(j + 1 < columns.size())
@@ -1084,6 +1107,41 @@ public class LatexExporter
 		}
 
 		return clean;
+	}
+	
+	/**
+	 * Coverts to a string then passes off to htmlToLatex(String)
+	 * @param html HTML string to do work on
+	 * @return Latex string
+	 */
+	private String htmlToLatex(Object html)
+	{
+		return htmlToLatex(html.toString());
+	}
+	
+	/**
+	 * Takes the given string with possible HTML tags and converts them to
+	 * Latex, if possible/is a known tag. Only basic tags like sup, sub, i,
+	 * b, etc are handled.
+	 * @param html HTML string to do work on
+	 * @return Latex string
+	 */
+	private String htmlToLatex(String html)
+	{
+		// First ensure that any latex special symbols are wrapped up
+		String cleanHTML = escapeLatex(html);
+		
+		String latex = cleanHTML;
+
+		// Order is important here. If we replace slashes later, then
+		// the others won't properly escape
+		for(Object[] patt : htmlToLatexReplacements)
+		{
+			Matcher m = ((Pattern)patt[0]).matcher(latex);
+			latex = m.replaceAll((String)patt[1]);
+		}
+
+		return latex;
 	}
 
 	/**

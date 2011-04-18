@@ -492,9 +492,8 @@
       &lt;/sup&gt;
     </displayname>
     <computation>
-      <set name="col" rvar="colName" use="name" />
-      <set name="col" rvar="colVals" use="values" />
-      <save type="numeric" r_column="paste('e^', colName, sep='')">exp(colVals)</save>
+      <set name="col" rvar="col" use="values" />
+      <save type="numeric">exp(col)</save>
     </computation>
   </operation>
   <operation name="Absolute Value">
