@@ -1173,8 +1173,9 @@ public class OperationXML extends Operation
 				else if(partObj instanceof Text)
 				{
 					Text partText = (Text) partObj;
-					shortName.append(partText.getText());
-					longName.append(partText.getText());
+					String normalized = partText.getTextNormalize();
+					shortName.append(normalized);
+					longName.append(normalized);
 				}
 			}
 
