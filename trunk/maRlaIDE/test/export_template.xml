@@ -7,6 +7,10 @@
 		\usepackage{array}
 		\usepackage{multirow}
 		\usepackage{longtable}
+		
+		% Used by exporter
+		\newcommand{\superscript}[1]{\ensuremath{^{\textrm{#1}}}}
+		\newcommand{\subscript}[1]{\ensuremath{_{\textrm{#1}}}}
 
 		\begin{document}
 		\begin{flushright}
