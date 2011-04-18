@@ -707,6 +707,8 @@ public class SettingsDialog extends EscapeDialog
 			{
 				try
 				{
+					Domain.logger.add(ex);
+					JOptionPane.showMessageDialog(this, ex.getMessage(), "Can't Change Path", JOptionPane.WARNING_MESSAGE);
 					customOpsTextField.setText((String) Configuration.getInstance().get(Configuration.ConfigType.UserOpsXML));
 				}
 				catch(MarlaException innerEx)
@@ -736,6 +738,7 @@ public class SettingsDialog extends EscapeDialog
 			{
 				try
 				{
+					Domain.logger.add(ex);
 					JOptionPane.showMessageDialog(this, ex.getMessage(), "Can't Change Path", JOptionPane.WARNING_MESSAGE);
 					rPathTextField.setText((String) Configuration.getInstance().get(Configuration.ConfigType.R));
 				}
@@ -759,6 +762,7 @@ public class SettingsDialog extends EscapeDialog
 			{
 				try
 				{
+					Domain.logger.add(ex);
 					JOptionPane.showMessageDialog(this, ex.getMessage(), "Can't Change Path", JOptionPane.WARNING_MESSAGE);
 					latexPathTextField.setText((String) Configuration.getInstance().get(Configuration.ConfigType.PdfTex));
 				}
@@ -786,6 +790,7 @@ public class SettingsDialog extends EscapeDialog
 			{
 				try
 				{
+					Domain.logger.add(ex);
 					JOptionPane.showMessageDialog(this, ex.getMessage(), "Can't Change Path", JOptionPane.WARNING_MESSAGE);
 					latexTemplateTextField.setText((String) Configuration.getInstance().get(Configuration.ConfigType.TexTemplate));
 				}
@@ -813,6 +818,7 @@ public class SettingsDialog extends EscapeDialog
 			{
 				try
 				{
+					Domain.logger.add(ex);
 					JOptionPane.showMessageDialog(this, ex.getMessage(), "Can't Change Path", JOptionPane.WARNING_MESSAGE);
 					operationsTextField.setText((String) Configuration.getInstance().get(Configuration.ConfigType.PrimaryOpsXML));
 				}

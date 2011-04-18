@@ -22,6 +22,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import marla.opedit.gui.Domain;
 import org.jdom.Document;
@@ -175,6 +176,9 @@ public final class OperationFile
 		List<String> names = new ArrayList<String>(ops.size());
 		for(OperationXMLEditable op : ops)
 			names.add(op.getName());
+		
+		Collections.sort(names);
+		
 		return names;
 	}
 

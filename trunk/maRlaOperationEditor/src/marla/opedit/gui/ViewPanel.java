@@ -46,6 +46,7 @@ import javax.swing.table.TableColumn;
 import marla.ide.gui.ExtensionFileFilter;
 import marla.ide.operation.OperationXML;
 import marla.ide.operation.OperationXMLException;
+import marla.ide.problem.DataColumn;
 import marla.ide.problem.DataSet;
 import marla.ide.problem.DuplicateNameException;
 import marla.ide.problem.MarlaException;
@@ -574,8 +575,8 @@ public class ViewPanel extends JPanel
 		{
 			OperationXMLEditable newOp = currentFile.addOperation();
 			operationsModel.addRow(new Object[] {newOp.getName()});
-			((marla.ide.gui.ExtendedJTable) operationsTable).refreshTable();
-			((marla.ide.gui.ExtendedJTable) operationsTable).setSelectedRow(operationsModel.getRowCount() - 1);
+			operationsTable.refreshTable();
+			operationsTable.setSelectedRow(operationsModel.getRowCount() - 1);
 			operationsTable.scrollRectToVisible (operationsTable.getCellRect (operationsModel.getRowCount() - 1, 0, false));
 			removeButton.setEnabled(true);
 		}
@@ -592,7 +593,7 @@ public class ViewPanel extends JPanel
 			int index = getOperationIndex(currentOperation.getName());
 			operationsModel.removeRow(index);
 			currentFile.removeOperation(currentOperation);
-			((marla.ide.gui.ExtendedJTable) operationsTable).refreshTable();
+			operationsTable.refreshTable();
 			if (operationsModel.getRowCount() == 0)
 			{
 				removeButton.setEnabled(false);
@@ -601,7 +602,7 @@ public class ViewPanel extends JPanel
 			boolean changeCallNeeded = false;
 			if (index >= operationsModel.getRowCount())
 			{
-				((marla.ide.gui.ExtendedJTable) operationsTable).setSelectedRow(operationsTable.getSelectedRow() - 1);
+				operationsTable.setSelectedRow(operationsTable.getSelectedRow() - 1);
 			}
 			else
 			{
@@ -714,7 +715,7 @@ public class ViewPanel extends JPanel
 				{
 					currentOperation.setEditableName(newName);
 					operationsModel.setValueAt(newName, operationsTable.getSelectedRow(), 0);
-					((marla.ide.gui.ExtendedJTable) operationsTable).refreshTable();
+					operationsTable.refreshTable();
 				}
 				catch(OperationEditorException ex)
 				{
@@ -730,13 +731,14 @@ public class ViewPanel extends JPanel
 
 	private void categoryTextFieldActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_categoryTextFieldActionPerformed
 	{//GEN-HEADEREND:event_categoryTextFieldActionPerformed
-		if (isUndoRedo || (!ignoreChanges && !categoryTextField.getText().equals(currentOperation.getCategory())))
+		if (isUndoRedo || (!ignoreChanges && !categoryTextField.getText().equals(currentOperation.getCategories().get(0))))
 		{
 			String newCat = categoryTextField.getText();
 
 			try
 			{
-				currentOperation.setCategory(newCat);
+				currentOperation.clearCategories();
+				currentOperation.addCategory(newCat);
 			}
 			catch(OperationEditorException ex)
 			{
@@ -778,7 +780,7 @@ public class ViewPanel extends JPanel
 				currentDataSetPath = file.toString();
 				currentDataSet = DataSet.importFile(currentDataSetPath);
 				outputModel.setData(currentDataSet);
-				((marla.ide.gui.ExtendedJTable) outputTable).refreshTable();
+				outputTable.refreshTable();
 
 				if(currentOperation != null)
 				{
@@ -1043,7 +1045,7 @@ public class ViewPanel extends JPanel
 
 			operationsNameTextField.setText(currentOperation.getName());
 			operationsNameTextFieldActionPerformed(null);
-			categoryTextField.setText(currentOperation.getCategory());
+			categoryTextField.setText(currentOperation.getCategories().get(0));
 			categoryTextFieldActionPerformed(null);
 			hasPlotCheckBox.setSelected(currentOperation.hasPlot());
 			hasPlotCheckBoxActionPerformed(null);
@@ -1069,7 +1071,7 @@ public class ViewPanel extends JPanel
 
 			operationsNameTextField.setText(currentOperation.getName());
 			operationsNameTextFieldActionPerformed(null);
-			categoryTextField.setText(currentOperation.getCategory());
+			categoryTextField.setText(currentOperation.getCategories().get(0));
 			categoryTextFieldActionPerformed(null);
 			hasPlotCheckBox.setSelected(currentOperation.hasPlot());
 			hasPlotCheckBoxActionPerformed(null);
@@ -1209,12 +1211,17 @@ public class ViewPanel extends JPanel
 		if (currentOperation != null && !currentOperation.isInfoUnanswered())
 		{
 			DefaultTableColumnModel newColumnModel = new DefaultTableColumnModel();
-			for (int i = 0; i < currentOperation.getColumnCount(); i++)
+			
+			// Only show the new columns this operation created
+			List<DataColumn> cols = currentOperation.getNewColumns();
+			int baseCol = currentOperation.getColumnCount() - cols.size();
+			for (int i = 0; i < cols.size(); i++)
 			{
-				TableColumn column = new TableColumn(i);
-				column.setHeaderValue(currentOperation.getColumn(i).getName());
+				TableColumn column = new TableColumn(baseCol + i);
+				column.setHeaderValue(cols.get(i).getName());
 				newColumnModel.addColumn(column);
 			}
+			
 			outputTable.setColumnModel(newColumnModel);
 			outputModel.setData (currentOperation);
 			outputTable.refreshTable();
@@ -1261,7 +1268,7 @@ public class ViewPanel extends JPanel
 
 				currentOperation = currentFile.getOperation(operationsTable.getValueAt(operationsTable.getSelectedRow(), 0).toString());
 				operationsNameTextField.setText(currentOperation.getName());
-				categoryTextField.setText(currentOperation.getCategory());
+				categoryTextField.setText(currentOperation.getCategories().get(0));
 				hasPlotCheckBox.setSelected(currentOperation.hasPlot());
 				operationTextPane.setText(currentOperation.getInnerXML().replaceAll("\\r\\n", "\\\n"));
 				xmlStatusLabel.setForeground(Color.BLACK);
