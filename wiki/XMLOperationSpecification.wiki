@@ -22,7 +22,7 @@ Attributes supported:
 {{{
 <category>Name of category</category>
 }}}
-An operation may fall into one or more categories. This allows maRla to organize the palette a bit more and make finding a given operation quicker. To specify which categories on operation falls into, use the `category` element.
+An operation may fall into one or more categories. This allows maRla to organize the palette a bit more and make finding a given operation quicker. To specify which categories on operation falls into, use the `category` element. Zero or may be given.
 
 A `category` uses whatever text is given in the element as the name of the category. This string is arbitrary. If multiple operations have the same category name, they will be placed together..
 
