@@ -589,7 +589,7 @@
 		<category>Descriptive Statistics</category>
 		<query type="column" name="col" prompt="Column:" column_type="numeric" />
 		<displayname>
-      ∑(
+      sum(
 			<response name="col" />
       )
 		</displayname>
@@ -602,12 +602,13 @@
 		<category>Descriptive Statistics</category>
 		<query type="column" prompt="Column:" name="col" />
 		<displayname>
-			summary(<response name="col" />)
+			summary(
+			<response name="col" />)
 		</displayname>
 		<computation>
 			<set rvar="colName" name="col" use="name" />
 			<set rvar="colVals" name="col" use="values" />
-      <!-- Get the summary of the column and then display whatever summary() tells us about it. Generically written -->
+			<!-- Get the summary of the column and then display whatever summary() tells us about it. Generically written -->
 			<cmd>s = summary(colVals)</cmd>
 			<cmd>n = names(s)</cmd>
 			<loop type="numeric" loop_var="s" index_var="i">
@@ -621,7 +622,10 @@
 		<category>Simple Linear Regression</category>
 		<query type="column" prompt="Column x:" name="x" />
 		<query type="column" prompt="Column y:" name="y" />
-		<displayname>lm(<response name="x" />~<response name="y" />)</displayname>
+		<displayname>lm(
+			<response name="x" />~
+			<response name="y" />)
+		</displayname>
 		<computation>
 			<set rvar="xName" name="x" use="name" />
 			<set rvar="xVals" name="x" use="values" />
@@ -640,7 +644,9 @@
 		<query type="column" prompt="Column x:" name="x" />
 		<query type="column" prompt="Column y:" name="y" />
 		<displayname>
-			summary(lm(<response name="x" />~<response name="y" />))
+			summary(lm(
+			<response name="x" />~
+			<response name="y" />))
 		</displayname>
 		<computation>
 			<set rvar="xName" name="x" use="name" />
@@ -682,7 +688,6 @@
 	</operation>
 	<operation name="rnorm">
 		<category>Data Creation</category>
-		<query type="string" name="saveTo" prompt="New Column Name:" />
 		<query type="numeric" name="samples" prompt="Sample count:" />
 		<query type="numeric" name="mean" prompt="Mean:" />
 		<displayname>
@@ -693,10 +698,9 @@
       )
 		</displayname>
 		<computation>
-			<set name="saveTo" rvar="saveTo" />
 			<set name="samples" rvar="n" />
 			<set name="mean" rvar="m" />
-			<save type="numeric" r_column="saveTo">rnorm(n, m)</save>
+			<save type="numeric">rnorm(n, m)</save>
 		</computation>
 	</operation>
 	<operation name="Binomial Test">
@@ -880,7 +884,6 @@
 	</operation>
 	<operation name="Sequence">
 		<category>Data Creation</category>
-		<query type="string" name="colName" prompt="New column name:" />
 		<query type="numeric" name="start" prompt="From:" />
 		<query type="numeric" name="end" prompt="To:" />
 		<displayname>
@@ -891,15 +894,13 @@
       )
 		</displayname>
 		<computation>
-			<set name="colName" />
 			<set name="start" />
 			<set name="end" />
-			<save type="numeric" r_column="colName">seq(start, end)</save>
+			<save type="numeric">seq(start, end)</save>
 		</computation>
 	</operation>
 	<operation name="Repeat">
 		<category>Data Creation</category>
-		<query type="string" name="colName" prompt="New column name:" />
 		<query type="numeric" name="val" prompt="Value:" />
 		<query type="numeric" name="count" prompt="Count:" />
 		<displayname>
@@ -910,10 +911,9 @@
       )
 		</displayname>
 		<computation>
-			<set name="colName" />
 			<set name="val" />
 			<set name="count" />
-			<save type="numeric" r_column="colName">rep(val, count)</save>
+			<save type="numeric">rep(val, count)</save>
 		</computation>
 	</operation>
 	<operation name="Median">

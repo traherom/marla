@@ -646,7 +646,7 @@ public abstract class DataSource extends JLabel implements Loadable, Changeable
 		sb.append("<table>\n");
 
 		// DataSource name
-		sb.append("\t<tr><td style='text-align: center' colspan='");
+		sb.append("\t<tr><td style='text-align: center; font-weight: bold; font-style: italic;' colspan='");
 		sb.append(getColumnCount() + 1);
 		sb.append("'>");
 		sb.append(getName());
@@ -656,7 +656,7 @@ public abstract class DataSource extends JLabel implements Loadable, Changeable
 		sb.append("\t<tr><td></td>");
 		for(int i = 0; i < getColumnCount(); i++)
 		{
-			sb.append("<td>");
+			sb.append("<td style='text-align: center; font-weight: bold;'>");
 			sb.append(getColumn(i).getName());
 			sb.append("</td>");
 		}
@@ -669,7 +669,7 @@ public abstract class DataSource extends JLabel implements Loadable, Changeable
 
 		for(int i = 0; i < len; i++)
 		{
-			sb.append("\t<tr><td>");
+			sb.append("\t<tr><td style='font-style: italic;'>");
 			sb.append(i + 1);
 			sb.append("</td>");
 			for(int j = 0; j < getColumnCount(); j++)
@@ -689,11 +689,11 @@ public abstract class DataSource extends JLabel implements Loadable, Changeable
 		// If we truncated tell the user
 		if(len < getColumnLength())
 		{
-			sb.append("<tr><td colspan='");
+			sb.append("<tr><td  style='font-style: italic;' colspan='");
 			sb.append(getColumnCount() + 1);
-			sb.append("' style='text-align: center'>-First ");
+			sb.append("' style='text-align: center'>- Only first ");
 			sb.append(len);
-			sb.append(" rows shown-</td></tr>");
+			sb.append(" rows shown -</td></tr>");
 		}
 
 		sb.append("</table>");

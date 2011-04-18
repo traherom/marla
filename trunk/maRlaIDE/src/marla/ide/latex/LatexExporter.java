@@ -109,7 +109,9 @@ public class LatexExporter
 		// Must be first or it will replace the slashes
 		// introduced by later patterns
 		l.add(new Object[]{Pattern.compile("\\\\"), "\\\\backslash"});
-		l.add(new Object[]{Pattern.compile("\\$"), "\\\\$"});
+
+		// Latex special symbols
+		l.add(new Object[]{Pattern.compile("\\$"), "\\$"});
 		l.add(new Object[]{Pattern.compile("%"), "\\\\%"});
 		l.add(new Object[]{Pattern.compile("\\^"), "\\\\^"});
 		l.add(new Object[]{Pattern.compile("&"), "\\\\&"});
@@ -118,6 +120,58 @@ public class LatexExporter
 		l.add(new Object[]{Pattern.compile("#"), "\\\\#"});
 		l.add(new Object[]{Pattern.compile("_"), "\\\\_"});
 		l.add(new Object[]{Pattern.compile("-"), "\\\\--"});
+
+		// Common unicode stuff
+		l.add(new Object[]{Pattern.compile("\u0391"), "A"});
+		l.add(new Object[]{Pattern.compile("\u0392"), "B"});
+		l.add(new Object[]{Pattern.compile("\u0393"), "\\$\\\\Gamma\\$"});
+		l.add(new Object[]{Pattern.compile("\u0394"), "\\$\\\\Delta\\$"});
+		l.add(new Object[]{Pattern.compile("\u0395"), "E"});
+		l.add(new Object[]{Pattern.compile("\u0396"), "Z"});
+		l.add(new Object[]{Pattern.compile("\u0397"), "H"});
+		l.add(new Object[]{Pattern.compile("\u0398"), "\\$\\\\Theta\\$"});
+		l.add(new Object[]{Pattern.compile("\u0399"), "I"});
+		l.add(new Object[]{Pattern.compile("\u039A"), "K"});
+		l.add(new Object[]{Pattern.compile("\u039B"), "\\$\\\\Lambda\\$"});
+		l.add(new Object[]{Pattern.compile("\u039C"), "M"});
+		l.add(new Object[]{Pattern.compile("\u039D"), "N"});
+		l.add(new Object[]{Pattern.compile("\u039E"), "\\$\\\\Xi\\$"});
+		l.add(new Object[]{Pattern.compile("\u039F"), "O"});
+		l.add(new Object[]{Pattern.compile("\u03A0"), "\\$\\\\Pi\\$"});
+		l.add(new Object[]{Pattern.compile("\u03A1"), "P"});
+		l.add(new Object[]{Pattern.compile("\u03A3"), "\\$\\\\Sigma\\$"});
+		l.add(new Object[]{Pattern.compile("\u03A4"), "T"});
+		l.add(new Object[]{Pattern.compile("\u03A5"), "\\$\\\\Upsilon\\$"});
+		l.add(new Object[]{Pattern.compile("\u03A6"), "\\$\\\\Phi\\$"});
+		l.add(new Object[]{Pattern.compile("\u03A7"), "X"});
+		l.add(new Object[]{Pattern.compile("\u03A8"), "\\$\\\\Psi\\$"});
+		l.add(new Object[]{Pattern.compile("\u03A9"), "\\$\\\\Omega\\$"});
+
+		l.add(new Object[]{Pattern.compile("\u03B1"), "\\$\\\\alpha\\$"});
+		l.add(new Object[]{Pattern.compile("\u03B2"), "\\$\\\\beta\\$"});
+		l.add(new Object[]{Pattern.compile("\u03B3"), "\\$\\\\gamma\\$"});
+		l.add(new Object[]{Pattern.compile("\u03B4"), "\\$\\\\delta\\$"});
+		l.add(new Object[]{Pattern.compile("\u03B5"), "\\$\\\\epsilon\\$"});
+		l.add(new Object[]{Pattern.compile("\u03B6"), "\\$\\\\zeta\\$"});
+		l.add(new Object[]{Pattern.compile("\u03B7"), "\\$\\\\eta\\$"});
+		l.add(new Object[]{Pattern.compile("\u03B8"), "\\$\\\\theta\\$"});
+		l.add(new Object[]{Pattern.compile("\u03B9"), "\\$\\\\iota\\$"});
+		l.add(new Object[]{Pattern.compile("\u03BA"), "\\$\\\\kappa\\$"});
+		l.add(new Object[]{Pattern.compile("\u03BB"), "\\$\\\\lambda\\$"});
+		l.add(new Object[]{Pattern.compile("\u03BC"), "\\$\\\\mu\\$"});
+		l.add(new Object[]{Pattern.compile("\u03BD"), "\\$\\\\nu\\$"});
+		l.add(new Object[]{Pattern.compile("\u03BE"), "\\$\\\\xi\\$"});
+		l.add(new Object[]{Pattern.compile("\u03BF"), "o\\$"});
+		l.add(new Object[]{Pattern.compile("\u03C0"), "\\$\\\\pi\\$"});
+		l.add(new Object[]{Pattern.compile("\u03C1"), "\\$\\\\rho\\$"});
+		l.add(new Object[]{Pattern.compile("\u03C3"), "\\$\\\\sigma\\$"});
+		l.add(new Object[]{Pattern.compile("\u03C4"), "\\$\\\\tau\\$"});
+		l.add(new Object[]{Pattern.compile("\u03C5"), "\\$\\\\upsilon\\$"});
+		l.add(new Object[]{Pattern.compile("\u03C6"), "\\$\\\\phi\\$"});
+		l.add(new Object[]{Pattern.compile("\u03C7"), "\\$\\\\chi\\$"});
+		l.add(new Object[]{Pattern.compile("\u03C8"), "\\$\\\\psi\\$"});
+		l.add(new Object[]{Pattern.compile("\u03C9"), "\\$\\\\omega\\$"});
+
 		return l;
 	}
 	
