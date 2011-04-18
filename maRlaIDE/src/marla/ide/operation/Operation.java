@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 import org.jdom.Element;
 import marla.ide.problem.DataColumn;
 import marla.ide.problem.DataNotFoundException;
@@ -155,7 +156,7 @@ public abstract class Operation extends DataSource implements Cloneable
 	 */
 	public static Map<String, List<String>> getAvailableOperationsCategorized()
 	{
-		Map<String, List<String>> opCategories = new HashMap<String, List<String>>();
+		Map<String, List<String>> opCategories = new TreeMap<String, List<String>>();
 
 		// Hardcoded java operations
 		for(String javaCat : javaOpCategories.keySet())
@@ -192,9 +193,7 @@ public abstract class Operation extends DataSource implements Cloneable
 
 		// And sort the operations inside the categories
 		for(String cat : opCategories.keySet())
-		{
 			Collections.sort(opCategories.get(cat));
-		}
 
 		return opCategories;
 	}
