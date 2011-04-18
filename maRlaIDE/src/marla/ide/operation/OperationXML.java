@@ -356,41 +356,89 @@ public class OperationXML extends Operation
 			loadXML();
 
 		Map<String, List<String>> opsCategorized = new HashMap<String, List<String>>();
-		for(Object opEl : operationXML.getChildren("operation"))
+		for(Object opObj : operationXML.getChildren("operation"))
 		{
-			Element op = (Element) opEl;
+			Element opEl = (Element) opObj;
 
-			// Operation name and category
-			String name = op.getAttributeValue("name");
+			// Operation name
+			String name = opEl.getAttributeValue("name");
 			if(name == null)
 				throw new OperationXMLException("No name supplied for operation in XML file");
-
-			String cat = op.getAttributeValue("category", "Uncategorized");
 
 			try
 			{
 				// Ensure that we're supposed to actually list this one
-				if(!Boolean.parseBoolean(op.getAttributeValue("list", "true")))
+				if(!Boolean.parseBoolean(opEl.getAttributeValue("list", "true")))
 					continue;
 			}
 			catch(NumberFormatException ex)
 			{
-				throw new OperationXMLException(name, "Invalid value '" + op.getAttributeValue("list") + "' for list attribute");
+				throw new OperationXMLException(name, "Invalid value '" + opEl.getAttributeValue("list") + "' for list attribute");
 			}
 
-			// Add to the categorized list.  Does this category already exist?
-			if(!opsCategorized.containsKey(cat))
+			// Add to the categorized list in each place it says
+			boolean catFound = false;
+			for(Object catObj : opEl.getChildren("category"))
 			{
-				// Not yet, create new category
-				List<String> newCat = new ArrayList<String>();
-				newCat.add(name);
-				opsCategorized.put(cat, newCat);
+				Element catEl = (Element)catObj;
+				catFound = true;
+				
+				String cat = catEl.getTextNormalize();
+				
+				//  Does this category already exist?
+				if(!opsCategorized.containsKey(cat))
+				{
+					// Not yet, create new category
+					List<String> newCat = new ArrayList<String>();
+					newCat.add(name);
+					opsCategorized.put(cat, newCat);
+				}
+				else
+				{
+					// Add to existing category
+					opsCategorized.get(cat).add(name);
+				}
 			}
-			else
+			
+			// TODO remove this eventually, require specification in elements
+			// For backward compatibility, also allow a single category in the 
+			// attribute if there were no element categories
+			String attrCat = opEl.getAttributeValue("category");
+			if(attrCat != null)
 			{
-				// Add to existing category
-				opsCategorized.get(cat).add(name);
+				catFound = true;
+				if(!opsCategorized.containsKey(attrCat))
+				{
+					// Not yet, create new category
+					List<String> newCat = new ArrayList<String>();
+					newCat.add(name);
+					opsCategorized.put(attrCat, newCat);
+				}
+				else
+				{
+					// Add to existing category
+					opsCategorized.get(attrCat).add(name);
+				}
 			}
+			
+			// Were no categories found?
+			if(!catFound)
+			{
+				// Put in the default one
+				String cat = "Uncategorized";
+				if(!opsCategorized.containsKey(cat))
+				{
+					// Not yet, create new category
+					List<String> newCat = new ArrayList<String>();
+					newCat.add(name);
+					opsCategorized.put(cat, newCat);
+				}
+				else
+				{
+					// Add to existing category
+					opsCategorized.get(cat).add(name);
+				}
+			}	
 		}
 
 		return opsCategorized;
@@ -719,10 +767,11 @@ public class OperationXML extends Operation
 		// Record the set calls
 		proc.setRecorderMode(intendedRecordMode);
 
-		// All of them will save to here
+		// All of them will save to here. If no name is given, use the prompty
+		// key, assuming that's a valid R variable
 		String rVar = setEl.getAttributeValue("rvar");
 		if(rVar == null)
-			throw new OperationXMLException("R variable not given to save answer to prompt '" + promptKey + "'");
+			rVar = promptKey;
 
 		// Find out what type of query it was so we know where setVar to call
 		PromptType promptType = answer.getType();
@@ -775,15 +824,18 @@ public class OperationXML extends Operation
 
 		// Determine the name of the column to save to
 		String colName = cmdEl.getAttributeValue("column");
+		
+		// Dynamic one?
 		if(colName == null)
 		{
-			// Rats, dynamic one?
 			String dynamicColumnCmd = cmdEl.getAttributeValue("r_column");
-			if(dynamicColumnCmd == null)
-				throw new OperationXMLException("No column name supplied for save");
-
-			colName = proc.executeString(dynamicColumnCmd);
+			if(dynamicColumnCmd != null)
+				colName = proc.executeString(dynamicColumnCmd);
 		}
+		
+		// Just use the display name?
+		if(colName == null)
+			colName = getDisplayString(false);
 
 		// Get/create column as needed
 		DataColumn col = null;
@@ -1105,9 +1157,8 @@ public class OperationXML extends Operation
 						}
 						else
 						{
-							val = partEl.getAttributeValue("default");
-							if(val == null)
-								throw new OperationXMLException(getName(), "No default given for filler in display name");
+							// Use the name as the default
+							val = partEl.getAttributeValue("name");
 						}
 
 						// Append to names

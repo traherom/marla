@@ -19,6 +19,7 @@ package marla.opedit.operation;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import marla.ide.operation.OperationXML;
@@ -154,35 +155,78 @@ public class OperationXMLEditable extends OperationXML
 	}
 
 	/**
-	 * Gets the category this operation is currently in
-	 * @return Category operation is in. Blank if there is none set
+	 * Gets the categor(ies) this operation is currently in
+	 * @return Categories operation is in. Empty if there are none
 	 */
-	public String getCategory()
+	public List<String> getCategories()
 	{
-		return opEl.getAttributeValue("category", "");
+		List<String> cats = new ArrayList<String>();
+		
+		// TODO remove legacy category
+		String legCat = opEl.getAttributeValue("category");
+		if(legCat != null)
+			cats.add(legCat);
+		
+		for(Object catObj : opEl.getChildren("category"))
+			cats.add(((Element)catObj).getTextTrim());
+		
+		return cats;
 	}
 
 	/**
 	 * Sets the category for this operation
-	 * @param newCat New category to place this operation in. Setting it to null
-	 *		or blank removes the category
-	 * @return Previously set category
+	 * @param newCat New category to place this operation in. null or blank values
+	 *		are ignored
 	 */
-	public String setCategory(String newCat) 
+	public void addCategory(String newCat) 
 	{
-		String old = opEl.getAttributeValue("category");
-
 		if(parent != null)
 			parent.changeBeginning();
-			
+		
 		if(newCat != null && !newCat.isEmpty())
-			opEl.setAttribute("category", newCat);
-		else
-			opEl.removeAttribute("category");
+			opEl.addContent(new Element("category").setText(newCat));
 
 		setConfiguration(opEl);
+	}
+	
+	/**
+	 * Removes all existing categories from operation
+	 */
+	public void clearCategories()
+	{
+		if(parent != null)
+			parent.changeBeginning();
+		
+		// TODO Remove legagory location
+		opEl.removeAttribute("category");
+		
+		// Remove all categories
+		opEl.removeChildren("category");
 
-		return old;
+		setConfiguration(opEl);
+	}
+	
+	/**
+	 * Removes the given category from the operation
+	 * @param cat Name of the category to remove. If not found, takes no action
+	 */
+	public void removeCategory(String cat)
+	{
+		Element toRemove = null;
+		
+		// Find category
+		for(Object catObj : opEl.getChildren("category"))
+		{
+			if(((Element)catObj).getText().equals(cat))
+			{
+				toRemove = (Element)catObj;
+				break;
+			}
+		}
+		
+		// Remove if we found it
+		if(toRemove != null)
+			opEl.removeContent(toRemove);
 	}
 
 	/**
@@ -235,7 +279,7 @@ public class OperationXMLEditable extends OperationXML
 	 */
 	public String getInnerXML() 
 	{
-		return innerXmlStr;
+		return innerXmlStr.trim();
 	}
 
 	/**
