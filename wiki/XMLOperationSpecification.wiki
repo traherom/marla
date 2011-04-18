@@ -6,7 +6,7 @@ given in bold are required. A full example implementing a t-test is listed at th
 
 = Operation =
 {{{
-<operation name="operation name" [plot="true|false"] [category="category name"] [list="true|false"]>
+<operation name="operation name" [plot="true|false"] [list="true|false"]>
 }}}
 Each `<operation />` takes a name that will be displayed to the user and can be used to
 create that operation. It must be unique. If multiple with the same name exist an
@@ -16,8 +16,15 @@ have `plot="true"` set as well. If an operation should not appear on the side pa
 Attributes supported:
   * *`name`* - Arbitrary name of the operation. Must be unique within the XML file
   * `plot` - Specifies if the operation will produce a plot. May be set to `true` or `false`. Default is `false`.
-  * `category` - Specifies the category this operation falls under. Arbitrary string.
   * `list` - Specifies if this operation is listed under normal displays. Maybe to set to `true` or `false`. Default is `true`.
+
+== Categories ==
+{{{
+<category>Name of category</category>
+}}}
+An operation may fall into one or more categories. This allows maRla to organize the palette a bit more and make finding a given operation quicker. To specify which categories on operation falls into, use the `category` element.
+
+A `category` uses whatever text is given in the element as the name of the category. This string is arbitrary. If multiple operations have the same category name, they will be placed together..
 
 == Information Prompts ==
 {{{
@@ -61,7 +68,7 @@ The user's response will be returned back and saved under the name given.
 {{{
 <displayname>Specification</displayname>
 }}}
-Operations may have a name which changes based on what it is actually doing. For example, an operation which adds a user-specified value to a given column might be called "Add" but be displayed as "ColName + 5." This behavior is specified by the `<longname />` element.
+Operations may have a name which changes based on what it is actually doing. For example, an operation which adds a user-specified value to a given column might be called "Add" but be displayed as "ColName + 5." This behavior is specified by the `<displayname />` element.
 
 The main `displayname` element takes no attributes. Inside it may have verbatim text--which will be copied as-is--or `<response />` elements. These may be intermixed freely as desired.
 
@@ -71,7 +78,7 @@ An example of the add operation discussed above:
   <query type="column" name="col" prompt="Column?" />
   <query type="numeric" name="val" prompt="Add" />
 
-  <displayname><response name="col" default="Column" /> + <response name="val" default="x" /></displayname>
+  <displayname><response name="col" /> + <response name="val" /></displayname>
 
   <computation>
     <!-- ...operations to perform addition... -->
@@ -81,13 +88,12 @@ An example of the add operation discussed above:
 
 === Response ===
 {{{
-<response name="query name" default="default value" />
+<response name="query name" />
 }}}
-The query referenced by `name` will be copied into the location of this element. If the user has not yet provided an answer to the query, the value given in `default` will be used instead.
+The query referenced by `name` will be copied into the location of this element. If the user has not yet provided an answer to the query, the name of the query will be used instead.
 
 Supported attributes:
   * *`name`* - Name used for a query (see [XMLOperationSpecification#Information_Prompts]). The text to this answer will be copied into the place of this element
-  * *`default`* - Default text to use if the query has not been answered yet.
 
 == Computation ==
 {{{
