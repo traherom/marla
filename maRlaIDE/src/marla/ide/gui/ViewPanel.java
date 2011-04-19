@@ -69,7 +69,6 @@ import marla.ide.operation.OperationInfoRequiredException;
 import marla.ide.operation.OperationInformation;
 import marla.ide.operation.OperationInformation.PromptType;
 import marla.ide.operation.OperationXML;
-import marla.ide.operation.OperationXMLException;
 import marla.ide.problem.DataSet;
 import marla.ide.problem.InternalMarlaException;
 import marla.ide.problem.Problem;
@@ -1426,19 +1425,10 @@ public class ViewPanel extends JPanel
 					answerDialog.setVisible(true);
 				}
 			}
-			catch(OperationXMLException ex)
-			{
-				Domain.logger.add(ex);
-				JOptionPane.showMessageDialog(domain.getTopWindow(), ex.getMessage(), "Operation Error", JOptionPane.ERROR_MESSAGE);
-			}
-			catch(OperationException ex)
-			{
-				// Don't log this, as it may be something like the operation having no parent (usually a user error)
-				JOptionPane.showMessageDialog(domain.getTopWindow(), ex.getMessage(), "Operation Error", JOptionPane.ERROR_MESSAGE);
-			}
 			catch(MarlaException ex)
 			{
 				Domain.logger.add(ex);
+				JOptionPane.showMessageDialog(domain.getTopWindow(), ex.getMessage(), "Operation Error", JOptionPane.ERROR_MESSAGE);
 			}
 			finally
 			{

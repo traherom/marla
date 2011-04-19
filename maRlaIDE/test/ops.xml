@@ -40,20 +40,20 @@
 	<operation name="Boxplot ANOVA" plot="true">
 		<category>ANOVA</category>
 		<category>Descriptive Graphics</category>
-		<query type="column" name="x" prompt="x:" column_type="numeric" />
-		<query type="column" name="y" prompt="y:" column_type="numeric" />
+		<query type="column" name="col1" prompt="x:" column_type="numeric" />
+		<query type="column" name="col2" prompt="y:" column_type="numeric" />
 		<displayname>
       boxplot(
-			<response name="x" />
+			<response name="col1" />
       ~
-			<response name="y" />
+			<response name="col2" />
       )
 		</displayname>
 		<computation>
-			<set name="x" rvar="x" use="values" />
-			<set name="y" rvar="y" use="values" />
+			<set name="col" use="values" />
+			<set name="col2" use="values" />
 			<plot>
-				<cmd>boxplot(x~y)</cmd>
+				<cmd>boxplot(col1~col2)</cmd>
 			</plot>
 		</computation>
 	</operation>
@@ -94,24 +94,39 @@
 	<operation name="Q-Q Plot" plot="true">
 		<category>Descriptive Graphics</category>
 		<category>Simple Linear Regression</category>
-		<query type="column" name="x" prompt="Column 1:" column_type="numeric" />
-		<query type="column" name="y" prompt="Column 2:" column_type="numeric" />
+		<query type="column" name="col1" prompt="Column 1:" column_type="numeric" />
+		<query type="column" name="col2" prompt="Column 2:" column_type="numeric" />
 		<displayname>
       qqplot(
-			<response name="x" />
+			<response name="col1" />
       ,
-			<response name="y" />
+			<response name="col2" />
       )
 		</displayname>
 		<computation>
-			<set name="x" rvar="x" use="values" />
-			<set name="y" rvar="y" use="values" />
+			<set name="col1" use="values" />
+			<set name="col2" use="values" />
 			<plot>
-				<cmd>qqplot(x, y)</cmd>
+				<cmd>qqplot(col1, col2)</cmd>
 			</plot>
 		</computation>
 	</operation>
 	<operation name="Barplot" plot="true">
+		<category>Descriptive Graphics</category>
+		<query type="column" name="col" prompt="Column:" column_type="numeric" />
+		<displayname>
+      barplot(
+			<response name="col" />
+      )
+		</displayname>
+		<computation>
+			<set name="col" rvar="x" use="values" />
+			<plot>
+				<cmd>barplot(x)</cmd>
+			</plot>
+		</computation>
+	</operation>
+	<operation name="Stem and leaf" plot="true">
 		<category>Descriptive Graphics</category>
 		<query type="column" name="col" prompt="Column:" column_type="numeric" />
 		<displayname>
@@ -292,6 +307,22 @@
 			<save type="numeric">col ^ val</save>
 		</computation>
 	</operation>
+	<operation name="Exponentiate 2">
+		<category>Non-Linear Transformations</category>
+		<query type="numeric" name="val" prompt="Value:" />
+		<query type="column" name="col" prompt="Raise to:" column_type="numeric" />
+		<displayname>
+			<response name="val" />
+      &lt;sup&gt;
+			<response name="col" />
+      &lt;/sup&gt;
+		</displayname>
+		<computation>
+			<set name="col" use="values" />
+			<set name="val" />
+			<save type="numeric">val ^ col</save>
+		</computation>
+	</operation>
 	<operation name="sin()">
 		<category>Non-Linear Transformations</category>
 		<query type="column" name="col" prompt="Column:" column_type="numeric" />
@@ -411,36 +442,36 @@
 	</operation>
 	<operation name="2-Var variance">
 		<category>Descriptive Statistics</category>
-		<query type="column" name="x" prompt="X:" column_type="numeric" />
-		<query type="column" name="y" prompt="Y:" column_type="numeric" />
+		<query type="column" name="col1" prompt="X:" column_type="numeric" />
+		<query type="column" name="col2" prompt="Y:" column_type="numeric" />
 		<displayname>
       var(
-			<response name="x" />
+			<response name="col1" />
       ,
-			<response name="y" />
+			<response name="col2" />
       )
 		</displayname>
 		<computation>
-			<set name="x" use="values" />
-			<set name="y" use="values" />
-			<save type="numeric">var(x, y)</save>
+			<set name="col1" use="values" />
+			<set name="col2" use="values" />
+			<save type="numeric">var(col1, col2)</save>
 		</computation>
 	</operation>
 	<operation name="Correlation">
 		<category>Descriptive Statistics</category>
-		<query type="column" name="x" prompt="Column 1:" column_type="numeric" />
-		<query type="column" name="y" prompt="Column 2:" column_type="numeric" />
+		<query type="column" name="col1" prompt="X:" column_type="numeric" />
+		<query type="column" name="col2" prompt="Y:" column_type="numeric" />
 		<displayname>
-      cor(
-			<response name="x" />
+      var(
+			<response name="col1" />
       ,
-			<response name="y" />
+			<response name="col2" />
       )
 		</displayname>
 		<computation>
-			<set name="x" use="values" />
-			<set name="y" use="values" />
-			<save type="numeric">cor(x, y)</save>
+			<set name="col1" use="values" />
+			<set name="col2" use="values" />
+			<save type="numeric">cor(col1, col2)</save>
 		</computation>
 	</operation>
 	<operation name="Log base 10">
@@ -495,6 +526,34 @@
 		<computation>
 			<set name="col" use="values" />
 			<save type="numeric">abs(col)</save>
+		</computation>
+	</operation>
+	<operation name="One-sample Wilcox">
+		<category>One Sample Test</category>
+		<query type="column" column_type="numeric" prompt="Column:" name="col" />
+		<query type="checkbox" prompt="Assume data is normal" name="normal" />
+		<displayname>
+      wilcox.test(
+			<response name="col" />
+      )
+		</displayname>
+		<computation>
+			<set rvar="colName" name="col" use="name" />
+			<set rvar="colVals" name="col" use="values" />
+			<cmd>w = wilcox.test(colVals)</cmd>
+      <!-- Create a "t-test vals" column, if it doesn't already exist -->
+			<if colexists="Wilcox">
+				<else>
+					<save type="string" column="Wilcox">c("estimate", "parameter", "P-Value", "Mean", "Lower CI", "Upper CI", "Alpha")</save>
+				</else>
+			</if>
+			<save type="numeric">w$statistic</save>
+			<save type="numeric">w$parameter</save>
+			<save type="numeric">w$p.value</save>
+			<save type="numeric">w$estimate</save>
+			<save type="numeric">w$conf.int[1]</save>
+			<save type="numeric">w$conf.int[2]</save>
+			<save type="numeric">attr(w$conf.int, 'conf.level')</save>
 		</computation>
 	</operation>
 	<operation name="One-sample t-test">
@@ -559,6 +618,43 @@
 			<save type="numeric">attr(t$conf.int, 'conf.level')</save>
 		</computation>
 	</operation>
+	<operation name="Two Sample Wilcox">
+		<category>Two Sample Test</category>
+		<query type="column" column_type="numeric" prompt="Column 1:" name="x" />
+		<query type="column" column_type="numeric" prompt="Column 2:" name="y" />
+		<query type="checkbox" prompt="Assume data is normal" name="normal" />
+		<query type="checkbox" prompt="Paired?" name="paired" />
+		<displayname>
+			wilcox.test(
+			<response name="x" />
+			,
+			y=
+			<response name="y" />,
+			paired=
+			<response name="paired" />)
+		</displayname>
+		<computation>
+			<set rvar="xName" name="x" use="name" />
+			<set rvar="xVals" name="x" use="values" />
+			<set rvar="yName" name="y" use="name" />
+			<set rvar="yVals" name="y" use="values" />
+			<set name="paired" />
+			<cmd>w = wilcox.test(xVals, y=yVals, paired=paired)</cmd>
+      <!-- Create a "t-test vals" column, if it doesn't already exist -->
+			<if colexists="Wilcox">
+				<else>
+					<save type="string" column="Wilcox">c("W statistic", "df", "P-Value", "Mean of x", "Mean of y", "Lower CI", "Upper CI", "Alpha")</save>
+				</else>
+			</if>
+			<save type="numeric">w$statistic</save>
+			<save type="numeric">w$parameter</save>
+			<save type="numeric">w$p.value</save>
+			<save type="numeric">w$estimate</save>
+			<save type="numeric">w$conf.int[1]</save>
+			<save type="numeric">w$conf.int[2]</save>
+			<save type="numeric">attr(w$conf.int, 'conf.level')</save>
+		</computation>
+	</operation>
 	<operation name="Mean">
 		<category>Descriptive Statistics</category>
 		<query type="column" name="col" prompt="Column:" column_type="numeric" />
@@ -620,17 +716,17 @@
 	<operation name="Linear Model">
 		<category>ANOVA</category>
 		<category>Simple Linear Regression</category>
-		<query type="column" prompt="Column x:" name="x" />
-		<query type="column" prompt="Column y:" name="y" />
+		<query type="column" prompt="Column x:" name="col1" />
+		<query type="column" prompt="Column y:" name="col2" />
 		<displayname>lm(
-			<response name="x" />~
-			<response name="y" />)
+			<response name="col1" />~
+			<response name="col2" />)
 		</displayname>
 		<computation>
-			<set rvar="xName" name="x" use="name" />
-			<set rvar="xVals" name="x" use="values" />
-			<set rvar="yName" name="y" use="name" />
-			<set rvar="yVals" name="y" use="values" />
+			<set rvar="xName" name="col1" use="name" />
+			<set rvar="xVals" name="col1" use="values" />
+			<set rvar="yName" name="col2" use="name" />
+			<set rvar="yVals" name="col2" use="values" />
 			<cmd>s = lm(xVals~yVals)</cmd>
 			<cmd>n = names(s)</cmd>
 			<loop type="numeric" loop_var="s" index_var="i">
@@ -705,32 +801,34 @@
 	</operation>
 	<operation name="Binomial Test">
 		<category>Statistical Test</category>
+		<category>One Sample Test</category>
 		<query type="numeric" name="successes" prompt="Success count:" />
 		<query type="numeric" name="trials" prompt="Trial count:" />
 		<query type="numeric" name="alpha" prompt="Alpha:" min="0" max="1" />
 		<displayname>
-      binom.test(
+			binom.test(
 			<response name="successes" />
-      ,
+			,
 			<response name="trials" />
-      )
+			)
 		</displayname>
 		<computation>
-			<set name="successes" rvar="x" />
-			<set name="trials" rvar="n" />
-			<set name="alpha" rvar="a" />
-      <!-- check arguments -->
-			<if expr="n &lt; x">
+			<set name="successes" />
+			<set name="trials" />
+			<set name="alpha" />
+			<!-- check arguments -->
+			<if expr="trials &lt; successes">
 				<then>
 					<error msg="Trials must be greater than successes" />
 				</then>
 			</if>
-			<cmd>res = binom.test(floor(x), floor(n), conf.level=1-a)</cmd>
+			<cmd>res = binom.test(floor(successes), floor(trials), conf.level=1-alpha)</cmd>
 			<save type="numeric">res$estimate</save>
 		</computation>
 	</operation>
 	<operation name="Proportionality Test">
 		<category>Statistical Test</category>
+		<category>One Sample Test</category>
 		<query type="column" name="successes" prompt="Sucess counts:" column_type="numeric" />
 		<query type="column" name="trials" prompt="Trial counts:" column_type="numeric" />
 		<query type="numeric" name="alpha" prompt="Alpha:" min="0" max="1" />
@@ -742,63 +840,84 @@
       )
 		</displayname>
 		<computation>
-			<set name="successes" rvar="x" use="values" />
-			<set name="trials" rvar="n" use="values" />
-			<set name="alpha" rvar="a" />
-			<cmd>res = prop.test(floor(x), floor(n), conf.level=1-a)</cmd>
+			<set name="successes" use="values" />
+			<set name="trials" use="values" />
+			<set name="alpha" />
+			<cmd>res = prop.test(floor(successes), floor(trials), conf.level=1-alpha)</cmd>
 			<save type="numeric">res$estimate</save>
 		</computation>
 	</operation>
 	<operation name="Correlation Test">
 		<category>Two Sample Test</category>
-		<query type="column" name="x" prompt="Column 1:" column_type="numeric" />
-		<query type="column" name="y" prompt="Column 2:" column_type="numeric" />
+		<query type="column" name="col1" prompt="Column 1:" column_type="numeric" />
+		<query type="column" name="col2" prompt="Column 2:" column_type="numeric" />
 		<query type="numeric" name="alpha" prompt="Alpha:" min="0" max="1" />
 		<displayname>
-      cor.test(
-			<response name="x" />
-      ,
-			<response name="y" />
-      )
+			cor.test(
+			<response name="col1" />
+			,
+			<response name="col2" />
+			)
 		</displayname>
 		<computation>
-			<set name="x" rvar="x" use="values" />
-			<set name="y" rvar="y" use="values" />
-			<set name="alpha" rvar="a" />
-			<cmd>res = cor.test(x, y, conf.level=1-a)</cmd>
+			<set name="col1" use="values" />
+			<set name="col2" use="values" />
+			<set name="alpha" />
+			<cmd>res = cor.test(col1, col2, conf.level=1-alpha)</cmd>
+			<save type="numeric">res$estimate</save>
+		</computation>
+	</operation>
+	<operation name="Variance Test">
+		<category>Two Sample Test</category>
+		<query type="column" name="col1" prompt="Column 1:" column_type="numeric" />
+		<query type="column" name="col2" prompt="Column 2:" column_type="numeric" />
+		<query type="numeric" name="alpha" prompt="Alpha:" min="0" max="1" />
+		<displayname>
+			var.test(
+			<response name="col1" />
+			,
+			<response name="col2" />
+			)
+		</displayname>
+		<computation>
+			<set name="col1" use="values" />
+			<set name="col2" use="values" />
+			<set name="alpha" />
+			<cmd>res = var.test(col1, col2, conf.level=1-alpha)</cmd>
 			<save type="numeric">res$estimate</save>
 		</computation>
 	</operation>
 	<operation name="Shapiro-Wilk Normality Test">
 		<category>ANOVA</category>
 		<category>Simple Linear Regression</category>
-		<query type="column" name="x" prompt="Column:" column_type="numeric" />
+		<category>One Sample Test</category>
+		<query type="column" name="col" prompt="Column:" column_type="numeric" />
 		<displayname>
       shapiro.test(
-			<response name="x" />
+			<response name="col" />
       )
 		</displayname>
 		<computation>
-			<set name="x" rvar="x" use="values" />
-			<cmd>res = shapiro.test(x)</cmd>
+			<set name="col" use="values" />
+			<cmd>res = shapiro.test(col)</cmd>
 			<save type="numeric">res$statistic</save>
 		</computation>
 	</operation>
 	<operation name="ANOVA">
 		<category>ANOVA</category>
-		<query type="column" name="x" prompt="x:" />
-		<query type="column" name="y" prompt="y:" />
+		<query type="column" name="col1" prompt="x:" />
+		<query type="column" name="col2" prompt="y:" />
 		<displayname>
       anova(lm(
-			<response name="x" />
+			<response name="col1" />
       ~
-			<response name="y" />
+			<response name="col2" />
       ))
 		</displayname>
 		<computation>
       <!-- Descriptive column -->
-			<set name="x" rvar="xName" use="name" />
-			<set name="y" rvar="yName" use="name" />
+			<set name="col1" rvar="xName" use="name" />
+			<set name="col2" rvar="yName" use="name" />
 			<cmd>cols = c(xName, yName)</cmd>
 			<cmd>descCol = "ANOVA"</cmd>
 			<save type="string" r_column="descCol">paste('Deg. Freedom', cols)</save>
@@ -807,9 +926,9 @@
 			<save type="string" r_column="descCol">'F'</save>
 			<save type="string" r_column="descCol">'P value'</save>
       <!-- Compute -->
-			<set name="x" use="values" />
-			<set name="y" use="values" />
-			<cmd>res = anova(lm(y~x))</cmd>
+			<set name="col1" use="values" />
+			<set name="col2" use="values" />
+			<cmd>res = anova(lm(col1~col2))</cmd>
       <!-- Save results -->
 			<save type="numeric">res$Df</save>
 			<save type="numeric">res$Sum</save>
@@ -852,33 +971,33 @@
 	</operation>
 	<operation name="XY Plot" plot="true">
 		<category>Descriptive Graphics</category>
-		<query type="column" name="x" prompt="X column:" column_type="numeric" />
-		<query type="column" name="y" prompt="Y column:" column_type="numeric" />
+		<category>Simple Linear Regression</category>
+		<query type="column" name="col1" prompt="X column:" column_type="numeric" />
+		<query type="column" name="col2" prompt="Y column:" column_type="numeric" />
 		<displayname>
-      Plot of
-			<response name="x" />
-      vs
-			<response name="y" />
+			  plot(
+			<response name="col1" />,
+			<response name="col2" />)
 		</displayname>
 		<computation>
-			<set rvar="x" name="x" />
-			<set rvar="y" name="y" />
+			<set name="col1" />
+			<set name="col2" />
 			<plot>
-				<cmd>plot(x,y)</cmd>
+				<cmd>plot(col1, col2)</cmd>
 			</plot>
 		</computation>
 	</operation>
 	<operation name="Single Var Plot" plot="true">
 		<category>Descriptive Graphics</category>
-		<query type="column" name="x" prompt="Column:" column_type="numeric" />
+		<query type="column" name="col" prompt="Column:" column_type="numeric" />
 		<displayname>
-      Plot of
-			<response name="x" />
+			plot(
+			<response name="col" />)
 		</displayname>
 		<computation>
-			<set rvar="x" name="x" />
+			<set name="col" />
 			<plot>
-				<cmd>plot(x)</cmd>
+				<cmd>plot(col)</cmd>
 			</plot>
 		</computation>
 	</operation>
@@ -979,14 +1098,14 @@
 	</operation>
 	<operation name="Reverse">
 		<category>Linear Data Transformation</category>
-		<query type="column" name="colName" prompt="Column:" />
+		<query type="column" name="col" prompt="Column:" />
 		<displayname>
       rev(
-			<response name="colName" />
+			<response name="col" />
       )
 		</displayname>
 		<computation>
-			<set rvar="col" name="colName" use="values" />
+			<set name="col" use="values" />
 			<save>rev(col)</save>
 		</computation>
 	</operation>
