@@ -737,10 +737,6 @@ public class OperationXML extends Operation
 			proc.setRecorderMode(intendedRecordMode);
 			proc.execute(cmdEl.getTextTrim());
 		}
-		catch(RProcessorException ex)
-		{
-			throw new OperationXMLException("Command given in XML appears to be invalid", ex);
-		}
 		finally
 		{
 			proc.setRecorderMode(RecordMode.DISABLED);
