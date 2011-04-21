@@ -28,7 +28,7 @@ A `category` uses whatever text is given in the element as the name of the categ
 
 == Information Prompts ==
 {{{
-<query type="column|checkbox|string|numeric|combo" [column_type="all|numeric|string"] name="internal name" prompt="User prompt" />
+<query type="column|checkbox|string|numeric|combo" [column-type="all|numeric|string"] name="internal name" prompt="User prompt" />
 }}}
 
 Inside of an operation there can be multiple `<query />` elements. These queries will be presented
@@ -40,11 +40,11 @@ Attributes supported:
   * *`type`* - One of the following:
     * `checkbox` - Simple checkbox that the user may select
     * `combo` - Operation-specified selectable list. See [XMLOperationSpecification#Combo] for detailed information
-    * `column` - Presents the user with a list of the parent columns. `column_type` must be given to specify which columns to display.
+    * `column` - Presents the user with a list of the parent columns. `column-type` must be given to specify which columns to display.
 	* `fixed` - Query with a single answer. Intened for user informational purposes (IE, so they know a parameter you will be using). Must specify a `value`
     * `numeric` - Arbitrary user-entered number. May specify a minimum or maximum through `min` and `max`, both of which are optional
     * `string` - Arbitrary user-entered string
-  * `column_type` - One of the following:
+  * `column-type` - One of the following:
     * `all` - All parent columns will be selectable
     * `numeric` - All numeric parent columns
     * `string` - All string parent columns
@@ -105,6 +105,7 @@ Supported attributes:
   <error />
   <save />
   <plot />
+  <fake-plot />
 </computation>
 }}}
 Inside each operation there must be a `<computation />` element. This section allows five types of elements which may be specified in any number of times and in any order. Elements will be executed in the order they are encountered.
@@ -143,7 +144,7 @@ For example, to ask a user to select a column and then save the values for use:
 
 === Loops ===
 {{{
-<loop type="parent|numeric|string" [index_var="R variable name"] [key_var="R variable name"] [value_var="R variable name"] [loop_var="R expression"]>
+<loop type="parent|numeric|string" [index-var="R variable name"] [key-var="R variable name"] [value-var="R variable name"] [loop-var="R expression"]>
   ...
 </loop>
 }}}
@@ -152,12 +153,12 @@ For example, to ask a user to select a column and then save the values for use:
 Attributes supported:
   * *`type`* - One of the following:
     * `parent` - Loop over every column in the parent data
-    * `numeric` - Iterate over every element of the vector given by `loop_var`, processing them as numeric values
+    * `numeric` - Iterate over every element of the vector given by `loop-var`, processing them as numeric values
     * `string` - Iterate over every element of the vector given by `loopVar`, processing them as string values
-  * `loop_var` - If using `numeric` or `string` loop types, this specifies an R statement that generates the vector to loop over
-  * `index_var` - Loop number the loop is on (1 based)
-  * `key_var` - For `parent` loops, gives the name of the current column. For array loops it is the same as indexVar
-  * `value_var` - For `parent` loops, gives the values in the current column. For array loops it gives the current value in the array
+  * `loop-var` - If using `numeric` or `string` loop types, this specifies an R statement that generates the vector to loop over
+  * `index-var` - Loop number the loop is on (1 based)
+  * `key-var` - For `parent` loops, gives the name of the current column. For array loops it is the same as indexVar
+  * `value-var` - For `parent` loops, gives the values in the current column. For array loops it gives the current value in the array
 
 === Conditionals ===
 {{{
@@ -205,18 +206,18 @@ Example:
 
 === Library Loading ===
 {{{
-<load [library="library"] [r_library="R variable"] />
+<load [library="library"] [r-library="R variable"] />
 }}}
 Loads the given library into R. If the library is not installed an attempt is made to install it. This should be used in
 preference to something like `<cmd>library(<lib>)</cmd>`.
 
 Attributes supported:
   * `library` - Verbatim name of the library to load
-  * `r_library` - R variable that contains the name of the library to load
+  * `r-library` - R variable that contains the name of the library to load
 
 === Saving Results ===
 {{{
-<save [type="numeric|string|auto"] [column="Column name"] [r_column="R command"]>R command</save>
+<save [type="numeric|string|auto"] [column="Column name"] [r-column="R command"]>R command</save>
 }}}
 To save the final values for the computation, `<save />` elements may be specified. The value saved is given by the single R command inside the save element.
 
@@ -226,7 +227,7 @@ Attributes supported:
     * `string` - Process the result as one or more string values
     * `auto` - Automatically chooses the correct column type. Attempts numeric first, then string
   * `column` - Static name of the column to save these values into
-  * `r_column` - R command from which to pull the name of the column to save into. Must return a single string
+  * `r-column` - R command from which to pull the name of the column to save into. Must return a single string
 
 For example:
 {{{
@@ -240,7 +241,15 @@ For example:
 {{{
 <plot>...</plot>
 }}}
-A single `<plot />` element is allowed in an operation. A plot creates a new device and commands may be placed inside may draw onto it. Commands should not manually change the device or close it, that will be taken care of by the plot. A plot takes no attributes but allows any of the other elements to be place inside it, just as with the main computation section.
+A single `<plot />` or `<fake-plot />` element is allowed in an operation. A plot creates a new device and commands may be placed inside may draw onto it. Commands should not manually change the device or close it, that will be taken care of by the plot. A plot takes no attributes but allows any of the other elements to be place inside it, just as with the main computation section.
+
+=== "Fake" Plots ===
+{{{
+<fake-plot>R command</fake-plot>
+}}}
+A single [#Plots `<plot />`] or `<fake-plot />` element is allowed in an operation. A fake plot is intended for commands which do not produce a true plot yet are not amendable to being saved into standard columns. For example, a stem-and-leaf plot in R is produced as text. By wrapping the call to `stem()` in a `fake-plot`, this text can be saved as a graph.
+
+Only a single command by be given to a `fake-plot`. If a more complex "plot" is needed, save it into a string variable and use that as the command.
 
 = Example =
 Good, working examples of operations are available at [http://code.google.com/p/marla/source/browse/trunk/maRlaIDE/test/ops.xml ops.xml] in the repository.
