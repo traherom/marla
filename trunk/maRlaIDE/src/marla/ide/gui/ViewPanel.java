@@ -187,11 +187,11 @@ public class ViewPanel extends JPanel
 	/** The initial y for dragging the component.*/
 	private int startY = -1;
 	/** The counter illustrating what column we're adding to in the legend.*/
-	protected int firstCounter = 3;
+	protected int firstSubCounter = 3;
 	/** The first placeholder (second column) in the legend.*/
-	protected JLabel second = null;
+	protected JLabel secondSub = null;
 	/** The second placeholder (third column) in the legend.*/
-	protected JLabel third = null;
+	protected JLabel thirdSub = null;
 	/** The counter illustrating what column we're adding to in the data set panel.*/
 	protected int firstDataCounter = 3;
 	/** The first placeholder (second column) in the data set panel.*/
@@ -916,13 +916,13 @@ public class ViewPanel extends JPanel
 
         trashCan.setIcon(new ImageIcon(getClass().getResource(Domain.IMAGES_DIR + "trash_button.png")));
         workspacePanel.add(trashCan);
-        trashCan.setBounds(730, 530, 0, 40);
+        trashCan.setBounds(740, 590, 26, 31);
 
-        statusLabel.setFont(new java.awt.Font("Verdana", 1, 12));
+        statusLabel.setFont(new java.awt.Font("Verdana", 1, 12)); // NOI18N
         statusLabel.setForeground(new java.awt.Color(153, 153, 153));
         statusLabel.setText("<<Status Label>>");
         workspacePanel.add(statusLabel);
-        statusLabel.setBounds(10, 550, 430, 14);
+        statusLabel.setBounds(10, 610, 430, 14);
 
         workspaceCardPanel.add(workspacePanel, "card4");
 
@@ -2460,128 +2460,132 @@ public class ViewPanel extends JPanel
 			// Move trees around if our workspace is smaller than the saving one
 			ensureComponentsVisible();
 
-			buildDataSetsOnRight();
-
-			// Add sub problems to legend
-			subProblemContentPanel.removeAll();
-			((GridLayout) subProblemContentPanel.getLayout()).setRows(0);
-			firstCounter = 3;
-			for(int i = 0; i < domain.problem.getSubProblemCount(); ++i)
-			{
-				// Add sub problem to legend
-				JLabel label;
-				if(firstCounter == 1)
-				{
-					label = second;
-				}
-				else if(firstCounter == 2)
-				{
-					label = third;
-				}
-				else
-				{
-					label = new JLabel("");
-					second = new JLabel("");
-					third = new JLabel("");
-				}
-				label.setFont(FONT_PLAIN_12);
-				label.setText(domain.problem.getSubProblem(i).getSubproblemID());
-				label.setForeground(domain.problem.getSubProblem(i).getColor());
-
-				if(firstCounter == 3)
-				{
-					firstCounter = 0;
-
-					GridLayout layout = (GridLayout) subProblemContentPanel.getLayout();
-					layout.setRows(layout.getRows() + 1);
-
-					subProblemContentPanel.add(label);
-					subProblemContentPanel.add(second);
-					subProblemContentPanel.add(third);
-
-					subProblemContentPanel.invalidate();
-				}
-				++firstCounter;
-			}
-
-			if(dataSetContentPanel.getComponentCount() == 0)
-			{
-				((GridLayout) dataSetContentPanel.getLayout()).setColumns(1);
-				JLabel noneLabel = new JLabel("-No Data Sets-");
-				noneLabel.setFont(FONT_BOLD_12);
-				dataSetContentPanel.add(noneLabel);
-			}
-			if(subProblemContentPanel.getComponentCount() == 0)
-			{
-				((GridLayout) subProblemContentPanel.getLayout()).setColumns(1);
-				JLabel noneLabel = new JLabel("-No Sub Problems-");
-				noneLabel.setFont(FONT_BOLD_12);
-				subProblemContentPanel.add(noneLabel);
-			}
-			dataSetContentPanel.invalidate();
-			subProblemContentPanel.invalidate();
+			rebuildDataSetLegend();
+			rebuildSubProblemLegend();
 
 			workspacePanel.repaint();
 		}
 	}
+	
+	/**
+	 * Add all sub problems to the sub problem legend panel.
+	 */
+	protected void rebuildSubProblemLegend()
+	{
+		// Add sub problems to legend
+		subProblemContentPanel.removeAll();
+		
+		((GridLayout) subProblemContentPanel.getLayout()).setColumns(3);
+		((GridLayout) subProblemContentPanel.getLayout()).setRows(0);
+		firstSubCounter = 3;
+		for(int i = 0; i < domain.problem.getSubProblemCount(); ++i)
+		{
+			// Add sub problem to legend
+			JLabel firstSub;
+			if(firstSubCounter == 1)
+			{
+				firstSub = secondSub;
+			}
+			else if(firstSubCounter == 2)
+			{
+				firstSub = thirdSub;
+			}
+			else
+			{
+				firstSub = new JLabel("");
+				secondSub = new JLabel("");
+				thirdSub = new JLabel("");
+			}
+			firstSub.setFont(FONT_PLAIN_12);
+			firstSub.setText(domain.problem.getSubProblem(i).getSubproblemID());
+			firstSub.setForeground(domain.problem.getSubProblem(i).getColor());
+
+			if(firstSubCounter == 3)
+			{
+				firstSubCounter = 0;
+
+				GridLayout layout = (GridLayout) subProblemContentPanel.getLayout();
+				layout.setRows(layout.getRows() + 1);
+
+				subProblemContentPanel.add(firstSub);
+				subProblemContentPanel.add(secondSub);
+				subProblemContentPanel.add(thirdSub);
+			}
+			++firstSubCounter;
+		}
+		
+		if(subProblemContentPanel.getComponentCount() == 0)
+		{
+			((GridLayout) subProblemContentPanel.getLayout()).setColumns(1);
+			((GridLayout) dataSetContentPanel.getLayout()).setRows(1);
+			JLabel noneLabel = new JLabel("-No Sub Problems-");
+			noneLabel.setFont(FONT_BOLD_12);
+			subProblemContentPanel.add(noneLabel);
+		}
+		
+		subProblemContentPanel.invalidate();
+		subProblemContentPanel.revalidate();
+		subProblemContentPanel.repaint();
+	}
 
 	/**
-	 * Assuming the data set content panel is empty, add all data sets to the
-	 * panel on the right.
+	 * Add all data sets to the data set legend panel.
 	 */
-	protected void buildDataSetsOnRight()
+	protected void rebuildDataSetLegend()
 	{
 		// Add data sets to legend
 		dataSetContentPanel.removeAll();
+		
+		((GridLayout) dataSetContentPanel.getLayout()).setColumns(3);
 		((GridLayout) dataSetContentPanel.getLayout()).setRows(0);
 		firstDataCounter = 3;
 		for(int i = 0; i < domain.problem.getDataCount(); ++i)
 		{
 			// Add sub problem to legend
-			JLabel label;
+			JLabel firstData;
 			if(firstDataCounter == 1)
 			{
-				label = secondData;
+				firstData = secondData;
 			}
 			else if(firstDataCounter == 2)
 			{
-				label = thirdData;
+				firstData = thirdData;
 			}
 			else
 			{
-				label = new JLabel("");
-				DRAG_SOURCE.createDefaultDragGestureRecognizer(label, DnDConstants.ACTION_MOVE, DND_LISTENER);
-				final JLabel thisLabel = label;
-				label.addMouseListener(new MouseAdapter()
+				firstData = new JLabel("");
+				DRAG_SOURCE.createDefaultDragGestureRecognizer(firstData, DnDConstants.ACTION_MOVE, DND_LISTENER);
+				final JLabel finalFirstLabel = firstData;
+				firstData.addMouseListener(new MouseAdapter()
 				{
 					@Override
 					public void mouseEntered(MouseEvent evt)
 					{
-						if(!thisLabel.getText().equals(""))
+						if(!finalFirstLabel.getText().equals(""))
 						{
 							setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-							thisLabel.setForeground(Color.GRAY);
+							finalFirstLabel.setForeground(Color.GRAY);
 						}
 					}
 
 					@Override
 					public void mouseExited(MouseEvent evt)
 					{
-						if(!thisLabel.getText().equals(""))
+						if(!finalFirstLabel.getText().equals(""))
 						{
 							setCursor(Cursor.getDefaultCursor());
-							thisLabel.setForeground(DataSet.getDefaultColor());
+							finalFirstLabel.setForeground(DataSet.getDefaultColor());
 						}
 					}
 
 					@Override
 					public void mousePressed(MouseEvent evt)
 					{
-						if(!thisLabel.getText().equals(""))
+						if(!finalFirstLabel.getText().equals(""))
 						{
 							buttonPressed = evt.getButton();
-							xDragOffset = (int) evt.getLocationOnScreen().getX() - (int) thisLabel.getLocationOnScreen().getX();
-							yDragOffset = (int) evt.getLocationOnScreen().getY() - (int) thisLabel.getLocationOnScreen().getY();
+							xDragOffset = (int) evt.getLocationOnScreen().getX() - (int) finalFirstLabel.getLocationOnScreen().getX();
+							yDragOffset = (int) evt.getLocationOnScreen().getY() - (int) finalFirstLabel.getLocationOnScreen().getY();
 						}
 					}
 				});
@@ -2658,9 +2662,9 @@ public class ViewPanel extends JPanel
 					}
 				});
 			}
-			label.setFont(FONT_PLAIN_12);
-			label.setText(domain.problem.getData(i).getName());
-			label.setForeground(DataSet.getDefaultColor());
+			firstData.setFont(FONT_PLAIN_12);
+			firstData.setText(domain.problem.getData(i).getName());
+			firstData.setForeground(DataSet.getDefaultColor());
 
 			if(firstDataCounter == 3)
 			{
@@ -2669,15 +2673,25 @@ public class ViewPanel extends JPanel
 				GridLayout layout = (GridLayout) dataSetContentPanel.getLayout();
 				layout.setRows(layout.getRows() + 1);
 
-				dataSetContentPanel.add(label);
+				dataSetContentPanel.add(firstData);
 				dataSetContentPanel.add(secondData);
 				dataSetContentPanel.add(thirdData);
 			}
 			++firstDataCounter;
-			
-			dataSetContentPanel.invalidate();
-			dataSetContentPanel.repaint();
 		}
+		
+		if(dataSetContentPanel.getComponentCount() == 0)
+		{
+			((GridLayout) dataSetContentPanel.getLayout()).setColumns(1);
+			((GridLayout) dataSetContentPanel.getLayout()).setRows(1);
+			JLabel noneLabel = new JLabel("-No Data Sets-");
+			noneLabel.setFont(FONT_BOLD_12);
+			dataSetContentPanel.add(noneLabel);
+		}
+		
+		dataSetContentPanel.invalidate();
+		dataSetContentPanel.revalidate();
+		dataSetContentPanel.repaint();
 	}
 
 	/**
