@@ -44,10 +44,10 @@ Name "The maRla Project"
 OutFile "Setup.exe"
 
 ; Default installation folder
-InstallDir "$ProgramFiles\maRla"
+InstallDir "$ProgramFiles\The maRla Project"
 
 ; Get installation folder from registry if available
-InstallDirRegKey HKCU "Software\maRla" ""
+InstallDirRegKey HKCU "Software\The maRla Project" ""
 
 ; Request admin privileges for Windows Vista
 RequestExecutionLevel highest
@@ -93,7 +93,7 @@ LangString TEXT_JRE_TITLE ${LANG_ENGLISH} "Java Runtime Environment"
 ;--------------------------------
 ;Installer Sections
 
-SectionGroup "maRla Core"
+SectionGroup "The maRla Project"
 
 	Section "Install JRE" InstallJava
 
@@ -126,7 +126,7 @@ SectionGroup "maRla Core"
 
 	SectionEnd
 
-	Section "Install maRla" InstallMarla
+	Section "Install The maRla Project" InstallMarla
 
 		AddSize 800
 		SectionIn 1 2
@@ -136,6 +136,10 @@ SectionGroup "maRla Core"
 		
 		; Ensure maRla isn't running
 		Call EnsureMarlaClosed
+		
+		; Remove old keys and installation folders
+		DeleteRegKey HKCU "Software\maRla" ""
+		RMDir /r "$ProgramFiles\maRla\"
 		
 		ClearErrors
 		Push $0
@@ -529,6 +533,7 @@ SectionGroup "Shortcuts" CreateShortcuts
 		SectionIn 1 2
 		
 		Delete "$SMPROGRAMS\maRla\Uninstall.lnk"
+		Delete "$SMPROGRAMS\maRla\Uninstall maRla.lnk"
 		Delete "$SMPROGRAMS\maRla\maRla.lnk"
 		Delete "$SMPROGRAMS\maRla\maRla Operation Editor.lnk"
 		RMDir "$SMPROGRAMS\maRla\"
@@ -599,10 +604,11 @@ Section "Uninstall"
 	
 	; Shortcuts
 	Delete "$SMPROGRAMS\maRla\Uninstall.lnk"
+	Delete "$SMPROGRAMS\maRla\Uninstall maRla.lnk"
 	Delete "$SMPROGRAMS\maRla\maRla.lnk"
 	Delete "$SMPROGRAMS\maRla\maRla Operation Editor.lnk"
 	RMDir "$SMPROGRAMS\maRla\"
-	Delete "$SMPROGRAMS\The maRla Project\Uninstall.lnk"
+	Delete "$SMPROGRAMS\The maRla Project\Uninstall The maRla Project.lnk"
 	Delete "$SMPROGRAMS\The maRla Project\maRla IDE.lnk"
 	Delete "$SMPROGRAMS\The maRla Project\maRla Operation Editor.lnk"
 	RMDir "$SMPROGRAMS\The maRla Project\"

@@ -63,8 +63,8 @@ public class CategoryHandle extends JPanel
 		setOpaque(false);
 		setBorder(BorderFactory.createRaisedBevelBorder());
 
-		open = new ImageIcon(getClass().getResource("/marla/ide/images/open_plus.png"));
-		close = new ImageIcon(getClass().getResource("/marla/ide/images/close_minus.png"));
+		open = new ImageIcon(getClass().getResource(Domain.IMAGES_DIR + "open_plus.png"));
+		close = new ImageIcon(getClass().getResource(Domain.IMAGES_DIR + "close_minus.png"));
 		label = new JLabel (text);
 		label.setIcon(open);
 		label.setFont (ViewPanel.FONT_PLAIN_12);

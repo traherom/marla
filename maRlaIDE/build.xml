@@ -229,7 +229,7 @@
 	<target name="-zip-package">
 		<echo>Creating archive of files</echo>
 		<!--<zip destfile="${store.dir}/${setup.base}.zip">-->
-		<zip destfile="The maRla Project.zip">
+		<zip destfile="${store.dir}/The maRla Project.zip">
 			<zipfileset file="${store.dir}/maRla IDE.jar" />
 			<zipfileset file="${store.dir}/maRla Operation Editor.jar" />
 			<zipfileset file="${store.dir}/ops.xml" />

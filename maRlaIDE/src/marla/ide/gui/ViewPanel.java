@@ -494,7 +494,7 @@ public class ViewPanel extends JPanel
 			wrapperPanel.add(catContentPanel);
 			catContentPanel.setVisible(false);
 			catHandlePanel.setPreferredSize(new Dimension(200, 20));
-			catContentPanel.setPreferredSize(new Dimension(200, catContentPanel.getPreferredSize().height));
+			catContentPanel.setPreferredSize(new Dimension(400, catContentPanel.getPreferredSize().height));
 
 			compConstraints.gridy = catCount;
 			compConstraints.weighty = 0;
@@ -539,19 +539,19 @@ public class ViewPanel extends JPanel
         addDataSetMenuItem = new javax.swing.JMenuItem();
         editDataSetMenuItem = new javax.swing.JMenuItem();
         toolBar = new javax.swing.JToolBar();
-        newButton = new ToolbarButton (new ImageIcon (getClass ().getResource ("/marla/ide/images/new_button.png")));
-        openButton = new ToolbarButton (new ImageIcon (getClass ().getResource ("/marla/ide/images/open_button.png")));
-        saveButton = new ToolbarButton (new ImageIcon (getClass ().getResource ("/marla/ide/images/save_button.png")));
+        newButton = new ToolbarButton (new ImageIcon (getClass ().getResource (Domain.IMAGES_DIR + "new_button.png")));
+        openButton = new ToolbarButton (new ImageIcon (getClass ().getResource (Domain.IMAGES_DIR + "open_button.png")));
+        saveButton = new ToolbarButton (new ImageIcon (getClass ().getResource (Domain.IMAGES_DIR + "save_button.png")));
         jSeparator4 = new javax.swing.JToolBar.Separator();
-        addDataButton = new ToolbarButton (new ImageIcon (getClass ().getResource ("/marla/ide/images/add_data_button.png")));
+        addDataButton = new ToolbarButton (new ImageIcon (getClass ().getResource (Domain.IMAGES_DIR + "add_data_button.png")));
         jSeparator1 = new javax.swing.JToolBar.Separator();
         fontSizeLabel = new javax.swing.JLabel();
-        plusFontButton = new ToolbarButton (new ImageIcon (getClass ().getResource ("/marla/ide/images/plus_button.png")));
-        minusFontButton = new ToolbarButton (new ImageIcon (getClass ().getResource ("/marla/ide/images/minus_button.png")));
+        plusFontButton = new ToolbarButton (new ImageIcon (getClass ().getResource (Domain.IMAGES_DIR + "plus_button.png")));
+        minusFontButton = new ToolbarButton (new ImageIcon (getClass ().getResource (Domain.IMAGES_DIR + "minus_button.png")));
         jSeparator3 = new javax.swing.JToolBar.Separator();
-        abbreviateButton = new ToolbarButton (new ImageIcon (getClass ().getResource ("/marla/ide/images/unchecked_button.png")));
+        abbreviateButton = new ToolbarButton (new ImageIcon (getClass ().getResource (Domain.IMAGES_DIR + "unchecked_button.png")));
         jSeparator2 = new javax.swing.JToolBar.Separator();
-        settingsButton = new ToolbarButton (new ImageIcon (getClass ().getResource ("/marla/ide/images/settings_button.png")));
+        settingsButton = new ToolbarButton (new ImageIcon (getClass ().getResource (Domain.IMAGES_DIR + "settings_button.png")));
         workspaceSplitPane = new javax.swing.JSplitPane();
         workspaceCardPanel = new javax.swing.JPanel();
         preWorkspacePanel = new javax.swing.JPanel();
@@ -856,7 +856,7 @@ public class ViewPanel extends JPanel
 
         preWorkspacePanel.setBackground(new java.awt.Color(204, 204, 204));
 
-        preWorkspaceLabel.setFont(new java.awt.Font("Verdana", 1, 14));
+        preWorkspaceLabel.setFont(new java.awt.Font("Verdana", 1, 14)); // NOI18N
         preWorkspaceLabel.setForeground(new java.awt.Color(102, 102, 102));
         preWorkspaceLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         preWorkspaceLabel.setText("<html><div align=\"center\">To get started, load a previous problem or use the<br /><em>New Problem Wizard</em> (File --> New Problem...) to<br />create a new problem</div></html>");
@@ -867,14 +867,14 @@ public class ViewPanel extends JPanel
             preWorkspacePanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(preWorkspacePanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .add(preWorkspaceLabel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 752, Short.MAX_VALUE)
+                .add(preWorkspaceLabel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 754, Short.MAX_VALUE)
                 .addContainerGap())
         );
         preWorkspacePanelLayout.setVerticalGroup(
             preWorkspacePanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(preWorkspacePanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .add(preWorkspaceLabel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 608, Short.MAX_VALUE)
+                .add(preWorkspaceLabel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 609, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -904,9 +904,9 @@ public class ViewPanel extends JPanel
         });
         workspacePanel.setLayout(null);
 
-        trashCan.setIcon(new javax.swing.ImageIcon(getClass().getResource("/marla/ide/images/trash_button.png"))); // NOI18N
+        trashCan.setIcon(new ImageIcon(getClass().getResource(Domain.IMAGES_DIR + "trash_button.png")));
         workspacePanel.add(trashCan);
-        trashCan.setBounds(730, 530, 26, 40);
+        trashCan.setBounds(730, 530, 0, 40);
 
         statusLabel.setFont(new java.awt.Font("Verdana", 1, 12));
         statusLabel.setForeground(new java.awt.Color(153, 153, 153));
@@ -941,11 +941,11 @@ public class ViewPanel extends JPanel
         emptyPalettePanel.setLayout(emptyPalettePanelLayout);
         emptyPalettePanelLayout.setHorizontalGroup(
             emptyPalettePanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(0, 208, Short.MAX_VALUE)
+            .add(0, 204, Short.MAX_VALUE)
         );
         emptyPalettePanelLayout.setVerticalGroup(
             emptyPalettePanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(0, 581, Short.MAX_VALUE)
+            .add(0, 569, Short.MAX_VALUE)
         );
 
         paletteCardPanel.add(emptyPalettePanel, "card3");
@@ -1566,14 +1566,14 @@ public class ViewPanel extends JPanel
 		{
 			if(abbreviated)
 			{
-				ImageIcon newIcon = new ImageIcon(getClass().getResource("/marla/ide/images/unchecked_button.png"));
+				ImageIcon newIcon = new ImageIcon(getClass().getResource(Domain.IMAGES_DIR + "unchecked_button.png"));
 				abbreviateButton.setIcon(newIcon);
 				abbreviateButton.setIconStandards(newIcon);
 				abbreviated = false;
 			}
 			else
 			{
-				ImageIcon newIcon = new ImageIcon(getClass().getResource("/marla/ide/images/checked_button.png"));
+				ImageIcon newIcon = new ImageIcon(getClass().getResource(Domain.IMAGES_DIR + "checked_button.png"));
 				abbreviateButton.setIcon(newIcon);
 				abbreviateButton.setIconStandards(newIcon);
 				abbreviated = true;

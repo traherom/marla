@@ -253,7 +253,7 @@ public class NewProblemWizardDialog extends EscapeDialog
         backWizardButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
-        setIconImage(new ImageIcon (getClass ().getResource ("/marla/ide/images/new_button.png")).getImage ());
+        setIconImage(new ImageIcon (getClass ().getResource (Domain.IMAGES_DIR + "new_button.png")).getImage ());
         setModal(true);
         setResizable(false);
         addWindowListener(new java.awt.event.WindowAdapter() {

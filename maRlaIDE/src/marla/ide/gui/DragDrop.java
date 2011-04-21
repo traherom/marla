@@ -22,6 +22,7 @@ package marla.ide.gui;
 
 import java.awt.Color;
 import java.awt.Cursor;
+import java.awt.Rectangle;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
@@ -126,7 +127,7 @@ public class DragDrop implements DragGestureListener, DragSourceListener, DropTa
 	@Override
 	public void dragDropEnd(DragSourceDropEvent ev)
 	{
-		endDrop((DragSourceContext) ev.getSource());
+		endDrop((DragSourceContext) ev.getSource(), ev);
 	}
 
 	@Override
@@ -265,7 +266,7 @@ public class DragDrop implements DragGestureListener, DragSourceListener, DropTa
 	 * 
 	 * @param source The source of the drag.
 	 */
-	protected void endDrop(DragSourceContext source)
+	protected void endDrop(DragSourceContext source, DragSourceDropEvent ev)
 	{
 		if (source != null)
 		{
@@ -279,6 +280,12 @@ public class DragDrop implements DragGestureListener, DragSourceListener, DropTa
 				label.setForeground(DataSet.getDefaultColor());
 			}
 			viewPanel.componentsScrollablePanel.repaint();
+			Rectangle rect = viewPanel.componentsScrollablePanel.getBounds();
+			rect.setLocation(viewPanel.componentsScrollablePanel.getLocationOnScreen());
+			if (rect.contains(ev.getLocation()))
+			{
+				viewPanel.setCursor(Cursor.getDefaultCursor());
+			}
 		}
 
 		viewPanel.draggingComponent = null;
