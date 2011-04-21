@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF8"?>
-<problem person="" course_long="" course_short="" chapter="" section="" probnum="">
-  <statement />
+<problem person="Ha" course_long="Computer Science" course_short="cs" chapter="3" section="4" probnum="5">
+  <statement>Test problem for use with, well, testing maRla.</statement>
   <conclusion />
-  <data name="Data Set 1" id="-205666826" x="354" y="89" height="16" width="70" hidden="false">
+  <data name="Data Set 1" id="-954407922" x="352" y="210" height="16" width="70" hidden="false">
     <column name="Column 1" mode="NUMERIC">
       <value>0.0</value>
       <value>1.0</value>
@@ -263,15 +263,26 @@
       <value>48.0</value>
       <value>49.0</value>
     </column>
-    <operation type="marla.ide.operation.OperationStemAndLeaf" name="Stem and Leaf" id="-497309939" x="271" y="120" height="16" width="108" hidden="false">
+    <operation type="marla.ide.operation.OperationXML" name="Stem" id="-1003877701" x="262" y="241" height="16" width="65" hidden="false">
       <remark />
-      <question name="col" answer="Column 1" />
-      <extra />
+      <question name="col" />
+      <extra name="Stem" />
     </operation>
-    <operation type="marla.ide.operation.OperationXML" name="Barplot" id="-2134048730" x="399" y="120" height="16" width="123" hidden="false">
+    <operation type="marla.ide.operation.OperationXML" name="Barplot" id="735040194" x="347" y="241" height="16" width="80" hidden="false">
       <remark />
-      <question name="col" answer="Column 1" />
+      <operation type="marla.ide.operation.OperationXML" name="1-Var variance" id="1399311321" x="360" y="272" height="16" width="55" hidden="false">
+        <remark />
+        <question name="col" />
+        <extra name="1-Var variance" />
+      </operation>
+      <question name="col" />
       <extra name="Barplot" />
+    </operation>
+    <operation type="marla.ide.operation.OperationXML" name="ANOVA" id="-369954550" x="447" y="241" height="16" width="150" hidden="false">
+      <remark />
+      <question name="col1" />
+      <question name="col2" />
+      <extra name="ANOVA" />
     </operation>
   </data>
   <unused />
