@@ -569,7 +569,7 @@ public class ViewPanel extends JPanel
         componentsScrollablePanel = new javax.swing.JPanel();
         dataSetsPanel = new javax.swing.JPanel();
         dataSetContentPanel = new javax.swing.JPanel();
-        legendPanel = new javax.swing.JPanel();
+        subProblemPanel = new javax.swing.JPanel();
         legendContentPanel = new javax.swing.JPanel();
 
         fileChooserDialog.setApproveButtonToolTipText("Open selection");
@@ -856,7 +856,7 @@ public class ViewPanel extends JPanel
 
         preWorkspacePanel.setBackground(new java.awt.Color(204, 204, 204));
 
-        preWorkspaceLabel.setFont(new java.awt.Font("Verdana", 1, 14)); // NOI18N
+        preWorkspaceLabel.setFont(new java.awt.Font("Verdana", 1, 14));
         preWorkspaceLabel.setForeground(new java.awt.Color(102, 102, 102));
         preWorkspaceLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         preWorkspaceLabel.setText("<html><div align=\"center\">To get started, load a previous problem or use the<br /><em>New Problem Wizard</em> (File --> New Problem...) to<br />create a new problem</div></html>");
@@ -867,14 +867,14 @@ public class ViewPanel extends JPanel
             preWorkspacePanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(preWorkspacePanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .add(preWorkspaceLabel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 754, Short.MAX_VALUE)
+                .add(preWorkspaceLabel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 752, Short.MAX_VALUE)
                 .addContainerGap())
         );
         preWorkspacePanelLayout.setVerticalGroup(
             preWorkspacePanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(preWorkspacePanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .add(preWorkspaceLabel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 609, Short.MAX_VALUE)
+                .add(preWorkspaceLabel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 608, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -941,11 +941,11 @@ public class ViewPanel extends JPanel
         emptyPalettePanel.setLayout(emptyPalettePanelLayout);
         emptyPalettePanelLayout.setHorizontalGroup(
             emptyPalettePanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(0, 204, Short.MAX_VALUE)
+            .add(0, 208, Short.MAX_VALUE)
         );
         emptyPalettePanelLayout.setVerticalGroup(
             emptyPalettePanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(0, 569, Short.MAX_VALUE)
+            .add(0, 581, Short.MAX_VALUE)
         );
 
         paletteCardPanel.add(emptyPalettePanel, "card3");
@@ -986,11 +986,11 @@ public class ViewPanel extends JPanel
         gridBagConstraints.weightx = 1.0;
         rightSidePanel.add(dataSetsPanel, gridBagConstraints);
 
-        legendPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Legend", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Verdana", 0, 12))); // NOI18N
-        legendPanel.setLayout(new java.awt.GridLayout(1, 1));
+        subProblemPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Sub Problems", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Verdana", 0, 12))); // NOI18N
+        subProblemPanel.setLayout(new java.awt.GridLayout(1, 1));
 
         legendContentPanel.setLayout(new java.awt.GridLayout(0, 3));
-        legendPanel.add(legendContentPanel);
+        subProblemPanel.add(legendContentPanel);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -998,7 +998,7 @@ public class ViewPanel extends JPanel
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTH;
         gridBagConstraints.weightx = 1.0;
-        rightSidePanel.add(legendPanel, gridBagConstraints);
+        rightSidePanel.add(subProblemPanel, gridBagConstraints);
 
         add(rightSidePanel, java.awt.BorderLayout.EAST);
     }// </editor-fold>//GEN-END:initComponents
@@ -2886,7 +2886,7 @@ public class ViewPanel extends JPanel
     private marla.ide.gui.ToolbarButton abbreviateButton;
     protected marla.ide.gui.ToolbarButton addDataButton;
     private javax.swing.JMenuItem addDataSetMenuItem;
-    protected javax.swing.JDialog answerDialog;
+    public javax.swing.JDialog answerDialog;
     private javax.swing.JPanel answerPanel;
     private javax.swing.JScrollPane answersScrollPane;
     private javax.swing.JMenuItem changeInfoMenuItem;
@@ -2899,14 +2899,13 @@ public class ViewPanel extends JPanel
     protected javax.swing.JTextArea debugTextArea;
     private javax.swing.JMenuItem editDataSetMenuItem;
     protected javax.swing.JPanel emptyPalettePanel;
-    protected javax.swing.JFileChooser fileChooserDialog;
+    public javax.swing.JFileChooser fileChooserDialog;
     private javax.swing.JLabel fontSizeLabel;
     private javax.swing.JToolBar.Separator jSeparator1;
     private javax.swing.JToolBar.Separator jSeparator2;
     private javax.swing.JToolBar.Separator jSeparator3;
     private javax.swing.JToolBar.Separator jSeparator4;
     protected javax.swing.JPanel legendContentPanel;
-    private javax.swing.JPanel legendPanel;
     private javax.swing.JPopupMenu.Separator menuSeparator1;
     private javax.swing.JPopupMenu.Separator menuSeparator2;
     private javax.swing.JPopupMenu.Separator menuSeparator3;
@@ -2925,6 +2924,7 @@ public class ViewPanel extends JPanel
     protected marla.ide.gui.ToolbarButton settingsButton;
     private javax.swing.JMenuItem solutionMenuItem;
     protected javax.swing.JLabel statusLabel;
+    private javax.swing.JPanel subProblemPanel;
     private javax.swing.JMenu tieSubProblemSubMenu;
     private javax.swing.JToolBar toolBar;
     protected javax.swing.JLabel trashCan;
