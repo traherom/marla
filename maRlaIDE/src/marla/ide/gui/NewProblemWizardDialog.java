@@ -891,10 +891,10 @@ public class NewProblemWizardDialog extends EscapeDialog
 
 		if (editing)
 		{
-			if (viewPanel.legendContentPanel.getComponentCount() == 1)
+			if (viewPanel.subProblemContentPanel.getComponentCount() == 1)
 			{
-				viewPanel.legendContentPanel.removeAll();
-				((GridLayout) viewPanel.legendContentPanel.getLayout()).setColumns(3);
+				viewPanel.subProblemContentPanel.removeAll();
+				((GridLayout) viewPanel.subProblemContentPanel.getLayout()).setColumns(3);
 			}
 			
 			// Add sub problem to legend
@@ -921,16 +921,17 @@ public class NewProblemWizardDialog extends EscapeDialog
 			{
 				viewPanel.firstCounter = 0;
 				
-				GridLayout layout = (GridLayout) viewPanel.legendContentPanel.getLayout();
+				GridLayout layout = (GridLayout) viewPanel.subProblemContentPanel.getLayout();
 				layout.setRows(layout.getRows() + 1);
 
-				viewPanel.legendContentPanel.add(label);
-				viewPanel.legendContentPanel.add(viewPanel.second);
-				viewPanel.legendContentPanel.add(viewPanel.third);
-
-				viewPanel.legendContentPanel.invalidate();
+				viewPanel.subProblemContentPanel.add(label);
+				viewPanel.subProblemContentPanel.add(viewPanel.second);
+				viewPanel.subProblemContentPanel.add(viewPanel.third);
 			}
 			++viewPanel.firstCounter;
+			
+			viewPanel.subProblemContentPanel.invalidate();
+			viewPanel.subProblemContentPanel.repaint();
 		}
 
 		((JTextArea) ((JViewport) ((JScrollPane) ((JPanel) subProblemPanels.get(subProblemPanels.size() - 1)).getComponent(1)).getComponent(0)).getComponent(0)).requestFocus();
@@ -978,30 +979,30 @@ public class NewProblemWizardDialog extends EscapeDialog
 			{
 				viewPanel.firstCounter = 4;
 
-				viewPanel.legendContentPanel.remove(viewPanel.legendContentPanel.getComponentCount() - 1);
-				viewPanel.legendContentPanel.remove(viewPanel.legendContentPanel.getComponentCount() - 1);
-				viewPanel.legendContentPanel.remove(viewPanel.legendContentPanel.getComponentCount() - 1);
+				viewPanel.subProblemContentPanel.remove(viewPanel.subProblemContentPanel.getComponentCount() - 1);
+				viewPanel.subProblemContentPanel.remove(viewPanel.subProblemContentPanel.getComponentCount() - 1);
+				viewPanel.subProblemContentPanel.remove(viewPanel.subProblemContentPanel.getComponentCount() - 1);
 
-				GridLayout layout = (GridLayout) viewPanel.legendContentPanel.getLayout();
+				GridLayout layout = (GridLayout) viewPanel.subProblemContentPanel.getLayout();
 				layout.setRows(layout.getRows() - 1);
 
-				if (viewPanel.legendContentPanel.getComponentCount() >= 3)
+				if (viewPanel.subProblemContentPanel.getComponentCount() >= 3)
 				{
-					viewPanel.third = (JLabel) viewPanel.legendContentPanel.getComponent(viewPanel.legendContentPanel.getComponentCount() - 1);
-					viewPanel.second = (JLabel) viewPanel.legendContentPanel.getComponent(viewPanel.legendContentPanel.getComponentCount() - 2);
+					viewPanel.third = (JLabel) viewPanel.subProblemContentPanel.getComponent(viewPanel.subProblemContentPanel.getComponentCount() - 1);
+					viewPanel.second = (JLabel) viewPanel.subProblemContentPanel.getComponent(viewPanel.subProblemContentPanel.getComponentCount() - 2);
 				}
 				else
 				{
-					if (viewPanel.legendContentPanel.getComponentCount() == 0)
+					if (viewPanel.subProblemContentPanel.getComponentCount() == 0)
 					{
-						((GridLayout) viewPanel.legendContentPanel.getLayout()).setColumns(1);
+						((GridLayout) viewPanel.subProblemContentPanel.getLayout()).setColumns(1);
 						JLabel noneLabel = new JLabel ("-No Sub Problems-");
 						noneLabel.setFont(ViewPanel.FONT_BOLD_12);
-						viewPanel.legendContentPanel.add (noneLabel);
+						viewPanel.subProblemContentPanel.add (noneLabel);
 					}
 				}
 
-				viewPanel.legendContentPanel.invalidate();
+				viewPanel.subProblemContentPanel.invalidate();
 			}
 			--viewPanel.firstCounter;
 
@@ -1920,7 +1921,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 	 */
 	private JLabel findLabel(String id)
 	{
-		for (Component comp : viewPanel.legendContentPanel.getComponents())
+		for (Component comp : viewPanel.subProblemContentPanel.getComponents())
 		{
 			if (((JLabel) comp).getText().equals(id))
 			{

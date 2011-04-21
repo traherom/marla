@@ -37,7 +37,6 @@ import marla.ide.problem.InternalMarlaException;
 import marla.ide.problem.Problem;
 import marla.ide.r.RProcessor;
 import marla.ide.r.RProcessor.RecordMode;
-import marla.ide.r.RProcessorException;
 import marla.ide.r.RProcessorParseException;
 import marla.ide.resource.Configuration.ConfigType;
 import marla.ide.resource.ConfigurationException;

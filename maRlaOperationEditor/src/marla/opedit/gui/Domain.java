@@ -39,12 +39,6 @@ public class Domain
 	public static final String VERSION = "1.0";
 	/** The pre-release version name of the application.*/
 	public static final String PRE_RELEASE = "RC";
-	/** The location of the application as it runs.*/
-	public static final String CWD = System.getProperty("user.dir");
-	/** The name of the operating system being used.*/
-	public static final String OS_NAME = System.getProperty("os.name");
-	/** The home directory for the current user.*/
-	public static final String HOME_DIR = System.getProperty("user.home");
 	/** The logger holds all caught exceptions for recording in the log file.*/
 	public static final Queue<Throwable> logger = marla.ide.gui.Domain.logger;
 	/** If launched with a file to open, this will be the file set.*/

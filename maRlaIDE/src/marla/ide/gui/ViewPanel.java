@@ -570,7 +570,7 @@ public class ViewPanel extends JPanel
         dataSetsPanel = new javax.swing.JPanel();
         dataSetContentPanel = new javax.swing.JPanel();
         subProblemPanel = new javax.swing.JPanel();
-        legendContentPanel = new javax.swing.JPanel();
+        subProblemContentPanel = new javax.swing.JPanel();
 
         fileChooserDialog.setApproveButtonToolTipText("Open selection");
         fileChooserDialog.setDialogTitle("Browse Problem Location");
@@ -594,6 +594,16 @@ public class ViewPanel extends JPanel
         answersScrollPane.setViewportView(answerPanel);
 
         answerDialog.getContentPane().add(answersScrollPane);
+
+        rightClickMenu.addPopupMenuListener(new javax.swing.event.PopupMenuListener() {
+            public void popupMenuCanceled(javax.swing.event.PopupMenuEvent evt) {
+                rightClickMenuPopupMenuCanceled(evt);
+            }
+            public void popupMenuWillBecomeInvisible(javax.swing.event.PopupMenuEvent evt) {
+            }
+            public void popupMenuWillBecomeVisible(javax.swing.event.PopupMenuEvent evt) {
+            }
+        });
 
         solutionMenuItem.setFont(new java.awt.Font("Verdana", 0, 11));
         solutionMenuItem.setText("Solution");
@@ -867,14 +877,14 @@ public class ViewPanel extends JPanel
             preWorkspacePanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(preWorkspacePanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .add(preWorkspaceLabel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 754, Short.MAX_VALUE)
+                .add(preWorkspaceLabel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 752, Short.MAX_VALUE)
                 .addContainerGap())
         );
         preWorkspacePanelLayout.setVerticalGroup(
             preWorkspacePanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(preWorkspacePanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .add(preWorkspaceLabel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 609, Short.MAX_VALUE)
+                .add(preWorkspaceLabel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 608, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -941,11 +951,11 @@ public class ViewPanel extends JPanel
         emptyPalettePanel.setLayout(emptyPalettePanelLayout);
         emptyPalettePanelLayout.setHorizontalGroup(
             emptyPalettePanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(0, 204, Short.MAX_VALUE)
+            .add(0, 208, Short.MAX_VALUE)
         );
         emptyPalettePanelLayout.setVerticalGroup(
             emptyPalettePanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(0, 569, Short.MAX_VALUE)
+            .add(0, 581, Short.MAX_VALUE)
         );
 
         paletteCardPanel.add(emptyPalettePanel, "card3");
@@ -989,8 +999,8 @@ public class ViewPanel extends JPanel
         subProblemPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Sub Problems", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Verdana", 0, 12))); // NOI18N
         subProblemPanel.setLayout(new java.awt.GridLayout(1, 1));
 
-        legendContentPanel.setLayout(new java.awt.GridLayout(0, 3));
-        subProblemPanel.add(legendContentPanel);
+        subProblemContentPanel.setLayout(new java.awt.GridLayout(0, 3));
+        subProblemPanel.add(subProblemContentPanel);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -1224,6 +1234,7 @@ public class ViewPanel extends JPanel
 									op.setBackground(NO_BACKGROUND_WORKSPACE);
 								}
 								workspacePanel.repaint();
+								
 								DND_LISTENER.endDrop(null, null);
 
 								rebuildWorkspace();
@@ -1324,17 +1335,32 @@ public class ViewPanel extends JPanel
 					editDataSetMenuItem.setEnabled(false);
 					try
 					{
-						if(rightClickedComponent != null && rightClickedComponent instanceof Operation && ((Operation) rightClickedComponent).isInfoRequired())
+						if (rightClickedComponent != null &&
+								rightClickedComponent instanceof Operation)
 						{
-							changeInfoMenuItem.setEnabled(true);
-						}
-						else
-						{
-							changeInfoMenuItem.setEnabled(false);
+							if (((Operation) rightClickedComponent).isInfoRequired() &&
+								((Operation) rightClickedComponent).getParentData() != null)
+							{
+								changeInfoMenuItem.setEnabled(true);
+							}
+							else
+							{
+								changeInfoMenuItem.setEnabled(false);
+							}
+							
+							if (((Operation) rightClickedComponent).getParentData() != null)
+							{
+								rCodeMenuItem.setEnabled(true);
+							}
+							else
+							{
+								rCodeMenuItem.setEnabled(false);
+							}
 						}
 					}
 					catch(MarlaException ex)
 					{
+						rCodeMenuItem.setEnabled(false);
 						changeInfoMenuItem.setEnabled(false);
 						Domain.logger.add(ex);
 					}
@@ -1434,9 +1460,8 @@ public class ViewPanel extends JPanel
 			{
 				startingAnswerPanelDisplay = false;
 			}
-
-			DND_LISTENER.endDrop(null, null);
 		}
+		DND_LISTENER.endDrop(null, null);
 	}//GEN-LAST:event_solutionMenuItemActionPerformed
 
 	private void tieSubProblemSubMenuMenuSelected(javax.swing.event.MenuEvent evt)//GEN-FIRST:event_tieSubProblemSubMenuMenuSelected
@@ -1507,9 +1532,8 @@ public class ViewPanel extends JPanel
 			{
 				Domain.logger.add(ex);
 			}
-
-			DND_LISTENER.endDrop(null, null);
 		}
+		DND_LISTENER.endDrop(null, null);
 	}//GEN-LAST:event_rCodeMenuItemActionPerformed
 
 	private void buttonMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_buttonMousePressed
@@ -1617,8 +1641,8 @@ public class ViewPanel extends JPanel
 		if(rightClickedComponent != null)
 		{
 			newProblemWizardDialog.editDataSet((DataSet) rightClickedComponent);
-			DND_LISTENER.endDrop(null, null);
 		}
+		DND_LISTENER.endDrop(null, null);
 	}//GEN-LAST:event_editDataSetMenuItemActionPerformed
 
 	private void changeInfoMenuItemActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_changeInfoMenuItemActionPerformed
@@ -1646,8 +1670,8 @@ public class ViewPanel extends JPanel
 			{
 				Domain.logger.add(ex);
 			}
-			DND_LISTENER.endDrop(null, null);
 		}
+		DND_LISTENER.endDrop(null, null);
 	}//GEN-LAST:event_changeInfoMenuItemActionPerformed
 
 	private void answerDialogWindowLostFocus(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_answerDialogWindowLostFocus
@@ -1666,8 +1690,8 @@ public class ViewPanel extends JPanel
 			{
 				((Operation) rightClickedComponent).setRemark(newRemark);
 			}
-			DND_LISTENER.endDrop(null, null);
 		}
+		DND_LISTENER.endDrop(null, null);
 	}//GEN-LAST:event_remarkMenuItemActionPerformed
 
 	private void workspacePanelMousePressed(java.awt.event.MouseEvent evt)//GEN-FIRST:event_workspacePanelMousePressed
@@ -1755,6 +1779,10 @@ public class ViewPanel extends JPanel
 		newProblemWizardDialog.addDataSet();
 		DND_LISTENER.endDrop(null, null);
 	}//GEN-LAST:event_addDataSetMenuItemActionPerformed
+
+	private void rightClickMenuPopupMenuCanceled(javax.swing.event.PopupMenuEvent evt) {//GEN-FIRST:event_rightClickMenuPopupMenuCanceled
+		DND_LISTENER.endDrop(null, null);
+	}//GEN-LAST:event_rightClickMenuPopupMenuCanceled
 
 	/**
 	 * Undo the last operation.
@@ -2260,10 +2288,15 @@ public class ViewPanel extends JPanel
 				JPanel tempPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
 				JLabel label = new JLabel(question.getPrompt());
 
-				DefaultComboBoxModel model = new DefaultComboBoxModel(((OperationInfoCombo) question).getOptions().toArray());
+				Object[] array = ((OperationInfoCombo) question).getOptions().toArray();
+				for (int i = 0; i < array.length; ++i)
+				{
+					array[i] = "<html>" + array[i] + "</html>";
+				}
+				DefaultComboBoxModel model = new DefaultComboBoxModel(array);
 				JComboBox comboBox = new JComboBox(model);
 				if(question.getAnswer() != null)
-					comboBox.setSelectedItem(question.getAnswer());
+					comboBox.setSelectedItem("<html>" + question.getAnswer() + "</html>");
 
 				tempPanel.add(label);
 				tempPanel.add(comboBox);
@@ -2355,7 +2388,9 @@ public class ViewPanel extends JPanel
 				}
 				else if(question.getType() == PromptType.COMBO || question.getType() == PromptType.COLUMN)
 				{
-					question.setAnswer(((JComboBox) valueComponents.get(i)).getSelectedItem());
+					String string = ((JComboBox) valueComponents.get(i)).getSelectedItem().toString();
+					string = string.substring(6, string.length() - 7);
+					question.setAnswer(string);
 				}
 				else if(question.getType() == PromptType.FIXED)
 				{
@@ -2428,8 +2463,8 @@ public class ViewPanel extends JPanel
 			buildDataSetsOnRight();
 
 			// Add sub problems to legend
-			legendContentPanel.removeAll();
-			((GridLayout) legendContentPanel.getLayout()).setRows(0);
+			subProblemContentPanel.removeAll();
+			((GridLayout) subProblemContentPanel.getLayout()).setRows(0);
 			firstCounter = 3;
 			for(int i = 0; i < domain.problem.getSubProblemCount(); ++i)
 			{
@@ -2457,14 +2492,14 @@ public class ViewPanel extends JPanel
 				{
 					firstCounter = 0;
 
-					GridLayout layout = (GridLayout) legendContentPanel.getLayout();
+					GridLayout layout = (GridLayout) subProblemContentPanel.getLayout();
 					layout.setRows(layout.getRows() + 1);
 
-					legendContentPanel.add(label);
-					legendContentPanel.add(second);
-					legendContentPanel.add(third);
+					subProblemContentPanel.add(label);
+					subProblemContentPanel.add(second);
+					subProblemContentPanel.add(third);
 
-					legendContentPanel.invalidate();
+					subProblemContentPanel.invalidate();
 				}
 				++firstCounter;
 			}
@@ -2476,15 +2511,15 @@ public class ViewPanel extends JPanel
 				noneLabel.setFont(FONT_BOLD_12);
 				dataSetContentPanel.add(noneLabel);
 			}
-			if(legendContentPanel.getComponentCount() == 0)
+			if(subProblemContentPanel.getComponentCount() == 0)
 			{
-				((GridLayout) legendContentPanel.getLayout()).setColumns(1);
+				((GridLayout) subProblemContentPanel.getLayout()).setColumns(1);
 				JLabel noneLabel = new JLabel("-No Sub Problems-");
 				noneLabel.setFont(FONT_BOLD_12);
-				legendContentPanel.add(noneLabel);
+				subProblemContentPanel.add(noneLabel);
 			}
 			dataSetContentPanel.invalidate();
-			legendContentPanel.invalidate();
+			subProblemContentPanel.invalidate();
 
 			workspacePanel.repaint();
 		}
@@ -2637,10 +2672,11 @@ public class ViewPanel extends JPanel
 				dataSetContentPanel.add(label);
 				dataSetContentPanel.add(secondData);
 				dataSetContentPanel.add(thirdData);
-
-				dataSetContentPanel.invalidate();
 			}
 			++firstDataCounter;
+			
+			dataSetContentPanel.invalidate();
+			dataSetContentPanel.repaint();
 		}
 	}
 
@@ -2707,8 +2743,8 @@ public class ViewPanel extends JPanel
 
 				dataSetContentPanel.removeAll();
 				((GridLayout) dataSetContentPanel.getLayout()).setRows(0);
-				legendContentPanel.removeAll();
-				((GridLayout) legendContentPanel.getLayout()).setRows(0);
+				subProblemContentPanel.removeAll();
+				((GridLayout) subProblemContentPanel.getLayout()).setRows(0);
 
 				domain.problem = null;
 
@@ -2905,7 +2941,6 @@ public class ViewPanel extends JPanel
     private javax.swing.JToolBar.Separator jSeparator2;
     private javax.swing.JToolBar.Separator jSeparator3;
     private javax.swing.JToolBar.Separator jSeparator4;
-    protected javax.swing.JPanel legendContentPanel;
     private javax.swing.JPopupMenu.Separator menuSeparator1;
     private javax.swing.JPopupMenu.Separator menuSeparator2;
     private javax.swing.JPopupMenu.Separator menuSeparator3;
@@ -2924,6 +2959,7 @@ public class ViewPanel extends JPanel
     protected marla.ide.gui.ToolbarButton settingsButton;
     private javax.swing.JMenuItem solutionMenuItem;
     protected javax.swing.JLabel statusLabel;
+    protected javax.swing.JPanel subProblemContentPanel;
     private javax.swing.JPanel subProblemPanel;
     private javax.swing.JMenu tieSubProblemSubMenu;
     private javax.swing.JToolBar toolBar;
