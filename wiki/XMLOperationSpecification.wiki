@@ -6,16 +6,13 @@ given in bold are required. A full example implementing a t-test is listed at th
 
 = Operation =
 {{{
-<operation name="operation name" [plot="true|false|fake"] [list="true|false"]>
+<operation name="operation name" [list="true|false"]>
 }}}
 Each `<operation />` takes a name that will be displayed to the user and can be used to
-create that operation. It must be unique. If multiple with the same name exist an
-exception will be thrown. If an operation is going to output a plot, it must
-have `plot="true"` set as well. If the operation uses a [#Fake_Plots `<fake-plot />`], set `plot="fake"`. If an operation should not appear on the side panel, set `list="false"`.
+create that operation. If more than one operation with the same name exists, later ones overwrite earlier ones. If an operation should not appear on the side panel, set `list="false"`.
 
 Attributes supported:
   * *`name`* - Arbitrary name of the operation. Must be unique within the XML file
-  * `plot` - Specifies if the operation will produce a plot. May be set to `true`, `false`, or `fake`. If `fake`, in most cases it acts as a normal plot, but may need special handling on export. Default is `false`.
   * `list` - Specifies if this operation is listed under normal displays. Maybe to set to `true` or `false`. Default is `true`.
 
 == Categories ==
