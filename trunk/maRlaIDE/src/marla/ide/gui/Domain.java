@@ -117,12 +117,12 @@ public class Domain
 	/** The desktop object for common desktop operations.*/
 	protected Desktop desktop;
 	/** The load/save thread that is continually running unless explicitly paused or stopped.*/
-	protected BackgroundThread loadSaveThread;
-	/** The load/save thread that is continually running unless explicitly paused or stopped.*/
-	protected DebugThread redirThread;
+	protected BackgroundThread backgroundThread;
+	/** The debug redirection thread that is continually running unless explicitly paused or stopped.*/
+	protected DebugThread debugThread;
 	/** The user can only have one problem open a time, so here is our problem object reference.*/
 	protected Problem problem = null;
-	/** Set to true when an export is cancelled, false otherwise.*/
+	/** Set to true when an export is canceled, false otherwise.*/
 	protected static boolean cancelExport = false;
 
 	/**
@@ -268,7 +268,7 @@ public class Domain
 					split.add(debugPane);
 				split.setDividerLocation(split.getHeight() - 100);
 
-				getInstance().redirThread.enableDebugRedirect();
+				getInstance().debugThread.enableDebugRedirect();
 
 				System.out.println("Sending debug output to interface");
 
@@ -282,7 +282,7 @@ public class Domain
 					split.remove(debugPane);
 				split.setDividerLocation(-1);
 
-				getInstance().redirThread.disableDebugRedirect();
+				getInstance().debugThread.disableDebugRedirect();
 			}
 		}
 

@@ -50,7 +50,10 @@ import marla.ide.problem.DataColumn;
 import marla.ide.problem.DataSet;
 import marla.ide.problem.DuplicateNameException;
 import marla.ide.problem.MarlaException;
+import marla.ide.r.RProcessor;
+import marla.ide.r.RProcessor.RecordMode;
 import marla.ide.resource.Configuration;
+import marla.ide.resource.DebugThread;
 import marla.ide.resource.UndoRedo;
 import marla.opedit.gui.xmlpane.XmlTextPane;
 import marla.opedit.operation.OperationEditorException;
@@ -156,11 +159,16 @@ public class ViewPanel extends JPanel
 	 */
 	private void initMyComponents()
 	{
-		domain.loadSaveThread = new LoadSaveThread(domain);
-		// launch the save thread
-		domain.loadSaveThread.start();
-		domain.setLoadSaveThread(domain.loadSaveThread);
+		// launch the threads
+		domain.debugThread = new DebugThread(debugTextArea);
+		domain.backgroundThread = new LoadSaveThread(domain);
+		domain.debugThread.start();
+		domain.backgroundThread.start();
 
+		// Always do debug stuff
+		RProcessor.setDebugMode(RecordMode.FULL);
+		domain.debugThread.enableDebugRedirect();
+		
 		operationsTable.getSelectionModel ().addListSelectionListener (new ListSelectionListener ()
 		{
 			@Override
@@ -1424,14 +1432,14 @@ public class ViewPanel extends JPanel
 			}
 
 			// Tell thread to stop
-			domain.loadSaveThread.stopRunning();
+			domain.backgroundThread.stopRunning();
 
 			try
 			{
 				// Wait for an extra couple seconds beyond the longest it'll take
 				// the load save thread to get around to checking if it's closing again
 				// The extra time lets it write if needed
-				domain.loadSaveThread.join(domain.loadSaveThread.getDelay() + 3000);
+				domain.backgroundThread.join(domain.backgroundThread.getDelay() + 3000);
 			}
 			catch(InterruptedException ex)
 			{

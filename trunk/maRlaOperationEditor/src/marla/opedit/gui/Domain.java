@@ -24,6 +24,7 @@ import java.io.File;
 import java.util.Queue;
 import javax.swing.SwingUtilities;
 import marla.ide.resource.Configuration;
+import marla.ide.resource.DebugThread;
 import marla.opedit.operation.OperationFile;
 import marla.opedit.resource.LoadSaveThread;
 
@@ -44,7 +45,9 @@ public class Domain
 	/** If launched with a file to open, this will be the file set.*/
 	public static File passedInFile = null;
 	/** The load/save thread that is continually running unless explicitly paused or stopped.*/
-	protected LoadSaveThread loadSaveThread;
+	protected LoadSaveThread backgroundThread;
+	/** The debug redirection thread that is continually running unless explicitly paused or stopped.*/
+	protected DebugThread debugThread;
 	/** The error file that keeps track of all errors and their occurrences.*/
 	protected File logFile;
 	/** Domain object currently created. Only one allowed, ever */
@@ -85,7 +88,7 @@ public class Domain
 	 */
 	public void setLoadSaveThread(LoadSaveThread loadSaveThread)
 	{
-		this.loadSaveThread = loadSaveThread;
+		this.backgroundThread = loadSaveThread;
 	}
 
 	/**
