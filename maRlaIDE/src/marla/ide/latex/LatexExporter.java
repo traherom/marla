@@ -823,43 +823,30 @@ public class LatexExporter
 			sb.append("\\\\\n");
 		}
 
-		// Plot?
-		if(op.hasPlot())
-		{
-			sb.append("\\multicolumn{");
-			if(dispColLen > 0)
-				sb.append(dispColLen + 1);
-			else
-				sb.append('2');
-			sb.append("}{|c|}{\n");
-
-			sb.append("<<echo=F,fig=T>>=\n");
-			sb.append(op.getRCommands());
-			sb.append("@\n");
-
-			sb.append("}\\\\\n\\hline\n");
-		}
-
-		/* TBD figure out a good way to include R if desired
-		if(includeR)
-		{
-			sb.append("\\multicolumn{");
-			if(dispColLen > 0)
-				sb.append(dispColLen + 1);
-			else
-				sb.append('2');
-			sb.append("}{|p{5cm}|}{\n");
-
-			sb.append("<<>>=\n");
-			sb.append(op.getRCommands(false));
-			sb.append("@\n");
-		
-			sb.append("}\\\\\n\\hline\n");
-		}
-		 */
-
 		// End table
 		sb.append("\\end{tabular}\n");
+		
+		// Plot?
+		if(op.hasFakePlot())
+		{
+			sb.append("<<echo=F>>=\n");
+			sb.append(op.getRCommands());
+			sb.append("\n@\n");
+		}
+		else if(op.hasPlot())
+		{
+			sb.append("<<echo=F,fig=T>>=\n");
+			sb.append(op.getRCommands());
+			sb.append("\n@\n");
+		}
+
+		// Include R code?
+		if(includeR && !op.hasFakePlot())
+		{
+			sb.append("<<>>=\n");
+			sb.append(op.getRCommands(false));
+			sb.append("\n@\n");
+		}
 
 		return sb.toString();
 	}

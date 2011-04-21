@@ -2,7 +2,7 @@
 <problem person="" course_long="" course_short="" chapter="" section="" probnum="">
   <statement />
   <conclusion />
-  <data name="Data Set 1" id="-205666826" x="280" y="89" height="16" width="70" hidden="false">
+  <data name="Data Set 1" id="-205666826" x="354" y="89" height="16" width="70" hidden="false">
     <column name="Column 1" mode="NUMERIC">
       <value>0.0</value>
       <value>1.0</value>
@@ -263,31 +263,15 @@
       <value>48.0</value>
       <value>49.0</value>
     </column>
-    <operation type="marla.ide.operation.OperationXML" name="Log base 10" id="-1675040607" x="267" y="120" height="22" width="96" hidden="false">
+    <operation type="marla.ide.operation.OperationStemAndLeaf" name="Stem and Leaf" id="-497309939" x="271" y="120" height="16" width="108" hidden="false">
       <remark />
-      <operation type="marla.ide.operation.OperationXML" name="Log base X" id="-1256365513" x="265" y="157" height="22" width="100" hidden="false">
-        <remark />
-        <operation type="marla.ide.operation.OperationXML" name="Sum" id="-914887746" x="202" y="194" height="16" width="103" hidden="false">
-          <remark />
-          <operation type="marla.ide.operation.OperationXML" name="StdDev" id="-673659816" x="211" y="225" height="16" width="85" hidden="false">
-            <remark />
-            <question name="col" answer="Column 1" />
-            <extra name="StdDev" />
-          </operation>
-          <question name="col" answer="Column 1" />
-          <extra name="Sum" />
-        </operation>
-        <operation type="marla.ide.operation.OperationXML" name="Exponential" id="1338553161" x="325" y="194" height="21" width="91" hidden="false">
-          <remark>test &lt;b&gt;hi&lt;/b&gt; &lt;strong&gt;Strong!&lt;/strong&gt; &lt;i&gt;it&lt;/i&gt; &lt;em&gt;leans&lt;/em&gt; &lt;sup&gt;Test&lt;/sup&gt;</remark>
-          <question name="col" answer="log&lt;sub&gt;10&lt;/sub&gt;Column 3" />
-          <extra name="Exponential" />
-        </operation>
-        <question name="col" answer="Column 1" />
-        <question name="base" answer="3.0" />
-        <extra name="Log base X" />
-      </operation>
-      <question name="col" answer="Column 3" />
-      <extra name="Log base 10" />
+      <question name="col" answer="Column 1" />
+      <extra />
+    </operation>
+    <operation type="marla.ide.operation.OperationXML" name="Barplot" id="-2134048730" x="399" y="120" height="16" width="123" hidden="false">
+      <remark />
+      <question name="col" answer="Column 1" />
+      <extra name="Barplot" />
     </operation>
   </data>
   <unused />

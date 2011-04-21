@@ -78,6 +78,15 @@ public abstract class Operation extends DataSource implements Cloneable
 	 */
 	private String remark = "";
 	/**
+	 * Cache for the dynamic name that we build for the user. Because we read
+	 * it from the XML we don't want to recalculate every time
+	 */
+	private String dynamicNameLong = null;
+	/**
+	 * Cache for the abbreviated version of the dynamic name that we build for the user.
+	 */
+	private String dynamicNameShort = null;
+	/**
 	 * Saves the R operations used the last time refreshCache() was called. This
 	 * string can then be dumped out by getRCommands() to give an idea of how to perform
 	 * the calculations
@@ -97,11 +106,11 @@ public abstract class Operation extends DataSource implements Cloneable
 	 * List of Java Operation derivative classes that may be created by
 	 * the GUI front end.
 	 */
-	private static Map<String, String> javaOps;
+	private static final Map<String, String> javaOps;
 	/**
 	 * Categorization of the Java operations
 	 */
-	private static Map<String, List<String>> javaOpCategories;
+	private static final Map<String, List<String>> javaOpCategories;
 
 	/**
 	 * Initializes the list of available Java-based (hard coded) operations.
@@ -219,7 +228,7 @@ public abstract class Operation extends DataSource implements Cloneable
 			try
 			{
 				// Try in the list of Java classes
-				Class opClass = Class.forName(Operation.javaOps.get(opName));
+				Class opClass = Class.forName(javaOps.get(opName));
 				op = (Operation) opClass.newInstance();
 			}
 			catch(IllegalAccessException ex2)
@@ -262,6 +271,8 @@ public abstract class Operation extends DataSource implements Cloneable
 		// Easy stuff
 		setDefaultColor();
 		remark = org.remark;
+		dynamicNameLong = org.dynamicNameLong;
+		dynamicNameShort = org.dynamicNameShort;
 		
 		// Questions
 		for(OperationInformation info : org.prompts)
@@ -316,6 +327,33 @@ public abstract class Operation extends DataSource implements Cloneable
 		return !remark.isEmpty();
 	}
 
+	@Override
+	public final String getDisplayString(boolean abbrv)
+	{
+		if(abbrv)
+			return dynamicNameShort;
+		else
+			return dynamicNameLong;
+	}
+	
+	/**
+	 * Sets the "short" (abbreviated) display name for this operation
+	 * @param newShort New abbreviated name
+	 */
+	protected final void setShortDisplayString(String newShort)
+	{
+		dynamicNameShort = newShort;
+	}
+	
+	/**
+	 * Sets the "long" (unabbreviated) display name for this operation
+	 * @param newLong New unabbreviated name
+	 */
+	protected final void setLongDisplayString(String newLong)
+	{
+		dynamicNameLong = newLong;
+	}
+	
 	/**
 	 * Creates the appropriate derivative Operation from the given JDOM XML. Class
 	 * must be specified as an attribute ("type") of the Element supplied. An exception
@@ -878,6 +916,19 @@ public abstract class Operation extends DataSource implements Cloneable
 	 * @return true if there is available graphical output via getPlot(), false otherwise
 	 */
 	public abstract boolean hasPlot();
+
+	/**
+	 * Returns true if this operation has graphical output that is actually
+	 * based on text output. The path to the graphic file can be obtained
+	 * via getPlot(). Primarily useful to know if it would be useful to just
+	 * pass the R commands behind the operation off to Sweave/R, rather
+	 * than use the plot
+	 * @return true if there is available graphical output via getPlot(), false otherwise
+	 */
+	public boolean hasFakePlot()
+	{
+		return false;
+	}
 
 	/**
 	 * Returns the path to the graphical plot this operation generated. An exception

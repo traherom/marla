@@ -17,11 +17,19 @@
  */
 package marla.ide.operation;
 
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.imageio.ImageIO;
 import marla.ide.operation.OperationInformation.PromptType;
 import org.jdom.Document;
 import org.jdom.Element;
@@ -72,20 +80,11 @@ public class OperationXML extends Operation
 	 */
 	private Element displayNameEl = null;
 	/**
-	 * Cache for the dynamic name that we build for the user. Because we read
-	 * it from the XML we don't want to recalculate every time
-	 */
-	private String dynamicNameLong = null;
-	/**
-	 * Cache for the abbreviated version of the dynamic name that we build for the user.
-	 */
-	private String dynamicNameShort = null;
-	/**
 	 * Used to store the name of the plot we (might) create. Unused
 	 * if the XML specification itself doesn't contain a <plot />
 	 * element.
 	 */
-	private String plotPath = null;
+	private File plotPath = null;
 	/**
 	 * Saves the RecordMode we should be saving in. XML ops have to perform 
 	 * extra R calls to do their work, we avoid saving those to the record
@@ -511,10 +510,6 @@ public class OperationXML extends Operation
 		if(org.displayNameEl != null)
 			displayNameEl = org.displayNameEl;
 		
-		// Just copy over dynamic names, rather than re-compute them
-		dynamicNameLong = org.dynamicNameLong;
-		dynamicNameShort = org.dynamicNameShort;
-		
 		isLoading(false);
 	}
 
@@ -568,7 +563,7 @@ public class OperationXML extends Operation
 			if(type == PromptType.COLUMN)
 			{
 				// What type of column should we present to the user?
-				String colType = queryEl.getAttributeValue("column_type", "all");
+				String colType = queryEl.getAttributeValue("column-type", "all");
 				List<String> columnNames = new ArrayList<String>();
 
 				OperationInformation opQuery = null;
@@ -713,6 +708,8 @@ public class OperationXML extends Operation
 				processLoop(proc, el);
 			else if(cmdName.equals("if"))
 				processIf(proc, el);
+			else if(cmdName.equals("fake-plot"))
+				processFakePlot(proc, el);
 			else if(cmdName.equals("plot"))
 				processPlot(proc, el);
 			else if(cmdName.equals("error"))
@@ -823,7 +820,7 @@ public class OperationXML extends Operation
 		// Dynamic one?
 		if(colName == null)
 		{
-			String dynamicColumnCmd = cmdEl.getAttributeValue("r_column");
+			String dynamicColumnCmd = cmdEl.getAttributeValue("r-column");
 			if(dynamicColumnCmd != null)
 				colName = proc.executeString(dynamicColumnCmd);
 		}
@@ -889,9 +886,9 @@ public class OperationXML extends Operation
 	private void processLoop(RProcessor proc, Element loopEl)
 	{
 		// Make up the loop we're going to work over and pass iteration back to processSequence()
-		String indexVar = loopEl.getAttributeValue("index_var");
-		String keyVar = loopEl.getAttributeValue("key_var");
-		String valueVar = loopEl.getAttributeValue("value_var");
+		String indexVar = loopEl.getAttributeValue("index-var");
+		String keyVar = loopEl.getAttributeValue("key-var");
+		String valueVar = loopEl.getAttributeValue("value-var");
 
 		// Process according to loop type
 		String loopType = loopEl.getAttributeValue("type");
@@ -920,7 +917,7 @@ public class OperationXML extends Operation
 		else if(loopType.equals("numeric"))
 		{
 			// Loop over an R vector, setting each element as the index var
-			List<Double> doubleVals = proc.executeDoubleArray(loopEl.getAttributeValue("loop_var"));
+			List<Double> doubleVals = proc.executeDoubleArray(loopEl.getAttributeValue("loop-var"));
 			for(int i = 0; i < doubleVals.size(); i++)
 			{
 				// Assign the loop index
@@ -940,7 +937,7 @@ public class OperationXML extends Operation
 		else if(loopType.equals("string"))
 		{
 			// Loop over an R vector, setting each element as the index var
-			List<String> stringVals = proc.executeStringArray(loopEl.getAttributeValue("loop_var"));
+			List<String> stringVals = proc.executeStringArray(loopEl.getAttributeValue("loop-var"));
 			for(int i = 0; i < stringVals.size(); i++)
 			{
 				// Assign the loop index
@@ -1032,21 +1029,122 @@ public class OperationXML extends Operation
 	}
 
 	/**
+	 * Takes a command inside it and converts the text output to an image
+	 * @param proc R process to pass command through
+	 * @param fakeEl Element containing the string R command to convert to an image
+	 */
+	private void processFakePlot(RProcessor proc, Element fakeEl)
+	{
+		// An operation may only have one plot/fake plot in it
+		if(plotPath != null)
+			throw new OperationXMLException("An operation may only have one plot in it");
+
+		// Get the string we're converting to an image
+		RecordMode oldMode = proc.setRecorderMode(RecordMode.CMDS_ONLY);
+		String textLeaf = proc.execute(fakeEl.getText()).trim();
+		proc.setRecorderMode(oldMode);
+		
+		// How tall and wide is the plot?
+		int height = 0;
+		int width = 0;
+		int maxWidth = 0;
+		for(int i = 0; i < textLeaf.length(); i++)
+		{
+			width++;
+			
+			if(textLeaf.charAt(i) == '\n')
+			{
+				width = 0;
+				height++;
+			}
+			
+			if(width > maxWidth)
+				maxWidth = width;
+		}
+		
+		width = maxWidth;
+		
+		// Transfer to real image (guess at size first, plenty large,
+		// resize down afterward)
+		Font plotFont = new Font(Font.MONOSPACED, Font.PLAIN, 12);
+		int charWidth = 20;
+		int charHeight = plotFont.getSize() * 2;
+		
+		BufferedImage img = new BufferedImage(charWidth * (width + 2), charHeight * (height + 2), BufferedImage.TYPE_3BYTE_BGR);
+		Graphics2D gd = img.createGraphics();
+		
+		gd.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+		gd.setFont(plotFont);
+		FontMetrics metrics = gd.getFontMetrics();
+		charWidth = metrics.charWidth('M') ;
+		charHeight = metrics.getHeight();
+		
+		// White background, black text
+		gd.setBackground(Color.WHITE);
+		gd.fillRect(0, 0, img.getWidth(), img.getHeight());
+		gd.setColor(Color.BLACK);
+		
+		// Draw each letter
+		int currX = charWidth;
+		int currY = charHeight;
+		for(int i = 0; i < textLeaf.length(); i++)
+		{
+			char c = textLeaf.charAt(i);
+			if(c == '\n')
+			{
+				// Next line
+				currY += charHeight;
+				currX = 0;
+			}
+			else
+			{
+				// Draw letter
+				gd.drawString(String.valueOf(c), currX, currY);
+				
+				// Advance
+				currX += charWidth;
+			}
+		}
+		
+		gd.dispose();
+		
+		// Copy image over to "correctly" sized image
+		BufferedImage correctImg = new BufferedImage(charWidth * (width + 2), charHeight * (height + 2), BufferedImage.TYPE_3BYTE_BGR);
+		Graphics2D correctGD = correctImg.createGraphics();
+		correctGD.setBackground(Color.WHITE);
+		correctGD.fillRect(0, 0, correctImg.getWidth(), correctImg.getHeight());
+		correctGD.drawImage(img, 0, 0, null);
+		correctGD.dispose();
+		
+		// Save image out
+		try
+		{
+			plotPath = File.createTempFile("marla", ".png");
+			ImageIO.write(correctImg, "png", plotPath);
+		}
+		catch(IOException ex)
+		{
+			plotPath = null;
+			throw new OperationException("Unable to create plot at '" + plotPath + "'", ex);
+		}
+	}
+
+	/**
 	 * Starts a plot with R and processes the sequence of commands inside. At
 	 * the end of the sequence, the plot is finished and the results saved 
 	 * as the plot for the operation. May only be executed once in an operation
 	 * @param proc R process to work get plot from
-	 * @param cmdEl Element containing plot commands
+	 * @param p Element containing plot commands
 	 */
-	private void processPlot(RProcessor proc, Element cmdEl)
+	private void processPlot(RProcessor proc, Element plotEl)
 	{
 		// An operation may only have one plot in it
 		if(plotPath != null)
 			throw new OperationXMLException("An operation may only have one plot in it");
 
 		// Plot away
-		plotPath = proc.startGraphicOutput();
-		processSequence(proc, cmdEl);
+		plotPath = new File(proc.startGraphicOutput());
+		processSequence(proc, plotEl);
 		proc.stopGraphicOutput();
 	}
 
@@ -1079,7 +1177,7 @@ public class OperationXML extends Operation
 		if(libToLoad == null)
 		{
 			// Ok, try for a dynamic version then
-			String dynamicName = loadEl.getAttributeValue("r_library");
+			String dynamicName = loadEl.getAttributeValue("r-library");
 			if(dynamicName == null)
 				throw new OperationXMLException("No library specified for load");
 
@@ -1089,15 +1187,6 @@ public class OperationXML extends Operation
 
 		if(!proc.loadLibrary(libToLoad))
 			throw new OperationXMLException("Unable to load and/or install library '" + libToLoad + "' into R");
-	}
-
-	@Override
-	public String getDisplayString(boolean abbrv)
-	{
-		if(abbrv)
-			return dynamicNameShort;
-		else
-			return dynamicNameLong;
 	}
 
 	@Override
@@ -1119,7 +1208,7 @@ public class OperationXML extends Operation
 	 */
 	private boolean updateDynamicName()
 	{
-		String oldLongName = dynamicNameLong;
+		String oldLongName = getDisplayString(false);
 
 		// Only bother if we aren't still initializing
 		if(opConfig == null)
@@ -1158,7 +1247,7 @@ public class OperationXML extends Operation
 
 						// Append to names
 						longName.append(val);
-						shortName.append(DataSet.shortenString(val.toString(), 5));
+						shortName.append(shortenString(val.toString(), 5));
 					}
 					else
 					{
@@ -1175,25 +1264,40 @@ public class OperationXML extends Operation
 			}
 
 			// Make it visible externally, not interal though
-			dynamicNameLong = longName.toString();
-			dynamicNameShort = shortName.toString();
+			setLongDisplayString(longName.toString());
+			setShortDisplayString(shortName.toString());
 		}
 		else
 		{
 			// Just use the plain old name
-			dynamicNameLong = opConfig.getAttributeValue("name");
-			dynamicNameShort = DataSet.shortenString(dynamicNameLong, 5);
+			setLongDisplayString(opConfig.getAttributeValue("name"));
+			setShortDisplayString(shortenString(opConfig.getAttributeValue("name"), 5));
 		}
 
 		// Did the name change?
-		return !dynamicNameLong.equals(oldLongName);
+		return !getDisplayString(false).equals(oldLongName);
 	}
 
 	@Override
 	public boolean hasPlot()
 	{
 		// Check if plot="true" is set for this op
-		return Boolean.parseBoolean(opConfig.getAttributeValue("plot", "false"));
+		String setting = opConfig.getAttributeValue("plot", "false");
+		if(setting.equals("false"))
+			return false;
+		else
+			// Could be a normal, full plot or a "fake" plot
+			return true;
+	}
+	
+	@Override
+	public boolean hasFakePlot()
+	{
+		String setting = opConfig.getAttributeValue("plot", "false");
+		if(setting.equals("fake"))
+			return true;
+		else
+			return false;
 	}
 
 	@Override
@@ -1205,7 +1309,14 @@ public class OperationXML extends Operation
 
 		// Ensure it's computed then return
 		checkCache();
-		return plotPath;
+		if(plotPath == null || !plotPath.exists())
+		{
+			// Temp file may have been removed
+			markDirty();
+			checkCache();
+		}
+		
+		return plotPath.getAbsolutePath();
 	}
 
 	@Override
