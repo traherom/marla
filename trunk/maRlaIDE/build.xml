@@ -117,7 +117,7 @@
              minus the .jar extension. It should not have spaces.
              <property name="store.jar.name" value="MyJarName"/>
         -->
-        <property name="store.jar.name" value="maRlaIDE"/>
+        <property name="store.jar.name" value="maRla IDE"/>
         <property name="store.jar" value="${store.dir}/${store.jar.name}.jar"/>
 
         <echo message="Packaging ${application.title} into a single JAR at ${store.jar}"/>
@@ -221,14 +221,16 @@
 		</delete>
 
 		<!-- Move (if needed) to file with revision name -->
-		<move file="${store.dir}/Setup.exe" tofile="${store.dir}/installer-${setup.base}.exe" />
+		<!--<move file="${store.dir}/Setup.exe" tofile="${store.dir}/installer-${setup.base}.exe" />-->
+		<move file="${store.dir}/Setup.exe" tofile="${store.dir}/The maRla Project Setup.exe" />
 		<echo message="Windows installer placed in ${store.dir}" />
 	</target>
 
 	<target name="-zip-package">
 		<echo>Creating archive of files</echo>
-		<zip destfile="${store.dir}/${setup.base}.zip">
-			<zipfileset file="${store.dir}/maRlaIDE.jar" />
+		<!--<zip destfile="${store.dir}/${setup.base}.zip">-->
+		<zip destfile="The maRla Project.zip">
+			<zipfileset file="${store.dir}/maRla IDE.jar" />
 			<zipfileset file="${store.dir}/maRla Operation Editor.jar" />
 			<zipfileset file="${store.dir}/ops.xml" />
 			<zipfileset file="${store.dir}/export_template.xml" />

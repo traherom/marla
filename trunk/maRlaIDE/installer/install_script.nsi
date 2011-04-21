@@ -40,7 +40,7 @@ Var /GLOBAL MikTexVer
 Var /GLOBAL MikTexHome
 
 ; Name and file
-Name "maRla"
+Name "The maRla Project"
 OutFile "Setup.exe"
 
 ; Default installation folder
@@ -77,7 +77,7 @@ InstType "Minimal"
 !define MUI_FINISHPAGE_NOAUTOCLOSE
 !define MUI_FINISHPAGE_RUN
 !define MUI_FINISHPAGE_RUN_CHECKED
-!define MUI_FINISHPAGE_RUN_TEXT "Launch maRla"
+!define MUI_FINISHPAGE_RUN_TEXT "Launch maRla IDE"
 !define MUI_FINISHPAGE_RUN_FUNCTION "LaunchLink"
 !insertmacro MUI_PAGE_FINISH
 
@@ -160,7 +160,7 @@ SectionGroup "maRla Core"
 		
 		; Install files!
 		ClearErrors
-		File "maRlaIDE.exe"
+		File "maRla IDE.exe"
 		File "maRla Operation Editor.exe"
 		File "export_template.xml"
 		File "ops.xml"
@@ -174,7 +174,7 @@ SectionGroup "maRla Core"
 		WriteRegStr HKCU "Software\maRla" "" $INSTDIR
 		
 		; Register .marla files with maRla
-		${registerExtension} "$INSTDIR\maRlaIDE.exe" ".marla" "maRla File"
+		${registerExtension} "$INSTDIR\maRla IDE.exe" ".marla" "maRla File"
 
 		; Create uninstaller
 		WriteUninstaller "$INSTDIR\Uninstall.exe"
@@ -513,7 +513,7 @@ Section "-configure-marla" ConfigureMarla
 		Call CheckInstalledMikTex
 		
 		ClearErrors
-		ExecWait '"$INSTDIR\maRlaIDE.exe" configure_only "--PrimaryOpsXML=$INSTDIR\ops.xml" "--TexTemplate=$INSTDIR\export_template.xml" "--R=$RHome\bin\R.exe" "--PdfTex=$MikTexHome\miktex\bin\pdflatex.exe"'
+		ExecWait '"$INSTDIR\maRla IDE.exe" configure_only "--PrimaryOpsXML=$INSTDIR\ops.xml" "--TexTemplate=$INSTDIR\export_template.xml" "--R=$RHome\bin\R.exe" "--PdfTex=$MikTexHome\miktex\bin\pdflatex.exe"'
 		
 		${If} ${Errors}
 			DetailPrint "Failed to configure"
@@ -528,10 +528,14 @@ SectionGroup "Shortcuts" CreateShortcuts
 
 		SectionIn 1 2
 		
-		CreateDirectory "$SMPROGRAMS\maRla"
-		CreateShortCut "$SMPROGRAMS\maRla\Uninstall maRla.lnk" "$INSTDIR\Uninstall.exe"
-		CreateShortCut "$SMPROGRAMS\maRla\maRla.lnk" "$INSTDIR\maRlaIDE.exe"
-		CreateShortCut "$SMPROGRAMS\maRla\maRla Operation Editor.lnk" "$INSTDIR\maRla Operation Editor.exe"
+		Delete "$SMPROGRAMS\maRla\Uninstall.lnk"
+		Delete "$SMPROGRAMS\maRla\maRla.lnk"
+		Delete "$SMPROGRAMS\maRla\maRla Operation Editor.lnk"
+		RMDir "$SMPROGRAMS\maRla\"
+		CreateDirectory "$SMPROGRAMS\The maRla Project"
+		CreateShortCut "$SMPROGRAMS\The maRla Project\Uninstall The maRla Project.lnk" "$INSTDIR\Uninstall.exe"
+		CreateShortCut "$SMPROGRAMS\The maRla Project\maRla IDE.lnk" "$INSTDIR\maRla IDE.exe"
+		CreateShortCut "$SMPROGRAMS\The maRla Project\maRla Operation Editor.lnk" "$INSTDIR\maRla Operation Editor.exe"
 		
 	SectionEnd
 
@@ -539,7 +543,7 @@ SectionGroup "Shortcuts" CreateShortcuts
 
 		SectionIn 1 2
 
-		CreateShortCut "$DESKTOP\maRla.lnk" "$INSTDIR\maRlaIDE.exe"
+		CreateShortCut "$DESKTOP\maRla IDE.lnk" "$INSTDIR\maRla IDE.exe"
 		
 	SectionEnd
 
@@ -583,7 +587,7 @@ Section "Uninstall"
 
 	; Program files
 	Delete "$INSTDIR\Uninstall.exe"
-	Delete "$INSTDIR\maRlaIDE.exe"
+	Delete "$INSTDIR\maRla IDE.exe"
 	Delete "$INSTDIR\maRla Operation Editor.exe"
 	
 	Delete "$INSTDIR\export_template.xml"
@@ -598,8 +602,13 @@ Section "Uninstall"
 	Delete "$SMPROGRAMS\maRla\maRla.lnk"
 	Delete "$SMPROGRAMS\maRla\maRla Operation Editor.lnk"
 	RMDir "$SMPROGRAMS\maRla\"
+	Delete "$SMPROGRAMS\The maRla Project\Uninstall.lnk"
+	Delete "$SMPROGRAMS\The maRla Project\maRla IDE.lnk"
+	Delete "$SMPROGRAMS\The maRla Project\maRla Operation Editor.lnk"
+	RMDir "$SMPROGRAMS\The maRla Project\"
 	
 	Delete "$DESKTOP\maRla.lnk"
+	Delete "$DESKTOP\maRla IDE.lnk"
 
 	; Registry info
 	DeleteRegKey /ifempty HKCU "Software\maRla"
@@ -664,7 +673,7 @@ FunctionEnd
 ; Utility functions
 
 Function LaunchLink
-	ExecShell "" "$INSTDIR\marlaIDE.exe"
+	ExecShell "" "$INSTDIR\marla IDE.exe"
 FunctionEnd
 
 Function SetSectionConfiguration
