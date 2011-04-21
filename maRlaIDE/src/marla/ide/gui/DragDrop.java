@@ -280,11 +280,14 @@ public class DragDrop implements DragGestureListener, DragSourceListener, DropTa
 				label.setForeground(DataSet.getDefaultColor());
 			}
 			viewPanel.componentsScrollablePanel.repaint();
-			Rectangle rect = viewPanel.componentsScrollablePanel.getBounds();
-			rect.setLocation(viewPanel.componentsScrollablePanel.getLocationOnScreen());
-			if (rect.contains(ev.getLocation()))
+			if (ev != null)
 			{
-				viewPanel.setCursor(Cursor.getDefaultCursor());
+				Rectangle rect = viewPanel.componentsScrollablePanel.getBounds();
+				rect.setLocation(viewPanel.componentsScrollablePanel.getLocationOnScreen());
+				if (rect.contains(ev.getLocation()))
+				{
+					viewPanel.setCursor(Cursor.getDefaultCursor());
+				}
 			}
 		}
 
