@@ -400,6 +400,7 @@ public class LatexExporter
 		try
 		{
 			// Move file
+			System.out.println("Moving '" + fromPath + "' to '" + toPath + "'");
 			FileUtils.deleteQuietly(toFile);
 			FileUtils.moveFile(fromFile, toFile);
 

@@ -80,6 +80,14 @@ public class OperationXML extends Operation
 	 */
 	private Element displayNameEl = null;
 	/**
+	 * Denotes if the operation produces a plot, whether real or fake
+	 */
+	private boolean hasPlot = false;
+	/**
+	 * Denotes if the operation produces a FAKE plot
+	 */
+	private boolean hasFakePlot = false;
+	/**
 	 * Used to store the name of the plot we (might) create. Unused
 	 * if the XML specification itself doesn't contain a <plot />
 	 * element.
@@ -503,10 +511,10 @@ public class OperationXML extends Operation
 		
 		isLoading(true);
 		
-		// TODO decide if clone is actually needed. For our undo/redo purposes,
-		// probably not. I mean, it doesn't change ever. However, that's not
-		// expected clone() behavior
 		opConfig = org.opConfig;
+		hasPlot = org.hasPlot;
+		hasFakePlot = org.hasFakePlot;
+		
 		if(org.displayNameEl != null)
 			displayNameEl = org.displayNameEl;
 		
@@ -521,7 +529,34 @@ public class OperationXML extends Operation
 	{
 		return opConfig;
 	}
-
+	
+	/**
+	 * Finds the first plot or fake-plot element from the given base element
+	 * @param baseEl Element to start search at
+	 * @return Element handling plot/fake-plot, null if not found
+	 */
+	private static Element getPlotElement(Element baseEl)
+	{
+		Element plotEl = baseEl.getChild("plot");
+		if(plotEl != null)
+			return plotEl;
+		
+		Element fakePlotEl = baseEl.getChild("fake-plot");
+		if(fakePlotEl != null)
+			return fakePlotEl;
+		
+		// Look through all our kids then
+		for(Object childObj : baseEl.getChildren())
+		{
+			Element ret = getPlotElement((Element)childObj);
+			if(ret != null)
+				return ret;
+		}
+		
+		// Not found
+		return null;
+	}
+	
 	/**
 	 * Creates a new operation with the given computational... stuff
 	 * @param newOpConfig JDOM XML Element that contains the needed configuration information
@@ -537,8 +572,33 @@ public class OperationXML extends Operation
 		// Obviously we'll need to update
 		markDirty();
 
+		// Operation name
 		setName(opConfig.getAttributeValue("name"));
 
+		// Figure out if we produce a plot and/or fake plot
+		Element compEl = opConfig.getChild("computation");
+		if(compEl == null)
+			throw new OperationXMLException("No computation element specified");
+		
+		Element plot = getPlotElement(compEl);
+		if(plot == null)
+		{
+			hasPlot = false;
+			hasFakePlot = false;
+		}
+		else if(plot.getName().equals("plot"))
+		{
+			hasPlot = true;
+			hasFakePlot = false;
+		}
+		else if(plot.getName().equals("fake-plot"))
+		{
+			hasPlot = true;
+			hasFakePlot = true;
+		}
+		else
+			throw new InternalMarlaException("getPlotElement() is incorrect");
+		
 		// Parse all the questions
 		clearQuestions();
 		@SuppressWarnings("unchecked")
@@ -1281,23 +1341,13 @@ public class OperationXML extends Operation
 	@Override
 	public boolean hasPlot()
 	{
-		// Check if plot="true" is set for this op
-		String setting = opConfig.getAttributeValue("plot", "false");
-		if(setting.equals("false"))
-			return false;
-		else
-			// Could be a normal, full plot or a "fake" plot
-			return true;
+		return hasPlot;
 	}
 	
 	@Override
 	public boolean hasFakePlot()
 	{
-		String setting = opConfig.getAttributeValue("plot", "false");
-		if(setting.equals("fake"))
-			return true;
-		else
-			return false;
+		return hasFakePlot;
 	}
 
 	@Override

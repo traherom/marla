@@ -92,7 +92,11 @@
           <Layout>
             <DimensionLayout dim="0">
               <Group type="103" groupAlignment="0" attributes="0">
-                  <EmptySpace min="0" pref="1100" max="32767" attributes="0"/>
+                  <Group type="102" alignment="0" attributes="0">
+                      <EmptySpace min="-2" pref="291" max="-2" attributes="0"/>
+                      <Component id="xmlStatusLabel" pref="450" max="32767" attributes="0"/>
+                      <EmptySpace min="-2" pref="357" max="-2" attributes="0"/>
+                  </Group>
                   <Group type="103" rootIndex="1" groupAlignment="0" attributes="0">
                       <Group type="102" alignment="0" attributes="0">
                           <EmptySpace max="-2" attributes="0"/>
@@ -102,7 +106,7 @@
                                   <EmptySpace max="-2" attributes="0"/>
                                   <Component id="editingLabel" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="editingTextField" pref="401" max="32767" attributes="0"/>
+                                  <Component id="editingTextField" pref="368" max="32767" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
                                   <Component id="browseEditingButton" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
@@ -117,23 +121,21 @@
                                           <EmptySpace max="-2" attributes="0"/>
                                           <Component id="removeButton" min="-2" pref="92" max="-2" attributes="0"/>
                                       </Group>
-                                      <Component id="operationsScrollPane" pref="252" max="32767" attributes="0"/>
+                                      <Component id="operationsScrollPane" pref="272" max="32767" attributes="0"/>
                                   </Group>
                                   <EmptySpace max="-2" attributes="0"/>
                                   <Group type="103" groupAlignment="0" attributes="0">
-                                      <Component id="operationScrollPane" pref="431" max="32767" attributes="0"/>
+                                      <Component id="operationScrollPane" pref="450" max="32767" attributes="0"/>
                                       <Group type="102" alignment="0" attributes="0">
                                           <Component id="opsNameLabel" min="-2" max="-2" attributes="0"/>
                                           <EmptySpace max="-2" attributes="0"/>
-                                          <Component id="operationsNameTextField" pref="312" max="32767" attributes="0"/>
+                                          <Component id="operationsNameTextField" pref="339" max="32767" attributes="0"/>
                                       </Group>
                                       <Group type="102" alignment="1" attributes="0">
                                           <Component id="innerXmlLinkLabel" min="-2" max="-2" attributes="0"/>
                                           <EmptySpace max="-2" attributes="0"/>
                                           <Component id="updateTestButton" min="-2" max="-2" attributes="0"/>
                                       </Group>
-                                      <Component id="hasPlotCheckBox" min="-2" max="-2" attributes="0"/>
-                                      <Component id="xmlStatusLabel" alignment="0" pref="431" max="32767" attributes="0"/>
                                   </Group>
                               </Group>
                           </Group>
@@ -146,7 +148,11 @@
             </DimensionLayout>
             <DimensionLayout dim="1">
               <Group type="103" groupAlignment="0" attributes="0">
-                  <EmptySpace min="0" pref="472" max="32767" attributes="0"/>
+                  <Group type="102" alignment="0" attributes="0">
+                      <EmptySpace min="-2" pref="68" max="-2" attributes="0"/>
+                      <Component id="xmlStatusLabel" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace pref="436" max="32767" attributes="0"/>
+                  </Group>
                   <Group type="103" rootIndex="1" groupAlignment="0" attributes="0">
                       <Group type="102" alignment="0" attributes="0">
                           <EmptySpace max="-2" attributes="0"/>
@@ -168,12 +174,8 @@
                                               <Component id="opsNameLabel" alignment="3" min="-2" max="-2" attributes="0"/>
                                               <Component id="operationsNameTextField" alignment="3" min="-2" max="-2" attributes="0"/>
                                           </Group>
-                                          <EmptySpace max="-2" attributes="0"/>
-                                          <Component id="hasPlotCheckBox" min="-2" max="-2" attributes="0"/>
-                                          <EmptySpace max="-2" attributes="0"/>
-                                          <Component id="xmlStatusLabel" min="-2" max="-2" attributes="0"/>
-                                          <EmptySpace max="-2" attributes="0"/>
-                                          <Component id="operationScrollPane" pref="296" max="32767" attributes="0"/>
+                                          <EmptySpace pref="42" max="32767" attributes="0"/>
+                                          <Component id="operationScrollPane" min="-2" pref="372" max="-2" attributes="0"/>
                                           <EmptySpace max="-2" attributes="0"/>
                                           <Group type="103" groupAlignment="3" attributes="0">
                                               <Component id="updateTestButton" alignment="3" min="-2" max="-2" attributes="0"/>
@@ -181,7 +183,7 @@
                                           </Group>
                                       </Group>
                                       <Group type="102" alignment="0" attributes="0">
-                                          <Component id="operationsScrollPane" pref="380" max="32767" attributes="0"/>
+                                          <Component id="operationsScrollPane" pref="436" max="32767" attributes="0"/>
                                           <EmptySpace max="-2" attributes="0"/>
                                           <Group type="103" groupAlignment="3" attributes="0">
                                               <Component id="addButton" alignment="3" min="-2" max="-2" attributes="0"/>
@@ -215,19 +217,19 @@
                       <Group type="102" alignment="1" attributes="0">
                           <EmptySpace max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="1" attributes="0">
-                              <Component id="outputScrollPane" alignment="0" pref="333" max="32767" attributes="0"/>
-                              <Component id="questionPanel" alignment="0" pref="333" max="32767" attributes="2"/>
+                              <Component id="outputScrollPane" alignment="0" pref="312" max="32767" attributes="0"/>
+                              <Component id="questionPanel" alignment="0" pref="312" max="32767" attributes="2"/>
                               <Group type="102" alignment="0" attributes="0">
                                   <Component id="dataCsvLabel" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="browseDataTextField" pref="182" max="32767" attributes="0"/>
+                                  <Component id="browseDataTextField" pref="149" max="32767" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
                                   <Component id="browseDataButton" min="-2" max="-2" attributes="0"/>
                               </Group>
                               <Group type="102" alignment="0" attributes="0">
                                   <Component id="displayNameLabel" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="displayNameScrollPane" pref="232" max="32767" attributes="0"/>
+                                  <Component id="displayNameScrollPane" pref="219" max="32767" attributes="0"/>
                               </Group>
                           </Group>
                           <EmptySpace max="-2" attributes="0"/>
@@ -251,7 +253,7 @@
                               <Component id="displayNameScrollPane" alignment="0" min="-2" pref="25" max="-2" attributes="1"/>
                           </Group>
                           <EmptySpace max="-2" attributes="0"/>
-                          <Component id="outputScrollPane" pref="321" max="32767" attributes="0"/>
+                          <Component id="outputScrollPane" pref="375" max="32767" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
                       </Group>
                   </Group>
@@ -511,18 +513,6 @@
                 </Component>
               </SubComponents>
             </Container>
-            <Component class="javax.swing.JCheckBox" name="hasPlotCheckBox">
-              <Properties>
-                <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                  <Font name="Verdana" size="12" style="0"/>
-                </Property>
-                <Property name="text" type="java.lang.String" value="Has plot"/>
-                <Property name="enabled" type="boolean" value="false"/>
-              </Properties>
-              <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="hasPlotCheckBoxActionPerformed"/>
-              </Events>
-            </Component>
             <Component class="javax.swing.JButton" name="saveAsButton">
               <Properties>
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">

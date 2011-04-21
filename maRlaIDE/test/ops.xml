@@ -7,7 +7,7 @@
 			<cmd>print("NOP happened")</cmd>
 		</computation>
 	</operation>
-	<operation name="Histogram" plot="true">
+	<operation name="Histogram">
 		<category>Descriptive Graphics</category>
 		<query type="column" name="col" prompt="Column:" column-type="numeric" />
 		<displayname>
@@ -22,7 +22,7 @@
 			</plot>
 		</computation>
 	</operation>
-	<operation name="Boxplot" plot="true">
+	<operation name="Boxplot">
 		<category>Descriptive Graphics</category>
 		<query type="column" name="col" prompt="Column:" column-type="numeric" />
 		<displayname>
@@ -37,7 +37,7 @@
 			</plot>
 		</computation>
 	</operation>
-	<operation name="Boxplot ANOVA" plot="true">
+	<operation name="Boxplot ANOVA">
 		<category>ANOVA</category>
 		<category>Descriptive Graphics</category>
 		<query type="column" name="col1" prompt="x:" column-type="numeric" />
@@ -57,7 +57,7 @@
 			</plot>
 		</computation>
 	</operation>
-	<operation name="Q-Q Norm" plot="true">
+	<operation name="Q-Q Norm">
 		<category>Descriptive Graphics</category>
 		<query type="column" name="col" prompt="Column:" column-type="numeric" />
 		<displayname>
@@ -75,7 +75,7 @@
 			</plot>
 		</computation>
 	</operation>
-	<operation name="Q-Q Line" plot="true">
+	<operation name="Q-Q Line">
 		<category>Descriptive Graphics</category>
 		<query type="column" name="col" prompt="Column:" column-type="numeric" />
 		<displayname>
@@ -91,7 +91,7 @@
 			</plot>
 		</computation>
 	</operation>
-	<operation name="Q-Q Plot" plot="true">
+	<operation name="Q-Q Plot">
 		<category>Descriptive Graphics</category>
 		<category>Simple Linear Regression</category>
 		<query type="column" name="col1" prompt="Column 1:" column-type="numeric" />
@@ -111,7 +111,7 @@
 			</plot>
 		</computation>
 	</operation>
-	<operation name="Barplot" plot="true">
+	<operation name="Barplot">
 		<category>Descriptive Graphics</category>
 		<query type="column" name="col" prompt="Column:" column-type="numeric" />
 		<displayname>
@@ -126,7 +126,7 @@
 			</plot>
 		</computation>
 	</operation>
-	<operation name="Stem and leaf" plot="true">
+	<operation name="Stem and leaf">
 		<category>Descriptive Graphics</category>
 		<query type="column" name="col" prompt="Column:" column-type="numeric" />
 		<displayname>
@@ -141,7 +141,7 @@
 			</plot>
 		</computation>
 	</operation>
-	<operation name="Dot Chart" plot="true">
+	<operation name="Dot Chart">
 		<category>Descriptive Graphics</category>
 		<query type="column" name="col" prompt="Column:" column-type="numeric" />
 		<displayname>
@@ -156,7 +156,7 @@
 			</plot>
 		</computation>
 	</operation>
-	<operation name="Strip Chart" plot="true">
+	<operation name="Strip Chart">
 		<category>Descriptive Graphics</category>
 		<query type="column" name="col" prompt="Column:" column-type="numeric" />
 		<displayname>
@@ -713,7 +713,7 @@
 			</loop>
 		</computation>
 	</operation>
-	<operation name="Stem" plot="fake">
+	<operation name="Stem">
 		<category>Descriptive Graphics</category>
 		<query type="column" prompt="Column:" name="col" />
 		<displayname>
@@ -980,7 +980,7 @@
 			<error msg="Power Prop Test: To be done" />
 		</computation>
 	</operation>
-	<operation name="XY Plot" plot="true">
+	<operation name="XY Plot">
 		<category>Descriptive Graphics</category>
 		<category>Simple Linear Regression</category>
 		<query type="column" name="col1" prompt="X column:" column-type="numeric" />
@@ -998,7 +998,7 @@
 			</plot>
 		</computation>
 	</operation>
-	<operation name="Single Var Plot" plot="true">
+	<operation name="Single Var Plot">
 		<category>Descriptive Graphics</category>
 		<query type="column" name="col" prompt="Column:" column-type="numeric" />
 		<displayname>
