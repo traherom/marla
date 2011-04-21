@@ -241,9 +241,9 @@ For example:
 {{{
 <plot>...</plot>
 }}}
-A single `<plot />` or [#"Fake"_Plots '<fake-plot />`] element is allowed in an operation. A plot creates a new device and commands may be placed inside may draw onto it. Commands should not manually change the device or close it, that will be taken care of by the plot. A plot takes no attributes but allows any of the other elements to be place inside it, just as with the main computation section.
+A single `<plot />` or [#Fake_Plots '<fake-plot />`] element is allowed in an operation. A plot creates a new device and commands may be placed inside may draw onto it. Commands should not manually change the device or close it, that will be taken care of by the plot. A plot takes no attributes but allows any of the other elements to be place inside it, just as with the main computation section.
 
-=== "Fake" Plots ===
+=== Fake Plots ===
 {{{
 <fake-plot>R command</fake-plot>
 }}}
