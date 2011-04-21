@@ -34,7 +34,6 @@ import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import marla.ide.problem.MarlaException;
 import marla.ide.problem.Problem;
-import marla.ide.resource.BuildInfo;
 import marla.ide.resource.Configuration;
 import marla.ide.resource.Configuration.ConfigType;
 import marla.ide.resource.Updater;
@@ -803,7 +802,7 @@ public class MainFrame extends JFrame
 		String title = Domain.NAME;
 		if(!Domain.PRE_RELEASE.equals(""))
 		{
-			title += " " + Domain.VERSION + " " + Domain.PRE_RELEASE + " r" + BuildInfo.revisionNumber;
+			title += " " + Domain.VERSION + " " + Domain.PRE_RELEASE;
 		}
 		return title;
 	}

@@ -33,27 +33,28 @@ import marla.opedit.resource.LoadSaveThread;
  */
 public class Domain
 {
-    /** The name of the application.*/
-    public static final String NAME = "maRla Operation Editor";
-    /** The version number of the application.*/
-    public static final String VERSION = "0.2";
-    /** The pre-release version name of the application.*/
-    public static final String PRE_RELEASE = "Beta";
-    /** The location of the application as it runs.*/
-    public static final String CWD = System.getProperty("user.dir");
-    /** The name of the operating system being used.*/
-    public static final String OS_NAME = System.getProperty("os.name");
-    /** The home directory for the current user.*/
-    public static final String HOME_DIR = System.getProperty("user.home");
-    /** The logger holds all caught exceptions for recording in the log file.*/
-    public static final Queue<Throwable> logger = marla.ide.gui.Domain.logger;
+	/** The name of the application.*/
+	public static final String NAME = "maRla Operation Editor";
+	/** The version number of the application.*/
+	public static final String VERSION = "0.2";
+	/** The pre-release version name of the application.*/
+	public static final String PRE_RELEASE = "Beta";
+	/** The location of the application as it runs.*/
+	public static final String CWD = System.getProperty("user.dir");
+	/** The name of the operating system being used.*/
+	public static final String OS_NAME = System.getProperty("os.name");
+	/** The home directory for the current user.*/
+	public static final String HOME_DIR = System.getProperty("user.home");
+	/** The logger holds all caught exceptions for recording in the log file.*/
+	public static final Queue<Throwable> logger = marla.ide.gui.Domain.logger;
 	/** If launched with a file to open, this will be the file set.*/
 	public static File passedInFile = null;
-
-    /** The load/save thread that is continually running unless explicitly paused or stopped.*/
-    protected LoadSaveThread loadSaveThread;
-    /** The error file that keeps track of all errors and their occurrences.*/
-    protected File logFile;
+	/** The load/save thread that is continually running unless explicitly paused or stopped.*/
+	protected LoadSaveThread loadSaveThread;
+	/** The error file that keeps track of all errors and their occurrences.*/
+	protected File logFile;
+	/** Domain object currently created. Only one allowed, ever */
+	public static Domain currDomain = null;
 	/** Denotes if the log is being written. Prevents double writing */
 	protected boolean isWritingLog = false;
 	/** The currently open operation XML file.*/
@@ -63,33 +64,35 @@ public class Domain
 	/** A reference to the desktop.*/
 	protected Desktop desktop = null;
 
-    /**
-     * Construct the domain with the view reference.
-     *
-     * @param viewPanel The view panel for this application.
-     */
-    public Domain(ViewPanel viewPanel)
-    {
+	/**
+	 * Construct the domain with the view reference.
+	 *
+	 * @param viewPanel The view panel for this application.
+	 */
+	public Domain(ViewPanel viewPanel)
+	{
 		Configuration conf = Configuration.getInstance();
 		conf.configureFromSearch(Configuration.ConfigType.ErrorServer);
 		System.out.println("Server for error reporting: " + marla.ide.gui.Domain.getErrorServer());
+		
+		currDomain = this;
 
 		// If the Desktop object is supported, get the reference
-		if (Desktop.isDesktopSupported ())
+		if(Desktop.isDesktopSupported())
 		{
-			desktop = Desktop.getDesktop ();
+			desktop = Desktop.getDesktop();
 		}
-    }
-    
-    /**
-     * Passes the reference to the load/save thread into this class.
-     *
-     * @param loadSaveThread The load/save thread to be used.
-     */
-    public void setLoadSaveThread(LoadSaveThread loadSaveThread)
-    {
+	}
+
+	/**
+	 * Passes the reference to the load/save thread into this class.
+	 *
+	 * @param loadSaveThread The load/save thread to be used.
+	 */
+	public void setLoadSaveThread(LoadSaveThread loadSaveThread)
+	{
 		this.loadSaveThread = loadSaveThread;
-    }
+	}
 
 	/**
 	 * Validates the undo/redo menu items in MainFrame to see if they should be
@@ -98,7 +101,7 @@ public class Domain
 	public void validateUndoRedoMenuItems()
 	{
 		ViewPanel viewPanel = ViewPanel.getInstance();
-		if (viewPanel.undoRedo.hasUndo())
+		if(viewPanel.undoRedo.hasUndo())
 		{
 			viewPanel.mainFrame.undoMenuItem.setEnabled(true);
 		}
@@ -106,7 +109,7 @@ public class Domain
 		{
 			viewPanel.mainFrame.undoMenuItem.setEnabled(false);
 		}
-		if (viewPanel.undoRedo.hasRedo())
+		if(viewPanel.undoRedo.hasRedo())
 		{
 			viewPanel.mainFrame.redoMenuItem.setEnabled(true);
 		}
@@ -117,17 +120,26 @@ public class Domain
 	}
 
 	/**
+	 * Gets the current instance of Domain (null if there is none)
+	 * @return Current Domain
+	 */
+	public static Domain getInstance()
+	{
+		return currDomain;
+	}
+
+	/**
 	 * Checks what window is the top-most being displayed right now and returns that.
 	 *
 	 * @return The top-most window displayed.
 	 */
 	public Container getTopWindow()
 	{
-		if (MainFrame.progressFrame.isVisible())
+		if(MainFrame.progressFrame.isVisible())
 		{
 			return MainFrame.progressFrame;
 		}
-		else if (ViewPanel.getInstance().answerDialog.isVisible())
+		else if(ViewPanel.getInstance().answerDialog.isVisible())
 		{
 			return ViewPanel.getInstance().answerDialog;
 		}
@@ -143,9 +155,9 @@ public class Domain
 	public static void changeBeginning()
 	{
 		ViewPanel viewPanel = ViewPanel.getInstance();
-		if (viewPanel != null && viewPanel.currentOperation != null)
+		if(viewPanel != null && viewPanel.currentOperation != null)
 		{
-			ViewPanel.getInstance().undoRedo.addUndoStep (ViewPanel.getInstance().currentOperation.clone());
+			ViewPanel.getInstance().undoRedo.addUndoStep(ViewPanel.getInstance().currentOperation.clone());
 		}
 
 		viewPanel.domain.validateUndoRedoMenuItems();
@@ -156,9 +168,9 @@ public class Domain
 	 */
 	public static void markUnsaved()
 	{
-		if (ViewPanel.getInstance().currentFile != null)
+		if(ViewPanel.getInstance().currentFile != null)
 		{
-			ViewPanel.getInstance().saveButton.setEnabled (true);
+			ViewPanel.getInstance().saveButton.setEnabled(true);
 		}
 	}
 
@@ -167,9 +179,9 @@ public class Domain
 	 */
 	public static void markSaved()
 	{
-		ViewPanel.getInstance().saveButton.setEnabled (false);
+		ViewPanel.getInstance().saveButton.setEnabled(false);
 	}
-	
+
 	public void flushLog()
 	{
 		if(isWritingLog)
