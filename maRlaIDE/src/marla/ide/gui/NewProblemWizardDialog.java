@@ -891,47 +891,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 
 		if (editing)
 		{
-			if (viewPanel.subProblemContentPanel.getComponentCount() == 1)
-			{
-				viewPanel.subProblemContentPanel.removeAll();
-				((GridLayout) viewPanel.subProblemContentPanel.getLayout()).setColumns(3);
-			}
-			
-			// Add sub problem to legend
-			JLabel label;
-			if (viewPanel.firstCounter == 1)
-			{
-				label = viewPanel.second;
-			}
-			else if (viewPanel.firstCounter == 2)
-			{
-				label = viewPanel.third;
-			}
-			else
-			{
-				label = new JLabel("");
-				viewPanel.second = new JLabel ("");
-				viewPanel.third = new JLabel ("");
-			}
-			label.setFont(ViewPanel.FONT_PLAIN_12);
-			label.setText(subProblem.getSubproblemID());
-			label.setForeground(subProblem.getColor());
-
-			if (viewPanel.firstCounter == 3)
-			{
-				viewPanel.firstCounter = 0;
-				
-				GridLayout layout = (GridLayout) viewPanel.subProblemContentPanel.getLayout();
-				layout.setRows(layout.getRows() + 1);
-
-				viewPanel.subProblemContentPanel.add(label);
-				viewPanel.subProblemContentPanel.add(viewPanel.second);
-				viewPanel.subProblemContentPanel.add(viewPanel.third);
-			}
-			++viewPanel.firstCounter;
-			
-			viewPanel.subProblemContentPanel.invalidate();
-			viewPanel.subProblemContentPanel.repaint();
+			viewPanel.rebuildSubProblemLegend();
 		}
 
 		((JTextArea) ((JViewport) ((JScrollPane) ((JPanel) subProblemPanels.get(subProblemPanels.size() - 1)).getComponent(1)).getComponent(0)).getComponent(0)).requestFocus();
@@ -967,46 +927,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 
 		if (editing)
 		{
-			if (viewPanel.firstCounter == 3)
-			{
-				viewPanel.third.setText ("");
-			}
-			else if (viewPanel.firstCounter == 2)
-			{
-				viewPanel.second.setText ("");
-			}
-			else if(viewPanel.firstCounter == 1)
-			{
-				viewPanel.firstCounter = 4;
-
-				viewPanel.subProblemContentPanel.remove(viewPanel.subProblemContentPanel.getComponentCount() - 1);
-				viewPanel.subProblemContentPanel.remove(viewPanel.subProblemContentPanel.getComponentCount() - 1);
-				viewPanel.subProblemContentPanel.remove(viewPanel.subProblemContentPanel.getComponentCount() - 1);
-
-				GridLayout layout = (GridLayout) viewPanel.subProblemContentPanel.getLayout();
-				layout.setRows(layout.getRows() - 1);
-
-				if (viewPanel.subProblemContentPanel.getComponentCount() >= 3)
-				{
-					viewPanel.third = (JLabel) viewPanel.subProblemContentPanel.getComponent(viewPanel.subProblemContentPanel.getComponentCount() - 1);
-					viewPanel.second = (JLabel) viewPanel.subProblemContentPanel.getComponent(viewPanel.subProblemContentPanel.getComponentCount() - 2);
-				}
-				else
-				{
-					if (viewPanel.subProblemContentPanel.getComponentCount() == 0)
-					{
-						((GridLayout) viewPanel.subProblemContentPanel.getLayout()).setColumns(1);
-						JLabel noneLabel = new JLabel ("-No Sub Problems-");
-						noneLabel.setFont(ViewPanel.FONT_BOLD_12);
-						viewPanel.subProblemContentPanel.add (noneLabel);
-					}
-				}
-
-				viewPanel.subProblemContentPanel.invalidate();
-			}
-			--viewPanel.firstCounter;
-
-			viewPanel.workspacePanel.repaint();
+			viewPanel.rebuildSubProblemLegend();
 		}
 
 		try
@@ -1095,7 +1016,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 		{
 			viewPanel.workspacePanel.remove(removedData);
 			viewPanel.workspacePanel.repaint();
-			removeFromRightPanel();
+			viewPanel.rebuildDataSetLegend();
 		}
 
 		dataSetTabbedPane.remove(dataSetTabbedPane.getSelectedIndex());
@@ -1670,7 +1591,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 			{
 				dataSet.setLocation(dataSet.getLocation().x, dataSet.getLocation().y + 20);
 			}
-			addToRightPanel();
+			viewPanel.rebuildDataSetLegend();
 		}
 	}
 
@@ -1877,24 +1798,6 @@ public class NewProblemWizardDialog extends EscapeDialog
 
 			return true;
 		}
-	}
-
-	/**
-	 * Adds the new data set to the right panel.
-	 */
-	private void addToRightPanel()
-	{
-		viewPanel.dataSetContentPanel.removeAll();
-		viewPanel.buildDataSetsOnRight();
-	}
-
-	/**
-	 * Remove the given last data set from the right panel.
-	 */
-	private void removeFromRightPanel()
-	{
-		viewPanel.dataSetContentPanel.removeAll();
-		viewPanel.buildDataSetsOnRight();
 	}
 
 	/**
