@@ -291,12 +291,11 @@ public class ViewPanel extends JPanel
 
 		workspacePanel.setDropTarget(new DropTarget(workspacePanel, DnDConstants.ACTION_MOVE, DND_LISTENER));
 
-		domain.loadSaveThread = new BackgroundThread(domain);
-		domain.redirThread = new DebugThread(debugTextArea);
-		
 		// Launch the threads
-		domain.loadSaveThread.start();
-		domain.redirThread.start();
+		domain.debugThread = new DebugThread(debugTextArea);
+		domain.backgroundThread = new BackgroundThread(domain);
+		domain.debugThread.start();
+		domain.backgroundThread.start();
 
 		// Initially, simply display the welcome card until a problem is created new or loaded
 		emptyPalettePanel.setVisible(true);
@@ -1794,7 +1793,7 @@ public class ViewPanel extends JPanel
 			String msg = undoRedo.undoMessage();
 			Problem problem = undoRedo.undo(domain.problem);
 			if(msg != null)
-				domain.loadSaveThread.addStatus(msg);
+				domain.backgroundThread.addStatus(msg);
 			closeProblem(false, true);
 			domain.problem = problem;
 			openProblem(false, true);
@@ -1813,7 +1812,7 @@ public class ViewPanel extends JPanel
 			String msg = undoRedo.redoMessage();
 			Problem problem = undoRedo.redo(domain.problem);
 			if(msg != null)
-				domain.loadSaveThread.addStatus(msg);
+				domain.backgroundThread.addStatus(msg);
 			closeProblem(false, true);
 			domain.problem = problem;
 			openProblem(false, true);
@@ -2894,8 +2893,8 @@ public class ViewPanel extends JPanel
 			mainFrame.setVisible(false);
 
 			// Tell threads to stop
-			domain.loadSaveThread.stopRunning();
-			domain.redirThread.stopRunning();
+			domain.backgroundThread.stopRunning();
+			domain.debugThread.stopRunning();
 			
 			// Write out any final errors we encountered and didn't hit yet
 			// We do this now, then write the configuration because, if the loadsavethread
@@ -2916,8 +2915,8 @@ public class ViewPanel extends JPanel
 			// Ensure both threads finished
 			try
 			{
-				domain.loadSaveThread.join(domain.loadSaveThread.getDelay() + 3000);
-				domain.redirThread.join(domain.redirThread.getDelay() + 3000);
+				domain.backgroundThread.join(domain.backgroundThread.getDelay() + 3000);
+				domain.debugThread.join(domain.debugThread.getDelay() + 3000);
 			}
 			catch(InterruptedException ex)
 			{
