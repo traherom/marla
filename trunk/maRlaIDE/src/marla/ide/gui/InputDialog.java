@@ -60,7 +60,7 @@ public class InputDialog extends EscapeDialog
 		super (viewPanel);
 
 		initComponents();
-		setIconImage(new ImageIcon (getClass ().getResource ("/marla/ide/images/logo.png")).getImage ());
+		setIconImage(new ImageIcon (getClass ().getResource (Domain.IMAGES_DIR + "logo.png")).getImage ());
 	}
 
 	private void initComponents()
@@ -77,7 +77,7 @@ public class InputDialog extends EscapeDialog
 		setResizable(false);
 		setModal(true);
 
-		iconLabel.setIcon (new ImageIcon(getClass().getResource("/marla/ide/images/question.png")));
+		iconLabel.setIcon (new ImageIcon(getClass().getResource(Domain.IMAGES_DIR + "question.png")));
 		okButton.addActionListener (new ActionListener()
 		{
 			@Override

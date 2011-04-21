@@ -338,7 +338,7 @@ public class MainFrame extends JFrame
         helpContentsMenuItem = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
-        setIconImage(new ImageIcon (getClass ().getResource ("/marla/ide/images/logo.png")).getImage ());
+        setIconImage(new ImageIcon (getClass ().getResource (Domain.IMAGES_DIR + "logo.png")).getImage ());
         setName("mainFrame"); // NOI18N
         getContentPane().setLayout(new java.awt.GridLayout(1, 1));
 

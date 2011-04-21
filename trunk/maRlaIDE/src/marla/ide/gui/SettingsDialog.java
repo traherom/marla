@@ -98,7 +98,7 @@ public class SettingsDialog extends EscapeDialog
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         setTitle("Settings");
-        setIconImage(new ImageIcon (getClass ().getResource ("/marla/ide/images/settings_button.png")).getImage ());
+        setIconImage(new ImageIcon (getClass ().getResource (Domain.IMAGES_DIR + "settings_button.png")).getImage ());
         setModal(true);
         setResizable(false);
         addWindowListener(new java.awt.event.WindowAdapter() {
@@ -259,7 +259,7 @@ public class SettingsDialog extends EscapeDialog
         preferencesPanel.add(jSeparator1);
         jSeparator1.setBounds(10, 130, 520, 10);
 
-        lineIcon.setIcon(new javax.swing.ImageIcon(getClass().getResource("/marla/ide/images/line.png"))); // NOI18N
+        lineIcon.setIcon(new javax.swing.ImageIcon(getClass().getResource(Domain.IMAGES_DIR + "line.png"))); // NOI18N
         preferencesPanel.add(lineIcon);
         lineIcon.setBounds(20, 60, 10, 30);
 
@@ -391,7 +391,7 @@ public class SettingsDialog extends EscapeDialog
         });
 
         jLabel1.setFont(new java.awt.Font("Verdana", 1, 14));
-        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/marla/ide/images/settings_button.png"))); // NOI18N
+        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource(Domain.IMAGES_DIR + "settings_button.png"))); // NOI18N
         jLabel1.setText("Settings");
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);

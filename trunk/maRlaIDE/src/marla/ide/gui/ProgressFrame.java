@@ -25,7 +25,6 @@ import javax.swing.JFrame;
 /**
  * The progress frame that should be shown and hidden when progress status is desired.
  *
- *
  * @author Alex Laird
  */
 public class ProgressFrame extends JFrame
@@ -53,7 +52,7 @@ public class ProgressFrame extends JFrame
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         setTitle("Launching The maRla Project");
-        setIconImage(new ImageIcon (getClass ().getResource ("/marla/ide/images/logo.png")).getImage ());
+        setIconImage(new ImageIcon (getClass ().getResource (Domain.IMAGES_DIR + "logo.png")).getImage ());
         setName("progressFrame"); // NOI18N
         setResizable(false);
         setUndecorated(true);

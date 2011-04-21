@@ -45,8 +45,6 @@ public class BackgroundThread extends Thread
 	private final long DELAY = 500;
 	/** The next time (system clock in ms) that the logger will be flushed */
 	private long nextLoggerUpdate = 0;
-	/** The number of logger delay iterations sat through.*/
-	private int loggerDelayIndex = 0;
 	/** The next time (system clock in ms) that statuses for the user will be updated */
 	private long nextStatusUpdate = 0;
 	/** True if a status is visible to the user */
