@@ -160,7 +160,7 @@ public class MainFrame extends JFrame
         redoMenuItem = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
-        setIconImage(new ImageIcon (getClass ().getResource ("/marla/ide/images/logo.png")).getImage ());
+        setIconImage(new ImageIcon (getClass ().getResource (marla.ide.gui.Domain.IMAGES_DIR + "logo.png")).getImage ());
         getContentPane().setLayout(new java.awt.GridLayout(1, 1));
 
         editMenuItem.setText("Edit");
