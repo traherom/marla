@@ -1224,7 +1224,7 @@ public class ViewPanel extends JPanel
 									op.setBackground(NO_BACKGROUND_WORKSPACE);
 								}
 								workspacePanel.repaint();
-								DND_LISTENER.endDrop(null);
+								DND_LISTENER.endDrop(null, null);
 
 								rebuildWorkspace();
 							}
@@ -1282,7 +1282,7 @@ public class ViewPanel extends JPanel
 								// Tie
 								subProblem.addAllSubSteps(ds);
 								
-								DND_LISTENER.endDrop(null);
+								DND_LISTENER.endDrop(null, null);
 
 								rebuildWorkspace();
 							}
@@ -1435,7 +1435,7 @@ public class ViewPanel extends JPanel
 				startingAnswerPanelDisplay = false;
 			}
 
-			DND_LISTENER.endDrop(null);
+			DND_LISTENER.endDrop(null, null);
 		}
 	}//GEN-LAST:event_solutionMenuItemActionPerformed
 
@@ -1508,7 +1508,7 @@ public class ViewPanel extends JPanel
 				Domain.logger.add(ex);
 			}
 
-			DND_LISTENER.endDrop(null);
+			DND_LISTENER.endDrop(null, null);
 		}
 	}//GEN-LAST:event_rCodeMenuItemActionPerformed
 
@@ -1617,7 +1617,7 @@ public class ViewPanel extends JPanel
 		if(rightClickedComponent != null)
 		{
 			newProblemWizardDialog.editDataSet((DataSet) rightClickedComponent);
-			DND_LISTENER.endDrop(null);
+			DND_LISTENER.endDrop(null, null);
 		}
 	}//GEN-LAST:event_editDataSetMenuItemActionPerformed
 
@@ -1646,7 +1646,7 @@ public class ViewPanel extends JPanel
 			{
 				Domain.logger.add(ex);
 			}
-			DND_LISTENER.endDrop(null);
+			DND_LISTENER.endDrop(null, null);
 		}
 	}//GEN-LAST:event_changeInfoMenuItemActionPerformed
 
@@ -1654,7 +1654,7 @@ public class ViewPanel extends JPanel
 		if(!startingAnswerPanelDisplay)
 		{
 			answerDialog.dispose();
-			DND_LISTENER.endDrop(null);
+			DND_LISTENER.endDrop(null, null);
 		}
 	}//GEN-LAST:event_answerDialogWindowLostFocus
 
@@ -1666,7 +1666,7 @@ public class ViewPanel extends JPanel
 			{
 				((Operation) rightClickedComponent).setRemark(newRemark);
 			}
-			DND_LISTENER.endDrop(null);
+			DND_LISTENER.endDrop(null, null);
 		}
 	}//GEN-LAST:event_remarkMenuItemActionPerformed
 
@@ -1753,7 +1753,7 @@ public class ViewPanel extends JPanel
 
 	private void addDataSetMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addDataSetMenuItemActionPerformed
 		newProblemWizardDialog.addDataSet();
-		DND_LISTENER.endDrop(null);
+		DND_LISTENER.endDrop(null, null);
 	}//GEN-LAST:event_addDataSetMenuItemActionPerformed
 
 	/**
