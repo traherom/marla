@@ -1422,7 +1422,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 					{
 						Domain.setProgressVisible(false);
 
-						Domain.showWarningDialog(Domain.getTopWindow(),  ex.getMessage(), "Data Set Not Loadable");
+						Domain.showWarningDialog(Domain.getTopWindow(),  ex.getMessage(), Domain.prettyExceptionDetails(ex), "Data Set Not Loadable");
 					}
 					finally
 					{
@@ -2221,7 +2221,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 								catch(MarlaException ex)
 								{
 									Domain.setProgressVisible(false);
-									Domain.showWarningDialog(Domain.getTopWindow(), ex.getMessage(), "Load Failed");
+									Domain.showWarningDialog(Domain.getTopWindow(), ex.getMessage(), Domain.prettyExceptionDetails(ex), "Load Failed");
 								}
 								finally
 								{
