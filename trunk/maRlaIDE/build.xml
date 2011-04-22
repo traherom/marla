@@ -178,6 +178,24 @@
     </target>
 
 	<target name="create-installer" depends="package-for-store">
+		<!-- Retrieve the latest version number -->
+        <exec executable="python" dir="." outputproperty="verNumOnes">
+            <arg value="GetVersion.py" />
+            <arg value="0" />
+        </exec>
+        <exec executable="python" dir="." outputproperty="verNumTenths">
+            <arg value="GetVersion.py" />
+            <arg value="1" />
+        </exec>
+        <exec executable="python" dir="." outputproperty="verNumHundreths">
+            <arg value="GetVersion.py" />
+            <arg value="2" />
+        </exec>
+		<exec executable="python" dir="." outputproperty="verNumPre">
+            <arg value="GetVersion.py" />
+            <arg value="3" />
+        </exec>
+		
 		<echo message="Building installer(s) and zip for ${application.title}"/>
 
 		<!-- Move needed files to store -->
@@ -222,14 +240,14 @@
 
 		<!-- Move (if needed) to file with revision name -->
 		<!--<move file="${store.dir}/Setup.exe" tofile="${store.dir}/installer-${setup.base}.exe" />-->
-		<move file="${store.dir}/Setup.exe" tofile="${store.dir}/The maRla Project Setup.exe" />
+		<move file="${store.dir}/Setup.exe" tofile="${store.dir}/The maRla Project Setup ${verNumOnes}.${verNumTenths}${verNumHundreths}${verNumPre}.exe" />
 		<echo message="Windows installer placed in ${store.dir}" />
 	</target>
 
 	<target name="-zip-package">
 		<echo>Creating archive of files</echo>
 		<!--<zip destfile="${store.dir}/${setup.base}.zip">-->
-		<zip destfile="${store.dir}/The maRla Project.zip">
+		<zip destfile="${store.dir}/The maRla Project ${verNumOnes}.${verNumTenths}${verNumHundreths}${verNumPre}.zip">
 			<zipfileset file="${store.dir}/maRla IDE.jar" />
 			<zipfileset file="${store.dir}/maRla Operation Editor.jar" />
 			<zipfileset file="${store.dir}/ops.xml" />
