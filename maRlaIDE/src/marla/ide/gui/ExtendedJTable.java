@@ -1,4 +1,5 @@
-/*
+
+/**
  * The maRla Project - Graphical problem solver for statistics and probability problems.
  * Copyright (C) 2010 Cedarville University
  *
@@ -15,13 +16,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package marla.ide.gui;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.Graphics;
-import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
@@ -38,7 +38,6 @@ import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.JTableHeader;
-import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableModel;
@@ -51,12 +50,14 @@ import javax.swing.text.JTextComponent;
  */
 public class ExtendedJTable extends JTable
 {
-	/** The color to paint the table grids.*/
-	private static final Color TABLE_GRID_COLOR = new Color(217, 217, 217);
 	/** The color to paint even rows.*/
 	private static final Color EVEN_ROW_COLOR = new Color(237, 240, 242);
 	/** The color to paint odd rows.*/
 	private static final Color ODD_ROW_COLOR = Color.WHITE;
+	/** The color to paint the table grids.*/
+	private static final Color TABLE_GRID_COLOR = new Color(217, 217, 217);
+	/** The cell renderer.*/
+	private static final CellRendererPane CELL_RENDER_PANE = new CellRendererPane();
 
 	/**
 	 * Construct the JTable with a given table model.
@@ -66,6 +67,7 @@ public class ExtendedJTable extends JTable
 	public ExtendedJTable(TableModel model)
 	{
 		super(model);
+
 		setTableHeader(new JTableHeader(getColumnModel())
 		{
 			@Override
@@ -83,11 +85,44 @@ public class ExtendedJTable extends JTable
 				}
 			}
 		});
+		getTableHeader().setReorderingAllowed(false);
+		setOpaque(false);
 		setGridColor(TABLE_GRID_COLOR);
+		setIntercellSpacing(new Dimension(0, 0));
+		setShowGrid(false);
 	}
 
 	/**
-	 * Paint the table header going clear to the far right of the viewport.
+	 * Invalidate, repaint, and resize the table after model changes have been made.
+	 */
+	public void refreshTable()
+	{
+		invalidate();
+		revalidate();
+		repaint();
+	}
+
+	/**
+	 * Sets the selected row in the table based on an index.
+	 *
+	 * @param index The index of the row to be set.
+	 */
+	public void setSelectedRow(int index)
+	{
+		if(index != -1)
+		{
+			getSelectionModel().setSelectionInterval(index, index);
+		}
+		else
+		{
+			getSelectionModel().removeSelectionInterval(getSelectedRow(), getSelectedRow());
+		}
+		refreshTable();
+	}
+
+	/**
+	 * Paints the given JTable's table default header background at given
+	 * x for the given width.
 	 */
 	private static void paintHeader(Graphics g, JTable table, int x, int width)
 	{
@@ -98,118 +133,26 @@ public class ExtendedJTable extends JTable
 		component.setBounds(0, 0, width, table.getTableHeader().getHeight());
 
 		((JComponent) component).setOpaque(false);
-		new CellRendererPane().paintComponent(g, component, null, x, 0, width, table.getTableHeader().getHeight(), true);
+		CELL_RENDER_PANE.paintComponent(g, component, null, x, 0,
+										width, table.getTableHeader().getHeight(), true);
 	}
 
-	/**
-	 * Invalidate, repaint, and resize the table after model changes have been made.
-	 */
-	public void refreshTable()
-	{
-		invalidate();
-		repaint();
-		getTableHeader().resizeAndRepaint();
-	}
-	
-	/**
-     * Sets the selected row in the table based on an index.
-     *
-     * @param index The index of the row to be set.
-     */
-    public void setSelectedRow(int index)
-    {
-        if (index != -1)
-        {
-            getSelectionModel ().setSelectionInterval (index, index);
-        }
-        else
-        {
-            getSelectionModel ().removeSelectionInterval (getSelectedRow (), getSelectedRow ());
-        }
-        refreshTable();
-    }
-
-	/**
-	 * Add stripes between cells and behind non-opaque cells.
-	 */
 	@Override
-	public void paintComponent(Graphics g)
+	public Component prepareRenderer(TableCellRenderer renderer, int row,
+									 int column)
 	{
-		// Paint background stripes
-		final Insets insets = getInsets();
-		final int w = getWidth() - insets.left - insets.right;
-		final int h = getHeight() - insets.top - insets.bottom;
-		final int x = insets.left;
-		int y = insets.top;
-		int localRowHeight = 16;
-		final int nItems = getRowCount();
-		// Paint stripes for each of the rows
-		for(int i = 0; i < nItems; i++, y += localRowHeight)
+		Component component = super.prepareRenderer(renderer, row, column);
+		// if the rendere is a JComponent and the given row isn't part of a
+		// selection, make the renderer non-opaque so that striped rows show
+		// through.
+		if(component instanceof JComponent)
 		{
-			localRowHeight = getRowHeight(i);
-			g.setColor(i % 2 == 0 ? EVEN_ROW_COLOR : ODD_ROW_COLOR);
-			g.fillRect(x, y, w, localRowHeight);
+			((JComponent) component).setOpaque(getSelectionModel().isSelectedIndex(row));
 		}
-
-		final int nRows = nItems + (insets.top + h - y) / localRowHeight;
-		for(int i = nItems; i < nRows; i++, y += localRowHeight)
-		{
-			g.setColor(i % 2 == 0 ? EVEN_ROW_COLOR : ODD_ROW_COLOR);
-			g.fillRect(x, y, w, localRowHeight);
-		}
-		final int remainder = insets.top + h - y / localRowHeight;
-		if(remainder > 0)
-		{
-			g.setColor(remainder % 2 == 0 ? EVEN_ROW_COLOR : ODD_ROW_COLOR);
-			g.fillRect(x, y, w, remainder);
-		}
-
-		// Paint the component
-		setOpaque(false);
-		super.paintComponent(g);
-		setOpaque(true);
+		return component;
 	}
 
 	/**
-	 * Add background stripes behind rendered cells.
-	 */
-	@Override
-	public Component prepareRenderer(TableCellRenderer renderer, int row, int col)
-	{
-		Component c;
-		if(getValueAt(row, col) != null)
-		{
-			c = super.prepareRenderer(renderer, row, col);
-		}
-		else
-		{
-			c = super.prepareRenderer(new DefaultTableCellRenderer(), row, col);
-		}
-
-		if(!isCellSelected(row, col))
-		{
-			c.setForeground(Color.BLACK);
-			c.setBackground(row % 2 == 0 ? EVEN_ROW_COLOR : ODD_ROW_COLOR);
-		}
-		return c;
-	}
-
-	/**
-	 * Add background stripes behind edited cells.  Selects everything within
-	 * a cell when it is selected.
-	 */
-	@Override
-	public Component prepareEditor(TableCellEditor editor, int row, int col)
-	{
-		final Component c = super.prepareEditor(editor, row, col);
-		if(!isCellSelected(row, col))
-		{
-			c.setBackground(row % 2 == 0 ? EVEN_ROW_COLOR : ODD_ROW_COLOR);
-		}
-		return c;
-	}
-
-	/*
 	 *  Override to provide Select All editing functionality
 	 */
 	@Override
@@ -223,7 +166,7 @@ public class ExtendedJTable extends JTable
 		return result;
 	}
 
-	/*
+	/**
 	 * Select the text when editing on a text related cell is started
 	 */
 	private void selectAll(EventObject e)
@@ -241,7 +184,6 @@ public class ExtendedJTable extends JTable
 		}
 
 		//  Typing in the cell was used to activate the editor
-
 		if(e instanceof KeyEvent)
 		{
 			((JTextComponent) editor).selectAll();
@@ -249,7 +191,6 @@ public class ExtendedJTable extends JTable
 		}
 
 		//  F2 was used to activate the editor
-
 		if(e instanceof ActionEvent)
 		{
 			((JTextComponent) editor).selectAll();
@@ -260,7 +201,6 @@ public class ExtendedJTable extends JTable
 		//  Generally this is a double click and the second mouse click is
 		//  passed to the editor which would remove the text selection unless
 		//  we use the invokeLater()
-
 		if(e instanceof MouseEvent)
 		{
 			SwingUtilities.invokeLater(new Runnable()
@@ -290,61 +230,40 @@ public class ExtendedJTable extends JTable
 	}
 
 	/**
-	 * Force the table to fill the viewport's height.
+	 * Creates a JViewport that draws a striped background corresponding to the
+	 * row positions of the given JTable.
 	 */
-	@Override
-	public boolean getScrollableTracksViewportHeight()
+	private static class StripedViewport extends JViewport
 	{
-		final Component c = getParent();
-		if(!(c instanceof JViewport))
-		{
-			return false;
-		}
-		return ((JViewport) c).getHeight() > getPreferredSize().height;
-	}
-	
-	/**
-	 * The corner looks tacky without this, so we place a "column" just above the scroll pane in the viewport
-	 * @param table
-	 * @return 
-	 */
-	public static JScrollPane createCorneredJScrollPane(final JTable table)
-	{
-		JScrollPane scrollPane = new JScrollPane(table);
-		scrollPane.setViewport(new ExtendedViewport(table));
-		scrollPane.getViewport().setView(table);
-		scrollPane.setBorder(BorderFactory.createEmptyBorder());
-		scrollPane.setCorner(JScrollPane.UPPER_RIGHT_CORNER,
-							 new JComponent()
-								{
-									@Override
-									protected void paintComponent(Graphics g)
-									{
-										paintHeader(g, table, 0, getWidth());
-									}
-								});
-		return scrollPane;
-	}
-
-	/**
-	 * The extended viewport, which ensures row paintings are drawn clear to the
-	 * far right of the viewport.
-	 */
-	private static class ExtendedViewport extends JViewport
-	{
-		/** The table to wrap within this viewport.*/
 		private final JTable table;
 
-		/**
-		 * Construct an extended viewport wrapped around the given table.
-		 * 
-		 * @param table The table to wrap this viewport around.
-		 */
-		public ExtendedViewport(JTable table)
+		public StripedViewport(JTable table)
 		{
 			this.table = table;
 			setOpaque(false);
 			initListeners();
+		}
+
+		private void initListeners()
+		{
+			//table.getTableHeader().addPropertyChangeListener(createNewRepaintPropertyChangeListener());
+			for(int i = 0; i < table.getColumnModel().getColumnCount(); i++)
+			{
+				table.getColumnModel().getColumn(i).addPropertyChangeListener(createNewRepaintPropertyChangeListener());
+			}
+			//table.addPropertyChangeListener(createNewRepaintPropertyChangeListener());
+		}
+
+		private PropertyChangeListener createNewRepaintPropertyChangeListener()
+		{
+			return new PropertyChangeListener()
+			{
+				@Override
+				public void propertyChange(PropertyChangeEvent evt)
+				{
+					repaint();
+				}
+			};
 		}
 
 		@Override
@@ -352,65 +271,94 @@ public class ExtendedJTable extends JTable
 		{
 			paintStripedBackground(g);
 			paintVerticalGridLines(g);
+			paintHorizontalGridLines(g);
 			super.paintComponent(g);
 		}
 
 		private void paintStripedBackground(Graphics g)
 		{
+			// get the row index at the top of the clip bounds (the first row
+			// to paint).
 			int rowAtPoint = table.rowAtPoint(g.getClipBounds().getLocation());
-			// Get the y-coordinate of the first row to paint
-			// If there are no rows in the table, start painting at the top of the bounds
-			int topY = rowAtPoint < 0 ? g.getClipBounds().y : table.getCellRect(rowAtPoint, 0, true).y;
+			// get the y coordinate of the first row to paint. if there are no
+			// rows in the table, start painting at the top of the supplied
+			// clipping bounds.
+			int topY = rowAtPoint < 0
+					? g.getClipBounds().y : table.getCellRect(rowAtPoint, 0, true).y;
 
-			// Start current row at 0 if there are no rows in the table
+			// create a counter variable to hold the current row. if there are no
+			// rows in the table, start the counter at 0.
 			int currentRow = rowAtPoint < 0 ? 0 : rowAtPoint;
 			while(topY < g.getClipBounds().y + g.getClipBounds().height)
 			{
 				int bottomY = topY + table.getRowHeight();
-				g.setColor(currentRow % 2 == 0 ? EVEN_ROW_COLOR : ODD_ROW_COLOR);
+				g.setColor(getRowColor(currentRow));
 				g.fillRect(g.getClipBounds().x, topY, g.getClipBounds().width, bottomY);
 				topY = bottomY;
 				currentRow++;
 			}
 		}
 
+		private Color getRowColor(int row)
+		{
+			return row % 2 == 0 ? EVEN_ROW_COLOR : ODD_ROW_COLOR;
+		}
+
+		private void paintHorizontalGridLines(Graphics g)
+		{
+			// paint the row grid dividers for the non-existent columns.
+			int y = 0;
+			for(int i = 0; i < table.getRowCount(); i++)
+			{
+				y += table.getRowHeight();
+				g.setColor(TABLE_GRID_COLOR);
+				// draw the grid line (not sure what the -1 is for, but BasicTableUI
+				// also does it.
+				g.drawLine(0, y - 1, getWidth(), y - 1);
+			}
+		}
+
 		private void paintVerticalGridLines(Graphics g)
 		{
+			// paint the column grid dividers for the non-existent rows.
 			int x = 0;
 			for(int i = 0; i < table.getColumnCount(); i++)
 			{
 				TableColumn column = table.getColumnModel().getColumn(i);
-
+				// increase the x position by the width of the current column.
 				x += column.getWidth();
 				g.setColor(TABLE_GRID_COLOR);
-
+				// draw the grid line (not sure what the -1 is for, but BasicTableUI
+				// also does it.
 				g.drawLine(x - 1, g.getClipBounds().y, x - 1, getHeight());
 			}
 		}
+	}
 
-		/**
-		 * The listener causes the table to repaint whenever a column is resized.
-		 */
-		private void initListeners()
+	public static JScrollPane createStripedJScrollPane(JTable table)
+	{
+		JScrollPane scrollPane = new JScrollPane(table);
+		scrollPane.setViewport(new StripedViewport(table));
+		scrollPane.getViewport().setView(table);
+		scrollPane.setBorder(BorderFactory.createEmptyBorder());
+		scrollPane.setCorner(JScrollPane.UPPER_RIGHT_CORNER,
+							 createCornerComponent(table));
+		return scrollPane;
+	}
+
+	/**
+	 * Creates a component that paints the header background for use in a
+	 * JScrollPane corner.
+	 */
+	private static JComponent createCornerComponent(final JTable table)
+	{
+		return new JComponent()
 		{
-			// Repaint when the column is resized
-			table.getTableHeader().addPropertyChangeListener(new PropertyChangeListener()
-				{
-					@Override
-					public void propertyChange(PropertyChangeEvent evt)
-					{
-						repaint();
-					}
-				});
-			// Repaint on scroll or any other JTable change event
-			table.addPropertyChangeListener(new PropertyChangeListener()
-				{
-					@Override
-					public void propertyChange(PropertyChangeEvent evt)
-					{
-						repaint();
-					}
-				});
-		}
+			@Override
+			protected void paintComponent(Graphics g)
+			{
+				paintHeader(g, table, 0, getWidth());
+			}
+		};
 	}
 }

@@ -184,11 +184,9 @@ public class ViewPanel extends JPanel
 		operationsTable.addColumn(column);
 		operationsTable.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		operationsModel.addColumn(column.getHeaderValue().toString());
-		operationsTable.getTableHeader().setReorderingAllowed(false);
 		operationsTable.getTableHeader().getColumnModel().getColumn(0).setHeaderValue("Operations");
 
 		outputTable.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		outputTable.getTableHeader().setReorderingAllowed(false);
 		outputTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 		outputTable.getTableHeader ().setFont (FONT_PLAIN_12);
 		outputTable.setFont(FONT_PLAIN_12);
@@ -239,7 +237,7 @@ public class ViewPanel extends JPanel
         displayNameLabel = new javax.swing.JLabel();
         displayNameScrollPane = new javax.swing.JScrollPane();
         displayNameTextPane = new javax.swing.JTextPane();
-        outputScrollPane = marla.ide.gui.ExtendedJTable.createCorneredJScrollPane(outputTable);
+        outputScrollPane = marla.ide.gui.ExtendedJTable.createStripedJScrollPane(outputTable);
         editingLabel = new javax.swing.JLabel();
         editingTextField = new javax.swing.JTextField();
         browseEditingButton = new javax.swing.JButton();
@@ -254,7 +252,7 @@ public class ViewPanel extends JPanel
         operationScrollPane = new javax.swing.JScrollPane();
         operationTextPane = new XmlTextPane();
         saveAsButton = new javax.swing.JButton();
-        operationsScrollPane = marla.ide.gui.ExtendedJTable.createCorneredJScrollPane(operationsTable);
+        operationsScrollPane = marla.ide.gui.ExtendedJTable.createStripedJScrollPane(operationsTable);
         xmlStatusLabel = new javax.swing.JLabel();
         debugScrollPane = new javax.swing.JScrollPane();
         debugTextArea = new javax.swing.JTextArea();
@@ -352,11 +350,11 @@ public class ViewPanel extends JPanel
                 .addContainerGap())
         );
 
-        editingLabel.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        editingLabel.setFont(new java.awt.Font("Verdana", 0, 12));
         editingLabel.setText("Editing:");
 
         editingTextField.setEditable(false);
-        editingTextField.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        editingTextField.setFont(new java.awt.Font("Verdana", 0, 12));
 
         browseEditingButton.setFont(new java.awt.Font("Verdana", 0, 12));
         browseEditingButton.setText("Browse");
@@ -367,10 +365,10 @@ public class ViewPanel extends JPanel
             }
         });
 
-        opsNameLabel.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        opsNameLabel.setFont(new java.awt.Font("Verdana", 0, 12));
         opsNameLabel.setText("Operation name:");
 
-        operationsNameTextField.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        operationsNameTextField.setFont(new java.awt.Font("Verdana", 0, 12));
         operationsNameTextField.setEnabled(false);
         operationsNameTextField.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -419,7 +417,7 @@ public class ViewPanel extends JPanel
             }
         });
 
-        newButton.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        newButton.setFont(new java.awt.Font("Verdana", 0, 12));
         newButton.setText("New");
         newButton.setEnabled(false);
         newButton.addActionListener(new java.awt.event.ActionListener() {
@@ -443,7 +441,7 @@ public class ViewPanel extends JPanel
             }
         });
 
-        operationTextPane.setFont(new java.awt.Font("Courier New", 0, 12)); // NOI18N
+        operationTextPane.setFont(new java.awt.Font("Courier New", 0, 12));
         operationTextPane.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusLost(java.awt.event.FocusEvent evt) {
                 operationTextPaneFocusLost(evt);
@@ -552,13 +550,13 @@ public class ViewPanel extends JPanel
 
         debugTextArea.setColumns(20);
         debugTextArea.setEditable(false);
-        debugTextArea.setFont(new java.awt.Font("Courier New", 0, 12)); // NOI18N
+        debugTextArea.setFont(new java.awt.Font("Courier New", 0, 12));
         debugTextArea.setLineWrap(true);
         debugTextArea.setRows(5);
         debugTextArea.setWrapStyleWord(true);
         debugScrollPane.setViewportView(debugTextArea);
 
-        splitPane.setRightComponent(debugScrollPane);
+        splitPane.setBottomComponent(debugScrollPane);
 
         org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(this);
         this.setLayout(layout);
