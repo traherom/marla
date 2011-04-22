@@ -308,7 +308,7 @@ public class OperationXMLEditable extends OperationXML
 		}
 		catch(JDOMException ex)
 		{
-			throw new OperationEditorException("XML is invalid: " + ex.getMessage(), ex);
+			throw new OperationEditorException(ex.getMessage(), ex);
 		}
 		catch(IOException ex)
 		{
