@@ -143,6 +143,7 @@ public class ExtendedJTable extends JTable
 		int y = insets.top;
 		int localRowHeight = 16;
 		final int nItems = getRowCount();
+		// Paint stripes for each of the rows
 		for(int i = 0; i < nItems; i++, y += localRowHeight)
 		{
 			localRowHeight = getRowHeight(i);
@@ -156,7 +157,7 @@ public class ExtendedJTable extends JTable
 			g.setColor(i % 2 == 0 ? EVEN_ROW_COLOR : ODD_ROW_COLOR);
 			g.fillRect(x, y, w, localRowHeight);
 		}
-		final int remainder = insets.top + h - y;
+		final int remainder = insets.top + h - y / localRowHeight;
 		if(remainder > 0)
 		{
 			g.setColor(remainder % 2 == 0 ? EVEN_ROW_COLOR : ODD_ROW_COLOR);
@@ -392,9 +393,8 @@ public class ExtendedJTable extends JTable
 		 */
 		private void initListeners()
 		{
-			for(int i = 0; i < table.getColumnModel().getColumnCount(); i++)
-			{
-				table.getColumnModel().getColumn(i).addPropertyChangeListener(new PropertyChangeListener()
+			// Repaint when the column is resized
+			table.getTableHeader().addPropertyChangeListener(new PropertyChangeListener()
 				{
 					@Override
 					public void propertyChange(PropertyChangeEvent evt)
@@ -402,7 +402,15 @@ public class ExtendedJTable extends JTable
 						repaint();
 					}
 				});
-			}
+			// Repaint on scroll or any other JTable change event
+			table.addPropertyChangeListener(new PropertyChangeListener()
+				{
+					@Override
+					public void propertyChange(PropertyChangeEvent evt)
+					{
+						repaint();
+					}
+				});
 		}
 	}
 }
