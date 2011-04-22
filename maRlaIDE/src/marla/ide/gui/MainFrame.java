@@ -244,6 +244,10 @@ public class MainFrame extends JFrame
 				viewPanel.quit(true);
 			}
 		});
+		
+		// TODO remove this when printing is implemented properly
+		fileSeparator3.setVisible(false);
+		printMenuItem.setVisible(false);
 	}
 
 	/**
@@ -315,6 +319,8 @@ public class MainFrame extends JFrame
         exportToPdfMenuItem = new javax.swing.JMenuItem();
         exportForLatexMenuItem = new javax.swing.JMenuItem();
         fileSeparator2 = new javax.swing.JPopupMenu.Separator();
+        printMenuItem = new javax.swing.JMenuItem();
+        fileSeparator3 = new javax.swing.JPopupMenu.Separator();
         exitMenuItem = new javax.swing.JMenuItem();
         editMenu = new javax.swing.JMenu();
         undoMenuItem = new javax.swing.JMenuItem();
@@ -421,6 +427,17 @@ public class MainFrame extends JFrame
         fileMenu.add(exportForLatexMenuItem);
         fileMenu.add(fileSeparator2);
 
+        printMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_P, java.awt.event.InputEvent.CTRL_MASK));
+        printMenuItem.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        printMenuItem.setText("Print...");
+        printMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                printMenuItemActionPerformed(evt);
+            }
+        });
+        fileMenu.add(printMenuItem);
+        fileMenu.add(fileSeparator3);
+
         exitMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F4, java.awt.event.InputEvent.ALT_MASK));
         exitMenuItem.setFont(new java.awt.Font("Verdana", 0, 12));
         exitMenuItem.setText("Exit");
@@ -461,7 +478,7 @@ public class MainFrame extends JFrame
         menuBar.add(editMenu);
 
         problemMenu.setText("Problem");
-        problemMenu.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        problemMenu.setFont(new java.awt.Font("Verdana", 0, 12));
         problemMenu.addMenuListener(new javax.swing.event.MenuListener() {
             public void menuCanceled(javax.swing.event.MenuEvent evt) {
             }
@@ -521,7 +538,7 @@ public class MainFrame extends JFrame
         menuBar.add(problemMenu);
 
         toolsMenu.setText("Tools");
-        toolsMenu.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        toolsMenu.setFont(new java.awt.Font("Verdana", 0, 12));
         toolsMenu.addMenuListener(new javax.swing.event.MenuListener() {
             public void menuCanceled(javax.swing.event.MenuEvent evt) {
             }
@@ -533,7 +550,7 @@ public class MainFrame extends JFrame
         });
 
         operationEditorMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F2, 0));
-        operationEditorMenuItem.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        operationEditorMenuItem.setFont(new java.awt.Font("Verdana", 0, 12));
         operationEditorMenuItem.setText("Launch maRla Operation Editor");
         operationEditorMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -635,6 +652,7 @@ public class MainFrame extends JFrame
 				exportForLatexMenuItem.setEnabled(true);
 				exportToPdfMenuItem.setEnabled(true);
 				closeProblemMenuItem.setEnabled(true);
+				printMenuItem.setEnabled(true);
 				saveAsMenuItem.setEnabled(true);
 				if(viewPanel.domain.problem.isChanged())
 				{
@@ -648,6 +666,7 @@ public class MainFrame extends JFrame
 			else
 			{
 				closeProblemMenuItem.setEnabled(false);
+				printMenuItem.setEnabled(false);
 				saveMenuItem.setEnabled(false);
 				saveAsMenuItem.setEnabled(false);
 				exportForLatexMenuItem.setEnabled(false);
@@ -789,6 +808,10 @@ public class MainFrame extends JFrame
 		viewPanel.redo();
 	}//GEN-LAST:event_redoMenuItemActionPerformed
 
+	private void printMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_printMenuItemActionPerformed
+		viewPanel.workspacePanel.print();
+	}//GEN-LAST:event_printMenuItemActionPerformed
+
 	/**
 	 * Retrieves the default title, which is the program name with it's version number.
 	 *
@@ -817,6 +840,7 @@ public class MainFrame extends JFrame
     private javax.swing.JMenu fileMenu;
     private javax.swing.JPopupMenu.Separator fileSeparator1;
     private javax.swing.JPopupMenu.Separator fileSeparator2;
+    private javax.swing.JPopupMenu.Separator fileSeparator3;
     private javax.swing.JMenuItem helpContentsMenuItem;
     private javax.swing.JMenu helpMenu;
     private javax.swing.JPopupMenu.Separator jSeparator1;
@@ -825,6 +849,7 @@ public class MainFrame extends JFrame
     private javax.swing.JMenuItem newProblemMenuItem;
     private javax.swing.JMenuItem openProblemMenuItem;
     private javax.swing.JMenuItem operationEditorMenuItem;
+    private javax.swing.JMenuItem printMenuItem;
     private javax.swing.JMenu problemMenu;
     private javax.swing.JPopupMenu.Separator problemSeparator1;
     protected javax.swing.JMenuItem redoMenuItem;

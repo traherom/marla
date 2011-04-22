@@ -25,8 +25,13 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.geom.Line2D;
+import java.awt.print.PageFormat;
+import java.awt.print.Printable;
+import java.awt.print.PrinterException;
+import java.awt.print.PrinterJob;
 import java.util.List;
 import javax.swing.JPanel;
+import javax.swing.RepaintManager;
 import marla.ide.problem.DataSource;
 import marla.ide.problem.SubProblem;
 import marla.ide.resource.Configuration.ConfigType;
@@ -37,7 +42,7 @@ import marla.ide.resource.ConfigurationException;
  *
  * @author Alex Laird
  */
-public class WorkspacePanel extends JPanel
+public class WorkspacePanel extends JPanel implements Printable
 {
 	/** Stroke width of lines on panel */
 	private static int minLineWidth = 2;
@@ -54,8 +59,10 @@ public class WorkspacePanel extends JPanel
 	/**
 	 * Empty constructor for Bean display.
 	 */
-	public WorkspacePanel() {}
-	
+	public WorkspacePanel()
+	{
+	}
+
 	/**
 	 * Construct the workspace panel with a reference to the view panel.
 	 *
@@ -71,7 +78,7 @@ public class WorkspacePanel extends JPanel
 	 * @param newMin Size in pixels for the lines. Must be 1 or greater
 	 * @return Previously set line width
 	 */
-	public static int setMinLineWidth(int newMin) 
+	public static int setMinLineWidth(int newMin)
 	{
 		int oldMin = minLineWidth;
 
@@ -96,7 +103,7 @@ public class WorkspacePanel extends JPanel
 	 * @param newSpace Size in pixels between the lines. Must be 0 or greater
 	 * @return Previously set line spacing
 	 */
-	public static int setLineSpacing(int newSpace) 
+	public static int setLineSpacing(int newSpace)
 	{
 		int oldSpace = lineSpacing;
 
@@ -128,11 +135,11 @@ public class WorkspacePanel extends JPanel
 	 */
 	public Component getComponentAt(int x, int y, Component ignore)
 	{
-		for (Component comp : getComponents())
+		for(Component comp : getComponents())
 		{
-			if (comp.getBounds().contains(x, y) &&
-					comp != this &&
-					comp != ignore)
+			if(comp.getBounds().contains(x, y)
+			   && comp != this
+			   && comp != ignore)
 			{
 				return comp;
 			}
@@ -147,15 +154,15 @@ public class WorkspacePanel extends JPanel
 	 * @param g The graphics of the panel.
 	 */
 	@Override
-    protected void paintComponent(Graphics g)
+	protected void paintComponent(Graphics g)
 	{
 		try
-		{	
-			super.paintComponent (g);
-			
+		{
+			super.paintComponent(g);
+
 			Graphics2D g2 = (Graphics2D) g;
-			g2.setRenderingHint (RenderingHints.KEY_ANTIALIASING,
-								 RenderingHints.VALUE_ANTIALIAS_ON);
+			g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+								RenderingHints.VALUE_ANTIALIAS_ON);
 
 			// Make the lines larger as we zoom in
 			int lineWidth = ViewPanel.fontSize - 11;
@@ -202,7 +209,7 @@ public class WorkspacePanel extends JPanel
 	 * @param ds The data source to draw a line to.
 	 */
 	private void drawConnection(Graphics2D g2, DataSource ds)
-	{		
+	{
 		// Stuff we'll need to reference a lot
 		DataSource parentDS = ds.getParentData();
 		if(parentDS == null)
@@ -214,7 +221,7 @@ public class WorkspacePanel extends JPanel
 			isStraight = true;
 
 		List<SubProblem> subs = ds.getSubProblems();
-		
+
 		// Figure out where lines will end at
 		int endY = ds.getY();
 
@@ -255,6 +262,45 @@ public class WorkspacePanel extends JPanel
 		{
 			g2.setPaint(Color.DARK_GRAY);
 			g2.draw(new Line2D.Double(startX, startY, endX, endY));
+		}
+	}
+
+	/**
+	 * Show the print dialog and print the workspace panel.
+	 */
+	public void print()
+	{
+		PrinterJob printJob = PrinterJob.getPrinterJob();
+		printJob.setPrintable(this);
+		if(printJob.printDialog())
+		{
+			try
+			{
+				printJob.print();
+			}
+			catch(PrinterException ex)
+			{
+				Domain.showErrorDialog(Domain.getTopWindow(), "An unknown error occured while printing.", Domain.prettyExceptionDetails(ex), "Print Error");
+			}
+		}
+	}
+
+	@Override
+	public int print(Graphics g, PageFormat pageFormat, int pageIndex) throws PrinterException
+	{
+		if(pageIndex > 0)
+		{
+			return (NO_SUCH_PAGE);
+		}
+		else
+		{
+			Graphics2D g2d = (Graphics2D) g;
+			g2d.translate(pageFormat.getImageableX(), pageFormat.getImageableY());
+			RepaintManager currentManager = RepaintManager.currentManager(this);
+			currentManager.setDoubleBufferingEnabled(false);
+			paint(g2d);
+			currentManager.setDoubleBufferingEnabled(true);
+			return (PAGE_EXISTS);
 		}
 	}
 }
