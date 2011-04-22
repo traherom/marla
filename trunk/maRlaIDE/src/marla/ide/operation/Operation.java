@@ -225,10 +225,14 @@ public abstract class Operation extends DataSource implements Cloneable
 		}
 		catch(OperationXMLException ex)
 		{
+			// Try in the list of Java classes
+			String className = javaOps.get(opName);
 			try
 			{
-				// Try in the list of Java classes
-				Class opClass = Class.forName(javaOps.get(opName));
+				if(className == null)
+					throw new OperationException("Unable to locate operation '" + opName + "' for loading", ex);
+				
+				Class opClass = Class.forName(className);
 				op = (Operation) opClass.newInstance();
 			}
 			catch(IllegalAccessException ex2)
@@ -241,7 +245,7 @@ public abstract class Operation extends DataSource implements Cloneable
 			}
 			catch(ClassNotFoundException ex2)
 			{
-				throw new OperationException("Unable to locate operation '" + opName + "' for loading", ex2);
+				throw new OperationException("Operation '" + opName + "' found, but unable to load class '" + className + "'", ex2);
 			}
 		}
 

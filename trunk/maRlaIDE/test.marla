@@ -263,26 +263,10 @@
       <value>48.0</value>
       <value>49.0</value>
     </column>
-    <operation type="marla.ide.operation.OperationXML" name="Stem" id="-1003877701" x="140" y="108" height="16" width="108" hidden="false">
+    <operation type="marla.ide.operation.OperationXML" name="String" id="-1255380140" x="279" y="108" height="16" width="59" hidden="false">
       <remark />
-      <question name="col" answer="Column 1" />
-      <extra name="Stem" />
-    </operation>
-    <operation type="marla.ide.operation.OperationXML" name="Barplot" id="735040194" x="268" y="108" height="16" width="80" hidden="false">
-      <remark />
-      <operation type="marla.ide.operation.OperationXML" name="1-Var variance" id="1399311321" x="281" y="139" height="16" width="55" hidden="false">
-        <remark />
-        <question name="col" />
-        <extra name="1-Var variance" />
-      </operation>
-      <question name="col" />
-      <extra name="Barplot" />
-    </operation>
-    <operation type="marla.ide.operation.OperationXML" name="ANOVA" id="-369954550" x="368" y="108" height="16" width="150" hidden="false">
-      <remark />
-      <question name="col1" />
-      <question name="col2" />
-      <extra name="ANOVA" />
+      <question name="disp" answer="TESTING" />
+      <extra name="String" />
     </operation>
   </data>
   <unused />
