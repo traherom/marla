@@ -1434,6 +1434,7 @@ public class ViewPanel extends JPanel
 				// the load save thread to get around to checking if it's closing again
 				// The extra time lets it write if needed
 				domain.backgroundThread.join(domain.backgroundThread.getDelay() + 3000);
+				domain.debugThread.join(domain.debugThread.getDelay() + 3000);
 			}
 			catch(InterruptedException ex)
 			{
