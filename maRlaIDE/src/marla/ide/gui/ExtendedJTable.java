@@ -246,12 +246,12 @@ public class ExtendedJTable extends JTable
 
 		private void initListeners()
 		{
-			//table.getTableHeader().addPropertyChangeListener(createNewRepaintPropertyChangeListener());
+			table.getTableHeader().addPropertyChangeListener(createNewRepaintPropertyChangeListener());
 			for(int i = 0; i < table.getColumnModel().getColumnCount(); i++)
 			{
 				table.getColumnModel().getColumn(i).addPropertyChangeListener(createNewRepaintPropertyChangeListener());
 			}
-			//table.addPropertyChangeListener(createNewRepaintPropertyChangeListener());
+			table.addPropertyChangeListener(createNewRepaintPropertyChangeListener());
 		}
 
 		private PropertyChangeListener createNewRepaintPropertyChangeListener()
@@ -306,21 +306,20 @@ public class ExtendedJTable extends JTable
 
 		private void paintHorizontalGridLines(Graphics g)
 		{
-			// paint the row grid dividers for the non-existent columns.
+			// paint the column grid dividers for the non-existent columns.
 			int y = 0;
 			for(int i = 0; i < table.getRowCount(); i++)
 			{
+				// increase the x position by the height of a row.
 				y += table.getRowHeight();
 				g.setColor(TABLE_GRID_COLOR);
-				// draw the grid line (not sure what the -1 is for, but BasicTableUI
-				// also does it.
 				g.drawLine(0, y - 1, getWidth(), y - 1);
 			}
 		}
 
 		private void paintVerticalGridLines(Graphics g)
 		{
-			// paint the column grid dividers for the non-existent rows.
+			// paint the row grid dividers for the non-existent rows.
 			int x = 0;
 			for(int i = 0; i < table.getColumnCount(); i++)
 			{
@@ -328,8 +327,6 @@ public class ExtendedJTable extends JTable
 				// increase the x position by the width of the current column.
 				x += column.getWidth();
 				g.setColor(TABLE_GRID_COLOR);
-				// draw the grid line (not sure what the -1 is for, but BasicTableUI
-				// also does it.
 				g.drawLine(x - 1, g.getClipBounds().y, x - 1, getHeight());
 			}
 		}
