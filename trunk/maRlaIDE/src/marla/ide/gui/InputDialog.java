@@ -18,6 +18,7 @@
 
 package marla.ide.gui;
 
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -26,7 +27,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -51,11 +51,12 @@ public class InputDialog extends EscapeDialog
 	private String returnValue = "";
 
 	/**
-	 * Construct the input dialog.
+	 * Construct the input dialog. An input dialog should only be constructed
+	 * from within this class using the launchInputDialog function.
 	 *
 	 * @param viewPanel A reference to the view panel.
 	 */
-	public InputDialog(ViewPanel viewPanel)
+	private InputDialog(ViewPanel viewPanel)
 	{
 		super (viewPanel);
 
@@ -150,26 +151,28 @@ public class InputDialog extends EscapeDialog
 	/**
 	 * Launch the input dialog.
 	 *
+	 * @param viewPanel A reference to the view panel.
 	 * @param parent The component to set the dialog relative to.
-	 * @param title Set the title for the dialog.
 	 * @param message Set the message for th dialog.
+	 * @param title Set the title for the dialog.
 	 * @param inputText Set the initial input message for the dialog.
 	 * @return The new string from the input dialog.
 	 */
-	protected String launchInputDialog(JComponent parent, String title, String message, String inputText)
+	public static String launchInputDialog(ViewPanel viewPanel, Component parent, String message, String title, String oldValue)
 	{
-		setLocationRelativeTo(parent);
-		setTitle(title);
-		messageLabel.setText(message);
-		inputTextArea.setText(inputText);
-		returnValue = inputText;
+		InputDialog inputDialog = new InputDialog(viewPanel);
+		inputDialog.setLocationRelativeTo(parent);
+		inputDialog.setTitle(title);
+		inputDialog.messageLabel.setText(message);
+		inputDialog.inputTextArea.setText(oldValue);
+		inputDialog.returnValue = oldValue;
 
 		// Pack and show the input dialog
-		setLocationRelativeTo(viewPanel);
-		inputTextArea.requestFocus();
-		inputTextArea.selectAll();
-		setVisible(true);
+		inputDialog.setLocationRelativeTo(viewPanel);
+		inputDialog.inputTextArea.requestFocus();
+		inputDialog.inputTextArea.selectAll();
+		inputDialog.setVisible(true);
 
-		return returnValue;
+		return inputDialog.returnValue;
 	}
 }

@@ -130,19 +130,27 @@ public class Domain
 	 *
 	 * @return The top-most window displayed.
 	 */
-	public Container getTopWindow()
+	public static Container getTopWindow()
 	{
 		if(MainFrame.progressFrame.isVisible())
 		{
 			return MainFrame.progressFrame;
 		}
-		else if(ViewPanel.getInstance().answerDialog.isVisible())
+		ViewPanel instance = ViewPanel.getInstance();
+		if (instance != null)
 		{
-			return ViewPanel.getInstance().answerDialog;
+			if (instance.answerDialog.isVisible())
+			{
+				return instance.answerDialog;
+			}
+			else
+			{
+				return instance;
+			}
 		}
 		else
 		{
-			return ViewPanel.getInstance();
+			return null;
 		}
 	}
 

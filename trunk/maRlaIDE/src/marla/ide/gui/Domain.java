@@ -18,6 +18,7 @@
 
 package marla.ide.gui;
 
+import java.awt.Component;
 import java.awt.Container;
 import java.awt.Desktop;
 import java.awt.GridLayout;
@@ -165,6 +166,124 @@ public class Domain
 	public static Domain getInstance()
 	{
 		return currDomain;
+	}
+	
+	/**
+	 * Show a standard input dialog and return the value the user enters.
+	 * 
+	 * @param parent The parent of the dialog to be shown.
+	 * @param message The standard message to be shown.
+	 * @param title The title of the dialog.
+	 * @param oldValue The old value to put in as the default input.
+	 * @return The input entered by the user on close of the dialog.
+	 */
+	public static Object showInputDialog(Component parent, Object message, String title, String oldValue)
+	{
+		return JOptionPane.showInputDialog(parent, message, title, JOptionPane.QUESTION_MESSAGE, null, null, oldValue);
+	}
+	
+	/**
+	 * Show the standard multi-line dialog and return the value the user enters.
+	 * 
+	 * @param parent The parent of the dialog to be shown.
+	 * @param message The standard message to be shown.
+	 * @param title The title of the dialog.
+	 * @param oldValue The old value to put in as the default input.
+	 * @return The input entered by the user on close of the dialog.
+	 */
+	public static String showMultiLineInputDialog(Component parent, String message, String title, String oldValue)
+	{
+		return InputDialog.launchInputDialog(ViewPanel.getInstance(), parent, title, message, oldValue);
+	}
+	
+	/**
+	 * Show the standard confirmation dialog.
+	 * 
+	 * @param parent The parent of the dialog to be shown.
+	 * @param message The standard message to be shown.
+	 * @param title The title of the dialog.
+	 * @param optionType The confirmation option types to be shown (constant variables from the JOptionPane).
+	 * @return The response from the confirmation dialog.
+	 */
+	public static int showConfirmDialog(Component parent, String message, String title, int optionType)
+	{
+		return showConfirmDialog (parent, message, title, optionType, JOptionPane.QUESTION_MESSAGE);
+	}
+	
+	/**
+	 * Display a confirmation dialog and return the option chosen.
+	 * 
+	 * @param parent The parent of the dialog to be shown.
+	 * @param message The standard message to be shown.
+	 * @param title The title of the dialog.
+	 * @param optionType The confirmation option types to be shown (constant variables from the JOptionPane).
+	 * @return The response from the confirmation dialog.
+	 */
+	public static int showConfirmDialog(Component parent, String message, String title, int optionType, int iconType)
+	{
+		return JOptionPane.showConfirmDialog (parent, message, title, optionType, iconType);
+	}
+
+	/**
+	 * Display a standard error dialog.
+	 * 
+	 * @param parent The parent of the dialog to be shown.
+	 * @param message The standard message to be shown.
+	 * @param title The title of the dialog.
+	 */
+	public static void showErrorDialog(Component parent, String message, String title)
+	{
+		JOptionPane.showMessageDialog(parent, message, title, JOptionPane.ERROR_MESSAGE);
+	}
+	
+	/**
+	 * Display an error dialog with an inner details collapsable scroll pane.
+	 * 
+	 * @param parent The parent of the dialog to be shown.
+	 * @param message The standard message to be shown.
+	 * @param innerStatus The inner status message to be shown/hidden.
+	 * @param title The title of the dialog.
+	 */
+	public static void showErrorDialog(Component parent, String message, String details, String title)
+	{
+		JOptionPane.showMessageDialog(parent, Domain.getInstance().createDetailedDisplayObject(message, details), title, JOptionPane.ERROR_MESSAGE);
+	}
+	
+	/**
+	 * Display a standard warning dialog.
+	 * 
+	 * @param parent The parent of the dialog to be shown.
+	 * @param message The standard message to be shown.
+	 * @param title The title of the dialog.
+	 */
+	public static void showWarningDialog(Component parent, String message, String title)
+	{
+		JOptionPane.showMessageDialog(parent, message, title, JOptionPane.WARNING_MESSAGE);
+	}
+	
+	/**
+	 * Display a warning dialog with an inner details collapsable scroll pane.
+	 * 
+	 * @param parent The parent of the dialog to be shown.
+	 * @param message The standard message to be shown.
+	 * @param innerStatus The inner status message to be shown/hidden.
+	 * @param title The title of the dialog.
+	 */
+	public static void showWarningDialog(Component parent, String message, String details, String title)
+	{
+		JOptionPane.showMessageDialog(parent, Domain.getInstance().createDetailedDisplayObject(message, details), title, JOptionPane.WARNING_MESSAGE);
+	}
+	
+	/**
+	 * Display a standard information dialog.
+	 * 
+	 * @param parent The parent of the dialog to be shown.
+	 * @param message The standard message to be shown.
+	 * @param title The title of the dialog.
+	 */
+	public static void showInformationDialog(Component parent, String message, String title)
+	{
+		JOptionPane.showMessageDialog(parent, message, title, JOptionPane.WARNING_MESSAGE);
 	}
 
 	/**
@@ -369,7 +488,7 @@ public class Domain
 	{
 		if(MainFrame.progressFrame != null)
 		{
-			MainFrame.progressFrame.setLocationRelativeTo(Domain.getInstance().getTopWindow());
+			MainFrame.progressFrame.setLocationRelativeTo(Domain.getTopWindow());
 			MainFrame.progressFrame.setVisible(visible);
 		}
 	}
@@ -722,7 +841,7 @@ public class Domain
 			catch (MarlaException ex)
 			{
 				logger.add(ex);
-				JOptionPane.showMessageDialog(getTopWindow(), ex.getMessage(), "Unable to Save", JOptionPane.ERROR_MESSAGE);
+				Domain.showErrorDialog(Domain.getTopWindow(), ex.getMessage(), "Unable to Save");
 			}
 		}
 	}
@@ -844,7 +963,7 @@ public class Domain
 				// ensure the file is a valid backup file
 				if (!file.toString ().endsWith (".marla"))
 				{
-					JOptionPane.showMessageDialog (getTopWindow(), "The extension for the file must be .marla.", "Invalid Extension", JOptionPane.WARNING_MESSAGE);
+					Domain.showWarningDialog(Domain.getTopWindow(), "The extension for the file must be .marla.", "Invalid Extension");
 					viewPanel.fileChooserDialog.setSelectedFile (new File (viewPanel.fileChooserDialog.getSelectedFile ().toString ().substring (0, viewPanel.fileChooserDialog.getSelectedFile ().toString ().lastIndexOf (".")) + ".marla"));
 					response = viewPanel.fileChooserDialog.showSaveDialog (viewPanel);
 					continue;
@@ -853,11 +972,7 @@ public class Domain
 				boolean continueAllowed = true;
 				if (file.exists ())
 				{
-					response = JOptionPane.showConfirmDialog (getTopWindow(), "The selected file already exists.\n"
-																		 + "Would you like to overwrite the existing file?",
-															  "Overwrite Existing File",
-															  JOptionPane.YES_NO_OPTION,
-															  JOptionPane.QUESTION_MESSAGE);
+					response = Domain.showConfirmDialog(Domain.getTopWindow(), "The selected file already exists.\nWould you like to overwrite the existing file?", "Overwrite Existing File", JOptionPane.YES_NO_OPTION);
 					if (response != JOptionPane.YES_OPTION)
 					{
 						continueAllowed = false;
@@ -908,7 +1023,7 @@ public class Domain
 				// ensure the file is a valid backup file
 				if (!finalFile.toString ().endsWith (".pdf"))
 				{
-					JOptionPane.showMessageDialog (viewPanel, "The extension for the file must be .pdf.", "Invalid Extension", JOptionPane.WARNING_MESSAGE);
+					Domain.showWarningDialog(Domain.getTopWindow(), "The extension for the file must be .pdf.", "Invalid Extension");
 					viewPanel.fileChooserDialog.setSelectedFile (new File (viewPanel.fileChooserDialog.getSelectedFile ().toString ().substring (0, viewPanel.fileChooserDialog.getSelectedFile ().toString ().lastIndexOf (".")) + ".pdf"));
 					response = viewPanel.fileChooserDialog.showSaveDialog (viewPanel);
 					continue;
@@ -917,11 +1032,7 @@ public class Domain
 				boolean continueAllowed = true;
 				if (finalFile.exists ())
 				{
-					response = JOptionPane.showConfirmDialog (getTopWindow(), "The selected file already exists.\n"
-																		 + "Would you like to overwrite the existing file?",
-															  "Overwrite Existing File",
-															  JOptionPane.YES_NO_OPTION,
-															  JOptionPane.QUESTION_MESSAGE);
+					response = Domain.showConfirmDialog(Domain.getTopWindow(), "The selected file already exists.\nWould you like to overwrite the existing file?", "Overwrite Existing File", JOptionPane.YES_NO_OPTION);
 					if (response != JOptionPane.YES_OPTION)
 					{
 						continueAllowed = false;
@@ -985,18 +1096,18 @@ public class Domain
 								if (filePath != null)
 								{
 									Domain.setProgressIndeterminate(false);
-									JOptionPane.showMessageDialog(getTopWindow(), "The file was exported successfully.\nLocation: " + filePath, "Export Successful", JOptionPane.INFORMATION_MESSAGE);
+									Domain.showInformationDialog(Domain.getTopWindow(), "The file was exported successfully.\nLocation: " + filePath, "Export Successful");
 								}
 								else
 								{
 									Domain.logger.add (ex);
-									JOptionPane.showMessageDialog(getTopWindow(), ex.getMessage(), "PDF Export Failed", JOptionPane.ERROR_MESSAGE);
+									Domain.showErrorDialog(Domain.getTopWindow(), ex.getMessage(), "PDF Export Failed");
 								}
 							}
 							catch (MarlaException ex)
 							{
 								Domain.logger.add (ex);
-								JOptionPane.showMessageDialog(getTopWindow(), ex.getMessage(), "PDF Export Failed", JOptionPane.ERROR_MESSAGE);
+								Domain.showErrorDialog(Domain.getTopWindow(), ex.getMessage(), "PDF Export Failed");
 							}
 							finally
 							{
@@ -1044,7 +1155,7 @@ public class Domain
 				// ensure the file is a valid backup file
 				if (!finalFile.toString ().toLowerCase().endsWith (".rnw"))
 				{
-					JOptionPane.showMessageDialog (getTopWindow(), "The extension for the file must be .Rnw.", "Invalid Extension", JOptionPane.WARNING_MESSAGE);
+					Domain.showWarningDialog(Domain.getTopWindow(), "The extension for the file must be .Rnw.", "Invalid Extension");
 					viewPanel.fileChooserDialog.setSelectedFile (new File (viewPanel.fileChooserDialog.getSelectedFile ().toString ().substring (0, viewPanel.fileChooserDialog.getSelectedFile ().toString ().lastIndexOf (".")) + ".tex"));
 					response = viewPanel.fileChooserDialog.showSaveDialog (viewPanel);
 					continue;
@@ -1053,11 +1164,7 @@ public class Domain
 				boolean continueAllowed = true;
 				if (finalFile.exists ())
 				{
-					response = JOptionPane.showConfirmDialog (getTopWindow(), "The selected file already exists.\n"
-																		 + "Would you like to overwrite the existing file?",
-															  "Overwrite Existing File",
-															  JOptionPane.YES_NO_OPTION,
-															  JOptionPane.QUESTION_MESSAGE);
+					response = Domain.showConfirmDialog(Domain.getTopWindow(), "The selected file already exists.\nWould you like to overwrite the existing file?", "Overwrite Existing File", JOptionPane.YES_NO_OPTION);
 					if (response != JOptionPane.YES_OPTION)
 					{
 						continueAllowed = false;
@@ -1112,18 +1219,18 @@ public class Domain
 								if (filePath != null)
 								{
 									Domain.setProgressIndeterminate(false);
-									JOptionPane.showMessageDialog(getTopWindow(), "The file was exported successfully.\nLocation: " + filePath, "Export Successful", JOptionPane.INFORMATION_MESSAGE);
+									Domain.showInformationDialog(Domain.getTopWindow(), "The file was exported successfully.\nLocation: " + filePath, "Export Successful");
 								}
 								else
 								{
 									Domain.logger.add (ex);
-									JOptionPane.showMessageDialog(getTopWindow(), ex.getMessage(), "Export Failed", JOptionPane.ERROR_MESSAGE);
+									Domain.showErrorDialog(Domain.getTopWindow(), ex.getMessage(), "Export Failed");
 								}
 							}
 							catch (MarlaException ex)
 							{
 								Domain.logger.add (ex);
-								JOptionPane.showMessageDialog(getTopWindow(), ex.getMessage(), "Export Failed", JOptionPane.ERROR_MESSAGE);
+								Domain.showErrorDialog(Domain.getTopWindow(), ex.getMessage(), "Export Failed");
 							}
 							finally
 							{
@@ -1169,7 +1276,7 @@ public class Domain
 				File file = viewPanel.fileChooserDialog.getSelectedFile ();
 				if (!file.isFile () || !file.toString ().endsWith (".marla"))
 				{
-					JOptionPane.showMessageDialog (getTopWindow(), "The specified file does not exist.", "Does Not Exist", JOptionPane.WARNING_MESSAGE);
+					Domain.showWarningDialog(Domain.getTopWindow(), "The specified file does not exist.", "Does Not Exist");
 					int lastIndex = viewPanel.fileChooserDialog.getSelectedFile ().toString ().lastIndexOf (".");
 					if (lastIndex == -1)
 					{
@@ -1210,7 +1317,7 @@ public class Domain
 		catch (MarlaException ex)
 		{
 			Domain.logger.add(ex);
-			JOptionPane.showMessageDialog (getTopWindow(), ex.getMessage (), "Error Loading Save File", JOptionPane.WARNING_MESSAGE);
+			Domain.showWarningDialog(Domain.getTopWindow(), ex.getMessage (), "Error Loading Save File");
 		}
 	}
 
@@ -1256,7 +1363,7 @@ public class Domain
 	 * @param innerMessage The scrollable inner message.
 	 * @return  The object to be placed in the JOptionPane message.
 	 */
-	public Object getDetailedErrorObject(String message, String innerMessage)
+	public Object createDetailedDisplayObject(String message, String innerMessage)
 	{
 		final JPanel panel = new JPanel(new GridLayout (2, 1));
 		JTextArea textArea = new JTextArea();
@@ -1319,23 +1426,34 @@ public class Domain
 	 *
 	 * @return The top-most window displayed.
 	 */
-	public Container getTopWindow()
+	public static Container getTopWindow()
 	{
 		if (MainFrame.progressFrame.isVisible())
 		{
 			return MainFrame.progressFrame;
 		}
-		else if (viewPanel.settingsDialog.isVisible())
-		{
-			return viewPanel.settingsDialog;
-		}
-		else if (viewPanel.newProblemWizardDialog.isVisible())
-		{
-			return viewPanel.newProblemWizardDialog;
-		}
 		else
 		{
-			return viewPanel;
+			ViewPanel instance = ViewPanel.getInstance();
+			if (instance != null)
+			{
+				if (instance.settingsDialog.isVisible())
+				{
+					return instance.settingsDialog;
+				}
+				else if (instance.newProblemWizardDialog.isVisible())
+				{
+					return instance.newProblemWizardDialog;
+				}
+				else
+				{
+					return instance;
+				}
+			}
+			else
+			{
+				return null;
+			}
 		}
 	}
 
