@@ -197,6 +197,8 @@ public class ViewPanel extends JPanel
 
 		// Find the "Cancel" button and change the tooltip
 		marla.ide.gui.ViewPanel.setToolTipForButton(fileChooserDialog, "Cancel", "Cancel file selection");
+		
+		splitPane.setDividerLocation(getPreferredSize().height - 100);
 	}
 
 	/**
@@ -248,12 +250,12 @@ public class ViewPanel extends JPanel
         updateTestButton = new javax.swing.JButton();
         saveButton = new javax.swing.JButton();
         newButton = new javax.swing.JButton();
-        xmlStatusLabel = new javax.swing.JLabel();
         innerXmlLinkLabel = new javax.swing.JLabel();
         operationScrollPane = new javax.swing.JScrollPane();
         operationTextPane = new XmlTextPane();
         saveAsButton = new javax.swing.JButton();
         operationsScrollPane = marla.ide.gui.ExtendedJTable.createCorneredJScrollPane(operationsTable);
+        xmlStatusLabel = new javax.swing.JLabel();
         debugScrollPane = new javax.swing.JScrollPane();
         debugTextArea = new javax.swing.JTextArea();
 
@@ -317,18 +319,18 @@ public class ViewPanel extends JPanel
             .add(org.jdesktop.layout.GroupLayout.TRAILING, testingPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .add(testingPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
-                    .add(org.jdesktop.layout.GroupLayout.LEADING, outputScrollPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 312, Short.MAX_VALUE)
-                    .add(org.jdesktop.layout.GroupLayout.LEADING, questionPanel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 312, Short.MAX_VALUE)
+                    .add(org.jdesktop.layout.GroupLayout.LEADING, outputScrollPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 302, Short.MAX_VALUE)
+                    .add(org.jdesktop.layout.GroupLayout.LEADING, questionPanel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 302, Short.MAX_VALUE)
                     .add(org.jdesktop.layout.GroupLayout.LEADING, testingPanelLayout.createSequentialGroup()
                         .add(dataCsvLabel)
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(browseDataTextField, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 149, Short.MAX_VALUE)
+                        .add(browseDataTextField, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 151, Short.MAX_VALUE)
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                         .add(browseDataButton))
                     .add(org.jdesktop.layout.GroupLayout.LEADING, testingPanelLayout.createSequentialGroup()
                         .add(displayNameLabel)
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(displayNameScrollPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 219, Short.MAX_VALUE)))
+                        .add(displayNameScrollPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 201, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         testingPanelLayout.setVerticalGroup(
@@ -346,15 +348,15 @@ public class ViewPanel extends JPanel
                     .add(displayNameLabel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .add(displayNameScrollPane, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 25, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(outputScrollPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 375, Short.MAX_VALUE)
+                .add(outputScrollPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 370, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
-        editingLabel.setFont(new java.awt.Font("Verdana", 0, 12));
+        editingLabel.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
         editingLabel.setText("Editing:");
 
         editingTextField.setEditable(false);
-        editingTextField.setFont(new java.awt.Font("Verdana", 0, 12));
+        editingTextField.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
 
         browseEditingButton.setFont(new java.awt.Font("Verdana", 0, 12));
         browseEditingButton.setText("Browse");
@@ -365,10 +367,10 @@ public class ViewPanel extends JPanel
             }
         });
 
-        opsNameLabel.setFont(new java.awt.Font("Verdana", 0, 12));
+        opsNameLabel.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
         opsNameLabel.setText("Operation name:");
 
-        operationsNameTextField.setFont(new java.awt.Font("Verdana", 0, 12));
+        operationsNameTextField.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
         operationsNameTextField.setEnabled(false);
         operationsNameTextField.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -417,7 +419,7 @@ public class ViewPanel extends JPanel
             }
         });
 
-        newButton.setFont(new java.awt.Font("Verdana", 0, 12));
+        newButton.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
         newButton.setText("New");
         newButton.setEnabled(false);
         newButton.addActionListener(new java.awt.event.ActionListener() {
@@ -425,9 +427,6 @@ public class ViewPanel extends JPanel
                 newButtonActionPerformed(evt);
             }
         });
-
-        xmlStatusLabel.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
-        xmlStatusLabel.setText("<html><b>XML status:</b> valid</html>");
 
         innerXmlLinkLabel.setFont(new java.awt.Font("Verdana", 0, 12));
         innerXmlLinkLabel.setForeground(java.awt.Color.blue);
@@ -468,97 +467,92 @@ public class ViewPanel extends JPanel
 
         operationsScrollPane.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
+        xmlStatusLabel.setText("<html><b>XML status:</b> valid</html>");
+
         org.jdesktop.layout.GroupLayout workspacePanelLayout = new org.jdesktop.layout.GroupLayout(workspacePanel);
         workspacePanel.setLayout(workspacePanelLayout);
         workspacePanelLayout.setHorizontalGroup(
             workspacePanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(workspacePanelLayout.createSequentialGroup()
-                .add(291, 291, 291)
-                .add(xmlStatusLabel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 450, Short.MAX_VALUE)
-                .add(357, 357, 357))
-            .add(workspacePanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                .add(workspacePanelLayout.createSequentialGroup()
-                    .addContainerGap()
-                    .add(workspacePanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
-                        .add(org.jdesktop.layout.GroupLayout.LEADING, workspacePanelLayout.createSequentialGroup()
-                            .add(newButton)
-                            .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                            .add(editingLabel)
-                            .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                            .add(editingTextField, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 368, Short.MAX_VALUE)
-                            .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                            .add(browseEditingButton)
-                            .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                            .add(saveButton)
-                            .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                            .add(saveAsButton))
-                        .add(org.jdesktop.layout.GroupLayout.LEADING, workspacePanelLayout.createSequentialGroup()
-                            .add(workspacePanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                                .add(workspacePanelLayout.createSequentialGroup()
-                                    .add(addButton, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 68, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                                    .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                                    .add(removeButton, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 92, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                                .add(operationsScrollPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 272, Short.MAX_VALUE))
-                            .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                            .add(workspacePanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                                .add(operationScrollPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 450, Short.MAX_VALUE)
-                                .add(workspacePanelLayout.createSequentialGroup()
-                                    .add(opsNameLabel)
-                                    .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                                    .add(operationsNameTextField, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 339, Short.MAX_VALUE))
-                                .add(org.jdesktop.layout.GroupLayout.TRAILING, workspacePanelLayout.createSequentialGroup()
-                                    .add(innerXmlLinkLabel, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                                    .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                                    .add(updateTestButton)))))
-                    .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                    .add(testingPanel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addContainerGap()))
+                .addContainerGap()
+                .add(workspacePanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
+                    .add(org.jdesktop.layout.GroupLayout.LEADING, workspacePanelLayout.createSequentialGroup()
+                        .add(newButton)
+                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                        .add(editingLabel)
+                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                        .add(editingTextField, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 232, Short.MAX_VALUE)
+                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                        .add(browseEditingButton)
+                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                        .add(saveButton)
+                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                        .add(saveAsButton))
+                    .add(org.jdesktop.layout.GroupLayout.LEADING, workspacePanelLayout.createSequentialGroup()
+                        .add(workspacePanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                            .add(workspacePanelLayout.createSequentialGroup()
+                                .add(addButton, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 68, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                                .add(removeButton, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 92, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                            .add(operationsScrollPane, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 166, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                        .add(workspacePanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                            .add(workspacePanelLayout.createSequentialGroup()
+                                .add(opsNameLabel)
+                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                                .add(operationsNameTextField, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 229, Short.MAX_VALUE))
+                            .add(org.jdesktop.layout.GroupLayout.TRAILING, workspacePanelLayout.createSequentialGroup()
+                                .add(innerXmlLinkLabel, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                                .add(updateTestButton))
+                            .add(xmlStatusLabel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 348, Short.MAX_VALUE)
+                            .add(operationScrollPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 348, Short.MAX_VALUE))))
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                .add(testingPanel, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
         );
         workspacePanelLayout.setVerticalGroup(
             workspacePanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(workspacePanelLayout.createSequentialGroup()
-                .add(68, 68, 68)
-                .add(xmlStatusLabel, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(436, Short.MAX_VALUE))
-            .add(workspacePanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                .add(workspacePanelLayout.createSequentialGroup()
-                    .addContainerGap()
-                    .add(workspacePanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
-                        .add(org.jdesktop.layout.GroupLayout.LEADING, testingPanel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .add(workspacePanelLayout.createSequentialGroup()
-                            .add(workspacePanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                                .add(editingTextField, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                                .add(newButton)
-                                .add(editingLabel)
-                                .add(saveAsButton)
-                                .add(saveButton)
-                                .add(browseEditingButton))
-                            .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                            .add(workspacePanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                                .add(workspacePanelLayout.createSequentialGroup()
-                                    .add(workspacePanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                                        .add(opsNameLabel)
-                                        .add(operationsNameTextField, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                                    .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 42, Short.MAX_VALUE)
-                                    .add(operationScrollPane, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 372, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                                    .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                                    .add(workspacePanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                                        .add(updateTestButton)
-                                        .add(innerXmlLinkLabel, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)))
-                                .add(workspacePanelLayout.createSequentialGroup()
-                                    .add(operationsScrollPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 436, Short.MAX_VALUE)
-                                    .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                                    .add(workspacePanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                                        .add(addButton)
-                                        .add(removeButton))))))
-                    .addContainerGap()))
+            .add(org.jdesktop.layout.GroupLayout.TRAILING, workspacePanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .add(workspacePanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
+                    .add(org.jdesktop.layout.GroupLayout.LEADING, testingPanel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .add(workspacePanelLayout.createSequentialGroup()
+                        .add(workspacePanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                            .add(editingTextField, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                            .add(newButton)
+                            .add(editingLabel)
+                            .add(saveAsButton)
+                            .add(saveButton)
+                            .add(browseEditingButton))
+                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                        .add(workspacePanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                            .add(workspacePanelLayout.createSequentialGroup()
+                                .add(workspacePanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                                    .add(opsNameLabel)
+                                    .add(operationsNameTextField, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                                .add(xmlStatusLabel, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                                .add(10, 10, 10)
+                                .add(operationScrollPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 372, Short.MAX_VALUE)
+                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                                .add(workspacePanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                                    .add(updateTestButton)
+                                    .add(innerXmlLinkLabel, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)))
+                            .add(org.jdesktop.layout.GroupLayout.TRAILING, workspacePanelLayout.createSequentialGroup()
+                                .add(operationsScrollPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 429, Short.MAX_VALUE)
+                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                                .add(workspacePanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                                    .add(addButton)
+                                    .add(removeButton))))))
+                .addContainerGap())
         );
 
         splitPane.setTopComponent(workspacePanel);
 
         debugTextArea.setColumns(20);
         debugTextArea.setEditable(false);
-        debugTextArea.setFont(new java.awt.Font("Courier New", 0, 12));
+        debugTextArea.setFont(new java.awt.Font("Courier New", 0, 12)); // NOI18N
         debugTextArea.setLineWrap(true);
         debugTextArea.setRows(5);
         debugTextArea.setWrapStyleWord(true);
@@ -570,11 +564,11 @@ public class ViewPanel extends JPanel
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(org.jdesktop.layout.GroupLayout.TRAILING, splitPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 1100, Short.MAX_VALUE)
+            .add(splitPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 900, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(org.jdesktop.layout.GroupLayout.TRAILING, splitPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 550, Short.MAX_VALUE)
+            .add(splitPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 550, Short.MAX_VALUE)
         );
     }// </editor-fold>//GEN-END:initComponents
 

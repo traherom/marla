@@ -45,7 +45,7 @@ import marla.opedit.operation.OperationFile;
 public class MainFrame extends JFrame
 {
 	/** The minimum size the window frame is allowed to be.*/
-	private final Dimension MINIMUM_WINDOW_SIZE = new Dimension(790, 400);
+	private final Dimension MINIMUM_WINDOW_SIZE = new Dimension(900, 550);
 	/** The progress frame.*/
 	public static ProgressFrame progressFrame;
 	/** The panel that is added to the frame.*/
@@ -217,13 +217,14 @@ public class MainFrame extends JFrame
 			public void run()
 			{
 				Domain.setProgressString("10%");
-				Domain.setProgressValue(10);
+				Domain.setProgressIndeterminate(true);
 				Domain.setProgressStatus("Loading configuration...");
 
 				// Configure
 				Configuration conf = Configuration.getInstance();
 				List<ConfigType> missed = conf.configureAll(args);
 
+				Domain.setProgressIndeterminate(false);
 				Domain.setProgressString("90%");
 				Domain.setProgressValue(90);
 				Domain.setProgressStatus("Validating configuration...");
