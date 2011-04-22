@@ -371,7 +371,7 @@ public class ViewPanel extends JPanel
 		catch(MarlaException ex)
 		{
 			Domain.logger.add(ex);
-			Domain.showWarningDialog(Domain.getTopWindow(), ex.getMessage(), "Reload Error");
+			Domain.showWarningDialog(Domain.getTopWindow(), ex.getMessage(), Domain.prettyExceptionDetails(ex), "Reload Error");
 		}
 	}
 
@@ -1462,7 +1462,7 @@ public class ViewPanel extends JPanel
 			catch(MarlaException ex)
 			{
 				Domain.logger.add(ex);
-				Domain.showErrorDialog(Domain.getTopWindow(), ex.getMessage(), "Operation Error");
+				Domain.showErrorDialog(Domain.getTopWindow(), ex.getMessage(), Domain.prettyExceptionDetails(ex), "Operation Error");
 			}
 			finally
 			{
@@ -2416,7 +2416,7 @@ public class ViewPanel extends JPanel
 				((JTextField) valueComponents.get(i)).selectAll();
 				if(showDialog)
 				{
-					Domain.showErrorDialog(Domain.getTopWindow(), ex.getMessage(), "Invalid Input");
+					Domain.showErrorDialog(Domain.getTopWindow(), ex.getMessage(), Domain.prettyExceptionDetails(ex), "Invalid Input");
 				}
 				pass = false;
 			}
@@ -2738,7 +2738,7 @@ public class ViewPanel extends JPanel
 					catch(MarlaException ex)
 					{
 						Domain.logger.add(ex);
-						Domain.showErrorDialog(Domain.getTopWindow(), ex.getMessage(), "Save Failed");
+						Domain.showErrorDialog(Domain.getTopWindow(), ex.getMessage(), Domain.prettyExceptionDetails(ex), "Save Failed");
 						return false;
 					}
 				}

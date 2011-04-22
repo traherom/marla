@@ -144,7 +144,7 @@ public class maRlaIDE
 					}
 					System.out.println();
 
-					Domain.showErrorDialog(null, "A fatal error occured while launching The maRla Project.\nPlease contact the developer.", "Fatal Error");
+					Domain.showErrorDialog(null, "A fatal error occured while launching The maRla Project.\nPlease contact the developer.", Domain.prettyExceptionDetails(ex), "Fatal Error");
 
 					System.exit(1);
 				}

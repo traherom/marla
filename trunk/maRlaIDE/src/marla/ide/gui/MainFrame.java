@@ -153,7 +153,7 @@ public class MainFrame extends JFrame
 				}
 				catch(MarlaException ex)
 				{
-					Domain.showWarningDialog(Domain.getTopWindow(), ex.getMessage(), "Load Error");
+					Domain.showWarningDialog(Domain.getTopWindow(), ex.getMessage(), Domain.prettyExceptionDetails(ex), "Load Error");
 				}
 
 				viewPanel.initLoading = false;

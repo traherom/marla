@@ -481,7 +481,7 @@ public class SettingsDialog extends EscapeDialog
 			catch (MarlaException ex)
 			{
 				// Path should not be changed, but display dialog telling user the problem
-				Domain.showWarningDialog(Domain.getTopWindow(), ex.getMessage(), "R Error");
+				Domain.showWarningDialog(Domain.getTopWindow(), ex.getMessage(), Domain.prettyExceptionDetails(ex), "R Error");
 			}
 		}
 	}//GEN-LAST:event_rPathButtonActionPerformed
@@ -509,7 +509,7 @@ public class SettingsDialog extends EscapeDialog
 			catch (MarlaException ex)
 			{
 				// Path should not be changed, but display dialog telling user the problem
-				Domain.showWarningDialog(Domain.getTopWindow(), ex.getMessage(), "PDFLaTeX Error");
+				Domain.showWarningDialog(Domain.getTopWindow(), ex.getMessage(), Domain.prettyExceptionDetails(ex), "PDFLaTeX Error");
 			}
 		}
 	}//GEN-LAST:event_latexPathButtonActionPerformed
@@ -537,7 +537,7 @@ public class SettingsDialog extends EscapeDialog
 			catch (MarlaException ex)
 			{
 				// Path should not be changed, but display dialog telling user the problem
-				Domain.showWarningDialog(Domain.getTopWindow(), ex.getMessage(), "LaTeX Export Template Error");
+				Domain.showWarningDialog(Domain.getTopWindow(), ex.getMessage(), Domain.prettyExceptionDetails(ex), "LaTeX Export Template Error");
 			}
 		}
 	}//GEN-LAST:event_latexTemplateButtonActionPerformed
@@ -566,7 +566,7 @@ public class SettingsDialog extends EscapeDialog
 			catch (MarlaException ex)
 			{
 				// Path should not be changed, but display dialog telling user the problem
-				Domain.showWarningDialog(Domain.getTopWindow(), ex.getMessage(), "Primary Operation XML Error");
+				Domain.showWarningDialog(Domain.getTopWindow(), ex.getMessage(), Domain.prettyExceptionDetails(ex), "Primary Operation XML Error");
 			}
 		}
 	}//GEN-LAST:event_operationsButtonActionPerformed
@@ -691,7 +691,7 @@ public class SettingsDialog extends EscapeDialog
 			catch (MarlaException ex)
 			{
 				// Path should not be changed, but display dialog telling user the problem
-				Domain.showWarningDialog(Domain.getTopWindow(), ex.getMessage(), "User XML Error");
+				Domain.showWarningDialog(Domain.getTopWindow(), ex.getMessage(), Domain.prettyExceptionDetails(ex), "User XML Error");
 			}
 		}
 	}//GEN-LAST:event_customOpsBrowseActionPerformed
@@ -708,7 +708,7 @@ public class SettingsDialog extends EscapeDialog
 				try
 				{
 					Domain.logger.add(ex);
-					Domain.showWarningDialog(Domain.getTopWindow(), ex.getMessage(), "Can't Change Path");
+					Domain.showWarningDialog(Domain.getTopWindow(), ex.getMessage(), Domain.prettyExceptionDetails(ex), "Can't Change Path");
 					customOpsTextField.setText((String) Configuration.getInstance().get(Configuration.ConfigType.UserOpsXML));
 				}
 				catch(MarlaException innerEx)
@@ -739,7 +739,7 @@ public class SettingsDialog extends EscapeDialog
 				try
 				{
 					Domain.logger.add(ex);
-					Domain.showWarningDialog(Domain.getTopWindow(), ex.getMessage(), "Can't Change Path");
+					Domain.showWarningDialog(Domain.getTopWindow(), ex.getMessage(), Domain.prettyExceptionDetails(ex), "Can't Change Path");
 					rPathTextField.setText((String) Configuration.getInstance().get(Configuration.ConfigType.R));
 				}
 				// Exception won't happen
@@ -763,7 +763,7 @@ public class SettingsDialog extends EscapeDialog
 				try
 				{
 					Domain.logger.add(ex);
-					Domain.showWarningDialog(Domain.getTopWindow(), ex.getMessage(), "Can't Change Path");
+					Domain.showWarningDialog(Domain.getTopWindow(), ex.getMessage(), Domain.prettyExceptionDetails(ex), "Can't Change Path");
 					latexPathTextField.setText((String) Configuration.getInstance().get(Configuration.ConfigType.PdfTex));
 				}
 				// Exception won't happen
@@ -791,7 +791,7 @@ public class SettingsDialog extends EscapeDialog
 				try
 				{
 					Domain.logger.add(ex);
-					Domain.showWarningDialog(Domain.getTopWindow(), ex.getMessage(), "Can't Change Path");
+					Domain.showWarningDialog(Domain.getTopWindow(), ex.getMessage(), Domain.prettyExceptionDetails(ex), "Can't Change Path");
 					latexTemplateTextField.setText((String) Configuration.getInstance().get(Configuration.ConfigType.TexTemplate));
 				}
 				// Exception won't happen
@@ -819,7 +819,7 @@ public class SettingsDialog extends EscapeDialog
 				try
 				{
 					Domain.logger.add(ex);
-					Domain.showWarningDialog(Domain.getTopWindow(), ex.getMessage(), "Can't Change Path");
+					Domain.showWarningDialog(Domain.getTopWindow(), ex.getMessage(), Domain.prettyExceptionDetails(ex), "Can't Change Path");
 					operationsTextField.setText((String) Configuration.getInstance().get(Configuration.ConfigType.PrimaryOpsXML));
 				}
 				// Exception won't happen

@@ -693,7 +693,7 @@ public class ViewPanel extends JPanel
 				}
 				catch(OperationEditorException ex)
 				{
-					marla.ide.gui.Domain.showWarningDialog(Domain.getTopWindow(), ex.getMessage(), "Unable to Open");
+					marla.ide.gui.Domain.showWarningDialog(Domain.getTopWindow(), ex.getMessage(), marla.ide.gui.Domain.prettyExceptionDetails(ex), "Unable to Open");
 				}
 
 
@@ -1139,7 +1139,7 @@ public class ViewPanel extends JPanel
 				{
 					clearTest = true;
 
-					marla.ide.gui.Domain.showErrorDialog(Domain.getTopWindow(), "The test panel could not be refresh.\n" + ex.getMessage(), "Error Testing");
+					marla.ide.gui.Domain.showErrorDialog(Domain.getTopWindow(), "The test panel could not be refresh.\n" + ex.getMessage(), marla.ide.gui.Domain.prettyExceptionDetails(ex), "Error Testing");
 					Domain.logger.add(ex);
 				}
 			}
@@ -1247,7 +1247,7 @@ public class ViewPanel extends JPanel
 				if(!ignoreSecond)
 				{
 					ignoreSecond = true;
-					marla.ide.gui.Domain.showErrorDialog(Domain.getTopWindow(), "The XML entered is not valid. You cannot edit another operation\nthe current operation has been made valid.", "Invalid XML");
+					marla.ide.gui.Domain.showErrorDialog(Domain.getTopWindow(), "The XML entered is not valid. You cannot edit another operation\nthe current operation has been made valid.", marla.ide.gui.Domain.prettyExceptionDetails(ex), "Invalid XML");
 				}
 				else
 				{

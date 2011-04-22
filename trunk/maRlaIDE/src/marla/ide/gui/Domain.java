@@ -87,17 +87,17 @@ public class Domain
 	/** The pre-release version name of the application.*/
 	public static final String PRE_RELEASE = "RC";
 	/** The location of the application as it runs.*/
-	public static final String CWD = System.getProperty ("user.dir");
+	public static final String CWD = System.getProperty("user.dir");
 	/** The name of the operating system being used.*/
-	public static final String OS_NAME = System.getProperty ("os.name");
+	public static final String OS_NAME = System.getProperty("os.name");
 	/** The home directory for the current user.*/
-	public static final String HOME_DIR = System.getProperty ("user.home");
+	public static final String HOME_DIR = System.getProperty("user.home");
 	/** The relative path to the images folder within the source.*/
 	public static final String IMAGES_DIR = "/marla/ide/images/";
 	/** The full time format for debug output.*/
 	public static final SimpleDateFormat FULL_TIME_FORMAT = new SimpleDateFormat("MM/dd/yyyy h:mm:ss a");
 	/** The logger holds all caught exceptions for recording in the log file.*/
-	public static final Queue<Throwable> logger = new ArrayDeque<Throwable> (5);
+	public static final Queue<Throwable> logger = new ArrayDeque<Throwable>(5);
 	/** Debug mode */
 	public static boolean debug = false;
 	/** First run of maRla */
@@ -149,14 +149,14 @@ public class Domain
 		this.viewPanel = viewPanel;
 
 		// If the Desktop object is supported, get the reference
-		if (Desktop.isDesktopSupported ())
+		if(Desktop.isDesktopSupported())
 		{
-			desktop = Desktop.getDesktop ();
+			desktop = Desktop.getDesktop();
 		}
 		final Domain domain = this;
-		Problem.setDomain (domain);
+		Problem.setDomain(domain);
 
-		logFile = new File ("log.dat");
+		logFile = new File("log.dat");
 	}
 
 	/**
@@ -167,7 +167,27 @@ public class Domain
 	{
 		return currDomain;
 	}
-	
+
+	/**
+	 * Retrieve a pretty string representation of the full exception details.
+	 * 
+	 * @param ex The thrown exception.
+	 * @return A pretty string representation of the exception.
+	 */
+	public static String prettyExceptionDetails(Exception ex)
+	{
+		String string = "Error: " + ex.getClass() + "\n";
+		string += "Message: " + ex.getMessage() + "\n--\nTrace:\n";
+		Object[] trace = ex.getStackTrace();
+		for(int j = 0; j < trace.length; ++j)
+		{
+			string += "  " + trace[j].toString() + "\n";
+		}
+		string += "\n";
+		
+		return string;
+	}
+
 	/**
 	 * Show a standard input dialog and return the value the user enters.
 	 * 
@@ -181,7 +201,7 @@ public class Domain
 	{
 		return JOptionPane.showInputDialog(parent, message, title, JOptionPane.QUESTION_MESSAGE, null, null, oldValue);
 	}
-	
+
 	/**
 	 * Show the standard multi-line dialog and return the value the user enters.
 	 * 
@@ -195,7 +215,7 @@ public class Domain
 	{
 		return InputDialog.launchInputDialog(ViewPanel.getInstance(), parent, title, message, oldValue);
 	}
-	
+
 	/**
 	 * Show the standard confirmation dialog.
 	 * 
@@ -207,9 +227,9 @@ public class Domain
 	 */
 	public static int showConfirmDialog(Component parent, String message, String title, int optionType)
 	{
-		return showConfirmDialog (parent, message, title, optionType, JOptionPane.QUESTION_MESSAGE);
+		return showConfirmDialog(parent, message, title, optionType, JOptionPane.QUESTION_MESSAGE);
 	}
-	
+
 	/**
 	 * Display a confirmation dialog and return the option chosen.
 	 * 
@@ -221,7 +241,7 @@ public class Domain
 	 */
 	public static int showConfirmDialog(Component parent, String message, String title, int optionType, int iconType)
 	{
-		return JOptionPane.showConfirmDialog (parent, message, title, optionType, iconType);
+		return JOptionPane.showConfirmDialog(parent, message, title, optionType, iconType);
 	}
 
 	/**
@@ -235,7 +255,7 @@ public class Domain
 	{
 		JOptionPane.showMessageDialog(parent, message, title, JOptionPane.ERROR_MESSAGE);
 	}
-	
+
 	/**
 	 * Display an error dialog with an inner details collapsable scroll pane.
 	 * 
@@ -248,7 +268,7 @@ public class Domain
 	{
 		JOptionPane.showMessageDialog(parent, Domain.getInstance().createDetailedDisplayObject(message, details), title, JOptionPane.ERROR_MESSAGE);
 	}
-	
+
 	/**
 	 * Display a standard warning dialog.
 	 * 
@@ -260,7 +280,7 @@ public class Domain
 	{
 		JOptionPane.showMessageDialog(parent, message, title, JOptionPane.WARNING_MESSAGE);
 	}
-	
+
 	/**
 	 * Display a warning dialog with an inner details collapsable scroll pane.
 	 * 
@@ -273,7 +293,7 @@ public class Domain
 	{
 		JOptionPane.showMessageDialog(parent, Domain.getInstance().createDetailedDisplayObject(message, details), title, JOptionPane.WARNING_MESSAGE);
 	}
-	
+
 	/**
 	 * Display a standard information dialog.
 	 * 
@@ -308,7 +328,7 @@ public class Domain
 		{
 			// Ensure it's valid. Don't allow it to follow redirects, helps with the CU proxy login
 			URL url = new URL(newServer);
-			HttpURLConnection conn = (HttpURLConnection)url.openConnection();
+			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 			conn.setInstanceFollowRedirects(false);
 
 			// Read in page
@@ -316,7 +336,9 @@ public class Domain
 			StringBuilder page = new StringBuilder();
 			String line = null;
 			while((line = rd.readLine()) != null)
+			{
 				page.append(line);
+			}
 			rd.close();
 
 			// Check response
@@ -384,7 +406,7 @@ public class Domain
 		boolean old = debug;
 		debug = newMode;
 
-		if (getInstance() != null)
+		if(getInstance() != null)
 		{
 			JScrollPane debugPane = getInstance().viewPanel.debugScrollPane;
 			JSplitPane split = getInstance().viewPanel.workspaceSplitPane;
@@ -461,7 +483,7 @@ public class Domain
 			lastGoodDir = loc.toString();
 		else
 			lastGoodDir = loc.getParent();
-		
+
 		return old;
 	}
 
@@ -472,7 +494,7 @@ public class Domain
 	 */
 	public static void setProgressTitle(final String string)
 	{
-		if (MainFrame.progressFrame != null)
+		if(MainFrame.progressFrame != null)
 		{
 			MainFrame.progressFrame.setTitle(string);
 		}
@@ -598,8 +620,8 @@ public class Domain
 	 */
 	public void setWorkspaceStatus(String status)
 	{
-		viewPanel.statusLabel.setText ("<html>" + status + "</html>");
-		viewPanel.statusLabel.setSize (viewPanel.statusLabel.getPreferredSize());
+		viewPanel.statusLabel.setText("<html>" + status + "</html>");
+		viewPanel.statusLabel.setSize(viewPanel.statusLabel.getPreferredSize());
 	}
 
 	/**
@@ -684,7 +706,7 @@ public class Domain
 				probCache = "Unable to get problem XML: " + ex.getMessage();
 			}
 		}
-		
+
 		try
 		{
 			confCache = Configuration.getInstance().getConfigXML();
@@ -815,7 +837,7 @@ public class Domain
 			System.out.println("Unable to send exception to development team: " + ex2.getMessage());
 		}
 	}
-	
+
 	/**
 	 * Retrieves the reference to the currently open problem.
 	 *
@@ -832,16 +854,16 @@ public class Domain
 	 */
 	public void save()
 	{
-		if (problem != null)
+		if(problem != null)
 		{
 			try
 			{
-				problem.save ();
+				problem.save();
 			}
-			catch (MarlaException ex)
+			catch(MarlaException ex)
 			{
 				logger.add(ex);
-				Domain.showErrorDialog(Domain.getTopWindow(), ex.getMessage(), "Unable to Save");
+				Domain.showErrorDialog(Domain.getTopWindow(), ex.getMessage(), Domain.prettyExceptionDetails(ex), "Unable to Save");
 			}
 		}
 	}
@@ -853,7 +875,7 @@ public class Domain
 	 */
 	public boolean isEditing()
 	{
-		if (viewPanel.newProblemWizardDialog.newProblem != null)
+		if(viewPanel.newProblemWizardDialog.newProblem != null)
 		{
 			return false;
 		}
@@ -886,7 +908,7 @@ public class Domain
 	 */
 	public void validateUndoRedoMenuItems()
 	{
-		if (viewPanel.undoRedo.hasUndo())
+		if(viewPanel.undoRedo.hasUndo())
 		{
 			viewPanel.mainFrame.undoMenuItem.setEnabled(true);
 		}
@@ -894,7 +916,7 @@ public class Domain
 		{
 			viewPanel.mainFrame.undoMenuItem.setEnabled(false);
 		}
-		if (viewPanel.undoRedo.hasRedo())
+		if(viewPanel.undoRedo.hasRedo())
 		{
 			viewPanel.mainFrame.redoMenuItem.setEnabled(true);
 		}
@@ -911,7 +933,7 @@ public class Domain
 	public void changeBeginning(String changeMsg)
 	{
 		if(viewPanel.newProblemWizardDialog.newProblem == null && problem != null)
-			viewPanel.undoRedo.addUndoStep (problem.clone(), changeMsg);
+			viewPanel.undoRedo.addUndoStep(problem.clone(), changeMsg);
 
 		validateUndoRedoMenuItems();
 	}
@@ -921,9 +943,9 @@ public class Domain
 	 */
 	public void markUnsaved()
 	{
-		if (isEditing ())
+		if(isEditing())
 		{
-			viewPanel.saveButton.setEnabled (true);
+			viewPanel.saveButton.setEnabled(true);
 		}
 	}
 
@@ -932,7 +954,7 @@ public class Domain
 	 */
 	public void markSaved()
 	{
-		viewPanel.saveButton.setEnabled (false);
+		viewPanel.saveButton.setEnabled(false);
 	}
 
 	/**
@@ -940,50 +962,50 @@ public class Domain
 	 */
 	protected void saveAs()
 	{
-		if (problem != null)
+		if(problem != null)
 		{
 			// Construct the file-based open chooser dialog
-			viewPanel.fileChooserDialog.setDialogTitle ("Save Problem As");
+			viewPanel.fileChooserDialog.setDialogTitle("Save Problem As");
 			viewPanel.fileChooserDialog.setDialogType(JFileChooser.SAVE_DIALOG);
-			viewPanel.fileChooserDialog.resetChoosableFileFilters ();
-			viewPanel.fileChooserDialog.setFileFilter (viewPanel.marlaFilter);
-			viewPanel.fileChooserDialog.setFileSelectionMode (JFileChooser.FILES_ONLY);
-			viewPanel.fileChooserDialog.setCurrentDirectory (new File (problem.getFileName ()));
-			viewPanel.fileChooserDialog.setSelectedFile (new File (problem.getFileName ()));
+			viewPanel.fileChooserDialog.resetChoosableFileFilters();
+			viewPanel.fileChooserDialog.setFileFilter(viewPanel.marlaFilter);
+			viewPanel.fileChooserDialog.setFileSelectionMode(JFileChooser.FILES_ONLY);
+			viewPanel.fileChooserDialog.setCurrentDirectory(new File(problem.getFileName()));
+			viewPanel.fileChooserDialog.setSelectedFile(new File(problem.getFileName()));
 			// Display the chooser and retrieve the selected file
-			int response = viewPanel.fileChooserDialog.showSaveDialog (viewPanel);
-			while (response == JFileChooser.APPROVE_OPTION)
+			int response = viewPanel.fileChooserDialog.showSaveDialog(viewPanel);
+			while(response == JFileChooser.APPROVE_OPTION)
 			{
-				File file = viewPanel.fileChooserDialog.getSelectedFile ();
+				File file = viewPanel.fileChooserDialog.getSelectedFile();
 				// ensure an extension is on the file
-				if (file.getName ().indexOf (".") == -1)
+				if(file.getName().indexOf(".") == -1)
 				{
-					file = new File (viewPanel.fileChooserDialog.getSelectedFile ().toString () + ".marla");
+					file = new File(viewPanel.fileChooserDialog.getSelectedFile().toString() + ".marla");
 				}
 				// ensure the file is a valid backup file
-				if (!file.toString ().endsWith (".marla"))
+				if(!file.toString().endsWith(".marla"))
 				{
 					Domain.showWarningDialog(Domain.getTopWindow(), "The extension for the file must be .marla.", "Invalid Extension");
-					viewPanel.fileChooserDialog.setSelectedFile (new File (viewPanel.fileChooserDialog.getSelectedFile ().toString ().substring (0, viewPanel.fileChooserDialog.getSelectedFile ().toString ().lastIndexOf (".")) + ".marla"));
-					response = viewPanel.fileChooserDialog.showSaveDialog (viewPanel);
+					viewPanel.fileChooserDialog.setSelectedFile(new File(viewPanel.fileChooserDialog.getSelectedFile().toString().substring(0, viewPanel.fileChooserDialog.getSelectedFile().toString().lastIndexOf(".")) + ".marla"));
+					response = viewPanel.fileChooserDialog.showSaveDialog(viewPanel);
 					continue;
 				}
 				// Ensure the problem name given does not match an already existing file
 				boolean continueAllowed = true;
-				if (file.exists ())
+				if(file.exists())
 				{
 					response = Domain.showConfirmDialog(Domain.getTopWindow(), "The selected file already exists.\nWould you like to overwrite the existing file?", "Overwrite Existing File", JOptionPane.YES_NO_OPTION);
-					if (response != JOptionPane.YES_OPTION)
+					if(response != JOptionPane.YES_OPTION)
 					{
 						continueAllowed = false;
 					}
 				}
 
-				if (continueAllowed)
+				if(continueAllowed)
 				{
-					problem.setFileName (file.toString ());
+					problem.setFileName(file.toString());
 					viewPanel.mainFrame.setTitle(viewPanel.mainFrame.getDefaultTitle() + " - " + problem.getFileName().substring(problem.getFileName().lastIndexOf(System.getProperty("file.separator")) + 1, problem.getFileName().lastIndexOf(".")));
-					save ();
+					save();
 					break;
 				}
 				else
@@ -999,47 +1021,47 @@ public class Domain
 	 */
 	protected void exportToPdf()
 	{
-		if (problem != null)
+		if(problem != null)
 		{
 			// Construct the file-based open chooser dialog
-			viewPanel.fileChooserDialog.setDialogTitle ("Export to PDF");
+			viewPanel.fileChooserDialog.setDialogTitle("Export to PDF");
 			viewPanel.fileChooserDialog.setDialogType(JFileChooser.SAVE_DIALOG);
-			viewPanel.fileChooserDialog.resetChoosableFileFilters ();
-			viewPanel.fileChooserDialog.setFileFilter (viewPanel.pdfFilter);
-			viewPanel.fileChooserDialog.setFileSelectionMode (JFileChooser.FILES_ONLY);
-			viewPanel.fileChooserDialog.setCurrentDirectory (new File (problem.getFileName ().substring (0, problem.getFileName ().lastIndexOf (".")) + ".pdf"));
-			viewPanel.fileChooserDialog.setSelectedFile (new File (problem.getFileName ().substring (0, problem.getFileName ().lastIndexOf (".")) + ".pdf"));
+			viewPanel.fileChooserDialog.resetChoosableFileFilters();
+			viewPanel.fileChooserDialog.setFileFilter(viewPanel.pdfFilter);
+			viewPanel.fileChooserDialog.setFileSelectionMode(JFileChooser.FILES_ONLY);
+			viewPanel.fileChooserDialog.setCurrentDirectory(new File(problem.getFileName().substring(0, problem.getFileName().lastIndexOf(".")) + ".pdf"));
+			viewPanel.fileChooserDialog.setSelectedFile(new File(problem.getFileName().substring(0, problem.getFileName().lastIndexOf(".")) + ".pdf"));
 			// Display the chooser and retrieve the selected file
-			int response = viewPanel.fileChooserDialog.showSaveDialog (viewPanel);
-			while (response == JFileChooser.APPROVE_OPTION)
+			int response = viewPanel.fileChooserDialog.showSaveDialog(viewPanel);
+			while(response == JFileChooser.APPROVE_OPTION)
 			{
-				File file = viewPanel.fileChooserDialog.getSelectedFile ();
+				File file = viewPanel.fileChooserDialog.getSelectedFile();
 				// ensure an extension is on the file
-				if (file.getName ().indexOf (".") == -1)
+				if(file.getName().indexOf(".") == -1)
 				{
-					file = new File (viewPanel.fileChooserDialog.getSelectedFile ().toString () + ".pdf");
+					file = new File(viewPanel.fileChooserDialog.getSelectedFile().toString() + ".pdf");
 				}
 				final File finalFile = file;
 				// ensure the file is a valid backup file
-				if (!finalFile.toString ().endsWith (".pdf"))
+				if(!finalFile.toString().endsWith(".pdf"))
 				{
 					Domain.showWarningDialog(Domain.getTopWindow(), "The extension for the file must be .pdf.", "Invalid Extension");
-					viewPanel.fileChooserDialog.setSelectedFile (new File (viewPanel.fileChooserDialog.getSelectedFile ().toString ().substring (0, viewPanel.fileChooserDialog.getSelectedFile ().toString ().lastIndexOf (".")) + ".pdf"));
-					response = viewPanel.fileChooserDialog.showSaveDialog (viewPanel);
+					viewPanel.fileChooserDialog.setSelectedFile(new File(viewPanel.fileChooserDialog.getSelectedFile().toString().substring(0, viewPanel.fileChooserDialog.getSelectedFile().toString().lastIndexOf(".")) + ".pdf"));
+					response = viewPanel.fileChooserDialog.showSaveDialog(viewPanel);
 					continue;
 				}
 				// Ensure the problem name given does not match an already existing file
 				boolean continueAllowed = true;
-				if (finalFile.exists ())
+				if(finalFile.exists())
 				{
 					response = Domain.showConfirmDialog(Domain.getTopWindow(), "The selected file already exists.\nWould you like to overwrite the existing file?", "Overwrite Existing File", JOptionPane.YES_NO_OPTION);
-					if (response != JOptionPane.YES_OPTION)
+					if(response != JOptionPane.YES_OPTION)
 					{
 						continueAllowed = false;
 					}
 				}
 
-				if (continueAllowed)
+				if(continueAllowed)
 				{
 					Domain.setProgressTitle("Exporting");
 					Domain.setProgressVisible(true);
@@ -1056,34 +1078,36 @@ public class Domain
 							try
 							{
 								// Ensure all operations have been fulfilled, info wise
-								for (int i = 0; i < problem.getDataCount (); i++)
+								for(int i = 0; i < problem.getDataCount(); i++)
 								{
-									List<Operation> ops = problem.getData (i).getAllLeafOperations ();
-									for (Operation op : ops)
+									List<Operation> ops = problem.getData(i).getAllLeafOperations();
+									for(Operation op : ops)
 									{
-										ensureRequirementsMet (op);
-										if (Domain.cancelExport)
+										ensureRequirementsMet(op);
+										if(Domain.cancelExport)
 										{
 											break;
 										}
 									}
 								}
 
-								if (!Domain.cancelExport)
+								if(!Domain.cancelExport)
 								{
-									LatexExporter exporter = new LatexExporter (problem);
-									File genFile = new File (exporter.exportPDF (finalFile.getPath ()));
+									LatexExporter exporter = new LatexExporter(problem);
+									File genFile = new File(exporter.exportPDF(finalFile.getPath()));
 									filePath = genFile.getCanonicalPath();
-									if (desktop != null)
+									if(desktop != null)
 									{
 										Domain.setProgressStatus("Opening PDF...");
 
-										desktop.open (genFile);
+										desktop.open(genFile);
 										try
 										{
 											Thread.sleep(3000);
 										}
-										catch (InterruptedException ex) {}
+										catch(InterruptedException ex)
+										{
+										}
 									}
 								}
 								else
@@ -1091,23 +1115,23 @@ public class Domain
 									Domain.cancelExport = false;
 								}
 							}
-							catch (IOException ex)
+							catch(IOException ex)
 							{
-								if (filePath != null)
+								if(filePath != null)
 								{
 									Domain.setProgressIndeterminate(false);
 									Domain.showInformationDialog(Domain.getTopWindow(), "The file was exported successfully.\nLocation: " + filePath, "Export Successful");
 								}
 								else
 								{
-									Domain.logger.add (ex);
-									Domain.showErrorDialog(Domain.getTopWindow(), ex.getMessage(), "PDF Export Failed");
+									Domain.logger.add(ex);
+									Domain.showErrorDialog(Domain.getTopWindow(), ex.getMessage(), Domain.prettyExceptionDetails(ex), "PDF Export Failed");
 								}
 							}
-							catch (MarlaException ex)
+							catch(MarlaException ex)
 							{
-								Domain.logger.add (ex);
-								Domain.showErrorDialog(Domain.getTopWindow(), ex.getMessage(), "PDF Export Failed");
+								Domain.logger.add(ex);
+								Domain.showErrorDialog(Domain.getTopWindow(), ex.getMessage(), Domain.prettyExceptionDetails(ex), "PDF Export Failed");
 							}
 							finally
 							{
@@ -1131,47 +1155,47 @@ public class Domain
 	 */
 	protected void exportForLatex()
 	{
-		if (problem != null)
+		if(problem != null)
 		{
 			// Construct the file-based open chooser dialog
-			viewPanel.fileChooserDialog.setDialogTitle ("Export for LaTeX");
+			viewPanel.fileChooserDialog.setDialogTitle("Export for LaTeX");
 			viewPanel.fileChooserDialog.setDialogType(JFileChooser.SAVE_DIALOG);
-			viewPanel.fileChooserDialog.resetChoosableFileFilters ();
-			viewPanel.fileChooserDialog.setFileFilter (viewPanel.latexFilter);
-			viewPanel.fileChooserDialog.setFileSelectionMode (JFileChooser.FILES_ONLY);
-			viewPanel.fileChooserDialog.setCurrentDirectory (new File (problem.getFileName ().substring (0, problem.getFileName ().lastIndexOf (".")) + ".Rnw"));
-			viewPanel.fileChooserDialog.setSelectedFile (new File (problem.getFileName ().substring (0, problem.getFileName ().lastIndexOf (".")) + ".Rnw"));
+			viewPanel.fileChooserDialog.resetChoosableFileFilters();
+			viewPanel.fileChooserDialog.setFileFilter(viewPanel.latexFilter);
+			viewPanel.fileChooserDialog.setFileSelectionMode(JFileChooser.FILES_ONLY);
+			viewPanel.fileChooserDialog.setCurrentDirectory(new File(problem.getFileName().substring(0, problem.getFileName().lastIndexOf(".")) + ".Rnw"));
+			viewPanel.fileChooserDialog.setSelectedFile(new File(problem.getFileName().substring(0, problem.getFileName().lastIndexOf(".")) + ".Rnw"));
 			// Display the chooser and retrieve the selected file
-			int response = viewPanel.fileChooserDialog.showSaveDialog (viewPanel);
-			while (response == JFileChooser.APPROVE_OPTION)
+			int response = viewPanel.fileChooserDialog.showSaveDialog(viewPanel);
+			while(response == JFileChooser.APPROVE_OPTION)
 			{
-				File file = viewPanel.fileChooserDialog.getSelectedFile ();
+				File file = viewPanel.fileChooserDialog.getSelectedFile();
 				// ensure an extension is on the file
-				if (file.getName ().indexOf (".") == -1)
+				if(file.getName().indexOf(".") == -1)
 				{
-					file = new File (viewPanel.fileChooserDialog.getSelectedFile ().toString () + ".Rnw");
+					file = new File(viewPanel.fileChooserDialog.getSelectedFile().toString() + ".Rnw");
 				}
 				final File finalFile = file;
 				// ensure the file is a valid backup file
-				if (!finalFile.toString ().toLowerCase().endsWith (".rnw"))
+				if(!finalFile.toString().toLowerCase().endsWith(".rnw"))
 				{
 					Domain.showWarningDialog(Domain.getTopWindow(), "The extension for the file must be .Rnw.", "Invalid Extension");
-					viewPanel.fileChooserDialog.setSelectedFile (new File (viewPanel.fileChooserDialog.getSelectedFile ().toString ().substring (0, viewPanel.fileChooserDialog.getSelectedFile ().toString ().lastIndexOf (".")) + ".tex"));
-					response = viewPanel.fileChooserDialog.showSaveDialog (viewPanel);
+					viewPanel.fileChooserDialog.setSelectedFile(new File(viewPanel.fileChooserDialog.getSelectedFile().toString().substring(0, viewPanel.fileChooserDialog.getSelectedFile().toString().lastIndexOf(".")) + ".tex"));
+					response = viewPanel.fileChooserDialog.showSaveDialog(viewPanel);
 					continue;
 				}
 				// Ensure the problem name given does not match an already existing file
 				boolean continueAllowed = true;
-				if (finalFile.exists ())
+				if(finalFile.exists())
 				{
 					response = Domain.showConfirmDialog(Domain.getTopWindow(), "The selected file already exists.\nWould you like to overwrite the existing file?", "Overwrite Existing File", JOptionPane.YES_NO_OPTION);
-					if (response != JOptionPane.YES_OPTION)
+					if(response != JOptionPane.YES_OPTION)
 					{
 						continueAllowed = false;
 					}
 				}
 
-				if (continueAllowed)
+				if(continueAllowed)
 				{
 					Domain.setProgressTitle("Exporting");
 					Domain.setProgressVisible(true);
@@ -1188,49 +1212,51 @@ public class Domain
 							try
 							{
 								// Ensure all operations have been fulfilled, info wise
-								for (int i = 0; i < problem.getDataCount (); i++)
+								for(int i = 0; i < problem.getDataCount(); i++)
 								{
-									List<Operation> ops = problem.getData (i).getAllLeafOperations ();
-									for (Operation op : ops)
+									List<Operation> ops = problem.getData(i).getAllLeafOperations();
+									for(Operation op : ops)
 									{
-										ensureRequirementsMet (op);
+										ensureRequirementsMet(op);
 									}
 								}
 
-								LatexExporter exporter = new LatexExporter (problem);
-								File genFile = new File (exporter.cleanExport (finalFile.getPath ()));
+								LatexExporter exporter = new LatexExporter(problem);
+								File genFile = new File(exporter.cleanExport(finalFile.getPath()));
 								filePath = genFile.getCanonicalPath();
-								if (desktop != null)
+								if(desktop != null)
 								{
-									desktop.open (genFile);
+									desktop.open(genFile);
 									try
 									{
 										Thread.sleep(3000);
 									}
-									catch (InterruptedException ex) {}
+									catch(InterruptedException ex)
+									{
+									}
 								}
 								else
 								{
-									throw new IOException ();
+									throw new IOException();
 								}
 							}
-							catch (IOException ex)
+							catch(IOException ex)
 							{
-								if (filePath != null)
+								if(filePath != null)
 								{
 									Domain.setProgressIndeterminate(false);
 									Domain.showInformationDialog(Domain.getTopWindow(), "The file was exported successfully.\nLocation: " + filePath, "Export Successful");
 								}
 								else
 								{
-									Domain.logger.add (ex);
-									Domain.showErrorDialog(Domain.getTopWindow(), ex.getMessage(), "Export Failed");
+									Domain.logger.add(ex);
+									Domain.showErrorDialog(Domain.getTopWindow(), ex.getMessage(), Domain.prettyExceptionDetails(ex), "Export Failed");
 								}
 							}
-							catch (MarlaException ex)
+							catch(MarlaException ex)
 							{
-								Domain.logger.add (ex);
-								Domain.showErrorDialog(Domain.getTopWindow(), ex.getMessage(), "Export Failed");
+								Domain.logger.add(ex);
+								Domain.showErrorDialog(Domain.getTopWindow(), ex.getMessage(), Domain.prettyExceptionDetails(ex), "Export Failed");
 							}
 							finally
 							{
@@ -1259,39 +1285,39 @@ public class Domain
 			// Construct the file-based open chooser dialog
 			viewPanel.fileChooserDialog.setDialogTitle("Browse Problem Location");
 			viewPanel.fileChooserDialog.setDialogType(JFileChooser.OPEN_DIALOG);
-			viewPanel.fileChooserDialog.resetChoosableFileFilters ();
-			viewPanel.fileChooserDialog.setFileFilter (viewPanel.marlaFilter);
-			viewPanel.fileChooserDialog.setFileSelectionMode (JFileChooser.FILES_ONLY);
+			viewPanel.fileChooserDialog.resetChoosableFileFilters();
+			viewPanel.fileChooserDialog.setFileFilter(viewPanel.marlaFilter);
+			viewPanel.fileChooserDialog.setFileSelectionMode(JFileChooser.FILES_ONLY);
 			String curDir = lastGoodDir;
-			if (problem != null)
+			if(problem != null)
 			{
-				curDir = problem.getFileName ();
+				curDir = problem.getFileName();
 			}
-			viewPanel.fileChooserDialog.setSelectedFile (new File (""));
-			viewPanel.fileChooserDialog.setCurrentDirectory (new File (curDir));
+			viewPanel.fileChooserDialog.setSelectedFile(new File(""));
+			viewPanel.fileChooserDialog.setCurrentDirectory(new File(curDir));
 			// Display the chooser and retrieve the selected file
-			int response = viewPanel.fileChooserDialog.showOpenDialog (viewPanel);
-			while (response == JFileChooser.APPROVE_OPTION)
+			int response = viewPanel.fileChooserDialog.showOpenDialog(viewPanel);
+			while(response == JFileChooser.APPROVE_OPTION)
 			{
-				File file = viewPanel.fileChooserDialog.getSelectedFile ();
-				if (!file.isFile () || !file.toString ().endsWith (".marla"))
+				File file = viewPanel.fileChooserDialog.getSelectedFile();
+				if(!file.isFile() || !file.toString().endsWith(".marla"))
 				{
 					Domain.showWarningDialog(Domain.getTopWindow(), "The specified file does not exist.", "Does Not Exist");
-					int lastIndex = viewPanel.fileChooserDialog.getSelectedFile ().toString ().lastIndexOf (".");
-					if (lastIndex == -1)
+					int lastIndex = viewPanel.fileChooserDialog.getSelectedFile().toString().lastIndexOf(".");
+					if(lastIndex == -1)
 					{
-						lastIndex = viewPanel.fileChooserDialog.getSelectedFile ().toString ().length ();
+						lastIndex = viewPanel.fileChooserDialog.getSelectedFile().toString().length();
 					}
-					viewPanel.fileChooserDialog.setSelectedFile (new File (viewPanel.fileChooserDialog.getSelectedFile ().toString ().substring (0, lastIndex) + ".marla"));
-					response = viewPanel.fileChooserDialog.showOpenDialog (viewPanel);
+					viewPanel.fileChooserDialog.setSelectedFile(new File(viewPanel.fileChooserDialog.getSelectedFile().toString().substring(0, lastIndex) + ".marla"));
+					response = viewPanel.fileChooserDialog.showOpenDialog(viewPanel);
 					continue;
 				}
 
 				boolean wantsClose = true;
-				if (problem != null)
+				if(problem != null)
 				{
-					wantsClose = viewPanel.closeProblem (false, false);
-					if (wantsClose)
+					wantsClose = viewPanel.closeProblem(false, false);
+					if(wantsClose)
 					{
 						viewPanel.undoRedo.clearHistory();
 					}
@@ -1299,25 +1325,25 @@ public class Domain
 
 				if(wantsClose)
 				{
-					if (file.isDirectory ())
+					if(file.isDirectory())
 					{
-						lastGoodDir = file.toString ();
+						lastGoodDir = file.toString();
 					}
 					else
 					{
 						lastGoodDir = file.getParent();
 					}
-					problem = Problem.load (file.toString ());
+					problem = Problem.load(file.toString());
 
-					viewPanel.openProblem (false, false);
+					viewPanel.openProblem(false, false);
 				}
 				break;
 			}
 		}
-		catch (MarlaException ex)
+		catch(MarlaException ex)
 		{
 			Domain.logger.add(ex);
-			Domain.showWarningDialog(Domain.getTopWindow(), ex.getMessage (), "Error Loading Save File");
+			Domain.showWarningDialog(Domain.getTopWindow(), ex.getMessage(), Domain.prettyExceptionDetails(ex), "Error Loading Save File");
 		}
 	}
 
@@ -1333,16 +1359,16 @@ public class Domain
 		// no operation that it depends on has missing requirements
 		boolean isSolved = false;
 		boolean allSolved = true;
-		while (!isSolved)
+		while(!isSolved)
 		{
 			try
 			{
-				op.checkCache ();
+				op.checkCache();
 				isSolved = true;
 			}
-			catch (OperationInfoRequiredException ex)
+			catch(OperationInfoRequiredException ex)
 			{
-				ViewPanel.getRequiredInfoDialog (ex.getOperation (), true);
+				ViewPanel.getRequiredInfoDialog(ex.getOperation(), true);
 				if(Domain.cancelExport)
 				{
 					allSolved = false;
@@ -1352,7 +1378,7 @@ public class Domain
 		}
 		return allSolved;
 	}
-	
+
 	/**
 	 * Consructs an error object that can be passed as the Message part of a
 	 * JOptionPane.  This object will a show/hide button for further details
@@ -1365,7 +1391,7 @@ public class Domain
 	 */
 	public Object createDetailedDisplayObject(String message, String innerMessage)
 	{
-		final JPanel panel = new JPanel(new GridLayout (2, 1));
+		final JPanel panel = new JPanel(new GridLayout(2, 1));
 		JTextArea textArea = new JTextArea();
 		textArea.setEditable(false);
 		textArea.setLineWrap(true);
@@ -1374,35 +1400,35 @@ public class Domain
 		final JScrollPane scrollPane = new JScrollPane();
 		scrollPane.setViewportView(textArea);
 		JPanel buttonPanel = new JPanel(new GridLayout(1, 3));
-		final JButton button = new JButton ("Show Details");
+		final JButton button = new JButton("Show Details");
 		button.addActionListener(new ActionListener()
 		{
 			@Override
 			public void actionPerformed(ActionEvent evt)
 			{
-				if (scrollPane.getParent() == null)
+				if(scrollPane.getParent() == null)
 				{
 					((GridLayout) panel.getLayout()).setRows(3);
 					panel.add(scrollPane);
-					button.setText ("Hide Details");
+					button.setText("Hide Details");
 				}
 				else
 				{
 					((GridLayout) panel.getLayout()).setRows(2);
 					panel.remove(scrollPane);
-					button.setText ("Show Details");
+					button.setText("Show Details");
 				}
 				JDialog dialog = null;
 				Container parent = panel.getParent();
-				while (parent != null && !(parent instanceof JDialog))
+				while(parent != null && !(parent instanceof JDialog))
 				{
 					parent = parent.getParent();
-					if (parent instanceof JDialog)
+					if(parent instanceof JDialog)
 					{
 						dialog = (JDialog) parent;
 					}
 				}
-				if (dialog != null)
+				if(dialog != null)
 				{
 					int width = dialog.getWidth();
 					dialog.pack();
@@ -1414,10 +1440,10 @@ public class Domain
 		buttonPanel.add(button);
 		buttonPanel.add(new JLabel(""));
 		buttonPanel.add(new JLabel(""));
-		
+
 		panel.add(new JLabel(message));
 		panel.add(buttonPanel);
-		
+
 		return panel;
 	}
 
@@ -1428,20 +1454,20 @@ public class Domain
 	 */
 	public static Container getTopWindow()
 	{
-		if (MainFrame.progressFrame.isVisible())
+		if(MainFrame.progressFrame.isVisible())
 		{
 			return MainFrame.progressFrame;
 		}
 		else
 		{
 			ViewPanel instance = ViewPanel.getInstance();
-			if (instance != null)
+			if(instance != null)
 			{
-				if (instance.settingsDialog.isVisible())
+				if(instance.settingsDialog.isVisible())
 				{
 					return instance.settingsDialog;
 				}
-				else if (instance.newProblemWizardDialog.isVisible())
+				else if(instance.newProblemWizardDialog.isVisible())
 				{
 					return instance.newProblemWizardDialog;
 				}
