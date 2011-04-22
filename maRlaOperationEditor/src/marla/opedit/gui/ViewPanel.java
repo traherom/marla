@@ -630,7 +630,7 @@ public class ViewPanel extends JPanel
 		}
 		else
 		{
-			JOptionPane.showMessageDialog(this, "You must browse for a data file to use before you\ncan test an operation.", "No Data Set", JOptionPane.INFORMATION_MESSAGE);
+			marla.ide.gui.Domain.showInformationDialog(Domain.getTopWindow(), "You must browse for a data file to use before you\ncan test an operation.", "No Data Set");
 		}
 	}//GEN-LAST:event_updateTestButtonActionPerformed
 
@@ -653,7 +653,7 @@ public class ViewPanel extends JPanel
 				File file = fileChooserDialog.getSelectedFile();
 				if(!file.isFile() || !file.toString().endsWith(".xml"))
 				{
-					JOptionPane.showMessageDialog(this, "The specified file does not exist.", "Does Not Exist", JOptionPane.WARNING_MESSAGE);
+					marla.ide.gui.Domain.showWarningDialog(Domain.getTopWindow(), "The specified file does not exist.", "Does Not Exist");
 					int lastIndex = fileChooserDialog.getSelectedFile().toString().lastIndexOf(".");
 					if(lastIndex == -1)
 					{
@@ -678,8 +678,8 @@ public class ViewPanel extends JPanel
 				// Warn if it's the primary xml
 				if(file.equals(new File(OperationXML.getPrimaryXMLPath())))
 				{
-					int ret = JOptionPane.showConfirmDialog(this, "This file is the primary XML file. It may be overwritten without warning if maRla is updated.\nInstead, create a new file and set it as maRla's user operations XML file.\nDo you still want to edit this file?", "Editing Not Recommended", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
-					if(ret == JOptionPane.NO_OPTION)
+					int resp = marla.ide.gui.Domain.showConfirmDialog(Domain.getTopWindow(), "This file is the primary XML file. It may be overwritten without warning if maRla is updated.\nInstead, create a new file and set it as maRla's user operations XML file.\nDo you still want to edit this file?", "Editing Not Recommended", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+					if(resp == JOptionPane.NO_OPTION)
 						return;
 				}
 
@@ -693,7 +693,7 @@ public class ViewPanel extends JPanel
 				}
 				catch(OperationEditorException ex)
 				{
-					JOptionPane.showMessageDialog(this, ex.getMessage(), "Unable to Open", JOptionPane.WARNING_MESSAGE);
+					marla.ide.gui.Domain.showWarningDialog(Domain.getTopWindow(), ex.getMessage(), "Unable to Open");
 				}
 
 
@@ -751,7 +751,7 @@ public class ViewPanel extends JPanel
 				File file = fileChooserDialog.getSelectedFile();
 				if(!file.isFile() || !file.toString().endsWith(".csv"))
 				{
-					JOptionPane.showMessageDialog(this, "The specified file does not exist.", "Does Not Exist", JOptionPane.WARNING_MESSAGE);
+					marla.ide.gui.Domain.showWarningDialog(Domain.getTopWindow(), "The specified file does not exist.", "Does Not Exist");
 					int lastIndex = fileChooserDialog.getSelectedFile().toString().lastIndexOf(".");
 					if(lastIndex == -1)
 					{
@@ -831,13 +831,13 @@ public class ViewPanel extends JPanel
 				File file = fileChooserDialog.getSelectedFile();
 				if(!file.toString().endsWith(".xml"))
 				{
-					JOptionPane.showMessageDialog(this, "The file must have a valid XML extension.", "Does Not Exist", JOptionPane.WARNING_MESSAGE);
+					marla.ide.gui.Domain.showWarningDialog(Domain.getTopWindow(), "The file must have a valid XML extension.", "Does Not Exist");
 					response = fileChooserDialog.showOpenDialog(this);
 					continue;
 				}
 				else if (file.exists())
 				{
-					response = JOptionPane.showOptionDialog(this, "The specified file already exists.  Overwrite?", "Overwrite File", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null);
+					response = marla.ide.gui.Domain.showConfirmDialog(Domain.getTopWindow(), "The specified file already exists.  Overwrite?", "Overwrite File", JOptionPane.YES_NO_OPTION);
 					if(response != JOptionPane.YES_OPTION)
 					{
 						response = fileChooserDialog.showSaveDialog(this);
@@ -905,7 +905,7 @@ public class ViewPanel extends JPanel
 		}
 		if (!success)
 		{
-			JOptionPane.showMessageDialog(this, "Launching the web browser failed. To view Inner XML documentation,\nvisit http://code.google.com/p/marla/wiki/XMLOperationSpecification manually in your web browser.", "Desktop Not Supported", JOptionPane.INFORMATION_MESSAGE);
+			marla.ide.gui.Domain.showInformationDialog(Domain.getTopWindow(), "Launching the web browser failed. To view Inner XML documentation,\nvisit http://code.google.com/p/marla/wiki/XMLOperationSpecification manually in your web browser.", "Desktop Not Supported");
 		}
 	}//GEN-LAST:event_innerXmlLinkLabelMouseReleased
 
@@ -950,13 +950,13 @@ public class ViewPanel extends JPanel
 				File file = fileChooserDialog.getSelectedFile();
 				if(!file.toString().endsWith(".xml"))
 				{
-					JOptionPane.showMessageDialog(this, "The file must have a valid XML extension.", "Does Not Exist", JOptionPane.WARNING_MESSAGE);
+					marla.ide.gui.Domain.showWarningDialog(Domain.getTopWindow(), "The file must have a valid XML extension.", "Does Not Exist");
 					response = fileChooserDialog.showSaveDialog(this);
 					continue;
 				}
 				else if (file.exists())
 				{
-					response = JOptionPane.showOptionDialog(this, "The specified file already exists.  Overwrite?", "Overwrite File", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null);
+					response = marla.ide.gui.Domain.showConfirmDialog(Domain.getTopWindow(), "The specified file already exists.  Overwrite?", "Overwrite File", JOptionPane.YES_NO_OPTION);
 					if(response != JOptionPane.YES_OPTION)
 					{
 						response = fileChooserDialog.showOpenDialog(this);
@@ -1060,7 +1060,7 @@ public class ViewPanel extends JPanel
 			}
 			catch(OperationEditorException ex)
 			{
-				JOptionPane.showMessageDialog(this, "You do not have permission to write to the file at its current location.\nYou will need to save the file to a new location to save your changes.", "Access Denied", JOptionPane.WARNING_MESSAGE);
+				marla.ide.gui.Domain.showWarningDialog(Domain.getTopWindow(), "You do not have permission to write to the file at its current location.\nYou will need to save the file to a new location to save your changes.", "Access Denied");
 				saveAsButtonActionPerformed(null);
 			}
 		}
@@ -1096,7 +1096,6 @@ public class ViewPanel extends JPanel
 								for (ActionListener listener : doneButton.getActionListeners())
 								{
 									doneButton.removeActionListener(listener);
-									final ViewPanel finalViewPanel = this;
 									doneButton.addActionListener(new ActionListener()
 									{
 										public void actionPerformed(ActionEvent evt)
@@ -1109,7 +1108,7 @@ public class ViewPanel extends JPanel
 												}
 												catch(OperationXMLException ex)
 												{
-													JOptionPane.showMessageDialog(finalViewPanel, ex.getMessage(), "No Data", JOptionPane.INFORMATION_MESSAGE);
+													marla.ide.gui.Domain.showInformationDialog(Domain.getTopWindow(), ex.getMessage(), "No Data");
 												}
 											}
 										}
@@ -1140,7 +1139,7 @@ public class ViewPanel extends JPanel
 				{
 					clearTest = true;
 
-					JOptionPane.showMessageDialog(this, "The test panel could not be refresh.\n" + ex.getMessage(), "Error Testing", JOptionPane.ERROR_MESSAGE);
+					marla.ide.gui.Domain.showErrorDialog(Domain.getTopWindow(), "The test panel could not be refresh.\n" + ex.getMessage(), "Error Testing");
 					Domain.logger.add(ex);
 				}
 			}
@@ -1248,7 +1247,7 @@ public class ViewPanel extends JPanel
 				if(!ignoreSecond)
 				{
 					ignoreSecond = true;
-					JOptionPane.showMessageDialog(this, "The XML entered is not valid. You cannot edit another operation\nthe current operation has been made valid.", "Invalid XML", JOptionPane.ERROR_MESSAGE);
+					marla.ide.gui.Domain.showErrorDialog(Domain.getTopWindow(), "The XML entered is not valid. You cannot edit another operation\nthe current operation has been made valid.", "Invalid XML");
 				}
 				else
 				{
@@ -1324,11 +1323,7 @@ public class ViewPanel extends JPanel
 			if(currentFile.isChanged())
 			{
 				int response = JOptionPane.YES_OPTION;
-				response = JOptionPane.showConfirmDialog(this,
-														 "Would you like to save changes to the current operations file?",
-														 "Save Operation Changes",
-														 JOptionPane.YES_NO_CANCEL_OPTION,
-														 JOptionPane.QUESTION_MESSAGE);
+				response = marla.ide.gui.Domain.showConfirmDialog(Domain.getTopWindow(), "Would you like to save changes to the current operations file?", "Save Operation Changes", JOptionPane.YES_NO_CANCEL_OPTION);
 				if(response == JOptionPane.YES_OPTION)
 				{
 					save();
@@ -1402,7 +1397,7 @@ public class ViewPanel extends JPanel
 		{
 			if (Domain.passedInFile != null)
 			{
-				JOptionPane.showMessageDialog(this, "It looks like you may have launched the maRla Operation Editor from within maRla IDE.\nIf this is the case and you've made changes to the operations file, you'll want\nto restart maRla IDE or select \"Reload Operations\" from the Tools menu.", "Reload Operations", JOptionPane.INFORMATION_MESSAGE);
+				marla.ide.gui.Domain.showInformationDialog(Domain.getTopWindow(), "It looks like you may have launched the maRla Operation Editor from within maRla IDE.\nIf this is the case and you've made changes to the operations file, you'll want\nto restart maRla IDE or select \"Reload Operations\" from the Tools menu.", "Reload Operations");
 			}
 			
 			// Hide the main window to give the appearance of better responsiveness

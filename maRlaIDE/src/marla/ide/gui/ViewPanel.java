@@ -142,8 +142,6 @@ public class ViewPanel extends JPanel
 	public final NewProblemWizardDialog newProblemWizardDialog = new NewProblemWizardDialog(this, domain);
 	/** The Settings dialog.*/
 	public final SettingsDialog settingsDialog = new SettingsDialog(this);
-	/** The Input dialog.*/
-	public final InputDialog inputDialog = new InputDialog(this);
 	/** The main frame of a stand-alone application.*/
 	public MainFrame mainFrame;
 	/**
@@ -373,7 +371,7 @@ public class ViewPanel extends JPanel
 		catch(MarlaException ex)
 		{
 			Domain.logger.add(ex);
-			JOptionPane.showMessageDialog(domain.getTopWindow(), ex.getMessage(), "Reload Error", JOptionPane.WARNING_MESSAGE);
+			Domain.showWarningDialog(Domain.getTopWindow(), ex.getMessage(), "Reload Error");
 		}
 	}
 
@@ -1115,7 +1113,7 @@ public class ViewPanel extends JPanel
 					// If the component is a data set, prompt the user that it will remove the data set and all operations from the workspace
 					if(draggingComponent instanceof DataSet)
 					{
-						response = JOptionPane.showConfirmDialog(this, "You are about to remove this data set from the workspace.\nThe data set can be readded to the workspace anytime by dragging\nit back from the list of data sets to the right.\nAre you sure you want to remove this data set?", "Remove Data Set", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+						response = Domain.showConfirmDialog(Domain.getTopWindow(), "You are about to remove this data set from the workspace.\nThe data set can be readded to the workspace anytime by dragging\nit back from the list of data sets to the right.\nAre you sure you want to remove this data set?", "Remove Data Set", JOptionPane.YES_NO_OPTION);
 						if(response == JOptionPane.YES_OPTION)
 						{
 							// Remove the data set and all its operations from the workspace
@@ -1464,7 +1462,7 @@ public class ViewPanel extends JPanel
 			catch(MarlaException ex)
 			{
 				Domain.logger.add(ex);
-				JOptionPane.showMessageDialog(domain.getTopWindow(), ex.getMessage(), "Operation Error", JOptionPane.ERROR_MESSAGE);
+				Domain.showErrorDialog(Domain.getTopWindow(), ex.getMessage(), "Operation Error");
 			}
 			finally
 			{
@@ -1667,7 +1665,7 @@ public class ViewPanel extends JPanel
 				{
 					if (((Operation) parentData).isInfoUnanswered())
 					{
-						JOptionPane.showMessageDialog(domain.getTopWindow(), "The parent of this operation has unmet requirements. Set the parameters of all\nparent operations first, then you can set the parameters of this operation.", "Child Operation", JOptionPane.INFORMATION_MESSAGE);
+						Domain.showInformationDialog(Domain.getTopWindow(), "The parent of this operation has unmet requirements. Set the parameters of all\nparent operations first, then you can set the parameters of this operation.", "Child Operation");
 						allow = false;
 					}
 				}
@@ -1695,7 +1693,7 @@ public class ViewPanel extends JPanel
 	private void remarkMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_remarkMenuItemActionPerformed
 		if(rightClickedComponent != null && rightClickedComponent instanceof Operation)
 		{
-			String newRemark = inputDialog.launchInputDialog(this, "Operation Remark", "Give a remark for this operation:", ((Operation) rightClickedComponent).getRemark());
+			String newRemark = Domain.showMultiLineInputDialog(Domain.getTopWindow(), "Give a remark for this operation:", "Operation Remark", ((Operation) rightClickedComponent).getRemark());
 			if(!newRemark.equals(((Operation) rightClickedComponent).getRemark()))
 			{
 				((Operation) rightClickedComponent).setRemark(newRemark);
@@ -2365,7 +2363,7 @@ public class ViewPanel extends JPanel
 		{
 			// Display dialog
 			dialog.pack();
-			dialog.setLocationRelativeTo(Domain.getInstance().getTopWindow());
+			dialog.setLocationRelativeTo(Domain.getTopWindow());
 			dialog.setVisible(true);
 		}
 
@@ -2418,7 +2416,7 @@ public class ViewPanel extends JPanel
 				((JTextField) valueComponents.get(i)).selectAll();
 				if(showDialog)
 				{
-					JOptionPane.showMessageDialog(ViewPanel.getInstance().domain.getTopWindow(), ex.getMessage(), "Invalid Input", JOptionPane.ERROR_MESSAGE);
+					Domain.showErrorDialog(Domain.getTopWindow(), ex.getMessage(), "Invalid Input");
 				}
 				pass = false;
 			}
@@ -2729,11 +2727,7 @@ public class ViewPanel extends JPanel
 				int response = JOptionPane.YES_OPTION;
 				if(!editing && !isUndoRedo)
 				{
-					response = JOptionPane.showConfirmDialog(domain.getTopWindow(),
-															 "Would you like to save changes to the currently open problem?",
-															 "Save Problem Changes",
-															 JOptionPane.YES_NO_CANCEL_OPTION,
-															 JOptionPane.QUESTION_MESSAGE);
+					response = Domain.showConfirmDialog(Domain.getTopWindow(), "Would you like to save changes to the currently open problem?", "Save Problem Changes", JOptionPane.YES_NO_CANCEL_OPTION);
 				}
 				if(!editing && !isUndoRedo && response == JOptionPane.YES_OPTION)
 				{
@@ -2744,7 +2738,7 @@ public class ViewPanel extends JPanel
 					catch(MarlaException ex)
 					{
 						Domain.logger.add(ex);
-						JOptionPane.showMessageDialog(domain.getTopWindow(), ex.getMessage(), "Save Failed", JOptionPane.ERROR_MESSAGE);
+						Domain.showErrorDialog(Domain.getTopWindow(), ex.getMessage(), "Save Failed");
 						return false;
 					}
 				}
@@ -2885,7 +2879,7 @@ public class ViewPanel extends JPanel
 
 		if(!found)
 		{
-			JOptionPane.showMessageDialog(this, "The maRla Operation Editor could not be found.", "maRla Operation Editor Not Found", JOptionPane.INFORMATION_MESSAGE);
+			Domain.showInformationDialog(Domain.getTopWindow(), "The maRla Operation Editor could not be found.", "maRla Operation Editor Not Found");
 		}
 	}
 

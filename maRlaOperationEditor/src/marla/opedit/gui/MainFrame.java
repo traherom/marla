@@ -250,7 +250,7 @@ public class MainFrame extends JFrame
 						}
 						else
 						{
-							JOptionPane.showMessageDialog(viewPanel.domain.getTopWindow(), "The maRla Project cannot run without these resources.", "Fatal Error", JOptionPane.ERROR_MESSAGE);
+							marla.ide.gui.Domain.showErrorDialog(Domain.getTopWindow(), "The maRla Project cannot run without these resources.", "Fatal Error");
 							System.exit(1);
 						}
 					}

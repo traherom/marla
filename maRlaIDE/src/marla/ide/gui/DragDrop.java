@@ -213,7 +213,7 @@ public class DragDrop implements DragGestureListener, DragSourceListener, DropTa
 					dataSet.setForeground(Color.GRAY);
 					if (!dataSet.isHidden())
 					{
-						JOptionPane.showMessageDialog(viewPanel, "This data set already exists in the workspace, so it\ncannot be added again.", "Data Set Exits", JOptionPane.INFORMATION_MESSAGE);
+						Domain.showInformationDialog(Domain.getTopWindow(), "This data set already exists in the workspace, so it\ncannot be added again.", "Data Set Exits");
 					}
 					else
 					{
@@ -245,7 +245,7 @@ public class DragDrop implements DragGestureListener, DragSourceListener, DropTa
 					}
 					catch (MarlaException ex)
 					{
-						JOptionPane.showMessageDialog (viewPanel.domain.getTopWindow(), "Unable to load the requested operation", "Missing Operation", JOptionPane.WARNING_MESSAGE);
+						Domain.showWarningDialog(Domain.getTopWindow(), "Unable to load the requested operation", "Missing Operation");
 					}
 				}
 			}

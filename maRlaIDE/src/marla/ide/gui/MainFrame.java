@@ -118,7 +118,7 @@ public class MainFrame extends JFrame
 						}
 						else
 						{
-							JOptionPane.showMessageDialog(viewPanel.domain.getTopWindow(), "The maRla Project cannot run without these resources.", "Fatal Error", JOptionPane.ERROR_MESSAGE);
+							Domain.showErrorDialog(Domain.getTopWindow(), "The maRla Project cannot run without these resources.", "Fatal Error");
 							System.exit(1);
 						}
 					}
@@ -153,7 +153,7 @@ public class MainFrame extends JFrame
 				}
 				catch(MarlaException ex)
 				{
-					JOptionPane.showMessageDialog(viewPanel.domain.getTopWindow(), ex.getMessage(), "Load Error", JOptionPane.WARNING_MESSAGE);
+					Domain.showWarningDialog(Domain.getTopWindow(), ex.getMessage(), "Load Error");
 				}
 
 				viewPanel.initLoading = false;
@@ -178,11 +178,8 @@ public class MainFrame extends JFrame
 
 				if(isUpdate)
 				{
-					int res = JOptionPane.showConfirmDialog(viewPanel.domain.getTopWindow(),
-							"An update for maRla is available.\nWould you like to go to the download page?",
-							"Update Available",
-							JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
-					if(res == JOptionPane.YES_OPTION)
+					int response = Domain.showConfirmDialog(Domain.getTopWindow(), "An update for maRla is available.\nWould you like to go to the download page?", "Update Available", JOptionPane.YES_NO_OPTION);
+					if(response == JOptionPane.YES_OPTION)
 					{
 						if (viewPanel.domain.desktop != null)
 						{

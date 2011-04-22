@@ -133,13 +133,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 					if(dataSetTabbedPane.getUI().getTabBounds(dataSetTabbedPane, i).contains(evt.getPoint()) && evt.getClickCount() == 2)
 					{
 						String oldName = dataSetTabbedPane.getTitleAt(i);
-						Object name = JOptionPane.showInputDialog(viewPanel.domain.getTopWindow(),
-																  "Give the data set a new name:",
-																  "Data Set Name",
-																  JOptionPane.QUESTION_MESSAGE,
-																  null,
-																  null,
-																  oldName);
+						Object name = Domain.showInputDialog(Domain.getTopWindow(), "Give the data set a new name:", "Data Set Name", oldName);
 						if(name != null)
 						{
 							if(!name.toString().equals(oldName))
@@ -162,7 +156,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 								}
 								else
 								{
-									JOptionPane.showMessageDialog(viewPanel.domain.getTopWindow(), "A column with that name already exists.", "Duplicate Column", JOptionPane.WARNING_MESSAGE);
+									Domain.showWarningDialog(Domain.getTopWindow(),  "A column with that name already exists.", "Duplicate Column");
 								}
 							}
 						}
@@ -1379,7 +1373,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 		optionPanel.add(libPanel);
 		optionPanel.add(docLabel);
 		optionPanel.add(label2);
-		final Object response = JOptionPane.showInputDialog(this, optionPanel, "Data Set from R Library", JOptionPane.QUESTION_MESSAGE);
+		final Object response = Domain.showInputDialog(Domain.getTopWindow(), optionPanel, "Data Set from R Library", "");
 		if (response != null)
 		{
 			Domain.setProgressTitle("Getting Library");
@@ -1422,13 +1416,13 @@ public class NewProblemWizardDialog extends EscapeDialog
 					{
 						Domain.setProgressVisible(false);
 
-						JOptionPane.showMessageDialog(newProblemWizardDialog, "The data set '" + response.toString() + "' could not be found in the " + libTextField.getText() + " library.", "Data Set Not Loaded", JOptionPane.WARNING_MESSAGE);
+						Domain.showWarningDialog(Domain.getTopWindow(),  "The data set '" + response.toString() + "' could not be found in the " + libTextField.getText() + " library.", "Data Set Not Loaded");
 					}
 					catch (MarlaException ex)
 					{
 						Domain.setProgressVisible(false);
 
-						JOptionPane.showMessageDialog(newProblemWizardDialog, ex.getMessage(), "Data Set Not Loadable", JOptionPane.WARNING_MESSAGE);
+						Domain.showWarningDialog(Domain.getTopWindow(),  ex.getMessage(), "Data Set Not Loadable");
 					}
 					finally
 					{
@@ -1644,11 +1638,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 				}
 				catch(IOException ex)
 				{
-					JOptionPane.showMessageDialog(viewPanel.domain.getTopWindow(), "The problem name you have given contains characters that are\n"
-														+ "not legal in a filename. Please rename your file and avoid\n"
-														+ "using special characters.",
-												  "Invalid Filename",
-												  JOptionPane.WARNING_MESSAGE);
+					Domain.showWarningDialog(Domain.getTopWindow(), "The problem name you have given contains characters that are\nnot legal in a filename. Please rename your file and avoid\nusing special characters.", "Invalid Filename");
 
 					continueAllowed = false;
 				}
@@ -1656,11 +1646,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 			// Ensure the problem name given does not match an already existing file
 			if(continueAllowed && file.exists() && !newProblemOverwrite && newProblem != null)
 			{
-				int response = JOptionPane.showConfirmDialog(viewPanel.domain.getTopWindow(), "The given problem name already exists as a file\n"
-																   + "at the specified location.\nWould you like to overwrite the existing file?",
-															 "Overwrite Existing File",
-															 JOptionPane.YES_NO_OPTION,
-															 JOptionPane.QUESTION_MESSAGE);
+				int response = Domain.showConfirmDialog(Domain.getTopWindow(), "The given problem name already exists as a file\nat the specified location.\nWould you like to overwrite the existing file?", "Overwrite Existing File", JOptionPane.YES_NO_OPTION);
 				if(response == JOptionPane.YES_OPTION)
 				{
 					newProblemOverwrite = true;
@@ -2028,9 +2014,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 					if (index != -1)
 					{
 						String oldName = table.getColumnModel().getColumn(index).getHeaderValue().toString();
-						Object name = JOptionPane.showInputDialog(viewPanel.domain.getTopWindow(), "Give the column a new name:", "Column Name",
-																  JOptionPane.QUESTION_MESSAGE, null, null,
-																  oldName);
+						Object name = Domain.showInputDialog(Domain.getTopWindow(), "Give the column a new name:", "Column Name", oldName);
 						if(name != null)
 						{
 							if(!name.toString().equals(((ExtendedTableModel) table.getModel()).getColumnName(index)))
@@ -2043,7 +2027,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 								}
 								else
 								{
-									JOptionPane.showMessageDialog(viewPanel.domain.getTopWindow(), "A column with that name already exists.", "Duplicate Column", JOptionPane.WARNING_MESSAGE);
+									Domain.showWarningDialog(Domain.getTopWindow(), "A column with that name already exists.", "Duplicate Column");
 								}
 							}
 						}
@@ -2237,7 +2221,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 								catch(MarlaException ex)
 								{
 									Domain.setProgressVisible(false);
-									JOptionPane.showMessageDialog(viewPanel.domain.getTopWindow(), ex.getMessage(), "Load Failed", JOptionPane.WARNING_MESSAGE);
+									Domain.showWarningDialog(Domain.getTopWindow(), ex.getMessage(), "Load Failed");
 								}
 								finally
 								{
