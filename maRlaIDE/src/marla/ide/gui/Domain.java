@@ -20,6 +20,9 @@ package marla.ide.gui;
 
 import java.awt.Container;
 import java.awt.Desktop;
+import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
@@ -41,10 +44,15 @@ import java.util.ArrayDeque;
 import java.util.Date;
 import java.util.List;
 import java.util.Queue;
+import javax.swing.JButton;
+import javax.swing.JDialog;
 import javax.swing.JFileChooser;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
+import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
 import marla.ide.latex.LatexExporter;
 import marla.ide.problem.MarlaException;
@@ -1236,6 +1244,74 @@ public class Domain
 			}
 		}
 		return allSolved;
+	}
+	
+	/**
+	 * Consructs an error object that can be passed as the Message part of a
+	 * JOptionPane.  This object will a show/hide button for further details
+	 * of a given error message.  The standard message display is passed as
+	 * message, and the hidden, scrollable message display is the innerMessage.
+	 * 
+	 * @param message The standard error message.
+	 * @param innerMessage The scrollable inner message.
+	 * @return  The object to be placed in the JOptionPane message.
+	 */
+	public Object getDetailedErrorObject(String message, String innerMessage)
+	{
+		final JPanel panel = new JPanel(new GridLayout (2, 1));
+		JTextArea textArea = new JTextArea();
+		textArea.setEditable(false);
+		textArea.setLineWrap(true);
+		textArea.setWrapStyleWord(true);
+		textArea.setText(innerMessage);
+		final JScrollPane scrollPane = new JScrollPane();
+		scrollPane.setViewportView(textArea);
+		JPanel buttonPanel = new JPanel(new GridLayout(1, 3));
+		final JButton button = new JButton ("Show Details");
+		button.addActionListener(new ActionListener()
+		{
+			@Override
+			public void actionPerformed(ActionEvent evt)
+			{
+				if (scrollPane.getParent() == null)
+				{
+					((GridLayout) panel.getLayout()).setRows(3);
+					panel.add(scrollPane);
+					button.setText ("Hide Details");
+				}
+				else
+				{
+					((GridLayout) panel.getLayout()).setRows(2);
+					panel.remove(scrollPane);
+					button.setText ("Show Details");
+				}
+				JDialog dialog = null;
+				Container parent = panel.getParent();
+				while (parent != null && !(parent instanceof JDialog))
+				{
+					parent = parent.getParent();
+					if (parent instanceof JDialog)
+					{
+						dialog = (JDialog) parent;
+					}
+				}
+				if (dialog != null)
+				{
+					int width = dialog.getWidth();
+					dialog.pack();
+					dialog.setSize(width, dialog.getHeight());
+					dialog.repaint();
+				}
+			}
+		});
+		buttonPanel.add(button);
+		buttonPanel.add(new JLabel(""));
+		buttonPanel.add(new JLabel(""));
+		
+		panel.add(new JLabel(message));
+		panel.add(buttonPanel);
+		
+		return panel;
 	}
 
 	/**
