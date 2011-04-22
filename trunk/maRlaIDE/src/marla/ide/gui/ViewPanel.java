@@ -394,6 +394,7 @@ public class ViewPanel extends JPanel
 		compConstraints.fill = GridBagConstraints.VERTICAL;
 		compConstraints.anchor = GridBagConstraints.FIRST_LINE_START;
 		int catCount = 0;
+		int maxWidth = 220;
 		for(String key : categories)
 		{
 			List<String> operations = ops.get(key);
@@ -444,6 +445,10 @@ public class ViewPanel extends JPanel
 					operation.setFont(ViewPanel.FONT_PLAIN_12);
 					operation.setDefaultColor();
 					operation.setText("<html>" + operation.getDisplayString(abbreviated) + "</html>");
+					if (operation.getPreferredSize().width > maxWidth)
+					{
+						maxWidth = operation.getPreferredSize().width;
+					}
 					operation.setToolTipText("<html>" + operation.getDescription() + "</html>");
 					DRAG_SOURCE.createDefaultDragGestureRecognizer(operation, DnDConstants.ACTION_MOVE, DND_LISTENER);
 
@@ -492,13 +497,19 @@ public class ViewPanel extends JPanel
 			wrapperPanel.add(catHandlePanel);
 			wrapperPanel.add(catContentPanel);
 			catContentPanel.setVisible(false);
-			catHandlePanel.setPreferredSize(new Dimension(200, 20));
-			catContentPanel.setPreferredSize(new Dimension(400, catContentPanel.getPreferredSize().height));
+			catHandlePanel.setPreferredSize(new Dimension(maxWidth, 20));
+			catContentPanel.setPreferredSize(new Dimension(maxWidth, catContentPanel.getPreferredSize().height));
 
 			compConstraints.gridy = catCount;
 			compConstraints.weighty = 0;
 			componentsScrollablePanel.add(wrapperPanel, compConstraints);
 			++catCount;
+		}
+		// Ensure all categories are set to the proper width
+		for (Component panel : componentsScrollablePanel.getComponents())
+		{
+			((JPanel) panel).getComponent (0).setPreferredSize(new Dimension(maxWidth, 20));
+			((JPanel) panel).getComponent (1).setPreferredSize(new Dimension(maxWidth, ((JPanel) panel).getComponent (1).getPreferredSize().height));
 		}
 
 		// Add final component to offset weight
