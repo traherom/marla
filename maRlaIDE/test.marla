@@ -1,272 +1,48 @@
 <?xml version="1.0" encoding="UTF8"?>
-<problem person="Ha" course_long="Computer Science" course_short="cs" chapter="3" section="4" probnum="5">
-  <statement>Test problem for use with, well, testing maRla.</statement>
+<problem person="" course_long="" course_short="" chapter="" section="" probnum="">
+  <statement />
   <conclusion />
-  <data name="Data Set 1" id="-954407922" x="273" y="77" height="16" width="70" hidden="false">
+  <data name="Data Set 1" id="528578182" x="364" y="104" height="16" width="70" hidden="false">
     <column name="Column 1" mode="NUMERIC">
       <value>0.0</value>
-      <value>1.0</value>
-      <value>2.0</value>
-      <value>3.0</value>
-      <value>4.0</value>
-      <value>5.0</value>
-      <value>6.0</value>
-      <value>7.0</value>
-      <value>8.0</value>
-      <value>9.0</value>
-      <value>10.0</value>
-      <value>11.0</value>
-      <value>12.0</value>
-      <value>13.0</value>
-      <value>14.0</value>
-      <value>15.0</value>
-      <value>16.0</value>
-      <value>17.0</value>
-      <value>18.0</value>
-      <value>19.0</value>
-      <value>20.0</value>
-      <value>21.0</value>
-      <value>22.0</value>
-      <value>23.0</value>
-      <value>24.0</value>
-      <value>25.0</value>
-      <value>26.0</value>
-      <value>27.0</value>
-      <value>28.0</value>
-      <value>29.0</value>
-      <value>30.0</value>
-      <value>31.0</value>
-      <value>32.0</value>
-      <value>33.0</value>
-      <value>34.0</value>
-      <value>35.0</value>
-      <value>36.0</value>
-      <value>37.0</value>
-      <value>38.0</value>
-      <value>39.0</value>
-      <value>40.0</value>
-      <value>41.0</value>
-      <value>42.0</value>
-      <value>43.0</value>
-      <value>44.0</value>
-      <value>45.0</value>
-      <value>46.0</value>
-      <value>47.0</value>
-      <value>48.0</value>
-      <value>49.0</value>
+      <value>0.0</value>
+      <value>0.0</value>
+      <value>0.0</value>
+      <value>0.0</value>
     </column>
     <column name="Column 2" mode="NUMERIC">
       <value>0.0</value>
-      <value>1.0</value>
-      <value>2.0</value>
-      <value>3.0</value>
-      <value>4.0</value>
-      <value>5.0</value>
-      <value>6.0</value>
-      <value>7.0</value>
-      <value>8.0</value>
-      <value>9.0</value>
-      <value>10.0</value>
-      <value>11.0</value>
-      <value>12.0</value>
-      <value>13.0</value>
-      <value>14.0</value>
-      <value>15.0</value>
-      <value>16.0</value>
-      <value>17.0</value>
-      <value>18.0</value>
-      <value>19.0</value>
-      <value>20.0</value>
-      <value>21.0</value>
-      <value>22.0</value>
-      <value>23.0</value>
-      <value>24.0</value>
-      <value>25.0</value>
-      <value>26.0</value>
-      <value>27.0</value>
-      <value>28.0</value>
-      <value>29.0</value>
-      <value>30.0</value>
-      <value>31.0</value>
-      <value>32.0</value>
-      <value>33.0</value>
-      <value>34.0</value>
-      <value>35.0</value>
-      <value>36.0</value>
-      <value>37.0</value>
-      <value>38.0</value>
-      <value>39.0</value>
-      <value>40.0</value>
-      <value>41.0</value>
-      <value>42.0</value>
-      <value>43.0</value>
-      <value>44.0</value>
-      <value>45.0</value>
-      <value>46.0</value>
-      <value>47.0</value>
-      <value>48.0</value>
-      <value>49.0</value>
+      <value>0.0</value>
+      <value>0.0</value>
+      <value>0.0</value>
+      <value>0.0</value>
     </column>
     <column name="Column 3" mode="NUMERIC">
       <value>0.0</value>
-      <value>1.0</value>
-      <value>2.0</value>
-      <value>3.0</value>
-      <value>4.0</value>
-      <value>5.0</value>
-      <value>6.0</value>
-      <value>7.0</value>
-      <value>8.0</value>
-      <value>9.0</value>
-      <value>10.0</value>
-      <value>11.0</value>
-      <value>12.0</value>
-      <value>13.0</value>
-      <value>14.0</value>
-      <value>15.0</value>
-      <value>16.0</value>
-      <value>17.0</value>
-      <value>18.0</value>
-      <value>19.0</value>
-      <value>20.0</value>
-      <value>21.0</value>
-      <value>22.0</value>
-      <value>23.0</value>
-      <value>24.0</value>
-      <value>25.0</value>
-      <value>26.0</value>
-      <value>27.0</value>
-      <value>28.0</value>
-      <value>29.0</value>
-      <value>30.0</value>
-      <value>31.0</value>
-      <value>32.0</value>
-      <value>33.0</value>
-      <value>34.0</value>
-      <value>35.0</value>
-      <value>36.0</value>
-      <value>37.0</value>
-      <value>38.0</value>
-      <value>39.0</value>
-      <value>40.0</value>
-      <value>41.0</value>
-      <value>42.0</value>
-      <value>43.0</value>
-      <value>44.0</value>
-      <value>45.0</value>
-      <value>46.0</value>
-      <value>47.0</value>
-      <value>48.0</value>
-      <value>49.0</value>
-    </column>
-    <column name="Column 4" mode="NUMERIC">
       <value>0.0</value>
-      <value>1.0</value>
-      <value>2.0</value>
-      <value>3.0</value>
-      <value>4.0</value>
-      <value>5.0</value>
-      <value>6.0</value>
-      <value>7.0</value>
-      <value>8.0</value>
-      <value>9.0</value>
-      <value>10.0</value>
-      <value>11.0</value>
-      <value>12.0</value>
-      <value>13.0</value>
-      <value>14.0</value>
-      <value>15.0</value>
-      <value>16.0</value>
-      <value>17.0</value>
-      <value>18.0</value>
-      <value>19.0</value>
-      <value>20.0</value>
-      <value>21.0</value>
-      <value>22.0</value>
-      <value>23.0</value>
-      <value>24.0</value>
-      <value>25.0</value>
-      <value>26.0</value>
-      <value>27.0</value>
-      <value>28.0</value>
-      <value>29.0</value>
-      <value>30.0</value>
-      <value>31.0</value>
-      <value>32.0</value>
-      <value>33.0</value>
-      <value>34.0</value>
-      <value>35.0</value>
-      <value>36.0</value>
-      <value>37.0</value>
-      <value>38.0</value>
-      <value>39.0</value>
-      <value>40.0</value>
-      <value>41.0</value>
-      <value>42.0</value>
-      <value>43.0</value>
-      <value>44.0</value>
-      <value>45.0</value>
-      <value>46.0</value>
-      <value>47.0</value>
-      <value>48.0</value>
-      <value>49.0</value>
-    </column>
-    <column name="Column 5" mode="NUMERIC">
       <value>0.0</value>
-      <value>1.0</value>
-      <value>2.0</value>
-      <value>3.0</value>
-      <value>4.0</value>
-      <value>5.0</value>
-      <value>6.0</value>
-      <value>7.0</value>
-      <value>8.0</value>
-      <value>9.0</value>
-      <value>10.0</value>
-      <value>11.0</value>
-      <value>12.0</value>
-      <value>13.0</value>
-      <value>14.0</value>
-      <value>15.0</value>
-      <value>16.0</value>
-      <value>17.0</value>
-      <value>18.0</value>
-      <value>19.0</value>
-      <value>20.0</value>
-      <value>21.0</value>
-      <value>22.0</value>
-      <value>23.0</value>
-      <value>24.0</value>
-      <value>25.0</value>
-      <value>26.0</value>
-      <value>27.0</value>
-      <value>28.0</value>
-      <value>29.0</value>
-      <value>30.0</value>
-      <value>31.0</value>
-      <value>32.0</value>
-      <value>33.0</value>
-      <value>34.0</value>
-      <value>35.0</value>
-      <value>36.0</value>
-      <value>37.0</value>
-      <value>38.0</value>
-      <value>39.0</value>
-      <value>40.0</value>
-      <value>41.0</value>
-      <value>42.0</value>
-      <value>43.0</value>
-      <value>44.0</value>
-      <value>45.0</value>
-      <value>46.0</value>
-      <value>47.0</value>
-      <value>48.0</value>
-      <value>49.0</value>
+      <value>0.0</value>
+      <value>0.0</value>
     </column>
-    <operation type="marla.ide.operation.OperationXML" name="String" id="-1255380140" x="279" y="108" height="16" width="59" hidden="false">
+    <operation type="marla.ide.operation.OperationXML" name="rnorm" id="-413244326" x="314" y="135" height="16" width="170" hidden="false">
       <remark />
-      <question name="disp" answer="TESTING" />
-      <extra name="String" />
+      <operation type="marla.ide.operation.OperationXML" name="Stem" id="118433692" x="173" y="166" height="16" width="216" hidden="false">
+        <remark />
+        <question name="col" answer="rnorm(30.0, mean=50.0)" />
+        <extra name="Stem" />
+      </operation>
+      <operation type="marla.ide.operation.OperationXML" name="Two Sample t-test" id="812436654" x="409" y="166" height="16" width="306" hidden="false">
+        <remark />
+        <question name="x" answer="Column 2" />
+        <question name="y" answer="rnorm(30.0, mean=50.0)" />
+        <question name="normal" answer="false" />
+        <question name="paired" answer="false" />
+        <question name="pooled" answer="true" />
+        <extra name="Two Sample t-test" />
+      </operation>
+      <question name="samples" answer="30.0" />
+      <question name="mean" answer="50.0" />
+      <extra name="rnorm" />
     </operation>
   </data>
   <unused />
