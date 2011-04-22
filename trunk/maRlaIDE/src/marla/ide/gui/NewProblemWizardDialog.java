@@ -1997,9 +1997,8 @@ public class NewProblemWizardDialog extends EscapeDialog
 		final JPanel valuesPanel = new JPanel();
 		final ExtendedTableModel model = new ExtendedTableModel(dataSet);
 		final ExtendedJTable table = new ExtendedJTable(model);
-		final JScrollPane scrollPane = ExtendedJTable.createCorneredJScrollPane(table);
+		final JScrollPane scrollPane = ExtendedJTable.createStripedJScrollPane(table);
 		table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-		table.getTableHeader().setReorderingAllowed(false);
 		table.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
 		table.getTableHeader().setFont(ViewPanel.FONT_PLAIN_12);
@@ -2036,7 +2035,6 @@ public class NewProblemWizardDialog extends EscapeDialog
 			}
 		});
 
-		scrollPane.setViewportView(table);
 		final JLabel columnsLabel = new JLabel("Columns:");
 		columnsLabel.setFont(ViewPanel.FONT_PLAIN_12);
 		final JSpinner columnsSpinner = new JSpinner();
