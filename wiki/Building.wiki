@@ -1,7 +1,7 @@
 #summary Instructions for building maRla
 #labels Phase-Implementation
 
-[MainHelp Back to Help Contents]
+[OnlineHelp Back to Help Contents]
 
 =Quick Start=
 maRla builds through an ant script and will build at a basic level in any JDK environment. To fully use the package-for-store and create-installer build targets (producing the Windows installer, most notably), [http://nsis.sourceforge.net/ NSIS], [http://www.python.org/download/ Python], and [http://launch4j.sourceforge.net/ launch4j] need to be installed and on the path.
@@ -51,4 +51,4 @@ Once the build environment is setup, building of maRla can be done through ant (
   * package-for-store - creates a single jar that contains all of maRla and its libraries, plus copies the needed default ops.xml and export_template.xml to the `./store` directory.
   * create-installer - builds the Windows installer and zips up required files for distribution to other platforms.
 
-[MainHelp Back to Help Contents]
+[OnlineHelp Back to Help Contents]
