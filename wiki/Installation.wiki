@@ -22,6 +22,10 @@ sudo apt-get install default-jre r-base-core texlive-base
 }}}
   # Download current release archive from Downloads page.
   # Extract and run where desired
+  # (If you double-click on a JAR executable from maRla and it will not launch, your distribution may not allow desktop execution of JAR files. You can still run maRla, you just need to launch it from the command line. For instance, to launch the maRla IDE, navigate to the directory you unzipped the archive to and type
+{{{
+java -jar maRla\ IDE.jar
+}}}
 
 = OSX =
 TBD
