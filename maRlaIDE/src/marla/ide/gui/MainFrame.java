@@ -428,7 +428,7 @@ public class MainFrame extends JFrame
         fileMenu.add(fileSeparator2);
 
         printMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_P, java.awt.event.InputEvent.CTRL_MASK));
-        printMenuItem.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        printMenuItem.setFont(new java.awt.Font("Verdana", 0, 12));
         printMenuItem.setText("Print...");
         printMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -595,8 +595,8 @@ public class MainFrame extends JFrame
         });
 
         helpContentsMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F1, 0));
-        helpContentsMenuItem.setFont(new java.awt.Font("Verdana", 0, 12));
-        helpContentsMenuItem.setText("Help Contents");
+        helpContentsMenuItem.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        helpContentsMenuItem.setText("Online Help");
         helpContentsMenuItem.setEnabled(false);
         helpContentsMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -789,7 +789,7 @@ public class MainFrame extends JFrame
 		{
 			try
 			{
-				viewPanel.domain.desktop.browse(new URI("http://code.google.com/p/marla/w/list"));
+				viewPanel.domain.desktop.browse(new URI("http://code.google.com/p/marla/wiki/MainHelp"));
 			}
 			catch(IOException ex) {}
 			catch(URISyntaxException ex) {}
