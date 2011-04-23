@@ -21,6 +21,10 @@ package marla.ide.gui;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Desktop;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -181,7 +185,7 @@ public class Domain
 		Object[] trace = ex.getStackTrace();
 		for(int j = 0; j < trace.length; ++j)
 		{
-			string += "  " + trace[j].toString() + "\n";
+			string += ("  " + trace[j].toString() + "\n");
 		}
 		string += "\n";
 		
@@ -1391,12 +1395,14 @@ public class Domain
 	 */
 	public Object createDetailedDisplayObject(String message, String innerMessage)
 	{
-		final JPanel panel = new JPanel(new GridLayout(2, 1));
+		final JPanel panel = new JPanel(new GridBagLayout());
+		final GridBagConstraints gbc = new GridBagConstraints();
 		JTextArea textArea = new JTextArea();
 		textArea.setEditable(false);
-		textArea.setLineWrap(true);
-		textArea.setWrapStyleWord(true);
 		textArea.setText(innerMessage);
+		textArea.setBackground(panel.getBackground());
+		textArea.setRows(8);
+		textArea.setFont(new Font("Courier New", Font.PLAIN, 12));
 		final JScrollPane scrollPane = new JScrollPane();
 		scrollPane.setViewportView(textArea);
 		JPanel buttonPanel = new JPanel(new GridLayout(1, 3));
@@ -1408,13 +1414,14 @@ public class Domain
 			{
 				if(scrollPane.getParent() == null)
 				{
-					((GridLayout) panel.getLayout()).setRows(3);
-					panel.add(scrollPane);
+					gbc.gridy = 2;
+					gbc.weightx = 1;
+					gbc.weighty = 1;
+					panel.add(scrollPane, gbc);
 					button.setText("Hide Details");
 				}
 				else
 				{
-					((GridLayout) panel.getLayout()).setRows(2);
 					panel.remove(scrollPane);
 					button.setText("Show Details");
 				}
@@ -1426,14 +1433,21 @@ public class Domain
 					if(parent instanceof JDialog)
 					{
 						dialog = (JDialog) parent;
+						break;
 					}
 				}
 				if(dialog != null)
 				{
-					int width = dialog.getWidth();
-					dialog.pack();
-					dialog.setSize(width, dialog.getHeight());
-					dialog.repaint();
+					int height;
+					if (scrollPane.getParent() != null)
+					{
+						height = dialog.getHeight() + scrollPane.getPreferredSize().height;
+					}
+					else
+					{
+						height = dialog.getHeight() - scrollPane.getPreferredSize().height;
+					}
+					dialog.setSize(dialog.getWidth(), height);
 				}
 			}
 		});
@@ -1441,8 +1455,15 @@ public class Domain
 		buttonPanel.add(new JLabel(""));
 		buttonPanel.add(new JLabel(""));
 
-		panel.add(new JLabel(message));
-		panel.add(buttonPanel);
+		gbc.gridx = 0;
+		gbc.gridy = 0;
+		gbc.weighty = 0;
+		gbc.weightx = 0;
+		gbc.fill = GridBagConstraints.BOTH;
+		gbc.anchor = GridBagConstraints.FIRST_LINE_START;
+		panel.add(new JLabel(message), gbc);
+		gbc.gridy = 1;
+		panel.add(buttonPanel, gbc);
 
 		return panel;
 	}

@@ -93,14 +93,14 @@
             <DimensionLayout dim="0">
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" alignment="0" attributes="0">
-                      <EmptySpace max="-2" attributes="0"/>
+                      <EmptySpace min="-2" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="1" attributes="0">
                           <Group type="102" alignment="0" attributes="0">
                               <Component id="newButton" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="editingLabel" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
-                              <Component id="editingTextField" pref="232" max="32767" attributes="0"/>
+                              <Component id="editingTextField" pref="289" max="32767" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="browseEditingButton" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
@@ -122,21 +122,21 @@
                                   <Group type="102" alignment="0" attributes="0">
                                       <Component id="opsNameLabel" min="-2" max="-2" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
-                                      <Component id="operationsNameTextField" pref="229" max="32767" attributes="0"/>
+                                      <Component id="operationsNameTextField" pref="286" max="32767" attributes="0"/>
                                   </Group>
                                   <Group type="102" alignment="1" attributes="0">
                                       <Component id="innerXmlLinkLabel" min="-2" max="-2" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Component id="updateTestButton" min="-2" max="-2" attributes="0"/>
                                   </Group>
-                                  <Component id="xmlStatusLabel" alignment="0" pref="348" max="32767" attributes="0"/>
-                                  <Component id="operationScrollPane" alignment="0" pref="348" max="32767" attributes="0"/>
+                                  <Component id="xmlStatusLabel" alignment="0" pref="405" max="32767" attributes="0"/>
+                                  <Component id="operationScrollPane" alignment="0" pref="405" max="32767" attributes="0"/>
                               </Group>
                           </Group>
                       </Group>
-                      <EmptySpace max="-2" attributes="0"/>
+                      <EmptySpace min="-2" max="-2" attributes="0"/>
                       <Component id="testingPanel" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace max="-2" attributes="0"/>
+                      <EmptySpace min="-2" max="-2" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -206,19 +206,19 @@
                       <Group type="102" alignment="1" attributes="0">
                           <EmptySpace max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="1" attributes="0">
-                              <Component id="outputScrollPane" alignment="0" pref="302" max="32767" attributes="0"/>
-                              <Component id="questionPanel" alignment="0" pref="302" max="32767" attributes="2"/>
+                              <Component id="outputScrollPane" alignment="0" pref="245" max="32767" attributes="0"/>
+                              <Component id="questionPanel" alignment="0" pref="245" max="32767" attributes="2"/>
                               <Group type="102" alignment="0" attributes="0">
                                   <Component id="dataCsvLabel" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="browseDataTextField" pref="151" max="32767" attributes="0"/>
+                                  <Component id="browseDataTextField" pref="94" max="32767" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
                                   <Component id="browseDataButton" min="-2" max="-2" attributes="0"/>
                               </Group>
                               <Group type="102" alignment="0" attributes="0">
                                   <Component id="displayNameLabel" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="displayNameScrollPane" pref="201" max="32767" attributes="0"/>
+                                  <Component id="displayNameScrollPane" pref="144" max="32767" attributes="0"/>
                               </Group>
                           </Group>
                           <EmptySpace max="-2" attributes="0"/>

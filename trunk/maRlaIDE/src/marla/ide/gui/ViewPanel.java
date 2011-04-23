@@ -2332,7 +2332,9 @@ public class ViewPanel extends JPanel
 		}
 
 		JButton doneButton = new JButton("Done");
+		doneButton.getInsets().set(10, 10, 10, 10);
 		JButton cancelButton = new JButton("Cancel");
+		cancelButton.getInsets().set(10, 10, 10, 10);
 		// When the user is done with the assumptions, forms will be validated and their values stored into the operation before continuing
 		doneButton.addActionListener(new ActionListener()
 		{
@@ -2354,9 +2356,18 @@ public class ViewPanel extends JPanel
 				Domain.cancelExport = true;
 			}
 		});
-		JPanel buttonPanel = new JPanel(new GridLayout(1, 2));
-		buttonPanel.add(doneButton);
-		buttonPanel.add(cancelButton);
+		JPanel buttonPanel = new JPanel(new GridBagLayout());
+		GridBagConstraints gbc = new GridBagConstraints();
+		gbc.gridx = 0;
+		gbc.gridy = 0;
+		gbc.weighty = 1;
+		gbc.weightx = 1;
+		gbc.fill = GridBagConstraints.BOTH;
+		gbc.anchor = GridBagConstraints.FIRST_LINE_START;
+		gbc.insets.set(3, 5, 3, 5);
+		buttonPanel.add(doneButton, gbc);
+		gbc.gridx = 1;
+		buttonPanel.add(cancelButton, gbc);
 		panel.add(buttonPanel);
 
 		if(showDialog)
