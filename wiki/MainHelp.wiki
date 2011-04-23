@@ -3,7 +3,9 @@
 
 = Getting Started =
 The help pages below will help you as you begin using maRla
+  * [Installation Installing maRla]
   * [CreateOrEditProblem Creating or editing a problem]
+  * [UsingTheWorkspace Working with the main workspace]
   * [SettingsHelp Setting configuration]
   * [FAQ Frequently Asked Questions]
 
