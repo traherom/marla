@@ -1,5 +1,8 @@
 #summary Covers the export template XML
 #labels Phase-Deploy
+
+[MainHelp Back to Help Contents]
+
 <wiki:toc max_depth="4" />
 
 = Introduction =
@@ -94,3 +97,5 @@ Attributes supported:
 
 = Example = 
 A complete, working example may be viewed at [http://code.google.com/p/marla/source/browse/trunk/maRlaIDE/test/export_template.xml export_template.xml]
+
+[MainHelp Back to Help Contents]
