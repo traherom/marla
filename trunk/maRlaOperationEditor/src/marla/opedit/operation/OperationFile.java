@@ -64,7 +64,6 @@ public final class OperationFile
 
 			Document doc = new Document(new Element("operations"));
 			Format formatter = Format.getPrettyFormat();
-			formatter.setEncoding(os.getEncoding());
 			XMLOutputter xml = new XMLOutputter(formatter);
 			xml.output(doc, outputStream);
 		}
@@ -342,7 +341,6 @@ public final class OperationFile
 
 			Document doc = new Document(rootEl);
 			Format formatter = Format.getPrettyFormat();
-			formatter.setEncoding(os.getEncoding());
 			XMLOutputter xml = new XMLOutputter(formatter);
 			xml.output(doc, outputStream);
 

@@ -859,7 +859,6 @@ public final class Problem implements ProblemPart, Cloneable
 			BufferedWriter outputStream = new BufferedWriter(os);
 
 			Format formatter = Format.getPrettyFormat();
-			formatter.setEncoding(os.getEncoding());
 			XMLOutputter xml = new XMLOutputter(formatter);
 			xml.output(doc, outputStream);
 		}
