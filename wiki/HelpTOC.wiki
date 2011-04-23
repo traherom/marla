@@ -1,4 +1,4 @@
-  * [OnlineHelp Help Pages]
+  * [HelpContents Help Pages]
     * Getting started
       * [Installation]
       * [SettingsHelp Configuring maRla]
