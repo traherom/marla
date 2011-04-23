@@ -1,0 +1,24 @@
+#summary Proper installation and configuration of maRla for various platforms
+#labels Phase-Support
+
+= Introduction =
+maRla depends on many different software packages and proper configuration can, on occasion, be troublesome. This page attempts to simplify the installation process for the most common operation systems.
+
+= Windows Installation =
+The maRla Windows installer, available on the [http://code.google.com/p/marla/downloads/list Downloads] page, attempts to do all configuration necessary for Windows XP, Vista, and 7 systems. This is the recommended path to take. However, if maRla fails to run after using the installer, manual installation may be required.
+
+TBD. Description of installing/configuring each package.
+
+= Linux Installation =
+Configuration is typically much easier on Linux than on Windows. The exact steps depend on your distribution, but you will need to ensure the latest JRE, R, and pdflatex are installed on your system. From there, the cross-platform archive of maRla, available on the [http://code.google.com/p/marla/downloads/list Downloads] page, should be runnable from any directory.
+
+More detailed directions for select distributions are below.
+
+== Ubuntu/Derivative ==
+  # Run
+  {{{
+  sudo apt-get update
+  sudo apt-get install default-jre r-base-core texlive-base
+  }}}
+  # Download current release archive from Downloads page.
+  # Extract and run where desired
