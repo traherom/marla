@@ -1,5 +1,5 @@
 #summary Help for creating new problem.
-#labels Phase-Support,Featured
+#labels Phase-Support
 
 = Introduction =
 
