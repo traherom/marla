@@ -26,6 +26,9 @@
 	<!-- Settings -->
 	<property name="store.dir" value="store" />
 
+	<condition property="launch4j.dir" value="/Developer/launch4j">
+        <isset property="is.mac" />
+    </condition>
 	<condition property="launch4j.dir" value="/opt/launch4j">
 		<isset property="is.linux" />
 	</condition>
