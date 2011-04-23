@@ -32,7 +32,14 @@ Your distribution may have packages for many of these items:
     * Must be on `PATH`
 
 ==Mac OSX==
-TBD. Largely similar to Linux though.
+  # *[http://www.oracle.com/technetwork/java/javase/downloads/index.html Java Development Kit]* v1.6+
+  # [http://netbeans.org/downloads/index.html NetBeans] v7.0+
+  # [http://launch4j.sourceforge.net/ launch4j] v3.0.2
+    * Must be installed to `/opt/launch4j/`
+    * If moved, modifications to [http://code.google.com/p/marla/source/browse/trunk/maRlaIDE/build.xml build.xml] will be needed. See the launch4j task definition in that file
+  # Nullsoft Scriptable Install System is not supported on OS X. Though this can be obtained through Darwin or Wine, it is not recommended. Avoid building the Windows installer from OS X.
+  # [http://www.python.org/download/ Python] v2.6+
+    * Must be on `PATH`
 
 =Getting the source=
 Instructions for getting the maRla source code are available under the [http://code.google.com/p/marla/source/checkout Source] tab.
