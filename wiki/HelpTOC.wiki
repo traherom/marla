@@ -1,7 +1,7 @@
   * [MainHelp Help Pages]
     * Getting started
       * [Installation]
-      * [Settings Configuring maRla]
+      * [SettingsHelp Configuring maRla]
       * [CreateOrEditProblem Creating and editing]
       * [UsingTheWorkspace Using the workspace]
       * [FAQ Frequently Asked Questions]
