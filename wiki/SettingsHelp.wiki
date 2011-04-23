@@ -28,4 +28,4 @@ These are the fields that show up in your homework problems. You may fill them o
 
 [http://marla.googlecode.com/svn/wiki/screenshots/settings_2.png]
 
-[OnlineHelp Back to Help Contents]
+[HelpContents Back to Help Contents]
