@@ -75,4 +75,4 @@ on setup your [Building build environment]
 =I found a bug. How do I tell you about it?=
 [http://code.google.com/p/marla/issues/entry?template=Defect%20report%20from%20user Report it].
 
-[OnlineHelp Back to Help Contents]
+[HelpContents Back to Help Contents]
