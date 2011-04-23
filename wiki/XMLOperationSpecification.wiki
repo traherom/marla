@@ -254,4 +254,4 @@ Only a single command by be given to a `fake-plot`. If a more complex "plot" is 
 = Example =
 Good, working examples of operations are available at [http://code.google.com/p/marla/source/browse/trunk/maRlaIDE/test/ops.xml ops.xml] in the repository.
 
-[OnlineHelp Back to Help Contents]
+[HelpContents Back to Help Contents]
