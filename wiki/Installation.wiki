@@ -16,9 +16,12 @@ More detailed directions for select distributions are below.
 
 == Ubuntu/Derivative ==
   # Run
-  {{{
-  sudo apt-get update
-  sudo apt-get install default-jre r-base-core texlive-base
-  }}}
+{{{
+sudo apt-get update
+sudo apt-get install default-jre r-base-core texlive-base
+}}}
   # Download current release archive from Downloads page.
   # Extract and run where desired
+
+= OSX =
+TBD
