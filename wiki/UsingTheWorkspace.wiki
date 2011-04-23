@@ -1,7 +1,11 @@
 #summary Describes the possible actions that may be performed from the main display
 #labels Phase-Support
 
+[MainHelp Back to Help Contents]
+
 = Introduction =
 Most work in maRla is done from what is referred to as the workspace. This area is where you layout your solution to a problem, designation solution steps, add comments on why you did an operation, and more. Although maRla strives to be user-friendly and intuitive, this page will help you discover all of the power available to you.
 
 TBD
+
+[MainHelp Back to Help Contents]
