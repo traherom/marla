@@ -977,7 +977,7 @@ public class Domain
 			viewPanel.fileChooserDialog.setCurrentDirectory(new File(problem.getFileName()));
 			viewPanel.fileChooserDialog.setSelectedFile(new File(problem.getFileName()));
 			// Display the chooser and retrieve the selected file
-			int response = viewPanel.fileChooserDialog.showSaveDialog(viewPanel);
+			int response = viewPanel.fileChooserDialog.showSaveDialog(Domain.getTopWindow());
 			while(response == JFileChooser.APPROVE_OPTION)
 			{
 				File file = viewPanel.fileChooserDialog.getSelectedFile();
@@ -991,7 +991,7 @@ public class Domain
 				{
 					Domain.showWarningDialog(Domain.getTopWindow(), "The extension for the file must be .marla.", "Invalid Extension");
 					viewPanel.fileChooserDialog.setSelectedFile(new File(viewPanel.fileChooserDialog.getSelectedFile().toString().substring(0, viewPanel.fileChooserDialog.getSelectedFile().toString().lastIndexOf(".")) + ".marla"));
-					response = viewPanel.fileChooserDialog.showSaveDialog(viewPanel);
+					response = viewPanel.fileChooserDialog.showSaveDialog(Domain.getTopWindow());
 					continue;
 				}
 				// Ensure the problem name given does not match an already existing file
@@ -1036,7 +1036,7 @@ public class Domain
 			viewPanel.fileChooserDialog.setCurrentDirectory(new File(problem.getFileName().substring(0, problem.getFileName().lastIndexOf(".")) + ".pdf"));
 			viewPanel.fileChooserDialog.setSelectedFile(new File(problem.getFileName().substring(0, problem.getFileName().lastIndexOf(".")) + ".pdf"));
 			// Display the chooser and retrieve the selected file
-			int response = viewPanel.fileChooserDialog.showSaveDialog(viewPanel);
+			int response = viewPanel.fileChooserDialog.showSaveDialog(Domain.getTopWindow());
 			while(response == JFileChooser.APPROVE_OPTION)
 			{
 				File file = viewPanel.fileChooserDialog.getSelectedFile();
@@ -1051,7 +1051,7 @@ public class Domain
 				{
 					Domain.showWarningDialog(Domain.getTopWindow(), "The extension for the file must be .pdf.", "Invalid Extension");
 					viewPanel.fileChooserDialog.setSelectedFile(new File(viewPanel.fileChooserDialog.getSelectedFile().toString().substring(0, viewPanel.fileChooserDialog.getSelectedFile().toString().lastIndexOf(".")) + ".pdf"));
-					response = viewPanel.fileChooserDialog.showSaveDialog(viewPanel);
+					response = viewPanel.fileChooserDialog.showSaveDialog(Domain.getTopWindow());
 					continue;
 				}
 				// Ensure the problem name given does not match an already existing file
@@ -1170,7 +1170,7 @@ public class Domain
 			viewPanel.fileChooserDialog.setCurrentDirectory(new File(problem.getFileName().substring(0, problem.getFileName().lastIndexOf(".")) + ".Rnw"));
 			viewPanel.fileChooserDialog.setSelectedFile(new File(problem.getFileName().substring(0, problem.getFileName().lastIndexOf(".")) + ".Rnw"));
 			// Display the chooser and retrieve the selected file
-			int response = viewPanel.fileChooserDialog.showSaveDialog(viewPanel);
+			int response = viewPanel.fileChooserDialog.showSaveDialog(Domain.getTopWindow());
 			while(response == JFileChooser.APPROVE_OPTION)
 			{
 				File file = viewPanel.fileChooserDialog.getSelectedFile();
@@ -1185,7 +1185,7 @@ public class Domain
 				{
 					Domain.showWarningDialog(Domain.getTopWindow(), "The extension for the file must be .Rnw.", "Invalid Extension");
 					viewPanel.fileChooserDialog.setSelectedFile(new File(viewPanel.fileChooserDialog.getSelectedFile().toString().substring(0, viewPanel.fileChooserDialog.getSelectedFile().toString().lastIndexOf(".")) + ".tex"));
-					response = viewPanel.fileChooserDialog.showSaveDialog(viewPanel);
+					response = viewPanel.fileChooserDialog.showSaveDialog(Domain.getTopWindow());
 					continue;
 				}
 				// Ensure the problem name given does not match an already existing file
@@ -1300,7 +1300,7 @@ public class Domain
 			viewPanel.fileChooserDialog.setSelectedFile(new File(""));
 			viewPanel.fileChooserDialog.setCurrentDirectory(new File(curDir));
 			// Display the chooser and retrieve the selected file
-			int response = viewPanel.fileChooserDialog.showOpenDialog(viewPanel);
+			int response = viewPanel.fileChooserDialog.showOpenDialog(Domain.getTopWindow());
 			while(response == JFileChooser.APPROVE_OPTION)
 			{
 				File file = viewPanel.fileChooserDialog.getSelectedFile();
@@ -1313,7 +1313,7 @@ public class Domain
 						lastIndex = viewPanel.fileChooserDialog.getSelectedFile().toString().length();
 					}
 					viewPanel.fileChooserDialog.setSelectedFile(new File(viewPanel.fileChooserDialog.getSelectedFile().toString().substring(0, lastIndex) + ".marla"));
-					response = viewPanel.fileChooserDialog.showOpenDialog(viewPanel);
+					response = viewPanel.fileChooserDialog.showOpenDialog(Domain.getTopWindow());
 					continue;
 				}
 

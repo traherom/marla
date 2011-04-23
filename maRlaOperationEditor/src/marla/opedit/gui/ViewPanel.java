@@ -645,7 +645,7 @@ public class ViewPanel extends JPanel
 			fileChooserDialog.setSelectedFile(new File(""));
 			fileChooserDialog.setCurrentDirectory(new File(marla.ide.gui.Domain.lastGoodDir));
 			// Display the chooser and retrieve the selected file
-			int response = fileChooserDialog.showOpenDialog(this);
+			int response = fileChooserDialog.showOpenDialog(Domain.getTopWindow());
 			while(response == JFileChooser.APPROVE_OPTION)
 			{
 				File file = fileChooserDialog.getSelectedFile();
@@ -658,7 +658,7 @@ public class ViewPanel extends JPanel
 						lastIndex = fileChooserDialog.getSelectedFile().toString().length();
 					}
 					fileChooserDialog.setSelectedFile(new File(fileChooserDialog.getSelectedFile().toString().substring(0, lastIndex) + ".xml"));
-					response = fileChooserDialog.showOpenDialog(this);
+					response = fileChooserDialog.showOpenDialog(Domain.getTopWindow());
 					continue;
 				}
 
@@ -743,7 +743,7 @@ public class ViewPanel extends JPanel
 			fileChooserDialog.setSelectedFile(new File(""));
 			fileChooserDialog.setCurrentDirectory(new File(marla.ide.gui.Domain.lastGoodDir));
 			// Display the chooser and retrieve the selected file
-			int response = fileChooserDialog.showOpenDialog(this);
+			int response = fileChooserDialog.showOpenDialog(Domain.getTopWindow());
 			while(response == JFileChooser.APPROVE_OPTION)
 			{
 				File file = fileChooserDialog.getSelectedFile();
@@ -756,7 +756,7 @@ public class ViewPanel extends JPanel
 						lastIndex = fileChooserDialog.getSelectedFile().toString().length();
 					}
 					fileChooserDialog.setSelectedFile(new File(fileChooserDialog.getSelectedFile().toString().substring(0, lastIndex) + ".csv"));
-					response = fileChooserDialog.showOpenDialog(this);
+					response = fileChooserDialog.showOpenDialog(Domain.getTopWindow());
 					continue;
 				}
 
@@ -817,7 +817,7 @@ public class ViewPanel extends JPanel
 			fileChooserDialog.setSelectedFile(new File(""));
 			fileChooserDialog.setCurrentDirectory(new File(marla.ide.gui.Domain.lastGoodDir));
 			// Display the chooser and retrieve the selected file
-			int response = fileChooserDialog.showSaveDialog(this);
+			int response = fileChooserDialog.showSaveDialog(Domain.getTopWindow());
 			while(response == JFileChooser.APPROVE_OPTION)
 			{
 				int lastIndex = fileChooserDialog.getSelectedFile().toString().lastIndexOf(".");
@@ -830,7 +830,7 @@ public class ViewPanel extends JPanel
 				if(!file.toString().endsWith(".xml"))
 				{
 					marla.ide.gui.Domain.showWarningDialog(Domain.getTopWindow(), "The file must have a valid XML extension.", "Does Not Exist");
-					response = fileChooserDialog.showOpenDialog(this);
+					response = fileChooserDialog.showOpenDialog(Domain.getTopWindow());
 					continue;
 				}
 				else if (file.exists())
@@ -838,7 +838,7 @@ public class ViewPanel extends JPanel
 					response = marla.ide.gui.Domain.showConfirmDialog(Domain.getTopWindow(), "The specified file already exists.  Overwrite?", "Overwrite File", JOptionPane.YES_NO_OPTION);
 					if(response != JOptionPane.YES_OPTION)
 					{
-						response = fileChooserDialog.showSaveDialog(this);
+						response = fileChooserDialog.showSaveDialog(Domain.getTopWindow());
 						continue;
 					}
 				}
@@ -936,7 +936,7 @@ public class ViewPanel extends JPanel
 			fileChooserDialog.setSelectedFile (new File(""));
 			fileChooserDialog.setCurrentDirectory(new File(marla.ide.gui.Domain.lastGoodDir));
 			// Display the chooser and retrieve the selected file
-			int response = fileChooserDialog.showSaveDialog(this);
+			int response = fileChooserDialog.showSaveDialog(Domain.getTopWindow());
 			while(response == JFileChooser.APPROVE_OPTION)
 			{
 				int lastIndex = fileChooserDialog.getSelectedFile().toString().lastIndexOf(".");
@@ -949,7 +949,7 @@ public class ViewPanel extends JPanel
 				if(!file.toString().endsWith(".xml"))
 				{
 					marla.ide.gui.Domain.showWarningDialog(Domain.getTopWindow(), "The file must have a valid XML extension.", "Does Not Exist");
-					response = fileChooserDialog.showSaveDialog(this);
+					response = fileChooserDialog.showSaveDialog(Domain.getTopWindow());
 					continue;
 				}
 				else if (file.exists())
@@ -957,7 +957,7 @@ public class ViewPanel extends JPanel
 					response = marla.ide.gui.Domain.showConfirmDialog(Domain.getTopWindow(), "The specified file already exists.  Overwrite?", "Overwrite File", JOptionPane.YES_NO_OPTION);
 					if(response != JOptionPane.YES_OPTION)
 					{
-						response = fileChooserDialog.showOpenDialog(this);
+						response = fileChooserDialog.showOpenDialog(Domain.getTopWindow());
 						continue;
 					}
 				}
