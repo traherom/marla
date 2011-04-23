@@ -311,7 +311,7 @@ public class ExtendedJTable extends JTable
 				// increase the x position by the height of a row.
 				y += table.getRowHeight();
 				g.setColor(TABLE_GRID_COLOR);
-				g.drawLine(0, y - 1, getWidth(), y - 1);
+				g.drawLine(0, y - 1, table.getColumnModel().getTotalColumnWidth(), y - 1);
 			}
 		}
 
@@ -325,7 +325,7 @@ public class ExtendedJTable extends JTable
 				// increase the x position by the width of the current column.
 				x += column.getWidth();
 				g.setColor(TABLE_GRID_COLOR);
-				g.drawLine(x - 1, g.getClipBounds().y, x - 1, getHeight());
+				g.drawLine(x - 1, g.getClipBounds().y, x - 1, table.getRowCount() * table.getRowHeight());
 			}
 		}
 	}
