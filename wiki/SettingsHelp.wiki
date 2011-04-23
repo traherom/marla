@@ -1,6 +1,8 @@
 #summary A guide to help users know marla settings specifics.
 #labels Phase-Support
 
+[MainHelp Back to Help Contents]
+
 =Introduction=
 
 The settings dialog allows you, the user, to configure the program according your needs. This guide will show you how to do so.
@@ -25,3 +27,5 @@ Program and data paths should already be configured for you. If you have a porta
 These are the fields that show up in your homework problems. You may fill them out here in order to save yourself time if you find yourself working a lot of problems.
 
 [http://marla.googlecode.com/svn/wiki/screenshots/settings_2.png]
+
+[MainHelp Back to Help Contents]
