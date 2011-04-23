@@ -246,12 +246,10 @@ public class ExtendedJTable extends JTable
 
 		private void initListeners()
 		{
-			table.getTableHeader().addPropertyChangeListener(createNewRepaintPropertyChangeListener());
 			for(int i = 0; i < table.getColumnModel().getColumnCount(); i++)
 			{
 				table.getColumnModel().getColumn(i).addPropertyChangeListener(createNewRepaintPropertyChangeListener());
 			}
-			table.addPropertyChangeListener(createNewRepaintPropertyChangeListener());
 		}
 
 		private PropertyChangeListener createNewRepaintPropertyChangeListener()

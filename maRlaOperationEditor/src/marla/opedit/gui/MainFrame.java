@@ -29,7 +29,6 @@ import java.util.List;
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
-import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import marla.ide.gui.ProgressFrame;
 import marla.ide.problem.MarlaException;
