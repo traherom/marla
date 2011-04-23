@@ -25,22 +25,22 @@ def googleCode(verNum, verPre, windowsSetupFile, zipFile):
     username = raw_input("\nUsername: ")
     password = getpass.getpass()
     try:
-        print ("\n::UPLOADS BEGINNING::")
+        print ("\n::UPLOADS BEGINNING FOR v" + verNum + verPre + "::")
         print ("::DO NOT TERMINATE UNTIL COMPLETE::")
         totalSuccess = True
         project = "marla"
         
         print ("Uploading Windows installation (" + str(round(float(os.path.getsize(windowsSetupFile)) / float(1048576), 1)) + "MB)...")
-        code = GoogleCodeUpload.upload(windowsSetupFile, project, username, password, "The maRla Project " + verNum + verPre + " for Windows", "The Windows installer for The maRla Project, a statistics IDE developed toward students to help them work through and solve complicated statistical calculations. This installer will also setup and configure R and LaTeX components that work with The maRla Project.", ["Featured", "OpSys-Windows", "Type-Installer"])[0]
+        code = GoogleCodeUpload.upload(windowsSetupFile, project, username, password, "The maRla Project " + verNum + verPre + " for Windows", "The Windows installer for The maRla Project, a statistics IDE developed for students to help them work through and solve complicated statistical calculations. The maRla Project requires the R statistical package as well as LaTeX to run, though this Windows installer will automatically download, install, and configure these programs for you if you do not already have them. The maRla Project requires the Java Runtime Environment (JRE) to run, though this installer will download and install the JRE for you if you do not already have it.", ["Featured", "OpSys-Windows", "Type-Installer"])[0]
         if code != 201:
             totalSuccess = False
-            print ("The upload did not succeed.  Either there was a miscommunication with the server, or the given filename already exists on Google Code.")
+            print ("The upload may not have succeeded, error code " + code + ".  Either there was a miscommunication with the server, or the given filename already exists on Google Code.")
                 
         print ("Uploading cross-platform archive (" + str(round(float(os.path.getsize(zipFile)) / float(1048576), 1)) + "MB)...")
-        code = GoogleCodeUpload.upload(zipFile, project, username, password, "The maRla Project " + verNum + verPre + " for any operating system", "The cross-platform version of The maRla Project, a statistics IDE developed toward students to help them work through and solve complicated statistical calculations. The cross-platform version requires that R and LaTeX components are already setup and configured manually before The maRla Project can be run.", ["Featured", "OpSys-All", "Type-Archive"])
+        code = GoogleCodeUpload.upload(zipFile, project, username, password, "The maRla Project " + verNum + verPre + " for any operating system", "The cross-platform version of The maRla Project, a statistics IDE developed for students to help them work through and solve complicated statistical calculations. The maRla Project requires the R statistical package as well as LaTeX to run. This version will run on Windows, Mac, Linux, and any other operation system that supports Java.", ["Featured", "OpSys-All", "Type-Archive"])
         if code != 201:
             totalSuccess = False
-            print ("The upload did not succeed.  Either there was a miscommunication with the server, or the given filename already exists on Google Code.")
+            print ("The upload may not have succeeded, error code " + code + ".  Either there was a miscommunication with the server, or the given filename already exists on Google Code.")
         
         if totalSuccess:
             print ("::UPLOADS COMPLETE::")
