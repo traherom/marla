@@ -50,7 +50,7 @@ def googleCode(verNum, verPre, windowsSetupFile, zipFile):
         else:
             print ("::UPLOADS ATTEMPTED::")
             
-            print ("One or more of the uploads encountered problems. Verify that all files are up to date on the Google Code Downloads page.")
+            print ("\nOne or more of the uploads encountered problems. Verify that all files are up to date on the Google Code Downloads page.")
     except Exception as e:
     	print type(e)
     	print e.args

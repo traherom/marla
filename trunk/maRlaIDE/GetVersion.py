@@ -46,7 +46,10 @@ def getPreRelease(domainSrc):
     # Close the file stream
     fileStream.close ()
     
-    return " " + verPre
+    if len(verPre) > 0:
+        return " " + verPre
+    else:
+        return ""
 
 ## Calls respective helper methods to complete overall task of ensuring the
 # version numbers are validate where needed.
@@ -74,8 +77,7 @@ def main(args):
             return verNum[verNum.find(".") + 2:]
         elif args[1] == "3":
             verPre = getPreRelease(domainSrc)
-            if (len(verPre) > 0):
-                sys.stdout.write (verPre)
+            sys.stdout.write (verPre)
             return ""
         else:
             print ("The argument specified is not a valid selection.")
