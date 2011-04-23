@@ -832,7 +832,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 		viewPanel.fileChooserDialog.setSelectedFile(new File(""));
 		viewPanel.fileChooserDialog.setCurrentDirectory(new File(Domain.lastGoodDir));
 		// Display the chooser and retrieve the selected folder
-		int response = viewPanel.fileChooserDialog.showOpenDialog(this);
+		int response = viewPanel.fileChooserDialog.showOpenDialog(Domain.getTopWindow());
 		if(response == JFileChooser.APPROVE_OPTION)
 		{
 			// If the user selected a folder that exists, point the problem's location to the newly selected location
@@ -2148,7 +2148,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 					viewPanel.fileChooserDialog.setSelectedFile(new File(""));
 				}
 				// Display the chooser and retrieve the selected folder
-				int response = viewPanel.fileChooserDialog.showOpenDialog(finalThis);
+				int response = viewPanel.fileChooserDialog.showOpenDialog(Domain.getTopWindow());
 				if(response == JFileChooser.APPROVE_OPTION)
 				{
 					// If the user selected a file that exists, point the problem's location to the newly selected location

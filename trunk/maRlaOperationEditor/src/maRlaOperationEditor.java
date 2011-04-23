@@ -19,14 +19,7 @@
 // Intentionlly in the default package. This makes the title
 // appear correctly(ish) on OS X
 
-import java.awt.Color;
 import java.awt.EventQueue;
-import java.awt.Font;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import marla.opedit.gui.Domain;
@@ -107,24 +100,6 @@ public class maRlaOperationEditor
 				}
 				catch(Exception ex)
 				{
-					UIManager.put("OptionPane.font", new Font("Verdana", Font.PLAIN, 12));
-					UIManager.put("OptionPane.messageFont", new Font("Verdana", Font.PLAIN, 12));
-					UIManager.put("OptionPane.buttonFont", new Font("Verdana", Font.PLAIN, 12));
-
-					/** The option pane which can be customized to have yes/no, ok/cancel, or just ok buttons in it.*/
-					final JOptionPane optionPane = new JOptionPane();
-					JButton okButton = new JButton("Ok");
-					okButton.setBackground(new Color(245, 245, 245));
-					okButton.setFont(new Font("Verdana", Font.PLAIN, 12));
-					okButton.addActionListener(new ActionListener()
-					{
-						@Override
-						public void actionPerformed(ActionEvent e)
-						{
-							optionPane.setValue(new Integer(JOptionPane.OK_OPTION));
-						}
-					});
-
 					System.out.println("Error: " + ex.getClass());
 					System.out.println("Message: " + ex.getMessage() + "\n--\nTrace:");
 					Object[] trace = ex.getStackTrace();
@@ -134,15 +109,8 @@ public class maRlaOperationEditor
 					}
 					System.out.println();
 
-					optionPane.setOptions(new Object[]
-							{
-								okButton
-							});
-					optionPane.setMessage("A fatal error occured while launching the maRla Operation Editor.\n"
-										  + "Please contact the developer.");
-					optionPane.setMessageType(JOptionPane.ERROR_MESSAGE);
-					JDialog optionDialog = optionPane.createDialog("Fatal Error");
-					optionDialog.setVisible(true);
+					progressFrame.setAlwaysOnTop(false);
+					marla.ide.gui.Domain.showErrorDialog(Domain.getTopWindow(), "A fatal error occured while launching the maRla Operation Editor.\nPlease contact the developer.", marla.ide.gui.Domain.prettyExceptionDetails(ex), "Fatal Error");
 
 					System.exit(1);
 				}

@@ -23,7 +23,6 @@ import marla.ide.gui.Domain;
 import marla.ide.gui.MainFrame;
 import marla.ide.gui.ProgressFrame;
 import java.awt.EventQueue;
-import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import marla.ide.resource.Configuration;
@@ -144,7 +143,8 @@ public class maRlaIDE
 					}
 					System.out.println();
 
-					Domain.showErrorDialog(null, "A fatal error occured while launching The maRla Project.\nPlease contact the developer.", Domain.prettyExceptionDetails(ex), "Fatal Error");
+					progressFrame.setAlwaysOnTop(false);
+					Domain.showErrorDialog(Domain.getTopWindow(), "A fatal error occured while launching the maRla IDE.\nPlease contact the developer.", Domain.prettyExceptionDetails(ex), "Fatal Error");
 
 					System.exit(1);
 				}

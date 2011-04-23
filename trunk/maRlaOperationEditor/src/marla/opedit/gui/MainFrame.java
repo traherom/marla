@@ -236,12 +236,13 @@ public class MainFrame extends JFrame
 
 					try
 					{
+						progressFrame.setAlwaysOnTop(false);
 						viewPanel.fileChooserDialog.setDialogTitle(Configuration.getName(curr));
 						viewPanel.fileChooserDialog.setDialogType(JFileChooser.OPEN_DIALOG);
 						viewPanel.fileChooserDialog.resetChoosableFileFilters();
 						viewPanel.fileChooserDialog.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
 						// Display the chooser and retrieve the selected file
-						int response = viewPanel.fileChooserDialog.showOpenDialog(progressFrame);
+						int response = viewPanel.fileChooserDialog.showOpenDialog(Domain.getTopWindow());
 						if(response == JFileChooser.APPROVE_OPTION)
 						{
 							conf.set(curr, viewPanel.fileChooserDialog.getSelectedFile().getPath());
@@ -249,7 +250,7 @@ public class MainFrame extends JFrame
 						}
 						else
 						{
-							marla.ide.gui.Domain.showErrorDialog(Domain.getTopWindow(), "The maRla Project cannot run without these resources.", "Fatal Error");
+							marla.ide.gui.Domain.showErrorDialog(Domain.getTopWindow(), "The maRla Operation Editor cannot run without these resources.", "Fatal Error");
 							System.exit(1);
 						}
 					}

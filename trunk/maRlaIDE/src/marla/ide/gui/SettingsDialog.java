@@ -470,7 +470,7 @@ public class SettingsDialog extends EscapeDialog
 		}
 		catch (MarlaException ex) {}
 		// Display the chooser and retrieve the selected file
-		int response = viewPanel.fileChooserDialog.showOpenDialog(this);
+		int response = viewPanel.fileChooserDialog.showOpenDialog(Domain.getTopWindow());
 		if(response == JFileChooser.APPROVE_OPTION)
 		{
 			try
@@ -498,7 +498,7 @@ public class SettingsDialog extends EscapeDialog
 		}
 		catch (MarlaException ex) {}
 		// Display the chooser and retrieve the selected file
-		int response = viewPanel.fileChooserDialog.showOpenDialog(this);
+		int response = viewPanel.fileChooserDialog.showOpenDialog(Domain.getTopWindow());
 		if(response == JFileChooser.APPROVE_OPTION)
 		{
 			try
@@ -526,7 +526,7 @@ public class SettingsDialog extends EscapeDialog
 		}
 		catch (MarlaException ex) {}
 		// Display the chooser and retrieve the selected file
-		int response = viewPanel.fileChooserDialog.showOpenDialog(this);
+		int response = viewPanel.fileChooserDialog.showOpenDialog(Domain.getTopWindow());
 		if(response == JFileChooser.APPROVE_OPTION)
 		{
 			try
@@ -554,7 +554,7 @@ public class SettingsDialog extends EscapeDialog
 		}
 		catch (MarlaException ex) {}
 		// Display the chooser and retrieve the selected file
-		int response = viewPanel.fileChooserDialog.showOpenDialog(this);
+		int response = viewPanel.fileChooserDialog.showOpenDialog(Domain.getTopWindow());
 		if(response == JFileChooser.APPROVE_OPTION)
 		{
 			try
@@ -656,7 +656,7 @@ public class SettingsDialog extends EscapeDialog
 			viewPanel.fileChooserDialog.setCurrentDirectory(new File(Domain.HOME_DIR));
 		}
 		// Display the chooser and retrieve the selected file
-		int response = viewPanel.fileChooserDialog.showOpenDialog(this);
+		int response = viewPanel.fileChooserDialog.showOpenDialog(Domain.getTopWindow());
 		if(response == JFileChooser.APPROVE_OPTION)
 		{
 			try
