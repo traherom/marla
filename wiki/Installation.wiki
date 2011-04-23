@@ -1,7 +1,7 @@
 #summary Proper installation and configuration of maRla for various platforms
 #labels Phase-Support
 
-[OnlineHelp Back to Help Contents]
+[HelpContents Back to Help Contents]
 
 = Introduction =
 maRla depends on many different software packages and proper configuration can, on occasion, be troublesome. This page attempts to simplify the installation process for the most common operation systems.
