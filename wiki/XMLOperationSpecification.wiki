@@ -1,7 +1,7 @@
 #summary Covers the XML file that specifies operations for maRla
 #labels Phase-Deploy
 
-[MainHelp Back to Help Contents]
+[OnlineHelp Back to Help Contents]
 
 <wiki:toc max_depth="4" />
 Operations in maRla may be specified using an XML format. In the discussion below, attributes
@@ -254,4 +254,4 @@ Only a single command by be given to a `fake-plot`. If a more complex "plot" is 
 = Example =
 Good, working examples of operations are available at [http://code.google.com/p/marla/source/browse/trunk/maRlaIDE/test/ops.xml ops.xml] in the repository.
 
-[MainHelp Back to Help Contents]
+[OnlineHelp Back to Help Contents]
