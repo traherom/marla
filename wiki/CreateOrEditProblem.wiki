@@ -1,7 +1,7 @@
 #summary Help for creating new problem.
 #labels Phase-Support
 
-[OnlineHelp Back to Help Contents]
+[HelpContents Back to Help Contents]
 
 = Introduction =
 
