@@ -45,7 +45,7 @@ def googleCode(verNum, verPre, windowsSetupFile, zipFile):
         if totalSuccess:
             print ("::UPLOADS COMPLETE::")
         
-            print ("The maRla Project was successfully updated to v" + str(verNum) + verPre + " on Google Code.")
+            print ("\nThe maRla Project was successfully updated to v" + str(verNum) + verPre + " on Google Code.")
             print ("You will still need to update the revision file on the Wiki so user's are informed of this update.")
         else:
             print ("::UPLOADS ATTEMPTED::")
@@ -55,7 +55,7 @@ def googleCode(verNum, verPre, windowsSetupFile, zipFile):
     	print type(e)
     	print e.args
     	print e
-        print ("An unknown error occured. Try running the push again. If this error persists, it is recommended that you ensure the validity of all version files and installers on Google Code immediately.")
+        print ("\nAn unknown error occured. Try running the push again. If this error persists, it is recommended that you ensure the validity of all version files and installers on Google Code immediately.")
 
 ## Calls respective helper methods to complete overall task of ensuring the
 # version numbers are validate where needed.

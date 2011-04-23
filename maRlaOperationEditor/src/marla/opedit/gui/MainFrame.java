@@ -167,7 +167,7 @@ public class MainFrame extends JFrame
         getContentPane().setLayout(new java.awt.GridLayout(1, 1));
 
         editMenuItem.setText("Edit");
-        editMenuItem.setFont(new java.awt.Font("Verdana", 0, 12));
+        editMenuItem.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
 
         undoMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_Z, java.awt.event.InputEvent.CTRL_MASK));
         undoMenuItem.setFont(new java.awt.Font("Verdana", 0, 12));
@@ -194,8 +194,10 @@ public class MainFrame extends JFrame
         menuBar.add(editMenuItem);
 
         jMenu1.setText("Help");
+        jMenu1.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
 
         onlineHelpMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F1, 0));
+        onlineHelpMenuItem.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
         onlineHelpMenuItem.setText("Online Help");
         onlineHelpMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
