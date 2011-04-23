@@ -460,6 +460,19 @@ public abstract class Operation extends DataSource implements Cloneable
 		if(parent == newParent || newParent == this)
 			return;
 		
+		// Don't allow ourselves to be assigned to someone who depends on us (IE,
+		// is our ancestor at any depth)
+		DataSource currDS = newParent;
+		while(currDS != null)
+		{
+			// Is it pointed to us?
+			if(currDS == this)
+				throw new OperationException("Operation may not be assigned to an ancestor of itself");
+			
+			// Head up the tree more
+			currDS = currDS.getParentData();
+		}
+		
 		// Tell our old parent we're removing ourselves
 		if(parent != null)
 		{

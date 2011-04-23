@@ -134,8 +134,8 @@ public class ViewPanel extends JPanel
 	private final int MIN_DRAG_DIST = 15;
 	/** The maximum font size.*/
 	private final int MAXIMUM_FONT_SIZE = 36;
-	/** The miniumu font size.*/
-	private final int MINIMUM_FONT_SIZE = 8;
+	/** The minimum font size.*/
+	private final int MINIMUM_FONT_SIZE = 9;
 	/** The domain object reference performs generic actions specific to the GUI.*/
 	protected Domain domain = new Domain(this);
 	/** The New Problem Wizard dialog.*/
