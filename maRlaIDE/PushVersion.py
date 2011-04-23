@@ -76,6 +76,7 @@ def main(args):
         
         if os.path.exists(windowsSetupFile) and os.path.exists(zipFile):
             print ("::ALL NECESSARY FILES IN PLACE::")
+            print ("Ensure that setup files in place are the LATEST build--this script will not do a build for you, it will only upload the files that already exist.")
                         
             answer = raw_input ("\nWould you like to update the files and installers on Google Code (y/n)? ")
             if "yes" in answer.lower() or answer.lower() == "y":

@@ -25,6 +25,8 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.List;
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
@@ -157,6 +159,8 @@ public class MainFrame extends JFrame
         editMenuItem = new javax.swing.JMenu();
         undoMenuItem = new javax.swing.JMenuItem();
         redoMenuItem = new javax.swing.JMenuItem();
+        jMenu1 = new javax.swing.JMenu();
+        onlineHelpMenuItem = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         setIconImage(new ImageIcon (getClass ().getResource (marla.ide.gui.Domain.IMAGES_DIR + "logo.png")).getImage ());
@@ -189,6 +193,19 @@ public class MainFrame extends JFrame
 
         menuBar.add(editMenuItem);
 
+        jMenu1.setText("Help");
+
+        onlineHelpMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F1, 0));
+        onlineHelpMenuItem.setText("Online Help");
+        onlineHelpMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                onlineHelpMenuItemActionPerformed(evt);
+            }
+        });
+        jMenu1.add(onlineHelpMenuItem);
+
+        menuBar.add(jMenu1);
+
         setJMenuBar(menuBar);
 
         pack();
@@ -201,6 +218,18 @@ public class MainFrame extends JFrame
 	private void redoMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_redoMenuItemActionPerformed
 		viewPanel.redo();
 	}//GEN-LAST:event_redoMenuItemActionPerformed
+
+	private void onlineHelpMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_onlineHelpMenuItemActionPerformed
+		if (viewPanel.domain.desktop != null)
+		{
+			try
+			{
+				viewPanel.domain.desktop.browse(new URI("http://code.google.com/p/marla/wiki/HelpContents"));
+			}
+			catch(IOException ex) {}
+			catch(URISyntaxException ex) {}
+		}
+	}//GEN-LAST:event_onlineHelpMenuItemActionPerformed
 
 	/**
 	 * Set the configuration arguments and the visible state of the MainFrame.
@@ -324,7 +353,9 @@ public class MainFrame extends JFrame
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenu editMenuItem;
+    private javax.swing.JMenu jMenu1;
     private javax.swing.JMenuBar menuBar;
+    private javax.swing.JMenuItem onlineHelpMenuItem;
     protected javax.swing.JMenuItem redoMenuItem;
     protected javax.swing.JMenuItem undoMenuItem;
     // End of variables declaration//GEN-END:variables

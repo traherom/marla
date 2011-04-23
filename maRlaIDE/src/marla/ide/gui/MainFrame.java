@@ -339,7 +339,7 @@ public class MainFrame extends JFrame
         jSeparator1 = new javax.swing.JPopupMenu.Separator();
         settingsMenuItem = new javax.swing.JMenuItem();
         helpMenu = new javax.swing.JMenu();
-        helpContentsMenuItem = new javax.swing.JMenuItem();
+        onlineHelpMenuItem = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         setIconImage(new ImageIcon (getClass ().getResource (Domain.IMAGES_DIR + "logo.png")).getImage ());
@@ -595,16 +595,16 @@ public class MainFrame extends JFrame
             }
         });
 
-        helpContentsMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F1, 0));
-        helpContentsMenuItem.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
-        helpContentsMenuItem.setText("Online Help");
-        helpContentsMenuItem.setEnabled(false);
-        helpContentsMenuItem.addActionListener(new java.awt.event.ActionListener() {
+        onlineHelpMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F1, 0));
+        onlineHelpMenuItem.setFont(new java.awt.Font("Verdana", 0, 12));
+        onlineHelpMenuItem.setText("Online Help");
+        onlineHelpMenuItem.setEnabled(false);
+        onlineHelpMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                helpContentsMenuItemActionPerformed(evt);
+                onlineHelpMenuItemActionPerformed(evt);
             }
         });
-        helpMenu.add(helpContentsMenuItem);
+        helpMenu.add(onlineHelpMenuItem);
 
         menuBar.add(helpMenu);
 
@@ -784,18 +784,18 @@ public class MainFrame extends JFrame
 		viewPanel.newProblemWizardDialog.editDataSet(null);
 	}//GEN-LAST:event_editDataSetsMenuItemActionPerformed
 
-	private void helpContentsMenuItemActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_helpContentsMenuItemActionPerformed
-	{//GEN-HEADEREND:event_helpContentsMenuItemActionPerformed
+	private void onlineHelpMenuItemActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_onlineHelpMenuItemActionPerformed
+	{//GEN-HEADEREND:event_onlineHelpMenuItemActionPerformed
 		if (viewPanel.domain.desktop != null)
 		{
 			try
 			{
-				viewPanel.domain.desktop.browse(new URI("http://code.google.com/p/marla/wiki/MainHelp"));
+				viewPanel.domain.desktop.browse(new URI("http://code.google.com/p/marla/wiki/HelpContents"));
 			}
 			catch(IOException ex) {}
 			catch(URISyntaxException ex) {}
 		}
-	}//GEN-LAST:event_helpContentsMenuItemActionPerformed
+	}//GEN-LAST:event_onlineHelpMenuItemActionPerformed
 
 	private void operationEditorMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_operationEditorMenuItemActionPerformed
 		viewPanel.launchOperationEditor();
@@ -842,12 +842,12 @@ public class MainFrame extends JFrame
     private javax.swing.JPopupMenu.Separator fileSeparator1;
     private javax.swing.JPopupMenu.Separator fileSeparator2;
     private javax.swing.JPopupMenu.Separator fileSeparator3;
-    private javax.swing.JMenuItem helpContentsMenuItem;
     private javax.swing.JMenu helpMenu;
     private javax.swing.JPopupMenu.Separator jSeparator1;
     private javax.swing.JMenuBar menuBar;
     private javax.swing.JMenuItem newDataSetMenuItem;
     private javax.swing.JMenuItem newProblemMenuItem;
+    private javax.swing.JMenuItem onlineHelpMenuItem;
     private javax.swing.JMenuItem openProblemMenuItem;
     private javax.swing.JMenuItem operationEditorMenuItem;
     private javax.swing.JMenuItem printMenuItem;
