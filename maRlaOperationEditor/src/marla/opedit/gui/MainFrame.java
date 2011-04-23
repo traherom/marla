@@ -229,11 +229,11 @@ public class MainFrame extends JFrame
 				Domain.setProgressStatus("Validating configuration...");
 
 				int currIndex = 0;
-				while(currIndex < missed.size())
+				boolean foundR = !missed.contains(ConfigType.R);
+				while(!foundR)
 				{
-					ConfigType curr = missed.get(currIndex);
+					ConfigType curr = ConfigType.R;
 
-					boolean fixed = false;
 					try
 					{
 						viewPanel.fileChooserDialog.setDialogTitle(Configuration.getName(curr));
@@ -245,7 +245,7 @@ public class MainFrame extends JFrame
 						if(response == JFileChooser.APPROVE_OPTION)
 						{
 							conf.set(curr, viewPanel.fileChooserDialog.getSelectedFile().getPath());
-							fixed = true;
+							foundR = true;
 						}
 						else
 						{
@@ -256,12 +256,8 @@ public class MainFrame extends JFrame
 					catch(MarlaException ex)
 					{
 						System.out.println(ex.getMessage());
-						fixed = false;
+						foundR = false;
 					}
-
-					// If we succeed, find the next thing
-					if(fixed)
-						currIndex++;
 				}
 
 				Domain.setProgressString("95%");
