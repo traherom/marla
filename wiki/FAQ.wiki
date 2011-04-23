@@ -1,7 +1,7 @@
 #summary Frequently Asked Questions about The maRla Project
 #labels Featured,Phase-Support
 
-[OnlineHelp Back to Help Contents]
+[HelpContents Back to Help Contents]
 
 <wiki:toc max_depth="1" />
 
