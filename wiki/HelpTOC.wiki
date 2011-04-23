@@ -1,7 +1,7 @@
   * [MainHelp Help Pages]
     * Getting started
       * [Installation]
-      * [CreateAndEditProblem Creating and editing]
+      * [CreateOrEditProblem Creating and editing]
       * [UsingTheWorkspace Using the workspace]
       * [FAQ Frequently Asked Questions]
     * Advanced
