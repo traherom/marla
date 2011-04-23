@@ -32,4 +32,4 @@ java -jar maRla\ IDE.jar
 = OSX =
 Configuration is typically much easier on Mac than on Windows. You will need to ensure the latest JRE, R, and pdlatex are installed on your system--some of these packages may come with Xcode, if you already have that installed. From there, the cross-platform archive of maRla, available on the [http://code.google.com/p/marla/downloads/list Downloads] page, should be runnable from any directory.
 
-[OnlineHelp Back to Help Contents]
+[HelpContents Back to Help Contents]
