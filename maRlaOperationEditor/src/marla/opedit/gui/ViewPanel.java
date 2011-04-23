@@ -674,7 +674,7 @@ public class ViewPanel extends JPanel
 				}
 
 				// Warn if it's the primary xml
-				if(file.equals(new File(OperationXML.getPrimaryXMLPath())))
+				if(OperationXML.getPrimaryXMLPath() != null && file.equals(new File(OperationXML.getPrimaryXMLPath())))
 				{
 					int resp = marla.ide.gui.Domain.showConfirmDialog(Domain.getTopWindow(), "This file is the primary XML file. It may be overwritten without warning if maRla is updated.\nInstead, create a new file and set it as maRla's user operations XML file.\nDo you still want to edit this file?", "Editing Not Recommended", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
 					if(resp == JOptionPane.NO_OPTION)
