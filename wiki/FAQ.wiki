@@ -1,6 +1,8 @@
 #summary Frequently Asked Questions about The maRla Project
 #labels Featured,Phase-Support
 
+[MainHelp Back to Help Contents]
+
 <wiki:toc max_depth="1" />
 
 =What is the maRla project?=
@@ -72,3 +74,5 @@ on setup your [Building build environment]
 
 =I found a bug. How do I tell you about it?=
 [http://code.google.com/p/marla/issues/entry?template=Defect%20report%20from%20user Report it].
+
+[MainHelp Back to Help Contents]
