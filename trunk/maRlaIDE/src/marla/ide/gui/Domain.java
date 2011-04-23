@@ -21,7 +21,6 @@ package marla.ide.gui;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Desktop;
-import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -270,7 +269,7 @@ public class Domain
 	 */
 	public static void showErrorDialog(Component parent, String message, String details, String title)
 	{
-		JOptionPane.showMessageDialog(parent, Domain.getInstance().createDetailedDisplayObject(message, details), title, JOptionPane.ERROR_MESSAGE);
+		JOptionPane.showMessageDialog(parent, Domain.createDetailedDisplayObject(message, details), title, JOptionPane.ERROR_MESSAGE);
 	}
 
 	/**
@@ -295,7 +294,7 @@ public class Domain
 	 */
 	public static void showWarningDialog(Component parent, String message, String details, String title)
 	{
-		JOptionPane.showMessageDialog(parent, Domain.getInstance().createDetailedDisplayObject(message, details), title, JOptionPane.WARNING_MESSAGE);
+		JOptionPane.showMessageDialog(parent, Domain.createDetailedDisplayObject(message, details), title, JOptionPane.WARNING_MESSAGE);
 	}
 
 	/**
@@ -1393,7 +1392,7 @@ public class Domain
 	 * @param innerMessage The scrollable inner message.
 	 * @return  The object to be placed in the JOptionPane message.
 	 */
-	public Object createDetailedDisplayObject(String message, String innerMessage)
+	private static Object createDetailedDisplayObject(String message, String innerMessage)
 	{
 		final JPanel panel = new JPanel(new GridBagLayout());
 		final GridBagConstraints gbc = new GridBagConstraints();
