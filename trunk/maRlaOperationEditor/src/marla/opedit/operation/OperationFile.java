@@ -207,6 +207,7 @@ public final class OperationFile
 		// Create XML for basic operation
 		Element newOpEl = new Element("operation");
 		newOpEl.setAttribute("name", operationName);
+		newOpEl.addContent(new Element("category").setText("New Category"));
 		newOpEl.addContent(new Element("displayname"));
 		newOpEl.addContent(new Element("computation"));
 
