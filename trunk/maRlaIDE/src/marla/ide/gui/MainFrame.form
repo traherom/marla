@@ -327,7 +327,7 @@
             <EventHandler event="menuSelected" listener="javax.swing.event.MenuListener" parameters="javax.swing.event.MenuEvent" handler="helpMenuMenuSelected"/>
           </Events>
           <SubComponents>
-            <MenuItem class="javax.swing.JMenuItem" name="helpContentsMenuItem">
+            <MenuItem class="javax.swing.JMenuItem" name="onlineHelpMenuItem">
               <Properties>
                 <Property name="accelerator" type="javax.swing.KeyStroke" editor="org.netbeans.modules.form.editors.KeyStrokeEditor">
                   <KeyStroke key="F1"/>
@@ -339,7 +339,7 @@
                 <Property name="enabled" type="boolean" value="false"/>
               </Properties>
               <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="helpContentsMenuItemActionPerformed"/>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="onlineHelpMenuItemActionPerformed"/>
               </Events>
             </MenuItem>
           </SubComponents>
