@@ -9,6 +9,6 @@ The help pages below will help you as you begin using maRla
 
 = Advanced work =
 The help pages below give details on creating new operations and changing the template for export.
-  * [XMLOperationTemplate Creating operations]
-  * [ExportTemplate LaTeX export template]
+  * [XMLOperationSpecification Creating operations]
+  * [ExportTemplateXML LaTeX export template]
   * [Building Compiling maRla yourself]
