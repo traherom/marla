@@ -825,7 +825,7 @@ public class LatexExporter
 		}
 
 		// End table
-		sb.append("\\end{tabular}\n");
+		sb.append("\\end{tabular}\\\\\n");
 		
 		// Plot?
 		if(op.hasFakePlot())

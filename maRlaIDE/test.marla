@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <problem person="" course_long="" course_short="" chapter="" section="" probnum="">
   <statement />
   <conclusion />
@@ -24,25 +24,10 @@
       <value>0.0</value>
       <value>0.0</value>
     </column>
-    <operation type="marla.ide.operation.OperationXML" name="" id="-413244326" x="314" y="135" height="16" width="170" hidden="false">
+    <operation type="marla.ide.operation.OperationXML" name="Barplot" id="-2122104039" x="338" y="135" height="16" width="123" hidden="false">
       <remark />
-      <operation type="marla.ide.operation.OperationXML" name="Stem" id="118433692" x="173" y="166" height="16" width="216" hidden="false">
-        <remark />
-        <question name="col" answer="rnorm(30.0, mean=50.0)" />
-        <extra name="Stem" />
-      </operation>
-      <operation type="marla.ide.operation.OperationXML" name="Two Sample t-test" id="812436654" x="409" y="166" height="16" width="306" hidden="false">
-        <remark />
-        <question name="x" answer="Column 2" />
-        <question name="y" answer="rnorm(30.0, mean=50.0)" />
-        <question name="normal" answer="false" />
-        <question name="paired" answer="false" />
-        <question name="pooled" answer="true" />
-        <extra name="Two Sample t-test" />
-      </operation>
-      <question name="samples" answer="30.0" />
-      <question name="mean" answer="50.0" />
-      <extra name="rnorm" />
+      <question name="col" answer="Column 1" />
+      <extra name="Barplot" />
     </operation>
   </data>
   <unused />
