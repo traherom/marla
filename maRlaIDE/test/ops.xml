@@ -261,6 +261,7 @@
       <set name="col1" use="values" />
       <set name="col2" use="values" />
       <save type="numeric">col1 * col2</save>
+
     </computation>
   </operation>
   <operation name="Divide Columns">
@@ -517,6 +518,7 @@
       <save type="numeric">exp(col)</save>
     </computation>
   </operation>
+
   <operation name="Absolute Value">
     <category>Linear Data Transformation</category>
     <query type="column" name="col" prompt="Column:" column-type="numeric" />
