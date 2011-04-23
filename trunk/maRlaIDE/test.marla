@@ -24,7 +24,7 @@
       <value>0.0</value>
       <value>0.0</value>
     </column>
-    <operation type="marla.ide.operation.OperationXML" name="rnorm" id="-413244326" x="314" y="135" height="16" width="170" hidden="false">
+    <operation type="marla.ide.operation.OperationXML" name="" id="-413244326" x="314" y="135" height="16" width="170" hidden="false">
       <remark />
       <operation type="marla.ide.operation.OperationXML" name="Stem" id="118433692" x="173" y="166" height="16" width="216" hidden="false">
         <remark />

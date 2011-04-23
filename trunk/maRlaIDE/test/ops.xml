@@ -59,6 +59,7 @@
   </operation>
   <operation name="Q-Q Norm">
     <category>Descriptive Graphics</category>
+	<category>ANOVA</category>
     <query type="column" name="col" prompt="Column:" column-type="numeric" />
     <displayname>
       qqnorm(
@@ -76,6 +77,7 @@
   </operation>
   <operation name="Q-Q Line">
     <category>Descriptive Graphics</category>
+	<category>ANOVA</category>
     <query type="column" name="col" prompt="Column:" column-type="numeric" />
     <displayname>
       qqline(
@@ -93,6 +95,7 @@
   <operation name="Q-Q Plot">
     <category>Descriptive Graphics</category>
     <category>Simple Linear Regression</category>
+	<category>ANOVA</category>
     <query type="column" name="col1" prompt="Column 1:" column-type="numeric" />
     <query type="column" name="col2" prompt="Column 2:" column-type="numeric" />
     <displayname>
@@ -713,6 +716,54 @@
       <loop type="numeric" loop-var="s" index-var="i">
         <save type="string">n[i]</save>
         <save r-column="paste('lm(', xName, '~', yName, ')', ' vals', sep='')">s[i]</save>
+      </loop>
+    </computation>
+  </operation>
+  <operation name="Kruskal">
+    <category>ANOVA</category>
+    <query type="column" prompt="Column x:" name="col1" />
+    <query type="column" prompt="Column y:" name="col2" />
+    <displayname>
+      kruskal.test(
+      <response name="col1" />
+      ~
+      <response name="col2" />
+      )
+    </displayname>
+    <computation>
+      <set rvar="xName" name="col1" use="name" />
+      <set rvar="xVals" name="col1" use="values" />
+      <set rvar="yName" name="col2" use="name" />
+      <set rvar="yVals" name="col2" use="values" />
+      <cmd>s = kruskal.test(xVals~yVals)</cmd>
+      <cmd>n = names(s)</cmd>
+      <loop type="numeric" loop-var="s" index-var="i">
+        <save type="string">n[i]</save>
+        <save r-column="paste('kruskal.test(', xName, '~', yName, ')', ' vals', sep='')">s[i]</save>
+      </loop>
+    </computation>
+  </operation>
+  <operation name="Bartlett">
+    <category>ANOVA</category>
+    <query type="column" prompt="Column x:" name="col1" />
+    <query type="column" prompt="Column y:" name="col2" />
+    <displayname>
+      bartlett.test(
+      <response name="col1" />
+      ~
+      <response name="col2" />
+      )
+    </displayname>
+    <computation>
+      <set rvar="xName" name="col1" use="name" />
+      <set rvar="xVals" name="col1" use="values" />
+      <set rvar="yName" name="col2" use="name" />
+      <set rvar="yVals" name="col2" use="values" />
+      <cmd>s = bartlett.test(xVals~yVals)</cmd>
+      <cmd>n = names(s)</cmd>
+      <loop type="numeric" loop-var="s" index-var="i">
+        <save type="string">n[i]</save>
+        <save r-column="paste('bartlett.test(', xName, '~', yName, ')', ' vals', sep='')">s[i]</save>
       </loop>
     </computation>
   </operation>
