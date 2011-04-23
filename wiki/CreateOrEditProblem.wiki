@@ -1,7 +1,7 @@
 #summary Help for creating new problem.
 #labels Phase-Support
 
-[MainHelp Back to Help Contents]
+[OnlineHelp Back to Help Contents]
 
 = Introduction =
 
@@ -61,4 +61,4 @@ These details are for the pdfLaTeX exporter, in order that your homework may be 
 
 You may edit an existing problem several ways. In the main window,to the right of the save icon, there is a button that will allow you to add a dataset. If you would like to do more, you may click on "Problem" option  in the menu list for another set of problem editing features. Don't forget to save when you are done manipulating your problem.
 
-[MainHelp Back to Help Contents]
+[OnlineHelp Back to Help Contents]
