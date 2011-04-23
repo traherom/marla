@@ -1,0 +1,10 @@
+  * [MainHelp Help Pages]
+    * Getting started
+      * [Installation]
+      * [CreateAndEditProblem Creating and editing]
+      * [UsingTheWorkspace Using the workspace]
+      * [FAQ Frequently Asked Questions]
+    * Advanced
+      * [XMLOperationSpecification Creating operations]
+      * [ExportTemplateXML Export template]
+      * [Building Compiling and editing maRla]
