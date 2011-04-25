@@ -20,7 +20,7 @@ A basic operation XML file with a single operation looks like this:
 </operations>
 }}}
 
-From there, additional `[#Operation operation]` elements may be placed inside. Each `operation` is stand-alone, unaffected by other `operations` within the same or other files.
+From there, additional [#Operation `<operation />`] elements may be placed inside. Each `operation` is stand-alone, unaffected by other `operations` within the same or other files.
 
 In the discussion below, attributes given in bold are required.
 
@@ -58,7 +58,7 @@ Attributes supported:
   * *`prompt`* - Any arbitrary string to display to the user.
   * *`type`* - One of the following:
     * `checkbox` - Simple checkbox that the user may select
-    * `combo` - Operation-specified selectable list. See [#Combo] for detailed information
+    * `combo` - Operation-specified selectable list. See [#Combo Combo] for detailed information
     * `column` - Presents the user with a list of the parent columns. `column-type` must be given to specify which columns to display.
 	* `fixed` - Query with a single answer. Intened for user informational purposes (IE, so they know a parameter you will be using). Must specify a `value`
     * `numeric` - Arbitrary user-entered number. May specify a minimum or maximum through `min` and `max`, both of which are optional
@@ -112,7 +112,7 @@ An example of the add operation discussed above:
 The query referenced by `name` will be copied into the location of this element. If the user has not yet provided an answer to the query, the name of the query will be used instead.
 
 Supported attributes:
-  * *`name`* - Name used for a query (see [#Information_Prompts]). The text to this answer will be copied into the place of this element
+  * *`name`* - Name used for a query (see [#Information_Prompts Information Prompts]). The text to this answer will be copied into the place of this element
 
 == Computation ==
 {{{
@@ -146,7 +146,7 @@ query values.
 
 Attributes supported:
   * *`rvar`* - Specifies the R variable name to set
-  * *`name`* - Name specified for the desired query element (see [#Information_Prompts]).
+  * *`name`* - Name specified for the desired query element (see [#Information_Prompts Information Prompts]).
   * `use` - For `column` queries, the R variable may be set with either the string name of the column selected or the actual values in that column. This attribute specifies which processing method to use.
     * `name` - Use the column name
     * `values` - Use the column values
