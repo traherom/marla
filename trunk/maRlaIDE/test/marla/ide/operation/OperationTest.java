@@ -111,7 +111,7 @@ public class OperationTest
 
 		// Tell it to check
 		if(op1.isInfoUnanswered())
-			OperationTester.fillRequiredInfo(op1);
+			op1.fakeFillRequiredInfo();
 		op1.checkCache();
 
 		assertFalse(op1.isDirty());
@@ -142,7 +142,7 @@ public class OperationTest
 				// Good
 			}
 
-			OperationTester.fillRequiredInfo(op1);
+			op1.fakeFillRequiredInfo();
 
 			// Now it should compute fine
 			op1.checkCache();
@@ -159,7 +159,7 @@ public class OperationTest
 	{
 		// Fill info if needed
 		if(op1.isInfoUnanswered())
-			OperationTester.fillRequiredInfo(op1);
+			op1.fakeFillRequiredInfo();
 			
 		if(op1.hasPlot())
 		{
@@ -183,7 +183,7 @@ public class OperationTest
 		if(op1.isInfoRequired())
 		{
 			// Do again with the info assigned
-			OperationTester.fillRequiredInfo(op1);
+			op1.fakeFillRequiredInfo();
 
 			el = op1.toXml();
 			op2 = Operation.fromXml(el);
@@ -197,7 +197,7 @@ public class OperationTest
 	{
 		// Fill info if needed
 		if(op1.isInfoUnanswered())
-			OperationTester.fillRequiredInfo(op1);
+			op1.fakeFillRequiredInfo();
 		
 		String opStr = op1.getRCommands(true);
 		assertFalse(opStr.isEmpty());

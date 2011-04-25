@@ -639,6 +639,15 @@ Function .onSelChange
 		!insertmacro SelectSection ${StartShortcuts}
 		!insertmacro SelectSection ${DesktopShortcut}
 		
+		; Install Java if needed
+		Call CheckInstalledJRE
+		!insertmacro SetSectionFlag ${InstallJava} ${SF_RO}
+		${If} $RETURN == "install"
+			!insertmacro SelectSection ${InstallJava}
+		${Else}
+			!insertmacro UnselectSection ${InstallJava}
+		${EndIf}
+	
 	${Else}
 		!insertmacro UnselectSection ${ConfigureMarla}
 		
@@ -647,6 +656,10 @@ Function .onSelChange
 		!insertmacro SetSectionFlag ${DesktopShortcut} ${SF_RO}
 		!insertmacro UnselectSection ${StartShortcuts}
 		!insertmacro UnselectSection ${DesktopShortcut}
+		
+		; Don't install Java
+		!insertmacro SetSectionFlag ${InstallJava} ${SF_RO}
+		!insertmacro UnselectSection ${InstallJava}
 		
 	${EndIf}
 	
@@ -683,13 +696,6 @@ Function LaunchLink
 FunctionEnd
 
 Function SetSectionConfiguration
-
-	Call CheckInstalledJRE
-	${If} $RETURN == "install"
-		!insertmacro SelectSection ${InstallJava}
-	${Else}
-		!insertmacro UnselectSection ${InstallJava}
-	${EndIf}
 	
 	Call CheckInstalledR
 	${If} $RETURN == "install"
