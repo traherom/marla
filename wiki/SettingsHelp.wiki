@@ -18,7 +18,7 @@ Program and data paths should already be configured for you. If you have a porta
   * PDFTex Path - This is the path to the program (pdflatex.exe, pdftex.exe) that allows maRla to produce nice PDF printouts of your homework.
   * LaTeX Template - This the template for TEX/PDF output.
   * Operations XML - This the XML which contains the common operations for R
-  * User Operations XML - This is a path you will have to set if you have created a separate XML operations file with the included operations editor.
+  * User Operations XML - If you have a custom operations file, either provided for you by an instructor or created yourself in the maRla Operation Editor, you can put the path to that operations file here. These operations will be merged with the primary operations. If you have multiple user operations files that you'd like to use, separate each path with the pipe (|) symbol.
 
 [http://marla.googlecode.com/svn/wiki/screenshots/settings_1.png]
 
