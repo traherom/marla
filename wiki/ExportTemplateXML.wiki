@@ -6,7 +6,7 @@
 <wiki:toc max_depth="4" />
 
 = Introduction =
-The LaTeX export template format is essentially a LaTeX document with markers sprinkled throughout to designate where content should be substituted. The example at the bottom [ExportTemplateXML#Example] is a good way to get the overview quickly.
+The LaTeX export template format is essentially a LaTeX document with markers sprinkled throughout to designate where content should be substituted. The [#Example example at the bottom] is a good way to get an overview quickly.
 
 The root element is a `<template />` that takes no attributes. From there any of the following elements may be included:
 
@@ -49,7 +49,7 @@ This problem's problem number in the section/chapter.
 {{{
 <statement />
 }}}
-Description of the problem from the book, as entered in the problem wizard. If done outside a loop (see [ExportTemplateXML#Loops]), this gives the main problem statement. If done inside a loop, returns the current subproblem's problem statement.
+Description of the problem from the book, as entered in the problem wizard. If done outside a loop (see [#Loops Loops]), this gives the main problem statement. If done inside a loop, returns the current subproblem's problem statement.
 
 == Data ==
 {{{
@@ -64,7 +64,7 @@ Supported attributes:
 {{{
 <solution />
 }}}
-R code to solve the problem. If done outside a loop (see [ExportTemplateXML#Loops]), this summarizes every operation in the problem. If done inside a loop, summarizes only those operations denoted as in the "solution" to the current subproblem. Between each operation any associated remarks are interleaved.
+R code to solve the problem. If done outside a loop (see [#Loops Loops]), this summarizes every operation in the problem. If done inside a loop, summarizes only those operations denoted as in the "solution" to the current subproblem. Between each operation any associated remarks are interleaved.
 
 == Problem Conclusions ==
 {{{
@@ -79,7 +79,7 @@ Supported attributes:
 {{{
 <loop type="subproblem">...</loop>
 }}}
-Loops over each of the subproblems. Allows their individual statements and solutions to be examined. See [ExportTemplateXML#Problem_Statement] and [ExportTemplateXML#Solution_Steps].
+Loops over each of the subproblems. Allows their individual statements and solutions to be examined. See [#Problem_Statement Problem Statement] and [#Solution_Steps Solution Steps].
 
 == Conditionals ==
 {{{
