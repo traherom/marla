@@ -10,8 +10,9 @@ Most work in maRla is done from what is referred to as the workspace. This area 
 
 
 =Workspace Elements=
-This spot will describe the various parts of the workspace
+The maRla workspace contains several different sections. The sidebar on the right side contains all loaded operations and datasets, the toolbar contains shortcuts to quickly access commands, and the main workspace allows the user to perform dataset operations.
 ==The Sidebar==
+The sidebar
 ==The Toolbar==
 ==The Main Workspace==
 
@@ -21,7 +22,8 @@ This spot will describe the various parts of the workspace
 ==Changing Operation Parameters==
 ==Assigning Subproblems==
 
-
+=Exporting Problems=
+Problems can be exported to a pd format that includes graphics and text for the problem and each subproblem. This feature can be accessed by going to the file option in the menu bar.
 
 
 TBD
