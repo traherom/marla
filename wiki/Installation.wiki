@@ -10,7 +10,7 @@ maRla depends on many different software packages and proper configuration can, 
 The maRla Windows installer, available on the [http://code.google.com/p/marla/downloads/list Downloads] page, attempts to do all configuration necessary for Windows XP, Vista, and 7 systems. This is the recommended path to take. However, if maRla fails to run after using the installer, manual installation may be required. Instructions for installing and configuring each package are below:
 
 == Java ==
-Download and install the Java Runtime Environment from http://www.java.com/en/download/index.jsp.
+Download and install the Java Runtime Environment from [http://www.java.com/en/download here].
 
 == R ==
 maRla requires R to be installed on your system. No special configuration is required of R, so a default installation should work fine. Go to the  [http://cran.r-project.org/mirrors.html R site] and [http://cran.case.edu/bin/windows/base/release.htm download] an installer. Install it and accept the default options. If R is installed in Program Files (something like `C:\Program Files\R\2-2.x`), maRla should be able to locate it just fine when it starts.
