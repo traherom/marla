@@ -5,21 +5,17 @@
 
 <wiki:toc max_depth="1" />
 
-=What is the maRla project?=
-maRla is intended to be a work environment for students in early statistical classes. It has the
-ability to take a student all the way from typing the problem statement--straight from the book--out
+=What is The maRla project?=
+The maRla IDE is intended to be a work environment for students in early statistical classes. It has the ability to take a student all the way from typing the problem statement--straight from the book--out
 to a final, polished PDF to turn into a professor.
 
-maRla does this in a graphical environment, where most work is done by dragging around data and operations.
-Operations may be attached to data, data can have multiple operations working off of it, and operations
-may chain together to perform more complex calculations. Once the needed calculations are done by the user,
-maRla can export to a PDF file that includes the original problem statement, data that was given, the
-steps (and associated analysis) needed to solve the various parts of the problem, resulting data, and
+maRla IDE does this in a graphical environment, where most work is done by dragging around data and operations.
+Operations may be attached to data, data can have multiple operations working off of it, and operations may chain together to perform more complex calculations. Once the needed calculations are done by the user,
+maRla can export to a PDF file that includes the original problem statement, data that was given, the steps (and associated analysis) needed to solve the various parts of the problem, resulting data, and
 any conclusions the user drew from their work.
 
 =Who should use maRla?=
-First year statistics students are the primary target. However, operations may be defined by the user,
-so any sort of math could theoretically be supported.
+First year statistics students are the primary target. However, operations may be added and modified in the maRla Operation Editor, so the maRla IDE can be used for any sort of mathematical operation that the R package supports.
 
 =When I export to PDF, I get a message saying "Sweave does not appear to be registered correctly with LaTeX." Can you fix it?=
 The Windows installer attempts to fix it for you, so try that first.
@@ -72,7 +68,7 @@ Go into maRla's preferences and check the "Debug Mode" checkbox. A console with 
 You'll probably have more fun actually debugging it in NetBeans though. Follow the instructions
 on setup your [Building build environment]
 
-=I found a bug. How do I tell you about it?=
-[http://code.google.com/p/marla/issues/entry?template=Defect%20report%20from%20user Report it].
+=I found a bug. What should I do?=
+If you find a problem with the software, you may submit an Issue [http://code.google.com/p/marla/issues/entry here]. Be aware that The maRla Project comes with no guarantee or warranty. No other support other than these help page is offered for maRla.
 
 [HelpContents Back to Help Contents]
