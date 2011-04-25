@@ -5,7 +5,7 @@
 
 = Introduction =
 
-MaRla is designed to aid you in  your homework cycle(or other work, if you feel so compelled). Creating, manipulating, and printing problems with R and LaTeX has never been easier! This guide will show you how to create a problem in maRla so you can enjoy the full use of this program.
+maRla is designed to aid you in  your homework cycle (though it can be used for statistical purposes other than homework). Creating, manipulating, and printing problems with R and LaTeX has never been easier! This guide will show you how to create a problem in maRla so you can enjoy the full use of this program.
 
 = Creating a New Problem =
 
