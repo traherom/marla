@@ -146,7 +146,7 @@ query values.
 
 Attributes supported:
   * *`rvar`* - Specifies the R variable name to set
-  * *`name`* - Name specified for the desired query element (see [#Information_Prompts].
+  * *`name`* - Name specified for the desired query element (see [#Information_Prompts]).
   * `use` - For `column` queries, the R variable may be set with either the string name of the column selected or the actual values in that column. This attribute specifies which processing method to use.
     * `name` - Use the column name
     * `values` - Use the column values
