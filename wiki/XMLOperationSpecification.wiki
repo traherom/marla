@@ -24,7 +24,7 @@ From there, additional [#Operation `<operation />`] elements may be placed insid
 
 In the discussion below, attributes given in bold are required.
 
-*NOTE:* In general, users should not directly edit the `ops.xml` file distributed with maRla, as an upgrade will overwrite your changes without warning.
+*NOTE:* In general, users should not directly edit the `ops.xml` file distributed with maRla, as an upgrade will overwrite your changes without warning. Instead, save your new operations as a separate XML file and then set them as User Operations XML in maRla's [SettingsHelp settings]. If you want to override an existing operation, name it the same thing as the current one.
 
 = Operation =
 {{{
