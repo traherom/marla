@@ -27,7 +27,7 @@ Secondly, maRla depends on Latex for generating PDFs. This, unfortunately, takes
     * Open up the MiKTeX Settings by going to Start Menu->Program Files->MiKTeX 2.9->Maintenance->Settings
     * Switch to the "Roots" tab and click the "Add..." button
     * Select R's `texmf` directory. If R was installed at the default location, this is `C:\Program Files\R\R-2.12.x\share\texmf`. Your window should now look like this:
-    [http://marla.googlecode.com/svn/screenshots/miktex_roots.png]
+    [http://marla.googlecode.com/svn/wiki/screenshots/miktex_roots.png]
   * Turn on automatic package installation for MiKTeX
     * If it isn't open, open up the MiKTeX Settings by going to Start Menu->Program Files->MiKTeX 2.9->Maintenance->Settings
     * Switch to the "General" tab and find the "Package Installation" section
