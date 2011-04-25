@@ -4,8 +4,27 @@
 [HelpContents Back to Help Contents]
 
 <wiki:toc max_depth="4" />
-Operations in maRla may be specified using an XML format. In the discussion below, attributes
-given in bold are required.
+
+= Getting Started =
+Within maRla, most operations are defined by one or more operation XML files. The "primary" XML file (see [http://code.google.com/p/marla/source/browse/trunk/maRlaIDE/test/ops.xml ops.xml] in the repository) should be consulted as a guide to creating your own operations in addition to the documentation on this page.
+
+A basic operation XML file with a single operation looks like this:
+{{{
+<?xml version="1.0" ?>
+<operations>
+  <operation name="boring">
+    <computation>
+      <cmd>print("yawn")</cmd>
+    </computation>
+  </operation>
+</operations>
+}}}
+
+From there, additional `[#Operation operation]` elements may be placed inside. Each `operation` is stand-alone, unaffected by other `operations` within the same or other files.
+
+In the discussion below, attributes given in bold are required.
+
+*NOTE:* In general, users should not directly edit the `ops.xml` file distributed with maRla, as an upgrade will overwrite your changes without warning.
 
 = Operation =
 {{{
