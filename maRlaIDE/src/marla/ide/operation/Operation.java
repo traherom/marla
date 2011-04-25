@@ -23,13 +23,16 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.TreeMap;
+import marla.ide.operation.OperationInformation.PromptType;
 import org.jdom.Element;
 import marla.ide.problem.DataColumn;
 import marla.ide.problem.DataNotFoundException;
 import marla.ide.problem.DataSet;
 import marla.ide.problem.DataSource;
 import marla.ide.problem.InternalMarlaException;
+import marla.ide.problem.MarlaException;
 import marla.ide.problem.Problem;
 import marla.ide.problem.SubProblem;
 import marla.ide.r.RProcessor;
@@ -253,6 +256,119 @@ public abstract class Operation extends DataSource implements Cloneable
 	}
 
 	/**
+	 * Tests to ensure the given operation is "correct." This may mean
+	 * checking that a given input produces the expected output or whatever.
+	 *  At a very basic level, just create it, hook it up to bogus data,
+	 * answer its questions, and then let it run. If a better test is
+	 * needed it may be supplied by the overrider
+	 * @return true if the operation passed, false otherwise. An exception
+	 *		will likely be thrown in the event of an error
+	 */
+	public boolean runTest()
+	{
+		// Create some random data
+		DataSet ds = new DataSet("DataSet Test");
+		Random rand = new Random();
+		int cols = rand.nextInt(9) + 1;
+		for(int dcNum = 1; dcNum <= cols; dcNum++)
+		{
+			DataColumn dc = ds.addColumn("Column " + dcNum);
+
+			boolean isNum = rand.nextBoolean();
+			if(isNum)
+				dc.setMode(DataColumn.DataMode.NUMERIC);
+			else
+				dc.setMode(DataColumn.DataMode.STRING);
+			
+			int rows = rand.nextInt(1000);
+			for(int dataNum = 0; dataNum < rows; dataNum++)
+			{
+				int n = rand.nextInt();
+				if(isNum)
+					dc.add(n);
+				else
+					dc.add("str" + n);
+			}
+		}
+
+		// Assign as parent
+		int oldIndex = getIndexFromDataSet();
+		DataSource oldParent = setParentData(ds);
+
+		// Fill questions
+		fakeFillRequiredInfo();
+
+		// Tell it to compute and show the display name and such.
+		// If it doesn't throw an exception, we assume it
+		// is all correct
+		markDirty();
+		getDisplayString(true);
+		getDisplayString(false);
+		refreshCache();
+
+		// Restore old parent
+		setParentData(oldIndex, oldParent);
+		
+		return true;
+	}
+
+	/**
+	 * Automatically fills required information as best as possible. Intended
+	 * primarily for testing
+	 */
+	public void fakeFillRequiredInfo()
+	{
+		List<OperationInformation> info = getRequiredInfoPrompt();
+
+		// Fill with some BS. Not every operation is nicely handled with this approach
+		// if it actually uses the data we may not have much fun (tests will fail)
+		Random rand = new Random();
+		for(OperationInformation question : info)
+		{
+			PromptType questionType = question.getType();
+			switch(questionType)
+			{
+				case CHECKBOX:
+					question.setAnswer(true);
+					break;
+
+				case NUMERIC:
+					// Get a random number within the limits
+					Double min = (Double)((OperationInfoNumeric)question).getMin();
+					Double max = (Double)((OperationInfoNumeric)question).getMax();
+
+					// Limit it some to what people will reasonably use
+					min = min > -1000 ? min : -1000;
+					max = max < 1000 ? max : 1000;
+
+					question.setAnswer(rand.nextDouble() * (max - min) - min);
+					break;
+
+				case STRING:
+					question.setAnswer("test string");
+					break;
+
+				case COMBO:
+				case COLUMN:
+					// Choose one of the values they offered us
+					List<String> opts = ((OperationInfoCombo)question).getOptions();
+					if(!opts.isEmpty())
+						question.setAnswer(opts.get(0));
+					else
+						throw new OperationException("No in parent column matches specifications for " + question.getName());
+					break;
+
+				case FIXED:
+					// Ignore, no need to fill
+					break;
+
+				default:
+					throw new MarlaException("Question type '" + questionType + "' not supported for filling yet");
+			}
+		}
+	}
+
+	/**
 	 * Sets the text name for the JLabel
 	 * @param newName Text for JLabel
 	 */
@@ -440,26 +556,31 @@ public abstract class Operation extends DataSource implements Cloneable
 	/**
 	 * Assigns this Operation to a new parent.
 	 * @param newParent Parent DataSet/Operation we're a part of
+	 * @return Previously assigned parent, null if there was none
 	 */
-	public final void setParentData(DataSource newParent)
+	public final DataSource setParentData(DataSource newParent)
 	{
 		if(newParent != null)
-			setParentData(newParent.getOperationCount(), newParent);
+			return setParentData(newParent.getOperationCount(), newParent);
 		else
-			setParentData(-1, newParent);
+			return setParentData(-1, newParent);
 	}
 	
 	/**
 	 * Assigns this Operation to a new parent.
 	 * @param index Index at which to insert ourselves into the parent
 	 * @param newParent Parent DataSet/Operation we're a part of
+	 * @return Previously assigned parent, null if there was none
 	 */
-	public final void setParentData(int index, DataSource newParent)
+	public final DataSource setParentData(int index, DataSource newParent)
 	{
 		// If we're already a part of this parent or its ourselves, ignore request
 		if(parent == newParent || newParent == this)
-			return;
-		
+			return parent;
+
+		// Save old parent
+		DataSource oldParent = parent;
+
 		// Don't allow ourselves to be assigned to someone who depends on us (IE,
 		// is our ancestor at any depth)
 		DataSource currDS = newParent;
@@ -483,8 +604,8 @@ public abstract class Operation extends DataSource implements Cloneable
 				currSubs.add(sub);
 			for(SubProblem sub : currSubs)
 				sub.removeStep(this);
-			
-			DataSource oldParent = parent;
+
+			// Tell parent we're gone
 			parent = null;
 			oldParent.removeOperation(this);
 		}
@@ -508,6 +629,8 @@ public abstract class Operation extends DataSource implements Cloneable
 
 		markDirty();
 		markUnsaved();
+
+		return oldParent;
 	}
 
 	@Override
@@ -542,21 +665,15 @@ public abstract class Operation extends DataSource implements Cloneable
 	public abstract String getDescription();
 
 	/**
-	 * Runs up the chain and finds what index from the root DataSet this
-	 * operation falls under
-	 * @return Index of the "branch" off point
+	 * Runs up the chain and finds where we reside within our parent data
+	 * @return Index of the "branch" off point. -1 if we have no parent
 	 */
 	public final int getIndexFromDataSet()
 	{
-		DataSource currOp = this;
-		Operation prevOp = null;
-		while(!(currOp instanceof DataSet))
-		{
-			prevOp = (Operation)currOp;
-			currOp = prevOp.getParentData();
-		}
-
-		return currOp.getOperationIndex(prevOp);
+		if(parent != null)
+			return parent.getOperationIndex(this);
+		else
+			return -1;
 	}
 
 	@Override

@@ -21,7 +21,6 @@ package marla.ide.operation;
 import marla.ide.resource.Configuration;
 import marla.ide.problem.*;
 import java.util.List;
-import org.jdom.Element;
 import java.util.ArrayList;
 import org.junit.runners.Parameterized.Parameters;
 import java.util.Collection;
@@ -62,159 +61,30 @@ public class ImplementedOperationTest
 		return objectArray;
 	}
 
-	public ImplementedOperationTest(String opName) throws OperationException
+	public ImplementedOperationTest(String opName)
 	{
-		System.out.println("Testing operation '" + opName + "'");
 		this.opName = opName;
 	}
 
-	@Before
-	public void setUp() throws Exception
+	@BeforeClass
+	public static void setUpR() throws Exception
 	{
 		// Ensure everything shows
 		RProcessor.setDebugMode(RProcessor.RecordMode.FULL);
+		RProcessor.getInstance();
+	}
 
-		// Create fake dataset to work with
-		ds1 = DataSetTest.createDataSet(4, 10, 0);
-		op1 = Operation.createOperation(opName);
-		ds1.addOperation(op1);
+	@AfterClass
+	public static void tearDownR()
+	{
+		RProcessor.getInstance().close();
 	}
 
 	@Test
-	public void testEquals() throws Exception
+	public void testWorking() throws Exception
 	{
-		Operation op2 = Operation.createOperation(opName);
-		op1.equals(op2);
-		assertTrue(op1.equals(op2));
-	}
-
-	@Test
-	public void testEqualsDifferentOps() throws Exception
-	{
-		Operation op2 = Operation.createOperation("NOP");
-		ds1.addOperation(op2);
-
-		assertFalse(op1.equals(op2));
-	}
-
-	@Test
-	public void testEqualsDifferentParentData() throws Exception
-	{
-		DataSet ds2 = DataSetTest.createDataSet(3, 5, 0);
-		assertFalse(ds1.equals(ds2));
-		Operation op2 = Operation.createOperation(opName);
-		ds2.addOperation(op2);
-
-		// TODO determine if this should be equal or not. I could see the arguement both ways
-		assertEquals(op1, op2);
-	}
-
-	@Test
-	public void testEqualsDifferentChildren() throws Exception
-	{
-		Operation op2 = Operation.createOperation(opName);
-		ds1.addOperation(op2);
-
-		Operation op3 = Operation.createOperation(opName);
-		op2.addOperation(op3);
-
-		assertFalse(op1.equals(op2));
-	}
-
-	@Test
-	public void testCheckCache() throws Exception
-	{
-		// Cache should be dirty and nothing computed
-		assertTrue(op1.isDirty());
-
-		// Tell it to check
-		if(op1.isInfoUnanswered())
-			OperationTester.fillRequiredInfo(op1);
-		op1.checkCache();
-
-		assertFalse(op1.isDirty());
-		if(!op1.hasPlot())
-		{
-			// Should be full now
-			assertFalse(op1.getColumnCount() == 0);
-		}
-		else
-		{
-			// Should have a plot
-			assertFalse(op1.getPlot().isEmpty());
-		}
-	}
-
-	@Test
-	public void testInfo() throws Exception
-	{
-		if(op1.isInfoUnanswered())
-		{
-			try
-			{
-				op1.checkCache();
-				fail("An exception should have been thrown, required info not set yet");
-			}
-			catch(OperationInfoRequiredException ex)
-			{
-				// Good
-			}
-
-			OperationTester.fillRequiredInfo(op1);
-
-			// Now it should compute fine
-			op1.checkCache();
-		}
-		else
-		{
-			// No info was required, it had better not error out on us
-			op1.checkCache();
-		}
-	}
-
-	@Test
-	public void testPlot() throws Exception
-	{
-		// Fill info if needed
-		if(op1.isInfoUnanswered())
-			OperationTester.fillRequiredInfo(op1);
-			
-		if(op1.hasPlot())
-		{
-			assertTrue(!op1.getPlot().isEmpty());
-		}
-		else
-		{
-			// It doesn't report a plot, shouldn't return one
-			op1.checkCache();
-			assertEquals(null, op1.getPlot());
-		}
-	}
-
-	@Test
-	public void testToAndFromXML() throws Exception
-	{
-		Element el = op1.toXml();
-
-		// Read back from XML and attach to the same parent (otherwise answers
-		// will be invalid)
-		Operation op2 = Operation.fromXml(el);
-
-		op1.equals(op2);
-		assertEquals(op1, op2);
-
-		if(op1.isInfoRequired())
-		{
-			// Do again with the info assigned
-			OperationTester.fillRequiredInfo(op1);
-
-			el = op1.toXml();
-			op2 = Operation.fromXml(el);
-			ds1.addOperation(op2);
-
-			op1.equals(op2);
-
-			assertEquals(op1, op2);
-		}
+		System.out.println("Testing operation " + opName);
+		Operation op = Operation.createOperation(opName);
+		assertTrue(op.runTest());
 	}
 }

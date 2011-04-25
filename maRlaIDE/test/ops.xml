@@ -16,9 +16,9 @@
       )
     </displayname>
     <computation>
-      <set name="col" rvar="x" use="values" />
+      <set name="col" use="values" />
       <plot>
-        <cmd>hist(x)</cmd>
+        <cmd>hist(col)</cmd>
       </plot>
     </computation>
   </operation>
@@ -31,9 +31,9 @@
       )
     </displayname>
     <computation>
-      <set name="col" rvar="x" use="values" />
+      <set name="col" use="values" />
       <plot>
-        <cmd>boxplot(x)</cmd>
+        <cmd>boxplot(col)</cmd>
       </plot>
     </computation>
   </operation>
@@ -50,7 +50,7 @@
       )
     </displayname>
     <computation>
-      <set name="col" use="values" />
+      <set name="col1" use="values" />
       <set name="col2" use="values" />
       <plot>
         <cmd>boxplot(col1~col2)</cmd>
@@ -69,9 +69,9 @@
     <description>Creates a QQ normality plot to help determine if the selected
 			data column is normal.</description>
     <computation>
-      <set name="col" rvar="x" use="values" />
+      <set name="col" use="values" />
       <plot>
-        <cmd>qqnorm(x)</cmd>
+        <cmd>qqnorm(col)</cmd>
       </plot>
     </computation>
   </operation>
@@ -85,10 +85,10 @@
       )
     </displayname>
     <computation>
-      <set name="col" rvar="x" use="values" />
+      <set name="col" use="values" />
       <plot>
-        <cmd>qqnorm(x)</cmd>
-        <cmd>qqline(x)</cmd>
+        <cmd>qqnorm(col)</cmd>
+        <cmd>qqline(col)</cmd>
       </plot>
     </computation>
   </operation>
@@ -122,9 +122,9 @@
       )
     </displayname>
     <computation>
-      <set name="col" rvar="x" use="values" />
+      <set name="col" use="values" />
       <plot>
-        <cmd>barplot(x)</cmd>
+        <cmd>barplot(col)</cmd>
       </plot>
     </computation>
   </operation>
@@ -137,9 +137,9 @@
       )
     </displayname>
     <computation>
-      <set name="col" rvar="x" use="values" />
+      <set name="col" use="values" />
       <plot>
-        <cmd>barplot(x)</cmd>
+        <cmd>barplot(col)</cmd>
       </plot>
     </computation>
   </operation>
@@ -152,9 +152,9 @@
       )
     </displayname>
     <computation>
-      <set name="col" rvar="x" use="values" />
+      <set name="col" use="values" />
       <plot>
-        <cmd>dotchart(x)</cmd>
+        <cmd>dotchart(col)</cmd>
       </plot>
     </computation>
   </operation>
@@ -184,7 +184,7 @@
     </displayname>
     <computation>
       <set name="col" use="values" />
-      <set name="val" rvar="val" />
+      <set name="val" />
       <save type="numeric">col / val</save>
     </computation>
   </operation>
@@ -290,7 +290,7 @@
     </displayname>
     <computation>
       <set name="col" use="values" />
-      <set name="val" rvar="val" />
+      <set name="val" />
       <save type="numeric">col - val</save>
     </computation>
   </operation>
@@ -500,8 +500,8 @@
       <response name="col" />
     </displayname>
     <computation>
-      <set name="col" rvar="col" use="values" />
-      <set name="base" rvar="base" />
+      <set name="col" use="values" />
+      <set name="base" />
       <save type="numeric">log(col) / log(base)</save>
     </computation>
   </operation>
@@ -514,7 +514,7 @@
       &lt;/sup&gt;
     </displayname>
     <computation>
-      <set name="col" rvar="col" use="values" />
+      <set name="col" use="values" />
       <save type="numeric">exp(col)</save>
     </computation>
   </operation>
