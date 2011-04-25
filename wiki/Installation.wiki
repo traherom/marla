@@ -22,12 +22,17 @@ Secondly, maRla depends on Latex for generating PDFs. This, unfortunately, takes
 
   * [#R Install R]
   * Download MiKTeX 2.9 installer
-  * Install MiKTeX, preferably turning on automatic packagage installation. However, directions for everything will be given further down, so it shouldn't matter too much.
+  * Install MiKTeX, preferably turning on automatic package installation.
   * Register Sweave with MiKTeX (TBD, only rough currently)
-    * Open up the MiKTeX Prefences by going to Start Menu->Program Files->MiKTeX->TBD
-    * Under the roots, click the "Add" button
-    * Select R's `texmf` directory. If R was installed at the default location, this is `C:\Program Files\R\R-2.12.x\share\texmf`
-  * Turn on automatic package installation by changing the "Automatic Package Installation" select box on the "X" tab to "Yes"
+    * Open up the MiKTeX Settings by going to Start Menu->Program Files->MiKTeX 2.9->Maintenance->Settings
+    * Switch to the "Roots" tab and click the "Add..." button
+    * Select R's `texmf` directory. If R was installed at the default location, this is `C:\Program Files\R\R-2.12.x\share\texmf`. Your window should now look like this:
+    [http://marla.googlecode.com/svn/screenshots/miktex_roots.png]
+  * Turn on automatic package installation for MiKTeX
+    * If it isn't open, open up the MiKTeX Settings by going to Start Menu->Program Files->MiKTeX 2.9->Maintenance->Settings
+    * Switch to the "General" tab and find the "Package Installation" section
+    * Change the "Install missing packages on-the-fly" select box to "Yes"
+    * Hit the OK button to complete setup
 
 = Linux =
 Configuration is typically much easier on Linux than on Windows. The exact steps depend on your distribution, but you will need to ensure the latest JRE, R, and pdflatex are installed on your system. From there, the cross-platform archive of maRla, available on the [http://code.google.com/p/marla/downloads/list Downloads] page, should be runnable from any directory.
