@@ -1,8 +1,0 @@
-#summary One-sentence summary of this page.
-#labels Deprecated
-
-= Introduction =
-
-This is to test image embedding
-
-http://marla.googlecode.com/svn/wiki/screenshots/main_workspace.png

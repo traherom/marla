@@ -7,9 +7,27 @@
 maRla depends on many different software packages and proper configuration can, on occasion, be troublesome. This page attempts to simplify the installation process for the most common operation systems.
 
 = Windows Installation =
-The maRla Windows installer, available on the [http://code.google.com/p/marla/downloads/list Downloads] page, attempts to do all configuration necessary for Windows XP, Vista, and 7 systems. This is the recommended path to take. However, if maRla fails to run after using the installer, manual installation may be required.
+The maRla Windows installer, available on the [http://code.google.com/p/marla/downloads/list Downloads] page, attempts to do all configuration necessary for Windows XP, Vista, and 7 systems. This is the recommended path to take. However, if maRla fails to run after using the installer, manual installation may be required. Instructions for installing and configuring each package are below:
 
-TBD. Description of installing/configuring each package.
+== Java ==
+Download and install the Java Runtime Environment from http://www.java.com/en/download/index.jsp.
+
+== R ==
+maRla requires R to be installed on your system. No special configuration is required of R, so a default installation should work fine. Go to the  [http://cran.r-project.org/mirrors.html R site] and [http://cran.case.edu/bin/windows/base/release.htm download] an installer. Install it and accept the default options. If R is installed in Program Files (something like `C:\Program Files\R\2-2.x`), maRla should be able to locate it just fine when it starts.
+
+If you need to use an R installation that maRla isn't able to automatically locate, it will pop up a dialog for you to choose the location of the main R binary. You want to choose the command-line R.exe file. In a default installation, this would be located at `C:\Program Files\R\R-2.12.1\bin\R.exe`. If the file you choose is not correct, maRla will prompt you again. If you want to use a relative path, you can set this manually after maRla has launched in the [SettingsHelp settings].
+
+== MiKTeX ==
+Secondly, maRla depends on Latex for generating PDFs. This, unfortunately, takes a bit more work to configure correctly. Follow the steps below to get everything configured correctly for use with Miktex. Skip to the appropriate point, depending on what you have completed.
+
+  * [#R Install R]
+  * Download MiKTeX 2.9 installer
+  * Install MiKTeX, preferably turning on automatic packagage installation. However, directions for everything will be given further down, so it shouldn't matter too much.
+  * Register Sweave with MiKTeX (TBD, only rough currently)
+    * Open up the MiKTeX Prefences by going to Start Menu->Program Files->MiKTeX->TBD
+    * Under the roots, click the "Add" button
+    * Select R's `texmf` directory. If R was installed at the default location, this is `C:\Program Files\R\R-2.12.x\share\texmf`
+  * Turn on automatic package installation by changing the "Automatic Package Installation" select box on the "X" tab to "Yes"
 
 = Linux Installation =
 Configuration is typically much easier on Linux than on Windows. The exact steps depend on your distribution, but you will need to ensure the latest JRE, R, and pdflatex are installed on your system. From there, the cross-platform archive of maRla, available on the [http://code.google.com/p/marla/downloads/list Downloads] page, should be runnable from any directory.
