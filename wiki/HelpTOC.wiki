@@ -1,3 +1,5 @@
+#summary The table of contents help pages within the Wiki
+
   * [HelpContents Help Pages]
     * Getting started
       * [Installation]
