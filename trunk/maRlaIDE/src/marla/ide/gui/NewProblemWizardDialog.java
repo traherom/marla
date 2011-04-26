@@ -1014,7 +1014,11 @@ public class NewProblemWizardDialog extends EscapeDialog
 		}
 
 		dataSetTabbedPane.remove(dataSetTabbedPane.getSelectedIndex());
-		if(dataSetTabbedPane.getTabCount() == 0)
+		if(dataSetTabbedPane.getTabCount() > 0)
+		{
+			removeDataSetButton.setEnabled(true);
+		}
+		else
 		{
 			removeDataSetButton.setEnabled(false);
 		}
@@ -1573,9 +1577,13 @@ public class NewProblemWizardDialog extends EscapeDialog
 		((JSpinner) panel.getComponent(2)).setValue(columns);
 		((JSpinner) panel.getComponent(4)).setValue(rows);
 
-		if(dataSetTabbedPane.getTabCount() == 1)
+		if(dataSetTabbedPane.getTabCount() > 0)
 		{
 			removeDataSetButton.setEnabled(true);
+		}
+		else
+		{
+			removeDataSetButton.setEnabled(false);
 		}
 
 		if (editing)
@@ -2542,14 +2550,15 @@ public class NewProblemWizardDialog extends EscapeDialog
 				table.setModel(newModel);
 				table.refreshTable();
 			}
-			if(dataSetTabbedPane.getTabCount() > 0)
-			{
-				removeDataSetButton.setEnabled(true);
-			}
-			else
-			{
-				removeDataSetButton.setEnabled(false);
-			}
+		}
+		
+		if(dataSetTabbedPane.getTabCount() > 0)
+		{
+			removeDataSetButton.setEnabled(true);
+		}
+		else
+		{
+			removeDataSetButton.setEnabled(false);
 		}
 	}
 

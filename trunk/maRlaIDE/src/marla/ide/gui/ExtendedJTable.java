@@ -22,6 +22,8 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
@@ -246,9 +248,10 @@ public class ExtendedJTable extends JTable
 
 		private void initListeners()
 		{
+			PropertyChangeListener listener = createNewRepaintPropertyChangeListener();
 			for(int i = 0; i < table.getColumnModel().getColumnCount(); i++)
 			{
-				table.getColumnModel().getColumn(i).addPropertyChangeListener(createNewRepaintPropertyChangeListener());
+				table.getColumnModel().getColumn(i).addPropertyChangeListener(listener);
 			}
 		}
 
@@ -275,26 +278,31 @@ public class ExtendedJTable extends JTable
 
 		private void paintStripedBackground(Graphics g)
 		{
-			// get the row index at the top of the clip bounds (the first row
-			// to paint).
-			int rowAtPoint = table.rowAtPoint(g.getClipBounds().getLocation());
-			// get the y coordinate of the first row to paint. if there are no
-			// rows in the table, start painting at the top of the supplied
-			// clipping bounds.
-			int topY = rowAtPoint < 0
-					? g.getClipBounds().y : table.getCellRect(rowAtPoint, 0, true).y;
+			Rectangle clipBounds = g.getClipBounds();
+			int topY = clipBounds.y;
+			int rowHeight = table.getRowHeight();
+			int clipYRelativeToTable = getViewPosition().y + topY;
+			int currentRow = clipYRelativeToTable / rowHeight;
+			int bottomY = topY + rowHeight;
 
-			// create a counter variable to hold the current row. if there are no
-			// rows in the table, start the counter at 0.
-			int currentRow = rowAtPoint < 0 ? 0 : rowAtPoint;
-			while(topY < g.getClipBounds().y + g.getClipBounds().height)
+			// calculate the first value of the bottom 'y' taking in count that
+			// first row may be partially displayed
+			bottomY -= clipYRelativeToTable % rowHeight;
+
+			while(topY < clipBounds.y + clipBounds.height)
 			{
-				int bottomY = topY + table.getRowHeight();
-				g.setColor(getRowColor(currentRow));
-				g.fillRect(g.getClipBounds().x, topY, g.getClipBounds().width, bottomY);
+				g.setColor(getRowColor(currentRow++));
+				g.fillRect(clipBounds.x, topY, clipBounds.width, bottomY);
 				topY = bottomY;
-				currentRow++;
+				bottomY = topY + rowHeight;
 			}
+		}
+
+		@Override
+		public void setViewPosition(Point p)
+		{
+			super.setViewPosition(p);
+			repaint();
 		}
 
 		private Color getRowColor(int row)
@@ -305,27 +313,45 @@ public class ExtendedJTable extends JTable
 		private void paintHorizontalGridLines(Graphics g)
 		{
 			// paint the column grid dividers for the non-existent columns.
-			int y = 0;
+			Rectangle clipBounds = g.getClipBounds();
+			int topY = clipBounds.y;
+			int rowHeight = table.getRowHeight();
+			int clipYRelativeToTable = getViewPosition().y + topY;
+			int bottomY = topY + rowHeight;
+
+			// calculate the first value of the bottom 'y' taking in count that
+			// first row may be partially displayed
+			bottomY -= clipYRelativeToTable % rowHeight;
 			for(int i = 0; i < table.getRowCount(); i++)
 			{
 				// increase the x position by the height of a row.
-				y += table.getRowHeight();
+				topY = bottomY;
 				g.setColor(TABLE_GRID_COLOR);
-				g.drawLine(0, y - 1, table.getColumnModel().getTotalColumnWidth(), y - 1);
+				g.drawLine(0, topY - 1, table.getColumnModel().getTotalColumnWidth(), topY - 1);
+				bottomY = topY + rowHeight;
 			}
 		}
 
 		private void paintVerticalGridLines(Graphics g)
 		{
 			// paint the row grid dividers for the non-existent rows.
-			int x = 0;
+			Rectangle clipBounds = g.getClipBounds();
+			int firstX = clipBounds.x;
+			int columnWidth = table.getColumnModel().getColumn(0).getWidth();
+			int clipXRelativeToTable = getViewPosition().x + firstX;
+			int lastX = firstX + columnWidth;
+			
+			// calculate the first value of the bottom 'y' taking in count that
+			// first row may be partially displayed
+			lastX -= clipXRelativeToTable % columnWidth;
 			for(int i = 0; i < table.getColumnCount(); i++)
 			{
 				TableColumn column = table.getColumnModel().getColumn(i);
 				// increase the x position by the width of the current column.
-				x += column.getWidth();
+				firstX = lastX;
 				g.setColor(TABLE_GRID_COLOR);
-				g.drawLine(x - 1, g.getClipBounds().y, x - 1, table.getRowCount() * table.getRowHeight());
+				g.drawLine(firstX - 1, g.getClipBounds().y, firstX - 1, table.getRowCount() * table.getRowHeight());
+				lastX = firstX + column.getWidth();
 			}
 		}
 	}
