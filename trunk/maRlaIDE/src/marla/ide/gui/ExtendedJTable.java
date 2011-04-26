@@ -243,28 +243,6 @@ public class ExtendedJTable extends JTable
 		{
 			this.table = table;
 			setOpaque(false);
-			initListeners();
-		}
-
-		private void initListeners()
-		{
-			PropertyChangeListener listener = createNewRepaintPropertyChangeListener();
-			for(int i = 0; i < table.getColumnModel().getColumnCount(); i++)
-			{
-				table.getColumnModel().getColumn(i).addPropertyChangeListener(listener);
-			}
-		}
-
-		private PropertyChangeListener createNewRepaintPropertyChangeListener()
-		{
-			return new PropertyChangeListener()
-			{
-				@Override
-				public void propertyChange(PropertyChangeEvent evt)
-				{
-					repaint();
-				}
-			};
 		}
 
 		@Override
@@ -327,7 +305,7 @@ public class ExtendedJTable extends JTable
 				// increase the x position by the height of a row.
 				topY = bottomY;
 				g.setColor(TABLE_GRID_COLOR);
-				g.drawLine(0, topY - 1, table.getColumnModel().getTotalColumnWidth(), topY - 1);
+				g.drawLine(0, topY - 1, table.getColumnModel().getTotalColumnWidth() - 1, topY - 1);
 				bottomY = topY + rowHeight;
 			}
 		}
@@ -337,22 +315,24 @@ public class ExtendedJTable extends JTable
 			// paint the row grid dividers for the non-existent rows.
 			Rectangle clipBounds = g.getClipBounds();
 			int firstX = clipBounds.x;
-			int columnWidth = table.getColumnModel().getColumn(0).getWidth();
 			int clipXRelativeToTable = getViewPosition().x + firstX;
-			int lastX = firstX + columnWidth;
+			int lastX = firstX;
 			
-			// calculate the first value of the bottom 'y' taking in count that
-			// first row may be partially displayed
-			lastX -= clipXRelativeToTable % columnWidth;
-			for(int i = 0; i < table.getColumnCount(); i++)
+			// calculate the first value of the first 'x' taking in count that
+			// first column may be partially displayed
+			lastX -= clipXRelativeToTable;
+			g.setColor(TABLE_GRID_COLOR);
+			for(int i = 0; i < table.getColumnModel().getColumnCount(); i++)
 			{
 				TableColumn column = table.getColumnModel().getColumn(i);
 				// increase the x position by the width of the current column.
 				firstX = lastX;
-				g.setColor(TABLE_GRID_COLOR);
-				g.drawLine(firstX - 1, g.getClipBounds().y, firstX - 1, table.getRowCount() * table.getRowHeight());
+				g.drawLine(firstX - 1, g.getClipBounds().y, firstX - 1, table.getRowCount() * table.getRowHeight() - 1);
 				lastX = firstX + column.getWidth();
 			}
+			// draw the last column line
+			g.drawLine(lastX - 1, g.getClipBounds().y, lastX - 1, table.getRowCount() * table.getRowHeight() - 1);
+			
 		}
 	}
 
