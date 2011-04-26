@@ -261,7 +261,6 @@
       <set name="col1" use="values" />
       <set name="col2" use="values" />
       <save type="numeric">col1 * col2</save>
-
     </computation>
   </operation>
   <operation name="Divide Columns">
@@ -518,7 +517,6 @@
       <save type="numeric">exp(col)</save>
     </computation>
   </operation>
-
   <operation name="Absolute Value">
     <category>Linear Data Transformation</category>
     <query type="column" name="col" prompt="Column:" column-type="numeric" />
@@ -786,11 +784,28 @@
       <set rvar="yName" name="y" use="name" />
       <set rvar="yVals" name="y" use="values" />
       <cmd>s = summary(lm(xVals~yVals))</cmd>
-      <cmd>n = names(s)</cmd>
-      <loop type="numeric" loop-var="s" index-var="i">
-        <save type="string">n[i]</save>
-        <save r-column="paste('summary(lm(', xName, '~', yName, '))', ' vals', sep='')">s[i]</save>
-      </loop>
+      <!-- Description summary LM -->
+      <if colexists="Summary Linear Model">
+        <else>
+          <save type="string" column="Summary Linear Model">c("Intercept", "Std-err", "t-value", "p-value", "slope", "Std-err", "t-value", "p-value", "Res-std-err", "DF", "R^2", "Adj R^2", "F-stat", "numdf", "dendf")</save>
+        </else>
+      </if>
+      <!-- Actual values -->
+      <save type="numeric">s$coefficients[1]</save>
+      <save type="numeric">s$coefficients[3]</save>
+      <save type="numeric">s$coefficients[5]</save>
+      <save type="numeric">s$coefficients[7]</save>
+      <save type="numeric">s$coefficients[2]</save>
+      <save type="numeric">s$coefficients[4]</save>
+      <save type="numeric">s$coefficients[6]</save>
+      <save type="numeric">s$coefficients[7]</save>
+      <save type="numeric">s$sigma</save>
+      <save type="numeric">s$df[2]</save>
+      <save type="numeric">s$r.squared</save>
+      <save type="numeric">s$adj.r.squared</save>
+      <save type="numeric">s$fstatistic[1]</save>
+      <save type="numeric">s$fstatistic[2]</save>
+      <save type="numeric">s$fstatistic[3]</save>
     </computation>
   </operation>
   <operation name="Five Nums">
