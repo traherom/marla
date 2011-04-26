@@ -1,6 +1,6 @@
 /*
- * The maRla Project - Graphical problem solver for statistics and probability problems.
- * Copyright (C) 2010 Cedarville University
+ * The maRla Project - Graphical problem solver for statistical calculations.
+ * Copyright (C) 2011 Cedarville University
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

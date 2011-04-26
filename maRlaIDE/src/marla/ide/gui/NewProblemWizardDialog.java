@@ -18,7 +18,6 @@
 
 package marla.ide.gui;
 
-import java.awt.event.KeyEvent;
 import marla.ide.gui.colorpicker.ColorPicker;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -29,7 +28,9 @@ import java.awt.GridLayout;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.InputEvent;
 import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
@@ -39,9 +40,12 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
+import javax.swing.InputMap;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -52,6 +56,7 @@ import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.JViewport;
+import javax.swing.KeyStroke;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
 import javax.swing.border.BevelBorder;
@@ -122,6 +127,29 @@ public class NewProblemWizardDialog extends EscapeDialog
 		this.domain = domain;
 
 		initComponents();
+		
+		// forward undo/redo key strokes to the main view
+		KeyStroke stroke = KeyStroke.getKeyStroke(KeyEvent.VK_Z, InputEvent.CTRL_MASK);
+		InputMap inputMap = rootPane.getInputMap (JComponent.WHEN_IN_FOCUSED_WINDOW);
+		inputMap.put (stroke, KeyEvent.VK_Z + " | " + InputEvent.CTRL_MASK);
+		rootPane.getActionMap ().put (KeyEvent.VK_Z + " | " + InputEvent.CTRL_MASK, new AbstractAction()
+				{
+					@Override
+					public void actionPerformed(ActionEvent evt)
+					{
+						viewPanel.undo();
+					}
+				});
+		stroke = KeyStroke.getKeyStroke(KeyEvent.VK_Y, InputEvent.CTRL_MASK);
+		inputMap.put (stroke, KeyEvent.VK_Y + " | " + InputEvent.CTRL_MASK);
+		rootPane.getActionMap ().put (KeyEvent.VK_Y + " | " + InputEvent.CTRL_MASK, new AbstractAction()
+				{
+					@Override
+					public void actionPerformed(ActionEvent evt)
+					{
+						viewPanel.redo();
+					}
+				});
 
 		dataSetTabbedPane.addMouseListener(new MouseAdapter()
 		{
@@ -280,7 +308,7 @@ public class NewProblemWizardDialog extends EscapeDialog
         stepsPanel.add(welcomeLabel);
         welcomeLabel.setBounds(20, 40, 140, 16);
 
-        nameAndLocationLabel.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        nameAndLocationLabel.setFont(new java.awt.Font("Verdana", 0, 12));
         nameAndLocationLabel.setText("2. Name and Location");
         nameAndLocationLabel.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
@@ -390,14 +418,14 @@ public class NewProblemWizardDialog extends EscapeDialog
             .addGroup(welcomePanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(welcomeTextLabel)
-                .addContainerGap(249, Short.MAX_VALUE))
+                .addContainerGap(247, Short.MAX_VALUE))
         );
         welcomePanelLayout.setVerticalGroup(
             welcomePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(welcomePanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(welcomeTextLabel)
-                .addContainerGap(293, Short.MAX_VALUE))
+                .addContainerGap(292, Short.MAX_VALUE))
         );
 
         welcomeCardPanel.add(welcomePanel);
@@ -447,11 +475,11 @@ public class NewProblemWizardDialog extends EscapeDialog
                     .addGroup(nameAndLocationPanelLayout.createSequentialGroup()
                         .addComponent(problemNameLabel)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(problemNameTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 340, Short.MAX_VALUE))
+                        .addComponent(problemNameTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 328, Short.MAX_VALUE))
                     .addGroup(nameAndLocationPanelLayout.createSequentialGroup()
                         .addComponent(problemLocationLabel)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(problemLocationTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 323, Short.MAX_VALUE))
+                        .addComponent(problemLocationTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 311, Short.MAX_VALUE))
                     .addComponent(browseButton, javax.swing.GroupLayout.Alignment.TRAILING))
                 .addContainerGap())
         );
@@ -468,7 +496,7 @@ public class NewProblemWizardDialog extends EscapeDialog
                     .addComponent(problemLocationTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(browseButton)
-                .addContainerGap(216, Short.MAX_VALUE))
+                .addContainerGap(204, Short.MAX_VALUE))
         );
 
         nameAndLocationCardPanel.add(nameAndLocationPanel);
@@ -505,7 +533,7 @@ public class NewProblemWizardDialog extends EscapeDialog
             .addGroup(descriptionPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(descriptionPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(descroptionScollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 440, Short.MAX_VALUE)
+                    .addComponent(descroptionScollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 436, Short.MAX_VALUE)
                     .addComponent(problemDescriptionLabel))
                 .addContainerGap())
         );
@@ -515,7 +543,7 @@ public class NewProblemWizardDialog extends EscapeDialog
                 .addContainerGap()
                 .addComponent(problemDescriptionLabel)
                 .addGap(18, 18, 18)
-                .addComponent(descroptionScollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 264, Short.MAX_VALUE)
+                .addComponent(descroptionScollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 262, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -547,7 +575,7 @@ public class NewProblemWizardDialog extends EscapeDialog
             subProblemsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(subProblemsPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(subProblemsScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 451, Short.MAX_VALUE))
+                .addComponent(subProblemsScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 449, Short.MAX_VALUE))
         );
         subProblemsPanelLayout.setVerticalGroup(
             subProblemsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -566,7 +594,7 @@ public class NewProblemWizardDialog extends EscapeDialog
             }
         });
         subProblemsCardPanel.add(addSubProblemButton);
-        addSubProblemButton.setBounds(285, 330, 70, 25);
+        addSubProblemButton.setBounds(285, 330, 70, 28);
 
         removeSubProblemButton.setFont(new java.awt.Font("Verdana", 0, 12));
         removeSubProblemButton.setText("Remove");
@@ -578,7 +606,7 @@ public class NewProblemWizardDialog extends EscapeDialog
             }
         });
         subProblemsCardPanel.add(removeSubProblemButton);
-        removeSubProblemButton.setBounds(370, 330, 90, 25);
+        removeSubProblemButton.setBounds(370, 330, 90, 28);
 
         wizardCardPanel.add(subProblemsCardPanel, "card6");
 
@@ -607,7 +635,7 @@ public class NewProblemWizardDialog extends EscapeDialog
             }
         });
         dataSetsCardPanel.add(addDataSetButton);
-        addDataSetButton.setBounds(285, 330, 70, 25);
+        addDataSetButton.setBounds(285, 330, 70, 28);
 
         removeDataSetButton.setFont(new java.awt.Font("Verdana", 0, 12));
         removeDataSetButton.setText("Remove");
@@ -618,7 +646,7 @@ public class NewProblemWizardDialog extends EscapeDialog
             }
         });
         dataSetsCardPanel.add(removeDataSetButton);
-        removeDataSetButton.setBounds(370, 330, 90, 25);
+        removeDataSetButton.setBounds(370, 330, 90, 28);
 
         tipTextLabel.setFont(new java.awt.Font("Verdana", 0, 12));
         dataSetsCardPanel.add(tipTextLabel);
@@ -633,7 +661,7 @@ public class NewProblemWizardDialog extends EscapeDialog
             }
         });
         dataSetsCardPanel.add(addFromRLibButton);
-        addFromRLibButton.setBounds(0, 330, 150, 25);
+        addFromRLibButton.setBounds(0, 330, 150, 28);
 
         wizardCardPanel.add(dataSetsCardPanel, "card2");
 
@@ -671,27 +699,27 @@ public class NewProblemWizardDialog extends EscapeDialog
 
         studentNameTextField.setFont(new java.awt.Font("Verdana", 0, 12));
         informationCardPanel.add(studentNameTextField);
-        studentNameTextField.setBounds(110, 50, 289, 22);
+        studentNameTextField.setBounds(110, 50, 289, 26);
 
         courseShortNameTextField.setFont(new java.awt.Font("Verdana", 0, 12));
         informationCardPanel.add(courseShortNameTextField);
-        courseShortNameTextField.setBounds(147, 90, 150, 22);
+        courseShortNameTextField.setBounds(147, 90, 150, 26);
 
         courseLongNameTextField.setFont(new java.awt.Font("Verdana", 0, 12));
         informationCardPanel.add(courseLongNameTextField);
-        courseLongNameTextField.setBounds(140, 130, 240, 22);
+        courseLongNameTextField.setBounds(140, 130, 240, 26);
 
         chapterTextField.setFont(new java.awt.Font("Verdana", 0, 12));
         informationCardPanel.add(chapterTextField);
-        chapterTextField.setBounds(73, 170, 190, 22);
+        chapterTextField.setBounds(73, 170, 190, 26);
 
         sectionTextField.setFont(new java.awt.Font("Verdana", 0, 12));
         informationCardPanel.add(sectionTextField);
-        sectionTextField.setBounds(70, 210, 170, 22);
+        sectionTextField.setBounds(70, 210, 170, 26);
 
         problemNumberTextField.setFont(new java.awt.Font("Verdana", 0, 12));
         informationCardPanel.add(problemNumberTextField);
-        problemNumberTextField.setBounds(130, 250, 90, 22);
+        problemNumberTextField.setBounds(130, 250, 90, 26);
 
         wizardLineCard6.setFont(new java.awt.Font("Verdana", 0, 12));
         wizardLineCard6.setText("______________________________________________________");
@@ -750,7 +778,7 @@ public class NewProblemWizardDialog extends EscapeDialog
         wizardControlPanelLayout.setHorizontalGroup(
             wizardControlPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, wizardControlPanelLayout.createSequentialGroup()
-                .addContainerGap(500, Short.MAX_VALUE)
+                .addContainerGap(516, Short.MAX_VALUE)
                 .addComponent(backWizardButton, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(nextWizardButton, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -773,7 +801,7 @@ public class NewProblemWizardDialog extends EscapeDialog
         newProblemPanel.setLayout(newProblemPanelLayout);
         newProblemPanelLayout.setHorizontalGroup(
             newProblemPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 783, Short.MAX_VALUE)
+            .addGap(0, 787, Short.MAX_VALUE)
             .addGroup(newProblemPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(newProblemPanelLayout.createSequentialGroup()
                     .addContainerGap()
@@ -787,7 +815,7 @@ public class NewProblemWizardDialog extends EscapeDialog
         );
         newProblemPanelLayout.setVerticalGroup(
             newProblemPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 479, Short.MAX_VALUE)
+            .addGap(0, 486, Short.MAX_VALUE)
             .addGroup(newProblemPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(newProblemPanelLayout.createSequentialGroup()
                     .addContainerGap()
@@ -803,7 +831,7 @@ public class NewProblemWizardDialog extends EscapeDialog
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 783, Short.MAX_VALUE)
+            .addGap(0, 787, Short.MAX_VALUE)
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(layout.createSequentialGroup()
                     .addGap(0, 0, 0)
@@ -812,7 +840,7 @@ public class NewProblemWizardDialog extends EscapeDialog
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 479, Short.MAX_VALUE)
+            .addGap(0, 486, Short.MAX_VALUE)
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(layout.createSequentialGroup()
                     .addGap(0, 0, 0)
@@ -986,41 +1014,54 @@ public class NewProblemWizardDialog extends EscapeDialog
 }//GEN-LAST:event_addDataSetButtonActionPerformed
 
 	private void removeDataSetButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeDataSetButtonActionPerformed
-		DataSet removedData = null;
-		if(newProblem != null)
+		Problem problem;
+		if (newProblem != null)
 		{
-			removedData = newProblem.removeData(newProblem.getData(dataSetTabbedPane.getSelectedIndex()));
-			repositionDataSets(newProblem);
+			problem = newProblem;
 		}
 		else
 		{
-			removedData = domain.problem.removeData(domain.problem.getData(dataSetTabbedPane.getSelectedIndex()));
-			for (int i = 0; i < removedData.getOperationCount(); ++i)
+			problem = domain.problem;
+		}
+		int response = Domain.showConfirmDialog(Domain.getTopWindow(), "Removing a data set from the problem will remove it and all its\nattached operations from the workspace as well.\nAre you sure you want to permanently remove " + problem.getData(dataSetTabbedPane.getSelectedIndex()).getDisplayString(false) + "?", "Remove Data", JOptionPane.YES_NO_OPTION);
+		if (response == JOptionPane.YES_OPTION)
+		{
+			DataSet removedData = null;
+			if(newProblem != null)
 			{
-				Operation op = removedData.getOperation(i);
-				for (Operation childOp : op.getAllChildOperations())
-				{
-					viewPanel.workspacePanel.remove(childOp);
-				}
-				viewPanel.workspacePanel.remove(op);
+				removedData = newProblem.removeData(newProblem.getData(dataSetTabbedPane.getSelectedIndex()));
+				repositionDataSets(newProblem);
 			}
-		}
+			else
+			{
+				removedData = domain.problem.removeData(domain.problem.getData(dataSetTabbedPane.getSelectedIndex()));
+				for (int i = 0; i < removedData.getOperationCount(); ++i)
+				{
+					Operation op = removedData.getOperation(i);
+					for (Operation childOp : op.getAllChildOperations())
+					{
+						viewPanel.workspacePanel.remove(childOp);
+					}
+					viewPanel.workspacePanel.remove(op);
+				}
+			}
 
-		if (editing)
-		{
-			viewPanel.workspacePanel.remove(removedData);
-			viewPanel.workspacePanel.repaint();
-			viewPanel.rebuildDataSetLegend();
-		}
+			if (editing)
+			{
+				viewPanel.workspacePanel.remove(removedData);
+				viewPanel.workspacePanel.repaint();
+				viewPanel.rebuildDataSetLegend();
+			}
 
-		dataSetTabbedPane.remove(dataSetTabbedPane.getSelectedIndex());
-		if(dataSetTabbedPane.getTabCount() > 0)
-		{
-			removeDataSetButton.setEnabled(true);
-		}
-		else
-		{
-			removeDataSetButton.setEnabled(false);
+			dataSetTabbedPane.remove(dataSetTabbedPane.getSelectedIndex());
+			if(dataSetTabbedPane.getTabCount() > 0)
+			{
+				removeDataSetButton.setEnabled(true);
+			}
+			else
+			{
+				removeDataSetButton.setEnabled(false);
+			}
 		}
 }//GEN-LAST:event_removeDataSetButtonActionPerformed
 
@@ -1502,7 +1543,7 @@ public class NewProblemWizardDialog extends EscapeDialog
     private javax.swing.JPanel welcomePanel;
     protected javax.swing.JLabel welcomeTextLabel;
     private javax.swing.JLabel welcomeWizardLabel;
-    private javax.swing.JPanel wizardCardPanel;
+    protected javax.swing.JPanel wizardCardPanel;
     private javax.swing.JPanel wizardControlPanel;
     private javax.swing.JLabel wizardLineCard1;
     private javax.swing.JLabel wizardLineCard2;
@@ -2380,7 +2421,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 	 *
 	 * @param editing True when editing a problem, false when creating a new one.
 	 */
-	private void setNewProblemWizardDefaultValues(boolean editing)
+	protected void setNewProblemWizardDefaultValues(boolean editing)
 	{
 		if(!editing)
 		{

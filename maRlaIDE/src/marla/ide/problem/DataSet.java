@@ -440,7 +440,6 @@ public final class DataSet extends DataSource
 		}
 
 		// Create
-		changeBeginning(null);
 		DataColumn newColumn = new DataColumn(this, colName);
 		columns.add(index, newColumn);
 		markUnsaved();

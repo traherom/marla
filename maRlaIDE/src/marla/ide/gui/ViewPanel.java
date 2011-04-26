@@ -19,6 +19,7 @@
 package marla.ide.gui;
 
 import java.awt.AWTEvent;
+import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
@@ -1808,6 +1809,27 @@ public class ViewPanel extends JPanel
 			closeProblem(false, true);
 			domain.problem = problem;
 			openProblem(false, true);
+			
+			if (newProblemWizardDialog.isVisible())
+			{
+				JPanel currentCard = null;
+				for (Component comp : newProblemWizardDialog.wizardCardPanel.getComponents())
+				{
+					if (comp.isVisible())
+					{
+						currentCard = (JPanel) comp;
+						break;
+					}
+				}
+				newProblemWizardDialog.initializeNewProblemWizard(true);
+				if (currentCard != null)
+				{
+					while (!currentCard.isVisible())
+					{
+						newProblemWizardDialog.goNext();
+					}
+				}
+			}
 
 			domain.validateUndoRedoMenuItems();
 		}
@@ -1827,6 +1849,27 @@ public class ViewPanel extends JPanel
 			closeProblem(false, true);
 			domain.problem = problem;
 			openProblem(false, true);
+			
+			if (newProblemWizardDialog.isVisible())
+			{
+				JPanel currentCard = null;
+				for (Component comp : newProblemWizardDialog.wizardCardPanel.getComponents())
+				{
+					if (comp.isVisible())
+					{
+						currentCard = (JPanel) comp;
+						break;
+					}
+				}
+				newProblemWizardDialog.initializeNewProblemWizard(true);
+				if (currentCard != null)
+				{
+					while (!currentCard.isVisible())
+					{
+						newProblemWizardDialog.goNext();
+					}
+				}
+			}
 
 			domain.validateUndoRedoMenuItems();
 		}
