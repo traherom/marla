@@ -286,6 +286,8 @@ public class ViewPanel extends JPanel
 				}
 			}
 		}, KeyEvent.KEY_EVENT_MASK);
+		
+		viewPanel = this;
 
 		workspacePanel.setDropTarget(new DropTarget(workspacePanel, DnDConstants.ACTION_MOVE, DND_LISTENER));
 
