@@ -178,10 +178,10 @@ def upload_find_auth(file_path, project_name, summary, labels=None,
       user_name = sys.stdin.readline().rstrip()
     if password is None:
       # Read password if not loaded from svn config, or on subsequent tries.
-      print 'Please enter your googlecode.com password.'
-      print '** Note that this is NOT your Gmail account password! **'
-      print 'It is the password you use to access Subversion repositories,'
-      print 'and can be found here: http://code.google.com/hosting/settings'
+      print ('Please enter your googlecode.com password.')
+      print ('** Note that this is NOT your Gmail account password! **')
+      print ('It is the password you use to access Subversion repositories,')
+      print ('and can be found here: http://code.google.com/hosting/settings')
       password = getpass.getpass()
 
     status, reason, url = upload(file_path, project_name, user_name, password,
@@ -236,12 +236,12 @@ def main():
                                          options.summary, labels,
                                          options.user, options.password)
   if url:
-    print 'The file was uploaded successfully.'
-    print 'URL: %s' % url
+    print ('The file was uploaded successfully.')
+    print ('URL: %s' % url)
     return 0
   else:
-    print 'An error occurred. Your file was not uploaded.'
-    print 'Google Code upload server said: %s (%s)' % (reason, status)
+    print ('An error occurred. Your file was not uploaded.')
+    print ('Google Code upload server said: %s (%s)' % (reason, status))
     return 1
 
 
