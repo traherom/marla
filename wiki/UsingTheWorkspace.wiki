@@ -12,18 +12,28 @@ Most work in maRla is done from what is referred to as the workspace. This area 
 =Workspace Elements=
 The maRla workspace contains several different sections. The sidebar on the right side contains all loaded operations and datasets, the toolbar contains shortcuts to quickly access commands, and the main workspace allows the user to perform dataset operations.
 ==The Sidebar==
-The sidebar
+The sidebar contains all loaded operations. In order to access the operations, select the relevant bar by clicking anywhere on it. For example, if you select the descriptive graphics menu, you have access to many graph operations.
 ==The Toolbar==
+The toolbar contains common functions that are likely needed when doing extensive data analysis. The user can create, open, and save .marla problem files, add a dataset to the existing problem, increase or decrease font size, abbreviate text to fit more into the workspace, or open the setting dialog.
 ==The Main Workspace==
+The main workspace is the blank slate that can contain the user defined datasets for the problem and the related operations. A simple drag and drop interface allows for easy use and an undo/redo function is provided to under the _Edit_ menu.
+
 
 =Working with a dataset=
+MaRla provides an easy interface to work with datasets. Gone are the days of working your problem in R and having to make sure you did all the steps right to get to a working PDF file from Sweave.
+==Adding and Removing Datasets==
+Datasets are stored on the right hand side, in the sidebar. If you have deleted a dataset in the main workspace, you may retrieve it again from the sidebar later. This storage is persistent for the problem. This way, your main workspace can contain exactly what you need, when you need it. However, if you accidentally drag your dataset to the trash bin in the bottom of the workspace (which will take the dataset out of the workspace), you can simply undo or redo by going to the _Edit_ menu selection. To add another dataset, simply select the silver cylinder in the toolbar, which will open a dialog and allow you to create a new dataset for your problem.
 ==Adding and Removing Operations==
+Adding operations to the main workspace is easy. Once you have selected an operation to do (e.g. histogram), simply drag and drop it over to the dataset you would like to associate it with. Operations can also be dragged and dropped onto other operations. This means that whatever the results of the previous operation are, they can be used by any children operations as a parameter. Operations can be deleted by dragging the operation to the trash bin in the bottom right. The undo feature, as mentioned above, will allow this to be undone. The student can add as many branches as is necessary to meet the problem requirements.
 ==Showing Problem Solutions==
+To perform the operation on a given set of data, right-click on the the operation and select "Solution". Be sure to set whatever the proper parameters were for the given analysis before finishing. Graphics will load on request as well.
 ==Changing Operation Parameters==
+To change operation parameters, right-click on the operation and select "Change Parameters". Then change the parameters as you require. In order to actually display the analysis, simply right-click again and select "Solution" once more.
 ==Assigning Subproblems==
+To assign subproblems, right-click on an operation and hover over "Tie to Sub Problem", and select the appropriate subproblem. The colors that have been selected for the subproblems will display properly in the operation structure. When exporting to a PDF, the document will be arranged according to user assignments.
 
 =Exporting Problems=
-Problems can be exported to a pd format that includes graphics and text for the problem and each subproblem. This feature can be accessed by going to the file option in the menu bar.
+Problems can be exported to a pd format that includes graphics and text for the problem and each subproblem. This feature can be accessed by going to the _File_ option in the menu bar. There you can select either "Export to PDF...", or "Export for LaTeX...". Exporting to PDF will allow the selection of a place to save a PDF file, and subsequently open it. This file contains the appropriately labelled details as outlined in the problem details and subproblem assignments as arranged in the main workspace.
 
 
 TBD
