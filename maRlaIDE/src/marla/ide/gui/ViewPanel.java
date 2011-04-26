@@ -203,26 +203,6 @@ public class ViewPanel extends JPanel
 	protected boolean dragFromPalette = false;
 	/** The default file filter for a JFileChooser open dialog.*/
 	protected FileFilter defaultFilter;
-	/** The extensions file filter for CSV files.*/
-	protected ExtensionFileFilter csvFilter = new ExtensionFileFilter("Comma Separated Value Files.csv, .txt)", new String[]
-			{
-				"CSV", "TXT"
-			});
-	/** The extensions file filter for CSV files.*/
-	protected ExtensionFileFilter marlaFilter = new ExtensionFileFilter("The maRla Project Files (.marla)", new String[]
-			{
-				"MARLA"
-			});
-	/** The extensions file filter for PDF files.*/
-	protected ExtensionFileFilter pdfFilter = new ExtensionFileFilter("PDF Files (.pdf)", new String[]
-			{
-				"PDF"
-			});
-	/** The extensions file filter for LaTeX files.*/
-	protected ExtensionFileFilter latexFilter = new ExtensionFileFilter("LaTeX Sweave Files (.Rnw)", new String[]
-			{
-				"RNW"
-			});
 	/** The point in the view where the answer dialog shall appear.*/
 	private Point answerDialogLocation = null;
 	/** True if operation and column names are abbreviated, false otherwise.*/

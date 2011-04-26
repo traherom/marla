@@ -21,7 +21,6 @@ package marla.ide.gui;
 import java.io.File;
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
-import javax.swing.JOptionPane;
 import marla.ide.problem.MarlaException;
 import marla.ide.resource.Configuration;
 
@@ -32,6 +31,17 @@ import marla.ide.resource.Configuration;
  */
 public class SettingsDialog extends EscapeDialog
 {
+	/** The extensions file filter for XML files.*/
+	protected ExtensionFileFilter xmlFilter = new ExtensionFileFilter("maRla Operation Files (.xml)", new String[]
+		{
+			"XML"
+		});
+	/** The extensions file filter for LaTeX template XML files.*/
+	protected ExtensionFileFilter xmlLatexFilter = new ExtensionFileFilter("maRla LaTeX Template Files (.xml)", new String[]
+		{
+			"XML"
+		});
+	
 	/**
 	 * Construct the Settings dialog.
 	 *
@@ -519,6 +529,7 @@ public class SettingsDialog extends EscapeDialog
 		viewPanel.fileChooserDialog.setDialogTitle(Configuration.getName(Configuration.ConfigType.TexTemplate));
 		viewPanel.fileChooserDialog.setDialogType(JFileChooser.OPEN_DIALOG);
 		viewPanel.fileChooserDialog.resetChoosableFileFilters();
+		viewPanel.fileChooserDialog.setFileFilter(xmlLatexFilter);
 		viewPanel.fileChooserDialog.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
 		try
 		{
@@ -547,6 +558,7 @@ public class SettingsDialog extends EscapeDialog
 		viewPanel.fileChooserDialog.setDialogTitle(Configuration.getName(Configuration.ConfigType.PrimaryOpsXML));
 		viewPanel.fileChooserDialog.setDialogType(JFileChooser.OPEN_DIALOG);
 		viewPanel.fileChooserDialog.resetChoosableFileFilters();
+		viewPanel.fileChooserDialog.setFileFilter(xmlFilter);
 		viewPanel.fileChooserDialog.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
 		try
 		{
@@ -635,6 +647,7 @@ public class SettingsDialog extends EscapeDialog
 		viewPanel.fileChooserDialog.setDialogTitle(Configuration.getName(Configuration.ConfigType.UserOpsXML));
 		viewPanel.fileChooserDialog.setDialogType(JFileChooser.OPEN_DIALOG);
 		viewPanel.fileChooserDialog.resetChoosableFileFilters();
+		viewPanel.fileChooserDialog.setFileFilter(xmlFilter);
 		viewPanel.fileChooserDialog.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
 		String path = customOpsTextField.getText();
 		if (!path.equals (""))

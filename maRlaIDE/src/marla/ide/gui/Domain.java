@@ -101,6 +101,21 @@ public class Domain
 	public static final SimpleDateFormat FULL_TIME_FORMAT = new SimpleDateFormat("MM/dd/yyyy h:mm:ss a");
 	/** The logger holds all caught exceptions for recording in the log file.*/
 	public static final Queue<Throwable> logger = new ArrayDeque<Throwable>(5);
+	/** The extensions file filter for CSV files.*/
+	protected ExtensionFileFilter marlaFilter = new ExtensionFileFilter("maRla IDE Project Files (.marla)", new String[]
+			{
+				"MARLA"
+			});
+	/** The extensions file filter for PDF files.*/
+	protected ExtensionFileFilter pdfFilter = new ExtensionFileFilter("PDF Files (.pdf)", new String[]
+			{
+				"PDF"
+			});
+	/** The extensions file filter for LaTeX files.*/
+	protected ExtensionFileFilter latexFilter = new ExtensionFileFilter("LaTeX Sweave Files (.Rnw)", new String[]
+			{
+				"RNW"
+			});
 	/** Debug mode */
 	public static boolean debug = false;
 	/** First run of maRla */
@@ -187,7 +202,7 @@ public class Domain
 			string += ("  " + trace[j].toString() + "\n");
 		}
 		string += "\n";
-		
+
 		return string;
 	}
 
@@ -971,7 +986,7 @@ public class Domain
 			viewPanel.fileChooserDialog.setDialogTitle("Save Problem As");
 			viewPanel.fileChooserDialog.setDialogType(JFileChooser.SAVE_DIALOG);
 			viewPanel.fileChooserDialog.resetChoosableFileFilters();
-			viewPanel.fileChooserDialog.setFileFilter(viewPanel.marlaFilter);
+			viewPanel.fileChooserDialog.setFileFilter(marlaFilter);
 			viewPanel.fileChooserDialog.setFileSelectionMode(JFileChooser.FILES_ONLY);
 			viewPanel.fileChooserDialog.setCurrentDirectory(new File(problem.getFileName()));
 			viewPanel.fileChooserDialog.setSelectedFile(new File(problem.getFileName()));
@@ -1030,7 +1045,7 @@ public class Domain
 			viewPanel.fileChooserDialog.setDialogTitle("Export to PDF");
 			viewPanel.fileChooserDialog.setDialogType(JFileChooser.SAVE_DIALOG);
 			viewPanel.fileChooserDialog.resetChoosableFileFilters();
-			viewPanel.fileChooserDialog.setFileFilter(viewPanel.pdfFilter);
+			viewPanel.fileChooserDialog.setFileFilter(pdfFilter);
 			viewPanel.fileChooserDialog.setFileSelectionMode(JFileChooser.FILES_ONLY);
 			viewPanel.fileChooserDialog.setCurrentDirectory(new File(problem.getFileName().substring(0, problem.getFileName().lastIndexOf(".")) + ".pdf"));
 			viewPanel.fileChooserDialog.setSelectedFile(new File(problem.getFileName().substring(0, problem.getFileName().lastIndexOf(".")) + ".pdf"));
@@ -1164,7 +1179,7 @@ public class Domain
 			viewPanel.fileChooserDialog.setDialogTitle("Export for LaTeX");
 			viewPanel.fileChooserDialog.setDialogType(JFileChooser.SAVE_DIALOG);
 			viewPanel.fileChooserDialog.resetChoosableFileFilters();
-			viewPanel.fileChooserDialog.setFileFilter(viewPanel.latexFilter);
+			viewPanel.fileChooserDialog.setFileFilter(latexFilter);
 			viewPanel.fileChooserDialog.setFileSelectionMode(JFileChooser.FILES_ONLY);
 			viewPanel.fileChooserDialog.setCurrentDirectory(new File(problem.getFileName().substring(0, problem.getFileName().lastIndexOf(".")) + ".Rnw"));
 			viewPanel.fileChooserDialog.setSelectedFile(new File(problem.getFileName().substring(0, problem.getFileName().lastIndexOf(".")) + ".Rnw"));
@@ -1289,7 +1304,7 @@ public class Domain
 			viewPanel.fileChooserDialog.setDialogTitle("Browse Problem Location");
 			viewPanel.fileChooserDialog.setDialogType(JFileChooser.OPEN_DIALOG);
 			viewPanel.fileChooserDialog.resetChoosableFileFilters();
-			viewPanel.fileChooserDialog.setFileFilter(viewPanel.marlaFilter);
+			viewPanel.fileChooserDialog.setFileFilter(marlaFilter);
 			viewPanel.fileChooserDialog.setFileSelectionMode(JFileChooser.FILES_ONLY);
 			String curDir = lastGoodDir;
 			if(problem != null)
@@ -1438,7 +1453,7 @@ public class Domain
 				if(dialog != null)
 				{
 					int height;
-					if (scrollPane.getParent() != null)
+					if(scrollPane.getParent() != null)
 					{
 						height = dialog.getHeight() + scrollPane.getPreferredSize().height;
 					}
