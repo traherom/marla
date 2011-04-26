@@ -52,9 +52,9 @@ def googleCode(verNum, verPre, windowsSetupFile, zipFile):
             
             print ("\nOne or more of the uploads encountered problems. Verify that all files are up to date on the Google Code Downloads page.")
     except Exception as e:
-    	print type(e)
-    	print e.args
-    	print e
+        print (type(e))
+        print (e.args)
+        print (e)
         print ("\nAn unknown error occured. Try running the push again. If this error persists, it is recommended that you ensure the validity of all version files and installers on Google Code immediately.")
 
 ## Calls respective helper methods to complete overall task of ensuring the

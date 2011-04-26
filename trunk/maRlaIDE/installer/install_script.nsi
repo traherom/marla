@@ -692,7 +692,12 @@ FunctionEnd
 ; Utility functions
 
 Function LaunchLink
-	ExecShell "" "$INSTDIR\marla IDE.exe"
+	StrCpy $RETURN 0
+	${DoWhile} $RETURN == 0
+		Call IsMarlaClosed
+	${LoopWhile} $RETURN == 0
+	
+	ExecShell "" "$INSTDIR\maRla IDE.exe"
 FunctionEnd
 
 Function SetSectionConfiguration
@@ -826,25 +831,40 @@ Function CheckInstalledMikTex
 FunctionEnd
 
 ; Let this "closed" function be used in both installer and uninstaller
-!macro EnsureMarlaClosed un
-Function ${un}EnsureMarlaClosed
+!macro IsMarlaClosed un
+Function ${un}IsMarlaClosed
 	
-	; Keep looping until both are dead and/or the user says to cancel
-	check:
+	; Assume it's dead for now
+	StrCpy $RETURN 1
 
 	System::Call 'kernel32::OpenMutex(i 0x100000, b 0, t "themarlaproject") i .R0'
 	
 	${If} $R0 != 0 
 		System::Call 'kernel32::CloseHandle(i $R0)'
-		MessageBox MB_RETRYCANCEL|MB_ICONEXCLAMATION "The maRla Project IDE is running. Please close it first" /SD IDRETRY IDRETRY check
-		Abort
+		StrCpy $RETURN 0
 	${EndIf}
 		
 	System::Call 'kernel32::OpenMutex(i 0x100000, b 0, t "themarlaprojectopeditor") i .R0'
 	
 	${If} $R0 != 0
 		System::Call 'kernel32::CloseHandle(i $R0)'
-		MessageBox MB_RETRYCANCEL|MB_ICONEXCLAMATION "The maRla Project Operation Editor is running. Please close it first" /SD IDRETRY IDRETRY check
+		StrCpy $RETURN 0
+	${EndIf}
+	
+FunctionEnd
+!macroend
+!insertmacro IsMarlaClosed ""
+!insertmacro IsMarlaClosed "un."
+
+!macro EnsureMarlaClosed un
+Function ${un}EnsureMarlaClosed
+	
+	; Keep looping until both are dead and/or the user says to cancel
+	check:
+
+	Call ${un}IsMarlaClosed
+	${If} $RETURN == 0
+		MessageBox MB_RETRYCANCEL|MB_ICONEXCLAMATION "The maRla Project is running. Please close it first" /SD IDRETRY IDRETRY check
 		Abort
 	${EndIf}
 	
