@@ -96,6 +96,11 @@ public class NewProblemWizardDialog extends EscapeDialog
 	};
 	/** Tip text for the values panel.*/
 	private final String VALUES_TIP_TEXT = "<html>Double-click on a data set tab to rename it.<br />Click on a column header in the table to rename it.</html>";
+	/** The extensions file filter for CSV files.*/
+	protected ExtensionFileFilter csvFilter = new ExtensionFileFilter("Comma Separated Value Files (.csv, .txt)", new String[]
+			{
+				"CSV", "TXT"
+			});
 	/** The list in the New Problem Wizard of sub problems within the current problem.*/
 	private ArrayList<JPanel> subProblemPanels = new ArrayList<JPanel>();
 	/** True if the New Problem Wizard is being opened and actions should be ignored.*/
@@ -127,29 +132,29 @@ public class NewProblemWizardDialog extends EscapeDialog
 		this.domain = domain;
 
 		initComponents();
-		
+
 		// forward undo/redo key strokes to the main view
 		KeyStroke stroke = KeyStroke.getKeyStroke(KeyEvent.VK_Z, InputEvent.CTRL_MASK);
-		InputMap inputMap = rootPane.getInputMap (JComponent.WHEN_IN_FOCUSED_WINDOW);
-		inputMap.put (stroke, KeyEvent.VK_Z + " | " + InputEvent.CTRL_MASK);
-		rootPane.getActionMap ().put (KeyEvent.VK_Z + " | " + InputEvent.CTRL_MASK, new AbstractAction()
-				{
-					@Override
-					public void actionPerformed(ActionEvent evt)
-					{
-						viewPanel.undo();
-					}
-				});
+		InputMap inputMap = rootPane.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
+		inputMap.put(stroke, KeyEvent.VK_Z + " | " + InputEvent.CTRL_MASK);
+		rootPane.getActionMap().put(KeyEvent.VK_Z + " | " + InputEvent.CTRL_MASK, new AbstractAction()
+		{
+			@Override
+			public void actionPerformed(ActionEvent evt)
+			{
+				viewPanel.undo();
+			}
+		});
 		stroke = KeyStroke.getKeyStroke(KeyEvent.VK_Y, InputEvent.CTRL_MASK);
-		inputMap.put (stroke, KeyEvent.VK_Y + " | " + InputEvent.CTRL_MASK);
-		rootPane.getActionMap ().put (KeyEvent.VK_Y + " | " + InputEvent.CTRL_MASK, new AbstractAction()
-				{
-					@Override
-					public void actionPerformed(ActionEvent evt)
-					{
-						viewPanel.redo();
-					}
-				});
+		inputMap.put(stroke, KeyEvent.VK_Y + " | " + InputEvent.CTRL_MASK);
+		rootPane.getActionMap().put(KeyEvent.VK_Y + " | " + InputEvent.CTRL_MASK, new AbstractAction()
+		{
+			@Override
+			public void actionPerformed(ActionEvent evt)
+			{
+				viewPanel.redo();
+			}
+		});
 
 		dataSetTabbedPane.addMouseListener(new MouseAdapter()
 		{
@@ -173,10 +178,14 @@ public class NewProblemWizardDialog extends EscapeDialog
 									{
 										domain.problem.getData(oldName).setDataName(name.toString());
 									}
-									catch(DataNotFoundException ex) {}
-									catch(DuplicateNameException ex) {}
+									catch(DataNotFoundException ex)
+									{
+									}
+									catch(DuplicateNameException ex)
+									{
+									}
 
-									if (editing)
+									if(editing)
 									{
 										updateLabelInRightPanel(oldName, name.toString());
 									}
@@ -184,7 +193,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 								}
 								else
 								{
-									Domain.showWarningDialog(Domain.getTopWindow(),  "A column with that name already exists.", "Duplicate Column");
+									Domain.showWarningDialog(Domain.getTopWindow(), "A column with that name already exists.", "Duplicate Column");
 								}
 							}
 						}
@@ -911,7 +920,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 		subProblemsScrollablePanel.invalidate();
 		subProblemsScrollablePanel.scrollRectToVisible(new Rectangle(0, subProblemsScrollablePanel.getHeight() + 150, 1, 1));
 
-		if (editing)
+		if(editing)
 		{
 			viewPanel.rebuildSubProblemLegend();
 		}
@@ -947,7 +956,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 		subProblemsScrollablePanel.revalidate();
 		subProblemsScrollablePanel.repaint();
 
-		if (editing)
+		if(editing)
 		{
 			viewPanel.rebuildSubProblemLegend();
 		}
@@ -1015,7 +1024,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 
 	private void removeDataSetButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeDataSetButtonActionPerformed
 		Problem problem;
-		if (newProblem != null)
+		if(newProblem != null)
 		{
 			problem = newProblem;
 		}
@@ -1024,7 +1033,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 			problem = domain.problem;
 		}
 		int response = Domain.showConfirmDialog(Domain.getTopWindow(), "Removing a data set from the problem will remove it and all its\nattached operations from the workspace as well.\nAre you sure you want to permanently remove " + problem.getData(dataSetTabbedPane.getSelectedIndex()).getDisplayString(false) + "?", "Remove Data", JOptionPane.YES_NO_OPTION);
-		if (response == JOptionPane.YES_OPTION)
+		if(response == JOptionPane.YES_OPTION)
 		{
 			DataSet removedData = null;
 			if(newProblem != null)
@@ -1035,10 +1044,10 @@ public class NewProblemWizardDialog extends EscapeDialog
 			else
 			{
 				removedData = domain.problem.removeData(domain.problem.getData(dataSetTabbedPane.getSelectedIndex()));
-				for (int i = 0; i < removedData.getOperationCount(); ++i)
+				for(int i = 0; i < removedData.getOperationCount(); ++i)
 				{
 					Operation op = removedData.getOperation(i);
-					for (Operation childOp : op.getAllChildOperations())
+					for(Operation childOp : op.getAllChildOperations())
 					{
 						viewPanel.workspacePanel.remove(childOp);
 					}
@@ -1046,7 +1055,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 				}
 			}
 
-			if (editing)
+			if(editing)
 			{
 				viewPanel.workspacePanel.remove(removedData);
 				viewPanel.workspacePanel.repaint();
@@ -1068,7 +1077,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 	private void closeWizardButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_closeWizardButtonActionPerformed
 		ignoreDataChanging = true;
 
-		if (editing)
+		if(editing)
 		{
 			if(descriptionCardPanel.isVisible())
 			{
@@ -1261,7 +1270,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 	private void mouseReleased(java.awt.event.MouseEvent evt)//GEN-FIRST:event_mouseReleased
 	{//GEN-HEADEREND:event_mouseReleased
 		JLabel label = (JLabel) evt.getSource();
-		while (backWizardButton.isEnabled())
+		while(backWizardButton.isEnabled())
 		{
 			backWizardButtonActionPerformed(null);
 		}
@@ -1276,7 +1285,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 		else if(label.isEnabled() && label == descriptionLabel)
 		{
 			boolean continueAllowed = goNext();
-			if (continueAllowed)
+			if(continueAllowed)
 			{
 				continueAllowed = goNext();
 			}
@@ -1284,11 +1293,11 @@ public class NewProblemWizardDialog extends EscapeDialog
 		else if(label.isEnabled() && label == subProblemsLabel)
 		{
 			boolean continueAllowed = goNext();
-			if (continueAllowed)
+			if(continueAllowed)
 			{
 				continueAllowed = goNext();
 			}
-			if (continueAllowed)
+			if(continueAllowed)
 			{
 				continueAllowed = goNext();
 			}
@@ -1296,15 +1305,15 @@ public class NewProblemWizardDialog extends EscapeDialog
 		else if(label.isEnabled() && label == dataSetsLabel)
 		{
 			boolean continueAllowed = goNext();
-			if (continueAllowed)
+			if(continueAllowed)
 			{
 				continueAllowed = goNext();
 			}
-			if (continueAllowed)
+			if(continueAllowed)
 			{
 				continueAllowed = goNext();
 			}
-			if (continueAllowed)
+			if(continueAllowed)
 			{
 				continueAllowed = goNext();
 			}
@@ -1312,19 +1321,19 @@ public class NewProblemWizardDialog extends EscapeDialog
 		else if(label.isEnabled() && label == informationLabel)
 		{
 			boolean continueAllowed = goNext();
-			if (continueAllowed)
+			if(continueAllowed)
 			{
 				continueAllowed = goNext();
 			}
-			if (continueAllowed)
+			if(continueAllowed)
 			{
 				continueAllowed = goNext();
 			}
-			if (continueAllowed)
+			if(continueAllowed)
 			{
 				continueAllowed = goNext();
 			}
-			if (continueAllowed)
+			if(continueAllowed)
 			{
 				continueAllowed = goNext();
 			}
@@ -1339,7 +1348,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 		docLabel.setForeground(Color.BLUE);
 		JLabel label2 = new JLabel("Enter the name of the data set you'd like to add from the library.");
 		final JTextField libTextField = new JTextField("Devore7");
-		
+
 		docLabel.addMouseListener(new MouseAdapter()
 		{
 			@Override
@@ -1357,7 +1366,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 			@Override
 			public void mouseReleased(MouseEvent evt)
 			{
-				if (viewPanel.domain.desktop != null)
+				if(viewPanel.domain.desktop != null)
 				{
 					try
 					{
@@ -1373,17 +1382,21 @@ public class NewProblemWizardDialog extends EscapeDialog
 						{
 							viewPanel.domain.desktop.browse(new URI("http://cran.fyxm.net/web/packages/Devore7/Devore7.pdf"));
 						}
-						else if (libTextField.getText().equals("cluster"))
+						else if(libTextField.getText().equals("cluster"))
 						{
 							viewPanel.domain.desktop.browse(new URI("http://stat.ethz.ch/R-manual/R-devel/library/cluster/html/00Index.html"));
 						}
-						else if (libTextField.getText().equals("datasets"))
+						else if(libTextField.getText().equals("datasets"))
 						{
 							viewPanel.domain.desktop.browse(new URI("http://stat.ethz.ch/R-manual/R-devel/library/datasets/html/00Index.html"));
 						}
 					}
-					catch(IOException ex) {}
-					catch(URISyntaxException ex) {}
+					catch(IOException ex)
+					{
+					}
+					catch(URISyntaxException ex)
+					{
+					}
 				}
 			}
 		});
@@ -1398,7 +1411,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 					@Override
 					public void run()
 					{
-						if (isAcceptedLibrary(libTextField.getText()))
+						if(isAcceptedLibrary(libTextField.getText()))
 						{
 							docLabel.setText("<html><u>Click here to view " + libTextField.getText() + " documentation.</u></html>");
 							docLabel.setVisible(true);
@@ -1411,15 +1424,15 @@ public class NewProblemWizardDialog extends EscapeDialog
 				});
 			}
 		});
-		
+
 		libPanel.add(libLabel, BorderLayout.WEST);
 		libPanel.add(libTextField, BorderLayout.CENTER);
-		
+
 		optionPanel.add(libPanel);
 		optionPanel.add(docLabel);
 		optionPanel.add(label2);
 		final Object response = Domain.showInputDialog(Domain.getTopWindow(), optionPanel, "Data Set from R Library", "");
-		if (response != null)
+		if(response != null)
 		{
 			Domain.setProgressTitle("Getting Library");
 			Domain.setProgressVisible(true);
@@ -1441,7 +1454,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 
 						addingDataSet = true;
 						Problem problem;
-						if (newProblem != null)
+						if(newProblem != null)
 						{
 							problem = newProblem;
 						}
@@ -1461,13 +1474,13 @@ public class NewProblemWizardDialog extends EscapeDialog
 					{
 						Domain.setProgressVisible(false);
 
-						Domain.showWarningDialog(Domain.getTopWindow(),  "The data set '" + response.toString() + "' could not be found in the " + libTextField.getText() + " library.", "Data Set Not Loaded");
+						Domain.showWarningDialog(Domain.getTopWindow(), "The data set '" + response.toString() + "' could not be found in the " + libTextField.getText() + " library.", "Data Set Not Loaded");
 					}
-					catch (MarlaException ex)
+					catch(MarlaException ex)
 					{
 						Domain.setProgressVisible(false);
 
-						Domain.showWarningDialog(Domain.getTopWindow(),  ex.getMessage(), Domain.prettyExceptionDetails(ex), "Data Set Not Loadable");
+						Domain.showWarningDialog(Domain.getTopWindow(), ex.getMessage(), Domain.prettyExceptionDetails(ex), "Data Set Not Loadable");
 					}
 					finally
 					{
@@ -1479,7 +1492,6 @@ public class NewProblemWizardDialog extends EscapeDialog
 			}).start();
 		}
 	}//GEN-LAST:event_addFromRLibButtonActionPerformed
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton addDataSetButton;
     private javax.swing.JButton addFromRLibButton;
@@ -1561,18 +1573,17 @@ public class NewProblemWizardDialog extends EscapeDialog
 	 */
 	private boolean isAcceptedLibrary(String library)
 	{
-		if (library.equals ("Devore5") ||
-				library.equals ("Devore6") ||
-				library.equals ("Devore7") ||
-				library.equals ("datasets") ||
-				library.equals ("cluster"))
+		if(library.equals("Devore5")
+		   || library.equals("Devore6")
+		   || library.equals("Devore7")
+		   || library.equals("datasets")
+		   || library.equals("cluster"))
 		{
 			return true;
 		}
 
 		return false;
 	}
-
 
 	/**
 	 * Add the given data set to the given problem.
@@ -1627,10 +1638,10 @@ public class NewProblemWizardDialog extends EscapeDialog
 			removeDataSetButton.setEnabled(false);
 		}
 
-		if (editing)
+		if(editing)
 		{
 			dataSet.setLocation((viewPanel.workspacePanel.getWidth() - dataSet.getWidth()) / 2, (viewPanel.workspacePanel.getHeight() - dataSet.getHeight()) / 2);
-			while (viewPanel.workspacePanel.getComponentAt(dataSet.getLocation().x + 10, dataSet.getLocation().y + 10, dataSet) != null)
+			while(viewPanel.workspacePanel.getComponentAt(dataSet.getLocation().x + 10, dataSet.getLocation().y + 10, dataSet) != null)
 			{
 				dataSet.setLocation(dataSet.getLocation().x, dataSet.getLocation().y + 20);
 			}
@@ -1840,9 +1851,9 @@ public class NewProblemWizardDialog extends EscapeDialog
 	 */
 	private void updateLabelInRightPanel(String oldName, String name)
 	{
-		for (Component comp : viewPanel.dataSetContentPanel.getComponents())
+		for(Component comp : viewPanel.dataSetContentPanel.getComponents())
 		{
-			if (((JLabel) comp).getText().equals(oldName))
+			if(((JLabel) comp).getText().equals(oldName))
 			{
 				((JLabel) comp).setText(name);
 				viewPanel.dataSetContentPanel.invalidate();
@@ -1859,9 +1870,9 @@ public class NewProblemWizardDialog extends EscapeDialog
 	 */
 	private JLabel findLabel(String id)
 	{
-		for (Component comp : viewPanel.subProblemContentPanel.getComponents())
+		for(Component comp : viewPanel.subProblemContentPanel.getComponents())
 		{
-			if (((JLabel) comp).getText().equals(id))
+			if(((JLabel) comp).getText().equals(id))
 			{
 				return (JLabel) comp;
 			}
@@ -1922,7 +1933,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 				{
 					evt.getComponent().setBackground(newColor);
 					subProblem.setColor(newColor);
-					if (editing)
+					if(editing)
 					{
 						viewPanel.workspacePanel.repaint();
 						findLabel(subProblem.getSubproblemID()).setForeground(newColor);
@@ -2056,10 +2067,10 @@ public class NewProblemWizardDialog extends EscapeDialog
 			@Override
 			public void mouseReleased(MouseEvent evt)
 			{
-				if (table.getTableHeader().getCursor().getType() != Cursor.E_RESIZE_CURSOR)
+				if(table.getTableHeader().getCursor().getType() != Cursor.E_RESIZE_CURSOR)
 				{
 					int index = table.getTableHeader().columnAtPoint(evt.getPoint());
-					if (index != -1)
+					if(index != -1)
 					{
 						String oldName = table.getColumnModel().getColumn(index).getHeaderValue().toString();
 						Object name = Domain.showInputDialog(Domain.getTopWindow(), "Give the column a new name:", "Column Name", oldName);
@@ -2185,7 +2196,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 				// Construct the folder-based open chooser dialog
 				viewPanel.fileChooserDialog.setDialogTitle("Import CSV File");
 				viewPanel.fileChooserDialog.setDialogType(JFileChooser.OPEN_DIALOG);
-				viewPanel.fileChooserDialog.setFileFilter(viewPanel.csvFilter);
+				viewPanel.fileChooserDialog.setFileFilter(csvFilter);
 				viewPanel.fileChooserDialog.setFileSelectionMode(JFileChooser.FILES_ONLY);
 				viewPanel.fileChooserDialog.setCurrentDirectory(new File(Domain.lastGoodDir));
 				if(new File(Domain.lastGoodDir).isFile())
@@ -2389,7 +2400,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 		// Set properties for the values tabs
 		dataSetTabbedPane.removeAll();
 
-		if (editing)
+		if(editing)
 		{
 			setTitle("Edit Problem");
 			welcomeTextLabel.setText(ViewPanel.welcomeEditText);
@@ -2592,7 +2603,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 				table.refreshTable();
 			}
 		}
-		
+
 		if(dataSetTabbedPane.getTabCount() > 0)
 		{
 			removeDataSetButton.setEnabled(true);
@@ -2667,11 +2678,11 @@ public class NewProblemWizardDialog extends EscapeDialog
 
 		// Transition to the values card panel
 		boolean continueAllowed = goNext();
-		if (continueAllowed)
+		if(continueAllowed)
 		{
 			continueAllowed = goNext();
 		}
-		if (continueAllowed)
+		if(continueAllowed)
 		{
 			continueAllowed = goNext();
 		}
@@ -2688,7 +2699,7 @@ public class NewProblemWizardDialog extends EscapeDialog
 
 		// Transition to the values card panel
 		boolean continueAllowed = goNext();
-		if (continueAllowed)
+		if(continueAllowed)
 		{
 			continueAllowed = goNext();
 		}
@@ -2706,15 +2717,15 @@ public class NewProblemWizardDialog extends EscapeDialog
 
 		// Transition to the values card panel
 		boolean continueAllowed = goNext();
-		if (continueAllowed)
+		if(continueAllowed)
 		{
 			continueAllowed = goNext();
 		}
-		if (continueAllowed)
+		if(continueAllowed)
 		{
 			continueAllowed = goNext();
 		}
-		if (continueAllowed)
+		if(continueAllowed)
 		{
 			continueAllowed = goNext();
 		}
@@ -2737,15 +2748,15 @@ public class NewProblemWizardDialog extends EscapeDialog
 
 		// Transition to the values card panel
 		boolean continueAllowed = goNext();
-		if (continueAllowed)
+		if(continueAllowed)
 		{
 			continueAllowed = goNext();
 		}
-		if (continueAllowed)
+		if(continueAllowed)
 		{
 			continueAllowed = goNext();
 		}
-		if (continueAllowed)
+		if(continueAllowed)
 		{
 			continueAllowed = goNext();
 		}
@@ -2773,22 +2784,22 @@ public class NewProblemWizardDialog extends EscapeDialog
 	protected void editConclusion()
 	{
 		initializeNewProblemWizard(true);
-		
+
 		// Transition to the values card panel
 		boolean continueAllowed = goNext();
-		if (continueAllowed)
+		if(continueAllowed)
 		{
 			continueAllowed = goNext();
 		}
-		if (continueAllowed)
+		if(continueAllowed)
 		{
 			continueAllowed = goNext();
 		}
-		if (continueAllowed)
+		if(continueAllowed)
 		{
 			continueAllowed = goNext();
 		}
-		if (continueAllowed)
+		if(continueAllowed)
 		{
 			continueAllowed = goNext();
 		}
@@ -2838,7 +2849,9 @@ public class NewProblemWizardDialog extends EscapeDialog
 		{
 			// Even number of datasets, balance them aronud center
 			for(int i = 0; i < dsCount / 2; i++)
+			{
 				halfWidth += widths[i] + spaceWidth;
+			}
 
 			// Eliminate half of the middle spacing
 			halfWidth -= spaceWidth / 2;
@@ -2847,7 +2860,9 @@ public class NewProblemWizardDialog extends EscapeDialog
 		{
 			// Odd number of datasets, center the middle one
 			for(int i = 0; i < dsCount / 2; i++)
+			{
 				halfWidth += widths[i] + spaceWidth;
+			}
 
 			// And add enough to move through half the middle column
 			halfWidth += widths[dsCount / 2] / 2;

@@ -109,14 +109,14 @@ public class ViewPanel extends JPanel
 	/** True while the interface is loading, false otherwise.*/
 	boolean initLoading;
 	/** The extensions file filter for XML files.*/
-	protected ExtensionFileFilter xmlFilter = new ExtensionFileFilter("The maRla Project Operation Files (.xml)", new String[]
+	protected ExtensionFileFilter xmlFilter = new ExtensionFileFilter("maRla Operation Files (.xml)", new String[]
 		{
 			"XML"
 		});
 	/** The extensions file filter for CSV files.*/
-	protected ExtensionFileFilter csvFilter = new ExtensionFileFilter("The maRla Project Data Files (.csv)", new String[]
+	protected ExtensionFileFilter csvFilter = new ExtensionFileFilter("Comma Separated Value Files (.csv, .txt)", new String[]
 		{
-			"CSV"
+			"CSV", "TXT"
 		});
 	/** The path to the current data set.*/
 	protected String currentDataSetPath = null;
@@ -126,6 +126,8 @@ public class ViewPanel extends JPanel
 	protected OperationFile currentFile = null;
 	/** Current operation the user is editing */
 	protected OperationXMLEditable currentOperation = null;
+	/** Ignore inner XML setting.*/
+	private boolean ignoreXmlSet = false;
 	/** Ignore changes made to operation components when true, otherwise accept them.*/
 	private boolean ignoreChanges = true;
 	/** Ignore the second table change event when an operation is invalid.*/
@@ -151,7 +153,6 @@ public class ViewPanel extends JPanel
 	{
 		initComponents();
 		initMyComponents();
-		viewPanel = this;
 	}
 
 	/**
@@ -164,6 +165,8 @@ public class ViewPanel extends JPanel
 		domain.backgroundThread = new LoadSaveThread(domain);
 		domain.debugThread.start();
 		domain.backgroundThread.start();
+		
+		viewPanel = this;
 
 		// Always do debug stuff
 		RProcessor.setDebugMode(RecordMode.FULL);
@@ -609,13 +612,17 @@ public class ViewPanel extends JPanel
 			{
 				changeCallNeeded = true;
 			}
+			
 			if (operationsTable.getSelectedRow () != -1)
 			{
 				currentOperation = currentFile.getOperation(operationsTable.getValueAt(operationsTable.getSelectedRow(), 0).toString());
 			}
+			
 			if (changeCallNeeded)
 			{
+				ignoreXmlSet = true;
 				operationsTableRowSelected(null);
+				ignoreXmlSet = false;
 			}
 		}
 	}//GEN-LAST:event_removeButtonActionPerformed
@@ -662,8 +669,6 @@ public class ViewPanel extends JPanel
 					continue;
 				}
 
-				save();
-
 				if(file.isDirectory())
 				{
 					marla.ide.gui.Domain.lastGoodDir = file.toString();
@@ -693,8 +698,7 @@ public class ViewPanel extends JPanel
 				{
 					marla.ide.gui.Domain.showWarningDialog(Domain.getTopWindow(), ex.getMessage(), marla.ide.gui.Domain.prettyExceptionDetails(ex), "Unable to Open");
 				}
-
-
+				
 				break;
 			}
 		}
@@ -842,8 +846,6 @@ public class ViewPanel extends JPanel
 						continue;
 					}
 				}
-
-				save();
 
 				if(file.isDirectory())
 				{
@@ -1015,6 +1017,7 @@ public class ViewPanel extends JPanel
 
 			operationsNameTextField.setText(currentOperation.getName());
 			operationsNameTextFieldActionPerformed(null);
+			operationsModel.setValueAt(currentOperation.getName(), operationsTable.getSelectedRow(), 0);
 			operationTextPane.setText(currentOperation.getInnerXML().replaceAll("\\r\\n", "\\\n"));
 			operationTextPaneFocusLost(null);
 
@@ -1037,6 +1040,7 @@ public class ViewPanel extends JPanel
 
 			operationsNameTextField.setText(currentOperation.getName());
 			operationsNameTextFieldActionPerformed(null);
+			operationsModel.setValueAt(currentOperation.getName(), operationsTable.getSelectedRow(), 0);
 			operationTextPane.setText(currentOperation.getInnerXML().replaceAll("\\r\\n", "\\\n"));
 			operationTextPaneFocusLost(null);
 
@@ -1273,7 +1277,7 @@ public class ViewPanel extends JPanel
 	 */
 	public void setOperationInnerXml() throws OperationEditorException
 	{
-		if (currentOperation != null)
+		if (currentOperation != null && !ignoreXmlSet)
 		{
 			if (!currentOperation.getInnerXML().replaceAll("\\r\\n", "\\\n").equals(operationTextPane.getText().replaceAll("\\r\\n", "\\\n")))
 			{
@@ -1390,7 +1394,7 @@ public class ViewPanel extends JPanel
 	 * plans to terminate the application.
 	 */
 	protected void quit(boolean forceQuit)
-	{		
+	{
 		if (closeFile ())
 		{
 			if (Domain.passedInFile != null)
