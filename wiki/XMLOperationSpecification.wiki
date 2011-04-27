@@ -60,7 +60,7 @@ Attributes supported:
     * `checkbox` - Simple checkbox that the user may select
     * `combo` - Operation-specified selectable list. See [#Combo Combo] for detailed information
     * `column` - Presents the user with a list of the parent columns. `column-type` must be given to specify which columns to display.
-	* `fixed` - Query with a single answer. Intened for user informational purposes (IE, so they know a parameter you will be using). Must specify a `value`
+    * `fixed` - Query with a single answer. Intened for user informational purposes (IE, so they know a parameter you will be using). Must specify a `value`
     * `numeric` - Arbitrary user-entered number. May specify a minimum or maximum through `min` and `max`, both of which are optional
     * `string` - Arbitrary user-entered string
   * `column-type` - One of the following:
@@ -139,14 +139,14 @@ in a string then use `\n`, not a hard line break.
 
 === Setting Variables From User Answers ===
 {{{
-<set rvar="R variable name" name="query name" [use="name|values"] />
+<set name="query name" [rvar="R variable name"] [use="name|values"] />
 }}}
 A `<set />` element allows for an R variable to be set from one of the user-prompted
 query values.
 
 Attributes supported:
-  * *`rvar`* - Specifies the R variable name to set
   * *`name`* - Name specified for the desired query element (see [#Information_Prompts Information Prompts]).
+  * `rvar` - Specifies the R variable name to set. If not given, an R variable with the same name as `name` is used.
   * `use` - For `column` queries, the R variable may be set with either the string name of the column selected or the actual values in that column. This attribute specifies which processing method to use.
     * `name` - Use the column name
     * `values` - Use the column values
