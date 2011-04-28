@@ -21,7 +21,7 @@ If you need to use an R installation that maRla isn't able to automatically loca
 Secondly, maRla depends on Latex for generating PDFs. This, unfortunately, takes a bit more work to configure correctly. Follow the steps below to get everything configured correctly for use with Miktex. Skip to the appropriate point, depending on what you have completed.
 
   * [#R Install R]
-  * Download MiKTeX 2.9 installer
+  * Download [http://miktex.org/2.9/setup MiKTeX 2.9 installer]
   * Install MiKTeX, preferably turning on automatic package installation.
   * Register Sweave with MiKTeX (TBD, only rough currently)
     * Open up the MiKTeX Settings by going to Start Menu->Program Files->MiKTeX 2.9->Maintenance->Settings
@@ -53,6 +53,16 @@ java -jar maRla\ IDE.jar
 }}}
 
 = Mac =
-Configuration is typically much easier on Mac than on Windows. You will need to ensure the latest JRE, R, and pdlatex are installed on your system--some of these packages may come with Xcode, if you already have that installed. From there, the cross-platform archive of maRla, available on the [http://code.google.com/p/marla/downloads/list Downloads] page, should be runnable from any directory.
+Configuration is typically much easier on Mac than on Windows.
+
+If you have the Xcode development environment installed on your Mac, you may already have R and LaTeX, so try just download and running the cross-platform version of maRla.
+
+If you do not Xcode installed on your Mac, or if your distribution of Xcode did not include R and LaTeX, follow the instructions below:
+
+  # [http://www.java.com/download Download and install the latest version of Java]
+  # [http://cran.r-project.org/bin/macosx/ Download and install R]
+  # [http://www.tug.org/mactex/ Download and install MacTex]
+  # [http://code.google.com/p/marla/downloads/list Download and install The maRla Project] (cross-platform version)
+  # Extract The maRla Project cross-platform zip file to a new folder, "The maRla Project", in your Applications folder
 
 [HelpContents Back to Help Contents]
