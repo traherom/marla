@@ -22,7 +22,7 @@ Operations in the palette can be customized. If an operation in the palette is n
 Since the palette is dynamically generated, changes to the operations XML file are immediate. To update the operations XML file, or create a new one, use the maRla Operation Editor, which can be launched from the "Tools" menu.
 
 ===User Operations Files in maRla===
-A user can use their own operations file in the maRla IDE, which will append any operations in the user operations file into the palette with the existing operations. To add new operations from a user operations XML file, specify a path to a file (or files) in the [ConfiguringMarla maRla configuration].
+A user can use their own operations file in the maRla IDE, which will append any operations in the user operations file into the palette with the existing operations. To add new operations from a user operations XML file, specify a path to a file (or files) in the [ConfiguringMarla#Preferences maRla configuration] (see User Operations XML).
 
 ====New Operations====
 To add new operations to the palette, create a new user.xml file in the maRla Operation Editor. See the documentation that goes into creating your own operation [XMLOperationSpecification here].
