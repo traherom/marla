@@ -2188,7 +2188,6 @@ public class NewProblemWizardDialog extends EscapeDialog
 		});
 		final JButton csvButton = new JButton("Import from CSV");
 		csvButton.setFont(ViewPanel.FONT_PLAIN_12);
-		final NewProblemWizardDialog finalThis = this;
 		csvButton.addActionListener(new ActionListener()
 		{
 			@Override

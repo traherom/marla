@@ -214,6 +214,19 @@ public class Domain
 	{
 		return operationFile;
 	}
+	
+	/**
+	 * Set the title of the progress frame.
+	 *
+	 * @param string The string to set the title with.
+	 */
+	public static void setProgressTitle(final String string)
+	{
+		if(MainFrame.progressFrame != null)
+		{
+			MainFrame.progressFrame.setTitle(string);
+		}
+	}
 
 	/**
 	 * Show or hide the progress bar. Must be set to false if you wish

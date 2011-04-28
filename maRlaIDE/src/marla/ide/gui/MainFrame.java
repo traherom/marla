@@ -837,7 +837,7 @@ public class MainFrame extends JFrame
 	}//GEN-LAST:event_printMenuItemActionPerformed
 
 	private void exportDataToCsvMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exportDataToCsvMenuItemActionPerformed
-		viewPanel.exportDataSet();
+		viewPanel.domain.exportDataSet();
 	}//GEN-LAST:event_exportDataToCsvMenuItemActionPerformed
 
 	/**
