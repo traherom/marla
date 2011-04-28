@@ -11,11 +11,6 @@ maRla is designed to aid you in  your homework cycle (though it can be used for 
 
 = Creating a New Problem =
 
-==First, open maRla==
-
-This is what your main window should look like. 
-[http://marla.googlecode.com/svn/wiki/screenshots/main_start.png]
-
 ==Start the New Problem Wizard==
 
 To do this, click on the blue folder icon with the plus symbol in the top left of the main window. Alternatively, click on the File menu option just above it and select the "New Problem..." option. The dialog that comes up will allow you to create a new problem.
