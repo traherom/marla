@@ -6,6 +6,7 @@
       * [ConfiguringMarla Configuring maRla]
       * [CreateOrEditProblem Creating and Editing Problems]
       * [UsingTheWorkspace Using the Workspace]
+      * [UsingThePalette Using the Operations Palette]
       * [FAQ Frequently Asked Questions]
     * Advanced
       * [XMLOperationSpecification Creating and Editing Operations]
