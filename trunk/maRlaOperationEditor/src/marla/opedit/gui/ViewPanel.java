@@ -692,12 +692,36 @@ public class ViewPanel extends JPanel
 					if (closeFile())
 					{
 						currentFile = new OperationFile(file.toString());
-						openFile();
+						setEnabled(false);
+						new Thread(new Runnable()
+						{
+							@Override
+							public void run()
+							{
+								Domain.setProgressTitle("Loading");
+								Domain.setProgressVisible(true);
+								Domain.setProgressIndeterminate(true);
+								Domain.setProgressString("");
+								Domain.setProgressStatus("Loading Operations XML file...");
+								MainFrame.progressFrame.setAlwaysOnTop(true);
+								
+								openFile();
+								
+								Domain.setProgressVisible(false);
+								Domain.setProgressIndeterminate(false);
+								MainFrame.progressFrame.setAlwaysOnTop(false);
+								setEnabled(true);
+							}
+						}).start();
 					}
 				}
 				catch(OperationEditorException ex)
 				{
 					marla.ide.gui.Domain.showWarningDialog(Domain.getTopWindow(), ex.getMessage(), marla.ide.gui.Domain.prettyExceptionDetails(ex), "Unable to Open");
+					Domain.setProgressVisible(false);
+					Domain.setProgressIndeterminate(false);
+					MainFrame.progressFrame.setAlwaysOnTop(false);
+					setEnabled(true);
 				}
 				
 				break;
@@ -749,33 +773,51 @@ public class ViewPanel extends JPanel
 			fileChooserDialog.setCurrentDirectory(new File(marla.ide.gui.Domain.lastGoodDir));
 			// Display the chooser and retrieve the selected file
 			int response = fileChooserDialog.showOpenDialog(Domain.getTopWindow());
-			while(response == JFileChooser.APPROVE_OPTION)
+			if(response == JFileChooser.APPROVE_OPTION)
 			{
 				if(fileChooserDialog.getSelectedFile().exists())
 				{
-					File file = fileChooserDialog.getSelectedFile();
-
-					currentDataSetPath = file.toString();
-					currentDataSet = DataSet.importFile(currentDataSetPath);
-					outputModel.setData(currentDataSet);
-					outputTable.refreshTable();
-
-					if(currentOperation != null)
+					setEnabled(false);
+					new Thread(new Runnable()
 					{
-						currentOperation.setParentData(currentDataSet);
-					}
+						@Override
+						public void run()
+						{
+							Domain.setProgressTitle("Loading");
+							Domain.setProgressVisible(true);
+							Domain.setProgressIndeterminate(true);
+							Domain.setProgressString("");
+							Domain.setProgressStatus("Loading CSV file...");
+							MainFrame.progressFrame.setAlwaysOnTop(true);
 
-					if(file.isDirectory())
-					{
-						marla.ide.gui.Domain.lastGoodDir = file.toString();
-					}
-					else
-					{
-						marla.ide.gui.Domain.lastGoodDir = file.toString().substring(0, file.toString().lastIndexOf(File.separatorChar));
-					}
+							File file = fileChooserDialog.getSelectedFile();
+							currentDataSet = DataSet.importFile(file.toString());
+							currentDataSetPath = file.toString();
+							outputModel.setData(currentDataSet);
+							outputTable.refreshTable();
 
-					openDataSet();
-					break;
+							if(currentOperation != null)
+							{
+								currentOperation.setParentData(currentDataSet);
+							}
+
+							if(file.isDirectory())
+							{
+								marla.ide.gui.Domain.lastGoodDir = file.toString();
+							}
+							else
+							{
+								marla.ide.gui.Domain.lastGoodDir = file.toString().substring(0, file.toString().lastIndexOf(File.separatorChar));
+							}
+
+							openDataSet();
+							
+							Domain.setProgressVisible(false);
+							Domain.setProgressIndeterminate(false);
+							MainFrame.progressFrame.setAlwaysOnTop(false);
+							setEnabled(true);
+						}
+					}).start();
 				}
 			}
 		}
@@ -786,6 +828,13 @@ public class ViewPanel extends JPanel
 		catch(MarlaException ex)
 		{
 			Domain.logger.add(ex);
+		}
+		finally
+		{
+			Domain.setProgressVisible(false);
+			Domain.setProgressIndeterminate(false);
+			MainFrame.progressFrame.setAlwaysOnTop(false);
+			setEnabled(true);
 		}
 	}//GEN-LAST:event_browseDataButtonActionPerformed
 
