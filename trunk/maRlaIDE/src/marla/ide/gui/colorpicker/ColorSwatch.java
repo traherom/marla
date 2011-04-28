@@ -1,6 +1,7 @@
 /*
- * The maRla Project - Graphical problem solver for statistics and probability problems.
- * Copyright (C) 2010 Cedarville University
+ * The maRla Project - Graphical problem solver for statistical calculations.
+ * Copyright © 2011 Cedarville University
+ * http://marla.googlecode.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -75,7 +76,7 @@ public class ColorSwatch extends JPanel
                 if (menu == null)
                 {
                     menu = new JPopupMenu ();
-                    copyItem = new JMenuItem (ColorPicker.strings.getObject ("Copy").toString ());
+                    copyItem = new JMenuItem ("Copy");
                     menu.add (copyItem);
                     copyItem.addActionListener (actionListener);
                 }

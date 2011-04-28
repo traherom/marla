@@ -1,8 +1,7 @@
 /*
- * Get Organized - Organize your schedule, course assignments, and grades
- * Copyright (C) 2010 Alex Laird
- * alexdlaird@gmail.com
- * www.alexlaird.net
+ * The maRla Project - Graphical problem solver for statistical calculations.
+ * Copyright © 2011 Cedarville University
+ * http://marla.googlecode.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

@@ -1,6 +1,7 @@
 /*
- * The maRla Project - Graphical problem solver for statistics and probability problems.
- * Copyright (C) 2010 Cedarville University
+ * The maRla Project - Graphical problem solver for statistical calculations.
+ * Copyright © 2011 Cedarville University
+ * http://marla.googlecode.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -54,8 +55,8 @@ public class ColorPickerDialog extends EscapeDialog
     private static final long serialVersionUID = 1L;
     ColorPicker cp;
     int alpha;
-    JButton ok = new JButton (ColorPicker.strings.getObject ("OK").toString ());
-    JButton cancel = new JButton (ColorPicker.strings.getObject ("Cancel").toString ());
+    JButton ok = new JButton ("Ok");
+    JButton cancel = new JButton ("Cancel");
     Color returnValue = null;
     ActionListener buttonListener = new ActionListener ()
     {

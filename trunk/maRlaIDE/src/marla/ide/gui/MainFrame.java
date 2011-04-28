@@ -1,6 +1,7 @@
 /*
- * The maRla Project - Graphical problem solver for statistics and probability problems.
- * Copyright (C) 2010 Cedarville University
+ * The maRla Project - Graphical problem solver for statistical calculations.
+ * Copyright © 2011 Cedarville University
+ * http://marla.googlecode.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -319,6 +320,7 @@ public class MainFrame extends JFrame
         fileSeparator1 = new javax.swing.JPopupMenu.Separator();
         exportToPdfMenuItem = new javax.swing.JMenuItem();
         exportForLatexMenuItem = new javax.swing.JMenuItem();
+        exportDataToCsvMenuItem = new javax.swing.JMenuItem();
         fileSeparator2 = new javax.swing.JPopupMenu.Separator();
         printMenuItem = new javax.swing.JMenuItem();
         fileSeparator3 = new javax.swing.JPopupMenu.Separator();
@@ -409,7 +411,8 @@ public class MainFrame extends JFrame
         fileMenu.add(saveAsMenuItem);
         fileMenu.add(fileSeparator1);
 
-        exportToPdfMenuItem.setFont(new java.awt.Font("Verdana", 0, 12));
+        exportToPdfMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_P, java.awt.event.InputEvent.ALT_MASK));
+        exportToPdfMenuItem.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
         exportToPdfMenuItem.setText("Export to PDF...");
         exportToPdfMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -418,7 +421,8 @@ public class MainFrame extends JFrame
         });
         fileMenu.add(exportToPdfMenuItem);
 
-        exportForLatexMenuItem.setFont(new java.awt.Font("Verdana", 0, 12));
+        exportForLatexMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_L, java.awt.event.InputEvent.ALT_MASK));
+        exportForLatexMenuItem.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
         exportForLatexMenuItem.setText("Export for LaTeX...");
         exportForLatexMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -426,6 +430,16 @@ public class MainFrame extends JFrame
             }
         });
         fileMenu.add(exportForLatexMenuItem);
+
+        exportDataToCsvMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_D, java.awt.event.InputEvent.ALT_MASK));
+        exportDataToCsvMenuItem.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        exportDataToCsvMenuItem.setText("Export Data to CSV...");
+        exportDataToCsvMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                exportDataToCsvMenuItemActionPerformed(evt);
+            }
+        });
+        fileMenu.add(exportDataToCsvMenuItem);
         fileMenu.add(fileSeparator2);
 
         printMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_P, java.awt.event.InputEvent.CTRL_MASK));
@@ -652,6 +666,14 @@ public class MainFrame extends JFrame
 			{
 				exportForLatexMenuItem.setEnabled(true);
 				exportToPdfMenuItem.setEnabled(true);
+				if (viewPanel.domain.problem.getDataCount() > 0)
+				{
+					exportDataToCsvMenuItem.setEnabled(true);
+				}
+				else
+				{
+					exportDataToCsvMenuItem.setEnabled(false);
+				}
 				closeProblemMenuItem.setEnabled(true);
 				printMenuItem.setEnabled(true);
 				saveAsMenuItem.setEnabled(true);
@@ -672,6 +694,7 @@ public class MainFrame extends JFrame
 				saveAsMenuItem.setEnabled(false);
 				exportForLatexMenuItem.setEnabled(false);
 				exportToPdfMenuItem.setEnabled(false);
+				exportDataToCsvMenuItem.setEnabled(false);
 			}
 		}
 	}//GEN-LAST:event_fileMenuMenuSelected
@@ -813,6 +836,10 @@ public class MainFrame extends JFrame
 		viewPanel.workspacePanel.print();
 	}//GEN-LAST:event_printMenuItemActionPerformed
 
+	private void exportDataToCsvMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exportDataToCsvMenuItemActionPerformed
+		viewPanel.exportDataSet();
+	}//GEN-LAST:event_exportDataToCsvMenuItemActionPerformed
+
 	/**
 	 * Retrieves the default title, which is the program name with it's version number.
 	 *
@@ -836,6 +863,7 @@ public class MainFrame extends JFrame
     private javax.swing.JMenuItem editProblemMenuItem;
     private javax.swing.JMenuItem editSubProblemsMenuItem;
     private javax.swing.JMenuItem exitMenuItem;
+    private javax.swing.JMenuItem exportDataToCsvMenuItem;
     private javax.swing.JMenuItem exportForLatexMenuItem;
     private javax.swing.JMenuItem exportToPdfMenuItem;
     private javax.swing.JMenu fileMenu;

@@ -1,6 +1,7 @@
 /*
- * The maRla Project - Graphical problem solver for statistics and probability problems.
- * Copyright (C) 2010 Cedarville University
+ * The maRla Project - Graphical problem solver for statistical calculations.
+ * Copyright © 2011 Cedarville University
+ * http://marla.googlecode.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -750,41 +751,32 @@ public class ViewPanel extends JPanel
 			int response = fileChooserDialog.showOpenDialog(Domain.getTopWindow());
 			while(response == JFileChooser.APPROVE_OPTION)
 			{
-				File file = fileChooserDialog.getSelectedFile();
-				if(!file.isFile() || !file.toString().endsWith(".csv"))
+				if(fileChooserDialog.getSelectedFile().exists())
 				{
-					marla.ide.gui.Domain.showWarningDialog(Domain.getTopWindow(), "The specified file does not exist.", "Does Not Exist");
-					int lastIndex = fileChooserDialog.getSelectedFile().toString().lastIndexOf(".");
-					if(lastIndex == -1)
+					File file = fileChooserDialog.getSelectedFile();
+
+					currentDataSetPath = file.toString();
+					currentDataSet = DataSet.importFile(currentDataSetPath);
+					outputModel.setData(currentDataSet);
+					outputTable.refreshTable();
+
+					if(currentOperation != null)
 					{
-						lastIndex = fileChooserDialog.getSelectedFile().toString().length();
+						currentOperation.setParentData(currentDataSet);
 					}
-					fileChooserDialog.setSelectedFile(new File(fileChooserDialog.getSelectedFile().toString().substring(0, lastIndex) + ".csv"));
-					response = fileChooserDialog.showOpenDialog(Domain.getTopWindow());
-					continue;
-				}
 
-				currentDataSetPath = file.toString();
-				currentDataSet = DataSet.importFile(currentDataSetPath);
-				outputModel.setData(currentDataSet);
-				outputTable.refreshTable();
+					if(file.isDirectory())
+					{
+						marla.ide.gui.Domain.lastGoodDir = file.toString();
+					}
+					else
+					{
+						marla.ide.gui.Domain.lastGoodDir = file.toString().substring(0, file.toString().lastIndexOf(File.separatorChar));
+					}
 
-				if(currentOperation != null)
-				{
-					currentOperation.setParentData(currentDataSet);
+					openDataSet();
+					break;
 				}
-
-				if(file.isDirectory())
-				{
-					marla.ide.gui.Domain.lastGoodDir = file.toString();
-				}
-				else
-				{
-					marla.ide.gui.Domain.lastGoodDir = file.toString().substring(0, file.toString().lastIndexOf(File.separatorChar));
-				}
-
-				openDataSet();
-				break;
 			}
 		}
 		catch(DuplicateNameException ex)
