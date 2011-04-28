@@ -5,7 +5,7 @@
 
 =Introduction=
 
-The settings dialog allows you, the user, to configure the program according your needs. This guide will show you how to do so.
+The settings dialog allows you to configure maRla according your specific needs (for instance, providing student information, or specifying relative paths to LaTeX and R executables for a portability, etc.).
 
 =Preferences=
 
