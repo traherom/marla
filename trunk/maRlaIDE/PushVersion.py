@@ -2,7 +2,7 @@
 
 #
 # The maRla Project - Graphical problem solver for statistical calculations.
-# Copyright © 2011 Cedarville University
+# Copyright (c) 2011 Cedarville University
 # http://marla.googlecode.com
 #
 # This program is free software: you can redistribute it and/or modify
