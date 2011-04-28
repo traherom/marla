@@ -74,6 +74,7 @@ The source for the R Processor was developed under the GNU GPL v3, so you are we
 =Can I contribute to The maRla Project?=
 The maRla Project can be checked out using Subversion by following the instructions on [http://code.google.com/p/marla/source/checkout this page].  However, this checkout will be a read-only checkout if you do not have commit access to the repository.  If you are interested in helping further develop The maRla Project, please contact one of the owners of this Google Code site.
 
+=I downloaded the source and fixed a bug myself. Will you include this in the next release?=
 If you have encountered a bug with The maRla Project, downloaded the source, and developed a fix yourself that you would like to see incorporated into a future version of the software, contact an owner of this Google Code page and we will try to implement that fix into the next major software release.
 
 [HelpContents Back to Help Contents]
