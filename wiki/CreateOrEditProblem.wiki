@@ -50,7 +50,7 @@ Data can be entered in several ways. You can import a CSV, by clicking the relev
 
 ==Final Details==
 
-These details are for the pdfLaTeX exporter, in order that your homework may be completed in the most effective and detailed manner possible upon printout.
+These details are for LaTeX and PDF exporting--specifying them will make your deliverable more informative and readable. If you are creating problems often, [ConfiguringMarla configuring maRla] to automatically fill in these fields may be useful.
 
 [http://marla.googlecode.com/svn/wiki/screenshots/new_problem_8.png]
 
