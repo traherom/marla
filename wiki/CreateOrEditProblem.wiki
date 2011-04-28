@@ -3,6 +3,8 @@
 
 [HelpContents Back to Help Contents]
 
+<wiki:toc max_depth="4" />
+
 = Introduction =
 
 maRla is designed to aid you in  your homework cycle (though it can be used for statistical purposes other than homework). Creating, manipulating, and printing problems with R and LaTeX has never been easier! This guide will show you how to create a problem in maRla so you can enjoy the full use of this program.
