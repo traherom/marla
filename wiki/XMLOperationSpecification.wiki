@@ -5,6 +5,9 @@
 
 <wiki:toc max_depth="4" />
 
+= maRla Operation Editor =
+A tool called the maRla Operation Editor is included in The maRla Project. If you would like to add, edit, or remove operations, it is easiest to do so with this tool. The documentation below is for editing the inner XML of each operation, which is the XML shown in the maRla Operation Editor when a particular operation is created or selected for editing.
+
 = Getting Started =
 Within maRla, most operations are defined by one or more operation XML files. The "primary" XML file (see [http://code.google.com/p/marla/source/browse/trunk/maRlaIDE/test/ops.xml ops.xml] in the repository) should be consulted as a guide to creating your own operations in addition to the documentation on this page.
 
