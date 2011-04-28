@@ -1,8 +1,7 @@
 /*
- * Get Organized - Organize your schedule, course assignments, and grades
- * Copyright (C) 2011 Alex Laird
- * alexdlaird@gmail.com
- * www.alexlaird.net
+ * The maRla Project - Graphical problem solver for statistical calculations.
+ * Copyright © 2011 Cedarville University
+ * http://marla.googlecode.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,7 +39,6 @@ import java.awt.dnd.DropTargetListener;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import marla.ide.problem.MarlaException;
 import marla.ide.operation.Operation;
 import marla.ide.problem.DataSet;

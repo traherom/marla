@@ -1,6 +1,7 @@
 /*
- * The maRla Project - Graphical problem solver for statistics and probability problems.
- * Copyright (C) 2010 Cedarville University
+ * The maRla Project - Graphical problem solver for statistical calculations.
+ * Copyright © 2011 Cedarville University
+ * http://marla.googlecode.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -88,8 +89,6 @@ import javax.swing.event.DocumentListener;
 public final class ColorPicker extends JPanel
 {
     private static final long serialVersionUID = 3L;
-    /** The localized strings used in this (and related) panel(s). */
-    protected static ResourceBundle strings = ResourceBundle.getBundle ("marla.ide.gui.colorpicker.ColorPicker");
 
     public static Color showDialog(Container owner, Color originalColor, ViewPanel viewPanel)
     {
@@ -163,7 +162,7 @@ public final class ColorPicker extends JPanel
         hexLabel.setFont (new Font ("Verdana", Font.BOLD, 11));
 
         d.setTitle (title == null
-                ? strings.getObject ("ColorPickerDialogTitle").toString ()
+                ? "Choose a Color"
                 : title);
         d.pack ();
         d.setVisible (true);
@@ -484,15 +483,15 @@ public final class ColorPicker extends JPanel
             changedUpdate (e);
         }
     };
-    private Option alpha = new Option (strings.getObject ("alphaLabel").toString (), 255);
-    private Option hue = new Option (strings.getObject ("hueLabel").toString (), 360);
-    private Option sat = new Option (strings.getObject ("saturationLabel").toString (), 100);
-    private Option bri = new Option (strings.getObject ("brightnessLabel").toString (), 100);
-    private Option red = new Option (strings.getObject ("redLabel").toString (), 255);
-    private Option green = new Option (strings.getObject ("greenLabel").toString (), 255);
-    private Option blue = new Option (strings.getObject ("blueLabel").toString (), 255);
+    private Option alpha = new Option ("Alpha:", 255);
+    private Option hue = new Option ("Hue:", 360);
+    private Option sat = new Option ("Sat:", 100);
+    private Option bri = new Option ("Bri:", 100);
+    private Option red = new Option ("Red:", 255);
+    private Option green = new Option ("Green:", 255);
+    private Option blue = new Option ("Blue:", 255);
     private ColorSwatch preview = new ColorSwatch (50);
-    private static JLabel hexLabel = new JLabel (strings.getObject ("hexLabel").toString ());
+    private static JLabel hexLabel = new JLabel ("Hex:");
     private JTextField hexField = new JTextField ("000000");
     /** Used to indicate when we're internally adjusting the value of the spinners.
      * If this equals zero, then incoming events are triggered by the user and must be processed.
@@ -530,7 +529,7 @@ public final class ColorPicker extends JPanel
     private JPanel expertControls = new JPanel (new GridBagLayout ());
     private ColorPickerPanel colorPanel = new ColorPickerPanel ();
     private JSlider opacitySlider = new JSlider (0, 255, 255);
-    private JLabel opacityLabel = new JLabel (strings.getObject ("opacityLabel").toString ());
+    private JLabel opacityLabel = new JLabel ("Opacity:");
 
     /** Create a new <code>ColorPicker</code> with all controls visible except opacity. */
     public ColorPicker()

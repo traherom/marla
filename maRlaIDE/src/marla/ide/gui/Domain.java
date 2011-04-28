@@ -1,6 +1,7 @@
 /*
  * The maRla Project - Graphical problem solver for statistical calculations.
- * Copyright (C) 2011 Cedarville University
+ * Copyright © 2011 Cedarville University
+ * http://marla.googlecode.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -88,7 +89,7 @@ public class Domain
 	/** The version number of the application.*/
 	public static final String VERSION = "1.0";
 	/** The pre-release version name of the application.*/
-	public static final String PRE_RELEASE = "RC2";
+	public static final String PRE_RELEASE = "";
 	/** The location of the application as it runs.*/
 	public static final String CWD = System.getProperty("user.dir");
 	/** The name of the operating system being used.*/
@@ -219,6 +220,21 @@ public class Domain
 	{
 		return JOptionPane.showInputDialog(parent, message, title, JOptionPane.QUESTION_MESSAGE, null, null, oldValue);
 	}
+	
+	/**
+	 * Show a standard input dialog with combo options and return the value the user enters.
+	 * 
+	 * @param parent The parent of the dialog to be shown.
+	 * @param message The standard message to be shown.
+	 * @param items The list of items to display in the JComboBox.
+	 * @param title The title of the dialog.
+	 * @param initialSelection The first item to have selected in the JComboBox, if any.
+	 * @return The input entered by the user on close of the dialog.
+	 */
+	public static Object showComboDialog(Component parent, Object message, Object[] items, String title, Object initialSelection)
+	{
+		return JOptionPane.showInputDialog(parent, message, title, JOptionPane.QUESTION_MESSAGE, null, items, initialSelection);
+	}
 
 	/**
 	 * Show the standard multi-line dialog and return the value the user enters.
@@ -231,7 +247,7 @@ public class Domain
 	 */
 	public static String showMultiLineInputDialog(Component parent, String message, String title, String oldValue)
 	{
-		return InputDialog.launchInputDialog(ViewPanel.getInstance(), parent, title, message, oldValue);
+		return InputDialog.launchInputDialog(ViewPanel.getInstance(), parent, message, title, oldValue);
 	}
 
 	/**
@@ -982,7 +998,7 @@ public class Domain
 	{
 		if(problem != null)
 		{
-			// Construct the file-based open chooser dialog
+			// Construct the file-based save chooser dialog
 			viewPanel.fileChooserDialog.setDialogTitle("Save Problem As");
 			viewPanel.fileChooserDialog.setDialogType(JFileChooser.SAVE_DIALOG);
 			viewPanel.fileChooserDialog.resetChoosableFileFilters();

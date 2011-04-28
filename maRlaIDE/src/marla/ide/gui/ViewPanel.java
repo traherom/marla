@@ -1,6 +1,7 @@
 /*
- * The maRla Project - Graphical problem solver for statistics and probability problems.
- * Copyright (C) 2010 Cedarville University
+ * The maRla Project - Graphical problem solver for statistical calculations.
+ * Copyright © 2011 Cedarville University
+ * http://marla.googlecode.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,7 +20,6 @@
 package marla.ide.gui;
 
 import java.awt.AWTEvent;
-import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
@@ -55,6 +55,7 @@ import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
+import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
@@ -283,6 +284,9 @@ public class ViewPanel extends JPanel
 		componentsPanel.setVisible(false);
 		preWorkspacePanel.setVisible(true);
 		workspacePanel.setVisible(false);
+		
+		firstRunLabel.setFont(FONT_BOLD_14);
+		firstRunLabel.setForeground(Color.LIGHT_GRAY);
 
 		componentsScrollPane.getViewport().setOpaque(false);
 
@@ -1483,7 +1487,7 @@ public class ViewPanel extends JPanel
 
 	private void workspacePanelComponentResized(java.awt.event.ComponentEvent evt)//GEN-FIRST:event_workspacePanelComponentResized
 	{//GEN-HEADEREND:event_workspacePanelComponentResized
-		firstRunLabel.setLocation((workspacePanel.getWidth() - firstRunLabel.getWidth()) / 2, (workspacePanel.getHeight() - firstRunLabel.getHeight()) / 2);
+		refreshTip();
 		trashCan.setLocation(workspacePanel.getWidth() - trashCan.getWidth() - 10, workspacePanel.getHeight() - trashCan.getHeight() - 10);
 		statusLabel.setLocation(10, workspacePanel.getHeight() - statusLabel.getHeight() - 10);
 		ensureComponentsVisible();
@@ -1860,40 +1864,48 @@ public class ViewPanel extends JPanel
 	 */
 	protected void refreshTip()
 	{
-		tipRemainder = "";
+		if (Boolean.valueOf((Configuration.getInstance().get(Configuration.ConfigType.FirstRun).toString())))
+		{
+			tipRemainder = "";
 
-		if(showFirst)
-		{
-			tipRemainder += FIRST_TIP;
-		}
-		if(showSecond)
-		{
-			tipRemainder += ("<br />" + SECOND_TIP);
-		}
-		if(showThird)
-		{
-			tipRemainder += ("<br />" + THIRD_TIP);
-		}
-		if(showFourth)
-		{
-			tipRemainder += ("<br />" + FOURTH_TIP);
-		}
-		if(showFifth)
-		{
-			tipRemainder += ("<br />" + FIFTH_TIP);
-		}
+			if(showFirst)
+			{
+				tipRemainder += FIRST_TIP;
+			}
+			if(showSecond)
+			{
+				tipRemainder += ("<br />" + SECOND_TIP);
+			}
+			if(showThird)
+			{
+				tipRemainder += ("<br />" + THIRD_TIP);
+			}
+			if(showFourth)
+			{
+				tipRemainder += ("<br />" + FOURTH_TIP);
+			}
+			if(showFifth)
+			{
+				tipRemainder += ("<br />" + FIFTH_TIP);
+			}
 
-		if(tipRemainder.startsWith("<br />"))
-		{
-			tipRemainder = tipRemainder.substring(6, tipRemainder.length());
-		}
-		if(!tipRemainder.equals(""))
-		{
+			if(tipRemainder.startsWith("<br />"))
+			{
+				tipRemainder = tipRemainder.substring(6, tipRemainder.length());
+			}
 			firstRunLabel.setText("<html><div align=\"center\">" + tipRemainder + "</div></html>");
 			firstRunLabel.setSize(firstRunLabel.getPreferredSize());
 			firstRunLabel.setLocation((workspacePanel.getWidth() - firstRunLabel.getWidth()) / 2, (workspacePanel.getHeight() - firstRunLabel.getHeight()) / 2);
+			if(!tipRemainder.equals(""))
+			{
+				workspacePanel.add(firstRunLabel);
+			}
+			else if(firstRunLabel.getParent() == workspacePanel)
+			{
+				workspacePanel.remove(firstRunLabel);
+			}
 		}
-		else if(firstRunLabel.getParent() == workspacePanel)
+		else
 		{
 			workspacePanel.remove(firstRunLabel);
 		}
@@ -2477,10 +2489,7 @@ public class ViewPanel extends JPanel
 		{
 			if(Domain.isFirstRun() && !isUndoRedo)
 			{
-				firstRunLabel.setFont(FONT_BOLD_14);
-				firstRunLabel.setForeground(Color.LIGHT_GRAY);
 				refreshTip();
-				workspacePanel.add(firstRunLabel);
 			}
 			componentsPanel.setVisible(true);
 			emptyPalettePanel.setVisible(false);
@@ -2508,6 +2517,119 @@ public class ViewPanel extends JPanel
 			rebuildSubProblemLegend();
 
 			workspacePanel.repaint();
+		}
+	}
+	
+	/**
+	 * Export a data set to a CSV file.
+	 */
+	protected void exportDataSet()
+	{
+		Object[] dataSets = new Object[domain.problem.getDataCount()];
+		for (int i = 0; i < domain.problem.getDataCount(); ++i)
+		{
+			dataSets[i] = domain.problem.getData(i).getName();
+		}
+		final Object resp = Domain.showComboDialog(Domain.getTopWindow(), "Select the data set you would like to export:", dataSets, "Export Data Set", null);
+		if (resp != null)
+		{
+			// Construct the file-based save chooser dialog
+			fileChooserDialog.setDialogTitle("Export Data Set");
+			fileChooserDialog.setDialogType(JFileChooser.SAVE_DIALOG);
+			fileChooserDialog.resetChoosableFileFilters();
+			fileChooserDialog.setFileFilter(newProblemWizardDialog.csvFilter);
+			fileChooserDialog.setFileSelectionMode(JFileChooser.FILES_ONLY);
+			fileChooserDialog.setCurrentDirectory(new File(Domain.lastGoodDir));
+			fileChooserDialog.setSelectedFile(new File(Domain.lastGoodDir, resp.toString()));
+			// Display the chooser and retrieve the selected file
+			int response = fileChooserDialog.showSaveDialog(Domain.getTopWindow());
+			while(response == JFileChooser.APPROVE_OPTION)
+			{
+				File file = fileChooserDialog.getSelectedFile();
+				// ensure an extension is on the file
+				if(file.getName().indexOf(".") == -1)
+				{
+					file = new File(fileChooserDialog.getSelectedFile().toString() + ".csv");
+				}
+				final File finalFile = file;
+				// ensure the file exists is a valid backup file
+				if(!file.toString().endsWith(".csv") && file.toString().endsWith(".txt"))
+				{
+					Domain.showWarningDialog(Domain.getTopWindow(), "The extension for the file must be .csv or .txt.", "Invalid Extension");
+					fileChooserDialog.setSelectedFile(new File(fileChooserDialog.getSelectedFile().toString().substring(0, fileChooserDialog.getSelectedFile().toString().lastIndexOf(".")) + ".csv"));
+					response = fileChooserDialog.showSaveDialog(Domain.getTopWindow());
+					continue;
+				}
+				// Ensure the problem name given does not match an already existing file
+				boolean continueAllowed = true;
+				if(file.exists())
+				{
+					response = Domain.showConfirmDialog(Domain.getTopWindow(), "The selected file already exists.\nWould you like to overwrite the existing file?", "Overwrite Existing File", JOptionPane.YES_NO_OPTION);
+					if(response != JOptionPane.YES_OPTION)
+					{
+						continueAllowed = false;
+					}
+				}
+
+				if(continueAllowed)
+				{
+					Domain.setProgressTitle("Exporting");
+					Domain.setProgressVisible(true);
+					Domain.setProgressIndeterminate(true);
+					Domain.setProgressString("");
+					Domain.setProgressStatus("Beginning CSV export...");
+					
+					new Thread(new Runnable()
+					{
+						@Override
+						public void run()
+						{
+							String filePath = null;
+							try
+							{
+								domain.problem.getData(resp.toString()).exportFile(finalFile.getCanonicalPath());
+								filePath = finalFile.getCanonicalPath();
+								if(domain.desktop != null)
+								{
+									Domain.setProgressStatus("Opening CSV...");
+
+									domain.desktop.open(new File(finalFile.getCanonicalPath()));
+									try
+									{
+										Thread.sleep(1000);
+									}
+									catch(InterruptedException ex)
+									{
+									}
+								}
+							}
+							catch (IOException ex)
+							{
+								if(filePath != null)
+								{
+									Domain.setProgressIndeterminate(false);
+									Domain.showInformationDialog(Domain.getTopWindow(), "The file was exported successfully.\nLocation: " + filePath, "Export Successful");
+								}
+								else
+								{
+									Domain.logger.add(ex);
+									Domain.showErrorDialog(Domain.getTopWindow(), ex.getMessage(), Domain.prettyExceptionDetails(ex), "PDF Export Failed");
+								}
+							}
+							finally
+							{
+								Domain.setProgressVisible(false);
+								Domain.setProgressIndeterminate(false);
+							}
+						}
+					}).start();
+					break;
+				}
+				else
+				{
+					continue;
+				}
+			}
 		}
 	}
 	
