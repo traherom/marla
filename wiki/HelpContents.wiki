@@ -7,6 +7,7 @@ The help pages below will help you as you begin using maRla
   * [ConfiguringMarla Configuring maRla]
   * [CreateOrEditProblem Creating and Editing Problems]
   * [UsingTheWorkspace Using the Workspace]
+  * [UsingThePalette  Using the Operations Palette]
   * [FAQ Frequently Asked Questions]
 
 = Advanced =
