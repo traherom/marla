@@ -3,8 +3,7 @@
 
 [HelpContents Back to Help Contents]
 
-= Introduction =
-maRla depends on many different software packages and proper configuration can, on occasion, be troublesome. This page attempts to simplify the installation process for the most common operation systems.
+<wiki:toc max_depth="1" />
 
 = Windows =
 The maRla Windows installer, available on the [http://code.google.com/p/marla/downloads/list Downloads] page, attempts to do all configuration necessary for Windows XP, Vista, and 7 systems. This is the recommended path to take. However, if maRla fails to run after using the installer, manual installation may be required. Instructions for installing and configuring each package are below:
