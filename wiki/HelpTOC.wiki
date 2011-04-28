@@ -8,6 +8,6 @@
       * [UsingTheWorkspace Using the Workspace]
       * [FAQ Frequently Asked Questions]
     * Advanced
-      * [XMLOperationSpecification Creating Operations]
-      * [ExportTemplateXML Export template]
-      * [Building Compiling and editing maRla]
+      * [XMLOperationSpecification Creating and Editing Operations]
+      * [ExportTemplateXML Export Template]
+      * [Building Compiling and Editing maRla]
