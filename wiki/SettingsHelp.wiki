@@ -7,8 +7,7 @@
 
 The settings dialog allows you, the user, to configure the program according your needs. This guide will show you how to do so.
 
-
-=Program Settings=
+=Preferences=
 
 The details of the preferences are as follows:
   * Error reports - this will automatically upload any errors in your program to a server that allows us, the developers, to see what went wrong and fix it. It is enabled by default.
