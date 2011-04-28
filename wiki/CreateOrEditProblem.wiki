@@ -7,55 +7,65 @@
 
 = Introduction =
 
-maRla is designed to aid you in  your homework cycle (though it can be used for statistical purposes other than homework). Creating, manipulating, and printing problems with R and LaTeX has never been easier! This guide will show you how to create a problem in maRla so you can enjoy the full use of this program.
+maRla is specifically designed to aid you in the homework cycle (though it can be used for statistical purposes other than homework). Creating, manipulating, and printing problems with R and LaTeX has never been easier! This guide will show you how to create a problem in maRla so you can enjoy the full use of this program.
 
 = Creating a New Problem =
 
-==Start the New Problem Wizard==
+==Launch the New Problem Wizard==
 
-To do this, click on the blue folder icon with the plus symbol in the top left of the main window. Alternatively, click on the File menu option just above it and select the "New Problem..." option. The dialog that comes up will allow you to create a new problem.
+Click on the blue folder icon with the plus symbol in the top left corner of the maRla IDE.  You may also launch the New Problem Wizard by clicking on the File menu and selecting "New Problem...".
+
+The first page of the New Problem Wizard gives you a brief overview of how to use the wizard.
 
 [http://marla.googlecode.com/svn/wiki/screenshots/new_problem_1.png]
 
-==Name and Place Your Created Project==
+==Name and Location==
 
-After clicking next, this dialog will come up. Name your project in the text box, and select the browse button in order to place the location of your marla homework file.
+Here you will be asked to name and place your maRla problem. This is where maRla will save your new problem to. Use the text box to name the problem and the "Browse" button to specify a folder to save the file to.
 
 [http://marla.googlecode.com/svn/wiki/screenshots/new_problem_2.png]
 
-==Write Out Your Problem==
-This text field will allow you to input your main question or problem, to be output upon printing your work out to a PDF file. Do not worry, if you have multiple parts, you will see how to do that next.
+==Description==
+Here you will be asked for a problem description. If you are working on a homework problem, simply take the main problem description straight from your textbook. If there are multiple parts to your problem (for instance, parts a., b., and c.), we will handle their descriptions in the next screen, not here.
+
+It is not necessary to input problem data in the problem description.
 
 [http://marla.googlecode.com/svn/wiki/screenshots/new_problem_3.png]
 
-==Create Your Sub-problems==
-You may choose whether or not to enter sub-problems. Sub-problems are useful ways to easily view individual pieces of a problem both inside maRla, and in PDF form. You may add or remove any number of sub-problems.
+==Sub Problems==
+If your problem has multiple parts, you may add sub problems to the problem, which are labeled a., b., c., and so on. Sub problems help you to distinguish various parts of the larger problem from each other within maRla and in PDF files you may eventually export.
+
+You may leave the sub problems blank, if you don't have any. You are allowed as many as a-z sub problems.
+
+===Sub Problem Conclusions===
+There is no need to enter a conclusion for the sub problems at this time, as you have not run any analysis on the data yet. You may come back to edit this data, using the Edit Problem Wizard, at any time.
 
 [http://marla.googlecode.com/svn/wiki/screenshots/new_problem_4.png]
 
-===Color Picker===
-Colors allow you to easily visualize what part of your problem belongs to which subproblem when you get to the maRla workspace. Pick a color that will be easily visible and distinct from other sub-problem colors.
+===Sub Problem Coloring===
+Colors allow you to easily visualize what part of your problem belongs to which sub problem when you get to the maRla workspace. A color is automatically assigned to your sub problem, but you can click on the color box to select a new color for each sub problem.
 
 [http://marla.googlecode.com/svn/wiki/screenshots/new_problem_5.png]
 
-==Import from R== 
-For students using the Devore book for homework, you may import a set from R, most likely the Devore7 library. Try ChickWeight, for example.
+==Data Sets==
+Data values can be entered here. They can be entered manually, added from a CSV file, or imported from a R library.
 
-[http://marla.googlecode.com/svn/wiki/screenshots/new_problem_6.png]
-
-==Data Set Editor==
-Data can be entered in several ways. You can import a CSV, by clicking the relevant button you see here. Otherwise, you can input it manually. More than one data set is possible. To add a set, click "add"; to remove, click "remove". Adding or removing columns and rows is as simple as adding to or subtracting from the small boxes associated with said labels. You may rename data sets by double clicking on the tab where the name of the set is contained.
+You can create as many data sets as are required, so if each sub problem has its own data set, this won't be an issue. Add/remove rows and columns to/from your data sets by clicking the up and down arrows on the spinners for rows and columns.
 
 [http://marla.googlecode.com/svn/wiki/screenshots/new_problem_7.png]
 
-==Final Details==
+[http://marla.googlecode.com/svn/wiki/screenshots/new_problem_6.png]
+
+==Information==
 
 These details are for LaTeX and PDF exporting--specifying them will make your deliverable more informative and readable. If you are creating problems often, [SettingsHelp configuring maRla] to automatically fill in these fields may be useful.
 
 [http://marla.googlecode.com/svn/wiki/screenshots/new_problem_8.png]
 
-=Editing an Existing Problem=
+===Problem Conclusion===
+There is no need to enter a conclusion for the problem at this time, as you have not run any analysis on the data yet. You may come back to edit this data, using the Edit Problem Wizard, at any time.
 
-You may edit an existing problem several ways. In the main window,to the right of the save icon, there is a button that will allow you to add a dataset. If you would like to do more, you may click on "Problem" option  in the menu list for another set of problem editing features. Don't forget to save when you are done manipulating your problem.
+=Editing an Existing Problem=
+To go back and edit the information contained within a problem (this includes description, sub problems, data sets, and information, as well as the ability to add/remove data sets), simply click the "Problem" menu. From here, you can click the part of the problem you'd like to edit to launch the Edit Problem Wizard. This dialog is nearly identical to the New Problem Wizard, so it should be familiar to you.
 
 [HelpContents Back to Help Contents]
