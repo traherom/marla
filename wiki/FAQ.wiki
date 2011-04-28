@@ -17,7 +17,7 @@ any conclusions the user drew from their work.
 =Who should use maRla?=
 First year statistics students are the primary target. However, operations may be added and modified in the maRla Operation Editor, so the maRla IDE can be used for any sort of mathematical operation that the R package supports.
 
-=When I export to PDF, I get a message saying "Sweave does not appear to be registered correctly with LaTeX." Can you fix it?=
+=What do I do if I tried exporting to a PDF and got the error message "Sweave does not appear to be registered correctly with LaTeX"?=
 The Windows installer attempts to fix it for you, so try that first.
 
 Assuming it didn't work or you're on a different operating system, the message means
@@ -27,12 +27,12 @@ it depends on your system and can be complicated. Try Googling it, but if you st
 a [http://code.google.com/p/marla/issues/entry?template=Support%20Request support request]. Be sure
 to tell us what operation system you're using and where R and LaTeX are installed.
 
-=maRla isn't able to install R and/or MiKTeX automatically and tells me to do it manually=
-If you have a limited user account, it will break the automatic installation of R and MiKTeX. The work-around is to install both of these manually and then re-run the maRla installer. The latest R installer is available from [http://cran.case.edu/bin/windows/base/release.htm www.r-project.org]. MiKTeX can be found at [http://miktex.org/2.9/setup miktex.org].
+=How do I configure R and/or MiKTeX manually?=
+If you have a limited user account, it will break the automatic installation of R and MiKTeX, so you may be asked to configure R and/or LaTeX manually. The work-around is to install both of these manually and then re-run the maRla installer. The latest R installer is available from [http://cran.case.edu/bin/windows/base/release.htm www.r-project.org]. MiKTeX can be found at [http://miktex.org/2.9/setup miktex.org].
 
 The installer may handle this more gracefully in the future.
 
-=maRla refuses to recognize LaTeX and/or R=
+=What do I do if maRla refuses to recognize LaTeX and/or R?=
 On occasion an R or LaTeX install will be corrupt and maRla is unable to use them. Usually reinstalling the offending
 program will solve the problem (if on Windows, the [http://code.google.com/p/marla/downloads/list maRla installer]
 can make it easy).
@@ -62,13 +62,13 @@ Common ones are the following
 =How did this take two semesters to make?=
 Because we're awesome like that.
 
-=I want to see details as maRla works/I want want to debug an issue myself!=
+=How can I see what maRla is doing in the background, or how can I debug an issue myself?=
 Go into maRla's preferences and check the "Debug Mode" checkbox. A console with data should appear at the bottom of the window.
 
 You'll probably have more fun actually debugging it in NetBeans though. Follow the instructions
 on setup your [Building build environment]
 
-=I found a bug. What should I do?=
+=What do I do if I found a bug?=
 If you find a problem with the software, you may submit an Issue [http://code.google.com/p/marla/issues/entry here]. Be aware that The maRla Project comes with no guarantee or warranty. No other support other than these help page is offered for maRla.
 
 [HelpContents Back to Help Contents]
