@@ -4,10 +4,10 @@
     * Getting started
       * [Installation]
       * [SettingsHelp Configuring maRla]
-      * [CreateOrEditProblem Creating and editing]
-      * [UsingTheWorkspace Using the workspace]
+      * [CreateOrEditProblem Creating and Editing Problems]
+      * [UsingTheWorkspace Using the Workspace]
       * [FAQ Frequently Asked Questions]
     * Advanced
-      * [XMLOperationSpecification Creating operations]
+      * [XMLOperationSpecification Creating Operations]
       * [ExportTemplateXML Export template]
       * [Building Compiling and editing maRla]
