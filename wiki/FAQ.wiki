@@ -59,9 +59,6 @@ Common ones are the following
   * Cedarville University computers: `H:\NET\CFG\.marla\`
   * Linux: `~/.marla/`
 
-=How did this take two semesters to make?=
-Because we're awesome like that.
-
 =How can I see what maRla is doing in the background, or how can I debug an issue myself?=
 Go into maRla's preferences and check the "Debug Mode" checkbox. A console with data should appear at the bottom of the window.
 
@@ -70,5 +67,13 @@ on setup your [Building build environment]
 
 =What do I do if I found a bug?=
 If you find a problem with the software, you may submit an Issue [http://code.google.com/p/marla/issues/entry here]. Be aware that The maRla Project comes with no guarantee or warranty. No other support other than these help page is offered for maRla.
+
+=I'm interested in just utilizing the R Processor you developed for The maRla Project=
+The source for the R Processor was developed under the GNU GPL v3, so you are welcome to take and reuse the R Processor code. The source for our R Processor can be found [http://code.google.com/p/marla/source/browse/#svn%2Ftrunk%2FmaRlaIDE%2Fsrc%2Fmarla%2Fide%2Fr here]. If you would like to checkout the entire project (or even just that portion of the folder), see the read-only checkout instructions [http://code.google.com/p/marla/source/checkout here].
+
+=Can I contribute to The maRla Project?=
+The maRla Project can be checked out using Subversion by following the instructions on [http://code.google.com/p/marla/source/checkout this page].  However, this checkout will be a read-only checkout if you do not have commit access to the repository.  If you are interested in helping further develop The maRla Project, please contact one of the owners of this Google Code site.
+
+If you have encountered a bug with The maRla Project, downloaded the source, and developed a fix yourself that you would like to see incorporated into a future version of the software, contact an owner of this Google Code page and we will try to implement that fix into the next major software release.
 
 [HelpContents Back to Help Contents]
