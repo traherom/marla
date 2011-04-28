@@ -33,7 +33,7 @@ To change operation parameters, right-click on the operation and select "Change 
 ==Assigning Sub Problems==
 To assign sub problems, right-click on an operation and hover over "Tie to Sub Problem", and select the appropriate sub problem. The colors that have been selected for the sub problems will display properly in the operation structure. When exporting to a PDF, the document will be arranged according to user assignments.
 ==Export Data Sets==
-To export the values of a data set to a CSV file, see [#Data Sets the exporting section on exporting data sets].
+To export the values of a data set to a CSV file, see [#Data_Sets the exporting section on exporting data sets].
 
 =Exporting=
 ==LaTeX==
