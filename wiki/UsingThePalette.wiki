@@ -27,5 +27,9 @@ A user can use their own operations file in the maRla IDE, which will append any
 ====New Operations====
 To add new operations to the palette, create a new user.xml file in the maRla Operation Editor. See the documentation that goes into creating your own operation [XMLOperationSpecification here].
 
+It's important to understand that giving adding an operation into a category that already exists in the primary operations fill will place that operation into that category, and specifying a category name that doesn't already exist will create a new category.
+
+If an operation is given a name that already exists in the primary operations file or another user operations file that is being used, the last operation found with that name will be the only one displayed in the palette.
+
 ====Overwriting Exiting Operation====
-If, in your newly created user.xml file in the maRla Operation Editor, you specify a name for an operation that already exists, your operation will overwrite
+If, in your newly created user.xml file in the maRla Operation Editor, you specify a name for an operation that already exists, your operation will overwrite any other operations when displayed in the palette. This allows you to customize a default operation more, if you would like to, or overwrite a broken operation if necessary.
