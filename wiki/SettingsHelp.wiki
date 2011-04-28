@@ -5,7 +5,7 @@
 
 =Introduction=
 
-The settings dialog allows you to configure maRla according your specific needs (for instance, providing student information, or specifying relative paths to LaTeX and R executables for a portability, etc.).
+The settings dialog allows you to configure maRla according your specific needs (for instance, providing student information, or specifying relative paths to LaTeX and R executable for a portability, etc.).
 
 =Preferences=
 
