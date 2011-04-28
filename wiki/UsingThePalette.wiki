@@ -1,14 +1,31 @@
-#summary One-sentence summary of this page.
+#summary Describes the details of the operations palette and how to work with it
 #labels Phase-Support
 
+[HelpContents Back to Help Contents]
+
+<wiki:toc max_depth="4" />
+
 = Introduction =
+The operations palette is the categorized list of operations on the right-hand side of the maRla IDE. These operations can interact with data in the workspace, and they where the core functionality of the maRla IDE resides.
 
-Add your content here.
+This list of operations is dynamically generated from an XML file and can be appended to if common operations are missing.
 
+= Expanding/Collapsing Categories =
+To prevent clutter, operations are categories, and all categories are collapsed by default. Simply click on the category heading (or the plus/minus symbol) to expand/collapse the category.
 
-= Details =
+= Adding from the Palette =
+To add an operation to the main workspace from the palette, simply click and drag that operation from the palette into the main workspace. Drop the operation in the main workspace.
 
-Add your content here.  Format your content with:
-  * Text in *bold* or _italic_
-  * Headings, paragraphs, and lists
-  * Automatic links to other wiki pages
+= Customizing the Palette =
+Operations in the palette can be customized. If an operation in the palette is not complete, a new, more complete operation can be made to overwrite it. If operations are missing from the palette, they can be added.
+
+Since the palette is dynamically generated, changes to the operations XML file are immediate. To update the operations XML file, or create a new one, use the maRla Operation Editor, which can be launched from the "Tools" menu.
+
+===User Operations Files in maRla===
+A user can use their own operations file in the maRla IDE, which will append any operations in the user operations file into the palette with the existing operations. To add new operations from a user operations XML file, specify a path to a file (or files) in the [#ConfiguringMarla maRla configuration].
+
+====New Operations====
+To add new operations to the palette, create a new user.xml file in the maRla Operation Editor. See the documentation that goes into creating your own operation [#OperationsXML here].
+
+====Overwriting Exiting Operation====
+If, in your newly created user.xml file in the maRla Operation Editor, you specify a name for an operation that already exists, your operation will overwrite
