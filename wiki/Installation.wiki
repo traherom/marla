@@ -59,10 +59,10 @@ If you have the Xcode development environment installed on your Mac, you may alr
 
 If you do not Xcode installed on your Mac, or if your distribution of Xcode did not include R and LaTeX, follow the instructions below:
 
-  # [http://www.java.com/download Download and install the latest version of Java]
-  # [http://cran.r-project.org/bin/macosx/ Download and install R]
-  # [http://www.tug.org/mactex/ Download and install MacTex]
-  # [http://code.google.com/p/marla/downloads/list Download and install The maRla Project] (cross-platform version)
+  # Download and install the latest version of Java from [http://www.java.com/download here]
+  # Download and install R from [http://cran.r-project.org/bin/macosx/ here]
+  # Download and install MacTex from [http://www.tug.org/mactex/ here]
+  # Download and install The maRla Project from [http://code.google.com/p/marla/downloads/list here] (cross-platform version)
   # Extract The maRla Project cross-platform zip file to a new folder, "The maRla Project", in your Applications folder
 
 [HelpContents Back to Help Contents]
