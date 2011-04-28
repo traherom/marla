@@ -24,7 +24,7 @@ Program and data paths should already be configured for you. If you have a porta
 
 =Student Information=
 
-These are the fields that show up in your homework problems. You may fill them out here in order to save yourself time if you find yourself working a lot of problems.
+While these fields are not required, filling in these details now will automatically fill in those details in the New Problem Wizard each time you create a new homework problem. These details (and the ones later shown in the New Probem Wizard) will be exported with your maRla problem when you select to export to LaTeX or a PDF.
 
 [http://marla.googlecode.com/svn/wiki/screenshots/settings_2.png]
 
