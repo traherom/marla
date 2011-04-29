@@ -45,14 +45,12 @@ There is no need to enter a conclusion for the sub problems at this time, as you
 ===Sub Problem Coloring===
 Colors allow you to easily visualize what part of your problem belongs to which sub problem when you get to the maRla workspace. A color is automatically assigned to your sub problem, but you can click on the color box to select a new color for each sub problem.
 
-[http://marla.googlecode.com/svn/wiki/screenshots/new_problem_5.png]
-
 ==Data Sets==
 Data values can be entered here. They can be entered manually, added from a CSV file, or imported from a R library.
 
 You can create as many data sets as are required, so if each sub problem has its own data set, this won't be an issue. Add/remove rows and columns to/from your data sets by clicking the up and down arrows on the spinners for rows and columns.
 
-[http://marla.googlecode.com/svn/wiki/screenshots/new_problem_7.png]
+[http://marla.googlecode.com/svn/wiki/screenshots/new_problem_5.png]
 
 [http://marla.googlecode.com/svn/wiki/screenshots/new_problem_6.png]
 
@@ -60,7 +58,7 @@ You can create as many data sets as are required, so if each sub problem has its
 
 These details are for LaTeX and PDF exporting--specifying them will make your deliverable more informative and readable. If you are creating problems often, [SettingsHelp configuring maRla] to automatically fill in these fields may be useful.
 
-[http://marla.googlecode.com/svn/wiki/screenshots/new_problem_8.png]
+[http://marla.googlecode.com/svn/wiki/screenshots/new_problem_7.png]
 
 ===Problem Conclusion===
 There is no need to enter a conclusion for the problem at this time, as you have not run any analysis on the data yet. You may come back to edit this data, using the Edit Problem Wizard, at any time.
