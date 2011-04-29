@@ -36,12 +36,12 @@ To assign sub problems, right-click on an operation and hover over "Tie to Sub P
 To export the values of a data set to a CSV file, see [#Data_Sets the exporting section on exporting data sets].
 
 =Exporting=
-MaRla is capable of exporting a problem to two different formats, LaTeX and PDF. Datasets are able to be exported to the CSV (comma separated value) format.
+maRla is capable of exporting a problem to two different formats, LaTeX and PDF. Data sets are able to be exported to the CSV (comma separated value) format.
 ==LaTeX==
 The LaTeX document is a .Rnw file which contains the executable R code to be processed by the Sweave module in R. It is editable by a LaTeX editor. This is the intermediate form of the PDF that gets exported. To export to LaTeX, go to the _File_ menu and select "Export for LaTeX..."
 ==PDF==
 Problems can be exported to a PDF format that includes graphics and text for the problem and each sub problem. This feature can be accessed by going to the _File_ option in the menu bar. There you can select "Export to PDF..." Exporting to PDF will open a save dialog, create the PDF file, and subsequently open it. This file contains the appropriately labeled details as outlined in the problem details and sub problem assignments as arranged in the main workspace.
 ==Data Sets==
-MaRla is able to export any one of the datasets in a problem to an external file. Similar to pdf and LaTeX exporting, go to the _File_ selection in the menu and select "Export to CSV..."
+maRla is able to export any one of the data sets in a problem to an external file. Similar to pdf and LaTeX exporting, go to the _File_ selection in the menu and select "Export to CSV..."
 
 [HelpContents Back to Help Contents]
