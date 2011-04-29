@@ -19,7 +19,7 @@ The main workspace is the blank slate that can contain the user defined data set
 
 
 =Working With a Data Set=
-MaRla provides an easy interface to work with data sets. Gone are the days of working your problem in R and having to make sure you did all the steps right to get to a working PDF file from Sweave.
+maRla provides an easy interface to work with data sets. Gone are the days of working your problem in R and having to make sure you did all the steps right to get to a working PDF file from Sweave.
 
 ==Adding and Removing Data Sets==
 Data sets are stored on the right hand side, in the sidebar. If you have deleted a data set in the main workspace, you may retrieve it again from the sidebar later. This storage is persistent for the problem. This way, your main workspace can contain exactly what you need, when you need it. However, if you accidentally drag your data set to the trash bin in the bottom of the workspace (which will take the data set out of the workspace), you can simply undo or redo by going to the _Edit_ menu selection. To add another data set, simply select the silver cylinder in the toolbar, which will open a dialog and allow you to create a new data set for your problem.
