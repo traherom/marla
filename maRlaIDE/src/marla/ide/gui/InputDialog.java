@@ -32,6 +32,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.UIManager;
 import javax.swing.WindowConstants;
 
 /**
@@ -100,6 +101,8 @@ public class InputDialog extends EscapeDialog
 		inputTextArea.setLineWrap(true);
 		inputTextArea.setWrapStyleWord(true);
 		inputTextArea.setRows(2);
+		inputTextArea.setFont(UIManager.getFont("OptionPane.font"));
+		System.out.println (inputTextArea.getFont().getName());
 		scrollPane = new JScrollPane ();
 		scrollPane.setViewportView (inputTextArea);
 
