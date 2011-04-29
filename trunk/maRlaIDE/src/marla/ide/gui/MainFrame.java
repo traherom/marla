@@ -246,10 +246,6 @@ public class MainFrame extends JFrame
 				viewPanel.quit(true);
 			}
 		});
-		
-		// TODO remove this when printing is implemented properly
-		fileSeparator3.setVisible(false);
-		printMenuItem.setVisible(false);
 	}
 
 	/**

@@ -102,7 +102,6 @@ public class InputDialog extends EscapeDialog
 		inputTextArea.setWrapStyleWord(true);
 		inputTextArea.setRows(2);
 		inputTextArea.setFont(UIManager.getFont("OptionPane.font"));
-		System.out.println (inputTextArea.getFont().getName());
 		scrollPane = new JScrollPane ();
 		scrollPane.setViewportView (inputTextArea);
 
