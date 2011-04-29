@@ -272,6 +272,7 @@ public class WorkspacePanel extends JPanel implements Printable
 	public void print()
 	{
 		PrinterJob printJob = PrinterJob.getPrinterJob();
+		printJob.setJobName(viewPanel.domain.problem.getFileName());
 		printJob.setPrintable(this);
 		if(printJob.printDialog())
 		{
