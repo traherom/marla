@@ -1863,7 +1863,7 @@ public class ViewPanel extends JPanel
 	 */
 	protected void refreshTip()
 	{
-		if (Boolean.valueOf((Configuration.getInstance().get(Configuration.ConfigType.FirstRun).toString())))
+		if ((Boolean)Configuration.getInstance().get(Configuration.ConfigType.FirstRun))
 		{
 			tipRemainder = "";
 
