@@ -1863,7 +1863,7 @@ public class ViewPanel extends JPanel
 	 */
 	protected void refreshTip()
 	{
-		if ((Boolean)Configuration.getInstance().get(Configuration.ConfigType.FirstRun))
+		if (Domain.isFirstRun())
 		{
 			tipRemainder = "";
 
@@ -2486,7 +2486,7 @@ public class ViewPanel extends JPanel
 	{
 		if(domain.problem != null)
 		{
-			if(Domain.isFirstRun() && !isUndoRedo)
+			if(!isUndoRedo)
 			{
 				refreshTip();
 			}
