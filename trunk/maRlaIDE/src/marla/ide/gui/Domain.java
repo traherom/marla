@@ -120,7 +120,7 @@ public class Domain
 	/** Debug mode */
 	public static boolean debug = false;
 	/** First run of maRla */
-	public static boolean firstRun = false;
+	public static boolean firstRun = true;
 	/** Domain object currently created. Only one allowed, ever */
 	public static Domain currDomain = null;
 	/** The reference to the view of the application.*/

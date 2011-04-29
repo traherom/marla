@@ -18,7 +18,9 @@ SetCompressor /SOLID lzma
 ;--------------------------------
 ;General
 
-!define JRE_VERSION "1.6"
+!define JRE_VERSION "1.6" ; Required JRE version
+
+; Where to possibly grab installers for quicker access
 !define TDRIVE_TEX "T:\TEX\CTAN\basic-miktex.exe"
 !define TDRIVE_R "T:\TEX\CRAN\R-win.exe"
 !define TDRIVE_TEXMAKER "T:\TEX\CTAN\texmakerwin32_install.exe"
@@ -26,18 +28,23 @@ SetCompressor /SOLID lzma
 !define TDRIVE_GSVIEW "T:\TEX\CTAN\gsview_install.exe"
 
 Var /GLOBAL RETURN ; Used by functions for returning values
+
+; Where to run installers from
 Var /GLOBAL JavaInstaller
 Var /GLOBAL RInstaller
 Var /GLOBAL MikTexInstaller
 Var /GLOBAL TexmakerInstaller
 Var /GLOBAL GhostscriptInstaller
 Var /GLOBAL GSviewInstaller
+
+; Where things are, after we locate/install them
 Var /GLOBAL JavaVer
 Var /GLOBAL JavaHome
 Var /GLOBAL RHome
 Var /GLOBAL RTexmfRoot
 Var /GLOBAL MikTexVer
 Var /GLOBAL MikTexHome
+Var /GLOBAL TexmakerHome
 
 ; Name and file
 Name "The maRla Project"
@@ -502,6 +509,15 @@ SectionGroup "Extra Software"
 			MessageBox MB_OK|MB_ICONEXCLAMATION "Failed to install Texmaker correctly. Please install manually or retry later.$\nInstallation aborted."
 		${EndIf}
 	
+		; Register .Rnw files with texmaker
+		Call CheckInstalledTexmaker
+		${If} $RETURN == "exists"
+			DetailPrint "Registering .Rnw files with Texmaker"
+			${registerExtension} "$TexmakerHome\texmaker.exe" ".Rnw" "LaTeX Sweave file"
+		${Else}
+			DetailPrint "Unable to register .Rnw files with Texmaker"
+		${EndIf}
+	
 	SectionEnd
 
 SectionGroupEnd
@@ -518,11 +534,19 @@ Section "-configure-marla" ConfigureMarla
 		
 		ClearErrors
 		ExecWait '"$INSTDIR\maRla IDE.exe" configure_only "--PrimaryOpsXML=$INSTDIR\ops.xml" "--TexTemplate=$INSTDIR\export_template.xml" "--R=$RHome\bin\R.exe" "--PdfTex=$MikTexHome\miktex\bin\pdflatex.exe"'
-		
+	
+		; Any problems?
 		${If} ${Errors}
 			DetailPrint "Failed to configure"
 			MessageBox MB_OK|MB_ICONINFORMATION "Unable to automatically configure maRla, manual configuration may be required."
 		${EndIf}
+		
+		; Wait for it to stop running
+		StrCpy $RETURN 0
+		${DoWhile} $RETURN == 0
+			Call IsMarlaClosed
+			sleep 500
+		${LoopWhile} $RETURN == 0
 		
 SectionEnd
 
@@ -692,12 +716,9 @@ FunctionEnd
 ; Utility functions
 
 Function LaunchLink
-	StrCpy $RETURN 0
-	${DoWhile} $RETURN == 0
-		Call IsMarlaClosed
-	${LoopWhile} $RETURN == 0
 	
 	ExecShell "" "$INSTDIR\maRla IDE.exe"
+	
 FunctionEnd
 
 Function SetSectionConfiguration
@@ -777,6 +798,56 @@ Function CheckInstalledR
 	${Else}
 		; Not found, need to install
 		DetailPrint "R found in registry but executable not correct"
+		StrCpy $RETURN "install"
+		Return
+	${EndIf}
+
+FunctionEnd
+
+Function CheckInstalledTexmaker
+		
+	; Try checking for current user install on Vista/7 first
+	; TODO determine this actual key. It's a guess!
+	ClearErrors
+	ReadRegStr $TexmakerHome HKCU "SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Texmaker" "UninstallString"
+	
+	${If} ${Errors}
+		; 7 system install?
+		ClearErrors
+		ReadRegStr $TexmakerHome HKLM "SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Texmaker" "UninstallString"
+	${EndIf}
+	
+	${If} ${Errors}
+		; XP current user?
+		ClearErrors
+		ReadRegStr $TexmakerHome HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\Texmaker" "UninstallString"
+	${EndIf}
+	
+	${If} ${Errors}
+		; XP system install?
+		ClearErrors
+		ReadRegStr $TexmakerHome HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Texmaker" "UninstallString"
+	${EndIf}
+	
+	${If} ${Errors}
+		; No key was found, apparently
+		DetailPrint "Texmaker not found in registry"
+		StrCpy $RETURN "install"
+		Return
+	${EndIf}
+ 
+	; Chop it down to just the directory (currently looking at uninstaller)
+	${StrLoc} $R0 $TexmakerHome "uninstall" 0
+	StrCpy $TexmakerHome $TexmakerHome $R0
+ 
+	; Ensure the file exists
+	${If} ${FileExists} "$TexmakerHome\texmaker.exe"
+		DetailPrint "Texmaker found at: $TexmakerHome"
+		StrCpy $RETURN "exists"
+		Return
+	${Else}
+		; Not found, need to install
+		DetailPrint "Texmaker found but executable not correct"
 		StrCpy $RETURN "install"
 		Return
 	${EndIf}
