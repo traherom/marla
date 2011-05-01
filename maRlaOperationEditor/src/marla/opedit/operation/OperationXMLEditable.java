@@ -125,7 +125,6 @@ public class OperationXMLEditable extends OperationXML
 	@Override
 	public Element getConfiguration()
 	{
-		// TODO name could update without making it here
 		return opEl;
 	}
 
@@ -164,11 +163,6 @@ public class OperationXMLEditable extends OperationXML
 	{
 		List<String> cats = new ArrayList<String>();
 		
-		// TODO remove legacy category
-		String legCat = opEl.getAttributeValue("category");
-		if(legCat != null)
-			cats.add(legCat);
-		
 		for(Object catObj : opEl.getChildren("category"))
 			cats.add(((Element)catObj).getTextTrim());
 		
@@ -199,10 +193,6 @@ public class OperationXMLEditable extends OperationXML
 		if(parent != null)
 			parent.changeBeginning();
 		
-		// TODO Remove legagory location
-		opEl.removeAttribute("category");
-		
-		// Remove all categories
 		opEl.removeChildren("category");
 
 		setConfiguration(opEl);
