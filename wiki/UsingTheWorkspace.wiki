@@ -8,7 +8,7 @@
 = Introduction =
 Most work in maRla is done from what is referred to as the workspace. This area is where you layout your solution to a problem, designation solution steps, add comments on why you did an operation, and more. Although maRla strives to be user-friendly and intuitive, this page will help you discover all of the power available to you.
 
-[http://marla.googlecode.com/svn/wiki/screenshots/miktex_roots.png]
+[http://marla.googlecode.com/svn/wiki/screenshots/workspace.png]
 
 =Workspace Elements=
 The maRla workspace contains several different sections. The sidebar on the right side contains all loaded operations and data sets, the toolbar contains shortcuts to quickly access commands, and the main workspace allows the user to perform data set operations.
