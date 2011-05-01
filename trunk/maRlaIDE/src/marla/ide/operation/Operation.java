@@ -624,11 +624,6 @@ public abstract class Operation extends DataSource implements Cloneable
 			parent.addOperation(index, this);
 		}
 
-		// Fill our questions from the new parent if possible
-		// TODO get to work with undo/redo
-		//for(OperationInformation q : getRequiredInfoPrompt())
-		//	q.autoAnswer();
-
 		markDirty();
 		markUnsaved();
 

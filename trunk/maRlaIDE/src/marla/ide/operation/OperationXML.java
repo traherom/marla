@@ -408,27 +408,6 @@ public class OperationXML extends Operation
 				}
 			}
 			
-			// TODO remove this eventually, require specification in elements
-			// For backward compatibility, also allow a single category in the 
-			// attribute if there were no element categories
-			String attrCat = opEl.getAttributeValue("category");
-			if(attrCat != null)
-			{
-				catFound = true;
-				if(!opsCategorized.containsKey(attrCat))
-				{
-					// Not yet, create new category
-					List<String> newCat = new ArrayList<String>();
-					newCat.add(name);
-					opsCategorized.put(attrCat, newCat);
-				}
-				else
-				{
-					// Add to existing category
-					opsCategorized.get(attrCat).add(name);
-				}
-			}
-			
 			// Were no categories found?
 			if(!catFound)
 			{
