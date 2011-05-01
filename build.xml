@@ -8,12 +8,14 @@
 
     <target name="package-for-store">
     	<subant target="package-for-store">
+			<property name="do.mkdist" value="true" />
     		<fileset dir="${basedir}" includes="maRlaIDE/build.xml" />
     	</subant>
     </target>
 
 	<target name="create-installer">
     	<subant target="create-installer">
+			<property name="do.mkdist" value="true" />
     		<fileset dir="${basedir}" includes="maRlaIDE/build.xml" />
     	</subant>
 	</target>

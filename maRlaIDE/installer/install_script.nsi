@@ -556,11 +556,6 @@ SectionGroup "Shortcuts" CreateShortcuts
 
 		SectionIn 1 2
 		
-		Delete "$SMPROGRAMS\maRla\Uninstall.lnk"
-		Delete "$SMPROGRAMS\maRla\Uninstall maRla.lnk"
-		Delete "$SMPROGRAMS\maRla\maRla.lnk"
-		Delete "$SMPROGRAMS\maRla\maRla Operation Editor.lnk"
-		RMDir "$SMPROGRAMS\maRla\"
 		CreateDirectory "$SMPROGRAMS\The maRla Project"
 		CreateShortCut "$SMPROGRAMS\The maRla Project\Uninstall The maRla Project.lnk" "$INSTDIR\Uninstall.exe"
 		CreateShortCut "$SMPROGRAMS\The maRla Project\maRla IDE.lnk" "$INSTDIR\maRla IDE.exe"
@@ -627,17 +622,11 @@ Section "Uninstall"
 	RMDir "$INSTDIR"
 	
 	; Shortcuts
-	Delete "$SMPROGRAMS\maRla\Uninstall.lnk"
-	Delete "$SMPROGRAMS\maRla\Uninstall maRla.lnk"
-	Delete "$SMPROGRAMS\maRla\maRla.lnk"
-	Delete "$SMPROGRAMS\maRla\maRla Operation Editor.lnk"
-	RMDir "$SMPROGRAMS\maRla\"
 	Delete "$SMPROGRAMS\The maRla Project\Uninstall The maRla Project.lnk"
 	Delete "$SMPROGRAMS\The maRla Project\maRla IDE.lnk"
 	Delete "$SMPROGRAMS\The maRla Project\maRla Operation Editor.lnk"
 	RMDir "$SMPROGRAMS\The maRla Project\"
 	
-	Delete "$DESKTOP\maRla.lnk"
 	Delete "$DESKTOP\maRla IDE.lnk"
 
 	; Registry info
