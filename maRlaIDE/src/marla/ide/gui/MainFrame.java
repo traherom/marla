@@ -338,6 +338,7 @@ public class MainFrame extends JFrame
         settingsMenuItem = new javax.swing.JMenuItem();
         helpMenu = new javax.swing.JMenu();
         onlineHelpMenuItem = new javax.swing.JMenuItem();
+        aboutMenuItem = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         setIconImage(new ImageIcon (getClass ().getResource (Domain.IMAGES_DIR + "logo.png")).getImage ());
@@ -408,7 +409,7 @@ public class MainFrame extends JFrame
         fileMenu.add(fileSeparator1);
 
         exportToPdfMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_P, java.awt.event.InputEvent.ALT_MASK));
-        exportToPdfMenuItem.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        exportToPdfMenuItem.setFont(new java.awt.Font("Verdana", 0, 12));
         exportToPdfMenuItem.setText("Export to PDF...");
         exportToPdfMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -418,7 +419,7 @@ public class MainFrame extends JFrame
         fileMenu.add(exportToPdfMenuItem);
 
         exportForLatexMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_L, java.awt.event.InputEvent.ALT_MASK));
-        exportForLatexMenuItem.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        exportForLatexMenuItem.setFont(new java.awt.Font("Verdana", 0, 12));
         exportForLatexMenuItem.setText("Export for LaTeX...");
         exportForLatexMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -428,7 +429,7 @@ public class MainFrame extends JFrame
         fileMenu.add(exportForLatexMenuItem);
 
         exportDataToCsvMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_D, java.awt.event.InputEvent.ALT_MASK));
-        exportDataToCsvMenuItem.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        exportDataToCsvMenuItem.setFont(new java.awt.Font("Verdana", 0, 12));
         exportDataToCsvMenuItem.setText("Export Data to CSV...");
         exportDataToCsvMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -615,6 +616,16 @@ public class MainFrame extends JFrame
             }
         });
         helpMenu.add(onlineHelpMenuItem);
+
+        aboutMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F3, 0));
+        aboutMenuItem.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        aboutMenuItem.setText("About");
+        aboutMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                aboutMenuItemActionPerformed(evt);
+            }
+        });
+        helpMenu.add(aboutMenuItem);
 
         menuBar.add(helpMenu);
 
@@ -836,6 +847,10 @@ public class MainFrame extends JFrame
 		viewPanel.domain.exportDataSet();
 	}//GEN-LAST:event_exportDataToCsvMenuItemActionPerformed
 
+	private void aboutMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_aboutMenuItemActionPerformed
+		viewPanel.aboutDialog.goViewAbout();
+	}//GEN-LAST:event_aboutMenuItemActionPerformed
+
 	/**
 	 * Retrieves the default title, which is the program name with it's version number.
 	 *
@@ -852,6 +867,7 @@ public class MainFrame extends JFrame
 	}
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JMenuItem aboutMenuItem;
     private javax.swing.JMenuItem closeProblemMenuItem;
     private javax.swing.JMenuItem editConclusionMenuItem;
     private javax.swing.JMenuItem editDataSetsMenuItem;
