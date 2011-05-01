@@ -160,15 +160,16 @@ public class MainFrame extends JFrame
         editMenuItem = new javax.swing.JMenu();
         undoMenuItem = new javax.swing.JMenuItem();
         redoMenuItem = new javax.swing.JMenuItem();
-        jMenu1 = new javax.swing.JMenu();
+        helpMenu = new javax.swing.JMenu();
         onlineHelpMenuItem = new javax.swing.JMenuItem();
+        aboutMenuItem = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         setIconImage(new ImageIcon (getClass ().getResource (marla.ide.gui.Domain.IMAGES_DIR + "logo.png")).getImage ());
         getContentPane().setLayout(new java.awt.GridLayout(1, 1));
 
         editMenuItem.setText("Edit");
-        editMenuItem.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        editMenuItem.setFont(new java.awt.Font("Verdana", 0, 12));
 
         undoMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_Z, java.awt.event.InputEvent.CTRL_MASK));
         undoMenuItem.setFont(new java.awt.Font("Verdana", 0, 12));
@@ -194,20 +195,30 @@ public class MainFrame extends JFrame
 
         menuBar.add(editMenuItem);
 
-        jMenu1.setText("Help");
-        jMenu1.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        helpMenu.setText("Help");
+        helpMenu.setFont(new java.awt.Font("Verdana", 0, 12));
 
         onlineHelpMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F1, 0));
-        onlineHelpMenuItem.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        onlineHelpMenuItem.setFont(new java.awt.Font("Verdana", 0, 12));
         onlineHelpMenuItem.setText("Online Help");
         onlineHelpMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 onlineHelpMenuItemActionPerformed(evt);
             }
         });
-        jMenu1.add(onlineHelpMenuItem);
+        helpMenu.add(onlineHelpMenuItem);
 
-        menuBar.add(jMenu1);
+        aboutMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F3, 0));
+        aboutMenuItem.setFont(new java.awt.Font("Verdana", 0, 12));
+        aboutMenuItem.setText("About");
+        aboutMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                aboutMenuItemActionPerformed(evt);
+            }
+        });
+        helpMenu.add(aboutMenuItem);
+
+        menuBar.add(helpMenu);
 
         setJMenuBar(menuBar);
 
@@ -233,6 +244,10 @@ public class MainFrame extends JFrame
 			catch(URISyntaxException ex) {}
 		}
 	}//GEN-LAST:event_onlineHelpMenuItemActionPerformed
+
+	private void aboutMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_aboutMenuItemActionPerformed
+		viewPanel.aboutDialog.goViewAbout();
+	}//GEN-LAST:event_aboutMenuItemActionPerformed
 
 	/**
 	 * Set the configuration arguments and the visible state of the MainFrame.
@@ -355,8 +370,9 @@ public class MainFrame extends JFrame
 	}
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JMenuItem aboutMenuItem;
     private javax.swing.JMenu editMenuItem;
-    private javax.swing.JMenu jMenu1;
+    private javax.swing.JMenu helpMenu;
     private javax.swing.JMenuBar menuBar;
     private javax.swing.JMenuItem onlineHelpMenuItem;
     protected javax.swing.JMenuItem redoMenuItem;

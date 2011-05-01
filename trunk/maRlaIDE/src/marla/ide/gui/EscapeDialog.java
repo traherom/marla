@@ -113,8 +113,11 @@ public class EscapeDialog extends JDialog
 			public void actionPerformed(ActionEvent actionEvent)
 			{
 				((JDialog) rootPane.getParent ()).dispose ();
-				viewPanel.setEnabled (true);
-				viewPanel.requestFocus ();
+				if (viewPanel != null)
+				{
+					viewPanel.setEnabled (true);
+					viewPanel.requestFocus ();
+				}
 			}
 		};
 		rootPane = new JRootPane ();

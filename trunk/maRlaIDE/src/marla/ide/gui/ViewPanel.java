@@ -143,6 +143,8 @@ public class ViewPanel extends JPanel
 	public final NewProblemWizardDialog newProblemWizardDialog = new NewProblemWizardDialog(this, domain);
 	/** The Settings dialog.*/
 	public final SettingsDialog settingsDialog = new SettingsDialog(this);
+	/** The About dialog.*/
+	public AboutDialog aboutDialog;
 	/** The main frame of a stand-alone application.*/
 	public MainFrame mainFrame;
 	/**
@@ -249,6 +251,8 @@ public class ViewPanel extends JPanel
 	 */
 	private void initMyComponents()
 	{
+		aboutDialog = new AboutDialog(mainFrame, this);
+		
 		// Remap shortcut keys to system defaults
 		Toolkit.getDefaultToolkit().addAWTEventListener(new AWTEventListener()
 		{

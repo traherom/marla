@@ -83,6 +83,8 @@ public class ViewPanel extends JPanel
 	public final String VALID_XML_STRING = "valid";
 	/** The main frame of a stand-alone application.*/
 	public MainFrame mainFrame;
+	/** The About dialog.*/
+	public marla.ide.gui.AboutDialog aboutDialog;
 	/** The model for the operations list.*/
 	protected ExtendedTableModel operationsModel = new ExtendedTableModel();
 	/** The operations table.*/
@@ -161,6 +163,8 @@ public class ViewPanel extends JPanel
 	 */
 	private void initMyComponents()
 	{
+		 aboutDialog = new marla.ide.gui.AboutDialog(mainFrame, null);
+				 
 		// launch the threads
 		domain.debugThread = new DebugThread(debugTextArea);
 		domain.backgroundThread = new LoadSaveThread(domain);
