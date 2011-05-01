@@ -2,4 +2,7 @@
 	order allow,deny
 	deny from all
 </Files>
-
+<Files "schema.sql">
+	order allow,deny
+	deny from all
+</Files>
