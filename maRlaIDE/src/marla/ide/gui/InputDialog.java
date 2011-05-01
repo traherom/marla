@@ -158,7 +158,7 @@ public class InputDialog extends EscapeDialog
 	 * @param parent The component to set the dialog relative to.
 	 * @param message Set the message for th dialog.
 	 * @param title Set the title for the dialog.
-	 * @param inputText Set the initial input message for the dialog.
+	 * @param oldValue Set the initial input message for the dialog.
 	 * @return The new string from the input dialog.
 	 */
 	public static String launchInputDialog(ViewPanel viewPanel, Component parent, String message, String title, String oldValue)

@@ -60,7 +60,6 @@ public class BackgroundThread extends Thread
 	 * a reference to the local utility object.
 	 *
 	 * @param domain The domain for the main frame.
-	 * @param debugTextArea Text area to redirect debug text to, if enabled
 	 */
 	public BackgroundThread(Domain domain)
 	{

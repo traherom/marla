@@ -1196,7 +1196,7 @@ public class OperationXML extends Operation
 	 * the end of the sequence, the plot is finished and the results saved 
 	 * as the plot for the operation. May only be executed once in an operation
 	 * @param proc R process to work get plot from
-	 * @param p Element containing plot commands
+	 * @param plotEl Element containing plot commands
 	 */
 	private void processPlot(RProcessor proc, Element plotEl)
 	{

@@ -2087,7 +2087,6 @@ public class ViewPanel extends JPanel
 	 * @param ds The data set to rebuild in the interface.
 	 * @param leftX X coordinate which the tree may start after
 	 * @param topY Y coordinate to start the tree at
-	 * @param Right-most pixel we extend to
 	 */
 	private int rebuildTree(DataSource ds, int leftX, int topY)
 	{

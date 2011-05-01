@@ -295,7 +295,7 @@ public class Domain
 	 * 
 	 * @param parent The parent of the dialog to be shown.
 	 * @param message The standard message to be shown.
-	 * @param innerStatus The inner status message to be shown/hidden.
+	 * @param details The inner status message to be shown/hidden.
 	 * @param title The title of the dialog.
 	 */
 	public static void showErrorDialog(Component parent, String message, String details, String title)
@@ -320,7 +320,7 @@ public class Domain
 	 * 
 	 * @param parent The parent of the dialog to be shown.
 	 * @param message The standard message to be shown.
-	 * @param innerStatus The inner status message to be shown/hidden.
+	 * @param details The inner status message to be shown/hidden.
 	 * @param title The title of the dialog.
 	 */
 	public static void showWarningDialog(Component parent, String message, String details, String title)
