@@ -1,0 +1,293 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- You may freely edit this file. See commented blocks below for -->
+<!-- some examples of how to customize the build. -->
+<!-- (If you delete it and reopen the project it will be recreated.) -->
+<!-- By default, only the Clean and Build commands use this build script. -->
+<!-- Commands such as Run, Debug, and Test only use this build script if -->
+<!-- the Compile on Save feature is turned off for the project. -->
+<!-- You can turn off the Compile on Save (or Deploy on Save) setting -->
+<!-- in the project's Project Properties dialog box.-->
+<project name="maRla" default="default" basedir=".">
+    <description>Builds, tests, and runs the project maRla.</description>
+    <import file="nbproject/build-impl.xml"/>
+
+    <!--
+    There exist several targets which are by default empty and which can be 
+    used for execution of your tasks. These targets are usually executed 
+    before and after some main targets. They are: 
+
+      -pre-init:                 called before initialization of project properties
+      -post-init:                called after initialization of project properties
+      -pre-compile:              called before javac compilation
+      -post-compile:             called after javac compilation
+      -pre-compile-single:       called before javac compilation of single file
+      -post-compile-single:      called after javac compilation of single file
+      -pre-compile-test:         called before javac compilation of JUnit tests
+      -post-compile-test:        called after javac compilation of JUnit tests
+      -pre-compile-test-single:  called before javac compilation of single JUnit test
+      -post-compile-test-single: called after javac compilation of single JUunit test
+      -pre-jar:                  called before JAR building
+      -post-jar:                 called after JAR building
+      -post-clean:               called after cleaning build products
+
+    (Targets beginning with '-' are not intended to be called on their own.)
+
+    Example of inserting an obfuscator after compilation could look like this:
+
+        <target name="-post-compile">
+            <obfuscate>
+                <fileset dir="${build.classes.dir}"/>
+            </obfuscate>
+        </target>
+
+    For list of available properties check the imported 
+    nbproject/build-impl.xml file. 
+
+
+    Another way to customize the build is by overriding existing main targets.
+    The targets of interest are: 
+
+      -init-macrodef-javac:     defines macro for javac compilation
+      -init-macrodef-junit:     defines macro for junit execution
+      -init-macrodef-debug:     defines macro for class debugging
+      -init-macrodef-java:      defines macro for class execution
+      -do-jar-with-manifest:    JAR building (if you are using a manifest)
+      -do-jar-without-manifest: JAR building (if you are not using a manifest)
+      run:                      execution of project 
+      -javadoc-build:           Javadoc generation
+      test-report:              JUnit report generation
+
+    An example of overriding the target for project execution could look like this:
+
+        <target name="run" depends="maRla-impl.jar">
+            <exec dir="bin" executable="launcher.exe">
+                <arg file="${dist.jar}"/>
+            </exec>
+        </target>
+
+    Notice that the overridden target depends on the jar target and not only on 
+    the compile target as the regular run target does. Again, for a list of available 
+    properties which you can use, check the target you are overriding in the
+    nbproject/build-impl.xml file. 
+
+    -->
+
+	<!-- Determine OS -->
+	<condition property="is.mac">
+		<os family="mac" />
+	</condition>
+
+	<condition property="is.linux">
+		<os family="unix" />
+	</condition>
+
+	<condition property="is.windows">
+		<os family="windows" />
+	</condition>
+
+	<condition property="is.linux.or.windows">
+		<or>
+			<os family="unix" />
+			<os family="windows" />
+		</or>
+	</condition>
+
+	<!-- Settings -->
+	<property name="store.dir" value="store" />
+
+	<condition property="launch4j.dir" value="/Developer/launch4j">
+        <isset property="is.mac" />
+    </condition>
+	<condition property="launch4j.dir" value="/opt/launch4j">
+		<isset property="is.linux" />
+	</condition>
+	<condition property="launch4j.dir" value="C:\Program Files\launch4j">
+		<isset property="is.windows" />
+	</condition>
+
+	<path id="svnant.classpath">
+		<fileset dir="svnant">
+			<include name="**/*.jar"/>
+		</fileset>
+	</path>
+
+	<taskdef name="launch4j"
+		classname="net.sf.launch4j.ant.Launch4jTask"
+		classpath="${launch4j.dir}/launch4j.jar:${launch4j.dir}/lib/xstream.jar" />
+
+    <target name="package-for-store" depends="clean,jar">
+        <!-- Change the value of this property to be the name of your JAR,
+             minus the .jar extension. It should not have spaces.
+             <property name="store.jar.name" value="MyJarName"/>
+        -->
+        <property name="store.jar.name" value="maRla IDE"/>
+        <property name="store.jar" value="${store.dir}/${store.jar.name}.jar"/>
+
+        <echo message="Packaging ${application.title} into a single JAR at ${store.jar}"/>
+
+		<!-- Clean the store -->
+		<delete dir="${store.dir}"/>
+        <mkdir dir="${store.dir}"/>
+
+		<!-- Pull all the jars together -->
+        <jar destfile="${store.dir}/temp_final.jar" filesetmanifest="skip">
+            <zipgroupfileset dir="dist" includes="*.jar"/>
+            <zipgroupfileset dir="dist/lib" includes="*.jar"/>
+
+            <manifest>
+                <attribute name="Main-Class" value="${main.class}"/>
+            </manifest>
+        </jar>
+
+        <zip destfile="${store.jar}">
+            <zipfileset src="${store.dir}/temp_final.jar"
+            excludes="META-INF/*.SF, META-INF/*.DSA, META-INF/*.RSA"/>
+        </zip>
+
+        <delete file="${store.dir}/temp_final.jar"/>
+
+		<!-- Create Windows launcher -->
+		<echo message="Creating Windows launcher using launch4j at ${launch4j.dir}" />
+		<copy todir="${store.dir}">
+			<fileset file="installer/launcher.xml" />
+			<fileset file="installer/maRla.ico" />
+		</copy>
+		
+		<launch4j configFile="${store.dir}/launcher.xml" />
+
+		<delete>
+			<fileset file="${store.dir}/launcher.xml" />
+			<fileset file="${store.dir}/maRla.ico" />
+		</delete>
+
+		<!-- Copy in required files for running marla -->
+		<copy todir="${store.dir}">
+			<fileset file="test/ops.xml" />
+			<fileset file="test/export_template.xml" />
+		</copy>
+
+		<!-- Check that xml files are valid -->
+		<echo>Checking validity of XML files</echo>
+		<xmlvalidate lenient="yes" warn="yes">
+			<fileset dir="${store.dir}" includes="*.xml"/>
+		</xmlvalidate>
+
+		<!-- Make the operation editor, if possible, and copy that to our store -->
+		<subant buildpath="../maRlaOperationEditor" target="package-for-store"
+			verbose="true">
+				<property name="ide.store" value="../maRlaIDE/${store.dir}" />
+		</subant>
+
+    </target>
+
+	<target name="create-installer" depends="package-for-store">
+		<!-- Retrieve the latest version number -->
+        <exec executable="python" dir="." outputproperty="verNumOnes">
+            <arg value="GetVersion.py" />
+            <arg value="0" />
+        </exec>
+        <exec executable="python" dir="." outputproperty="verNumTenths">
+            <arg value="GetVersion.py" />
+            <arg value="1" />
+        </exec>
+        <exec executable="python" dir="." outputproperty="verNumHundreths">
+            <arg value="GetVersion.py" />
+            <arg value="2" />
+        </exec>
+		<exec executable="python" dir="." outputproperty="verNumPre">
+            <arg value="GetVersion.py" />
+            <arg value="3" />
+        </exec>
+		
+		<echo message="Building installer(s) and zip for ${application.title}"/>
+
+		<!-- Move needed files to store -->
+		<copy todir="${store.dir}">
+			<fileset file="installer/maRla.ico" />
+			<fileset file="installer/install_script.nsi" />
+			<fileset file="installer/gpl-3.0.txt" />
+		</copy>
+
+		<!-- What should the files start with? -->
+		<property name="setup.base" value="maRla-r${svn.revision}" />
+
+		<!-- Generate various packages -->
+		<antcall target="-zip-package" />
+		<antcall target="-windows-installer" />
+		<antcall target="-debian-package" />
+
+		<!-- Remove temp files -->
+		<delete>
+			<fileset file="${store.dir}/maRla.ico" />
+			<fileset file="${store.dir}/install_script.nsi" />
+			<fileset file="${store.dir}/gpl-3.0.txt" />
+		</delete>
+	</target>
+
+	<target name="-windows-installer" if="is.linux.or.windows">
+		<echo>Creating Windows installer</echo>
+
+		<copy todir="${store.dir}">
+			<fileset file="installer/FileAssociation.nsh" />
+			<fileset file="installer/StrUtils.nsh" />
+		</copy>
+
+		<exec executable="makensis" dir="${store.dir}" resultproperty="build.result" searchpath="true">
+			<arg value="install_script.nsi"/>
+		</exec>
+
+		<delete>
+			<fileset file="${store.dir}/FileAssociation.nsh" />
+			<fileset file="${store.dir}/StrUtils.nsh" />
+		</delete>
+
+		<!-- Move (if needed) to file with revision name -->
+		<!--<move file="${store.dir}/Setup.exe" tofile="${store.dir}/installer-${setup.base}.exe" />-->
+		<move file="${store.dir}/Setup.exe" tofile="${store.dir}/The maRla Project Setup ${verNumOnes}.${verNumTenths}${verNumHundreths}${verNumPre}.exe" />
+		<echo message="Windows installer placed in ${store.dir}" />
+	</target>
+
+	<target name="-zip-package">
+		<echo>Creating archive of files</echo>
+		<!--<zip destfile="${store.dir}/${setup.base}.zip">-->
+		<zip destfile="${store.dir}/The maRla Project ${verNumOnes}.${verNumTenths}${verNumHundreths}${verNumPre}.zip">
+			<zipfileset file="${store.dir}/maRla IDE.jar" />
+			<zipfileset file="${store.dir}/maRla Operation Editor.jar" />
+			<zipfileset file="${store.dir}/ops.xml" />
+			<zipfileset file="${store.dir}/export_template.xml" />
+			<zipfileset file="${store.dir}/gpl-3.0.txt" />
+		</zip>
+		<echo message="Zip file placed in ${store.dir}" />
+	</target>
+
+	<target name="-debian-package" if="is.linux">
+		<echo>Creating Debian package (fake! ha! TBD)</echo>
+	</target>
+
+	<target name="-pre-init">
+		<echo>Generate build info class...</echo>
+		<typedef resource="org/tigris/subversion/svnant/svnantlib.xml" classpathref="svnant.classpath" />
+		<svn javahl="false" svnkit="true">
+			<status path="${basedir}/src/marla/ide/resource/BuildInfo.java" revisionProperty="svn.revision" />
+		</svn>
+		<tstamp>
+			<format property="TODAY" pattern="EEE, d-MMMM-yyyy HH:mm:ss z" locale="ENGLISH"/>
+		</tstamp>
+		<echo>maRla revision: ${svn.revision}</echo>
+		<echo>Time stamp ${TODAY}</echo>
+		<echo>Writing build info to file ${basedir}/BuildInfo.java</echo>
+		
+		<!-- the source code of the java class -->
+		<echo file="${basedir}/src/marla/ide/resource/BuildInfo.java">
+			/**
+			 * This file is automatically generated by ant on compile and reflects the current svn version.
+			 * See main build.xml for generate script.
+			 */
+			package marla.ide.resource;
+			public class BuildInfo {
+				public static final String revisionNumber="${svn.revision}";
+				public static final String timeStamp="${TODAY}";
+			}
+		</echo>
+	</target>
+</project>

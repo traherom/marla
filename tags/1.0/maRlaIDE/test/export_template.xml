@@ -1,0 +1,69 @@
+<?xml version="1.0" ?>
+<template>
+	<main>
+		\documentclass[10pt,letterpaper]{article}
+		\usepackage{graphicx}
+		\usepackage{enumerate}
+		\usepackage{array}
+		\usepackage{multirow}
+		\usepackage{longtable}
+		
+		% Used by exporter
+		\newcommand{\superscript}[1]{\ensuremath{^{\textrm{#1}}}}
+		\newcommand{\subscript}[1]{\ensuremath{_{\textrm{#1}}}}
+
+		\begin{document}
+		\begin{flushright}
+		<name />\par
+		<class type="short" /> --- <class type="long" />\par
+		Chapter <chapter />-Section <section />-Problem \#<probnum />
+		\end{flushright}
+
+		\noindent\textbf{\Large Given}\par
+		<statement />\par
+		<data type="start" />
+
+		<if has_subproblems="true">
+			<then>
+			\noindent\textbf{\Large Required}\par
+			\begin{enumerate}[(a)]
+			<loop type="subproblem">
+				\item <statement />
+			</loop>
+			\end{enumerate}
+			</then>
+		</if>
+
+		\noindent\textbf{\Large Analysis and Solution}\par
+		<if has_subproblems="false">
+			<then>
+				<solution rcode="false" maxlen="7" />\par
+				<data type="end" maxcols="7" />
+			</then>
+			<else>
+				\begin{enumerate}[(a)]
+				<loop type="subproblem">
+				\item
+					<solution rcode="false" maxlen="7" />
+					
+					\par <data type="end" maxcols="7" />
+					
+					<!-- Include a conclusion if it exists -->
+					<if has_conclusion="true">
+						<then>\par <conclusion /></then>
+					</if>
+				</loop>
+				\end{enumerate}
+			</else>
+		</if>
+
+		<if has_conclusion="true">
+			<then>
+			\noindent\textbf{Conclusion}
+			\par <conclusion />
+			</then>
+		</if>
+
+		\end{document}
+	</main>
+</template>

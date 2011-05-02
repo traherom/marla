@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<problem person="" course_long="" course_short="" chapter="" section="" probnum="">
+  <statement />
+  <conclusion />
+  <data name="Data Set 1" id="528578182" x="364" y="104" height="16" width="70" hidden="false">
+    <column name="Column 1" mode="NUMERIC">
+      <value>0.0</value>
+      <value>0.0</value>
+      <value>0.0</value>
+      <value>0.0</value>
+      <value>0.0</value>
+    </column>
+    <column name="Column 2" mode="NUMERIC">
+      <value>0.0</value>
+      <value>0.0</value>
+      <value>0.0</value>
+      <value>0.0</value>
+      <value>0.0</value>
+    </column>
+    <column name="Column 3" mode="NUMERIC">
+      <value>0.0</value>
+      <value>0.0</value>
+      <value>0.0</value>
+      <value>0.0</value>
+      <value>0.0</value>
+    </column>
+    <operation type="marla.ide.operation.OperationXML" name="Barplot" id="-2122104039" x="338" y="135" height="16" width="123" hidden="false">
+      <remark />
+      <question name="col" answer="Column 1" />
+      <extra name="Barplot" />
+    </operation>
+  </data>
+  <unused />
+</problem>
+
