@@ -6,3 +6,7 @@
 	order allow,deny
 	deny from all
 </Files>
+<Files "README">
+	order allow,deny
+	deny from all
+</Files>
