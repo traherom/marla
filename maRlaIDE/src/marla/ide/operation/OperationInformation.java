@@ -19,6 +19,7 @@
 
 package marla.ide.operation;
 
+import marla.ide.problem.ProblemException;
 import org.jdom.Element;
 
 /**
@@ -195,7 +196,16 @@ public abstract class OperationInformation
 	 */
 	public static void fromXml(Element questionEl, Operation op)
 	{
-		op.getQuestion(questionEl.getAttributeValue("name")).fromXmlAnswer(questionEl);
+		String qName = questionEl.getAttributeValue("name");
+		if(qName == null)
+			throw new ProblemException("Name not given for question answer in save XML");
+		
+		// Get the question
+		OperationInformation q = op.getQuestion(qName);
+		
+		// If there isn't a question that uses this information, just ignore it
+		if(q != null)
+			q.fromXmlAnswer(questionEl);
 	}
 
 	/**
