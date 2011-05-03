@@ -1,0 +1,12 @@
+-- Exception Server --
+Exceptions are reported by default to the server specified
+at http://code.google.com/p/marla/wiki/CurrentSettings.
+
+This directory contains all files needed to setup your own
+exception receiving site. Create the database by doing
+	SOURCE("schema.sql")
+in MySQL, then create a user in the database with the command
+	INSERT INTO users (user, password) VALUES ("username", md5("password"))
+
+From there, you should be able to login to the exception
+site and see everything that gets reported.
