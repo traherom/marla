@@ -367,102 +367,6 @@ SectionGroupEnd
 
 SectionGroup "Extra Software" 
 	
-	Section "Ghostscript" InstallGhostscript
-	
-		AddSize 12032
-		
-		; First check if we have a copy in the temp folder already 
-		StrCpy $GhostscriptInstaller "$TEMP\ghostscript_install.exe"
-		
-		${IfNot} ${FileExists} $GhostscriptInstaller
-		
-			; Nope, is it on the T drive?
-			${IfNot} ${FileExists} ${TDRIVE_GHOSTSCRIPT}
-			
-				; Download
-				DetailPrint "Downloading Ghostscript to $GhostscriptInstaller"
-				NSISdl::download "http://mirror.cs.wisc.edu/pub/mirrors/ghost/GPL/gs902/gs902w32.exe" $GhostscriptInstaller
-				Pop $0
-				DetailPrint "Download result: $0"
-				
-				${If} $0 != "success"
-					; Download failed
-					DetailPrint "Ghostscript download failed"
-					MessageBox MB_OK|MB_ICONEXCLAMATION "Ghostscript installer could not be downloaded.$\nTry again later or manually install."
-					Abort
-				${EndIf}
-				
-			${Else}
-				; Copy from T to temp for speed and to show progress
-				ClearErrors
-				CopyFiles ${TDRIVE_GHOSTSCRIPT} $GhostscriptInstaller
-				
-				${If} ${Errors}
-					DetailPrint "Failed to copy Ghostscript to temporary folder"
-					StrCpy $GhostscriptInstaller ${TDRIVE_GHOSTSCRIPT}
-				${EndIf}
-			${EndIf}
-		${EndIf}
-
-		; Install!
-		DetailPrint "Installing Ghostscript from '$GhostscriptInstaller'"
-		ClearErrors
-		ExecWait "$GhostscriptInstaller /S"
-		
-		${If} ${Errors}
-			MessageBox MB_OK|MB_ICONEXCLAMATION "Failed to install Ghostscript correctly. Please install manually or retry later.$\nInstallation aborted."
-		${EndIf}
-	
-	SectionEnd
-	
-	Section "GSview" InstallGSview
-	
-		AddSize 1494
-		
-		; First check if we have a copy in the temp folder already 
-		StrCpy $GSviewInstaller "$TEMP\gsview_zip.exe"
-		
-		${IfNot} ${FileExists} $GSviewInstaller
-		
-			; Nope, is it on the T drive?
-			${IfNot} ${FileExists} ${TDRIVE_GSVIEW}
-			
-				; Download
-				DetailPrint "Downloading GSview to $GSviewInstaller"
-				NSISdl::download "http://mirror.cs.wisc.edu/pub/mirrors/ghost/ghostgum/gsv49w32.exe" $GSviewInstaller
-				Pop $0
-				DetailPrint "Download result: $0"
-				
-				${If} $0 != "success"
-					; Download failed
-					DetailPrint "GSview download failed"
-					MessageBox MB_OK|MB_ICONEXCLAMATION "GSview installer could not be downloaded.$\nTry again later or manually install."
-					Abort
-				${EndIf}
-				
-			${Else}
-				; Copy from T to temp for speed and to show progress
-				ClearErrors
-				CopyFiles ${TDRIVE_GSVIEW} $GSviewInstaller
-				
-				${If} ${Errors}
-					DetailPrint "Failed to copy GSview to temporary folder"
-					StrCpy $GSviewInstaller ${TDRIVE_GSVIEW}
-				${EndIf}
-			${EndIf}
-		${EndIf}
-
-		; Install!
-		DetailPrint "Installing GSview from '$GSviewInstaller'"
-		ClearErrors
-		ExecWait "$GSviewInstaller /auto $TEMP\gsview_install.exe"
-		
-		${If} ${Errors}
-			MessageBox MB_OK|MB_ICONEXCLAMATION "Failed to install GSview correctly. Please install manually or retry later.$\nInstallation aborted."
-		${EndIf}
-	
-	SectionEnd
-	
 	Section "Texmaker" InstallTexmaker
 	
 		AddSize 53568
@@ -485,7 +389,7 @@ SectionGroup "Extra Software"
 					; Download failed
 					DetailPrint "Texmaker download failed"
 					MessageBox MB_OK|MB_ICONEXCLAMATION "Texmaker installer could not be downloaded.$\nTry again later or manually install."
-					Abort
+					Return
 				${EndIf}
 				
 			${Else}
@@ -516,6 +420,102 @@ SectionGroup "Extra Software"
 			${registerExtension} "$TexmakerHome\texmaker.exe" ".Rnw" "LaTeX Sweave file"
 		${Else}
 			DetailPrint "Unable to register .Rnw files with Texmaker"
+		${EndIf}
+	
+	SectionEnd
+	
+	Section "Ghostscript" InstallGhostscript
+	
+		AddSize 12032
+		
+		; First check if we have a copy in the temp folder already 
+		StrCpy $GhostscriptInstaller "$TEMP\ghostscript_install.exe"
+		
+		${IfNot} ${FileExists} $GhostscriptInstaller
+		
+			; Nope, is it on the T drive?
+			${IfNot} ${FileExists} ${TDRIVE_GHOSTSCRIPT}
+			
+				; Download
+				DetailPrint "Downloading Ghostscript to $GhostscriptInstaller"
+				NSISdl::download "http://mirror.cs.wisc.edu/pub/mirrors/ghost/GPL/gs902/gs902w32.exe" $GhostscriptInstaller
+				Pop $0
+				DetailPrint "Download result: $0"
+				
+				${If} $0 != "success"
+					; Download failed
+					DetailPrint "Ghostscript download failed"
+					MessageBox MB_OK|MB_ICONEXCLAMATION "Ghostscript installer could not be downloaded.$\nTry again later or manually install."
+					Return
+				${EndIf}
+				
+			${Else}
+				; Copy from T to temp for speed and to show progress
+				ClearErrors
+				CopyFiles ${TDRIVE_GHOSTSCRIPT} $GhostscriptInstaller
+				
+				${If} ${Errors}
+					DetailPrint "Failed to copy Ghostscript to temporary folder"
+					StrCpy $GhostscriptInstaller ${TDRIVE_GHOSTSCRIPT}
+				${EndIf}
+			${EndIf}
+		${EndIf}
+
+		; Install!
+		DetailPrint "Installing Ghostscript from '$GhostscriptInstaller'"
+		ClearErrors
+		ExecWait "$GhostscriptInstaller /S"
+		
+		${If} ${Errors}
+			MessageBox MB_OK|MB_ICONEXCLAMATION "Failed to install Ghostscript correctly. Please install manually or retry later.$\nInstallation aborted."
+		${EndIf}
+	
+	SectionEnd
+	
+	Section "GSview" InstallGSview
+	
+		AddSize 1494
+		
+		; First check if we have a copy in the temp folder already 
+		StrCpy $GSviewInstaller "$TEMP\gsview_install.exe"
+		
+		${IfNot} ${FileExists} $GSviewInstaller
+		
+			; Nope, is it on the T drive?
+			${IfNot} ${FileExists} ${TDRIVE_GSVIEW}
+			
+				; Download
+				DetailPrint "Downloading GSview to $GSviewInstaller"
+				NSISdl::download "http://mirror.cs.wisc.edu/pub/mirrors/ghost/ghostgum/gsv49w32.exe" $GSviewInstaller
+				Pop $0
+				DetailPrint "Download result: $0"
+				
+				${If} $0 != "success"
+					; Download failed
+					DetailPrint "GSview download failed"
+					MessageBox MB_OK|MB_ICONEXCLAMATION "GSview installer could not be downloaded.$\nTry again later or manually install."
+					Return
+				${EndIf}
+				
+			${Else}
+				; Copy from T to temp for speed and to show progress
+				ClearErrors
+				CopyFiles ${TDRIVE_GSVIEW} $GSviewInstaller
+				
+				${If} ${Errors}
+					DetailPrint "Failed to copy GSview to temporary folder"
+					StrCpy $GSviewInstaller ${TDRIVE_GSVIEW}
+				${EndIf}
+			${EndIf}
+		${EndIf}
+
+		; Install!
+		DetailPrint "Installing GSview from '$GSviewInstaller'"
+		ClearErrors
+		ExecWait "$GSviewInstaller /auto $TEMP\gsview_install.exe"
+		
+		${If} ${Errors}
+			MessageBox MB_OK|MB_ICONEXCLAMATION "Failed to install GSview correctly. Please install manually or retry later.$\nInstallation aborted."
 		${EndIf}
 	
 	SectionEnd
