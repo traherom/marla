@@ -24,7 +24,7 @@ SetCompressor /SOLID lzma
 !define TDRIVE_TEX "T:\TEX\CTAN\basic-miktex.exe"
 !define TDRIVE_R "T:\TEX\CRAN\R-win.exe"
 !define TDRIVE_TEXMAKER "T:\TEX\CTAN\texmakerwin32_install.exe"
-!define TDRIVE_GHOSTSCRIPT "T:\TEX\CTAN\ghostcript_install.exe"
+!define TDRIVE_GHOSTSCRIPT "T:\TEX\CTAN\ghostscript_install.exe"
 !define TDRIVE_GSVIEW "T:\TEX\CTAN\gsview_install.exe"
 
 Var /GLOBAL RETURN ; Used by functions for returning values
